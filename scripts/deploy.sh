@@ -1,84 +1,142 @@
 #!/bin/bash
 # =============================================================================
-# JARABA SAAS - IONOS DEPLOYMENT SCRIPT
+# SCRIPT DE DEPLOY SEGURO - Jaraba Impact Platform v2.0
 # =============================================================================
-# Usage: ./deploy.sh [--force]
-# 
-# This script deploys the latest changes from the main branch to IONOS.
-# Run from the project root directory on IONOS server.
+# Ubicación: ~/JarabaImpactPlatformSaaS/scripts/deploy.sh
+# Uso: ./scripts/deploy.sh
+#
+# DISEÑADO PARA: IONOS Shared Hosting
+# PROBADO: 2026-01-10
 # =============================================================================
 
 set -e
 
-# Configuration
-SITE_DIR="${HOME}/JarabaImpactPlatformSaaS"
-BACKUP_DIR="${HOME}/backups"
-PHP_CLI="/usr/bin/php8.4-cli"
-DRUSH="${PHP_CLI} ${SITE_DIR}/vendor/bin/drush.php"
-COMPOSER="${PHP_CLI} ${HOME}/bin/composer.phar"
-DATE=$(date +%Y%m%d_%H%M%S)
-
-# Colors for output
+# Colores
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo -e "${GREEN}🚀 JARABA SAAS - Starting Deployment${NC}"
-echo "=================================================="
-echo "Date: $(date)"
-echo "Directory: ${SITE_DIR}"
-echo ""
+# Variables
+PROJECT_DIR="$HOME/JarabaImpactPlatformSaaS"
+WEB_DIR="$PROJECT_DIR/web"
+SETTINGS_DIR="$WEB_DIR/sites/default"
+SETTINGS_LOCAL="$SETTINGS_DIR/settings.local.php"
+HTACCESS="$WEB_DIR/.htaccess"
+BACKUP_DIR="$HOME/backups"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# Create backup directory if it doesn't exist
-mkdir -p ${BACKUP_DIR}
+# Comandos IONOS
+PHP_CLI="/usr/bin/php8.4-cli"
+COMPOSER="$PHP_CLI $HOME/bin/composer.phar"
+DRUSH="$PHP_CLI $PROJECT_DIR/vendor/bin/drush.php"
 
-# Step 1: Pre-deployment backup
-echo -e "${YELLOW}📦 Step 1: Creating pre-deployment backup...${NC}"
-cd ${SITE_DIR}
-${DRUSH} sql-dump --gzip > "${BACKUP_DIR}/db_pre_deploy_${DATE}.sql.gz"
-echo "   Backup saved: ${BACKUP_DIR}/db_pre_deploy_${DATE}.sql.gz"
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Step 2: Enable maintenance mode
-echo -e "${YELLOW}🔧 Step 2: Enabling maintenance mode...${NC}"
-${DRUSH} state:set system.maintenance_mode 1
+# =============================================================================
+# PRE-FLIGHT CHECKS
+# =============================================================================
+log_info "=========================================="
+log_info "DEPLOY SEGURO IONOS - $TIMESTAMP"
+log_info "=========================================="
 
-# Step 3: Pull latest changes
-echo -e "${YELLOW}📥 Step 3: Pulling latest changes from Git...${NC}"
+cd "$PROJECT_DIR"
+
+# Verificar que estamos en el directorio correcto
+if [ ! -f "composer.json" ]; then
+    log_error "No estamos en el directorio del proyecto. Abortando."
+    exit 1
+fi
+
+# Verificar que settings.local.php existe
+if [ ! -f "$SETTINGS_LOCAL" ]; then
+    log_error "settings.local.php NO EXISTE. Las credenciales de IONOS se perderían."
+    log_error "Ejecute el procedimiento de recreación en el runbook."
+    exit 1
+fi
+
+# Verificar conexión BD antes de continuar
+log_info "Verificando conexión a base de datos..."
+if ! $DRUSH sql:query "SELECT 1" > /dev/null 2>&1; then
+    log_error "No hay conexión a la base de datos. Verificar settings.local.php"
+    exit 1
+fi
+log_info "Conexión BD OK"
+
+# =============================================================================
+# BACKUP
+# =============================================================================
+mkdir -p "$BACKUP_DIR"
+
+log_info "Creando backup de BD..."
+$DRUSH sql-dump --gzip > "$BACKUP_DIR/db_pre_deploy_$TIMESTAMP.sql.gz"
+log_info "Backup: $BACKUP_DIR/db_pre_deploy_$TIMESTAMP.sql.gz"
+
+log_info "Backup de settings.local.php..."
+cp "$SETTINGS_LOCAL" "$BACKUP_DIR/settings.local_$TIMESTAMP.php"
+
+CURRENT_COMMIT=$(git rev-parse HEAD)
+log_info "Commit actual: $CURRENT_COMMIT"
+
+# =============================================================================
+# DEPLOY
+# =============================================================================
+log_info "Desbloqueando permisos..."
+chmod 755 "$SETTINGS_DIR"
+chmod 644 "$SETTINGS_DIR/settings.php"
+
+log_info "Actualizando código..."
 git fetch origin
-git reset --hard origin/main
+git pull origin main
 
-# Step 4: Install dependencies
-echo -e "${YELLOW}📦 Step 4: Installing Composer dependencies...${NC}"
-${COMPOSER} install --no-dev --optimize-autoloader
+log_info "Restaurando permisos seguros..."
+chmod 555 "$SETTINGS_DIR"
+chmod 444 "$SETTINGS_DIR/settings.php"
 
-# Step 5: Run database updates
-echo -e "${YELLOW}🗄️ Step 5: Running database updates...${NC}"
-${DRUSH} updatedb -y
+# Verificar que settings.local.php no fue sobrescrito
+if [ ! -f "$SETTINGS_LOCAL" ]; then
+    log_warn "settings.local.php fue eliminado. Restaurando backup..."
+    cp "$BACKUP_DIR/settings.local_$TIMESTAMP.php" "$SETTINGS_LOCAL"
+fi
 
-# Step 6: Import configuration
-echo -e "${YELLOW}⚙️ Step 6: Importing configuration...${NC}"
-${DRUSH} config:import -y || echo "   No config changes to import"
+# Habilitar RewriteBase (necesario para IONOS)
+if grep -q "# RewriteBase /" "$HTACCESS"; then
+    log_info "Habilitando RewriteBase..."
+    sed -i 's/# RewriteBase \//RewriteBase \//' "$HTACCESS"
+fi
 
-# Step 7: Clear caches
-echo -e "${YELLOW}🧹 Step 7: Clearing caches...${NC}"
-${DRUSH} cache:rebuild
+# =============================================================================
+# COMPOSER & DRUSH
+# =============================================================================
+log_info "Ejecutando composer install..."
+$COMPOSER install --no-dev --optimize-autoloader
 
-# Step 8: Disable maintenance mode
-echo -e "${YELLOW}✅ Step 8: Disabling maintenance mode...${NC}"
-${DRUSH} state:set system.maintenance_mode 0
+log_info "Ejecutando database updates..."
+$DRUSH updatedb -y || log_warn "updatedb tuvo warnings (puede ser normal)"
 
-# Summary
-echo ""
-echo "=================================================="
-echo -e "${GREEN}🎉 DEPLOYMENT COMPLETE!${NC}"
-echo "=================================================="
-echo "Time: $(date)"
-echo "Backup: ${BACKUP_DIR}/db_pre_deploy_${DATE}.sql.gz"
-echo ""
-echo "Verify at: https://plataformadeecosistemas.com"
-echo ""
+log_info "Limpiando caché..."
+$DRUSH cr
 
-# Cleanup old backups (keep last 7 days)
-find ${BACKUP_DIR} -name "db_pre_deploy_*.sql.gz" -mtime +7 -delete 2>/dev/null || true
-echo "Old backups cleaned (kept last 7 days)"
+# =============================================================================
+# VERIFICACIÓN
+# =============================================================================
+log_info "Verificando sitio..."
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://plataformadeecosistemas.com/" 2>/dev/null || echo "000")
+if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "302" ]; then
+    log_info "Sitio respondiendo correctamente (HTTP $HTTP_CODE)"
+else
+    log_warn "Sitio devuelve HTTP $HTTP_CODE - verificar manualmente"
+fi
+
+# =============================================================================
+# RESUMEN
+# =============================================================================
+NEW_COMMIT=$(git rev-parse HEAD)
+log_info "=========================================="
+log_info "DEPLOY COMPLETADO"
+log_info "Commit anterior: $CURRENT_COMMIT"
+log_info "Commit nuevo:    $NEW_COMMIT"
+log_info "Backup BD:       $BACKUP_DIR/db_pre_deploy_$TIMESTAMP.sql.gz"
+log_info "=========================================="

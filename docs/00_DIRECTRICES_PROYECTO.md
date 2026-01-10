@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-10 19:41  
-**Versión:** 2.0.0
+**Última actualización:** 2026-01-10 22:02  
+**Versión:** 2.0.1 (AI-First Commerce desplegado)
 
 ---
 
@@ -41,7 +41,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 
 ### 1.4 Módulos Principales
 - **Gestión de Tenants**: Organizaciones cliente que utilizan la plataforma
-- **E-commerce**: Integración con Ecwid para tiendas de productores
+- **E-commerce**: Drupal Commerce 3.x nativo con Stripe Connect (split payments)
 - **Trazabilidad**: Seguimiento de productos desde origen
 - **Certificación Digital**: Firma electrónica con FNMT/AutoFirma
 - **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
