@@ -1,0 +1,11 @@
+name: 'Jaraba Commerce'
+type: module
+description: 'Integración de Drupal Commerce con multi-tenancy y optimización GEO (Answer Capsules).'
+package: Jaraba Impact
+core_version_requirement: ^11
+dependencies:
+  - drupal:commerce
+  - drupal:commerce_product
+  - drupal:commerce_store
+  - drupal:commerce_order
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

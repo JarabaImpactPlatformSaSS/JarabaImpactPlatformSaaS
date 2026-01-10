@@ -60,6 +60,17 @@ services:
       - '@file_system'
 
   # ===========================================
+  # SERVICIOS DE PAGOS Y STRIPE CONNECT
+  # ===========================================
+
+  # Servicio de Stripe Connect para split payments (marketplace)
+  ecosistema_jaraba_core.stripe_connect:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaStripeConnect
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # LOGGING
   # ===========================================
 

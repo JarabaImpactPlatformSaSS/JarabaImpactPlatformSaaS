@@ -1,0 +1,14 @@
+services:
+  # Event subscriber para auto-crear Store cuando se crea un Tenant
+  jaraba_commerce.tenant_store_subscriber:
+    class: Drupal\jaraba_commerce\EventSubscriber\TenantStoreSubscriber
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_commerce'
+    tags:
+      - { name: event_subscriber }
+
+  # Logger channel para el módulo
+  logger.channel.jaraba_commerce:
+    parent: logger.channel_base
+    arguments: ['jaraba_commerce']

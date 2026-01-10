@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Commerce module - Integración Commerce + Multi-tenancy.
+ *
+ * Este módulo proporciona:
+ * - Auto-creación de Commerce Store por Tenant
+ * - Campos GEO (field_ai_summary) para productos
+ * - Integración con el sistema de multi-tenancy
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Cuando se crea un nuevo Tenant, crea automáticamente una Commerce Store.
+ */
+function jaraba_commerce_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() !== 'tenant') {
+    return;
+  }
+
+  if (!$entity instanceof TenantInterface) {
+    return;
+  }
+
+  // Verificar que Commerce está instalado
+  if (!\Drupal::moduleHandler()->moduleExists('commerce_store')) {
+    return;
+  }
+
+  // Crear la Store para el nuevo Tenant
+  try {
+    /** @var \Drupal\jaraba_commerce\EventSubscriber\TenantStoreSubscriber $storeSubscriber */
+    $storeSubscriber = \Drupal::service('jaraba_commerce.tenant_store_subscriber');
+    $store = $storeSubscriber->createStoreForTenant($entity);
+
+    if ($store) {
+      \Drupal::messenger()->addStatus(t(
+        'Tienda Commerce creada automáticamente: @store',
+        ['@store' => $store->getName()]
+      ));
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_commerce')->error(
+      'Error en hook_entity_insert para Tenant: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ *
+ * Añade el campo field_ai_summary a los productos Commerce para Answer Capsules.
+ */
+function jaraba_commerce_entity_bundle_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  $fields = [];
+
+  // Solo para commerce_product
+  if ($entity_type->id() !== 'commerce_product') {
+    return $fields;
+  }
+
+  // Campo field_ai_summary ya se añade vía config - este hook es para campos base
+  // Lo dejamos preparado por si se necesita en el futuro
+  
+  return $fields;
+}

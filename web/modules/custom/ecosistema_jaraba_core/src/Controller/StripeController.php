@@ -431,4 +431,252 @@ class StripeController extends ControllerBase
         return $messages[$declineCode] ?? 'Tu tarjeta ha sido rechazada. Por favor, verifica los datos o usa otra tarjeta.';
     }
 
+    // =========================================================================
+    // STRIPE CONNECT - MARKETPLACE SPLIT PAYMENTS
+    // =========================================================================
+
+    /**
+     * Inicia el onboarding de Stripe Connect para el tenant actual.
+     *
+     * Crea una cuenta Express y genera el link de onboarding KYC.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   URL de redirección al onboarding de Stripe.
+     */
+    public function startConnectOnboarding(Request $request): JsonResponse
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Sin acceso.'], 403);
+        }
+
+        // Si ya tiene cuenta Connect, generar nuevo link
+        $connectId = $tenant->get('stripe_connect_id')->value;
+
+        try {
+            $stripeConnect = \Drupal::service('ecosistema_jaraba_core.stripe_connect');
+
+            // Si no tiene cuenta, crearla
+            if (!$connectId) {
+                $adminUser = $tenant->getAdminUser();
+                $email = $adminUser ? $adminUser->getEmail() : '';
+
+                $connectId = $stripeConnect->createConnectedAccount($tenant, $email, 'ES');
+
+                // Guardar el ID en el tenant
+                $tenant->set('stripe_connect_id', $connectId);
+                $tenant->save();
+            }
+
+            // Generar link de onboarding
+            $baseUrl = $request->getSchemeAndHttpHost();
+            $returnUrl = $baseUrl . '/stripe/connect/return';
+            $refreshUrl = $baseUrl . '/stripe/connect/refresh';
+
+            $onboardingUrl = $stripeConnect->createAccountLink($connectId, $returnUrl, $refreshUrl);
+
+            $this->logger->info(
+                '🔗 Stripe Connect: Onboarding iniciado para tenant @tenant',
+                ['@tenant' => $tenant->getName()]
+            );
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'redirect_url' => $onboardingUrl,
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error(
+                '🚫 Stripe Connect: Error en onboarding para tenant @tenant: @error',
+                [
+                    '@tenant' => $tenant->getName(),
+                    '@error' => $e->getMessage(),
+                ]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al iniciar la configuración de pagos.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Callback tras completar el onboarding de Stripe Connect.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP.
+     *
+     * @return array
+     *   Render array con mensaje de éxito.
+     */
+    public function connectOnboardingReturn(Request $request): array
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant || !$tenant->get('stripe_connect_id')->value) {
+            return [
+                '#markup' => '<p>Error: No se pudo verificar la configuración.</p>',
+            ];
+        }
+
+        try {
+            $stripeConnect = \Drupal::service('ecosistema_jaraba_core.stripe_connect');
+            $status = $stripeConnect->getAccountStatus($tenant->get('stripe_connect_id')->value);
+
+            if ($status['verified']) {
+                $this->logger->info(
+                    '✅ Stripe Connect: Onboarding completado para tenant @tenant',
+                    ['@tenant' => $tenant->getName()]
+                );
+
+                return [
+                    '#theme' => 'status_messages',
+                    '#message_list' => [
+                        'status' => ['¡Tu cuenta de pagos está configurada correctamente! Ya puedes recibir pagos de tus clientes.'],
+                    ],
+                    '#status_headings' => [
+                        'status' => $this->t('¡Configuración Completada!'),
+                    ],
+                ];
+            } else {
+                return [
+                    '#markup' => '<p>Tu configuración está pendiente de verificación. Por favor, completa todos los requisitos en Stripe.</p>',
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                '#markup' => '<p>Error al verificar el estado de tu cuenta: ' . $e->getMessage() . '</p>',
+            ];
+        }
+    }
+
+    /**
+     * Página para reintentar onboarding si el link expiró.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|array
+     *   Redirección o mensaje de error.
+     */
+    public function connectOnboardingRefresh(Request $request)
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant || !$tenant->get('stripe_connect_id')->value) {
+            return [
+                '#markup' => '<p>Error: No tienes una cuenta de pagos configurada.</p>',
+            ];
+        }
+
+        try {
+            $stripeConnect = \Drupal::service('ecosistema_jaraba_core.stripe_connect');
+
+            $baseUrl = $request->getSchemeAndHttpHost();
+            $returnUrl = $baseUrl . '/stripe/connect/return';
+            $refreshUrl = $baseUrl . '/stripe/connect/refresh';
+
+            $onboardingUrl = $stripeConnect->createAccountLink(
+                $tenant->get('stripe_connect_id')->value,
+                $returnUrl,
+                $refreshUrl
+            );
+
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($onboardingUrl);
+
+        } catch (\Exception $e) {
+            return [
+                '#markup' => '<p>Error al generar nuevo enlace: ' . $e->getMessage() . '</p>',
+            ];
+        }
+    }
+
+    /**
+     * Obtiene el estado de la cuenta Connect del tenant actual.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Estado de la cuenta.
+     */
+    public function getConnectStatus(): JsonResponse
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Sin acceso.'], 403);
+        }
+
+        $connectId = $tenant->get('stripe_connect_id')->value;
+
+        if (!$connectId) {
+            return new JsonResponse([
+                'success' => TRUE,
+                'has_account' => FALSE,
+                'message' => 'No tienes una cuenta de pagos configurada.',
+            ]);
+        }
+
+        try {
+            $stripeConnect = \Drupal::service('ecosistema_jaraba_core.stripe_connect');
+            $status = $stripeConnect->getAccountStatus($connectId);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'has_account' => TRUE,
+                'connect_id' => $connectId,
+                'status' => $status,
+            ]);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al obtener estado: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtiene el enlace al dashboard de Stripe Express.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   URL del dashboard.
+     */
+    public function getConnectDashboard(): JsonResponse
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Sin acceso.'], 403);
+        }
+
+        $connectId = $tenant->get('stripe_connect_id')->value;
+
+        if (!$connectId) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'No tienes una cuenta de pagos configurada.',
+            ], 400);
+        }
+
+        try {
+            $stripeConnect = \Drupal::service('ecosistema_jaraba_core.stripe_connect');
+            $dashboardUrl = $stripeConnect->createLoginLink($connectId);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'dashboard_url' => $dashboardUrl,
+            ]);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al generar enlace al dashboard.',
+            ], 500);
+        }
+    }
+
 }

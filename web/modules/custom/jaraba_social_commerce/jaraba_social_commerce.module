@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Social Commerce module - Integración con redes sociales vía Make.com.
+ *
+ * Este módulo envía eventos de Commerce a Make.com para sincronización
+ * automática con: Facebook/Instagram Shop, TikTok Shop, Pinterest, Google Shopping.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_insert() for commerce_product.
+ *
+ * Envía evento product.created cuando se crea un producto.
+ */
+function jaraba_social_commerce_commerce_product_insert(EntityInterface $entity) {
+  _jaraba_social_commerce_dispatch_product_event($entity, 'created');
+}
+
+/**
+ * Implements hook_entity_update() for commerce_product.
+ *
+ * Envía evento product.updated cuando se actualiza un producto.
+ */
+function jaraba_social_commerce_commerce_product_update(EntityInterface $entity) {
+  _jaraba_social_commerce_dispatch_product_event($entity, 'updated');
+}
+
+/**
+ * Implements hook_commerce_order_paid().
+ *
+ * Envía evento order.completed cuando se completa un pedido.
+ */
+function jaraba_social_commerce_commerce_order_paid(EntityInterface $order) {
+  try {
+    /** @var \Drupal\jaraba_social_commerce\Service\WebhookDispatcher $dispatcher */
+    $dispatcher = \Drupal::service('jaraba_social_commerce.webhook_dispatcher');
+    $dispatcher->dispatchOrderCompleted($order);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_social_commerce')->error(
+      'Error despachando order.completed: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper para enviar eventos de productos.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $product
+ *   El producto.
+ * @param string $action
+ *   Acción: 'created' o 'updated'.
+ */
+function _jaraba_social_commerce_dispatch_product_event(EntityInterface $product, string $action): void {
+  try {
+    /** @var \Drupal\jaraba_social_commerce\Service\WebhookDispatcher $dispatcher */
+    $dispatcher = \Drupal::service('jaraba_social_commerce.webhook_dispatcher');
+
+    if ($action === 'created') {
+      $dispatcher->dispatchProductCreated($product);
+    }
+    else {
+      $dispatcher->dispatchProductUpdated($product);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_social_commerce')->error(
+      'Error despachando product.@action: @error',
+      ['@action' => $action, '@error' => $e->getMessage()]
+    );
+  }
+}

@@ -1,0 +1,13 @@
+services:
+  # Servicio de webhooks para Make.com
+  jaraba_social_commerce.webhook_dispatcher:
+    class: Drupal\jaraba_social_commerce\Service\WebhookDispatcher
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_social_commerce'
+
+  # Logger channel
+  logger.channel.jaraba_social_commerce:
+    parent: logger.channel_base
+    arguments: ['jaraba_social_commerce']

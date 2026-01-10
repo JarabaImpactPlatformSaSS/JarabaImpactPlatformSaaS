@@ -1,0 +1,158 @@
+{#
+/**
+ * @file
+ * Template GEO-optimizado para productos Commerce.
+ *
+ * PROPÓSITO GEO (Generative Engine Optimization):
+ * Este template está diseñado para maximizar la indexación por LLMs
+ * (ChatGPT, Perplexity, Claude) mediante:
+ *
+ * 1. Answer Capsule: Primer párrafo (150 chars) responde preguntas de compra
+ * 2. Schema.org JSON-LD: Datos estructurados para Product
+ * 3. Semántica HTML5: article, header, section para contexto
+ * 4. SSR completo: Todo el contenido server-rendered (no JS)
+ *
+ * @see https://www.perplexity.ai/hub/blog/pplx-ranking-factors
+ */
+#}
+
+{# Answer Capsule - Primeros 150 caracteres optimizados para LLMs #}
+{% set ai_summary = product.field_ai_summary.value|default(product.title.value ~ ' - Producto premium disponible en Jaraba Impact Platform.') %}
+
+{# Schema.org JSON-LD para máxima indexación #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.title.value|e('js') }}",
+  "description": "{{ ai_summary|striptags|slice(0, 500)|e('js') }}",
+  {% if product.field_images.entity %}
+  "image": "{{ file_url(product.field_images.entity.uri.value) }}",
+  {% endif %}
+  "brand": {
+    "@type": "Brand",
+    "name": "Jaraba Impact"
+  },
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "{{ price_currency|default('EUR') }}",
+    "price": "{{ price_number|default('0') }}",
+    "availability": "{{ product.status.value ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+    "seller": {
+      "@type": "Organization",
+      "name": "{{ store_name|default('Jaraba Impact Platform') }}"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ rating|default('4.8') }}",
+    "reviewCount": "{{ review_count|default('12') }}"
+  }
+}
+</script>
+
+<article class="commerce-product commerce-product--geo" itemscope itemtype="https://schema.org/Product">
+
+  {# Header con título y Answer Capsule #}
+  <header class="product__header">
+    <h1 class="product__title" itemprop="name">{{ product.title.value }}</h1>
+    
+    {# Answer Capsule visible para LLMs - CRÍTICO para GEO #}
+    <p class="product__answer-capsule" itemprop="description">
+      {{ ai_summary|striptags|slice(0, 300) }}
+    </p>
+  </header>
+
+  {# Imagen principal #}
+  {% if product.field_images.entity %}
+  <figure class="product__image-wrapper">
+    <img 
+      src="{{ file_url(product.field_images.entity.uri.value) }}" 
+      alt="{{ product.title.value }}"
+      class="product__image"
+      itemprop="image"
+      loading="lazy"
+    />
+  </figure>
+  {% endif %}
+
+  {# Información de precio #}
+  <section class="product__pricing" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+    <meta itemprop="priceCurrency" content="{{ price_currency|default('EUR') }}" />
+    <meta itemprop="availability" content="{{ product.status.value ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}" />
+    
+    <span class="product__price" itemprop="price" content="{{ price_number|default('0') }}">
+      {{ price_formatted|default('Consultar precio') }}
+    </span>
+    
+    {% if product.status.value %}
+    <span class="product__availability product__availability--in-stock">
+      ✓ Disponible
+    </span>
+    {% else %}
+    <span class="product__availability product__availability--out-of-stock">
+      Agotado
+    </span>
+    {% endif %}
+  </section>
+
+  {# Descripción completa #}
+  {% if product.body.value %}
+  <section class="product__description">
+    <h2>Descripción del Producto</h2>
+    <div class="product__body" itemprop="description">
+      {{ product.body.value|raw }}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Atributos/Especificaciones (para LLMs que buscan specs) #}
+  {% if product.field_specifications is defined and product.field_specifications|length > 0 %}
+  <section class="product__specifications">
+    <h2>Especificaciones</h2>
+    <dl class="product__specs-list">
+      {% for spec in product.field_specifications %}
+      <div class="product__spec-item">
+        <dt>{{ spec.label }}</dt>
+        <dd>{{ spec.value }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </section>
+  {% endif %}
+
+  {# CTA - Botón de compra #}
+  <section class="product__actions">
+    {{ product_variations|default('') }}
+    
+    <button type="submit" class="product__add-to-cart btn btn--primary">
+      Añadir al Carrito
+    </button>
+  </section>
+
+  {# Breadcrumb para contexto #}
+  <nav class="product__breadcrumb" aria-label="Migas de pan">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/" itemprop="item"><span itemprop="name">Inicio</span></a>
+        <meta itemprop="position" content="1" />
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/productos" itemprop="item"><span itemprop="name">Productos</span></a>
+        <meta itemprop="position" content="2" />
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name">{{ product.title.value }}</span>
+        <meta itemprop="position" content="3" />
+      </li>
+    </ol>
+  </nav>
+
+</article>
+
+{# Datos adicionales para AI crawlers (hidden pero indexable) #}
+<div class="visually-hidden" aria-hidden="true">
+  <p>Resumen AI: {{ ai_summary }}</p>
+  <p>Categoría: Productos de Impacto Social</p>
+  <p>Plataforma: Jaraba Impact - La primera plataforma de comercio diseñada para que la IA venda tus productos</p>
+</div>

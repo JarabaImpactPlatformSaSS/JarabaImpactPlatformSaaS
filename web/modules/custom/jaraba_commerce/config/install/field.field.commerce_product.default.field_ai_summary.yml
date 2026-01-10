@@ -1,0 +1,19 @@
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.commerce_product.field_ai_summary
+  module:
+    - commerce_product
+id: commerce_product.default.field_ai_summary
+field_name: field_ai_summary
+entity_type: commerce_product
+bundle: default
+label: 'Answer Capsule (AI Summary)'
+description: 'Resumen optimizado para LLMs. Los primeros 150 caracteres deben responder directamente a preguntas de intención de compra.'
+required: false
+translatable: true
+default_value: []
+default_value_callback: ''
+settings: {}
+field_type: string_long

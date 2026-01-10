@@ -285,9 +285,34 @@ function ecosistema_jaraba_core_update_9004() {
 function ecosistema_jaraba_core_update_9005() {
   $database = \Drupal::database();
   $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
-  $entity_type_manager = \Drupal::entityTypeManager();
 
-  // 1. Eliminar las tablas antiguas si existen
+  // 1. Intentar desinstalar las definiciones de campo antiguas primero
+  // (antes de eliminar las tablas para evitar errores de SQL)
+  try {
+    $old_features_def = $entity_definition_manager->getFieldStorageDefinition('enabled_features', 'vertical');
+    if ($old_features_def) {
+      $entity_definition_manager->uninstallFieldStorageDefinition($old_features_def);
+      \Drupal::logger('ecosistema_jaraba_core')->notice('Definición enabled_features desinstalada.');
+    }
+  }
+  catch (\Exception $e) {
+    // La tabla ya no existe o la definición ya fue removida - continuar
+    \Drupal::logger('ecosistema_jaraba_core')->notice('enabled_features ya eliminado o no existe: ' . $e->getMessage());
+  }
+
+  try {
+    $old_agents_def = $entity_definition_manager->getFieldStorageDefinition('ai_agents', 'vertical');
+    if ($old_agents_def) {
+      $entity_definition_manager->uninstallFieldStorageDefinition($old_agents_def);
+      \Drupal::logger('ecosistema_jaraba_core')->notice('Definición ai_agents desinstalada.');
+    }
+  }
+  catch (\Exception $e) {
+    // La tabla ya no existe o la definición ya fue removida - continuar
+    \Drupal::logger('ecosistema_jaraba_core')->notice('ai_agents ya eliminado o no existe: ' . $e->getMessage());
+  }
+
+  // 2. Eliminar las tablas si aún existen (cleanup)
   $tables_to_drop = [
     'vertical__enabled_features',
     'vertical__ai_agents',
@@ -298,18 +323,6 @@ function ecosistema_jaraba_core_update_9005() {
       $database->schema()->dropTable($table);
       \Drupal::logger('ecosistema_jaraba_core')->notice("Tabla $table eliminada.");
     }
-  }
-
-  // 2. Forzar redescubrimiento de definiciones de campos
-  // Uninstall old field definitions
-  $old_features_def = $entity_definition_manager->getFieldStorageDefinition('enabled_features', 'vertical');
-  if ($old_features_def) {
-    $entity_definition_manager->uninstallFieldStorageDefinition($old_features_def);
-  }
-
-  $old_agents_def = $entity_definition_manager->getFieldStorageDefinition('ai_agents', 'vertical');
-  if ($old_agents_def) {
-    $entity_definition_manager->uninstallFieldStorageDefinition($old_agents_def);
   }
 
   // 3. Instalar nuevas definiciones (entity_reference)

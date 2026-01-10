@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-10 15:15  
-**Versión:** 1.7.0
+**Última actualización:** 2026-01-10 19:41  
+**Versión:** 2.0.0
 
 ---
 
@@ -110,12 +110,25 @@ npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
 
 ### 2.3 Integraciones Externas
 
+> **Evolución v2.0 (Enero 2026)**: Arquitectura AI-First Commerce reemplazando Ecwid
+> Ver: [Documento Técnico Maestro v2](./tecnicos/20260110e-Documento_Tecnico_Maestro_v2_Claude.md)
+
 | Servicio | Propósito |
 |----------|----------|
-| **Ecwid** | Plataforma e-commerce embebida, SSO |
+| **Drupal Commerce 3.x** | E-commerce nativo con Server-Side Rendering (GEO-optimizado) |
+| **Stripe Connect** | Split payments automáticos plataforma/tenant |
+| **Make.com** | Hub de integración (Facebook, Instagram, TikTok, Pinterest, Google) |
 | **FNMT / AutoFirma** | Certificados digitales y firma electrónica |
-| **APIs de IA** | OpenAI, Anthropic, Google - según configuración |
-| **Blockchain** | Trazabilidad (en evaluación) |
+| **APIs de IA** | OpenAI, Anthropic, Google - generación de Answer Capsules |
+
+#### 2.3.1 Estrategia GEO (Generative Engine Optimization)
+
+> **PRINCIPIO RECTOR**: "La primera plataforma de comercio diseñada para que la IA venda tus productos"
+
+La arquitectura Commerce 3.x proporciona Server-Side Rendering que permite:
+- **Answer Capsules**: Primeros 150 caracteres optimizados para extracción por LLMs
+- **Schema.org completo**: JSON-LD para Product, Offer, FAQ, Organization
+- **Indexación 100%**: Todo el contenido visible para GPTBot, PerplexityBot, ClaudeBot
 
 ### 2.4 Desarrollo Local
 

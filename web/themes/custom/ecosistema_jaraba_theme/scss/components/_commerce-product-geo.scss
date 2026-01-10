@@ -1,0 +1,410 @@
+// ============================================================================
+// ESTILOS GEO PARA PRODUCTOS COMMERCE
+// ============================================================================
+// Ubicación: themes/custom/ecosistema_jaraba_theme/scss/components/_commerce-product-geo.scss
+//
+// PROPÓSITO:
+// Estilos optimizados para el template commerce-product--geo.html.twig
+// que maximiza la indexación por LLMs (ChatGPT, Perplexity, Claude).
+//
+// ARQUITECTURA:
+// Usa variables inyectables que pueden ser sobrescritas por tenant
+// a través del sistema de personalización administrativa.
+//
+// Añadir @import "components/commerce-product-geo"; al archivo main.scss
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// VARIABLES INYECTABLES (sobrescritas por tenant)
+// ---------------------------------------------------------------------------
+// Estas variables pueden ser personalizadas por cada tenant vía admin
+
+// Colores principales del tenant (inyectables)
+$product-primary: var(--tenant-primary, #2563EB) !default;
+$product-secondary: var(--tenant-secondary, #1E40AF) !default;
+$product-accent: var(--tenant-accent, #10B981) !default;
+
+// Tipografía (inyectable)
+$product-font-family: var(--tenant-font-family, 'Inter', -apple-system, sans-serif) !default;
+$product-heading-weight: var(--tenant-heading-weight, 700) !default;
+
+// Colores de UI
+$product-text: #1F2937;
+$product-text-muted: #6B7280;
+$product-bg: #FFFFFF;
+$product-bg-secondary: #F9FAFB;
+$product-border: #E5E7EB;
+$product-success: #059669;
+$product-warning: #D97706;
+
+// Espaciado
+$product-spacing-sm: 0.5rem;
+$product-spacing-md: 1rem;
+$product-spacing-lg: 1.5rem;
+$product-spacing-xl: 2rem;
+
+// Bordes
+$product-radius-sm: 8px;
+$product-radius-md: 12px;
+$product-radius-lg: 16px;
+
+// Sombras
+$product-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$product-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$product-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+// ---------------------------------------------------------------------------
+// CONTENEDOR PRINCIPAL DEL PRODUCTO
+// ---------------------------------------------------------------------------
+.commerce-product--geo {
+    font-family: $product-font-family;
+    color: $product-text;
+    background: $product-bg;
+    border-radius: $product-radius-lg;
+    box-shadow: $product-shadow-md;
+    overflow: hidden;
+    max-width: 1200px;
+    margin: $product-spacing-xl auto;
+
+    // Grid layout para desktop
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        gap: $product-spacing-xl;
+        padding: $product-spacing-xl;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// HEADER CON TÍTULO Y ANSWER CAPSULE
+// ---------------------------------------------------------------------------
+.product__header {
+    padding: $product-spacing-lg;
+
+    @media (min-width: 768px) {
+        grid-column: 1 / -1;
+        padding: 0 0 $product-spacing-md 0;
+        border-bottom: 1px solid $product-border;
+    }
+}
+
+.product__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: $product-heading-weight;
+    color: $product-text;
+    margin: 0 0 $product-spacing-md 0;
+    line-height: 1.2;
+
+    // Resaltar con color del tenant
+    background: linear-gradient(135deg, $product-primary, $product-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// CRÍTICO GEO: Answer Capsule visible para LLMs
+.product__answer-capsule {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: $product-text-muted;
+    margin: 0;
+    padding: $product-spacing-md;
+    background: $product-bg-secondary;
+    border-radius: $product-radius-sm;
+    border-left: 4px solid $product-primary;
+
+    // Primeras 150 chars son las más importantes para LLMs
+    &::first-line {
+        font-weight: 600;
+        color: $product-text;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// IMAGEN DEL PRODUCTO
+// ---------------------------------------------------------------------------
+.product__image-wrapper {
+    margin: 0;
+    padding: $product-spacing-lg;
+
+    @media (min-width: 768px) {
+        padding: 0;
+    }
+}
+
+.product__image {
+    width: 100%;
+    height: auto;
+    border-radius: $product-radius-md;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PRICING - INFORMACIÓN DE PRECIO
+// ---------------------------------------------------------------------------
+.product__pricing {
+    padding: $product-spacing-lg;
+    background: $product-bg-secondary;
+    border-radius: $product-radius-md;
+    display: flex;
+    flex-direction: column;
+    gap: $product-spacing-sm;
+
+    @media (min-width: 768px) {
+        padding: $product-spacing-lg;
+        align-self: start;
+    }
+}
+
+.product__price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: $product-primary;
+
+    &::before {
+        content: '';
+    }
+}
+
+.product__availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+
+    &--in-stock {
+        background: rgba($product-success, 0.1);
+        color: $product-success;
+    }
+
+    &--out-of-stock {
+        background: rgba($product-warning, 0.1);
+        color: $product-warning;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DESCRIPCIÓN DEL PRODUCTO
+// ---------------------------------------------------------------------------
+.product__description {
+    padding: $product-spacing-lg;
+
+    @media (min-width: 768px) {
+        grid-column: 1 / -1;
+        padding: $product-spacing-lg 0;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 $product-spacing-md 0;
+        color: $product-text;
+    }
+}
+
+.product__body {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: $product-text-muted;
+
+    p {
+        margin: 0 0 $product-spacing-md 0;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    ul,
+    ol {
+        padding-left: $product-spacing-lg;
+        margin: $product-spacing-md 0;
+    }
+
+    li {
+        margin-bottom: $product-spacing-sm;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ESPECIFICACIONES
+// ---------------------------------------------------------------------------
+.product__specifications {
+    padding: $product-spacing-lg;
+    background: $product-bg-secondary;
+    border-radius: $product-radius-md;
+
+    @media (min-width: 768px) {
+        grid-column: 1 / -1;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 $product-spacing-md 0;
+    }
+}
+
+.product__specs-list {
+    display: grid;
+    gap: $product-spacing-sm;
+    margin: 0;
+
+    @media (min-width: 576px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.product__spec-item {
+    display: flex;
+    justify-content: space-between;
+    padding: $product-spacing-sm $product-spacing-md;
+    background: $product-bg;
+    border-radius: $product-radius-sm;
+
+    dt {
+        font-weight: 500;
+        color: $product-text-muted;
+    }
+
+    dd {
+        font-weight: 600;
+        color: $product-text;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ACCIONES (ADD TO CART)
+// ---------------------------------------------------------------------------
+.product__actions {
+    padding: $product-spacing-lg;
+
+    @media (min-width: 768px) {
+        display: flex;
+        gap: $product-spacing-md;
+        align-items: center;
+    }
+}
+
+.product__add-to-cart {
+    width: 100%;
+    padding: $product-spacing-md $product-spacing-xl;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, $product-primary, $product-secondary);
+    border: none;
+    border-radius: $product-radius-md;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: $product-shadow-md;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $product-shadow-lg;
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    @media (min-width: 768px) {
+        width: auto;
+        min-width: 200px;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// BREADCRUMB
+// ---------------------------------------------------------------------------
+.product__breadcrumb {
+    padding: $product-spacing-md $product-spacing-lg;
+    background: $product-bg-secondary;
+
+    @media (min-width: 768px) {
+        grid-column: 1 / -1;
+        padding: $product-spacing-md 0;
+    }
+
+    ol {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 0.875rem;
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+
+        &::after {
+            content: '/';
+            margin-left: 0.5rem;
+            color: $product-border;
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+    }
+
+    a {
+        color: $product-text-muted;
+        text-decoration: none;
+
+        &:hover {
+            color: $product-primary;
+        }
+    }
+
+    span[itemprop="name"] {
+        color: $product-text;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// VISUALLY HIDDEN (para datos AI pero no visuales)
+// ---------------------------------------------------------------------------
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+// ---------------------------------------------------------------------------
+// RESPONSIVE
+// ---------------------------------------------------------------------------
+@media (max-width: 576px) {
+    .commerce-product--geo {
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .product__title {
+        font-size: 1.5rem;
+    }
+
+    .product__price {
+        font-size: 1.75rem;
+    }
+}

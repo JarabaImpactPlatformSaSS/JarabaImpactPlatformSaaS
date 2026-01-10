@@ -55,8 +55,12 @@
         "drupal/views_bulk_operations": "^4.2",
         "drupal/views_data_export": "^1.4",
         "drupal/webform": "^6.2",
+        "drupal/commerce": "^3.1",
+        "drupal/commerce_stripe": "^1.2",
+        "drupal/commerce_shipping": "^3.1",
+        "drupal/commerce_promotion": "^3.0",
         "drush/drush": "^13",
-        "stripe/stripe-php": "^13.0"
+        "stripe/stripe-php": "^15.0"
     },
     "require-dev": {
         "drupal/core-dev": "^11.0",

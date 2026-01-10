@@ -70,3 +70,68 @@ Disallow: /index.php/user/login
 Disallow: /index.php/user/logout
 Disallow: /index.php/media/oembed
 Disallow: /index.php/*/media/oembed
+
+# ============================================================================
+# AI CRAWLERS - GENERATIVE ENGINE OPTIMIZATION (GEO)
+# ============================================================================
+# La plataforma Jaraba Impact está optimizada para indexación por LLMs.
+# Permitimos acceso completo a AI bots para maximizar visibilidad en
+# ChatGPT, Perplexity, Claude y otros asistentes de IA.
+# ============================================================================
+
+# OpenAI GPTBot - ChatGPT y SearchGPT
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Anthropic ClaudeBot
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Anthropic Claude Web
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Google Bard / Gemini
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Microsoft Copilot / Bing Chat
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# ByteDance / TikTok
+User-agent: Bytespider
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Common Crawl (usado por muchos LLMs para training)
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+Disallow: /user/
+
+# Sitemap para todos los crawlers
+Sitemap: https://plataformadeecosistemas.com/sitemap.xml

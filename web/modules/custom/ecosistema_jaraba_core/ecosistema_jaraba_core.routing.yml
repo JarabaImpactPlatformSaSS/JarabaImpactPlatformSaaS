@@ -369,3 +369,52 @@ ecosistema_jaraba_core.api.stripe.portal:
     _user_is_logged_in: 'TRUE'
   methods: [POST]
 
+# ---------------------------------------------------------------------------
+# STRIPE CONNECT - MARKETPLACE SPLIT PAYMENTS
+# ---------------------------------------------------------------------------
+
+# Iniciar onboarding de cuenta Connect (crear cuenta Express y redirigir a Stripe)
+ecosistema_jaraba_core.api.stripe.connect.onboard:
+  path: '/api/stripe/connect/onboard'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::startConnectOnboarding'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+
+# Callback tras completar onboarding de Stripe Connect
+ecosistema_jaraba_core.stripe.connect.return:
+  path: '/stripe/connect/return'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::connectOnboardingReturn'
+    _title: 'Configuración de Pagos Completada'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Página para reintentar onboarding si expira el link
+ecosistema_jaraba_core.stripe.connect.refresh:
+  path: '/stripe/connect/refresh'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::connectOnboardingRefresh'
+    _title: 'Reintentar Configuración de Pagos'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Obtener estado de cuenta Connect del tenant actual
+ecosistema_jaraba_core.api.stripe.connect.status:
+  path: '/api/stripe/connect/status'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectStatus'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# Acceder al dashboard de Stripe Express del tenant
+ecosistema_jaraba_core.api.stripe.connect.dashboard:
+  path: '/api/stripe/connect/dashboard'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectDashboard'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
