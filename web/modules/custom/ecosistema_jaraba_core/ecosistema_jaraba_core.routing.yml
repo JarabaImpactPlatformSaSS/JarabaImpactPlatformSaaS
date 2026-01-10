@@ -418,3 +418,18 @@ ecosistema_jaraba_core.api.stripe.connect.dashboard:
     _user_is_logged_in: 'TRUE'
   methods: [GET]
 
+# ---------------------------------------------------------------------------
+# GEO - GENERATIVE ENGINE OPTIMIZATION
+# ---------------------------------------------------------------------------
+
+# Archivo llms.txt para descubrimiento por LLMs (ChatGPT, Perplexity, Claude)
+# Similar a robots.txt pero específico para crawlers de IA generativa.
+# Estándar: https://llmstxt.org
+ecosistema_jaraba_core.llms_txt:
+  path: '/llms.txt'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LlmsTxtController::generate'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+

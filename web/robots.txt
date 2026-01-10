@@ -135,3 +135,7 @@ Disallow: /user/
 
 # Sitemap para todos los crawlers
 Sitemap: https://plataformadeecosistemas.com/sitemap.xml
+
+# LLMs.txt - Archivo de descubrimiento para motores de IA generativos
+# Estándar: https://llmstxt.org
+# https://plataformadeecosistemas.com/llms.txt
