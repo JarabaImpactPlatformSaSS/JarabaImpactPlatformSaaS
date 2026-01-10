@@ -2,7 +2,7 @@
 
 > **Servidor**: IONOS Dedicado L-16 NVMe (16 cores, 128GB RAM)  
 > **Stack**: PHP 8.4, MariaDB 10.11  
-> **Dominio**: plataformadeecosistemas.es  
+> **Dominio**: plataformadeecosistemas.com  
 > **Estado**: Planificación
 
 ---
@@ -115,11 +115,11 @@ Añadir en: GitHub → Settings → SSH Keys
 ssh usuario@IP_IONOS
 
 # Crear estructura
-sudo mkdir -p /var/www/plataformadeecosistemas.es
-sudo chown -R www-data:www-data /var/www/plataformadeecosistemas.es
+sudo mkdir -p /var/www/plataformadeecosistemas.com
+sudo chown -R www-data:www-data /var/www/plataformadeecosistemas.com
 
 # Clonar repositorio
-cd /var/www/plataformadeecosistemas.es
+cd /var/www/plataformadeecosistemas.com
 git clone git@github.com:TU_USUARIO/JarabaImpactPlatformSaaS.git .
 
 # Instalar dependencias
@@ -166,7 +166,7 @@ $config['ecosistema_jaraba_core.stripe']['secret_key'] = 'sk_live_...';
 #!/bin/bash
 set -e
 
-SITE_DIR="/var/www/plataformadeecosistemas.es"
+SITE_DIR="/var/www/plataformadeecosistemas.com"
 BACKUP_DIR="/var/backups/drupal"
 DATE=$(date +%Y%m%d_%H%M%S)
 
