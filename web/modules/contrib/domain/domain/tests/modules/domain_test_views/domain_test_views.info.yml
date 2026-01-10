@@ -1,0 +1,15 @@
+name: 'Domain test views'
+type: module
+description: 'Provides default views for views domain tests.'
+package: Testing
+core_version_requirement: ^10.2 || ^11
+dependencies:
+  - drupal:node
+  - drupal:views
+  - drupal:language
+  - domain:domain
+
+# Information added by Drupal.org packaging script on 2026-01-06
+version: '2.0.0-rc1'
+project: 'domain'
+datestamp: 1767689084

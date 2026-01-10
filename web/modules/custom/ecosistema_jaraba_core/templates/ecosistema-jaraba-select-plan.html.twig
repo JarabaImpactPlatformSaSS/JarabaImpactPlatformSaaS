@@ -1,0 +1,199 @@
+{#
+/**
+ * @file
+ * Template para la página de selección de plan durante el onboarding.
+ *
+ * Muestra todos los planes disponibles para que el usuario elija el que
+ * mejor se adapte a sus necesidades. Incluye comparativa de características
+ * y precios mensuales/anuales.
+ *
+ * Variables disponibles:
+ * - tenant: Entidad Tenant del usuario actual
+ * - vertical: Entidad Vertical asociada
+ * - plans: Array de planes SaaS disponibles
+ * - current_plan: Plan actual del tenant (si está en trial)
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\OnboardingController::selectPlan()
+ */
+#}
+
+<div class="ej-select-plan-page">
+  {# Progress indicator #}
+  <div class="ej-onboarding-progress">
+    <div class="ej-onboarding-progress__container">
+      <div class="ej-progress-step ej-progress-step--completed">
+        <span class="ej-progress-step__number">1</span>
+        <span class="ej-progress-step__label">{{ 'Registro'|t }}</span>
+      </div>
+      <div class="ej-progress-step ej-progress-step--active">
+        <span class="ej-progress-step__number">2</span>
+        <span class="ej-progress-step__label">{{ 'Seleccionar Plan'|t }}</span>
+      </div>
+      <div class="ej-progress-step">
+        <span class="ej-progress-step__number">3</span>
+        <span class="ej-progress-step__label">{{ 'Configurar Pago'|t }}</span>
+      </div>
+      <div class="ej-progress-step">
+        <span class="ej-progress-step__number">4</span>
+        <span class="ej-progress-step__label">{{ '¡Listo!'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="ej-select-plan-main">
+    <div class="ej-select-plan-container">
+      {# Header #}
+      <header class="ej-select-plan-header">
+        <h1 class="ej-select-plan-header__title">
+          {{ 'Selecciona tu plan'|t }}
+        </h1>
+        <p class="ej-select-plan-header__subtitle">
+          {{ 'Elige el plan que mejor se adapte a las necesidades de tu organización.'|t }}
+          <br>
+          <strong>{{ 'Todos los planes incluyen 14 días de prueba gratuita.'|t }}</strong>
+        </p>
+
+        {# Toggle mensual/anual #}
+        <div class="ej-pricing-toggle">
+          <span class="ej-pricing-toggle__label" data-period="monthly">{{ 'Mensual'|t }}</span>
+          <label class="ej-toggle">
+            <input type="checkbox" id="pricing-toggle" class="ej-toggle__input">
+            <span class="ej-toggle__slider"></span>
+          </label>
+          <span class="ej-pricing-toggle__label" data-period="yearly">
+            {{ 'Anual'|t }}
+            <span class="ej-pricing-toggle__badge">{{ '-17%'|t }}</span>
+          </span>
+        </div>
+      </header>
+
+      {# Grid de planes #}
+      <div class="ej-plans-grid">
+        {% for plan in plans %}
+          {% set is_popular = loop.index == 2 %}
+          {% set is_free = plan.isFree() %}
+          
+          <div class="ej-plan-card {{ is_popular ? 'ej-plan-card--popular' : '' }}">
+            {% if is_popular %}
+              <div class="ej-plan-card__badge">{{ 'Más Popular'|t }}</div>
+            {% endif %}
+
+            <div class="ej-plan-card__header">
+              <h2 class="ej-plan-card__name">{{ plan.name }}</h2>
+              <p class="ej-plan-card__description">{{ plan.description.value|default('') }}</p>
+            </div>
+
+            <div class="ej-plan-card__pricing">
+              <div class="ej-plan-price ej-plan-price--monthly">
+                {% if is_free %}
+                  <span class="ej-plan-price__amount">{{ 'Gratis'|t }}</span>
+                {% else %}
+                  <span class="ej-plan-price__amount">{{ plan.getMonthlyPrice() }}€</span>
+                  <span class="ej-plan-price__period">/{{ 'mes'|t }}</span>
+                {% endif %}
+              </div>
+              <div class="ej-plan-price ej-plan-price--yearly" style="display: none;">
+                {% if is_free %}
+                  <span class="ej-plan-price__amount">{{ 'Gratis'|t }}</span>
+                {% else %}
+                  <span class="ej-plan-price__amount">{{ (plan.getYearlyPrice() / 12)|number_format(0) }}€</span>
+                  <span class="ej-plan-price__period">/{{ 'mes'|t }}</span>
+                  <span class="ej-plan-price__billed">{{ 'Facturado anualmente'|t }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            {# Límites del plan #}
+            {% set limits = plan.getLimits() %}
+            <ul class="ej-plan-card__limits">
+              <li>
+                <i class="bi bi-person-check"></i>
+                {% if limits.productores == -1 %}
+                  {{ 'Productores ilimitados'|t }}
+                {% else %}
+                  {{ 'Hasta @count productores'|t({'@count': limits.productores}) }}
+                {% endif %}
+              </li>
+              <li>
+                <i class="bi bi-hdd"></i>
+                {% if limits.storage_gb == -1 %}
+                  {{ 'Almacenamiento ilimitado'|t }}
+                {% else %}
+                  {{ '@count GB de almacenamiento'|t({'@count': limits.storage_gb}) }}
+                {% endif %}
+              </li>
+              <li>
+                <i class="bi bi-robot"></i>
+                {% if limits.ai_queries == -1 %}
+                  {{ 'Consultas IA ilimitadas'|t }}
+                {% elseif limits.ai_queries == 0 %}
+                  {{ 'Sin acceso a IA'|t }}
+                {% else %}
+                  {{ '@count consultas IA/mes'|t({'@count': limits.ai_queries}) }}
+                {% endif %}
+              </li>
+            </ul>
+
+            {# Features del plan #}
+            {% set features = plan.getFeatures() %}
+            <ul class="ej-plan-card__features">
+              {% for feature in features %}
+                <li>
+                  <i class="bi bi-check-lg"></i>
+                  <span>{{ feature|replace({'_': ' '})|capitalize }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+
+            {# Botón de selección #}
+            <div class="ej-plan-card__action">
+              <a href="{{ path('ecosistema_jaraba_core.onboarding.setup_payment', {'plan_id': plan.id}) }}" 
+                 class="ej-btn {{ is_popular ? 'ej-btn--primary' : 'ej-btn--outline' }} ej-btn--block">
+                {% if is_free %}
+                  {{ 'Comenzar gratis'|t }}
+                {% else %}
+                  {{ 'Seleccionar plan'|t }}
+                {% endif %}
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {# Garantías #}
+      <div class="ej-plan-guarantees">
+        <div class="ej-guarantee">
+          <i class="bi bi-shield-check"></i>
+          <span>{{ 'Cancelación gratuita en cualquier momento'|t }}</span>
+        </div>
+        <div class="ej-guarantee">
+          <i class="bi bi-credit-card"></i>
+          <span>{{ 'No se cobra durante el periodo de prueba'|t }}</span>
+        </div>
+        <div class="ej-guarantee">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>{{ 'Cambia de plan cuando quieras'|t }}</span>
+        </div>
+      </div>
+
+      {# FAQ rápido #}
+      <div class="ej-plan-faq">
+        <h3 class="ej-plan-faq__title">{{ '¿Tienes dudas?'|t }}</h3>
+        <div class="ej-plan-faq__grid">
+          <div class="ej-faq-item">
+            <h4>{{ '¿Puedo cambiar de plan después?'|t }}</h4>
+            <p>{{ 'Sí, puedes subir o bajar de plan en cualquier momento. Los cambios se aplican en el siguiente ciclo de facturación.'|t }}</p>
+          </div>
+          <div class="ej-faq-item">
+            <h4>{{ '¿Qué pasa cuando termina la prueba?'|t }}</h4>
+            <p>{{ 'Te avisaremos antes de que termine. Si no añades un método de pago, tu cuenta pasará al plan gratuito.'|t }}</p>
+          </div>
+          <div class="ej-faq-item">
+            <h4>{{ '¿Hay descuentos para ONGs?'|t }}</h4>
+            <p>{{ 'Sí, ofrecemos descuentos especiales para organizaciones sin ánimo de lucro. Contáctanos.'|t }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

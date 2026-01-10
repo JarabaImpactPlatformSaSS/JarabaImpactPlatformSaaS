@@ -1,0 +1,27 @@
+# Plan SaaS Enterprise - Para grandes organizaciones
+# Se importa al instalar el módulo
+
+langcode: es
+status: true
+name: 'Enterprise'
+price_monthly: '199.00'
+price_yearly: '1990.00'
+features:
+  - trazabilidad_basica
+  - trazabilidad_avanzada
+  - agentes_ia_limitados
+  - agentes_ia_completos
+  - firma_digital
+  - soporte_email
+  - soporte_chat
+  - soporte_telefono
+  - soporte_dedicado
+  - analiticas_basicas
+  - analiticas_avanzadas
+  - webhooks
+  - api_access
+  - dominio_personalizado
+  - marca_blanca
+limits: '{"productores": -1, "storage_gb": 100, "ai_queries": -1, "webhooks": -1}'
+stripe_price_id: ''
+weight: 2

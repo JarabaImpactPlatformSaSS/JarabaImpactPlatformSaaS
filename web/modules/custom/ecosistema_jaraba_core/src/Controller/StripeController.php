@@ -1,0 +1,434 @@
+<?php
+
+namespace Drupal\ecosistema_jaraba_core\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantManager;
+use Drupal\ecosistema_jaraba_core\Service\TenantOnboardingService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Controlador para la API de integración con Stripe.
+ *
+ * Este controlador gestiona los endpoints necesarios para:
+ * - Crear sesiones de Stripe Checkout
+ * - Crear suscripciones con Stripe Elements
+ * - Confirmar pagos con autenticación 3D Secure
+ * - Gestionar el portal de clientes de Stripe
+ *
+ * Seguridad:
+ * - Todos los endpoints requieren autenticación de usuario
+ * - Se valida la propiedad del tenant antes de operaciones
+ * - Los errores de Stripe se loguean para diagnóstico
+ *
+ * @see https://stripe.com/docs/api
+ */
+class StripeController extends ControllerBase
+{
+
+    /**
+     * El gestor de tenants.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantManager
+     */
+    protected TenantManager $tenantManager;
+
+    /**
+     * El servicio de onboarding.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantOnboardingService
+     */
+    protected TenantOnboardingService $onboardingService;
+
+    /**
+     * Canal de log.
+     *
+     * @var \Drupal\Core\Logger\LoggerChannelInterface
+     */
+    protected LoggerChannelInterface $logger;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container)
+    {
+        $instance = parent::create($container);
+        $instance->tenantManager = $container->get('ecosistema_jaraba_core.tenant_manager');
+        $instance->onboardingService = $container->get('ecosistema_jaraba_core.tenant_onboarding');
+        $instance->logger = $container->get('logger.channel.ecosistema_jaraba_core');
+        return $instance;
+    }
+
+    /**
+     * Crea una suscripción con el método de pago proporcionado.
+     *
+     * Este endpoint recibe un payment_method_id de Stripe Elements y crea
+     * la suscripción para el tenant actual.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP con los datos de pago.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con el resultado de la operación.
+     */
+    public function createSubscription(Request $request): JsonResponse
+    {
+        // Obtener tenant del usuario actual
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'No tienes un tenant asociado.',
+            ], 403);
+        }
+
+        // Parsear datos de la petición
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['payment_method_id']) || empty($data['plan_id'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Datos de pago incompletos.',
+            ], 400);
+        }
+
+        // Obtener configuración de Stripe
+        $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
+        $secretKey = $stripeConfig->get('secret_key');
+
+        if (!$secretKey) {
+            $this->logger->error('🚫 Stripe: Clave secreta no configurada');
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error de configuración de pagos.',
+            ], 500);
+        }
+
+        try {
+            // Inicializar cliente de Stripe
+            \Stripe\Stripe::setApiKey($secretKey);
+
+            // Cargar el plan seleccionado
+            $plan = $this->entityTypeManager()
+                ->getStorage('saas_plan')
+                ->load($data['plan_id']);
+
+            if (!$plan) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Plan no encontrado.',
+                ], 404);
+            }
+
+            // Obtener el price_id de Stripe según el periodo de facturación
+            $priceId = $data['billing_period'] === 'yearly'
+                ? $plan->get('stripe_price_yearly_id')->value
+                : $plan->getStripePriceId();
+
+            if (!$priceId) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Plan no disponible para suscripción.',
+                ], 400);
+            }
+
+            // Crear o recuperar el cliente de Stripe
+            $customerId = $tenant->get('stripe_customer_id')->value;
+
+            if (!$customerId) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $this->currentUser()->getEmail(),
+                    'name' => $tenant->getName(),
+                    'metadata' => [
+                        'tenant_id' => $tenant->id(),
+                        'drupal_user_id' => $this->currentUser()->id(),
+                    ],
+                ]);
+                $customerId = $customer->id;
+
+                // Guardar ID de cliente en el tenant
+                $tenant->set('stripe_customer_id', $customerId);
+                $tenant->save();
+            }
+
+            // Adjuntar método de pago al cliente
+            \Stripe\PaymentMethod::retrieve($data['payment_method_id'])->attach([
+                'customer' => $customerId,
+            ]);
+
+            // Establecer como método de pago por defecto
+            \Stripe\Customer::update($customerId, [
+                'invoice_settings' => [
+                    'default_payment_method' => $data['payment_method_id'],
+                ],
+            ]);
+
+            // Crear la suscripción
+            $subscriptionParams = [
+                'customer' => $customerId,
+                'items' => [
+                    ['price' => $priceId],
+                ],
+                'default_payment_method' => $data['payment_method_id'],
+                'expand' => ['latest_invoice.payment_intent'],
+                'metadata' => [
+                    'tenant_id' => $tenant->id(),
+                    'plan_id' => $plan->id(),
+                ],
+            ];
+
+            // Si el tenant está en trial, configurar trial_end
+            if ($tenant->isOnTrial() && $tenant->getTrialEndsAt()) {
+                $trialEnd = strtotime($tenant->getTrialEndsAt());
+                if ($trialEnd > time()) {
+                    $subscriptionParams['trial_end'] = $trialEnd;
+                }
+            }
+
+            $subscription = \Stripe\Subscription::create($subscriptionParams);
+
+            // Verificar si requiere autenticación 3D Secure
+            $paymentIntent = $subscription->latest_invoice->payment_intent;
+
+            if ($paymentIntent && $paymentIntent->status === 'requires_action') {
+                return new JsonResponse([
+                    'success' => TRUE,
+                    'requires_action' => TRUE,
+                    'client_secret' => $paymentIntent->client_secret,
+                    'subscription_id' => $subscription->id,
+                ]);
+            }
+
+            // Suscripción creada exitosamente
+            $this->completeSubscriptionSetup($tenant, $subscription->id, $plan);
+
+            $this->logger->info(
+                '✅ Suscripción creada para tenant @tenant: @subscription',
+                [
+                    '@tenant' => $tenant->getName(),
+                    '@subscription' => $subscription->id,
+                ]
+            );
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'subscription_id' => $subscription->id,
+                'redirect' => '/onboarding/bienvenida',
+            ]);
+
+        } catch (\Stripe\Exception\CardException $e) {
+            // Error de tarjeta (declinada, fondos insuficientes, etc.)
+            $this->logger->warning(
+                '⚠️ Stripe: Error de tarjeta para tenant @tenant: @error',
+                [
+                    '@tenant' => $tenant->getName(),
+                    '@error' => $e->getMessage(),
+                ]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->getCardErrorMessage($e->getDeclineCode()),
+            ], 400);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Error de API de Stripe
+            $this->logger->error(
+                '🚫 Stripe: Error de API para tenant @tenant: @error',
+                [
+                    '@tenant' => $tenant->getName(),
+                    '@error' => $e->getMessage(),
+                ]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al procesar el pago. Por favor, inténtalo de nuevo.',
+            ], 500);
+        } catch (\Exception $e) {
+            $this->logger->error(
+                '🚫 Error inesperado en Stripe: @error',
+                ['@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error interno. Por favor, contacta con soporte.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Confirma una suscripción después de autenticación 3D Secure.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON.
+     */
+    public function confirmSubscription(Request $request): JsonResponse
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Sin acceso.'], 403);
+        }
+
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['subscription_id'])) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'ID de suscripción requerido.'], 400);
+        }
+
+        try {
+            $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
+            \Stripe\Stripe::setApiKey($stripeConfig->get('secret_key'));
+
+            // Verificar estado de la suscripción
+            $subscription = \Stripe\Subscription::retrieve($data['subscription_id']);
+
+            if ($subscription->status === 'active' || $subscription->status === 'trialing') {
+                // Buscar el plan asociado
+                $plans = $this->entityTypeManager()
+                    ->getStorage('saas_plan')
+                    ->loadByProperties(['stripe_price_id' => $subscription->items->data[0]->price->id]);
+
+                $plan = !empty($plans) ? reset($plans) : NULL;
+
+                $this->completeSubscriptionSetup($tenant, $subscription->id, $plan);
+
+                return new JsonResponse([
+                    'success' => TRUE,
+                    'redirect' => '/onboarding/bienvenida',
+                ]);
+            }
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'La suscripción no está activa.',
+            ], 400);
+
+        } catch (\Exception $e) {
+            $this->logger->error(
+                '🚫 Error confirmando suscripción: @error',
+                ['@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al confirmar la suscripción.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Crea una sesión del portal de clientes de Stripe.
+     *
+     * Permite al usuario gestionar su suscripción, cambiar tarjeta, etc.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   URL del portal de clientes.
+     */
+    public function createPortalSession(Request $request): JsonResponse
+    {
+        $tenant = $this->tenantManager->getCurrentTenant();
+
+        if (!$tenant) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Sin acceso.'], 403);
+        }
+
+        $customerId = $tenant->get('stripe_customer_id')->value;
+
+        if (!$customerId) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'No tienes una suscripción activa.',
+            ], 400);
+        }
+
+        try {
+            $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
+            \Stripe\Stripe::setApiKey($stripeConfig->get('secret_key'));
+
+            $returnUrl = $request->getSchemeAndHttpHost() . '/admin/config/subscription';
+
+            $portalSession = \Stripe\BillingPortal\Session::create([
+                'customer' => $customerId,
+                'return_url' => $returnUrl,
+            ]);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'url' => $portalSession->url,
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error(
+                '🚫 Error creando portal session: @error',
+                ['@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Error al acceder al portal de pagos.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Completa la configuración de suscripción en el tenant.
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant.
+     * @param string $subscriptionId
+     *   ID de la suscripción en Stripe.
+     * @param \Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface|null $plan
+     *   El plan asociado.
+     */
+    protected function completeSubscriptionSetup($tenant, string $subscriptionId, $plan = NULL): void
+    {
+        $tenant->set('stripe_subscription_id', $subscriptionId);
+
+        if ($plan) {
+            $tenant->set('subscription_plan', $plan->id());
+        }
+
+        // Si no está en trial, activar inmediatamente
+        if (!$tenant->isOnTrial()) {
+            $this->tenantManager->activateSubscription($tenant, $subscriptionId);
+        }
+
+        $tenant->save();
+    }
+
+    /**
+     * Traduce códigos de error de tarjeta a mensajes legibles.
+     *
+     * @param string|null $declineCode
+     *   Código de rechazo de Stripe.
+     *
+     * @return string
+     *   Mensaje legible en español.
+     */
+    protected function getCardErrorMessage(?string $declineCode): string
+    {
+        $messages = [
+            'card_declined' => 'Tu tarjeta ha sido rechazada. Por favor, usa otra tarjeta.',
+            'expired_card' => 'Tu tarjeta ha expirado. Por favor, usa otra tarjeta.',
+            'incorrect_cvc' => 'El código de seguridad (CVC) es incorrecto.',
+            'insufficient_funds' => 'Fondos insuficientes. Por favor, usa otra tarjeta.',
+            'processing_error' => 'Error al procesar la tarjeta. Inténtalo de nuevo.',
+            'incorrect_number' => 'El número de tarjeta es incorrecto.',
+        ];
+
+        return $messages[$declineCode] ?? 'Tu tarjeta ha sido rechazada. Por favor, verifica los datos o usa otra tarjeta.';
+    }
+
+}

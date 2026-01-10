@@ -1,0 +1,33 @@
+// =============================================================================
+// ECOSISTEMA JARABA CORE - ARCHIVO PRINCIPAL SCSS
+// =============================================================================
+// Este es el archivo de entrada para compilar todos los estilos del módulo.
+// Importa los parciales en el orden correcto para garantizar que las
+// dependencias (variables, mixins) estén disponibles.
+//
+// COMPILACIÓN:
+// El archivo CSS resultante se guarda en css/ecosistema-jaraba-core.css
+// y se referencia en ecosistema_jaraba_core.libraries.yml
+//
+// PERSONALIZACIÓN:
+// Las variables CSS inyectables en _injectable.scss permiten que cada
+// vertical/tenant personalice los colores y tipografía sin recompilar SCSS.
+// =============================================================================
+
+// 1. Variables SCSS - Valores por defecto y configuración
+@use 'variables' as *;
+
+// 2. Mixins - Funciones reutilizables
+@use 'mixins' as *;
+
+// 3. Variables CSS inyectables - Custom properties sobrescribibles en runtime
+@use 'injectable';
+
+// 4. Componentes base - Botones, formularios, cards, etc.
+@use 'components';
+
+// 5. Estilos de páginas de onboarding
+@use 'onboarding';
+
+// 6. Dashboard de administración del Tenant
+@use 'tenant-dashboard';

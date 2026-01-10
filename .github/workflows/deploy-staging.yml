@@ -1,0 +1,116 @@
+# Deploy a Staging cuando se hace merge a develop
+#
+# Este workflow despliega automáticamente a staging
+# después de un merge exitoso a la rama develop.
+
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=staging-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Staging Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: deploy
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /var/www/jaraba-staging
+            
+            # Pull new image
+            docker compose pull
+            
+            # Stop old containers
+            docker compose down --remove-orphans
+            
+            # Start new containers
+            docker compose up -d
+            
+            # Wait for health check
+            sleep 30
+            
+            # Run database updates
+            docker compose exec -T web drush cr
+            docker compose exec -T web drush updb -y
+            docker compose exec -T web drush cim -y
+            
+            # Clear caches
+            docker compose exec -T web drush cr
+            
+            echo "✅ Staging deployment complete"
+
+      - name: Verify Deployment
+        run: |
+          echo "Verificando despliegue en staging..."
+          for i in {1..10}; do
+            if curl -sf https://staging.jaraba.io/health; then
+              echo "✅ Staging está respondiendo correctamente"
+              exit 0
+            fi
+            echo "Esperando respuesta... intento $i"
+            sleep 10
+          done
+          echo "❌ Staging no responde después de 100 segundos"
+          exit 1
+
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "${{ job.status == 'success' && '✅' || '❌' }} *Staging Deploy* - ${{ job.status }}\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

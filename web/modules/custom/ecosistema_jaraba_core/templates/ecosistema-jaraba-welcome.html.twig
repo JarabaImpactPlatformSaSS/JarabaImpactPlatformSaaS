@@ -1,0 +1,154 @@
+{#
+/**
+ * @file
+ * Template para la página de bienvenida post-onboarding.
+ *
+ * Esta página se muestra al usuario después de completar el registro
+ * y la configuración de pago. Proporciona un resumen del tenant creado
+ * y guía al usuario hacia los siguientes pasos.
+ *
+ * Variables disponibles:
+ * - tenant: Entidad Tenant del usuario
+ * - vertical: Entidad Vertical asociada
+ * - plan: Plan de suscripción actual
+ * - trial_days_remaining: Días restantes de prueba (si aplica)
+ * - tenant_url: URL completa del tenant
+ * - next_steps: Array de siguientes pasos con título, descripción, url e icono
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\OnboardingController::welcome()
+ */
+#}
+
+<div class="ej-welcome-page">
+  {# Confetti animation container #}
+  <div id="ej-confetti-container" class="ej-confetti-container"></div>
+
+  <main class="ej-welcome-main">
+    <div class="ej-welcome-container">
+      {# Success header #}
+      <header class="ej-welcome-header">
+        <div class="ej-welcome-header__icon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h1 class="ej-welcome-header__title">
+          {{ '¡Bienvenido a @vertical!'|t({'@vertical': vertical.name}) }}
+        </h1>
+        <p class="ej-welcome-header__subtitle">
+          {{ 'Tu organización <strong>@tenant</strong> está lista.'|t({'@tenant': tenant.name})|raw }}
+        </p>
+      </header>
+
+      {# Trial info card #}
+      {% if trial_days_remaining %}
+        <div class="ej-welcome-trial-card">
+          <div class="ej-welcome-trial-card__icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div class="ej-welcome-trial-card__content">
+            <h3>{{ 'Periodo de prueba activo'|t }}</h3>
+            <p>
+              {{ 'Te quedan <strong>@days días</strong> para explorar todas las funcionalidades.'|t({'@days': trial_days_remaining})|raw }}
+            </p>
+          </div>
+          <a href="{{ path('ecosistema_jaraba_core.onboarding.setup_payment') }}" class="ej-btn ej-btn--outline ej-btn--sm">
+            {{ 'Añadir método de pago'|t }}
+          </a>
+        </div>
+      {% endif %}
+
+      {# Tenant info summary #}
+      <div class="ej-welcome-summary">
+        <h2 class="ej-welcome-summary__title">{{ 'Resumen de tu cuenta'|t }}</h2>
+        
+        <div class="ej-welcome-summary__grid">
+          <div class="ej-summary-item">
+            <span class="ej-summary-item__label">{{ 'Organización'|t }}</span>
+            <span class="ej-summary-item__value">{{ tenant.name }}</span>
+          </div>
+          <div class="ej-summary-item">
+            <span class="ej-summary-item__label">{{ 'URL de acceso'|t }}</span>
+            <a href="{{ tenant_url }}" class="ej-summary-item__value ej-summary-item__value--link" target="_blank">
+              {{ tenant_url }}
+              <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+          </div>
+          <div class="ej-summary-item">
+            <span class="ej-summary-item__label">{{ 'Plan'|t }}</span>
+            <span class="ej-summary-item__value">
+              {{ plan.name }}
+              {% if trial_days_remaining %}
+                <span class="ej-badge ej-badge--warning">{{ 'Trial'|t }}</span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="ej-summary-item">
+            <span class="ej-summary-item__label">{{ 'Vertical'|t }}</span>
+            <span class="ej-summary-item__value">{{ vertical.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      {# Next steps #}
+      <div class="ej-welcome-next-steps">
+        <h2 class="ej-welcome-next-steps__title">{{ 'Siguientes pasos'|t }}</h2>
+        <p class="ej-welcome-next-steps__subtitle">
+          {{ 'Completa estos pasos para sacar el máximo partido a la plataforma.'|t }}
+        </p>
+
+        <div class="ej-next-steps-list">
+          {% for step in next_steps %}
+            <a href="{{ step.url }}" class="ej-next-step-card {{ step.completed ? 'ej-next-step-card--completed' : '' }}">
+              <div class="ej-next-step-card__icon">
+                <i class="bi {{ step.icon }}"></i>
+              </div>
+              <div class="ej-next-step-card__content">
+                <h3 class="ej-next-step-card__title">{{ step.title }}</h3>
+                <p class="ej-next-step-card__description">{{ step.description }}</p>
+              </div>
+              <div class="ej-next-step-card__arrow">
+                {% if step.completed %}
+                  <i class="bi bi-check-circle-fill"></i>
+                {% else %}
+                  <i class="bi bi-chevron-right"></i>
+                {% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# Quick actions #}
+      <div class="ej-welcome-actions">
+        <a href="{{ tenant_url }}/admin" class="ej-btn ej-btn--primary ej-btn--lg">
+          <i class="bi bi-speedometer2"></i>
+          {{ 'Ir al Panel de Control'|t }}
+        </a>
+        <a href="/ayuda/primeros-pasos" class="ej-btn ej-btn--outline ej-btn--lg">
+          <i class="bi bi-book"></i>
+          {{ 'Ver guía de inicio'|t }}
+        </a>
+      </div>
+
+      {# Help section #}
+      <div class="ej-welcome-help">
+        <div class="ej-welcome-help__icon">
+          <i class="bi bi-headset"></i>
+        </div>
+        <div class="ej-welcome-help__content">
+          <h3>{{ '¿Necesitas ayuda?'|t }}</h3>
+          <p>{{ 'Nuestro equipo está disponible para ayudarte en lo que necesites.'|t }}</p>
+        </div>
+        <div class="ej-welcome-help__actions">
+          <a href="/contacto" class="ej-btn ej-btn--text">
+            <i class="bi bi-envelope"></i>
+            {{ 'Contactar'|t }}
+          </a>
+          <a href="/ayuda" class="ej-btn ej-btn--text">
+            <i class="bi bi-question-circle"></i>
+            {{ 'Centro de ayuda'|t }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

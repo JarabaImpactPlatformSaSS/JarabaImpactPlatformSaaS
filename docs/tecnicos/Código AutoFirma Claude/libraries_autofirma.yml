@@ -1,0 +1,44 @@
+# ============================================================================
+# LIBRARIES PARA AUTOFIRMA - AÑADIR A agroconecta_core.libraries.yml
+# ============================================================================
+# 
+# Si el archivo no existe, crearlo en la raíz del módulo.
+# Si existe, añadir esta sección al final.
+#
+# Ubicación: modules/custom/agroconecta_core/agroconecta_core.libraries.yml
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Librería principal de AutoFirma
+# ---------------------------------------------------------------------------
+# Incluye:
+# - autofirma.js: Librería oficial del Gobierno de España
+# - agroconecta-firma.js: Nuestra integración personalizada
+# ---------------------------------------------------------------------------
+autofirma:
+  version: 1.0
+  js:
+    # Librería oficial de AutoFirma (descargar de GitHub del MinDigital)
+    js/autofirma.js:
+      weight: -10
+      preprocess: false
+    # Nuestra integración
+    js/agroconecta-firma.js:
+      weight: 0
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/jquery
+
+# ---------------------------------------------------------------------------
+# Estilos del modal de firma (si se usan desde el módulo)
+# ---------------------------------------------------------------------------
+# Si los estilos están en el tema, no es necesario declararlos aquí.
+# Se incluye para casos donde se quiera cargar desde el módulo.
+# ---------------------------------------------------------------------------
+autofirma.styles:
+  version: 1.0
+  css:
+    theme:
+      css/autofirma.css: {}

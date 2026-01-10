@@ -1,0 +1,205 @@
+# Pipeline de Integración Continua para JarabaImpactPlatformSaaS
+# 
+# Este workflow se ejecuta en cada push y pull request
+# para validar la calidad del código antes del merge.
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [develop, feature/*, hotfix/*]
+  pull_request:
+    branches: [develop, main]
+
+env:
+  PHP_VERSION: '8.4'
+  NODE_VERSION: '20'
+
+jobs:
+  # ===========================================
+  # JOB 1: LINTING Y ANÁLISIS ESTÁTICO
+  # ===========================================
+  lint:
+    name: 🔍 Lint & Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+          tools: composer:v2, phpcs, phpstan
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-progress
+
+      - name: PHP CodeSniffer (Drupal Standard)
+        run: |
+          phpcs --standard=Drupal,DrupalPractice \
+            --extensions=php,module,inc,install,theme \
+            --ignore=*/vendor/*,*/node_modules/* \
+            web/modules/custom
+
+      - name: PHPStan Static Analysis
+        run: |
+          phpstan analyse web/modules/custom --level=5 --no-progress
+        continue-on-error: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint:js --if-present
+
+      - name: Stylelint
+        run: npm run lint:css --if-present
+
+  # ===========================================
+  # JOB 2: TESTS UNITARIOS
+  # ===========================================
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: drupal_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Copy test environment config
+        run: cp .env.ci .env || echo "No .env.ci file found"
+
+      - name: Run PHPUnit tests
+        run: |
+          ./vendor/bin/phpunit \
+            --configuration phpunit.xml \
+            --coverage-clover coverage.xml \
+            --testsuite Unit
+        env:
+          SIMPLETEST_DB: mysql://root:root@127.0.0.1:3306/drupal_test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+
+  # ===========================================
+  # JOB 3: ANÁLISIS DE SEGURIDAD
+  # ===========================================
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist
+
+      - name: Composer Audit
+        run: composer audit --no-dev
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          security-checks: 'vuln,secret'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # ===========================================
+  # JOB 4: BUILD CHECK
+  # ===========================================
+  build:
+    name: 🏗️ Build Check
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Build frontend assets
+        run: |
+          npm ci --production=false
+          npm run build --if-present
+
+      - name: Check Drupal requirements
+        run: |
+          php -r "require 'vendor/autoload.php'; echo 'Autoloader OK\n';"
+
+      - name: Verify module structure
+        run: |
+          echo "Verificando estructura del módulo ecosistema_jaraba_core..."
+          test -f web/modules/custom/ecosistema_jaraba_core/ecosistema_jaraba_core.info.yml
+          test -f web/modules/custom/ecosistema_jaraba_core/ecosistema_jaraba_core.services.yml
+          echo "✅ Estructura del módulo verificada"

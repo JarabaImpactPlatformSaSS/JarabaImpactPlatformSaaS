@@ -1,0 +1,51 @@
+# ============================================================================
+# SERVICIOS DE FIRMA DIGITAL - AÑADIR A agroconecta_core.services.yml
+# ============================================================================
+# 
+# Copiar estas definiciones al archivo existente agroconecta_core.services.yml
+# Ubicación: modules/custom/agroconecta_core/agroconecta_core.services.yml
+#
+# IMPORTANTE: No reemplazar el archivo completo, solo añadir estos servicios
+# al final del archivo existente.
+# ============================================================================
+
+services:
+
+  # ... (mantener servicios existentes: agroconecta_core.ecwid_api, etc.)
+
+  # ---------------------------------------------------------------------------
+  # SERVICIO: Generación de Certificados PDF de Trazabilidad
+  # ---------------------------------------------------------------------------
+  # Genera documentos PDF profesionales con los datos de trazabilidad
+  # de cada lote de producción, incluyendo QR de verificación.
+  #
+  # Uso:
+  #   $pdf_service = \Drupal::service('agroconecta_core.certificado_pdf');
+  #   $pdf_uri = $pdf_service->generatePdf($lote_node);
+  # ---------------------------------------------------------------------------
+  agroconecta_core.certificado_pdf:
+    class: Drupal\agroconecta_core\Service\CertificadoPdfService
+    arguments:
+      - '@file_system'
+      - '@entity_type.manager'
+
+  # ---------------------------------------------------------------------------
+  # SERVICIO: Firma Digital de Documentos PDF
+  # ---------------------------------------------------------------------------
+  # Firma PDFs con certificado de persona jurídica (sello de empresa FNMT)
+  # y añade sellado de tiempo (TSA) para validez legal.
+  #
+  # REQUISITOS:
+  #   - Certificado .p12/.pfx en /etc/ssl/private/agroconecta-sello.p12
+  #   - Variable de entorno: AGROCONECTA_CERT_PASSWORD
+  #
+  # Uso:
+  #   $firma_service = \Drupal::service('agroconecta_core.firma_digital');
+  #   $signed_uri = $firma_service->signPdf($pdf_uri, ['reason' => 'Trazabilidad']);
+  # ---------------------------------------------------------------------------
+  agroconecta_core.firma_digital:
+    class: Drupal\agroconecta_core\Service\FirmaDigitalService
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'
+      - '@file_system'

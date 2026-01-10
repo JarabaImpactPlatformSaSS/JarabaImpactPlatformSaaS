@@ -1,0 +1,248 @@
+{#
+/**
+ * @file
+ * Template para la página de configuración de pago con Stripe.
+ *
+ * Esta página permite al usuario configurar su método de pago mediante
+ * Stripe Elements. Incluye:
+ * - Resumen del plan seleccionado
+ * - Formulario de tarjeta de crédito
+ * - Toggle para periodo de facturación (mensual/anual)
+ * - Indicadores de seguridad
+ *
+ * Variables disponibles:
+ * - tenant: Entidad Tenant del usuario
+ * - plan: Plan SaaS seleccionado
+ * - stripe_public_key: Clave pública de Stripe
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\OnboardingController::setupPayment()
+ */
+#}
+
+<div class="ej-setup-payment-page">
+  {# Progress indicator #}
+  <div class="ej-onboarding-progress">
+    <div class="ej-onboarding-progress__container">
+      <div class="ej-progress-step ej-progress-step--completed">
+        <span class="ej-progress-step__number">1</span>
+        <span class="ej-progress-step__label">{{ 'Registro'|t }}</span>
+      </div>
+      <div class="ej-progress-step ej-progress-step--completed">
+        <span class="ej-progress-step__number">2</span>
+        <span class="ej-progress-step__label">{{ 'Seleccionar Plan'|t }}</span>
+      </div>
+      <div class="ej-progress-step ej-progress-step--active">
+        <span class="ej-progress-step__number">3</span>
+        <span class="ej-progress-step__label">{{ 'Configurar Pago'|t }}</span>
+      </div>
+      <div class="ej-progress-step">
+        <span class="ej-progress-step__number">4</span>
+        <span class="ej-progress-step__label">{{ '¡Listo!'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="ej-setup-payment-main">
+    <div class="ej-setup-payment-container">
+      {# Header #}
+      <header class="ej-setup-payment-header">
+        <h1 class="ej-setup-payment-header__title">
+          {{ 'Configura tu método de pago'|t }}
+        </h1>
+        <p class="ej-setup-payment-header__subtitle">
+          {{ 'No se realizará ningún cargo hasta que termine tu periodo de prueba de 14 días.'|t }}
+        </p>
+      </header>
+
+      <div class="ej-setup-payment-grid">
+        {# Columna izquierda: Formulario de pago #}
+        <div class="ej-payment-form-column">
+          <form id="ej-payment-form" class="ej-payment-form">
+            {# Datos de facturación #}
+            <div class="ej-payment-section">
+              <h3 class="ej-payment-section__title">
+                <i class="bi bi-person-badge"></i>
+                {{ 'Datos de facturación'|t }}
+              </h3>
+
+              <div class="ej-form-group">
+                <label for="billing-name" class="ej-form-label">
+                  {{ 'Nombre completo'|t }} <span class="required">*</span>
+                </label>
+                <input type="text" 
+                       id="billing-name" 
+                       name="billing_name" 
+                       class="ej-form-input"
+                       required>
+              </div>
+
+              <div class="ej-form-group">
+                <label for="billing-email" class="ej-form-label">
+                  {{ 'Email de facturación'|t }} <span class="required">*</span>
+                </label>
+                <input type="email" 
+                       id="billing-email" 
+                       name="billing_email" 
+                       class="ej-form-input"
+                       required>
+              </div>
+            </div>
+
+            {# Tarjeta de crédito #}
+            <div class="ej-payment-section">
+              <h3 class="ej-payment-section__title">
+                <i class="bi bi-credit-card"></i>
+                {{ 'Datos de la tarjeta'|t }}
+              </h3>
+
+              <div class="ej-form-group">
+                <label class="ej-form-label">
+                  {{ 'Número de tarjeta'|t }} <span class="required">*</span>
+                </label>
+                {# Contenedor para Stripe Elements #}
+                <div id="ej-card-element" class="ej-card-element"></div>
+                <div id="ej-card-errors" class="ej-form-error"></div>
+              </div>
+
+              {# Iconos de tarjetas aceptadas #}
+              <div class="ej-accepted-cards">
+                <span class="ej-accepted-cards__label">{{ 'Aceptamos'|t }}:</span>
+                <img src="/modules/custom/ecosistema_jaraba_core/images/cards/visa.svg" alt="Visa" class="ej-card-icon">
+                <img src="/modules/custom/ecosistema_jaraba_core/images/cards/mastercard.svg" alt="Mastercard" class="ej-card-icon">
+                <img src="/modules/custom/ecosistema_jaraba_core/images/cards/amex.svg" alt="American Express" class="ej-card-icon">
+              </div>
+            </div>
+
+            {# Periodo de facturación #}
+            <div class="ej-payment-section">
+              <h3 class="ej-payment-section__title">
+                <i class="bi bi-calendar-check"></i>
+                {{ 'Periodo de facturación'|t }}
+              </h3>
+
+              <div class="ej-billing-toggle">
+                <label class="ej-billing-option" data-period="monthly">
+                  <input type="radio" name="billing_period" value="monthly" checked>
+                  <span class="ej-billing-option__content">
+                    <span class="ej-billing-option__title">{{ 'Mensual'|t }}</span>
+                    <span class="ej-billing-option__price">{{ plan.getMonthlyPrice() }}€/{{ 'mes'|t }}</span>
+                  </span>
+                </label>
+
+                <label class="ej-billing-option" data-period="yearly">
+                  <input type="radio" name="billing_period" value="yearly">
+                  <span class="ej-billing-option__content">
+                    <span class="ej-billing-option__title">
+                      {{ 'Anual'|t }}
+                      <span class="ej-badge ej-badge--success">{{ '-17%'|t }}</span>
+                    </span>
+                    <span class="ej-billing-option__price">
+                      {{ (plan.getYearlyPrice() / 12)|number_format(2) }}€/{{ 'mes'|t }}
+                      <small>({{ plan.getYearlyPrice() }}€/{{ 'año'|t }})</small>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {# Mensajes de error y éxito #}
+            <div id="ej-payment-error" class="ej-alert ej-alert--error" style="display: none;"></div>
+            <div id="ej-payment-success" class="ej-alert ej-alert--success" style="display: none;"></div>
+
+            {# Botón de envío #}
+            <div class="ej-form-actions">
+              <button type="submit" id="ej-submit-payment" class="ej-btn ej-btn--primary ej-btn--lg ej-btn--block" disabled>
+                <i class="bi bi-lock-fill"></i>
+                <span>{{ 'Confirmar suscripción'|t }}</span>
+              </button>
+            </div>
+
+            {# Texto legal #}
+            <p class="ej-payment-legal">
+              {{ 'Al confirmar, aceptas que se cargue el importe de tu plan en tu tarjeta cuando finalice el periodo de prueba. Puedes cancelar en cualquier momento.'|t }}
+            </p>
+          </form>
+        </div>
+
+        {# Columna derecha: Resumen del pedido #}
+        <div class="ej-order-summary-column">
+          <div class="ej-order-summary">
+            <h3 class="ej-order-summary__title">{{ 'Resumen del pedido'|t }}</h3>
+
+            <div class="ej-order-summary__plan">
+              <div class="ej-order-summary__plan-header">
+                <span class="ej-plan-name">{{ plan.name }}</span>
+                <div id="ej-price-display" class="ej-order-summary__price">
+                  <span class="ej-price-amount">{{ plan.getMonthlyPrice() }}€</span>
+                  <span class="ej-price-period">/{{ 'mes'|t }}</span>
+                </div>
+              </div>
+
+              {# Características del plan #}
+              <ul class="ej-order-summary__features">
+                {% set limits = plan.getLimits() %}
+                <li>
+                  <i class="bi bi-check-lg"></i>
+                  {% if limits.productores == -1 %}
+                    {{ 'Productores ilimitados'|t }}
+                  {% else %}
+                    {{ 'Hasta @count productores'|t({'@count': limits.productores}) }}
+                  {% endif %}
+                </li>
+                <li>
+                  <i class="bi bi-check-lg"></i>
+                  {% if limits.storage_gb == -1 %}
+                    {{ 'Almacenamiento ilimitado'|t }}
+                  {% else %}
+                    {{ '@count GB almacenamiento'|t({'@count': limits.storage_gb}) }}
+                  {% endif %}
+                </li>
+                <li>
+                  <i class="bi bi-check-lg"></i>
+                  {% if limits.ai_queries == -1 %}
+                    {{ 'Consultas IA ilimitadas'|t }}
+                  {% else %}
+                    {{ '@count consultas IA/mes'|t({'@count': limits.ai_queries}) }}
+                  {% endif %}
+                </li>
+                {% for feature in plan.getFeatures()|slice(0, 3) %}
+                  <li>
+                    <i class="bi bi-check-lg"></i>
+                    {{ feature|replace({'_': ' '})|capitalize }}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            {# Trial info #}
+            <div class="ej-order-summary__trial">
+              <i class="bi bi-gift"></i>
+              <div>
+                <strong>{{ '14 días de prueba gratis'|t }}</strong>
+                <p>{{ 'No se cobra nada hoy. Tu suscripción comenzará automáticamente al finalizar el periodo de prueba.'|t }}</p>
+              </div>
+            </div>
+
+            {# Indicadores de seguridad #}
+            <div class="ej-security-badges">
+              <div class="ej-security-badge">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>{{ 'Pago seguro SSL'|t }}</span>
+              </div>
+              <div class="ej-security-badge">
+                <i class="bi bi-stripe"></i>
+                <span>{{ 'Powered by Stripe'|t }}</span>
+              </div>
+            </div>
+
+            {# Cambiar plan #}
+            <a href="{{ path('ecosistema_jaraba_core.onboarding.select_plan') }}" class="ej-change-plan-link">
+              <i class="bi bi-arrow-left"></i>
+              {{ 'Cambiar plan'|t }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

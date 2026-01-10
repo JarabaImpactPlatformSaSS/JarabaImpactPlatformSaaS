@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * Plantilla para mostrar documentos pendientes de firma.
+ *
+ * Este componente se puede incluir en el dashboard del productor
+ * para mostrar los documentos que requieren su firma electrónica.
+ *
+ * Variables disponibles:
+ * - documentos: Array de documentos con sus datos
+ * - total_pendientes: Número de documentos pendientes
+ * - usuario_puede_firmar: Boolean indicando si el usuario puede firmar
+ *
+ * Uso en otra plantilla:
+ *   {% include '@agroconecta_core/autofirma/documentos-pendientes.html.twig' with {
+ *     documentos: documentos_firma,
+ *     total_pendientes: count_pendientes,
+ *   } %}
+ *
+ * Ubicación sugerida:
+ *   modules/custom/agroconecta_core/templates/autofirma/documentos-pendientes.html.twig
+ *   O en el tema: themes/custom/agroconecta_theme/templates/components/documentos-firma.html.twig
+ */
+#}
+
+{{ attach_library('agroconecta_core/autofirma') }}
+
+<div class="documentos-firma-list">
+  {# Encabezado de la sección #}
+  <div class="list-header">
+    <h3>
+      <i class="bi bi-file-earmark-text"></i>
+      Documentos para Firma
+      {% if total_pendientes > 0 %}
+        <span class="count-badge">{{ total_pendientes }}</span>
+      {% endif %}
+    </h3>
+    
+    {% if documentos|length > 3 %}
+      <a href="{{ path('view.mis_documentos_firma.page_1') }}" class="btn btn-sm btn-outline-primary">
+        Ver todos
+      </a>
+    {% endif %}
+  </div>
+
+  {# Lista de documentos #}
+  {% if documentos|length > 0 %}
+    {% for documento in documentos %}
+      <article class="documento-firma-card estado-{{ documento.estado }}">
+        <div class="documento-firma-header">
+          {# Icono del documento #}
+          <div class="documento-firma-icon">
+            {% if documento.tipo == 'contrato' %}
+              <i class="bi bi-file-text"></i>
+            {% elseif documento.tipo == 'declaracion' %}
+              <i class="bi bi-clipboard-check"></i>
+            {% elseif documento.tipo == 'certificado' %}
+              <i class="bi bi-award"></i>
+            {% else %}
+              <i class="bi bi-file-earmark"></i>
+            {% endif %}
+          </div>
+          
+          {# Información del documento #}
+          <div class="documento-firma-info">
+            <h4>{{ documento.titulo }}</h4>
+            
+            {# Badge de estado #}
+            <span class="badge-estado-firma {{ documento.estado }}">
+              {% if documento.estado == 'pendiente' %}
+                <i class="bi bi-clock"></i> Pendiente de firma
+              {% elseif documento.estado == 'firmado' %}
+                <i class="bi bi-check-circle"></i> Firmado
+              {% elseif documento.estado == 'rechazado' %}
+                <i class="bi bi-x-circle"></i> Rechazado
+              {% elseif documento.estado == 'expirado' %}
+                <i class="bi bi-hourglass-bottom"></i> Expirado
+              {% endif %}
+            </span>
+          </div>
+        </div>
+        
+        {# Metadatos #}
+        <div class="documento-firma-meta">
+          <span>
+            <i class="bi bi-calendar3"></i>
+            {{ documento.fecha_creacion|date('d/m/Y') }}
+          </span>
+          
+          {% if documento.fecha_limite and documento.estado == 'pendiente' %}
+            <span class="{% if documento.dias_restantes <= 3 %}text-danger{% endif %}">
+              <i class="bi bi-hourglass-split"></i>
+              Límite: {{ documento.fecha_limite|date('d/m/Y') }}
+              {% if documento.dias_restantes > 0 %}
+                ({{ documento.dias_restantes }} días)
+              {% elseif documento.dias_restantes == 0 %}
+                (Hoy)
+              {% endif %}
+            </span>
+          {% endif %}
+          
+          {% if documento.estado == 'firmado' and documento.fecha_firma %}
+            <span class="text-success">
+              <i class="bi bi-check2-circle"></i>
+              Firmado: {{ documento.fecha_firma|date('d/m/Y H:i') }}
+            </span>
+          {% endif %}
+        </div>
+        
+        {# Acciones #}
+        <div class="documento-firma-actions">
+          {# Ver documento original #}
+          <a href="{{ documento.url_ver }}" 
+             class="btn btn-sm btn-outline-secondary" 
+             target="_blank"
+             title="Ver documento">
+            <i class="bi bi-eye"></i> Ver
+          </a>
+          
+          {% if documento.estado == 'pendiente' %}
+            {# Botón de firma #}
+            <button type="button" 
+                    class="btn btn-sm btn-firmar-documento"
+                    data-document-id="{{ documento.id }}"
+                    data-document-title="{{ documento.titulo }}">
+              <i class="bi bi-pen"></i> Firmar con Certificado
+            </button>
+          {% endif %}
+          
+          {% if documento.estado == 'firmado' %}
+            {# Descargar documento firmado #}
+            <a href="{{ documento.url_firmado }}" 
+               class="btn btn-sm btn-success" 
+               download>
+              <i class="bi bi-download"></i> Descargar firmado
+            </a>
+            
+            {# Verificar firma #}
+            <a href="https://valide.redsara.es" 
+               class="btn btn-sm btn-outline-success" 
+               target="_blank"
+               title="Verificar firma en VALIDe">
+              <i class="bi bi-shield-check"></i> Verificar
+            </a>
+          {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+    
+  {% else %}
+    {# Estado vacío #}
+    <div class="empty-state">
+      <i class="bi bi-file-earmark-check"></i>
+      <p>No tiene documentos pendientes de firma.</p>
+    </div>
+  {% endif %}
+</div>
+
+{# Información de ayuda #}
+{% if total_pendientes > 0 %}
+<div class="alert alert-info mt-3" role="alert">
+  <div class="d-flex align-items-start">
+    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+    <div>
+      <strong>¿Cómo firmar?</strong>
+      <p class="mb-0 small">
+        Necesita tener instalado 
+        <a href="https://firmaelectronica.gob.es/Home/Descargas.html" target="_blank">AutoFirma</a> 
+        y un certificado digital (FNMT o DNIe) en su navegador.
+        <a href="{{ path('agroconecta_core.autofirma.help') }}">Más información</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endif %}

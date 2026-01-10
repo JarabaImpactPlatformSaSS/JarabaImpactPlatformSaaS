@@ -1,0 +1,7 @@
+id: qr_codes
+label: 'Códigos QR'
+description: 'Generación de códigos QR para productos y trazabilidad.'
+category: general
+icon: qr-code
+weight: 1
+status: true

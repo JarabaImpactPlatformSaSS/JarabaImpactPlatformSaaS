@@ -1,0 +1,326 @@
+// =============================================================================
+// COMPONENTES BASE - ECOSISTEMA JARABA
+// =============================================================================
+// Componentes UI reutilizables: botones, badges, alertas, formularios.
+// =============================================================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---------------------------------------------------------------------------
+// BOTONES
+// ---------------------------------------------------------------------------
+
+.ej-btn {
+    @include button-base;
+
+    // Variantes
+    &--primary {
+        @include button-primary;
+    }
+
+    &--outline {
+        @include button-outline;
+    }
+
+    &--text {
+        background: none;
+        border: none;
+        color: var(--ej-color-primary);
+        padding: $ej-spacing-sm;
+
+        &:hover:not(:disabled) {
+            text-decoration: underline;
+        }
+    }
+
+    // Tamaños
+    &--sm {
+        padding: 0.5rem 1rem;
+        font-size: $ej-font-size-sm;
+    }
+
+    &--lg {
+        padding: 1rem 2rem;
+        font-size: $ej-font-size-lg;
+    }
+
+    // Modificadores
+    &--block {
+        width: 100%;
+    }
+
+    // Icono + texto
+    &__text {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// BADGES
+// ---------------------------------------------------------------------------
+
+.ej-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-semibold;
+    border-radius: $ej-border-radius-full;
+
+    &--success {
+        background-color: color-mix(in srgb, var(--ej-color-success) 15%, white);
+        color: var(--ej-color-success);
+    }
+
+    &--warning {
+        background-color: #FFF3E0;
+        color: #E65100;
+    }
+
+    &--error {
+        background-color: #FFEBEE;
+        color: var(--ej-color-error);
+    }
+
+    &--info {
+        background-color: #E3F2FD;
+        color: var(--ej-color-info);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ALERTAS
+// ---------------------------------------------------------------------------
+
+.ej-alert {
+    padding: $ej-spacing-md;
+    border-radius: $ej-border-radius-sm;
+    margin: $ej-spacing-md 0;
+
+    &--error {
+        background-color: #FFEBEE;
+        border: 1px solid #FFCDD2;
+        color: #C62828;
+    }
+
+    &--success {
+        background-color: #E8F5E9;
+        border: 1px solid #C8E6C9;
+        color: #2E7D32;
+    }
+
+    &--warning {
+        background-color: #FFF8E1;
+        border: 1px solid #FFE082;
+        color: #E65100;
+    }
+
+    &--info {
+        background-color: #E3F2FD;
+        border: 1px solid #90CAF9;
+        color: #1565C0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// FORMULARIOS
+// ---------------------------------------------------------------------------
+
+.ej-form-group {
+    margin-bottom: $ej-spacing-lg;
+}
+
+.ej-form-label {
+    display: block;
+    margin-bottom: $ej-spacing-sm;
+    font-weight: $ej-font-weight-medium;
+    color: var(--ej-text-primary);
+
+    .required {
+        color: var(--ej-color-error);
+        margin-left: 2px;
+    }
+}
+
+.ej-form-input {
+    @include input-base;
+}
+
+.ej-form-input-group {
+    display: flex;
+    align-items: stretch;
+
+    .ej-form-input {
+        border-right: none;
+        border-radius: $ej-border-radius-sm 0 0 $ej-border-radius-sm;
+    }
+}
+
+.ej-form-input-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    background-color: var(--ej-gray-100);
+    border: $ej-border-width-thick solid var(--ej-border-color);
+    border-left: none;
+    border-radius: 0 $ej-border-radius-sm $ej-border-radius-sm 0;
+    color: var(--ej-text-secondary);
+    font-size: $ej-font-size-sm;
+}
+
+.ej-form-help {
+    display: block;
+    margin-top: $ej-spacing-xs;
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-secondary);
+}
+
+.ej-form-error {
+    display: none;
+    margin-top: $ej-spacing-xs;
+    font-size: $ej-font-size-sm;
+    color: var(--ej-color-error);
+
+    &.active {
+        display: block;
+    }
+}
+
+.ej-form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: $ej-spacing-sm;
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        cursor: pointer;
+        accent-color: var(--ej-color-primary);
+    }
+
+    label {
+        font-size: $ej-font-size-sm;
+        color: var(--ej-text-secondary);
+
+        a {
+            color: var(--ej-color-primary);
+            text-decoration: underline;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+}
+
+// Campo de contraseña con toggle de visibilidad
+.ej-password-field {
+    position: relative;
+}
+
+.ej-password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ej-text-muted);
+    cursor: pointer;
+    padding: $ej-spacing-sm;
+    transition: var(--ej-transition-fast);
+
+    &:hover {
+        color: var(--ej-text-primary);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TOGGLE SWITCH
+// ---------------------------------------------------------------------------
+
+.ej-toggle {
+    position: relative;
+    width: 48px;
+    height: 26px;
+
+    &__input {
+        @include visually-hidden;
+    }
+
+    &__slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--ej-gray-300);
+        border-radius: 26px;
+        transition: var(--ej-transition);
+
+        &::before {
+            content: '';
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            transition: var(--ej-transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    &__input:checked+&__slider {
+        background-color: var(--ej-color-primary);
+    }
+
+    &__input:checked+&__slider::before {
+        transform: translateX(22px);
+    }
+
+    &__input:focus-visible+&__slider {
+        box-shadow: 0 0 0 4px var(--ej-color-primary-light);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CARDS
+// ---------------------------------------------------------------------------
+
+.ej-card {
+    @include card-base;
+    padding: $ej-spacing-xl;
+
+    &--hoverable {
+        @include card-base(true);
+    }
+
+    &__header {
+        margin-bottom: $ej-spacing-lg;
+    }
+
+    &__title {
+        margin: 0 0 $ej-spacing-sm;
+        font-size: $ej-font-size-xl;
+        font-weight: $ej-font-weight-bold;
+        color: var(--ej-text-primary);
+    }
+
+    &__description {
+        margin: 0;
+        color: var(--ej-text-secondary);
+    }
+
+    &__footer {
+        margin-top: $ej-spacing-lg;
+        padding-top: $ej-spacing-lg;
+        border-top: 1px solid var(--ej-border-color-light);
+    }
+}

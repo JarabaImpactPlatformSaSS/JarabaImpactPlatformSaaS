@@ -1,0 +1,17 @@
+name: 'Ecosistema Jaraba Core'
+type: module
+description: 'Módulo core de Jaraba Impact Platform SaaS - Entidades Multi-tenant, Trazabilidad, Firma Digital, Agentes IA'
+package: Jaraba
+core_version_requirement: ^11
+php: 8.4
+
+dependencies:
+  # Core Drupal
+  - drupal:node
+  - drupal:user
+  - drupal:file
+  - drupal:field
+  - drupal:options
+  - drupal:datetime
+
+configure: entity.vertical.collection

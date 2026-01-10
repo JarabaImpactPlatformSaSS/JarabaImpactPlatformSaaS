@@ -1,0 +1,97 @@
+# ============================================================================
+# RUTAS PARA AUTOFIRMA - AÑADIR A agroconecta_core.routing.yml
+# ============================================================================
+# 
+# Copiar estas rutas al archivo existente agroconecta_core.routing.yml
+#
+# IMPORTANTE: Estas rutas definen la API REST para la integración
+# con AutoFirma. Todas requieren autenticación.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Obtener documento para firmar
+# GET /api/autofirma/documento/{document_id}
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.get_documento:
+  path: '/api/autofirma/documento/{document_id}'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::getDocumento'
+  requirements:
+    _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+  options:
+    _format: json
+
+# ---------------------------------------------------------------------------
+# Recibir documento firmado
+# POST /api/autofirma/firmar
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.recibir_firma:
+  path: '/api/autofirma/firmar'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::recibirFirma'
+  requirements:
+    _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+  options:
+    _format: json
+
+# ---------------------------------------------------------------------------
+# Obtener estado de un documento
+# GET /api/autofirma/estado/{document_id}
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.get_estado:
+  path: '/api/autofirma/estado/{document_id}'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::getEstado'
+  requirements:
+    _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+  options:
+    _format: json
+
+# ---------------------------------------------------------------------------
+# Verificar disponibilidad de AutoFirma
+# GET /api/autofirma/check
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.check:
+  path: '/api/autofirma/check'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::checkAutoFirma'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+  options:
+    _format: json
+
+# ---------------------------------------------------------------------------
+# Generar documento para firma
+# POST /api/autofirma/generar
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.generar:
+  path: '/api/autofirma/generar'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::generarDocumento'
+  requirements:
+    _permission: 'generate traceability qr'
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+  options:
+    _format: json
+
+# ---------------------------------------------------------------------------
+# Página de ayuda sobre AutoFirma
+# GET /ayuda/autofirma
+# ---------------------------------------------------------------------------
+agroconecta_core.autofirma.help:
+  path: '/ayuda/autofirma'
+  defaults:
+    _controller: '\Drupal\agroconecta_core\Controller\AutoFirmaController::helpPage'
+    _title: 'Ayuda - Firma Electrónica con AutoFirma'
+  requirements:
+    _access: 'TRUE'

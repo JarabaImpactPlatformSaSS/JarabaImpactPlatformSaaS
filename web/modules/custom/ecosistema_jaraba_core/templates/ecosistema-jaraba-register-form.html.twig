@@ -1,0 +1,239 @@
+{#
+/**
+ * @file
+ * Template para el formulario de registro de nuevos tenants.
+ *
+ * Este template renderiza el formulario de registro público que permite
+ * a nuevas organizaciones registrarse en la plataforma. Está diseñado
+ * para ser visualmente atractivo y adaptarse a los colores de cada vertical.
+ *
+ * Variables disponibles:
+ * - vertical: Entidad Vertical con nombre, descripción y configuración
+ * - plans: Array de planes SaaS disponibles para preview
+ * - theme_settings: Configuración de tema de la vertical (colores, tipografía)
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\OnboardingController::registerForm()
+ */
+#}
+
+{# Aplicar variables CSS del tema de la vertical #}
+<style>
+  :root {
+    --ej-color-primary: {{ theme_settings.color_primario ?? '#2E7D32' }};
+    --ej-color-secondary: {{ theme_settings.color_secundario ?? '#1B5E20' }};
+    --ej-font-family: {{ theme_settings.tipografia ?? 'Inter, sans-serif' }};
+  }
+</style>
+
+<div class="ej-register-page">
+  {# Header con logo y nombre de la vertical #}
+  <header class="ej-register-header">
+    <div class="ej-register-header__container">
+      {% if theme_settings.logo_url %}
+        <img src="{{ theme_settings.logo_url }}" alt="{{ vertical.name }}" class="ej-register-header__logo">
+      {% endif %}
+      <h1 class="ej-register-header__title">{{ vertical.name }}</h1>
+    </div>
+  </header>
+
+  <main class="ej-register-main">
+    <div class="ej-register-container">
+      {# Sección izquierda: Beneficios #}
+      <div class="ej-register-benefits">
+        <h2 class="ej-register-benefits__title">
+          {{ 'Únete a la plataforma de trazabilidad más avanzada'|t }}
+        </h2>
+        <p class="ej-register-benefits__subtitle">
+          {{ vertical.description.value|default('Gestiona tu organización con herramientas profesionales de trazabilidad y cumplimiento normativo.') }}
+        </p>
+
+        <ul class="ej-register-benefits__list">
+          <li class="ej-register-benefits__item">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ 'Trazabilidad completa de lotes'|t }}</span>
+          </li>
+          <li class="ej-register-benefits__item">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ 'Certificados con firma digital'|t }}</span>
+          </li>
+          <li class="ej-register-benefits__item">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ 'Códigos QR verificables'|t }}</span>
+          </li>
+          <li class="ej-register-benefits__item">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ 'Agentes de IA integrados'|t }}</span>
+          </li>
+          <li class="ej-register-benefits__item">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ '14 días de prueba gratuita'|t }}</span>
+          </li>
+        </ul>
+
+        {# Preview de planes #}
+        {% if plans|length > 0 %}
+          <div class="ej-register-plans-preview">
+            <h3 class="ej-register-plans-preview__title">{{ 'Planes disponibles'|t }}</h3>
+            <div class="ej-register-plans-preview__list">
+              {% for plan in plans %}
+                <div class="ej-register-plans-preview__item">
+                  <span class="ej-plan-name">{{ plan.name }}</span>
+                  <span class="ej-plan-price">
+                    {% if plan.isFree() %}
+                      {{ 'Gratis'|t }}
+                    {% else %}
+                      {{ plan.getMonthlyPrice() }}€/{{ 'mes'|t }}
+                    {% endif %}
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Sección derecha: Formulario #}
+      <div class="ej-register-form-container">
+        <div class="ej-register-form-card">
+          <h2 class="ej-register-form__title">
+            {{ 'Crea tu cuenta'|t }}
+          </h2>
+          <p class="ej-register-form__subtitle">
+            {{ 'Completa los datos para comenzar tu periodo de prueba gratuito.'|t }}
+          </p>
+
+          <form id="ej-register-form" class="ej-register-form" novalidate>
+            {# Datos de la organización #}
+            <fieldset class="ej-register-fieldset">
+              <legend class="ej-register-fieldset__legend">
+                <i class="bi bi-building"></i>
+                {{ 'Datos de la Organización'|t }}
+              </legend>
+
+              <div class="ej-form-group">
+                <label for="organization_name" class="ej-form-label">
+                  {{ 'Nombre de la organización'|t }} <span class="required">*</span>
+                </label>
+                <input type="text" 
+                       id="organization_name" 
+                       name="organization_name" 
+                       class="ej-form-input"
+                       placeholder="{{ 'Ej: Cooperativa Agrícola del Valle'|t }}"
+                       required>
+                <div class="ej-form-error" data-field="organization_name"></div>
+              </div>
+
+              <div class="ej-form-group">
+                <label for="domain" class="ej-form-label">
+                  {{ 'Subdominio'|t }} <span class="required">*</span>
+                </label>
+                <div class="ej-form-input-group">
+                  <input type="text" 
+                         id="domain" 
+                         name="domain" 
+                         class="ej-form-input"
+                         placeholder="{{ 'mi-organizacion'|t }}"
+                         pattern="[a-z0-9\-]+"
+                         required>
+                  <span class="ej-form-input-suffix">.jaraba.io</span>
+                </div>
+                <small class="ej-form-help">
+                  {{ 'Solo letras minúsculas, números y guiones.'|t }}
+                </small>
+                <div class="ej-form-error" data-field="domain"></div>
+              </div>
+            </fieldset>
+
+            {# Datos del administrador #}
+            <fieldset class="ej-register-fieldset">
+              <legend class="ej-register-fieldset__legend">
+                <i class="bi bi-person-badge"></i>
+                {{ 'Datos del Administrador'|t }}
+              </legend>
+
+              <div class="ej-form-group">
+                <label for="admin_name" class="ej-form-label">
+                  {{ 'Nombre completo'|t }} <span class="required">*</span>
+                </label>
+                <input type="text" 
+                       id="admin_name" 
+                       name="admin_name" 
+                       class="ej-form-input"
+                       placeholder="{{ 'Ej: María García López'|t }}"
+                       required>
+                <div class="ej-form-error" data-field="admin_name"></div>
+              </div>
+
+              <div class="ej-form-group">
+                <label for="admin_email" class="ej-form-label">
+                  {{ 'Email'|t }} <span class="required">*</span>
+                </label>
+                <input type="email" 
+                       id="admin_email" 
+                       name="admin_email" 
+                       class="ej-form-input"
+                       placeholder="{{ 'ejemplo@correo.com'|t }}"
+                       required>
+                <div class="ej-form-error" data-field="admin_email"></div>
+              </div>
+
+              <div class="ej-form-group">
+                <label for="password" class="ej-form-label">
+                  {{ 'Contraseña'|t }} <span class="required">*</span>
+                </label>
+                <div class="ej-form-input-group ej-password-field">
+                  <input type="password" 
+                         id="password" 
+                         name="password" 
+                         class="ej-form-input"
+                         minlength="8"
+                         required>
+                  <button type="button" class="ej-password-toggle" aria-label="{{ 'Mostrar contraseña'|t }}">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+                <small class="ej-form-help">
+                  {{ 'Mínimo 8 caracteres, 1 mayúscula y 1 número.'|t }}
+                </small>
+                <div class="ej-form-error" data-field="password"></div>
+              </div>
+            </fieldset>
+
+            {# Campo oculto con el ID de la vertical #}
+            <input type="hidden" name="vertical_id" value="{{ vertical.id }}">
+
+            {# Aceptación de términos #}
+            <div class="ej-form-group ej-form-checkbox">
+              <input type="checkbox" id="accept_terms" name="accept_terms" required>
+              <label for="accept_terms">
+                {{ 'Acepto los <a href="/terminos" target="_blank">términos de servicio</a> y la <a href="/privacidad" target="_blank">política de privacidad</a>.'|t }}
+              </label>
+              <div class="ej-form-error" data-field="accept_terms"></div>
+            </div>
+
+            {# Botón de envío #}
+            <div class="ej-form-actions">
+              <button type="submit" class="ej-btn ej-btn--primary ej-btn--lg">
+                <span class="ej-btn__text">{{ 'Comenzar prueba gratuita'|t }}</span>
+                <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+
+            {# Mensaje de error general #}
+            <div id="ej-register-error" class="ej-alert ej-alert--error" style="display: none;"></div>
+          </form>
+
+          <p class="ej-register-login-link">
+            {{ '¿Ya tienes una cuenta?'|t }} 
+            <a href="/user/login">{{ 'Inicia sesión'|t }}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  {# Footer simple #}
+  <footer class="ej-register-footer">
+    <p>&copy; {{ 'now'|date('Y') }} Ecosistema Jaraba. {{ 'Todos los derechos reservados.'|t }}</p>
+  </footer>
+</div>

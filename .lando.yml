@@ -1,0 +1,95 @@
+# =============================================================================
+# CONFIGURACIÓN LANDO - ECOSISTEMA JARABA SAAS
+# =============================================================================
+# COMANDOS:
+#   lando start    - Iniciar entorno
+#   lando drush    - Ejecutar Drush
+#   lando composer - Ejecutar Composer
+#
+# URL: https://jaraba-saas.lndo.site
+# =============================================================================
+
+name: jaraba-saas
+recipe: drupal11
+
+config:
+  webroot: web
+  php: "8.4"
+  via: apache
+  config:
+    php: php.ini
+
+# =============================================================================
+# SERVICIOS
+# =============================================================================
+
+services:
+  database:
+    type: mariadb:10.11
+    portforward: 3310
+    creds:
+      user: drupal
+      password: drupal
+      database: drupal_jaraba
+
+  phpmyadmin:
+    type: phpmyadmin
+    hosts:
+      - database
+
+# =============================================================================
+# PROXY
+# =============================================================================
+# Dominios disponibles:
+#   - jaraba-saas.lndo.site (plataforma principal)
+#   - *.jaraba-saas.lndo.site (subdominios de tenants)
+# =============================================================================
+
+proxy:
+  appserver:
+    - jaraba-saas.lndo.site
+    # Subdominios de Tenants
+    - aceitesdelsur.jaraba-saas.lndo.site
+    # Añadir más subdominios según se creen tenants
+  phpmyadmin:
+    - phpmyadmin.jaraba-saas.lndo.site
+
+# =============================================================================
+# TOOLING
+# =============================================================================
+
+tooling:
+  php:
+    service: appserver
+  composer:
+    service: appserver
+  drush:
+    service: appserver
+
+  # Instalar Drupal
+  install-drupal:
+    service: appserver
+    description: Instalar Drupal desde cero
+    cmd: |
+      drush site:install standard \
+        --db-url=mysql://drupal:drupal@database:3306/drupal_jaraba \
+        --site-name="Ecosistema Jaraba" \
+        --account-name=admin \
+        --account-pass=admin \
+        --yes
+
+  # Habilitar módulo core
+  enable-core:
+    service: appserver
+    description: Habilitar ecosistema_jaraba_core
+    cmd: drush en ecosistema_jaraba_core -y && drush cr
+
+  # Exportar configuración
+  export-config:
+    service: appserver
+    cmd: drush cex -y
+
+  # Importar configuración
+  import-config:
+    service: appserver
+    cmd: drush cim -y

@@ -1,0 +1,7 @@
+id: api_access
+label: 'Acceso API'
+description: 'Acceso programático a la API REST de la plataforma.'
+category: integraciones
+icon: code
+weight: 6
+status: true

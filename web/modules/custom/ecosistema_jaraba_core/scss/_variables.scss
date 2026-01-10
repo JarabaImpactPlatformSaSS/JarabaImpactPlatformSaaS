@@ -1,0 +1,157 @@
+// =============================================================================
+// VARIABLES SCSS - ECOSISTEMA JARABA ONBOARDING
+// =============================================================================
+// Este archivo define las variables SCSS que pueden ser sobrescritas desde
+// la configuración del tema de Drupal. Las variables CSS inyectables se
+// definen en _injectable.scss para personalización en tiempo de ejecución.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// COLORES BASE (pueden sobrescribirse por vertical/tenant)
+// ---------------------------------------------------------------------------
+
+// Estos valores son fallbacks. Los colores reales se inyectan como CSS custom
+// properties desde la configuración de la vertical/tenant.
+
+$ej-color-primary-fallback: #2E7D32 !default;
+$ej-color-secondary-fallback: #1B5E20 !default;
+$ej-color-accent-fallback: #4CAF50 !default;
+
+// Colores semánticos (fijos, no personalizables por tenant)
+$ej-color-success: #43A047 !default;
+$ej-color-warning: #FFA000 !default;
+$ej-color-error: #E53935 !default;
+$ej-color-info: #1976D2 !default;
+
+// Escala de grises
+$ej-gray-50: #FAFAFA !default;
+$ej-gray-100: #F5F5F5 !default;
+$ej-gray-200: #EEEEEE !default;
+$ej-gray-300: #E0E0E0 !default;
+$ej-gray-400: #BDBDBD !default;
+$ej-gray-500: #9E9E9E !default;
+$ej-gray-600: #757575 !default;
+$ej-gray-700: #616161 !default;
+$ej-gray-800: #424242 !default;
+$ej-gray-900: #212121 !default;
+
+// ---------------------------------------------------------------------------
+// TIPOGRAFÍA
+// ---------------------------------------------------------------------------
+
+$ej-font-family-fallback: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !default;
+$ej-font-size-base: 16px !default;
+$ej-line-height-base: 1.5 !default;
+
+// Escala tipográfica (modular scale 1.25)
+$ej-font-size-xs: 0.75rem !default; // 12px
+$ej-font-size-sm: 0.875rem !default; // 14px
+$ej-font-size-md: 1rem !default; // 16px
+$ej-font-size-lg: 1.125rem !default; // 18px
+$ej-font-size-xl: 1.25rem !default; // 20px
+$ej-font-size-2xl: 1.5rem !default; // 24px
+$ej-font-size-3xl: 2rem !default; // 32px
+$ej-font-size-4xl: 2.5rem !default; // 40px
+
+// Peso de fuente
+$ej-font-weight-normal: 400 !default;
+$ej-font-weight-medium: 500 !default;
+$ej-font-weight-semibold: 600 !default;
+$ej-font-weight-bold: 700 !default;
+
+// ---------------------------------------------------------------------------
+// ESPACIADO
+// ---------------------------------------------------------------------------
+
+$ej-spacing-unit: 0.25rem !default; // 4px base
+
+$ej-spacing-xs: $ej-spacing-unit !default; // 4px
+$ej-spacing-sm: $ej-spacing-unit * 2 !default; // 8px
+$ej-spacing-md: $ej-spacing-unit * 4 !default; // 16px
+$ej-spacing-lg: $ej-spacing-unit * 6 !default; // 24px
+$ej-spacing-xl: $ej-spacing-unit * 8 !default; // 32px
+$ej-spacing-2xl: $ej-spacing-unit * 12 !default; // 48px
+$ej-spacing-3xl: $ej-spacing-unit * 16 !default; // 64px
+
+// ---------------------------------------------------------------------------
+// BORDES Y ESQUINAS
+// ---------------------------------------------------------------------------
+
+$ej-border-radius-sm: 6px !default;
+$ej-border-radius-md: 10px !default;
+$ej-border-radius-lg: 14px !default;
+$ej-border-radius-xl: 20px !default;
+$ej-border-radius-full: 9999px !default;
+
+$ej-border-width: 1px !default;
+$ej-border-width-thick: 2px !default;
+
+// ---------------------------------------------------------------------------
+// SOMBRAS
+// ---------------------------------------------------------------------------
+
+$ej-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06) !default;
+$ej-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10) !default;
+$ej-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14) !default;
+$ej-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.18) !default;
+
+// Sombra para focus
+$ej-shadow-focus: 0 0 0 4px rgba($ej-color-primary-fallback, 0.15) !default;
+
+// ---------------------------------------------------------------------------
+// TRANSICIONES
+// ---------------------------------------------------------------------------
+
+$ej-transition-duration-fast: 150ms !default;
+$ej-transition-duration-normal: 250ms !default;
+$ej-transition-duration-slow: 400ms !default;
+
+$ej-transition-easing: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$ej-transition-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1) !default;
+
+// ---------------------------------------------------------------------------
+// BREAKPOINTS (responsive)
+// ---------------------------------------------------------------------------
+
+$ej-breakpoint-sm: 576px !default;
+$ej-breakpoint-md: 768px !default;
+$ej-breakpoint-lg: 992px !default;
+$ej-breakpoint-xl: 1200px !default;
+$ej-breakpoint-xxl: 1400px !default;
+
+// ---------------------------------------------------------------------------
+// Z-INDEX
+// ---------------------------------------------------------------------------
+
+$ej-z-index-dropdown: 1000 !default;
+$ej-z-index-sticky: 1020 !default;
+$ej-z-index-fixed: 1030 !default;
+$ej-z-index-modal-backdrop: 1040 !default;
+$ej-z-index-modal: 1050 !default;
+$ej-z-index-popover: 1060 !default;
+$ej-z-index-tooltip: 1070 !default;
+$ej-z-index-confetti: 1100 !default;
+
+// ---------------------------------------------------------------------------
+// LAYOUT
+// ---------------------------------------------------------------------------
+
+$ej-container-max-width: 1200px !default;
+$ej-container-padding: $ej-spacing-md !default;
+
+// ---------------------------------------------------------------------------
+// ALIASES SIMPLIFICADOS (para compatibilidad con _tenant-dashboard.scss)
+// ---------------------------------------------------------------------------
+
+$font-primary: $ej-font-family-fallback;
+$font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', monospace;
+$primary-color: $ej-color-primary-fallback;
+$success-color: $ej-color-success;
+$warning-color: $ej-color-warning;
+$danger-color: $ej-color-error;
+$text-primary: $ej-gray-900;
+$text-secondary: $ej-gray-600;
+$text-muted: $ej-gray-500;
+$border-color: $ej-gray-200;
+$bg-light: $ej-gray-50;
+$white: #ffffff;

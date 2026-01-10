@@ -1,0 +1,7 @@
+ai_provider_google_vertex.settings:
+  type: mapping
+  label: 'Google Vertex Settings'
+  mapping:
+    general_credentials_file:
+      type: string
+      label: 'General Credentials File'

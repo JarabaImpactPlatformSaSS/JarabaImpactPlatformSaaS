@@ -1,0 +1,512 @@
+<?php
+
+/**
+ * @file
+ * Archivo principal del módulo Ecosistema Jaraba Core.
+ *
+ * Este archivo contiene los hooks de Drupal necesarios para:
+ * - Registrar templates Twig personalizados
+ * - Definir configuraciones de email
+ * - Implementar los hooks del módulo
+ *
+ * @see https://www.drupal.org/docs/8/creating-custom-modules
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ *
+ * Proporciona información de ayuda para el módulo en la página de ayuda
+ * de Drupal (/admin/help).
+ */
+function ecosistema_jaraba_core_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.ecosistema_jaraba_core':
+      $output = '<h3>' . t('Acerca de Ecosistema Jaraba Core') . '</h3>';
+      $output .= '<p>' . t('Este módulo proporciona las funcionalidades core de la plataforma Ecosistema Jaraba SaaS, incluyendo:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Gestión de Verticales de negocio') . '</li>';
+      $output .= '<li>' . t('Gestión de Tenants (multi-tenancy)') . '</li>';
+      $output .= '<li>' . t('Planes de suscripción SaaS') . '</li>';
+      $output .= '<li>' . t('Firma digital de documentos') . '</li>';
+      $output .= '<li>' . t('Integración con Stripe para pagos') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig personalizados del módulo.
+ * Cada template tiene sus propias variables disponibles documentadas.
+ */
+function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
+  return [
+    // Template del formulario de registro de nuevos tenants
+    // Ruta: /registro/{vertical}
+    'ecosistema_jaraba_register_form' => [
+      'variables' => [
+        'vertical' => NULL,
+        'plans' => [],
+        'theme_settings' => [],
+      ],
+      'template' => 'ecosistema-jaraba-register-form',
+      'path' => $path . '/templates',
+    ],
+
+    // Template de selección de plan durante onboarding
+    // Ruta: /onboarding/seleccionar-plan
+    'ecosistema_jaraba_select_plan' => [
+      'variables' => [
+        'tenant' => NULL,
+        'vertical' => NULL,
+        'plans' => [],
+        'current_plan' => NULL,
+      ],
+      'template' => 'ecosistema-jaraba-select-plan',
+      'path' => $path . '/templates',
+    ],
+
+    // Template de configuración de pago con Stripe
+    // Ruta: /onboarding/configurar-pago
+    'ecosistema_jaraba_setup_payment' => [
+      'variables' => [
+        'tenant' => NULL,
+        'plan' => NULL,
+        'stripe_public_key' => '',
+      ],
+      'template' => 'ecosistema-jaraba-setup-payment',
+      'path' => $path . '/templates',
+    ],
+
+    // Template de bienvenida post-onboarding
+    // Ruta: /onboarding/bienvenida
+    'ecosistema_jaraba_welcome' => [
+      'variables' => [
+        'tenant' => NULL,
+        'vertical' => NULL,
+        'plan' => NULL,
+        'trial_days_remaining' => NULL,
+        'tenant_url' => '',
+        'next_steps' => [],
+      ],
+      'template' => 'ecosistema-jaraba-welcome',
+      'path' => $path . '/templates',
+    ],
+
+    // Dashboard de administración para Tenant Admins
+    // Ruta: /tenant/dashboard
+    // Muestra estado de suscripción, métricas de uso y acciones rápidas
+    'ecosistema_jaraba_tenant_dashboard' => [
+      'variables' => [
+        'tenant' => NULL,
+        'plan' => NULL,
+        'group' => NULL,
+        'domain' => NULL,
+        'vertical' => NULL,
+        'metrics' => [],
+        'subscription_status' => 'active',
+        'subscription_status_label' => '',
+        'is_on_trial' => FALSE,
+        'trial_days_remaining' => 0,
+        'quick_actions' => [],
+      ],
+      'template' => 'ecosistema-jaraba-tenant-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Página de cambio de plan (upgrade/downgrade)
+    // Ruta: /tenant/change-plan
+    // Muestra planes disponibles para que el tenant pueda cambiar
+    'ecosistema_jaraba_change_plan' => [
+      'variables' => [
+        'tenant' => NULL,
+        'current_plan' => NULL,
+        'plans' => [],
+        'back_url' => NULL,
+      ],
+      'template' => 'ecosistema-jaraba-change-plan',
+      'path' => $path . '/templates',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Define las plantillas de correo electrónico del módulo.
+ * Los emails se envían en formato HTML con texto plano alternativo.
+ */
+function ecosistema_jaraba_core_mail($key, &$message, $params) {
+  switch ($key) {
+    // Email de bienvenida para nuevos tenants
+    case 'tenant_welcome':
+      $message['subject'] = t('¡Bienvenido a @vertical!', [
+        '@vertical' => $params['vertical_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      $message['body'][] = t('Tu organización <strong>@tenant</strong> ha sido creada exitosamente en la plataforma @vertical.', [
+        '@tenant' => $params['tenant_name'],
+        '@vertical' => $params['vertical_name'],
+      ]);
+
+      $message['body'][] = t('Tu URL de acceso es: @url', [
+        '@url' => $params['access_url'],
+      ]);
+
+      $message['body'][] = t('Tu periodo de prueba gratuita termina el: @date', [
+        '@date' => $params['trial_ends'],
+      ]);
+
+      $message['body'][] = t('Para empezar, inicia sesión en tu panel de control y completa la configuración de tu organización.');
+
+      $message['body'][] = '---';
+      $message['body'][] = t('El equipo de Ecosistema Jaraba');
+      break;
+
+    // Email de recordatorio de fin de trial
+    case 'trial_ending_reminder':
+      $message['subject'] = t('Tu periodo de prueba en @vertical termina pronto', [
+        '@vertical' => $params['vertical_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      $message['body'][] = t('Tu periodo de prueba en @tenant termina en @days días.', [
+        '@tenant' => $params['tenant_name'],
+        '@days' => $params['days_remaining'],
+      ]);
+
+      $message['body'][] = t('Para seguir disfrutando de todas las funcionalidades, añade un método de pago antes de que termine el periodo de prueba.');
+
+      $message['body'][] = t('Accede a tu cuenta: @url', [
+        '@url' => $params['access_url'],
+      ]);
+      break;
+
+    // Email de confirmación de pago
+    case 'payment_confirmation':
+      $message['subject'] = t('Confirmación de pago - @tenant', [
+        '@tenant' => $params['tenant_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      $message['body'][] = t('Hemos recibido tu pago de @amount para el plan @plan.', [
+        '@amount' => $params['amount'],
+        '@plan' => $params['plan_name'],
+      ]);
+
+      $message['body'][] = t('Próxima facturación: @date', [
+        '@date' => $params['next_billing_date'],
+      ]);
+
+      $message['body'][] = t('Gracias por confiar en nosotros.');
+      break;
+
+    // Email de alerta de pago fallido
+    case 'payment_failed':
+      $message['subject'] = t('⚠️ Problema con tu pago - @tenant', [
+        '@tenant' => $params['tenant_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      $message['body'][] = t('No hemos podido procesar tu pago de @amount para el plan @plan.', [
+        '@amount' => $params['amount'],
+        '@plan' => $params['plan_name'],
+      ]);
+
+      $message['body'][] = t('Por favor, verifica tu método de pago para evitar la suspensión de tu cuenta.');
+
+      $message['body'][] = t('Actualizar método de pago: @url', [
+        '@url' => $params['payment_url'],
+      ]);
+      break;
+
+    // Email de alerta de límite de uso
+    case 'usage_limit_alert':
+      $message['subject'] = t('📊 Alerta de uso (@percent%) - @tenant', [
+        '@percent' => $params['percentage'],
+        '@tenant' => $params['tenant_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      if ($params['percentage'] >= 100) {
+        $message['body'][] = t('Has alcanzado el 100% del límite de @type en tu plan.', [
+          '@type' => $params['limit_type'],
+        ]);
+        $message['body'][] = t('Uso actual: @current de @max permitidos.', [
+          '@current' => $params['current'],
+          '@max' => $params['max'],
+        ]);
+        $message['body'][] = t('Para continuar añadiendo más @type, necesitas actualizar tu plan.', [
+          '@type' => $params['limit_type'],
+        ]);
+      } else {
+        $message['body'][] = t('Has alcanzado el @percent% del límite de @type en tu plan.', [
+          '@percent' => $params['percentage'],
+          '@type' => $params['limit_type'],
+        ]);
+        $message['body'][] = t('Uso actual: @current de @max permitidos.', [
+          '@current' => $params['current'],
+          '@max' => $params['max'],
+        ]);
+        $message['body'][] = t('Te recomendamos revisar tu plan antes de alcanzar el límite.');
+      }
+
+      $message['body'][] = t('Actualizar plan: @url', [
+        '@url' => $params['upgrade_url'],
+      ]);
+      break;
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Tareas programadas del módulo que se ejecutan con cada cron.
+ */
+function ecosistema_jaraba_core_cron() {
+  // Verificar tenants con trial próximo a expirar
+  _ecosistema_jaraba_core_check_expiring_trials();
+
+  // Verificar tenants con pagos pendientes
+  _ecosistema_jaraba_core_check_past_due_subscriptions();
+
+  // Verificar tenants que se acercan a sus límites de uso
+  _ecosistema_jaraba_core_check_usage_limits();
+}
+
+/**
+ * Verifica y notifica tenants con trial próximo a expirar.
+ *
+ * Esta función busca tenants cuyo periodo de prueba termina en los próximos
+ * 3 días y envía recordatorios por email.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_check_expiring_trials() {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $tenantStorage = $entityTypeManager->getStorage('tenant');
+
+  // Buscar tenants en trial que expiran en 3 días o menos
+  $thresholdDate = (new \DateTime())->add(new \DateInterval('P3D'))->format('Y-m-d\TH:i:s');
+  $now = (new \DateTime())->format('Y-m-d\TH:i:s');
+
+  $query = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', 'trial')
+    ->condition('trial_ends', $now, '>')
+    ->condition('trial_ends', $thresholdDate, '<=');
+
+  $tenantIds = $query->execute();
+
+  foreach ($tenantIds as $tenantId) {
+    $tenant = $tenantStorage->load($tenantId);
+    if ($tenant && !$tenant->get('trial_reminder_sent')->value) {
+      // TODO: Enviar email de recordatorio
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        '📧 Recordatorio de trial enviado a tenant @tenant',
+        ['@tenant' => $tenant->getName()]
+      );
+
+      // Marcar como enviado para no repetir
+      $tenant->set('trial_reminder_sent', TRUE);
+      $tenant->save();
+    }
+  }
+}
+
+/**
+ * Verifica tenants con pagos pendientes para posible suspensión.
+ *
+ * Los tenants que llevan más de 7 días en estado past_due se suspenden.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_check_past_due_subscriptions() {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $tenantStorage = $entityTypeManager->getStorage('tenant');
+
+  // Buscar tenants en past_due desde hace más de 7 días
+  $thresholdDate = (new \DateTime())->sub(new \DateInterval('P7D'))->format('Y-m-d\TH:i:s');
+
+  $query = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', 'past_due')
+    ->condition('changed', strtotime($thresholdDate), '<');
+
+  $tenantIds = $query->execute();
+
+  $tenantManager = \Drupal::service('ecosistema_jaraba_core.tenant_manager');
+
+  foreach ($tenantIds as $tenantId) {
+    $tenant = $tenantStorage->load($tenantId);
+    if ($tenant) {
+      // Suspender el tenant
+      $tenantManager->suspendTenant($tenant, 'payment_overdue');
+
+      \Drupal::logger('ecosistema_jaraba_core')->warning(
+        '⚠️ Tenant @tenant suspendido por pago pendiente',
+        ['@tenant' => $tenant->getName()]
+      );
+    }
+  }
+}
+
+/**
+ * Verifica tenants que se acercan a sus límites de uso.
+ *
+ * Envía alertas cuando un tenant alcanza el 80% o 100% de sus límites:
+ * - Número de productores
+ * - Almacenamiento utilizado
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_check_usage_limits() {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $tenantStorage = $entityTypeManager->getStorage('tenant');
+
+  // Solo tenants activos
+  $query = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', ['active', 'trial'], 'IN');
+
+  $tenantIds = $query->execute();
+
+  /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+  $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+
+  $alertThreshold80 = 0.80;
+  $alertThreshold100 = 1.00;
+
+  foreach ($tenantIds as $tenantId) {
+    $tenant = $tenantStorage->load($tenantId);
+    if (!$tenant) {
+      continue;
+    }
+
+    $plan = $tenant->getSubscriptionPlan();
+    if (!$plan) {
+      continue;
+    }
+
+    $limits = $plan->getLimits();
+    $metrics = $tenantContext->getUsageMetrics($tenant);
+
+    // Verificar límite de productores
+    $maxProductores = $limits['productores'] ?? 0;
+    if ($maxProductores > 0) {
+      $currentProductores = $metrics['producers_count'] ?? 0;
+      $ratio = $currentProductores / $maxProductores;
+
+      if ($ratio >= $alertThreshold100) {
+        _ecosistema_jaraba_core_send_usage_alert($tenant, 'producers', 100, $currentProductores, $maxProductores);
+      } elseif ($ratio >= $alertThreshold80) {
+        _ecosistema_jaraba_core_send_usage_alert($tenant, 'producers', 80, $currentProductores, $maxProductores);
+      }
+    }
+
+    // Verificar límite de almacenamiento
+    $maxStorageMb = $limits['almacenamiento_mb'] ?? 0;
+    if ($maxStorageMb > 0) {
+      $currentStorageMb = $metrics['storage_mb'] ?? 0;
+      $ratio = $currentStorageMb / $maxStorageMb;
+
+      if ($ratio >= $alertThreshold100) {
+        _ecosistema_jaraba_core_send_usage_alert($tenant, 'storage', 100, $currentStorageMb, $maxStorageMb);
+      } elseif ($ratio >= $alertThreshold80) {
+        _ecosistema_jaraba_core_send_usage_alert($tenant, 'storage', 80, $currentStorageMb, $maxStorageMb);
+      }
+    }
+  }
+}
+
+/**
+ * Envía alerta de uso al administrador del tenant.
+ *
+ * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+ *   El tenant que ha alcanzado el límite.
+ * @param string $limitType
+ *   Tipo de límite: 'producers' o 'storage'.
+ * @param int $percentage
+ *   Porcentaje alcanzado: 80 o 100.
+ * @param int $current
+ *   Valor actual.
+ * @param int $max
+ *   Valor máximo permitido.
+ */
+function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percentage, $current, $max) {
+  $adminUser = $tenant->getAdminUser();
+  if (!$adminUser || !$adminUser->getEmail()) {
+    return;
+  }
+
+  // Crear clave para evitar spam (solo 1 alerta por tipo/nivel/día)
+  $alertKey = "usage_alert_{$tenant->id()}_{$limitType}_{$percentage}";
+  $state = \Drupal::state();
+  $lastAlert = $state->get($alertKey, 0);
+  $oneDayAgo = time() - 86400;
+
+  if ($lastAlert > $oneDayAgo) {
+    // Ya se envió alerta hoy, no repetir
+    return;
+  }
+
+  $limitLabels = [
+    'producers' => t('productores'),
+    'storage' => t('almacenamiento'),
+  ];
+
+  $params = [
+    'tenant_name' => $tenant->getName(),
+    'admin_name' => $adminUser->getDisplayName(),
+    'limit_type' => $limitLabels[$limitType] ?? $limitType,
+    'percentage' => $percentage,
+    'current' => $current,
+    'max' => $max,
+    'upgrade_url' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.tenant.change_plan', [], ['absolute' => TRUE])->toString(),
+  ];
+
+  // Enviar email
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  $result = $mailManager->mail(
+    'ecosistema_jaraba_core',
+    'usage_limit_alert',
+    $adminUser->getEmail(),
+    $adminUser->getPreferredLangcode(),
+    $params,
+    NULL,
+    TRUE
+  );
+
+  if ($result['result']) {
+    $state->set($alertKey, time());
+    \Drupal::logger('ecosistema_jaraba_core')->info(
+      '📊 Alerta de uso (@percent%) enviada a @tenant: @type = @current/@max',
+      [
+        '@percent' => $percentage,
+        '@tenant' => $tenant->getName(),
+        '@type' => $limitType,
+        '@current' => $current,
+        '@max' => $max,
+      ]
+    );
+  }
+}

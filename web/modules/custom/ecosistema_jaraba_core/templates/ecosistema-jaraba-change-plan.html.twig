@@ -1,0 +1,112 @@
+{#
+/**
+ * @file
+ * Template para la página de cambio de plan.
+ *
+ * Variables disponibles:
+ * - tenant: La entidad Tenant actual
+ * - current_plan: El plan actual del tenant (puede ser NULL)
+ * - plans: Array de planes disponibles con:
+ *   - id, name, description
+ *   - monthly_price, yearly_price
+ *   - max_producers, max_storage_mb
+ *   - features (array)
+ *   - is_current (bool)
+ *   - stripe_monthly_price_id, stripe_yearly_price_id
+ * - back_url: URL para volver al dashboard
+ */
+#}
+
+<div class="change-plan-page">
+
+  {# Header con botón de volver #}
+  <header class="change-plan-page__header">
+    <a href="{{ back_url }}" class="change-plan-page__back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      {{ 'Volver al Dashboard'|t }}
+    </a>
+    <h1 class="change-plan-page__title">{{ 'Cambiar Plan'|t }}</h1>
+    <p class="change-plan-page__subtitle">
+      {{ 'Selecciona el plan que mejor se adapte a las necesidades de tu organización.'|t }}
+    </p>
+  </header>
+
+  {# Toggle Mensual/Anual #}
+  <div class="billing-toggle">
+    <button type="button" class="billing-toggle__btn billing-toggle__btn--active" data-period="monthly">
+      {{ 'Mensual'|t }}
+    </button>
+    <button type="button" class="billing-toggle__btn" data-period="yearly">
+      {{ 'Anual'|t }}
+      <span class="billing-toggle__discount">-17%</span>
+    </button>
+  </div>
+
+  {# Grid de planes #}
+  <div class="plans-grid">
+    {% for plan in plans %}
+      <div class="plan-card {{ plan.is_current ? 'plan-card--current' : '' }}">
+        {% if plan.is_current %}
+          <div class="plan-card__badge">{{ 'Plan Actual'|t }}</div>
+        {% endif %}
+
+        <h2 class="plan-card__name">{{ plan.name }}</h2>
+        <p class="plan-card__description">{{ plan.description }}</p>
+
+        <div class="plan-card__price" data-monthly="{{ plan.monthly_price }}" data-yearly="{{ plan.yearly_price }}">
+          <span class="plan-card__price-value">{{ plan.monthly_price|number_format(0, ',', '.') }}</span>
+          <span class="plan-card__price-currency">€</span>
+          <span class="plan-card__price-period">/{{ 'mes'|t }}</span>
+        </div>
+
+        <ul class="plan-card__features">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ 'Hasta @count productores'|t({'@count': plan.max_producers > 0 ? plan.max_producers : 'ilimitados'}) }}
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ '@storage almacenamiento'|t({'@storage': (plan.max_storage_mb / 1024)|number_format(0) ~ ' GB'}) }}
+          </li>
+          {% if plan.features is iterable %}
+            {% for feature in plan.features %}
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                {{ feature }}
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+
+        <div class="plan-card__actions">
+          {% if plan.is_current %}
+            <button type="button" class="plan-card__btn plan-card__btn--disabled" disabled>
+              {{ 'Plan Actual'|t }}
+            </button>
+          {% else %}
+            <button type="button" 
+                    class="plan-card__btn plan-card__btn--select"
+                    data-plan-id="{{ plan.id }}"
+                    data-stripe-monthly="{{ plan.stripe_monthly_price_id }}"
+                    data-stripe-yearly="{{ plan.stripe_yearly_price_id }}">
+              {% if current_plan and plan.monthly_price < current_plan.monthly_price.value %}
+                {{ 'Cambiar a este plan'|t }}
+              {% else %}
+                {{ 'Actualizar'|t }}
+              {% endif %}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Nota informativa #}
+  <div class="change-plan-page__note">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <p>
+      {{ 'Los cambios de plan se aplican inmediatamente. Si actualizas a un plan superior, se te cobrará la diferencia prorrateada. Si reduces el plan, el cambio se aplicará al próximo ciclo de facturación.'|t }}
+    </p>
+  </div>
+
+</div>

@@ -1,0 +1,7 @@
+id: firma_digital
+label: 'Firma Digital'
+description: 'Firma electrónica avanzada con AutoFirma y FNMT.'
+category: seguridad
+icon: file-signature
+weight: 3
+status: true

@@ -1,0 +1,47 @@
+# ============================================================================
+# CONFIGURACIÓN DE FIRMA DIGITAL
+# ============================================================================
+# Ubicación: modules/custom/ecosistema_jaraba_core/config/install/ecosistema_jaraba_core.firma_settings.yml
+#
+# Esta configuración se instala automáticamente al activar el módulo.
+# Los valores sensibles (contraseña) DEBEN estar en variables de entorno.
+# ============================================================================
+
+# Ruta al certificado PKCS#12 (.p12 o .pfx)
+# IMPORTANTE: Este archivo debe estar FUERA del webroot y con permisos 600
+# Alternativa: usar variable de entorno ECOSISTEMA_JARABA_CERT_PATH
+certificate_path: '/etc/ssl/private/ecosistema-jaraba-sello.p12'
+
+# Contraseña del certificado
+# ⚠️  NUNCA poner la contraseña aquí en producción
+# Usar variable de entorno: ECOSISTEMA_JARABA_CERT_PASSWORD
+# Este campo solo para desarrollo/pruebas
+certificate_password: ''
+
+# URL del servidor de sellado de tiempo (TSA)
+# El TSA de la FNMT es gratuito y público
+tsa_url: 'http://tsa.fnmt.es/tsa/tss'
+
+# Configuración de la firma visible en el PDF
+signature_visible: true
+signature_position:
+  x: 10        # Posición X en mm desde el borde izquierdo
+  y: 260       # Posición Y en mm desde el borde superior (cerca del pie)
+  width: 50    # Ancho del campo de firma en mm
+  height: 20   # Alto del campo de firma en mm
+
+# Información por defecto del firmante
+# (se puede sobrescribir al llamar al servicio)
+default_signer_info:
+  name: 'Ecosistema Jaraba - Plataforma de Trazabilidad'
+  location: 'España'
+  reason: 'Certificado de Trazabilidad de Lote'
+  contact: 'info@jaraba.io'
+
+# Habilitar/deshabilitar la firma automática
+# Si es FALSE, los PDFs se generan pero no se firman
+auto_sign_enabled: true
+
+# Directorio donde se almacenan los certificados firmados
+# Usar 'private://' para que no sean accesibles directamente por URL
+output_directory: 'private://certificados'

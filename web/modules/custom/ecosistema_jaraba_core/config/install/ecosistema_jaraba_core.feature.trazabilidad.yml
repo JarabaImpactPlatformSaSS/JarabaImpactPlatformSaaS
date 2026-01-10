@@ -1,0 +1,7 @@
+id: trazabilidad
+label: 'Trazabilidad de productos'
+description: 'Permite rastrear el origen y proceso de producción de cada producto.'
+category: general
+icon: map-pin
+weight: 0
+status: true

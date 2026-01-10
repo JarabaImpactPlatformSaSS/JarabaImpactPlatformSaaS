@@ -1,0 +1,7 @@
+id: webhooks
+label: 'Webhooks'
+description: 'Integración con servicios externos mediante webhooks.'
+category: integraciones
+icon: webhook
+weight: 5
+status: true

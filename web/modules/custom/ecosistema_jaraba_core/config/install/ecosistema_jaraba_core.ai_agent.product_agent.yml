@@ -1,0 +1,8 @@
+id: product_agent
+label: 'Product Agent'
+description: 'Optimización de fichas de producto: descripciones, atributos, SEO.'
+service_id: ecosistema_jaraba_core.product_agent
+icon: box
+color: '#4caf50'
+weight: 4
+status: true

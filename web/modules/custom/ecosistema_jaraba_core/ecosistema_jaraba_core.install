@@ -1,0 +1,349 @@
+<?php
+
+/**
+ * @file
+ * Archivo de instalación del módulo Ecosistema Jaraba Core.
+ *
+ * Contiene los hooks de instalación, actualización y desinstalación
+ * del módulo. Define el esquema de base de datos adicional y
+ * realiza las operaciones necesarias al activar el módulo.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Se ejecuta cuando el módulo se instala por primera vez.
+ * Crea las configuraciones iniciales y los datos de ejemplo.
+ */
+function ecosistema_jaraba_core_install() {
+  // Mostrar mensaje de bienvenida
+  \Drupal::messenger()->addStatus(t('Ecosistema Jaraba Core instalado correctamente. Accede a <a href="@url">Estructura</a> para configurar verticales y planes.', [
+    '@url' => '/admin/structure',
+  ]));
+
+  // Log de instalación
+  \Drupal::logger('ecosistema_jaraba_core')->notice('Módulo instalado correctamente.');
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Limpia todos los datos del módulo al desinstalarlo.
+ */
+function ecosistema_jaraba_core_uninstall() {
+  // Eliminar configuraciones del módulo
+  $config_factory = \Drupal::configFactory();
+
+  $configs_to_delete = [
+    'ecosistema_jaraba_core.stripe',
+    'ecosistema_jaraba_core.firma_settings',
+  ];
+
+  foreach ($configs_to_delete as $config_name) {
+    $config_factory->getEditable($config_name)->delete();
+  }
+
+  // Log de desinstalación
+  \Drupal::logger('ecosistema_jaraba_core')->notice('Módulo desinstalado. Todas las configuraciones han sido eliminadas.');
+}
+
+/**
+ * Implements hook_requirements().
+ *
+ * Verifica los requisitos del módulo durante la instalación
+ * y en el informe de estado.
+ */
+function ecosistema_jaraba_core_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'runtime') {
+    // Verificar configuración de Stripe
+    $stripe_config = \Drupal::config('ecosistema_jaraba_core.stripe');
+
+    if (empty($stripe_config->get('public_key')) || empty($stripe_config->get('secret_key'))) {
+      $requirements['ecosistema_jaraba_stripe'] = [
+        'title' => t('Ecosistema Jaraba - Stripe'),
+        'value' => t('No configurado'),
+        'description' => t('Las claves de Stripe no están configuradas. Los pagos no funcionarán hasta que se configuren en <a href="@url">la configuración del módulo</a>.', [
+          '@url' => '/admin/config/ecosistema-jaraba/stripe',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $mode = $stripe_config->get('mode') ?? 'test';
+      $requirements['ecosistema_jaraba_stripe'] = [
+        'title' => t('Ecosistema Jaraba - Stripe'),
+        'value' => t('Configurado (modo @mode)', ['@mode' => $mode]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+
+    // Verificar que existe al menos una vertical
+    $vertical_storage = \Drupal::entityTypeManager()->getStorage('vertical');
+    $vertical_count = $vertical_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    if ($vertical_count == 0) {
+      $requirements['ecosistema_jaraba_verticals'] = [
+        'title' => t('Ecosistema Jaraba - Verticales'),
+        'value' => t('Sin verticales'),
+        'description' => t('No hay verticales configuradas. <a href="@url">Crea tu primera vertical</a> para comenzar.', [
+          '@url' => '/admin/structure/verticales/add',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_verticals'] = [
+        'title' => t('Ecosistema Jaraba - Verticales'),
+        'value' => t('@count vertical(es) configurada(s)', ['@count' => $vertical_count]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+
+    // Verificar que existe al menos un plan
+    $plan_storage = \Drupal::entityTypeManager()->getStorage('saas_plan');
+    $plan_count = $plan_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    if ($plan_count == 0) {
+      $requirements['ecosistema_jaraba_plans'] = [
+        'title' => t('Ecosistema Jaraba - Planes SaaS'),
+        'value' => t('Sin planes'),
+        'description' => t('No hay planes SaaS configurados. <a href="@url">Crea tu primer plan</a>.', [
+          '@url' => '/admin/structure/saas-plans/add',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_plans'] = [
+        'title' => t('Ecosistema Jaraba - Planes SaaS'),
+        'value' => t('@count plan(es) configurado(s)', ['@count' => $plan_count]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Añade el campo stripe_price_yearly_id a la entidad SaasPlan.
+ */
+function ecosistema_jaraba_core_update_9001() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Verificar si el campo ya existe
+  $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('stripe_price_yearly_id', 'saas_plan');
+
+  if (!$field_storage_definition) {
+    // Crear la definición del campo
+    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Price ID (Anual)'))
+      ->setDescription(t('ID del precio anual en Stripe.'))
+      ->setSettings([
+        'max_length' => 255,
+      ]);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'stripe_price_yearly_id',
+      'saas_plan',
+      'ecosistema_jaraba_core',
+      $field_storage_definition
+    );
+
+    return t('Campo stripe_price_yearly_id añadido a SaasPlan.');
+  }
+
+  return t('Campo stripe_price_yearly_id ya existe.');
+}
+
+/**
+ * Añade el campo trial_reminder_sent a la entidad Tenant.
+ */
+function ecosistema_jaraba_core_update_9002() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('trial_reminder_sent', 'tenant');
+
+  if (!$field_storage_definition) {
+    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Recordatorio de trial enviado'))
+      ->setDescription(t('Indica si se ha enviado el recordatorio de fin de trial.'))
+      ->setDefaultValue(FALSE);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'trial_reminder_sent',
+      'tenant',
+      'ecosistema_jaraba_core',
+      $field_storage_definition
+    );
+
+    return t('Campo trial_reminder_sent añadido a Tenant.');
+  }
+
+  return t('Campo trial_reminder_sent ya existe.');
+}
+
+/**
+ * Añade el campo group_id a la entidad Tenant para integración con Group Module.
+ */
+function ecosistema_jaraba_core_update_9003() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('group_id', 'tenant');
+
+  if (!$field_storage_definition) {
+    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Grupo de Aislamiento'))
+      ->setDescription(t('Grupo asociado para aislamiento de contenido (Group Module).'))
+      ->setSetting('target_type', 'group')
+      ->setSetting('handler', 'default')
+      ->setSetting('handler_settings', [
+        'target_bundles' => ['tenant' => 'tenant'],
+      ]);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'group_id',
+      'tenant',
+      'ecosistema_jaraba_core',
+      $field_storage_definition
+    );
+
+    return t('Campo group_id añadido a Tenant para integración con Group Module.');
+  }
+
+  return t('Campo group_id ya existe en Tenant.');
+}
+
+/**
+ * Añade el campo domain_id a la entidad Tenant para integración con Domain Access.
+ *
+ * PROPÓSITO:
+ * Este campo permite vincular cada Tenant con su Domain personalizado del
+ * módulo Domain Access, habilitando URLs personalizadas por tenant como
+ * aceites-sur.jaraba-saas.lndo.site o dominios propios como aceites-sur.com.
+ *
+ * FLUJO DE CREACIÓN:
+ * 1. TenantOnboardingService genera un slug único basado en el nombre
+ * 2. Se crea el Domain en /admin/config/domain
+ * 3. Se vincula al Tenant mediante este campo entity_reference
+ *
+ * MIGRACIÓN:
+ * Los tenants existentes sin domain_id pueden asignarse manualmente
+ * desde el formulario de edición del tenant.
+ */
+function ecosistema_jaraba_core_update_9004() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('domain_id', 'tenant');
+
+  if (!$field_storage_definition) {
+    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Dominio Asignado'))
+      ->setDescription(t('Dominio de Domain Access asociado para acceso personalizado.'))
+      ->setSetting('target_type', 'domain')
+      ->setSetting('handler', 'default');
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'domain_id',
+      'tenant',
+      'ecosistema_jaraba_core',
+      $field_storage_definition
+    );
+
+    \Drupal::logger('ecosistema_jaraba_core')->notice(
+      'Campo domain_id instalado en Tenant para integración con Domain Access.'
+    );
+
+    return t('Campo domain_id añadido a Tenant para integración con Domain Access.');
+  }
+
+  return t('Campo domain_id ya existe en Tenant.');
+}
+
+/**
+ * Migra los campos enabled_features y ai_agents de Vertical a entity_reference.
+ *
+ * PROPÓSITO:
+ * Los campos enabled_features y ai_agents cambiaron de list_string (hardcoded)
+ * a entity_reference (Feature y AIAgent config entities) para permitir
+ * gestión zero-code desde admin.
+ *
+ * ESTRATEGIA:
+ * 1. Borrar las tablas antiguas (vertical__enabled_features, vertical__ai_agents)
+ * 2. Aplicar las nuevas definiciones de campo
+ * 3. Los datos anteriores (valores hardcodeados) no se migran ya que ahora
+ *    referencian las nuevas config entities que deben crearse manualmente
+ */
+function ecosistema_jaraba_core_update_9005() {
+  $database = \Drupal::database();
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // 1. Eliminar las tablas antiguas si existen
+  $tables_to_drop = [
+    'vertical__enabled_features',
+    'vertical__ai_agents',
+  ];
+
+  foreach ($tables_to_drop as $table) {
+    if ($database->schema()->tableExists($table)) {
+      $database->schema()->dropTable($table);
+      \Drupal::logger('ecosistema_jaraba_core')->notice("Tabla $table eliminada.");
+    }
+  }
+
+  // 2. Forzar redescubrimiento de definiciones de campos
+  // Uninstall old field definitions
+  $old_features_def = $entity_definition_manager->getFieldStorageDefinition('enabled_features', 'vertical');
+  if ($old_features_def) {
+    $entity_definition_manager->uninstallFieldStorageDefinition($old_features_def);
+  }
+
+  $old_agents_def = $entity_definition_manager->getFieldStorageDefinition('ai_agents', 'vertical');
+  if ($old_agents_def) {
+    $entity_definition_manager->uninstallFieldStorageDefinition($old_agents_def);
+  }
+
+  // 3. Instalar nuevas definiciones (entity_reference)
+  $new_features_def = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Features Habilitadas'))
+    ->setDescription(t('Funcionalidades activas para esta vertical.'))
+    ->setCardinality(\Drupal\Core\Field\BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('target_type', 'feature')
+    ->setSetting('handler', 'default');
+
+  $entity_definition_manager->installFieldStorageDefinition(
+    'enabled_features',
+    'vertical',
+    'ecosistema_jaraba_core',
+    $new_features_def
+  );
+
+  $new_agents_def = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Agentes IA'))
+    ->setDescription(t('Agentes de IA disponibles para esta vertical.'))
+    ->setCardinality(\Drupal\Core\Field\BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('target_type', 'ai_agent')
+    ->setSetting('handler', 'default');
+
+  $entity_definition_manager->installFieldStorageDefinition(
+    'ai_agents',
+    'vertical',
+    'ecosistema_jaraba_core',
+    $new_agents_def
+  );
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'Campos enabled_features y ai_agents migrados a entity_reference.'
+  );
+
+  return t('Campos de Vertical migrados a entity_reference (Feature/AIAgent).');
+}

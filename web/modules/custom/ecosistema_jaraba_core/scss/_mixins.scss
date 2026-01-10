@@ -1,0 +1,304 @@
+// =============================================================================
+// MIXINS SCSS - ECOSISTEMA JARABA
+// =============================================================================
+// Mixins reutilizables para componentes y layouts del onboarding.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// RESPONSIVE BREAKPOINTS
+// ---------------------------------------------------------------------------
+
+/// Genera un media query para pantallas desde el breakpoint indicado hacia arriba
+/// @param {String} $breakpoint - Nombre del breakpoint (sm, md, lg, xl, xxl)
+@mixin breakpoint-up($breakpoint) {
+    @if $breakpoint ==sm {
+        @media (min-width: #{$ej-breakpoint-sm}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==md {
+        @media (min-width: #{$ej-breakpoint-md}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==lg {
+        @media (min-width: #{$ej-breakpoint-lg}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==xl {
+        @media (min-width: #{$ej-breakpoint-xl}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==xxl {
+        @media (min-width: #{$ej-breakpoint-xxl}) {
+            @content;
+        }
+    }
+}
+
+/// Genera un media query para pantallas hasta el breakpoint indicado
+/// @param {String} $breakpoint - Nombre del breakpoint
+@mixin breakpoint-down($breakpoint) {
+    @if $breakpoint ==sm {
+        @media (max-width: #{$ej-breakpoint-sm - 1px}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==md {
+        @media (max-width: #{$ej-breakpoint-md - 1px}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==lg {
+        @media (max-width: #{$ej-breakpoint-lg - 1px}) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==xl {
+        @media (max-width: #{$ej-breakpoint-xl - 1px}) {
+            @content;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// LAYOUT
+// ---------------------------------------------------------------------------
+
+/// Contenedor centrado con ancho máximo
+/// @param {Number} $max-width - Ancho máximo del contenedor
+/// @param {Number} $padding - Padding horizontal
+@mixin container($max-width: $ej-container-max-width, $padding: $ej-container-padding) {
+    max-width: $max-width;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: $padding;
+    padding-right: $padding;
+}
+
+/// Flexbox centrado en ambos ejes
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/// Flexbox con elementos separados
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/// Grid responsive con tamaño mínimo de columna
+/// @param {Number} $min-width - Ancho mínimo de cada columna
+/// @param {Number} $gap - Espacio entre columnas
+@mixin grid-auto-fit($min-width: 300px, $gap: $ej-spacing-lg) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+    gap: $gap;
+}
+
+// ---------------------------------------------------------------------------
+// BOTONES
+// ---------------------------------------------------------------------------
+
+/// Estilos base para botones
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-sm;
+    padding: 0.75rem 1.5rem;
+    font-family: var(--ej-font-family);
+    font-size: $ej-font-size-md;
+    font-weight: $ej-font-weight-semibold;
+    text-decoration: none;
+    border: $ej-border-width-thick solid transparent;
+    border-radius: $ej-border-radius-sm;
+    cursor: pointer;
+    transition: var(--ej-transition);
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--ej-color-primary-light);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+/// Variante de botón primario
+@mixin button-primary {
+    @include button-base;
+    background-color: var(--ej-color-primary);
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ej-color-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+/// Variante de botón outline
+@mixin button-outline {
+    @include button-base;
+    background-color: transparent;
+    border-color: var(--ej-color-primary);
+    color: var(--ej-color-primary);
+
+    &:hover:not(:disabled) {
+        background-color: var(--ej-color-primary);
+        color: #ffffff;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// FORMULARIOS
+// ---------------------------------------------------------------------------
+
+/// Estilos base para inputs
+@mixin input-base {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-family: var(--ej-font-family);
+    font-size: $ej-font-size-md;
+    color: var(--ej-text-primary);
+    background-color: var(--ej-bg-input);
+    border: $ej-border-width-thick solid var(--ej-border-color);
+    border-radius: $ej-border-radius-sm;
+    transition: var(--ej-transition-fast);
+
+    &::placeholder {
+        color: var(--ej-text-muted);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary);
+        box-shadow: 0 0 0 4px var(--ej-color-primary-light);
+    }
+
+    &:invalid:not(:focus):not(:placeholder-shown) {
+        border-color: var(--ej-color-error);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CARDS
+// ---------------------------------------------------------------------------
+
+/// Estilos base para tarjetas
+/// @param {Boolean} $hoverable - Si la tarjeta tiene efecto hover
+@mixin card-base($hoverable: false) {
+    background-color: var(--ej-bg-card);
+    border-radius: var(--ej-border-radius-lg);
+    box-shadow: var(--ej-shadow-md);
+
+    @if $hoverable {
+        transition: var(--ej-transition);
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--ej-shadow-lg);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// UTILIDADES
+// ---------------------------------------------------------------------------
+
+/// Ocultar elemento visualmente pero mantenerlo accesible para lectores de pantalla
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/// Truncar texto con ellipsis
+/// @param {Number} $lines - Número de líneas antes de truncar (1 para single-line)
+@mixin text-truncate($lines: 1) {
+    @if $lines ==1 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $lines;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+/// Efecto de gradiente en texto
+@mixin gradient-text {
+    background: linear-gradient(135deg, var(--ej-color-primary), var(--ej-color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// ---------------------------------------------------------------------------
+// ANIMACIONES
+// ---------------------------------------------------------------------------
+
+/// Keyframes de animación bounce-in
+@mixin keyframes-bounce-in {
+    @keyframes bounce-in {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+}
+
+/// Keyframes de animación fade-in
+@mixin keyframes-fade-in {
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}

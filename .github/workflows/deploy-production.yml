@@ -1,0 +1,251 @@
+# Deploy a Production cuando se crea un tag de versión
+#
+# Este workflow realiza un despliegue Blue-Green a producción
+# cuando se crea un tag con formato v*.*.* (semver).
+
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ===========================================
+  # JOB 1: BUILD Y PUSH DE IMAGEN
+  # ===========================================
+  build:
+    name: 🏗️ Build Production Image
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      version: ${{ steps.version.outputs.VERSION }}
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ steps.version.outputs.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ===========================================
+  # JOB 2: BACKUP PRE-DEPLOY
+  # ===========================================
+  backup:
+    name: 💾 Pre-Deploy Backup
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+    
+    steps:
+      - name: Create database backup
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: deploy
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            echo "Creando backup pre-deploy..."
+            /opt/scripts/backup-database.sh production pre-deploy-${{ needs.build.outputs.version }}
+            echo "✅ Backup creado: pre-deploy-${{ needs.build.outputs.version }}"
+
+  # ===========================================
+  # JOB 3: DEPLOY BLUE-GREEN
+  # ===========================================
+  deploy:
+    name: 🚀 Blue-Green Deploy
+    runs-on: ubuntu-latest
+    needs: [build, backup]
+    environment: production
+    
+    steps:
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: deploy
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /var/www/jaraba-production
+            
+            # Determinar ambiente activo
+            CURRENT=$(docker compose ps --format "table {{.Name}}" | grep web | head -1)
+            if [[ $CURRENT == *"blue"* ]]; then
+              DEPLOY_TO="green"
+            else
+              DEPLOY_TO="blue"
+            fi
+            
+            echo "🔄 Desplegando a $DEPLOY_TO..."
+            
+            # Export version
+            export TAG=${{ needs.build.outputs.version }}
+            
+            # Pull new image
+            docker compose pull web-$DEPLOY_TO
+            
+            # Start new container
+            docker compose up -d web-$DEPLOY_TO
+            
+            # Wait for container to be healthy
+            for i in {1..30}; do
+              if docker compose exec -T web-$DEPLOY_TO curl -sf http://localhost/health; then
+                echo "✅ Container $DEPLOY_TO está healthy"
+                break
+              fi
+              echo "Esperando health check... $i/30"
+              sleep 5
+            done
+            
+            # Run database updates
+            docker compose exec -T web-$DEPLOY_TO drush updb -y
+            docker compose exec -T web-$DEPLOY_TO drush cim -y
+            docker compose exec -T web-$DEPLOY_TO drush cr
+            
+            # Switch nginx upstream
+            sed -i "s/web-blue\|web-green/web-$DEPLOY_TO/g" /etc/nginx/conf.d/upstream.conf
+            nginx -s reload
+            
+            echo "🚀 Tráfico redirigido a $DEPLOY_TO"
+
+      - name: Verify Production Health
+        run: |
+          echo "Verificando producción..."
+          for i in {1..10}; do
+            if curl -sf https://jaraba.io/health; then
+              echo "✅ Producción está respondiendo correctamente"
+              exit 0
+            fi
+            echo "Esperando respuesta... intento $i"
+            sleep 15
+          done
+          echo "❌ Producción no responde - INICIANDO ROLLBACK"
+          exit 1
+
+  # ===========================================
+  # JOB 4: POST-DEPLOY
+  # ===========================================
+  post-deploy:
+    name: 📝 Post-Deploy Tasks
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success()
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          name: Release ${{ github.ref_name }}
+
+      - name: Notify Success
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🚀 *Production Deploy Successful*\n*Version:* `${{ github.ref_name }}`\n*URL:* https://jaraba.io"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # ===========================================
+  # JOB 5: ROLLBACK (si falla deploy)
+  # ===========================================
+  rollback:
+    name: ⏪ Rollback
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    environment: production
+    
+    steps:
+      - name: Rollback to previous version
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: deploy
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /var/www/jaraba-production
+            
+            # Determinar ambiente actual
+            CURRENT=$(docker compose ps --format "table {{.Name}}" | grep web | head -1)
+            if [[ $CURRENT == *"blue"* ]]; then
+              ROLLBACK_TO="green"
+            else
+              ROLLBACK_TO="blue"
+            fi
+            
+            echo "⏪ Rollback a $ROLLBACK_TO..."
+            
+            # Switch nginx back
+            sed -i "s/web-blue\|web-green/web-$ROLLBACK_TO/g" /etc/nginx/conf.d/upstream.conf
+            nginx -s reload
+            
+            echo "✅ Rollback completado a $ROLLBACK_TO"
+
+      - name: Notify Rollback
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "⚠️ *Production Rollback Executed*\n*Failed Version:* `${{ github.ref_name }}`\n*Reason:* Health check failed"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

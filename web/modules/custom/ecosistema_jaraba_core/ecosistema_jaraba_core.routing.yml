@@ -1,0 +1,371 @@
+# ============================================================================
+# RUTAS DEL MÓDULO ECOSISTEMA JARABA CORE
+# ============================================================================
+# Este archivo define todas las rutas disponibles en el módulo.
+# Las rutas están organizadas por funcionalidad:
+#   - Dashboard de Tenant Admin
+#   - Gestión de entidades (Vertical, SaasPlan, Tenant)
+#   - API REST para firma digital (AutoFirma)
+#   - Onboarding de nuevos tenants
+#   - Webhooks para integraciones externas
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# DASHBOARD DEL TENANT ADMIN
+# ---------------------------------------------------------------------------
+
+# Panel principal para administradores de tenant
+# Muestra estado de suscripción, métricas de uso y acciones rápidas
+ecosistema_jaraba_core.tenant.dashboard:
+  path: '/tenant/dashboard'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantDashboardController::dashboard'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\TenantDashboardController::getTitle'
+  requirements:
+    _role: 'tenant_admin+administrator'
+  options:
+    _admin_route: FALSE
+
+# Página para cambiar de plan (upgrade/downgrade)
+# Muestra planes disponibles y permite al tenant cambiar su suscripción
+ecosistema_jaraba_core.tenant.change_plan:
+  path: '/tenant/change-plan'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantDashboardController::changePlan'
+    _title: 'Cambiar Plan'
+  requirements:
+    _role: 'tenant_admin+administrator'
+  options:
+    _admin_route: FALSE
+
+# ---------------------------------------------------------------------------
+# RUTAS DE ADMINISTRACIÓN - VERTICALES
+# ---------------------------------------------------------------------------
+
+# Lista de verticales en el backend de administración
+entity.vertical.collection:
+  path: '/admin/structure/verticales'
+  defaults:
+    _entity_list: 'vertical'
+    _title: 'Verticales de Negocio'
+  requirements:
+    _permission: 'administer verticals'
+
+# Formulario para crear una nueva vertical
+entity.vertical.add_form:
+  path: '/admin/structure/verticales/add'
+  defaults:
+    _entity_form: 'vertical.add'
+    _title: 'Añadir Vertical'
+  requirements:
+    _permission: 'administer verticals'
+
+# Formulario de edición de vertical existente
+entity.vertical.edit_form:
+  path: '/admin/structure/verticales/{vertical}/edit'
+  defaults:
+    _entity_form: 'vertical.edit'
+    _title: 'Editar Vertical'
+  requirements:
+    _permission: 'administer verticals'
+  options:
+    parameters:
+      vertical:
+        type: entity:vertical
+
+# Vista canónica de una vertical
+entity.vertical.canonical:
+  path: '/admin/structure/verticales/{vertical}'
+  defaults:
+    _entity_view: 'vertical'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'view published verticals'
+  options:
+    parameters:
+      vertical:
+        type: entity:vertical
+
+# Formulario de confirmación de eliminación
+entity.vertical.delete_form:
+  path: '/admin/structure/verticales/{vertical}/delete'
+  defaults:
+    _entity_form: 'vertical.delete'
+    _title: 'Eliminar Vertical'
+  requirements:
+    _permission: 'administer verticals'
+  options:
+    parameters:
+      vertical:
+        type: entity:vertical
+
+# ---------------------------------------------------------------------------
+# RUTAS DE ADMINISTRACIÓN - PLANES SAAS
+# ---------------------------------------------------------------------------
+
+# Lista de planes de suscripción
+entity.saas_plan.collection:
+  path: '/admin/structure/saas-plans'
+  defaults:
+    _entity_list: 'saas_plan'
+    _title: 'Planes de Suscripción'
+  requirements:
+    _permission: 'administer saas plans'
+
+# Crear nuevo plan SaaS
+entity.saas_plan.add_form:
+  path: '/admin/structure/saas-plans/add'
+  defaults:
+    _entity_form: 'saas_plan.add'
+    _title: 'Añadir Plan SaaS'
+  requirements:
+    _permission: 'administer saas plans'
+
+# Editar plan SaaS existente
+entity.saas_plan.edit_form:
+  path: '/admin/structure/saas-plans/{saas_plan}/edit'
+  defaults:
+    _entity_form: 'saas_plan.edit'
+    _title: 'Editar Plan SaaS'
+  requirements:
+    _permission: 'administer saas plans'
+  options:
+    parameters:
+      saas_plan:
+        type: entity:saas_plan
+
+# Vista pública del plan (para páginas de precios)
+entity.saas_plan.canonical:
+  path: '/planes/{saas_plan}'
+  defaults:
+    _entity_view: 'saas_plan'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'view published saas plans'
+  options:
+    parameters:
+      saas_plan:
+        type: entity:saas_plan
+
+# ---------------------------------------------------------------------------
+# RUTAS DE ADMINISTRACIÓN - TENANTS
+# ---------------------------------------------------------------------------
+
+# Lista de todos los tenants de la plataforma
+entity.tenant.collection:
+  path: '/admin/structure/tenants'
+  defaults:
+    _entity_list: 'tenant'
+    _title: 'Tenants de la Plataforma'
+  requirements:
+    _permission: 'administer tenants'
+
+# Crear nuevo tenant manualmente
+entity.tenant.add_form:
+  path: '/admin/structure/tenants/add'
+  defaults:
+    _entity_form: 'tenant.add'
+    _title: 'Crear Nuevo Tenant'
+  requirements:
+    _permission: 'administer tenants'
+
+# Editar tenant existente
+entity.tenant.edit_form:
+  path: '/admin/structure/tenants/{tenant}/edit'
+  defaults:
+    _entity_form: 'tenant.edit'
+    _title: 'Editar Tenant'
+  requirements:
+    _permission: 'administer tenants'
+  options:
+    parameters:
+      tenant:
+        type: entity:tenant
+
+# Vista detallada de un tenant (dashboard de administración)
+entity.tenant.canonical:
+  path: '/admin/structure/tenants/{tenant}'
+  defaults:
+    _entity_view: 'tenant.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'view any tenant'
+  options:
+    parameters:
+      tenant:
+        type: entity:tenant
+
+# ---------------------------------------------------------------------------
+# API REST - AUTOFIRMA / FIRMA DIGITAL
+# ---------------------------------------------------------------------------
+
+# Obtener documento en Base64 para firmar con AutoFirma
+ecosistema_jaraba_core.autofirma.get_documento:
+  path: '/api/autofirma/documento/{document_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getDocumento'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Endpoint para recibir el documento firmado desde AutoFirma
+ecosistema_jaraba_core.autofirma.recibir_firma:
+  path: '/api/autofirma/firmar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::recibirFirma'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+# Consultar estado de firma de un documento
+ecosistema_jaraba_core.autofirma.get_estado:
+  path: '/api/autofirma/estado/{document_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getEstado'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Verificar disponibilidad de AutoFirma (endpoint público)
+ecosistema_jaraba_core.autofirma.check:
+  path: '/api/autofirma/check'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::checkAutoFirma'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# Generar nuevo documento PDF para firma
+ecosistema_jaraba_core.autofirma.generar:
+  path: '/api/autofirma/generar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::generarDocumento'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# ONBOARDING DE TENANTS - FLUJO DE REGISTRO
+# ---------------------------------------------------------------------------
+
+# Página pública de registro para una vertical específica
+ecosistema_jaraba_core.onboarding.register:
+  path: '/registro/{vertical}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::registerForm'
+    _title: 'Registra tu Organización'
+  requirements:
+    _access: 'TRUE'
+  options:
+    parameters:
+      vertical:
+        type: entity:vertical
+
+# Procesar formulario de registro (POST)
+ecosistema_jaraba_core.onboarding.process:
+  path: '/registro/procesar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::processRegistration'
+  requirements:
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+# Paso 2: Selección de plan de suscripción
+ecosistema_jaraba_core.onboarding.select_plan:
+  path: '/onboarding/seleccionar-plan'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::selectPlan'
+    _title: 'Selecciona tu Plan'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Paso 3: Configurar método de pago con Stripe
+ecosistema_jaraba_core.onboarding.setup_payment:
+  path: '/onboarding/configurar-pago'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::setupPayment'
+    _title: 'Configurar Método de Pago'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Paso 4: Página de bienvenida post-onboarding
+ecosistema_jaraba_core.onboarding.welcome:
+  path: '/onboarding/bienvenida'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::welcome'
+    _title: '¡Bienvenido!'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# WEBHOOKS PARA INTEGRACIONES EXTERNAS
+# ---------------------------------------------------------------------------
+
+# Webhook de Stripe para eventos de suscripción y pagos
+ecosistema_jaraba_core.webhook.stripe:
+  path: '/webhook/stripe'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\WebhookController::stripeWebhook'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# Webhook genérico para integraciones personalizadas por tenant
+ecosistema_jaraba_core.webhook.custom:
+  path: '/webhook/{integration_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\WebhookController::customWebhook'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# ---------------------------------------------------------------------------
+# API PÚBLICA - PLANES Y PRECIOS
+# ---------------------------------------------------------------------------
+
+# Obtener lista de precios para una vertical (para páginas de pricing)
+ecosistema_jaraba_core.api.pricing:
+  path: '/api/pricing/{vertical}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::getPricing'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+  options:
+    parameters:
+      vertical:
+        type: entity:vertical
+
+# ---------------------------------------------------------------------------
+# API DE STRIPE - SUSCRIPCIONES Y PAGOS
+# ---------------------------------------------------------------------------
+
+# Crear suscripción con método de pago de Stripe Elements
+ecosistema_jaraba_core.api.stripe.create_subscription:
+  path: '/api/stripe/create-subscription'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createSubscription'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+
+# Confirmar suscripción después de 3D Secure
+ecosistema_jaraba_core.api.stripe.confirm_subscription:
+  path: '/api/stripe/confirm-subscription'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::confirmSubscription'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+
+# Crear sesión del portal de clientes de Stripe
+ecosistema_jaraba_core.api.stripe.portal:
+  path: '/api/stripe/portal-session'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createPortalSession'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+

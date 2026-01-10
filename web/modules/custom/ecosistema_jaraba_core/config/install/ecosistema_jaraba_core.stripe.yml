@@ -1,0 +1,54 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+
+# =============================================================================
+# CONFIGURACIÓN DE STRIPE - ECOSISTEMA JARABA
+# =============================================================================
+# Esta configuración contiene las credenciales de Stripe para:
+# - Procesamiento de pagos de suscripciones
+# - Gestión de clientes
+# - Webhooks para sincronización de estados
+#
+# IMPORTANTE: Las claves se deben establecer mediante variables de entorno
+# en producción. Nunca incluir claves reales en este archivo.
+# =============================================================================
+
+# Clave pública de Stripe (se usa en el frontend)
+# En producción: getenv('STRIPE_PUBLIC_KEY')
+public_key: ''
+
+# Clave secreta de Stripe (solo backend)
+# En producción: getenv('STRIPE_SECRET_KEY')
+secret_key: ''
+
+# Secreto del webhook para validar firmas
+# En producción: getenv('STRIPE_WEBHOOK_SECRET')
+webhook_secret: ''
+
+# Modo de operación: 'test' o 'live'
+mode: 'test'
+
+# ID del producto en Stripe (opcional, para referencia)
+product_id: ''
+
+# URLs de redirección para Stripe Checkout
+checkout:
+  success_url: '/onboarding/bienvenida'
+  cancel_url: '/onboarding/seleccionar-plan'
+
+# Configuración del portal de clientes
+portal:
+  enabled: true
+  allow_cancellation: true
+  allow_plan_change: true
+
+# Configuración de trial
+trial:
+  days: 14
+  require_payment_method: false
+
+# Moneda por defecto
+currency: 'eur'

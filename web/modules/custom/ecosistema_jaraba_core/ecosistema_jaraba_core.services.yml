@@ -1,0 +1,69 @@
+services:
+  # ===========================================
+  # SERVICIOS CORE - GESTIÓN DE TENANTS
+  # ===========================================
+
+  # Validador de límites de planes SaaS
+  ecosistema_jaraba_core.plan_validator:
+    class: Drupal\ecosistema_jaraba_core\Service\PlanValidator
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Gestor de Tenants (ciclo de vida, temas, dominios)
+  ecosistema_jaraba_core.tenant_manager:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantManager
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@ecosistema_jaraba_core.plan_validator'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Servicio de Onboarding de Tenants
+  # Gestiona el flujo de registro y activación de nuevos tenants
+  ecosistema_jaraba_core.tenant_onboarding:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantOnboardingService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@plugin.manager.mail'
+
+  # Servicio de Contexto de Tenant
+  # Resuelve el tenant actual basado en el usuario logueado
+  # Usado por el dashboard y otras páginas específicas del tenant
+  ecosistema_jaraba_core.tenant_context:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantContextService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+
+  # ===========================================
+  # SERVICIOS DE TRAZABILIDAD Y FIRMA DIGITAL
+  # ===========================================
+
+  # Servicio de generación de certificados PDF
+  ecosistema_jaraba_core.certificado_pdf:
+    class: Drupal\ecosistema_jaraba_core\Service\CertificadoPdfService
+    arguments:
+      - '@file_system'
+      - '@entity_type.manager'
+
+  # Servicio de firma digital
+  ecosistema_jaraba_core.firma_digital:
+    class: Drupal\ecosistema_jaraba_core\Service\FirmaDigitalService
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'
+      - '@file_system'
+
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  # Canal de logging para el módulo
+  logger.channel.ecosistema_jaraba_core:
+    parent: logger.channel_base
+    arguments: ['ecosistema_jaraba_core']

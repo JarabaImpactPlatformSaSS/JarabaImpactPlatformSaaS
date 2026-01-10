@@ -1,0 +1,5 @@
+ai_provider_google_vertex.settings_menu:
+  title: "Google Vertex Provider"
+  description: "Setup Google Vertex Provider"
+  route_name: ai_provider_google_vertex.settings_form
+  parent: ai.admin_providers

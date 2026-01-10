@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Google Vertex Provider.
+ */
+
+use Drupal\ai_provider_google_vertex\Form\VertexConfigForm;
+
+/**
+ * Convert the existing configuration to use "file" provider.
+ */
+function ai_provider_google_vertex_update_10001() {
+  $configFactory = \Drupal::configFactory();
+  $config = $configFactory->getEditable(VertexConfigForm::CONFIG_NAME);
+  $key = $config->get('general_credential_file');
+  if (!$key) {
+    return;
+  }
+  /** @var \Drupal\key\KeyRepository $keyRepository */
+  $keyRepository = \Drupal::service('key.repository');
+  /** @var \Drupal\key\Entity\Key */
+  if (!($key = $keyRepository->getKey($key))
+    || ($key->getKeyProvider()->getPluginId() === 'file')) {
+    return;
+  }
+  $fileLocation = $key->getKeyValue();
+  $key->setPlugin('key_provider', 'file');
+  $key->getPlugin('key_provider')->setConfiguration([
+    'file_location' => $fileLocation,
+    'strip_line_breaks' => FALSE,
+  ]);
+  $key->save();
+}

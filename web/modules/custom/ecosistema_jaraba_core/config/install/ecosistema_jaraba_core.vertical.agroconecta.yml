@@ -1,0 +1,27 @@
+# Configuración inicial para la vertical AgroConecta
+# Este archivo se importa al instalar el módulo
+
+langcode: es
+status: true
+name: 'AgroConecta'
+machine_name: agroconecta
+description: |
+  Ecosistema digital para productores agroalimentarios locales.
+  Conecta a productores con consumidores ofreciendo trazabilidad completa,
+  tiendas online y herramientas de marketing potenciadas por IA.
+enabled_features:
+  - trazabilidad
+  - qr_codes
+  - ecwid_integration
+  - ai_storytelling
+  - ai_marketing
+  - ai_customer_experience
+ai_agents:
+  - producer_copilot
+  - consumer_copilot
+  - marketing_agent
+  - storytelling_agent
+  - customer_experience_agent
+  - product_agent
+  - recipe_agent
+theme_settings: '{"color_primario": "#FF8C42", "color_secundario": "#2D3436", "tipografia": "Inter"}'

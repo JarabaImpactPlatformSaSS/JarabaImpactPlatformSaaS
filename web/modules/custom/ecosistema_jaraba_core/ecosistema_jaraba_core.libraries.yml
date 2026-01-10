@@ -1,0 +1,92 @@
+# ============================================================================
+# BIBLIOTECAS DEL MÓDULO ECOSISTEMA JARABA CORE
+# ============================================================================
+# Define las bibliotecas de CSS y JS del módulo.
+# Las bibliotecas se cargan condicionalmente según la página/funcionalidad.
+# 
+# COMPILACIÓN SCSS:
+# Los archivos SCSS en scss/ se compilan a css/ con el siguiente comando:
+# npx sass scss/main.scss:css/ecosistema-jaraba-core.css --style=compressed
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA PRINCIPAL DEL MÓDULO
+# ---------------------------------------------------------------------------
+# Incluye los estilos base compilados desde SCSS.
+# Se carga automáticamente cuando se usan los templates del módulo.
+
+global:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE ONBOARDING
+# ---------------------------------------------------------------------------
+# Estilos y JavaScript específicos para el flujo de registro de tenants.
+# Incluye validación de formularios, toggle de precios, confetti, etc.
+
+onboarding:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/ecosistema-jaraba-onboarding.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - core/jquery
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE AUTOFIRMA
+# ---------------------------------------------------------------------------
+# JavaScript para integración con AutoFirma (firma digital de documentos).
+
+autofirma:
+  version: 1.x
+  js:
+    js/ecosistema-jaraba-firma.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - core/jquery
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE STRIPE
+# ---------------------------------------------------------------------------
+# Integración con Stripe Elements/Checkout para configuración de pagos.
+# Carga el SDK de Stripe desde CDN.
+
+stripe:
+  version: 1.x
+  js:
+    https://js.stripe.com/v3/: { type: external, minified: true }
+    js/ecosistema-jaraba-stripe.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - ecosistema_jaraba_core/onboarding
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL DASHBOARD DE TENANT
+# ---------------------------------------------------------------------------
+# Estilos para el panel de administración del Tenant.
+# Incluye cards, métricas, acciones rápidas y estilos responsivos.
+# También incluye JavaScript para el portal de facturación Stripe.
+
+tenant_dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/tenant-dashboard.css: {}
+  js:
+    js/ecosistema-jaraba-billing.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

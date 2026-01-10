@@ -1,0 +1,29 @@
+# Schema for Feature config entity
+ecosistema_jaraba_core.feature.*:
+  type: config_entity
+  label: 'Feature configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description'
+    category:
+      type: string
+      label: 'Category'
+    icon:
+      type: string
+      label: 'Icon'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

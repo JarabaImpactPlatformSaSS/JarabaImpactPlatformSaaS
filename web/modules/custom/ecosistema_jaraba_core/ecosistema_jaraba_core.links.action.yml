@@ -1,0 +1,61 @@
+# ============================================================================
+# ENLACES DE ACCIÓN - ECOSISTEMA JARABA CORE
+# ============================================================================
+# Define los botones de acción (como "Añadir") que aparecen en las páginas
+# de listado de entidades.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# ACCIONES - VERTICALES
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Vertical" en la lista de verticales
+entity.vertical.add_form:
+  route_name: entity.vertical.add_form
+  title: 'Añadir Vertical'
+  appears_on:
+    - entity.vertical.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - PLANES SAAS
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Plan" en la lista de planes
+entity.saas_plan.add_form:
+  route_name: entity.saas_plan.add_form
+  title: 'Añadir Plan SaaS'
+  appears_on:
+    - entity.saas_plan.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - TENANTS
+# ---------------------------------------------------------------------------
+
+# Botón "Crear Tenant" en la lista de tenants
+entity.tenant.add_form:
+  route_name: entity.tenant.add_form
+  title: 'Crear Nuevo Tenant'
+  appears_on:
+    - entity.tenant.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - FEATURES
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Feature" en la lista de features
+entity.feature.add_form:
+  route_name: entity.feature.add_form
+  title: 'Añadir Feature'
+  appears_on:
+    - entity.feature.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - AI AGENTS
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Agente IA" en la lista de agentes
+entity.ai_agent.add_form:
+  route_name: entity.ai_agent.add_form
+  title: 'Añadir Agente IA'
+  appears_on:
+    - entity.ai_agent.collection

@@ -1,0 +1,32 @@
+# Schema for AIAgent config entity
+ecosistema_jaraba_core.ai_agent.*:
+  type: config_entity
+  label: 'AI Agent configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description'
+    service_id:
+      type: string
+      label: 'Service ID'
+    icon:
+      type: string
+      label: 'Icon'
+    color:
+      type: string
+      label: 'Color'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

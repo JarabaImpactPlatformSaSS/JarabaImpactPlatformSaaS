@@ -1,0 +1,7 @@
+id: ecwid_integration
+label: 'Integración Ecwid'
+description: 'Conexión con tienda Ecwid para gestión de productos y pedidos.'
+category: integraciones
+icon: shopping-cart
+weight: 2
+status: true

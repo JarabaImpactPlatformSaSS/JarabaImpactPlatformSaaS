@@ -1,0 +1,7 @@
+ai_provider_google_vertex.settings_form:
+  path: '/admin/config/ai/providers/google_vertex'
+  defaults:
+    _form: '\Drupal\ai_provider_google_vertex\Form\VertexConfigForm'
+    _title: 'Setup Google Vertex'
+  requirements:
+    _permission: 'administer ai providers'

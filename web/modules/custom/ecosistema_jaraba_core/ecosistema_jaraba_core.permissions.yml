@@ -1,0 +1,107 @@
+# Permisos para el módulo Ecosistema Jaraba Core
+
+# ===========================================
+# ADMINISTRACIÓN DE VERTICALES
+# ===========================================
+
+administer verticals:
+  title: 'Administrar Verticales'
+  description: 'Crear, editar y eliminar verticales de negocio (AgroConecta, FormaTech, etc.)'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACIÓN DE PLANES SAAS
+# ===========================================
+
+administer saas plans:
+  title: 'Administrar Planes SaaS'
+  description: 'Crear, editar y eliminar planes de suscripción con precios y límites'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACIÓN DE FEATURES
+# ===========================================
+
+administer features:
+  title: 'Administrar Features'
+  description: 'Crear, editar y eliminar features disponibles para verticales'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACIÓN DE AI AGENTS
+# ===========================================
+
+administer ai agents:
+  title: 'Administrar Agentes IA'
+  description: 'Crear, editar y eliminar agentes de inteligencia artificial'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACIÓN DE TENANTS
+# ===========================================
+
+administer tenants:
+  title: 'Administrar Tenants'
+  description: 'Administración completa de todos los tenants de la plataforma'
+  restrict access: TRUE
+
+view any tenant:
+  title: 'Ver cualquier Tenant'
+  description: 'Ver información de cualquier tenant en la plataforma'
+
+edit own tenant:
+  title: 'Editar propio Tenant'
+  description: 'Editar la información del tenant al que pertenece el usuario'
+
+# ===========================================
+# GESTIÓN DE PRODUCTORES
+# ===========================================
+
+manage tenant producers:
+  title: 'Gestionar productores del Tenant'
+  description: 'Añadir, editar y eliminar productores dentro del propio tenant'
+
+view tenant producers:
+  title: 'Ver productores del Tenant'
+  description: 'Ver la lista de productores del propio tenant'
+
+# ===========================================
+# FUNCIONALIDADES SAAS
+# ===========================================
+
+use ai features:
+  title: 'Usar funcionalidades de IA'
+  description: 'Acceso a agentes de IA (storytelling, marketing, etc.)'
+
+use traceability features:
+  title: 'Usar funcionalidades de trazabilidad'
+  description: 'Crear y consultar lotes con trazabilidad'
+
+use digital signature:
+  title: 'Usar firma digital'
+  description: 'Firmar documentos y certificados digitalmente'
+
+# ===========================================
+# API Y WEBHOOKS
+# ===========================================
+
+access rest api:
+  title: 'Acceder a API REST'
+  description: 'Realizar llamadas a la API REST del módulo'
+
+manage webhooks:
+  title: 'Gestionar Webhooks'
+  description: 'Configurar y gestionar webhooks para integraciones externas'
+
+# ===========================================
+# REPORTING
+# ===========================================
+
+view tenant analytics:
+  title: 'Ver analíticas del Tenant'
+  description: 'Acceso a dashboards y reportes del tenant'
+
+view platform analytics:
+  title: 'Ver analíticas de plataforma'
+  description: 'Acceso a métricas globales de la plataforma SaaS'
+  restrict access: TRUE

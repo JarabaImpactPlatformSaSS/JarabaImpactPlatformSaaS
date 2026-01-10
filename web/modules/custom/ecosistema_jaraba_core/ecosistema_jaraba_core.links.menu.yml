@@ -1,0 +1,66 @@
+# ============================================================================
+# ENLACES DE MENÚ - ECOSISTEMA JARABA CORE
+# ============================================================================
+# Este archivo define los enlaces que aparecen en los menús de administración
+# de Drupal para las entidades y funcionalidades del módulo.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - VERTICALES
+# ---------------------------------------------------------------------------
+
+# Enlace principal en /admin/structure
+entity.vertical.collection:
+  title: 'Verticales de Negocio'
+  description: 'Gestiona las verticales de negocio de la plataforma (AgroConecta, FormaTech, etc.)'
+  route_name: entity.vertical.collection
+  parent: system.admin_structure
+  weight: -10
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - PLANES SAAS
+# ---------------------------------------------------------------------------
+
+# Enlace principal para gestión de planes
+entity.saas_plan.collection:
+  title: 'Planes SaaS'
+  description: 'Gestiona los planes de suscripción y sus características'
+  route_name: entity.saas_plan.collection
+  parent: system.admin_structure
+  weight: -9
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - TENANTS
+# ---------------------------------------------------------------------------
+
+# Enlace principal para gestión de tenants
+entity.tenant.collection:
+  title: 'Tenants'
+  description: 'Gestiona las organizaciones suscritas a la plataforma'
+  route_name: entity.tenant.collection
+  parent: system.admin_structure
+  weight: -8
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - FEATURES
+# ---------------------------------------------------------------------------
+
+# Enlace principal para gestión de features
+entity.feature.collection:
+  title: 'Features'
+  description: 'Gestiona las funcionalidades disponibles para cada vertical'
+  route_name: entity.feature.collection
+  parent: system.admin_structure
+  weight: -7
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - AI AGENTS
+# ---------------------------------------------------------------------------
+
+# Enlace principal para gestión de agentes IA
+entity.ai_agent.collection:
+  title: 'Agentes IA'
+  description: 'Gestiona los agentes de inteligencia artificial disponibles'
+  route_name: entity.ai_agent.collection
+  parent: system.admin_structure
+  weight: -6

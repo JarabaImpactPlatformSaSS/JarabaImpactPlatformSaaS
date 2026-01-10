@@ -1,0 +1,7 @@
+id: blockchain
+label: 'Blockchain/Timestamping'
+description: 'Anclaje de datos en blockchain para certificación inmutable.'
+category: seguridad
+icon: link
+weight: 4
+status: true

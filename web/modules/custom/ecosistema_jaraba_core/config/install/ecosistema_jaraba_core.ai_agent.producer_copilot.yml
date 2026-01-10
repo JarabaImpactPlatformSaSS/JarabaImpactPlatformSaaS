@@ -1,0 +1,8 @@
+id: producer_copilot
+label: 'Producer Copilot'
+description: 'Asistente conversacional para productores con acceso a datos de Ecwid y trazabilidad.'
+service_id: ecosistema_jaraba_core.producer_copilot
+icon: comments
+color: '#1a73e8'
+weight: 0
+status: true

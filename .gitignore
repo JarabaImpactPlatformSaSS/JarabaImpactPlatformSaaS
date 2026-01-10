@@ -1,0 +1,72 @@
+# =============================================================================
+# DRUPAL + JARABA SAAS .GITIGNORE
+# =============================================================================
+
+# ----- DRUPAL CORE IGNORES -----
+# Ignore configuration files that may contain sensitive information.
+web/sites/*/settings.local.php
+web/sites/*/services.yml
+
+# Ignore paths that contain user-generated content.
+web/sites/*/files
+web/sites/*/private
+
+# Ignore SimpleTest multi-site environment.
+web/sites/simpletest
+
+# Ignore PHP dependency manager
+vendor
+composer.lock
+
+# ----- DRUPAL INSTALATION -----
+# Uncomment if you want to track core
+# web/core
+
+# ----- NODE / NPM -----
+node_modules
+npm-debug.log
+yarn-error.log
+
+# ----- LANDO (LOCAL DEV ONLY) -----
+.lando.local.yml
+
+# ----- IDE / EDITOR -----
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
+
+# ----- OS FILES -----
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ----- ENVIRONMENT -----
+.env
+.env.local
+.env.*.local
+
+# ----- BUILD / CACHE -----
+.cache
+.sass-cache
+*.css.map
+
+# ----- TESTING -----
+web/sites/simpletest
+phpunit.xml
+
+# ----- BACKUPS -----
+*.sql
+*.sql.gz
+*.tar.gz
+backups/
+
+# ----- LOGS -----
+*.log
+logs/
+
+# ----- SASS NODE MODULES (installed by npx sass) -----
+web/modules/custom/ecosistema_jaraba_core/node_modules

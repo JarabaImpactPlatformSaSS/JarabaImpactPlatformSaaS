@@ -1,0 +1,8 @@
+id: customer_experience_agent
+label: 'Customer Experience Agent'
+description: 'Gestión de experiencia del cliente: recordatorios, upselling, recuperación de carritos.'
+service_id: ecosistema_jaraba_core.customer_experience_agent
+icon: heart
+color: '#ff5722'
+weight: 3
+status: true

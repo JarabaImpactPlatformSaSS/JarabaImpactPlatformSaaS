@@ -1,0 +1,104 @@
+// =============================================================================
+// VARIABLES CSS INYECTABLES - PERSONALIZACIÓN EN TIEMPO DE EJECUCIÓN
+// =============================================================================
+// Este archivo genera las CSS Custom Properties (variables) que pueden ser
+// modificadas en tiempo de ejecución desde la configuración de la vertical
+// o tenant en Drupal.
+//
+// El tema de Drupal inyecta los valores personalizados en el <head> de la
+// página mediante hook_page_attachments o un bloque de configuración.
+//
+// Ejemplo de inyección desde PHP:
+// $variables['#attached']['html_head'][] = [
+//   ['#type' => 'html_tag', '#tag' => 'style', '#value' => ':root { --ej-color-primary: #FF8C42; }'],
+//   'ecosistema_jaraba_custom_vars',
+// ];
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// DEFINICIÓN DE VARIABLES INYECTABLES EN :root
+// ---------------------------------------------------------------------------
+
+:root {
+    // Colores principales (inyectables por vertical/tenant)
+    // Estos valores son los fallbacks; los reales se inyectan desde Drupal
+    --ej-color-primary: #{$ej-color-primary-fallback};
+    --ej-color-secondary: #{$ej-color-secondary-fallback};
+    --ej-color-accent: #{$ej-color-accent-fallback};
+
+    // Colores derivados calculados (CSS Calculations)
+    // Hover: ligeramente más oscuro
+    --ej-color-primary-hover: color-mix(in srgb, var(--ej-color-primary) 85%, black);
+    --ej-color-secondary-hover: color-mix(in srgb, var(--ej-color-secondary) 85%, black);
+
+    // Light: versión clara para fondos
+    --ej-color-primary-light: color-mix(in srgb, var(--ej-color-primary) 15%, white);
+    --ej-color-secondary-light: color-mix(in srgb, var(--ej-color-secondary) 15%, white);
+
+    // Colores semánticos (fijos, no inyectables)
+    --ej-color-success: #{$ej-color-success};
+    --ej-color-warning: #{$ej-color-warning};
+    --ej-color-error: #{$ej-color-error};
+    --ej-color-info: #{$ej-color-info};
+
+    // Tipografía inyectable
+    --ej-font-family: #{$ej-font-family-fallback};
+
+    // Grises
+    --ej-gray-50: #{$ej-gray-50};
+    --ej-gray-100: #{$ej-gray-100};
+    --ej-gray-200: #{$ej-gray-200};
+    --ej-gray-300: #{$ej-gray-300};
+    --ej-gray-400: #{$ej-gray-400};
+    --ej-gray-500: #{$ej-gray-500};
+    --ej-gray-600: #{$ej-gray-600};
+    --ej-gray-700: #{$ej-gray-700};
+    --ej-gray-800: #{$ej-gray-800};
+    --ej-gray-900: #{$ej-gray-900};
+
+    // Texto
+    --ej-text-primary: #{$ej-gray-900};
+    --ej-text-secondary: #{$ej-gray-600};
+    --ej-text-muted: #{$ej-gray-500};
+    --ej-text-light: #{$ej-gray-400};
+
+    // Fondos
+    --ej-bg-page: linear-gradient(135deg, #{$ej-gray-50} 0%, #{$ej-gray-200} 100%);
+    --ej-bg-card: #ffffff;
+    --ej-bg-input: #ffffff;
+
+    // Bordes
+    --ej-border-color: #{$ej-gray-300};
+    --ej-border-color-light: #{$ej-gray-200};
+
+    // Sombras como variables para posible personalización
+    --ej-shadow-sm: #{$ej-shadow-sm};
+    --ej-shadow-md: #{$ej-shadow-md};
+    --ej-shadow-lg: #{$ej-shadow-lg};
+
+    // Radio de bordes
+    --ej-border-radius: #{$ej-border-radius-md};
+    --ej-border-radius-sm: #{$ej-border-radius-sm};
+    --ej-border-radius-lg: #{$ej-border-radius-lg};
+
+    // Transiciones
+    --ej-transition: all #{$ej-transition-duration-normal} #{$ej-transition-easing};
+    --ej-transition-fast: all #{$ej-transition-duration-fast} #{$ej-transition-easing};
+}
+
+// ---------------------------------------------------------------------------
+// SOPORTE PARA MODO OSCURO (futuro)
+// ---------------------------------------------------------------------------
+// Cuando se implemente dark mode, estas variables se sobrescribirán
+
+@media (prefers-color-scheme: dark) {
+    // :root {
+    //   --ej-text-primary: #{$ej-gray-100};
+    //   --ej-text-secondary: #{$ej-gray-400};
+    //   --ej-bg-page: linear-gradient(135deg, #{$ej-gray-900} 0%, #{$ej-gray-800} 100%);
+    //   --ej-bg-card: #{$ej-gray-800};
+    //   --ej-border-color: #{$ej-gray-700};
+    // }
+}
