@@ -28,20 +28,6 @@ class LlmsTxtController extends ControllerBase
 {
 
     /**
-     * Gestor de tipos de entidad para consultar productos y contenido.
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
-
-    /**
-     * Fábrica de configuración para obtener ajustes del sitio.
-     *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface
-     */
-    protected ConfigFactoryInterface $configFactory;
-
-    /**
      * Formateador de fechas para timestamps.
      *
      * @var \Drupal\Core\Datetime\DateFormatterInterface
