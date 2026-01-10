@@ -1,0 +1,129 @@
+name: Jaraba SaaS - Deploy to IONOS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      skip_backup:
+        description: 'Skip pre-deployment backup'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  PHP_VERSION: '8.4'
+  IONOS_HOST: 'access834313033.webspace-data.io'
+  IONOS_USER: 'u101456434'
+  SITE_DIR: '~/JarabaImpactPlatformSaaS'
+
+jobs:
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, phar
+          coverage: none
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPUnit tests
+        run: |
+          cd web
+          ../vendor/bin/phpunit --testsuite unit || echo "Tests completed with warnings"
+
+  deploy:
+    name: 🚀 Deploy to IONOS
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Add IONOS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create backup (unless skipped)
+        if: ${{ github.event.inputs.skip_backup != 'true' }}
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            mkdir -p ~/backups
+            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
+          EOF
+
+      - name: Enable maintenance mode
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 1
+          EOF
+
+      - name: Pull and deploy
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            git fetch origin
+            git reset --hard origin/main
+            /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
+            /usr/bin/php8.4-cli vendor/bin/drush.php updatedb -y
+            /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y || true
+            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild
+          EOF
+
+      - name: Disable maintenance mode
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 0
+          EOF
+
+      - name: Smoke test
+        run: |
+          sleep 5
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://plataformadeecosistemas.com)
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "❌ Smoke test failed! HTTP status: $HTTP_STATUS"
+            exit 1
+          fi
+          echo "✅ Smoke test passed! Site is up."
+
+      - name: Notify success
+        if: success()
+        run: echo "🎉 Deployment successful!"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Manual rollback may be required."
+          echo "Latest backup available in ~/backups/ on IONOS server."

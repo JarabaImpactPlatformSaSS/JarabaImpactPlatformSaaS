@@ -277,8 +277,13 @@ Si prefieres que configure algo directamente, podrías:
 - [ ] Push inicial del código
 - [ ] Configurar SSH key en IONOS para pull de Git
 - [ ] Crear base de datos `drupal_production` en IONOS
-- [ ] Clonar repo en IONOS
-- [ ] Crear `settings.local.php` de producción
+- [x] Clonar repo en IONOS
+- [x] Crear `settings.local.php` de producción
+- [x] Instalar entidades custom (vertical, tenant, saas_plan, feature, ai_agent):
+```bash
+/usr/bin/php8.4-cli vendor/bin/drush.php php:script install_entities.php
+```
 - [ ] Configurar Nginx/Apache vhost
+- [x] Clean URLs con RewriteBase /
 - [ ] SSL con Let's Encrypt
-- [ ] Primer deploy
+- [x] Primer deploy completado
