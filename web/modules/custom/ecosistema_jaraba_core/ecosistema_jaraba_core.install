@@ -360,3 +360,81 @@ function ecosistema_jaraba_core_update_9005() {
 
   return t('Campos de Vertical migrados a entity_reference (Feature/AIAgent).');
 }
+
+/**
+ * Implements hook_schema().
+ *
+ * Define la tabla para almacenar el histórico de health checks.
+ */
+function ecosistema_jaraba_core_schema() {
+  $schema['health_check_log'] = [
+    'description' => 'Almacena el histórico de health checks de la plataforma.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único del registro.',
+      ],
+      'timestamp' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp Unix del check.',
+      ],
+      'service' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Nombre del servicio (database, qdrant, cache, site).',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Estado del servicio (healthy, warning, critical).',
+      ],
+      'latency' => [
+        'type' => 'float',
+        'not null' => FALSE,
+        'description' => 'Latencia en milisegundos.',
+      ],
+      'message' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'Mensaje descriptivo del check.',
+      ],
+      'overall_health' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Porcentaje de salud general al momento del check.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'timestamp' => ['timestamp'],
+      'service' => ['service'],
+      'status' => ['status'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Crea la tabla health_check_log para histórico de health checks.
+ */
+function ecosistema_jaraba_core_update_9006() {
+  $schema = ecosistema_jaraba_core_schema();
+  $database = \Drupal::database();
+
+  if (!$database->schema()->tableExists('health_check_log')) {
+    $database->schema()->createTable('health_check_log', $schema['health_check_log']);
+    \Drupal::logger('ecosistema_jaraba_core')->notice('Tabla health_check_log creada.');
+    return t('Tabla health_check_log creada para histórico de health checks.');
+  }
+
+  return t('Tabla health_check_log ya existe.');
+}

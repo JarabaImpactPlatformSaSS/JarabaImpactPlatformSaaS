@@ -88,6 +88,9 @@ class HealthDashboardController extends ControllerBase
         $metrics['services_total'] = $total_count;
         $metrics['uptime'] = $this->getUptime();
 
+        // Log health checks to database and check for alerts
+        $this->logAndAlertHealthChecks($services, $metrics['overall_health']);
+
         // Get recent health checks from logs
         $recent_checks = $this->getRecentHealthChecks();
 
@@ -97,6 +100,200 @@ class HealthDashboardController extends ControllerBase
             'recent_checks' => $recent_checks,
             'timestamp' => time(),
         ];
+    }
+
+    /**
+     * Log health checks and send alerts if status changed to critical.
+     */
+    protected function logAndAlertHealthChecks(array $services, int $overall_health): void
+    {
+        $state = \Drupal::state();
+        $previous_states = $state->get('jaraba_health_previous_states', []);
+        $alerts_to_send = [];
+
+        foreach ($services as $key => $service) {
+            // Log the check
+            $this->logHealthCheck(
+                $key,
+                $service['status'],
+                $service['latency'] ?? null,
+                $service['message'] ?? null,
+                $overall_health
+            );
+
+            // Check for status change to critical (for alerts)
+            $previous_status = $previous_states[$key] ?? 'healthy';
+            if ($service['status'] === 'critical' && $previous_status !== 'critical') {
+                $alerts_to_send[] = [
+                    'service' => $service['name'],
+                    'status' => $service['status'],
+                    'message' => $service['message'],
+                ];
+            }
+
+            // Update previous state
+            $previous_states[$key] = $service['status'];
+        }
+
+        // Save previous states
+        $state->set('jaraba_health_previous_states', $previous_states);
+
+        // Send alerts if any
+        if (!empty($alerts_to_send)) {
+            $this->sendHealthAlerts($alerts_to_send);
+        }
+    }
+
+    /**
+     * Send email alerts for critical service failures.
+     */
+    protected function sendHealthAlerts(array $alerts): void
+    {
+        // Rate limiting - don't send more than 1 alert per 5 minutes
+        $state = \Drupal::state();
+        $last_alert = $state->get('jaraba_health_last_alert', 0);
+
+        if (time() - $last_alert < 300) {
+            // Rate limited, skip
+            return;
+        }
+
+        // Get site email
+        $site_mail = \Drupal::config('system.site')->get('mail');
+        if (empty($site_mail)) {
+            return;
+        }
+
+        // Build alert message
+        $alert_messages = [];
+        foreach ($alerts as $alert) {
+            $alert_messages[] = sprintf(
+                "- %s: %s (%s)",
+                $alert['service'],
+                $alert['status'],
+                $alert['message']
+            );
+        }
+
+        $body = $this->t("Health Alert - Critical services detected:\n\n@alerts\n\nTimestamp: @time\n\nVisit /admin/health for details.", [
+            '@alerts' => implode("\n", $alert_messages),
+            '@time' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Send email using Drupal mail system
+        try {
+            $mailManager = \Drupal::service('plugin.manager.mail');
+            $langcode = \Drupal::currentUser()->getPreferredLangcode();
+
+            $params = [
+                'subject' => $this->t('[ALERT] Jaraba Platform Health Issue'),
+                'body' => $body,
+            ];
+
+            $mailManager->mail(
+                'ecosistema_jaraba_core',
+                'health_alert',
+                $site_mail,
+                $langcode,
+                $params,
+                NULL,
+                TRUE
+            );
+
+            // Update last alert time
+            $state->set('jaraba_health_last_alert', time());
+
+            \Drupal::logger('ecosistema_jaraba_core')->warning('Health alert sent: @services', [
+                '@services' => implode(', ', array_column($alerts, 'service')),
+            ]);
+
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->error('Failed to send health alert: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Logs a single health check to the database.
+     */
+    protected function logHealthCheck(string $service_key, string $status, ?float $latency, ?string $message, int $overall_health): void
+    {
+        try {
+            $database = \Drupal::database();
+
+            // Ensure the table exists. If not, create it.
+            if (!$database->schema()->tableExists('health_check_log')) {
+                $schema = [
+                    'description' => 'Stores health check results for monitoring.',
+                    'fields' => [
+                        'id' => [
+                            'type' => 'serial',
+                            'not null' => TRUE,
+                            'unsigned' => TRUE,
+                            'description' => 'Primary Key: Unique log ID.',
+                        ],
+                        'timestamp' => [
+                            'type' => 'int',
+                            'not null' => TRUE,
+                            'unsigned' => TRUE,
+                            'description' => 'Timestamp of the check.',
+                        ],
+                        'service' => [
+                            'type' => 'varchar',
+                            'length' => 64,
+                            'not null' => TRUE,
+                            'description' => 'Name of the service checked.',
+                        ],
+                        'status' => [
+                            'type' => 'varchar',
+                            'length' => 16,
+                            'not null' => TRUE,
+                            'description' => 'Status (healthy, warning, critical).',
+                        ],
+                        'latency' => [
+                            'type' => 'float',
+                            'not null' => FALSE,
+                            'description' => 'Latency in milliseconds.',
+                        ],
+                        'message' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                            'not null' => FALSE,
+                            'description' => 'Detailed message.',
+                        ],
+                        'overall_health' => [
+                            'type' => 'int',
+                            'not null' => TRUE,
+                            'unsigned' => TRUE,
+                            'description' => 'Overall health percentage at the time of check.',
+                        ],
+                    ],
+                    'primary key' => ['id'],
+                    'indexes' => [
+                        'timestamp' => ['timestamp'],
+                        'service_status' => ['service', 'status'],
+                    ],
+                ];
+                $database->schema()->createTable('health_check_log', $schema);
+            }
+
+            $database->insert('health_check_log')
+                ->fields([
+                    'timestamp' => time(),
+                    'service' => $service_key,
+                    'status' => $status,
+                    'latency' => $latency,
+                    'message' => $message,
+                    'overall_health' => $overall_health,
+                ])
+                ->execute();
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->error('Failed to log health check for @service: @error', [
+                '@service' => $service_key,
+                '@error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -269,32 +466,75 @@ class HealthDashboardController extends ControllerBase
     }
 
     /**
-     * Get recent health check results.
+     * Get recent health check results from database.
      */
     protected function getRecentHealthChecks(): array
     {
-        // In a real implementation, this would read from a log file or database
-        // For now, return simulated recent checks
+        $checks = [];
+
+        try {
+            $database = \Drupal::database();
+
+            // Check if table exists
+            if (!$database->schema()->tableExists('health_check_log')) {
+                // Return fallback data if table doesn't exist yet
+                return $this->getFallbackHealthChecks();
+            }
+
+            $results = $database->select('health_check_log', 'h')
+                ->fields('h', ['timestamp', 'service', 'status', 'message'])
+                ->orderBy('timestamp', 'DESC')
+                ->range(0, 10)
+                ->execute()
+                ->fetchAll();
+
+            foreach ($results as $row) {
+                $result = 'pass';
+                if ($row->status === 'critical') {
+                    $result = 'fail';
+                } elseif ($row->status === 'warning') {
+                    $result = 'recovery';
+                }
+
+                $checks[] = [
+                    'time' => date('H:i:s', $row->timestamp),
+                    'type' => $this->t('Health Check'),
+                    'result' => $result,
+                    'message' => $row->message ?? $this->t('@service: @status', [
+                        '@service' => $row->service,
+                        '@status' => $row->status,
+                    ]),
+                ];
+            }
+
+            // If no records, return fallback
+            if (empty($checks)) {
+                return $this->getFallbackHealthChecks();
+            }
+
+        } catch (\Exception $e) {
+            // Fallback to simulated data on error
+            return $this->getFallbackHealthChecks();
+        }
+
+        return $checks;
+    }
+
+    /**
+     * Fallback health checks when DB table not available.
+     */
+    protected function getFallbackHealthChecks(): array
+    {
         return [
             [
-                'time' => date('H:i:s', strtotime('-5 minutes')),
-                'type' => $this->t('Automated Check'),
+                'time' => date('H:i:s'),
+                'type' => $this->t('System Start'),
                 'result' => 'pass',
-                'message' => $this->t('All services healthy'),
-            ],
-            [
-                'time' => date('H:i:s', strtotime('-10 minutes')),
-                'type' => $this->t('Automated Check'),
-                'result' => 'pass',
-                'message' => $this->t('All services healthy'),
-            ],
-            [
-                'time' => date('H:i:s', strtotime('-15 minutes')),
-                'type' => $this->t('Self-Healing'),
-                'result' => 'recovery',
-                'message' => $this->t('Cache rebuilt successfully'),
+                'message' => $this->t('Health monitoring initialized'),
             ],
         ];
     }
 
 }
+
+
