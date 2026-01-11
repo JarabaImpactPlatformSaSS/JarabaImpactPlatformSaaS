@@ -25,12 +25,12 @@
       <p class="finops-header__subtitle">{% trans %}Cost optimization and resource usage{% endtrans %}</p>
     </div>
     <div class="finops-header__actions">
-      <a href="/admin/config/finops" class="btn btn-secondary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"FinOps Settings"}' title="{% trans %}Configure pricing{% endtrans %}">
-        <span class="btn__icon">⚙️</span> {% trans %}Settings{% endtrans %}
-      </a>
       <button class="btn btn-primary" id="refresh-finops" title="{% trans %}Refresh data{% endtrans %}">
         <span class="btn__icon">🔄</span> {% trans %}Refresh{% endtrans %}
       </button>
+      <a href="/admin/config/finops" class="finops-header__settings use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"FinOps Settings"}' title="{% trans %}Configure pricing{% endtrans %}">
+        ⚙️
+      </a>
       <span class="finops-header__updated">
         {% trans %}Last updated{% endtrans %}: <strong id="last-updated">{{ last_updated }}</strong>
       </span>

@@ -90,6 +90,29 @@ $finops-gold: #fbbf24;
     color: $finops-text-muted;
 }
 
+// Icono de settings sutil
+.finops-header__settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-lg;
+    color: $finops-text-muted;
+    text-decoration: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+    background: transparent;
+    border: $ej-border-width solid transparent;
+
+    &:hover {
+        color: $finops-text;
+        background: rgba(255, 255, 255, 0.1);
+        border-color: $finops-border;
+        transform: rotate(90deg);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // ALERTS
 // ---------------------------------------------------------------------------
