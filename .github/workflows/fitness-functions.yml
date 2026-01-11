@@ -1,0 +1,296 @@
+# ==============================================
+# ARCHITECTURE FITNESS FUNCTIONS
+# ==============================================
+# Este workflow valida que la arquitectura cumple
+# sus objetivos técnicos en cada cambio.
+#
+# ESTRATEGIA DE PROTECCIÓN:
+# - PRs: Checks completos y BLOQUEANTES
+# - Push directo: Checks como WARNING (no bloquea)
+# - Producción: Solo recibe código que pasó PR
+#
+# Referencia: docs/planificacion/2026-01-11_1503_roadmap-nivel5-arquitectura.md
+# ==============================================
+
+name: 🎯 Architecture Fitness
+
+on:
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Ejecutar cada lunes a las 8:00 UTC (audit semanal)
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+env:
+  PHP_VERSION: '8.4'
+
+jobs:
+  # ===========================================
+  # JOB 1: PHPSTAN OBLIGATORIO (Level 5)
+  # ===========================================
+  phpstan:
+    name: 🔬 PHPStan Level 5
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, bcmath, gd
+          tools: composer:v2, phpstan
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist --no-progress
+
+      - name: PHPStan Analysis
+        id: phpstan
+        run: |
+          echo "## 🔬 PHPStan Level 5 Results" >> $GITHUB_STEP_SUMMARY
+          phpstan analyse web/modules/custom --level=5 --error-format=github 2>&1 | tee phpstan-output.txt
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ **PHPStan passed** - No errors found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **PHPStan failed** - See errors above" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # ===========================================
+  # JOB 2: DEPENDENCY FRESHNESS
+  # ===========================================
+  dependency-freshness:
+    name: 📦 Dependency Freshness
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: Check outdated dependencies
+        id: outdated
+        run: |
+          echo "## 📦 Dependency Freshness Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Instalar dependencias
+          composer install --no-dev --prefer-dist --no-progress
+          
+          # Verificar outdated (solo major y minor)
+          OUTDATED=$(composer outdated --direct --format=json 2>/dev/null || echo '{"installed":[]}')
+          COUNT=$(echo "$OUTDATED" | jq '.installed | length')
+          
+          if [ "$COUNT" -gt 10 ]; then
+            echo "⚠️ **Warning:** $COUNT dependencies are outdated" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Run \`composer update\` to update dependencies." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Dependencies are reasonably up to date** ($COUNT outdated)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Lista de outdated
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>Outdated packages</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          composer outdated --direct 2>/dev/null | head -20 >> $GITHUB_STEP_SUMMARY || echo "None" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+        continue-on-error: true
+
+  # ===========================================
+  # JOB 3: MODULE STRUCTURE VALIDATION
+  # ===========================================
+  module-structure:
+    name: 📂 Module Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Validate module structure
+        run: |
+          echo "## 📂 Module Structure Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          MODULES_DIR="web/modules/custom"
+          ERRORS=0
+          WARNINGS=0
+          
+          for module in $(find $MODULES_DIR -maxdepth 1 -mindepth 1 -type d); do
+            MODULE_NAME=$(basename $module)
+            echo "### $MODULE_NAME" >> $GITHUB_STEP_SUMMARY
+            
+            # Check required: *.info.yml
+            if ls $module/*.info.yml 1> /dev/null 2>&1; then
+              echo "- ✅ \`.info.yml\` exists" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- ❌ \`.info.yml\` **MISSING** (required)" >> $GITHUB_STEP_SUMMARY
+              ERRORS=$((ERRORS + 1))
+            fi
+            
+            # Check recommended: README.md
+            if [ -f "$module/README.md" ]; then
+              echo "- ✅ \`README.md\` exists" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- ⚠️ \`README.md\` missing (recommended)" >> $GITHUB_STEP_SUMMARY
+              WARNINGS=$((WARNINGS + 1))
+            fi
+            
+            # Check if has services
+            if ls $module/src/Service/*.php 1> /dev/null 2>&1; then
+              if ls $module/*.services.yml 1> /dev/null 2>&1; then
+                echo "- ✅ \`.services.yml\` exists" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "- ⚠️ Has Service classes but no \`.services.yml\`" >> $GITHUB_STEP_SUMMARY
+                WARNINGS=$((WARNINGS + 1))
+              fi
+            fi
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "**Summary:** $ERRORS errors, $WARNINGS warnings" >> $GITHUB_STEP_SUMMARY
+          
+          if [ $ERRORS -gt 0 ]; then
+            echo "❌ Module structure validation failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # ===========================================
+  # JOB 4: ARCHITECTURE PATTERNS
+  # ===========================================
+  architecture-patterns:
+    name: 🏗️ Architecture Patterns
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Check forbidden patterns
+        run: |
+          echo "## 🏗️ Architecture Pattern Checks" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          ERRORS=0
+          MODULES_DIR="web/modules/custom"
+          
+          # Pattern 1: No direct superglobals
+          echo "### Superglobals Check" >> $GITHUB_STEP_SUMMARY
+          SUPERGLOBALS=$(grep -r '\$_GET\|\$_POST\|\$_REQUEST\|\$_SESSION' $MODULES_DIR --include="*.php" 2>/dev/null || true)
+          if [ -z "$SUPERGLOBALS" ]; then
+            echo "✅ No direct superglobal usage found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Found direct superglobal usage (use Request object instead):" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "$SUPERGLOBALS" | head -10 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Pattern 2: No die() or exit()
+          echo "### Die/Exit Check" >> $GITHUB_STEP_SUMMARY
+          DIEEXIT=$(grep -r '\bdie(\|\bexit(' $MODULES_DIR --include="*.php" 2>/dev/null || true)
+          if [ -z "$DIEEXIT" ]; then
+            echo "✅ No die() or exit() calls found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Found die() or exit() calls (use exceptions instead):" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "$DIEEXIT" | head -10 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            ERRORS=$((ERRORS + 1))
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Pattern 3: No hardcoded credentials
+          echo "### Hardcoded Credentials Check" >> $GITHUB_STEP_SUMMARY
+          CREDS=$(grep -rE "(password|api_key|secret)\s*=\s*['\"][^'\"]+['\"]" $MODULES_DIR --include="*.php" 2>/dev/null | grep -v "// " || true)
+          if [ -z "$CREDS" ]; then
+            echo "✅ No hardcoded credentials found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Potential hardcoded credentials found:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "$CREDS" | head -5 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            ERRORS=$((ERRORS + 1))
+          fi
+          
+          if [ $ERRORS -gt 0 ]; then
+            exit 1
+          fi
+
+  # ===========================================
+  # JOB 5: FITNESS REPORT
+  # ===========================================
+  fitness-report:
+    name: 📊 Fitness Report
+    runs-on: ubuntu-latest
+    needs: [phpstan, dependency-freshness, module-structure, architecture-patterns]
+    if: always()
+    
+    steps:
+      - name: Generate fitness report
+        run: |
+          echo "# 🎯 Architecture Fitness Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPStan Level 5 | ${{ needs.phpstan.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Freshness | ${{ needs.dependency-freshness.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Module Structure | ${{ needs.module-structure.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Architecture Patterns | ${{ needs.architecture-patterns.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Overall status
+          if [ "${{ needs.phpstan.result }}" == "success" ] && \
+             [ "${{ needs.module-structure.result }}" == "success" ] && \
+             [ "${{ needs.architecture-patterns.result }}" == "success" ]; then
+            echo "## ✅ Overall: PASSED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Overall: FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Some fitness functions did not pass. Please review the details above." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Notify Slack on failure
+        if: failure() && github.ref == 'refs/heads/main'
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "⚠️ *Architecture Fitness Check Failed*\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true

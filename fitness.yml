@@ -1,0 +1,109 @@
+# Fitness Functions - Architecture Quality Gates
+
+version: "1.0"
+
+# ==============================================
+# THRESHOLDS - Umbrales de calidad
+# ==============================================
+thresholds:
+  # Análisis estático
+  phpstan_level: 5
+  phpcs_standard: "Drupal,DrupalPractice"
+  
+  # Dependencias
+  dependency_max_age_days: 180
+  
+  # Tests
+  test_coverage_min: 60
+  
+  # Assets
+  max_css_kb: 200
+  max_js_kb: 500
+  max_image_kb: 500
+
+# ==============================================
+# MODULES - Validación de módulos custom
+# ==============================================
+modules:
+  # Directorio a escanear
+  path: "web/modules/custom"
+  
+  # Archivos obligatorios en cada módulo
+  required_files:
+    - "*.info.yml"
+  
+  # Archivos recomendados (warning si faltan)
+  recommended_files:
+    - "README.md"
+    - "*.services.yml"
+  
+  # Módulos conocidos que deben existir
+  expected_modules:
+    - ecosistema_jaraba_core
+    - jaraba_commerce
+    - jaraba_rag
+    - jaraba_social_commerce
+
+# ==============================================
+# SECURITY - Validaciones de seguridad
+# ==============================================
+security:
+  # Vulnerabilidades que bloquean el deploy
+  block_on_severity:
+    - CRITICAL
+    - HIGH
+  
+  # Solo warning
+  warn_on_severity:
+    - MEDIUM
+    - LOW
+
+# ==============================================
+# ARCHITECTURE - Reglas arquitectónicas
+# ==============================================
+architecture:
+  # Patrones prohibidos
+  forbidden_patterns:
+    - pattern: "\\$_GET\\["
+      message: "Usar Drupal request object en lugar de $_GET"
+    - pattern: "\\$_POST\\["
+      message: "Usar Drupal request object en lugar de $_POST"
+    - pattern: "die\\(|exit\\("
+      message: "No usar die() o exit() en módulos"
+  
+  # Namespaces requeridos
+  namespace_prefix: "Drupal\\\\jaraba"
+
+# ==============================================
+# BLOCKING vs WARNING
+# ==============================================
+# Las métricas en 'blocking' fallan el CI si no pasan
+# Las métricas en 'warning' solo generan un aviso
+
+blocking:
+  - phpstan
+  - security_critical
+  - module_structure
+
+warning_only:
+  - dependency_freshness
+  - test_coverage
+  - readme_exists
+  - asset_size
+
+# ==============================================
+# NOTIFICATIONS
+# ==============================================
+notifications:
+  # Canales de notificación
+  slack:
+    enabled: true
+    on_failure: true
+    on_success: false
+    channel: "#ci-alerts"
+  
+  github:
+    # Crear issue automático si falla
+    create_issue_on_failure: false
+    # Añadir comentario en PR
+    comment_on_pr: true

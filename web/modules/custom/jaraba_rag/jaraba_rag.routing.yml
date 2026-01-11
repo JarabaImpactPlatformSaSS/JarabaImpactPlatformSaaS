@@ -1,0 +1,41 @@
+# Rutas del módulo Jaraba RAG
+
+jaraba_rag.settings:
+  path: '/admin/config/jaraba/rag'
+  defaults:
+    _form: '\Drupal\jaraba_rag\Form\JarabaRagConfigForm'
+    _title: 'Knowledge Base AI-Nativa'
+  requirements:
+    _permission: 'administer jaraba_rag'
+
+jaraba_rag.dashboard:
+  path: '/admin/reports/jaraba-rag'
+  defaults:
+    _controller: '\Drupal\jaraba_rag\Controller\RagAdminController::dashboard'
+    _title: 'Dashboard KB Analytics'
+  requirements:
+    _permission: 'view jaraba_rag analytics'
+
+jaraba_rag.api.query:
+  path: '/api/jaraba-rag/query'
+  defaults:
+    _controller: '\Drupal\jaraba_rag\Controller\RagApiController::query'
+  methods: [POST]
+  requirements:
+    _permission: 'use jaraba_rag copilot'
+
+jaraba_rag.api.reindex:
+  path: '/api/jaraba-rag/reindex/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_rag\Controller\RagApiController::reindex'
+  methods: [POST]
+  requirements:
+    _permission: 'administer jaraba_rag'
+
+jaraba_rag.tenant_stats:
+  path: '/admin/reports/jaraba-rag/tenant/{tenant_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_rag\Controller\RagAdminController::tenantStats'
+    _title: 'Estadísticas KB del Tenant'
+  requirements:
+    _permission: 'view jaraba_rag analytics'

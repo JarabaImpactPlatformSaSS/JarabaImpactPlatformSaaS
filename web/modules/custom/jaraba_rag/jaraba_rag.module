@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba RAG module.
+ *
+ * Este módulo implementa la Knowledge Base AI-Nativa con RAG Multi-Tenant
+ * para los Copilots de Jaraba Impact Platform.
+ *
+ * @see docs/tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md
+ * @see docs/tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Indexa nuevas entidades en la Knowledge Base.
+ */
+function jaraba_rag_entity_insert(EntityInterface $entity): void {
+  _jaraba_rag_index_entity($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Re-indexa entidades actualizadas en la Knowledge Base.
+ */
+function jaraba_rag_entity_update(EntityInterface $entity): void {
+  _jaraba_rag_index_entity($entity);
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Elimina entidades de la Knowledge Base.
+ */
+function jaraba_rag_entity_delete(EntityInterface $entity): void {
+  if (!_jaraba_rag_is_indexable($entity)) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_rag\Service\KbIndexerService $indexer */
+    $indexer = \Drupal::service('jaraba_rag.indexer');
+    $indexer->deleteEntity($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_rag')->error('Error eliminando de KB: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Helper: Indexa una entidad si es indexable y está publicada.
+ */
+function _jaraba_rag_index_entity(EntityInterface $entity): void {
+  if (!_jaraba_rag_is_indexable($entity)) {
+    return;
+  }
+
+  // Solo indexar entidades publicadas
+  if (method_exists($entity, 'isPublished') && !$entity->isPublished()) {
+    // Eliminar de KB si se despublica
+    try {
+      /** @var \Drupal\jaraba_rag\Service\KbIndexerService $indexer */
+      $indexer = \Drupal::service('jaraba_rag.indexer');
+      $indexer->deleteEntity($entity);
+    }
+    catch (\Exception $e) {
+      // Silenciar errores si no existe
+    }
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_rag\Service\KbIndexerService $indexer */
+    $indexer = \Drupal::service('jaraba_rag.indexer');
+    $indexer->indexEntity($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_rag')->error('Error indexando en KB: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Helper: Determina si una entidad es indexable en la KB.
+ */
+function _jaraba_rag_is_indexable(EntityInterface $entity): bool {
+  $indexable_types = [
+    'commerce_product' => TRUE,
+    'node' => [
+      'article' => TRUE,
+      'faq' => TRUE,
+      'page' => TRUE,
+    ],
+    'taxonomy_term' => TRUE,
+  ];
+
+  $entity_type = $entity->getEntityTypeId();
+
+  if (!isset($indexable_types[$entity_type])) {
+    return FALSE;
+  }
+
+  // Para nodos, verificar bundle específico
+  if ($entity_type === 'node') {
+    $bundle = $entity->bundle();
+    return isset($indexable_types['node'][$bundle]);
+  }
+
+  return TRUE;
+}

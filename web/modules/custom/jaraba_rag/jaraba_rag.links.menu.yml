@@ -1,0 +1,15 @@
+# Links de menú para el módulo Jaraba RAG
+
+jaraba_rag.settings:
+  title: 'Knowledge Base AI-Nativa'
+  description: 'Configuración del sistema RAG: Qdrant, embeddings, grounding y analytics.'
+  route_name: jaraba_rag.settings
+  parent: system.admin_config_services
+  weight: 50
+
+jaraba_rag.dashboard:
+  title: 'KB Analytics'
+  description: 'Dashboard de métricas y analytics de la Knowledge Base.'
+  route_name: jaraba_rag.dashboard
+  parent: system.admin_reports
+  weight: 100

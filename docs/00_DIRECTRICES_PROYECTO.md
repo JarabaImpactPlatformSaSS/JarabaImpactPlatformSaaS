@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-10 22:02  
-**Versión:** 2.0.1 (AI-First Commerce desplegado)
+**Última actualización:** 2026-01-11 14:50  
+**Versión:** 2.1.0 (KB AI-Nativa + RAG Qdrant)
 
 ---
 
@@ -129,6 +129,36 @@ La arquitectura Commerce 3.x proporciona Server-Side Rendering que permite:
 - **Answer Capsules**: Primeros 150 caracteres optimizados para extracción por LLMs
 - **Schema.org completo**: JSON-LD para Product, Offer, FAQ, Organization
 - **Indexación 100%**: Todo el contenido visible para GPTBot, PerplexityBot, ClaudeBot
+
+#### 2.3.2 Knowledge Base AI-Nativa (RAG + Qdrant)
+
+> **Módulo**: `jaraba_rag` | **Estado**: ✅ Operativo (v5.1, 2026-01-11)
+> Ver: [Guía Técnica KB RAG](./tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md)
+
+| Componente | Descripción |
+|------------|-------------|
+| **Qdrant** | Base de datos vectorial para embeddings (1536D, OpenAI) |
+| **Arquitectura Dual** | Lando (`http://qdrant:6333`) + IONOS Cloud (HTTPS) |
+| **Colección** | `jaraba_kb` - Knowledge Base multi-tenant |
+| **Indexación** | Automática via `hook_entity_insert/update/delete` |
+
+**Servicios Core:**
+- `KbIndexerService`: Extrae contenido, chunking, embeddings, upsert
+- `QdrantDirectClient`: Cliente HTTP directo para API Qdrant
+- `TenantContextService`: Filtros multi-tenant para búsquedas
+
+**Fallbacks Robustos (Lección Aprendida v5.1):**
+```php
+// ❌ No funciona si config devuelve ""
+$value = $config->get('key') ?? 'default';
+
+// ✅ Funciona con null Y ""
+$value = $config->get('key') ?: 'default';
+```
+
+**Rutas Admin:**
+- `/admin/config/jaraba/rag` - Configuración general
+- Ver logs: `/admin/reports/dblog?type[]=jaraba_rag`
 
 ### 2.4 Desarrollo Local
 
@@ -935,6 +965,8 @@ El asistente IA debe:
 | 2026-01-10 | 1.5.0 | Añadido flujo de trabajo SCSS |
 | 2026-01-10 | 1.6.0 | Actualización menor |
 | 2026-01-10 | 1.7.0 | Añadidas Config Entities (Feature, AIAgent) para admin zero-code |
+| 2026-01-10 | 2.0.1 | AI-First Commerce desplegado en IONOS |
+| 2026-01-11 | 2.1.0 | **KB AI-Nativa:** Sección 2.3.2 con Qdrant, servicios RAG, lecciones aprendidas |
 
 ---
 

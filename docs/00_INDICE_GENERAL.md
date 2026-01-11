@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-10 15:15  
-**Versión:** 2.4.0
+**Última actualización:** 2026-01-11 14:50  
+**Versión:** 2.5.0
 
 ---
 
@@ -27,7 +27,8 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **LEER AL INICIO** | 2026-01-09 |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **LEER AL INICIO** | 2026-01-11 |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v3.0** - Visión, stack, multi-tenant, IA, roadmap | 2026-01-11 |
 | [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-01-09 |
 
 ---
@@ -44,8 +45,10 @@
 | [2026-01-09_2231_governance-arquitectonico.md](./arquitectura/2026-01-09_2231_governance-arquitectonico.md) | 🏦 **Governance** - RACI, ADR-003, Checklists | 2026-01-09 |
 | [2026-01-09_2231_feature-flags.md](./arquitectura/2026-01-09_2231_feature-flags.md) | 🚩 **Feature Flags** - Por tenant, rollout gradual | 2026-01-09 |
 | [2026-01-09_2239_arquitectura-adaptativa.md](./arquitectura/2026-01-09_2239_arquitectura-adaptativa.md) | 🧠 **Arquitectura Adaptativa** - Fitness Functions, AIOps | 2026-01-09 |
+| [2026-01-10_1941_arquitectura_ai_first_commerce.md](./arquitectura/2026-01-10_1941_arquitectura_ai_first_commerce.md) | 🛒 **AI-First Commerce** - Drupal Commerce 3.x, GEO, RAG | 2026-01-10 |
+| [2026-01-11_1453_evaluacion-madurez-v5.1.md](./arquitectura/2026-01-11_1453_evaluacion-madurez-v5.1.md) | 📊 **Evaluación Madurez v5.1** - Nivel 4.5/5.0, KB RAG | 2026-01-11 |
 
-**Total documentos:** 6
+**Total documentos:** 8
 
 ### Documentos completados:
 - [x] Diagrama de Arquitectura C4
@@ -84,8 +87,9 @@
 | Documento | Descripción | Fecha Creación |
 |-----------|-------------|----------------|
 | [2026-01-09_1528_plan-estructura-documentacion.md](./planificacion/2026-01-09_1528_plan-estructura-documentacion.md) | Plan de implementación de la estructura de documentación | 2026-01-09 |
+| [2026-01-11_1503_roadmap-nivel5-arquitectura.md](./planificacion/2026-01-11_1503_roadmap-nivel5-arquitectura.md) | 🎯 **Roadmap Nivel 5** - 9 sprints, Q1-Q4 2026, AIOps | 2026-01-11 |
 
-**Total documentos:** 1
+**Total documentos:** 2
 
 ---
 
@@ -164,6 +168,16 @@
 | Documento | Descripción | Fuente |
 |-----------|-------------|--------|
 | [20260109e-DOCUMENTO_TECNICO_MAESTRO_SaaS_CONSOLIDADO_Claude.md](./tecnicos/20260109e-DOCUMENTO_TECNICO_MAESTRO_SaaS_CONSOLIDADO_Claude.md) | 📋 **Documento técnico maestro consolidado del proyecto SaaS** | Claude |
+| [20260110e-Documento_Tecnico_Maestro_v2_Claude.md](./tecnicos/20260110e-Documento_Tecnico_Maestro_v2_Claude.md) | 📋 **v2.0 AI-First Commerce** - Drupal Commerce 3.x, GEO Quick Wins | Claude |
+
+### 7.4 Knowledge Base AI-Nativa (RAG + Qdrant)
+
+| Documento | Descripción | Fuente |
+|-----------|-------------|--------|
+| [20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md](./tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md) | 🧠 **Arquitectura KB Multi-Tenant** - Diseño, indexación, búsqueda semántica | Claude |
+| [20260111-Guia_Tecnica_KB_RAG_Qdrant.md](./tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md) | 📚 **Guía Técnica RAG** - Implementación completa módulo jaraba_rag | Claude |
+| [20260111b-Anexo_A1_Integracion_Qdrant_Seguro_v3_Claude.md](./tecnicos/20260111b-Anexo_A1_Integracion_Qdrant_Seguro_v3_Claude.md) | 🔒 **Integración Segura Dual** - Lando + IONOS Cloud, validaciones | Claude |
+| [20260111c-Lecciones_Integracion_Qdrant_v5.1.md](./tecnicos/20260111c-Lecciones_Integracion_Qdrant_v5.1.md) | 📝 **Lecciones Aprendidas** - Fallbacks PHP, config overrides | Claude |
 
 ### 7.4 Código Fuente (Referencia)
 
@@ -258,6 +272,7 @@
 | 2026-01-10 | 2.2.0 | Añadida documentación de Group Module multi-tenancy |
 | 2026-01-10 | 2.3.0 | Añadida documentación Domain Automation multi-tenancy |
 | 2026-01-10 | 2.4.0 | **Evolution Sprint:** Config Entities (Feature, AIAgent), Tests (12), Dashboard, Billing |
+| 2026-01-11 | 2.5.0 | **KB AI-Nativa:** Integración Qdrant v5.1, módulo jaraba_rag, indexación verificada |
 
 ---
 

@@ -1,0 +1,19 @@
+name: 'Jaraba RAG'
+type: module
+description: 'Knowledge Base AI-Nativa con RAG Multi-Tenant para Copilots de Jaraba Impact Platform.'
+package: Jaraba
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+
+dependencies:
+  - drupal:user
+  - ai:ai
+  - ai_search:ai_search
+  - group:group
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+configure: jaraba_rag.settings
+
+# Nota: El módulo ai_vdb_provider_qdrant está en desarrollo.
+# Ver: https://www.drupal.org/project/ai_vdb_provider_qdrant
+# Alternativa estable: ai_vdb_provider_sqlite

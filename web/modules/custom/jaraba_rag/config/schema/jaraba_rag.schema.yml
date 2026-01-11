@@ -1,0 +1,112 @@
+jaraba_rag.settings:
+  type: config_object
+  label: 'Jaraba RAG Settings'
+  mapping:
+    vector_db:
+      type: mapping
+      label: 'Vector Database Settings'
+      mapping:
+        host:
+          type: string
+          label: 'Qdrant Host URL'
+        api_key:
+          type: string
+          label: 'Qdrant API Key (Key module reference)'
+        collection:
+          type: string
+          label: 'Collection Name'
+        dimensions:
+          type: integer
+          label: 'Embedding Dimensions'
+        distance_metric:
+          type: string
+          label: 'Distance Metric'
+    embeddings:
+      type: mapping
+      label: 'Embeddings Settings'
+      mapping:
+        model:
+          type: string
+          label: 'Embedding Model'
+        chunk_size:
+          type: integer
+          label: 'Chunk Size'
+        chunk_overlap:
+          type: integer
+          label: 'Chunk Overlap'
+    search:
+      type: mapping
+      label: 'Search Settings'
+      mapping:
+        top_k:
+          type: integer
+          label: 'Top K Results'
+        min_score:
+          type: float
+          label: 'Minimum Similarity Score'
+        include_vertical_content:
+          type: boolean
+          label: 'Include Vertical Content'
+        include_platform_content:
+          type: boolean
+          label: 'Include Platform Content'
+    grounding:
+      type: mapping
+      label: 'Grounding Settings'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Enable Grounding'
+        min_entailment_score:
+          type: float
+          label: 'Minimum Entailment Score'
+        fallback_message:
+          type: string
+          label: 'Fallback Message'
+    analytics:
+      type: mapping
+      label: 'Analytics Settings'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Enable Analytics'
+        classify_intent:
+          type: boolean
+          label: 'Classify Intent'
+        detect_gaps:
+          type: boolean
+          label: 'Detect Content Gaps'
+        gap_alert_threshold:
+          type: integer
+          label: 'Gap Alert Threshold'
+    llm:
+      type: mapping
+      label: 'LLM Settings'
+      mapping:
+        model:
+          type: string
+          label: 'LLM Model'
+        temperature:
+          type: float
+          label: 'Temperature'
+        max_tokens:
+          type: integer
+          label: 'Max Tokens'
+    indexable_entities:
+      type: sequence
+      label: 'Indexable Entities'
+      sequence:
+        type: mapping
+        mapping:
+          enabled:
+            type: boolean
+            label: 'Enabled'
+          fields:
+            type: sequence
+            label: 'Fields'
+            sequence:
+              type: string
+              label: 'Field Name'
+          answer_capsule_boost:
+            type: float
+            label: 'Answer Capsule Boost'

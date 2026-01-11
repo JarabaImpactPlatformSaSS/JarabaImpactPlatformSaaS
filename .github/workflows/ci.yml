@@ -55,8 +55,7 @@ jobs:
 
       - name: PHPStan Static Analysis
         run: |
-          phpstan analyse web/modules/custom --level=5 --no-progress
-        continue-on-error: true
+          phpstan analyse web/modules/custom --level=5 --no-progress --error-format=github
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

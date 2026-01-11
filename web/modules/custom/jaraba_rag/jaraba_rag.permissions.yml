@@ -1,0 +1,18 @@
+# Permisos del módulo Jaraba RAG
+
+administer jaraba_rag:
+  title: 'Administrar Knowledge Base AI-Nativa'
+  description: 'Acceso completo a configuración, reindexación y analytics globales.'
+  restrict access: true
+
+view jaraba_rag analytics:
+  title: 'Ver analytics de Knowledge Base'
+  description: 'Acceso al dashboard de métricas y gaps de contenido.'
+
+use jaraba_rag copilot:
+  title: 'Usar Copilot con RAG'
+  description: 'Permite hacer consultas al Consumer/Producer Copilot.'
+
+reindex jaraba_rag content:
+  title: 'Reindexar contenido en KB'
+  description: 'Permite forzar reindexación de entidades.'

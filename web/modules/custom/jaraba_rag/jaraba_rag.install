@@ -1,0 +1,110 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Jaraba RAG module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_schema().
+ *
+ * Define la tabla de logging de queries para analytics.
+ */
+function jaraba_rag_schema(): array {
+  $schema['jaraba_rag_query_log'] = [
+    'description' => 'Log de queries a la Knowledge Base para analytics.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único del registro.',
+      ],
+      'query_text' => [
+        'type' => 'varchar',
+        'length' => 500,
+        'not null' => TRUE,
+        'description' => 'Texto de la query del usuario.',
+      ],
+      'query_hash' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Hash normalizado para agrupar queries similares.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'ID del tenant (grupo).',
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'ID del usuario que hizo la query.',
+      ],
+      'classification' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'ANSWERED_FULL',
+        'description' => 'Clasificación de la respuesta.',
+      ],
+      'confidence_score' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Score de confianza de la respuesta (0-1).',
+      ],
+      'response_time_ms' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Tiempo de respuesta en milisegundos.',
+      ],
+      'sources_count' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Número de fuentes utilizadas.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de creación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'tenant_created' => ['tenant_id', 'created'],
+      'query_hash' => ['query_hash'],
+      'classification' => ['classification'],
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_rag_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba RAG module installed. Configure at /admin/config/jaraba/rag'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_rag_uninstall(): void {
+  // Eliminar configuración
+  \Drupal::configFactory()->getEditable('jaraba_rag.settings')->delete();
+
+  // Nota: La tabla se elimina automáticamente por Drupal al desinstalar
+}

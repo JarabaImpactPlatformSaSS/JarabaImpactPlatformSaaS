@@ -1,0 +1,100 @@
+# Configuración por defecto del módulo Jaraba RAG
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Vector Database (Qdrant)
+vector_db:
+  # Host de Qdrant (local o cloud)
+  # Local: http://qdrant:6333 (Lando) o http://localhost:6333
+  # Cloud: https://xxx.europe-west3-0.gcp.cloud.qdrant.io:6333
+  host: 'http://qdrant:6333'
+  # API Key (referencia al módulo Key, vacío para local sin auth)
+  api_key: ''
+  # Nombre de la collection en Qdrant
+  collection: 'jaraba_kb'
+  # Dimensiones del embedding (text-embedding-3-small = 1536)
+  dimensions: 1536
+  # Métrica de distancia (cosine, dot, euclidean)
+  distance_metric: 'cosine'
+
+# Embeddings
+embeddings:
+  # Modelo de OpenAI para embeddings
+  model: 'text-embedding-3-small'
+  # Tamaño máximo de chunk en tokens
+  chunk_size: 500
+  # Overlap entre chunks
+  chunk_overlap: 100
+
+# Búsqueda
+search:
+  # Número máximo de resultados a recuperar
+  top_k: 5
+  # Score mínimo de similitud (0-1)
+  min_score: 0.7
+  # Incluir contenido compartido de vertical
+  include_vertical_content: true
+  # Incluir contenido compartido de plataforma
+  include_platform_content: true
+
+# Grounding (Anti-Alucinaciones)
+grounding:
+  # Activar validación de claims
+  enabled: true
+  # Score mínimo de entailment para aceptar claim
+  min_entailment_score: 0.7
+  # Fallback message cuando no hay información
+  fallback_message: 'No tengo esa información. ¿Puedo ayudarte con algo más?'
+
+# Analytics
+analytics:
+  # Activar logging de queries
+  enabled: true
+  # Clasificar intención de queries
+  classify_intent: true
+  # Detectar gaps de contenido
+  detect_gaps: true
+  # Umbral para alertar gaps (número de queries similares sin respuesta)
+  gap_alert_threshold: 5
+
+# LLM para generación
+llm:
+  # Modelo para generación de respuestas
+  model: 'gpt-4o-mini'
+  # Temperatura (0-1, menor = más determinista)
+  temperature: 0.3
+  # Máximo de tokens en respuesta
+  max_tokens: 500
+
+# Entidades indexables
+indexable_entities:
+  commerce_product:
+    enabled: true
+    # Campos a indexar
+    fields:
+      - title
+      - body
+      - field_ai_summary
+    # Prioridad del Answer Capsule
+    answer_capsule_boost: 1.5
+  node:
+    article:
+      enabled: true
+      fields:
+        - title
+        - body
+        - field_summary
+    faq:
+      enabled: true
+      fields:
+        - field_question
+        - field_answer
+    page:
+      enabled: true
+      fields:
+        - title
+        - body
+  taxonomy_term:
+    enabled: true
+    fields:
+      - name
+      - description

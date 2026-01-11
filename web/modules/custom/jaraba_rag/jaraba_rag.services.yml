@@ -1,0 +1,76 @@
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JARABA RAG - Servicios de Knowledge Base AI-Nativa
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Documentación: docs/tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md
+  # Anexo A: docs/tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # ---------------------------------------------------------------------------
+  # Cliente Qdrant Directo (reemplaza ai_vdb_provider_qdrant)
+  # ---------------------------------------------------------------------------
+  jaraba_rag.qdrant_client:
+    class: Drupal\jaraba_rag\Client\QdrantDirectClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@key.repository'
+      - '@logger.factory'
+
+  # ---------------------------------------------------------------------------
+  # Servicio Principal: Orquestador RAG
+  # ---------------------------------------------------------------------------
+  jaraba_rag.rag_service:
+    class: Drupal\jaraba_rag\Service\JarabaRagService
+    arguments:
+      - '@jaraba_rag.tenant_context'
+      - '@jaraba_rag.grounding_validator'
+      - '@jaraba_rag.query_analytics'
+      - '@ai.provider'
+      - '@jaraba_rag.qdrant_client'
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@config.factory'
+
+  # ---------------------------------------------------------------------------
+  # Contexto Multi-Tenant
+  # ---------------------------------------------------------------------------
+  jaraba_rag.tenant_context:
+    class: Drupal\jaraba_rag\Service\TenantContextService
+    arguments:
+      - '@group.membership_loader'
+      - '@current_user'
+      - '@config.factory'
+
+  # ---------------------------------------------------------------------------
+  # Validador de Grounding (Anti-Alucinaciones)
+  # ---------------------------------------------------------------------------
+  jaraba_rag.grounding_validator:
+    class: Drupal\jaraba_rag\Service\GroundingValidator
+    arguments:
+      - '@ai.provider'
+      - '@logger.factory'
+
+  # ---------------------------------------------------------------------------
+  # Analytics de Queries
+  # ---------------------------------------------------------------------------
+  jaraba_rag.query_analytics:
+    class: Drupal\jaraba_rag\Service\QueryAnalyticsService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+      - '@config.factory'
+
+  # ---------------------------------------------------------------------------
+  # Servicio de Indexación
+  # ---------------------------------------------------------------------------
+  jaraba_rag.indexer:
+    class: Drupal\jaraba_rag\Service\KbIndexerService
+    arguments:
+      - '@ai.provider'
+      - '@jaraba_rag.qdrant_client'
+      - '@jaraba_rag.tenant_context'
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@config.factory'
+
