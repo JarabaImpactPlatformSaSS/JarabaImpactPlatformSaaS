@@ -1,0 +1,167 @@
+{#
+/**
+ * @file
+ * Health Dashboard - Premium Admin UX Template
+ *
+ * Variables:
+ *   - services: Array of service health statuses
+ *   - metrics: Overall platform metrics
+ *   - recent_checks: Recent health check results
+ *   - last_updated: Timestamp of last update
+ */
+#}
+
+<div class="health-dashboard">
+  {# Header Section #}
+  <div class="health-header">
+    <div class="health-header__content">
+      <h1 class="health-header__title">
+        <span class="health-header__icon">🏥</span>
+        Platform Health Dashboard
+      </h1>
+      <p class="health-header__subtitle">Real-time monitoring and health status</p>
+    </div>
+    <div class="health-header__actions">
+      <button class="btn btn-primary" id="refresh-health" title="Refresh data">
+        <span class="btn__icon">🔄</span> Refresh
+      </button>
+      <span class="health-header__updated">
+        Last updated: <strong id="last-updated">{{ last_updated }}</strong>
+      </span>
+    </div>
+  </div>
+
+  {# Metrics Overview Cards #}
+  <div class="health-metrics">
+    <div class="metric-card metric-card--health">
+      <div class="metric-card__icon">💚</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value" id="overall-health">{{ metrics.overall_health }}%</span>
+        <span class="metric-card__label">Overall Health</span>
+      </div>
+      <div class="metric-card__indicator metric-card__indicator--{{ metrics.overall_health >= 80 ? 'good' : (metrics.overall_health >= 50 ? 'warning' : 'critical') }}"></div>
+    </div>
+    
+    <div class="metric-card metric-card--services">
+      <div class="metric-card__icon">⚡</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ metrics.services_up }}/{{ metrics.services_total }}</span>
+        <span class="metric-card__label">Services Up</span>
+      </div>
+    </div>
+    
+    <div class="metric-card metric-card--uptime">
+      <div class="metric-card__icon">⏱️</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ metrics.uptime }}</span>
+        <span class="metric-card__label">Uptime</span>
+      </div>
+    </div>
+    
+    <div class="metric-card metric-card--external">
+      <div class="metric-card__icon">📊</div>
+      <div class="metric-card__content">
+        <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="metric-card__link">
+          Open Grafana →
+        </a>
+        <span class="metric-card__label">Advanced Metrics</span>
+      </div>
+    </div>
+  </div>
+
+  {# Services Grid #}
+  <div class="health-section">
+    <h2 class="health-section__title">
+      <span class="health-section__icon">🔧</span>
+      Service Status
+    </h2>
+    <div class="services-grid" id="services-grid">
+      {% for key, service in services %}
+        <div class="service-card service-card--{{ service.status }}" data-service="{{ key }}">
+          <div class="service-card__header">
+            <span class="service-card__icon service-card__icon--{{ service.icon }}">
+              {% if service.icon == 'database' %}💾{% endif %}
+              {% if service.icon == 'brain' %}🧠{% endif %}
+              {% if service.icon == 'bolt' %}⚡{% endif %}
+              {% if service.icon == 'globe' %}🌐{% endif %}
+            </span>
+            <span class="service-card__status-badge service-card__status-badge--{{ service.status }}">
+              {{ service.status|upper }}
+            </span>
+          </div>
+          <h3 class="service-card__name">{{ service.name }}</h3>
+          <p class="service-card__message">{{ service.message }}</p>
+          {% if service.latency %}
+            <div class="service-card__latency">
+              <span class="service-card__latency-label">Latency:</span>
+              <span class="service-card__latency-value">{{ service.latency }}ms</span>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Recent Checks #}
+  <div class="health-section">
+    <h2 class="health-section__title">
+      <span class="health-section__icon">📋</span>
+      Recent Health Checks
+    </h2>
+    <div class="checks-table">
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Result</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody id="recent-checks">
+          {% for check in recent_checks %}
+            <tr class="check-row check-row--{{ check.result }}">
+              <td class="check-row__time">{{ check.time }}</td>
+              <td class="check-row__type">{{ check.type }}</td>
+              <td class="check-row__result">
+                <span class="result-badge result-badge--{{ check.result }}">
+                  {% if check.result == 'pass' %}✅{% endif %}
+                  {% if check.result == 'fail' %}❌{% endif %}
+                  {% if check.result == 'recovery' %}🔄{% endif %}
+                  {{ check.result|upper }}
+                </span>
+              </td>
+              <td class="check-row__message">{{ check.message }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# Quick Actions #}
+  <div class="health-section">
+    <h2 class="health-section__title">
+      <span class="health-section__icon">⚡</span>
+      Quick Actions
+    </h2>
+    <div class="quick-actions">
+      <a href="/admin/config/development/performance" class="action-btn action-btn--primary">
+        <span class="action-btn__icon">🗑️</span>
+        Clear Cache
+      </a>
+      <a href="/admin/reports/status" class="action-btn action-btn--secondary">
+        <span class="action-btn__icon">📊</span>
+        Status Report
+      </a>
+      <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="action-btn action-btn--external">
+        <span class="action-btn__icon">📈</span>
+        Grafana Dashboard
+      </a>
+      <a href="http://prometheus.jaraba-saas.lndo.site:9090" target="_blank" class="action-btn action-btn--external">
+        <span class="action-btn__icon">🔍</span>
+        Prometheus
+      </a>
+    </div>
+  </div>
+</div>

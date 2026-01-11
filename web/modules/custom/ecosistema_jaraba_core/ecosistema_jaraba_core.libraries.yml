@@ -90,3 +90,21 @@ tenant_dashboard:
   dependencies:
     - core/drupal
     - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL DASHBOARD DE SALUD
+# ---------------------------------------------------------------------------
+# Dashboard de observabilidad con estado de servicios, métricas y quick actions.
+# Diseño premium con dark theme y glassmorphism.
+
+health-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/health-dashboard.css: {}
+  js:
+    js/health-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

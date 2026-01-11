@@ -69,10 +69,18 @@ entity.ai_agent.collection:
 # MENÚ DE INFORMES - OBSERVABILIDAD
 # ---------------------------------------------------------------------------
 
+# Dashboard de Salud de la Plataforma (interno)
+ecosistema_jaraba_core.health_dashboard_menu:
+  title: 'Platform Health Dashboard'
+  description: 'Estado de servicios, métricas y health checks en tiempo real'
+  route_name: ecosistema_jaraba_core.health.dashboard
+  parent: system.admin_reports
+  weight: 99
+
 # Enlace a Grafana Dashboard (externo)
 ecosistema_jaraba_core.grafana_dashboard:
   title: 'Grafana Dashboard'
-  description: 'Dashboard de observabilidad y métricas de la plataforma'
+  description: 'Dashboard de observabilidad avanzada'
   url: 'http://grafana.jaraba-saas.lndo.site:3000'
   parent: system.admin_reports
   weight: 100
@@ -94,3 +102,4 @@ ecosistema_jaraba_core.prometheus:
       target: _blank
       class:
         - external-link
+

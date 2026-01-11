@@ -130,6 +130,20 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'ecosistema-jaraba-change-plan',
       'path' => $path . '/templates',
     ],
+
+    // Dashboard de Salud de la Plataforma
+    // Ruta: /admin/health
+    // Muestra estado de servicios, métricas y health checks recientes
+    'health_dashboard' => [
+      'variables' => [
+        'services' => [],
+        'metrics' => [],
+        'recent_checks' => [],
+        'last_updated' => NULL,
+      ],
+      'template' => 'health-dashboard',
+      'path' => $path . '/templates',
+    ],
   ];
 }
 

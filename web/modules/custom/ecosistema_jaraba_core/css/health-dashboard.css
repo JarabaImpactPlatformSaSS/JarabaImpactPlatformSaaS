@@ -1,0 +1,469 @@
+/**
+ * Health Dashboard - Premium Admin CSS
+ * 
+ * Modern, dark-themed dashboard with glassmorphism effects
+ * for a premium SaaS admin experience.
+ */
+
+/* ============================================================================
+   Variables
+   ============================================================================ */
+
+:root {
+  --health-bg: #0f172a;
+  --health-card-bg: rgba(30, 41, 59, 0.8);
+  --health-border: rgba(148, 163, 184, 0.1);
+  --health-text: #e2e8f0;
+  --health-text-muted: #94a3b8;
+  --health-primary: #3b82f6;
+  --health-success: #22c55e;
+  --health-warning: #f59e0b;
+  --health-critical: #ef4444;
+  --health-gradient: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+}
+
+/* ============================================================================
+   Dashboard Container
+   ============================================================================ */
+
+.health-dashboard {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--health-bg);
+  min-height: 100vh;
+  padding: 2rem;
+  color: var(--health-text);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--health-border);
+}
+
+.health-header__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.health-header__icon {
+  font-size: 2rem;
+}
+
+.health-header__subtitle {
+  color: var(--health-text-muted);
+  margin: 0.5rem 0 0 0;
+  font-size: 0.95rem;
+}
+
+.health-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.health-header__updated {
+  font-size: 0.85rem;
+  color: var(--health-text-muted);
+}
+
+/* ============================================================================
+   Buttons
+   ============================================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--health-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn__icon {
+  font-size: 1rem;
+}
+
+/* ============================================================================
+   Metrics Cards
+   ============================================================================ */
+
+.health-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.metric-card {
+  background: var(--health-card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--health-border);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card__icon {
+  font-size: 2.5rem;
+  opacity: 0.9;
+}
+
+.metric-card__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.metric-card__label {
+  font-size: 0.85rem;
+  color: var(--health-text-muted);
+  margin-top: 0.25rem;
+}
+
+.metric-card__link {
+  color: var(--health-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.metric-card__link:hover {
+  text-decoration: underline;
+}
+
+.metric-card__indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.metric-card__indicator--good { background: var(--health-success); }
+.metric-card__indicator--warning { background: var(--health-warning); }
+.metric-card__indicator--critical { background: var(--health-critical); }
+
+/* ============================================================================
+   Section Headers
+   ============================================================================ */
+
+.health-section {
+  margin-bottom: 2.5rem;
+}
+
+.health-section__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.health-section__icon {
+  font-size: 1.25rem;
+}
+
+/* ============================================================================
+   Services Grid
+   ============================================================================ */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.service-card {
+  background: var(--health-card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  border: 1px solid var(--health-border);
+  transition: all 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.service-card--healthy {
+  border-left: 4px solid var(--health-success);
+}
+
+.service-card--warning {
+  border-left: 4px solid var(--health-warning);
+}
+
+.service-card--critical {
+  border-left: 4px solid var(--health-critical);
+}
+
+.service-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.service-card__icon {
+  font-size: 1.75rem;
+}
+
+.service-card__status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.service-card__status-badge--healthy {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--health-success);
+}
+
+.service-card__status-badge--warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--health-warning);
+}
+
+.service-card__status-badge--critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--health-critical);
+}
+
+.service-card__name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.service-card__message {
+  font-size: 0.875rem;
+  color: var(--health-text-muted);
+  margin: 0;
+}
+
+.service-card__latency {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--health-border);
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.service-card__latency-label {
+  color: var(--health-text-muted);
+}
+
+.service-card__latency-value {
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================================
+   Table
+   ============================================================================ */
+
+.checks-table {
+  background: var(--health-card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 0.875rem;
+  border: 1px solid var(--health-border);
+  overflow: hidden;
+}
+
+.table--modern {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table--modern th,
+.table--modern td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+}
+
+.table--modern thead {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.table--modern th {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--health-text-muted);
+}
+
+.table--modern tbody tr {
+  border-top: 1px solid var(--health-border);
+  transition: background 0.15s ease;
+}
+
+.table--modern tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.check-row__time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--health-text-muted);
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+}
+
+.result-badge--pass {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--health-success);
+}
+
+.result-badge--fail {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--health-critical);
+}
+
+.result-badge--recovery {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--health-primary);
+}
+
+/* ============================================================================
+   Quick Actions
+   ============================================================================ */
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: 0.625rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid var(--health-border);
+}
+
+.action-btn__icon {
+  font-size: 1rem;
+}
+
+.action-btn--primary {
+  background: var(--health-primary);
+  color: white;
+  border-color: var(--health-primary);
+}
+
+.action-btn--primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.action-btn--secondary {
+  background: transparent;
+  color: var(--health-text);
+}
+
+.action-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn--external {
+  background: rgba(124, 58, 237, 0.1);
+  color: #a78bfa;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.action-btn--external:hover {
+  background: rgba(124, 58, 237, 0.2);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .health-dashboard {
+    padding: 1rem;
+  }
+  
+  .health-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .health-header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    justify-content: center;
+  }
+}
