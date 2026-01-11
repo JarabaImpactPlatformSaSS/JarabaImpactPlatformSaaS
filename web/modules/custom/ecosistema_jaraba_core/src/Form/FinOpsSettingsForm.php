@@ -192,6 +192,9 @@ class FinOpsSettingsForm extends ConfigFormBase
         parent::submitForm($form, $form_state);
 
         $this->messenger()->addStatus($this->t('FinOps settings have been saved.'));
+
+        // Redirigir al dashboard FinOps después de guardar
+        $form_state->setRedirect('ecosistema_jaraba_core.finops.dashboard');
     }
 
 }

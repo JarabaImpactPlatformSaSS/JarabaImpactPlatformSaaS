@@ -338,7 +338,7 @@
     {# Link to Settings #}
     {% if help_info.settings_url %}
     <div style="margin-top: 1rem;">
-      <a href="{{ help_info.settings_url }}" class="action-btn action-btn--primary">
+      <a href="{{ help_info.settings_url }}" class="action-btn action-btn--primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"FinOps Settings"}'>
         <span class="action-btn__icon">⚙️</span>
         {% trans %}Configure Pricing{% endtrans %}
       </a>
