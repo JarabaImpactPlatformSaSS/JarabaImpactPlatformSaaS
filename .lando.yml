@@ -73,14 +73,14 @@ services:
     type: compose
     services:
       image: prom/prometheus:latest
-      command:
-        - '--config.file=/etc/prometheus/prometheus.yml'
-        - '--storage.tsdb.path=/prometheus'
-        - '--web.enable-lifecycle'
+      command: |
+        --config.file=/etc/prometheus/prometheus.yml
+        --storage.tsdb.path=/prometheus
+        --web.enable-lifecycle
       ports:
         - "9090:9090"
       volumes:
-        - ./monitoring/prometheus:/etc/prometheus
+        - ./monitoring/prometheus:/etc/prometheus:ro
 
   # ─────────────────────────────────────────────────────
   # GRAFANA - Dashboard de Observabilidad
@@ -98,9 +98,10 @@ services:
         GF_SECURITY_ADMIN_USER: admin
         GF_SECURITY_ADMIN_PASSWORD: jaraba123
         GF_USERS_ALLOW_SIGN_UP: "false"
+        GF_PATHS_PROVISIONING: /etc/grafana/provisioning
       volumes:
-        - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-        - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+        - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+        - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
 
 # =============================================================================
 # PROXY
