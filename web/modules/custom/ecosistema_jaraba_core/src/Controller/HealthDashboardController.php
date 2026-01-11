@@ -111,19 +111,19 @@ class HealthDashboardController extends ControllerBase
             $latency = round((microtime(true) - $start) * 1000, 2);
 
             return [
-                'name' => 'Database',
+                'name' => $this->t('Database'),
                 'status' => 'healthy',
                 'icon' => 'database',
                 'latency' => $latency,
-                'message' => "Connected ({$latency}ms)",
+                'message' => $this->t('Connected (@latency ms)', ['@latency' => $latency]),
             ];
         } catch (\Exception $e) {
             return [
-                'name' => 'Database',
+                'name' => $this->t('Database'),
                 'status' => 'critical',
                 'icon' => 'database',
                 'latency' => null,
-                'message' => 'Connection failed',
+                'message' => $this->t('Connection failed'),
             ];
         }
     }
@@ -146,11 +146,11 @@ class HealthDashboardController extends ControllerBase
 
             if ($response->getStatusCode() === 200) {
                 return [
-                    'name' => 'Qdrant (Vector DB)',
+                    'name' => $this->t('Qdrant (Vector DB)'),
                     'status' => 'healthy',
                     'icon' => 'brain',
                     'latency' => $latency,
-                    'message' => "Connected ({$latency}ms)",
+                    'message' => $this->t('Connected (@latency ms)', ['@latency' => $latency]),
                 ];
             }
         } catch (\Exception $e) {
@@ -158,11 +158,11 @@ class HealthDashboardController extends ControllerBase
         }
 
         return [
-            'name' => 'Qdrant (Vector DB)',
+            'name' => $this->t('Qdrant (Vector DB)'),
             'status' => 'warning',
             'icon' => 'brain',
             'latency' => null,
-            'message' => 'Not available',
+            'message' => $this->t('Not available'),
         ];
     }
 
@@ -183,11 +183,11 @@ class HealthDashboardController extends ControllerBase
 
             if ($result && $result->data === 'test') {
                 return [
-                    'name' => 'Cache System',
+                    'name' => $this->t('Cache System'),
                     'status' => 'healthy',
                     'icon' => 'bolt',
                     'latency' => $latency,
-                    'message' => "Working ({$latency}ms)",
+                    'message' => $this->t('Working (@latency ms)', ['@latency' => $latency]),
                 ];
             }
         } catch (\Exception $e) {
@@ -195,11 +195,11 @@ class HealthDashboardController extends ControllerBase
         }
 
         return [
-            'name' => 'Cache System',
+            'name' => $this->t('Cache System'),
             'status' => 'warning',
             'icon' => 'bolt',
             'latency' => null,
-            'message' => 'Cache test failed',
+            'message' => $this->t('Cache test failed'),
         ];
     }
 
@@ -227,19 +227,19 @@ class HealthDashboardController extends ControllerBase
             }
 
             return [
-                'name' => 'Site Response',
+                'name' => $this->t('Site Response'),
                 'status' => $status,
                 'icon' => 'globe',
                 'latency' => $latency,
-                'message' => "HTTP 200 ({$latency}ms)",
+                'message' => $this->t('HTTP 200 (@latency ms)', ['@latency' => $latency]),
             ];
         } catch (\Exception $e) {
             return [
-                'name' => 'Site Response',
+                'name' => $this->t('Site Response'),
                 'status' => 'critical',
                 'icon' => 'globe',
                 'latency' => null,
-                'message' => 'Site unreachable',
+                'message' => $this->t('Site unreachable'),
             ];
         }
     }
@@ -278,21 +278,21 @@ class HealthDashboardController extends ControllerBase
         return [
             [
                 'time' => date('H:i:s', strtotime('-5 minutes')),
-                'type' => 'Automated Check',
+                'type' => $this->t('Automated Check'),
                 'result' => 'pass',
-                'message' => 'All services healthy',
+                'message' => $this->t('All services healthy'),
             ],
             [
                 'time' => date('H:i:s', strtotime('-10 minutes')),
-                'type' => 'Automated Check',
+                'type' => $this->t('Automated Check'),
                 'result' => 'pass',
-                'message' => 'All services healthy',
+                'message' => $this->t('All services healthy'),
             ],
             [
                 'time' => date('H:i:s', strtotime('-15 minutes')),
-                'type' => 'Self-Healing',
+                'type' => $this->t('Self-Healing'),
                 'result' => 'recovery',
-                'message' => 'Cache rebuilt successfully',
+                'message' => $this->t('Cache rebuilt successfully'),
             ],
         ];
     }

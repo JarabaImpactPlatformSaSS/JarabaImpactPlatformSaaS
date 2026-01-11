@@ -400,6 +400,11 @@ Asistente de compras para el usuario final:
 •	Recomendaciones personalizadas basadas en historial
 •	Respuestas a preguntas sobre productos en lenguaje natural
 •	Consulta directa a la base de datos estructurada de Drupal
+
+ANEXO A: KNOWLEDGE BASE AI-NATIVA
+La arquitectura detallada de la Knowledge Base que alimenta los Copilots, incluyendo RAG Multi-Tenant con Qdrant, Grounding Estricto anti-alucinaciones, y Analytics de queries, está documentada en el Anexo A:
+→ docs/tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md
+
 7.2 Reglas de Negocio (ECA)
 Implementadas mediante módulo ECA con archivos YAML exportables:
 Regla	Trigger	Condición	Acción
