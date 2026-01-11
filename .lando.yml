@@ -113,11 +113,11 @@ proxy:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:
     - qdrant.jaraba-saas.lndo.site:6333
-  # Observability Stack
+  # Observability Stack - acceso via proxy en puertos estándar
   grafana:
-    - grafana.jaraba-saas.lndo.site:3000
+    - grafana.jaraba-saas.lndo.site
   prometheus:
-    - prometheus.jaraba-saas.lndo.site:9090
+    - prometheus.jaraba-saas.lndo.site
 
 # =============================================================================
 # TOOLING
