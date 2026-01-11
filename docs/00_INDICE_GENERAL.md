@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-11 14:50  
-**Versión:** 2.5.0
+**Última actualización:** 2026-01-11 19:10  
+**Versión:** 2.6.0
 
 ---
 
@@ -274,6 +274,7 @@
 | 2026-01-10 | 2.3.0 | Añadida documentación Domain Automation multi-tenancy |
 | 2026-01-10 | 2.4.0 | **Evolution Sprint:** Config Entities (Feature, AIAgent), Tests (12), Dashboard, Billing |
 | 2026-01-11 | 2.5.0 | **KB AI-Nativa:** Integración Qdrant v5.1, módulo jaraba_rag, indexación verificada |
+| 2026-01-11 | 2.6.0 | **Observabilidad v2:** Health Dashboard (histórico BD, alertas email), FinOps Dashboard, workflow SCSS |
 
 ---
 

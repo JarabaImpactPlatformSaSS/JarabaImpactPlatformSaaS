@@ -1,8 +1,8 @@
 # Estrategia de Observabilidad
 
 **Fecha de creación:** 2026-01-09 22:31  
-**Última actualización:** 2026-01-09 22:31  
-**Versión:** 1.0.0  
+**Última actualización:** 2026-01-11 19:10  
+**Versión:** 2.0.0  
 **Categoría:** Implementación
 
 ---
@@ -18,7 +18,8 @@
 7. [Alertas](#7-alertas)
 8. [Dashboards](#8-dashboards)
 9. [Implementación en Drupal](#9-implementación-en-drupal)
-10. [Registro de Cambios](#10-registro-de-cambios)
+10. [Dashboards Drupal Nativos](#10-dashboards-drupal-nativos)
+11. [Registro de Cambios](#11-registro-de-cambios)
 
 ---
 
@@ -448,10 +449,81 @@ public function onKernelResponse(ResponseEvent $event): void {
 }
 ```
 
+## 10. Dashboards Drupal Nativos
+
+> **Estado:** ✅ Implementado (2026-01-11)
+> **Decisión Arquitectónica:** Dashboards Drupal nativos como alternativa a Grafana para entornos donde Prometheus no está disponible.
+
+### 10.1 Health Dashboard (`/admin/health`)
+
+Dashboard de estado de servicios integrado en Drupal:
+
+| Feature | Descripción |
+|---------|-------------|
+| **Estado de servicios** | Database, Qdrant, Cache, Site Response |
+| **Métricas** | Uptime, Health %, Request Count |
+| **Histórico BD** | Tabla `health_check_log` (últimos 1000 registros) |
+| **Alertas Email** | Notificación automática cuando servicio → critical |
+| **Rate-limiting** | Máximo 1 alerta cada 5 minutos |
+
+**Archivos:**
+- `HealthDashboardController.php`
+- `templates/health-dashboard.html.twig`
+- `css/health-dashboard.css`
+
+**Rutas:**
+```yaml
+/admin/health       # Dashboard visual
+/admin/health/api   # API JSON
+```
+
+**Tabla de histórico:**
+```sql
+CREATE TABLE health_check_log (
+  id INT PRIMARY KEY,
+  timestamp INT,
+  service VARCHAR(64),
+  status VARCHAR(32),
+  latency FLOAT,
+  message TEXT,
+  overall_health INT
+);
+```
+
+### 10.2 FinOps Dashboard (`/admin/finops`)
+
+Dashboard de optimización de costes:
+
+| Métrica | Descripción |
+|---------|-------------|
+| **Costes por Tenant** | Storage, API requests, CPU hours |
+| **Proyecciones** | Mensual, % de presupuesto |
+| **Alertas** | Budget warning (75%), critical (90%) |
+| **Recomendaciones** | Sugerencias de optimización con savings |
+
+**Archivos:**
+- `FinOpsDashboardController.php`
+- `templates/finops-dashboard.html.twig`
+- `scss/_finops-dashboard.scss` (variables CSS inyectables)
+
+**Rutas:**
+```yaml
+/admin/finops       # Dashboard visual
+/admin/finops/api   # API JSON
+```
+
+### 10.3 Acceso desde Menú Admin
+
+Ambos dashboards están integrados en:
+- **Admin → Reports → Platform Health Dashboard**
+- **Admin → Reports → FinOps Dashboard**
+
 ---
 
-## 10. Registro de Cambios
+## 11. Registro de Cambios
 
 | Fecha | Versión | Autor | Descripción |
 |-------|---------|-------|-------------|
 | 2026-01-09 | 1.0.0 | IA Asistente | Creación inicial del documento |
+| 2026-01-11 | 2.0.0 | IA Asistente | Añadidos Health Dashboard y FinOps Dashboard nativos Drupal |
+
