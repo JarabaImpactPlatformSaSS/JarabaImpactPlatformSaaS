@@ -68,25 +68,21 @@ services:
   # PROMETHEUS - Recolección de Métricas
   # ─────────────────────────────────────────────────────
   # URL: http://prometheus.jaraba-saas.lndo.site:9090
+  # Nota: Configuración mínima sin volúmenes externos
   # ─────────────────────────────────────────────────────
   prometheus:
     type: compose
     services:
       image: prom/prometheus:latest
-      command: |
-        --config.file=/etc/prometheus/prometheus.yml
-        --storage.tsdb.path=/prometheus
-        --web.enable-lifecycle
       ports:
         - "9090:9090"
-      volumes:
-        - ./monitoring/prometheus:/etc/prometheus:ro
 
   # ─────────────────────────────────────────────────────
   # GRAFANA - Dashboard de Observabilidad
   # ─────────────────────────────────────────────────────
   # URL: http://grafana.jaraba-saas.lndo.site:3000
   # Credenciales: admin / jaraba123
+  # Nota: Configuración mínima, dashboards se configuran manualmente
   # ─────────────────────────────────────────────────────
   grafana:
     type: compose
@@ -98,10 +94,6 @@ services:
         GF_SECURITY_ADMIN_USER: admin
         GF_SECURITY_ADMIN_PASSWORD: jaraba123
         GF_USERS_ALLOW_SIGN_UP: "false"
-        GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      volumes:
-        - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-        - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
 
 # =============================================================================
 # PROXY
