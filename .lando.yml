@@ -37,6 +37,33 @@ services:
     hosts:
       - database
 
+  # ─────────────────────────────────────────────────────
+  # QDRANT - Base de Datos Vectorial para RAG (KB AI-Nativa)
+  # ─────────────────────────────────────────────────────
+  # URLs de acceso:
+  #   - Desde Drupal (interno): http://qdrant:6333
+  #   - Desde navegador (externo): http://qdrant.jaraba-saas.lndo.site:6333
+  #   - Dashboard UI: http://qdrant.jaraba-saas.lndo.site:6333/dashboard
+  # Documentación: docs/tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md
+  # ─────────────────────────────────────────────────────
+  qdrant:
+    type: compose
+    services:
+      image: qdrant/qdrant:latest
+      command: "./qdrant"
+      ports:
+        - "6333:6333"
+        - "6334:6334"
+      environment:
+        QDRANT__SERVICE__GRPC_PORT: "6334"
+      # Healthcheck añadido tras Game Day #1 (2026-01-11)
+      healthcheck:
+        test: ["CMD", "wget", "-q", "--spider", "http://localhost:6333/"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 10s
+
 # =============================================================================
 # PROXY
 # =============================================================================
@@ -53,6 +80,8 @@ proxy:
     # Añadir más subdominios según se creen tenants
   phpmyadmin:
     - phpmyadmin.jaraba-saas.lndo.site
+  qdrant:
+    - qdrant.jaraba-saas.lndo.site:6333
 
 # =============================================================================
 # TOOLING

@@ -30,8 +30,14 @@ class QdrantDirectClient
 
     /**
      * Timeout por defecto en segundos.
+     * Reducido de 30s a 3s tras Game Day #1 (2026-01-11).
      */
-    protected const DEFAULT_TIMEOUT = 30;
+    protected const DEFAULT_TIMEOUT = 3;
+
+    /**
+     * Timeout de conexión en segundos (fail-fast).
+     */
+    protected const CONNECT_TIMEOUT = 2;
 
     /**
      * Dimension de vectores para OpenAI text-embedding-3-small.
@@ -445,6 +451,7 @@ class QdrantDirectClient
                 'Content-Type' => 'application/json',
             ],
             'timeout' => self::DEFAULT_TIMEOUT,
+            'connect_timeout' => self::CONNECT_TIMEOUT,
         ];
 
         // Añadir API key si está configurada
