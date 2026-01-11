@@ -30,9 +30,12 @@ metadata:
   
   # Nivel de madurez arquitectónica
   maturity:
-    level: 4.7
-    target: 5.0
+    level: 5.0
+    previous: 4.7
+    certification_date: "2026-01-11"
+    certification_score: 95
     last_assessment: "2026-01-11"
+    next_review: "2027-01-11"
 
 # =============================================================================
 # SERVICES
