@@ -117,6 +117,9 @@ class FinOpsDashboardController extends ControllerBase
 
     /**
      * Get resource usage per tenant.
+     * 
+     * IMPORTANTE: Solo devuelve tenants REALES de la base de datos.
+     * No usa datos ficticios - si no hay tenants, devuelve array vacío.
      */
     protected function getTenantUsage(): array
     {
@@ -139,9 +142,18 @@ class FinOpsDashboardController extends ControllerBase
                 // Calculate estimated CPU time
                 $cpu_hours = $this->estimateCpuUsage($api_requests, $storage_mb);
 
-                // Get plan tier for pricing
-                $plan = $tenant->get('plan')->entity;
-                $tier = $plan ? $plan->id() : 'basic';
+                // Get plan tier for pricing (robusto - no falla si campo no existe)
+                $tier = 'basic';
+                try {
+                    if ($tenant->hasField('plan') && !$tenant->get('plan')->isEmpty()) {
+                        $plan = $tenant->get('plan')->entity;
+                        if ($plan) {
+                            $tier = $plan->id() ?: 'basic';
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Plan no disponible, usar basic
+                }
 
                 // Calculate costs from config (NOT hardcoded)
                 $config = $this->getFinOpsConfig();
@@ -167,8 +179,13 @@ class FinOpsDashboardController extends ControllerBase
                 ];
             }
         } catch (\Exception $e) {
-            // Return sample data if tenant entity not available
-            $tenants = $this->getSampleTenantData();
+            // Log error pero NO devolver datos ficticios
+            \Drupal::logger('ecosistema_jaraba_core')->warning(
+                'FinOps: Error loading tenants: @error',
+                ['@error' => $e->getMessage()]
+            );
+            // Devolver array vacío - el template mostrará mensaje apropiado
+            return [];
         }
 
         // Sort by total cost descending
@@ -466,60 +483,6 @@ class FinOpsDashboardController extends ControllerBase
         }
 
         return $recommendations;
-    }
-
-    /**
-     * Sample tenant data for demo purposes.
-     */
-    protected function getSampleTenantData(): array
-    {
-        return [
-            [
-                'id' => 'aceites-sur',
-                'name' => 'Aceites del Sur',
-                'tier' => 'professional',
-                'storage_mb' => 256.50,
-                'api_requests' => 4500,
-                'cpu_hours' => 5.2,
-                'costs' => [
-                    'storage' => 5.13,
-                    'api' => 4.50,
-                    'cpu' => 0.52,
-                    'total' => 10.15,
-                ],
-                'status' => 'normal',
-            ],
-            [
-                'id' => 'olivos-premium',
-                'name' => 'Olivos Premium',
-                'tier' => 'enterprise',
-                'storage_mb' => 512.00,
-                'api_requests' => 12000,
-                'cpu_hours' => 15.8,
-                'costs' => [
-                    'storage' => 10.24,
-                    'api' => 12.00,
-                    'cpu' => 1.58,
-                    'total' => 23.82,
-                ],
-                'status' => 'normal',
-            ],
-            [
-                'id' => 'cooperativa-norte',
-                'name' => 'Cooperativa Norte',
-                'tier' => 'basic',
-                'storage_mb' => 128.00,
-                'api_requests' => 8500,
-                'cpu_hours' => 9.0,
-                'costs' => [
-                    'storage' => 2.56,
-                    'api' => 8.50,
-                    'cpu' => 0.90,
-                    'total' => 11.96,
-                ],
-                'status' => 'warning',
-            ],
-        ];
     }
 
     /**
