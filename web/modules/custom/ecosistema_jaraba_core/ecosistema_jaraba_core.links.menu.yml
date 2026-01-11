@@ -64,3 +64,33 @@ entity.ai_agent.collection:
   route_name: entity.ai_agent.collection
   parent: system.admin_structure
   weight: -6
+
+# ---------------------------------------------------------------------------
+# MENÚ DE INFORMES - OBSERVABILIDAD
+# ---------------------------------------------------------------------------
+
+# Enlace a Grafana Dashboard (externo)
+ecosistema_jaraba_core.grafana_dashboard:
+  title: 'Grafana Dashboard'
+  description: 'Dashboard de observabilidad y métricas de la plataforma'
+  url: 'http://grafana.jaraba-saas.lndo.site:3000'
+  parent: system.admin_reports
+  weight: 100
+  options:
+    attributes:
+      target: _blank
+      class:
+        - external-link
+
+# Enlace a Prometheus (externo)
+ecosistema_jaraba_core.prometheus:
+  title: 'Prometheus Metrics'
+  description: 'Métricas y alertas del sistema'
+  url: 'http://prometheus.jaraba-saas.lndo.site:9090'
+  parent: system.admin_reports
+  weight: 101
+  options:
+    attributes:
+      target: _blank
+      class:
+        - external-link
