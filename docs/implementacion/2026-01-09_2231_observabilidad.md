@@ -492,31 +492,56 @@ CREATE TABLE health_check_log (
 
 ### 10.2 FinOps Dashboard (`/admin/finops`)
 
-Dashboard de optimización de costes:
+Dashboard de optimización de costes con datos reales:
 
 | Métrica | Descripción |
 |---------|-------------|
 | **Costes por Tenant** | Storage, API requests, CPU hours |
 | **Proyecciones** | Mensual, % de presupuesto |
-| **Alertas** | Budget warning (75%), critical (90%) |
+| **Alertas** | Budget warning/critical (configurables) |
 | **Recomendaciones** | Sugerencias de optimización con savings |
+
+**Features Implementadas (2026-01-11):**
+
+| Feature | Descripción |
+|---------|-------------|
+| **Precios configurables** | `/admin/config/finops` con modal desde dashboard |
+| **Datos reales** | Sin fallback a datos ficticios |
+| **Tracking API requests** | `RequestTrackingSubscriber` automático |
+| **Tabla `finops_usage_log`** | Métricas por tenant en tiempo real |
+| **Labels traducibles** | Diccionario Twig para i18n |
+| **Icono settings** | UX sutil con modal (rotación hover) |
+
+**Directriz Clave:** ❌ NO hardcodear valores configurables. Usar Config API.
 
 **Archivos:**
 - `FinOpsDashboardController.php`
+- `FinOpsSettingsForm.php` (precios configurables)
+- `FinOpsTrackingService.php` (métricas reales)
+- `RequestTrackingSubscriber.php` (auto-tracking)
 - `templates/finops-dashboard.html.twig`
 - `scss/_finops-dashboard.scss` (variables CSS inyectables)
+- `config/install/ecosistema_jaraba_core.finops.yml`
 
 **Rutas:**
 ```yaml
-/admin/finops       # Dashboard visual
-/admin/finops/api   # API JSON
+/admin/finops         # Dashboard visual
+/admin/finops/api     # API JSON
+/admin/config/finops  # Configuración precios (modal)
 ```
+
+**Tareas Futuras:**
+- [ ] Sección de ingresos reales por facturación
+- [ ] Proyección mensual basada en suscripciones activas
+- [ ] Panel de resultados netos actuales y previstos
+- [ ] Trasladar UX Premium de `/admin/finops` a toda la interfaz de estructura admin
 
 ### 10.3 Acceso desde Menú Admin
 
 Ambos dashboards están integrados en:
 - **Admin → Reports → Platform Health Dashboard**
 - **Admin → Reports → FinOps Dashboard**
+- **Admin → Configuration → System → FinOps Settings**
 
 ---
 
@@ -526,4 +551,5 @@ Ambos dashboards están integrados en:
 |-------|---------|-------|-------------|
 | 2026-01-09 | 1.0.0 | IA Asistente | Creación inicial del documento |
 | 2026-01-11 | 2.0.0 | IA Asistente | Añadidos Health Dashboard y FinOps Dashboard nativos Drupal |
+| 2026-01-11 | 2.1.0 | IA Asistente | FinOps: precios configurables, tracking real, modal settings |
 
