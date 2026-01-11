@@ -6,7 +6,7 @@
 # =============================================================================
 
 # Configuración de notificaciones
-NOTIFY_EMAIL="admin@jarabaimpact.com"
+NOTIFY_EMAIL="contacto@pepejaraba.es"
 NOTIFY_FROM="selfhealing@jaraba-saas.lndo.site"
 NOTIFY_SUBJECT_PREFIX="[Jaraba Self-Healing]"
 
