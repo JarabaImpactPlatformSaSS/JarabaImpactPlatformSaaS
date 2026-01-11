@@ -8,6 +8,8 @@
  *   - metrics: Overall platform metrics
  *   - recent_checks: Recent health check results
  *   - last_updated: Timestamp of last update
+ *
+ * Todas las etiquetas son traducibles desde /admin/config/regional/translate
  */
 #}
 
@@ -17,16 +19,16 @@
     <div class="health-header__content">
       <h1 class="health-header__title">
         <span class="health-header__icon">🏥</span>
-        Panel de Salud de la Plataforma
+        {% trans %}Panel de Salud de la Plataforma{% endtrans %}
       </h1>
-      <p class="health-header__subtitle">Monitoreo en tiempo real y estado de servicios</p>
+      <p class="health-header__subtitle">{% trans %}Monitoreo en tiempo real y estado de servicios{% endtrans %}</p>
     </div>
     <div class="health-header__actions">
-      <button class="btn btn-primary" id="refresh-health" title="Actualizar datos">
-        <span class="btn__icon">🔄</span> Actualizar
+      <button class="btn btn-primary" id="refresh-health" title="{% trans %}Actualizar datos{% endtrans %}">
+        <span class="btn__icon">🔄</span> {% trans %}Actualizar{% endtrans %}
       </button>
       <span class="health-header__updated">
-        Última actualización: <strong id="last-updated">{{ last_updated }}</strong>
+        {% trans %}Última actualización{% endtrans %}: <strong id="last-updated">{{ last_updated }}</strong>
       </span>
     </div>
   </div>
@@ -37,7 +39,7 @@
       <div class="metric-card__icon">💚</div>
       <div class="metric-card__content">
         <span class="metric-card__value" id="overall-health">{{ metrics.overall_health }}%</span>
-        <span class="metric-card__label">Salud General</span>
+        <span class="metric-card__label">{% trans %}Salud General{% endtrans %}</span>
       </div>
       <div class="metric-card__indicator metric-card__indicator--{{ metrics.overall_health >= 80 ? 'good' : (metrics.overall_health >= 50 ? 'warning' : 'critical') }}"></div>
     </div>
@@ -46,7 +48,7 @@
       <div class="metric-card__icon">⚡</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ metrics.services_up }}/{{ metrics.services_total }}</span>
-        <span class="metric-card__label">Servicios Activos</span>
+        <span class="metric-card__label">{% trans %}Servicios Activos{% endtrans %}</span>
       </div>
     </div>
     
@@ -54,7 +56,7 @@
       <div class="metric-card__icon">⏱️</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ metrics.uptime }}</span>
-        <span class="metric-card__label">Tiempo Activo</span>
+        <span class="metric-card__label">{% trans %}Tiempo Activo{% endtrans %}</span>
       </div>
     </div>
     
@@ -62,9 +64,9 @@
       <div class="metric-card__icon">📊</div>
       <div class="metric-card__content">
         <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="metric-card__link">
-          Abrir Grafana →
+          {% trans %}Abrir Grafana{% endtrans %} →
         </a>
-        <span class="metric-card__label">Métricas Avanzadas</span>
+        <span class="metric-card__label">{% trans %}Métricas Avanzadas{% endtrans %}</span>
       </div>
     </div>
   </div>
@@ -73,7 +75,7 @@
   <div class="health-section">
     <h2 class="health-section__title">
       <span class="health-section__icon">🔧</span>
-      Estado de Servicios
+      {% trans %}Estado de Servicios{% endtrans %}
     </h2>
     <div class="services-grid" id="services-grid">
       {% for key, service in services %}
@@ -93,7 +95,7 @@
           <p class="service-card__message">{{ service.message }}</p>
           {% if service.latency %}
             <div class="service-card__latency">
-              <span class="service-card__latency-label">Latencia:</span>
+              <span class="service-card__latency-label">{% trans %}Latencia{% endtrans %}:</span>
               <span class="service-card__latency-value">{{ service.latency }}ms</span>
             </div>
           {% endif %}
@@ -106,16 +108,16 @@
   <div class="health-section">
     <h2 class="health-section__title">
       <span class="health-section__icon">📋</span>
-      Verificaciones Recientes
+      {% trans %}Verificaciones Recientes{% endtrans %}
     </h2>
     <div class="checks-table">
       <table class="table table--modern">
         <thead>
           <tr>
-            <th>Hora</th>
-            <th>Tipo</th>
-            <th>Resultado</th>
-            <th>Mensaje</th>
+            <th>{% trans %}Hora{% endtrans %}</th>
+            <th>{% trans %}Tipo{% endtrans %}</th>
+            <th>{% trans %}Resultado{% endtrans %}</th>
+            <th>{% trans %}Mensaje{% endtrans %}</th>
           </tr>
         </thead>
         <tbody id="recent-checks">
@@ -143,20 +145,20 @@
   <div class="health-section">
     <h2 class="health-section__title">
       <span class="health-section__icon">⚡</span>
-      Acciones Rápidas
+      {% trans %}Acciones Rápidas{% endtrans %}
     </h2>
     <div class="quick-actions">
       <a href="/admin/config/development/performance" class="action-btn action-btn--primary">
         <span class="action-btn__icon">🗑️</span>
-        Limpiar Caché
+        {% trans %}Limpiar Caché{% endtrans %}
       </a>
       <a href="/admin/reports/status" class="action-btn action-btn--secondary">
         <span class="action-btn__icon">📊</span>
-        Informe de Estado
+        {% trans %}Informe de Estado{% endtrans %}
       </a>
       <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="action-btn action-btn--external">
         <span class="action-btn__icon">📈</span>
-        Grafana Dashboard
+        {% trans %}Dashboard Grafana{% endtrans %}
       </a>
       <a href="http://prometheus.jaraba-saas.lndo.site:9090" target="_blank" class="action-btn action-btn--external">
         <span class="action-btn__icon">🔍</span>
