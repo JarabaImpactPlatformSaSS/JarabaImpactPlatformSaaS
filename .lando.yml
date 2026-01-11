@@ -68,12 +68,12 @@ services:
   # PROMETHEUS - Recolección de Métricas
   # ─────────────────────────────────────────────────────
   # URL: http://prometheus.jaraba-saas.lndo.site:9090
-  # Nota: Configuración mínima sin volúmenes externos
   # ─────────────────────────────────────────────────────
   prometheus:
     type: compose
     services:
       image: prom/prometheus:latest
+      user: root
       ports:
         - "9090:9090"
 
@@ -82,12 +82,12 @@ services:
   # ─────────────────────────────────────────────────────
   # URL: http://grafana.jaraba-saas.lndo.site:3000
   # Credenciales: admin / jaraba123
-  # Nota: Configuración mínima, dashboards se configuran manualmente
   # ─────────────────────────────────────────────────────
   grafana:
     type: compose
     services:
       image: grafana/grafana:latest
+      user: root
       ports:
         - "3000:3000"
       environment:
