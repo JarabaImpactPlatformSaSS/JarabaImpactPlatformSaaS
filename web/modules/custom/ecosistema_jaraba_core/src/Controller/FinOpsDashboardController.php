@@ -61,6 +61,7 @@ class FinOpsDashboardController extends ControllerBase
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/finops-dashboard',
+                    'core/drupal.dialog.ajax',
                 ],
             ],
             '#tenants' => $finops_data['tenants'],
