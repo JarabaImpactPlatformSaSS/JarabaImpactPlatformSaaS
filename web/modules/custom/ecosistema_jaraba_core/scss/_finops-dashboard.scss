@@ -1,0 +1,532 @@
+// =============================================================================
+// FINOPS DASHBOARD - COST OPTIMIZATION DASHBOARD
+// =============================================================================
+// Dashboard premium de optimización de costes con tema oscuro.
+// Utiliza las variables CSS inyectables del proyecto para mantener consistencia.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// VARIABLES ESPECÍFICAS FINOPS (usando variables inyectables CSS)
+// ---------------------------------------------------------------------------
+
+// Colores del dashboard oscuro (tema dark específico de FinOps)
+$finops-bg: #0f172a !default;
+$finops-card-bg: rgba(30, 41, 59, 0.8) !default;
+$finops-border: var(--ej-border-color-light, rgba(148, 163, 184, 0.1));
+$finops-text: #e2e8f0 !default;
+$finops-text-muted: var(--ej-text-muted, #94a3b8);
+
+// Colores semánticos (usando variables CSS inyectables)
+$finops-primary: var(--ej-color-primary, #{$ej-color-primary-fallback});
+$finops-success: var(--ej-color-success, #{$ej-color-success});
+$finops-warning: var(--ej-color-warning, #{$ej-color-warning});
+$finops-critical: var(--ej-color-error, #{$ej-color-error});
+$finops-gold: #fbbf24;
+
+// ---------------------------------------------------------------------------
+// BASE LAYOUT
+// ---------------------------------------------------------------------------
+
+.finops-dashboard {
+    background: $finops-bg;
+    min-height: 100vh;
+    padding: $ej-spacing-xl;
+    color: $finops-text;
+    font-family: $ej-font-family-fallback;
+}
+
+// ---------------------------------------------------------------------------
+// HEADER
+// ---------------------------------------------------------------------------
+
+.finops-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-xl;
+    padding-bottom: $ej-spacing-lg;
+    border-bottom: $ej-border-width solid $finops-border;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $ej-spacing-md;
+    }
+}
+
+.finops-header__title {
+    font-size: $ej-font-size-3xl;
+    font-weight: $ej-font-weight-bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    background: linear-gradient(135deg, $finops-gold, $finops-success);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.finops-header__icon {
+    font-size: $ej-font-size-4xl;
+}
+
+.finops-header__subtitle {
+    color: $finops-text-muted;
+    margin: $ej-spacing-xs 0 0;
+    font-size: $ej-font-size-sm;
+}
+
+.finops-header__actions {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+}
+
+.finops-header__updated {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+}
+
+// ---------------------------------------------------------------------------
+// ALERTS
+// ---------------------------------------------------------------------------
+
+.finops-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.alert-card {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    background: $finops-card-bg;
+    border-left: 4px solid;
+
+    &--critical {
+        border-left-color: $finops-critical;
+        background: rgba($ej-color-error, 0.1);
+    }
+
+    &--warning {
+        border-left-color: $finops-warning;
+        background: rgba($ej-color-warning, 0.1);
+    }
+}
+
+.alert-card__icon {
+    font-size: $ej-font-size-2xl;
+}
+
+.alert-card__content p {
+    margin: $ej-spacing-xs 0 0;
+    font-size: $ej-font-size-sm;
+    color: $finops-text-muted;
+}
+
+// ---------------------------------------------------------------------------
+// METRICS CARDS
+// ---------------------------------------------------------------------------
+
+.finops-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.metric-card {
+    background: $finops-card-bg;
+    border: $ej-border-width solid $finops-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &--cost {
+        border-top: 3px solid $finops-gold;
+    }
+
+    &--projection {
+        border-top: 3px solid $finops-primary;
+    }
+
+    &--budget {
+        border-top: 3px solid $finops-success;
+    }
+
+    &--tenants {
+        border-top: 3px solid #8b5cf6;
+    }
+}
+
+.metric-card__icon {
+    font-size: $ej-font-size-4xl;
+    margin-bottom: $ej-spacing-sm;
+}
+
+.metric-card__value {
+    font-size: $ej-font-size-4xl;
+    font-weight: $ej-font-weight-bold;
+    color: $finops-text;
+}
+
+.metric-card__label {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.metric-card__trend {
+    position: absolute;
+    top: $ej-spacing-md;
+    right: $ej-spacing-md;
+    font-size: $ej-font-size-2xl;
+}
+
+.metric-card__progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: $ej-spacing-sm;
+}
+
+.metric-card__progress .progress-bar {
+    height: 100%;
+    background: $finops-success;
+    transition: width $ej-transition-duration-slow $ej-transition-easing;
+}
+
+// ---------------------------------------------------------------------------
+// SECTIONS
+// ---------------------------------------------------------------------------
+
+.finops-section {
+    background: $finops-card-bg;
+    border: $ej-border-width solid $finops-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+    backdrop-filter: blur(10px);
+}
+
+.finops-section__title {
+    font-size: $ej-font-size-lg;
+    font-weight: $ej-font-weight-semibold;
+    margin: 0 0 $ej-spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    color: $finops-text;
+}
+
+.finops-section__icon {
+    font-size: $ej-font-size-xl;
+}
+
+// ---------------------------------------------------------------------------
+// RESOURCE CARDS
+// ---------------------------------------------------------------------------
+
+.resource-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+.resource-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-lg;
+    text-align: center;
+}
+
+.resource-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-sm;
+}
+
+.resource-card__icon {
+    font-size: $ej-font-size-xl;
+}
+
+.resource-card__title {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+    text-transform: uppercase;
+}
+
+.resource-card__value {
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+    color: $finops-text;
+}
+
+.resource-card__cost {
+    font-size: $ej-font-size-sm;
+    color: $finops-gold;
+    margin-top: $ej-spacing-xs;
+}
+
+// ---------------------------------------------------------------------------
+// TENANT TABLE
+// ---------------------------------------------------------------------------
+
+.tenant-table {
+    overflow-x: auto;
+}
+
+.table--modern {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: $ej-spacing-md;
+        text-align: left;
+        border-bottom: $ej-border-width solid $finops-border;
+    }
+
+    th {
+        font-size: $ej-font-size-xs;
+        text-transform: uppercase;
+        color: $finops-text-muted;
+        font-weight: $ej-font-weight-semibold;
+    }
+
+    td {
+        font-size: $ej-font-size-sm;
+    }
+}
+
+.tenant-row {
+    &--warning {
+        background: rgba($ej-color-warning, 0.05);
+    }
+
+    &--critical {
+        background: rgba($ej-color-error, 0.05);
+    }
+}
+
+.tenant-row__name strong {
+    display: block;
+}
+
+.tenant-row__id {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+}
+
+// Badges
+.tier-badge {
+    display: inline-block;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+
+    &--basic {
+        background: rgba(148, 163, 184, 0.2);
+        color: #94a3b8;
+    }
+
+    &--professional {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+    }
+
+    &--enterprise {
+        background: rgba(139, 92, 246, 0.2);
+        color: #a78bfa;
+    }
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+
+    &--normal {
+        background: rgba($ej-color-success, 0.2);
+        color: $finops-success;
+    }
+
+    &--warning {
+        background: rgba($ej-color-warning, 0.2);
+        color: $finops-warning;
+    }
+
+    &--critical {
+        background: rgba($ej-color-error, 0.2);
+        color: $finops-critical;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// RECOMMENDATIONS
+// ---------------------------------------------------------------------------
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+.recommendation-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-lg;
+    border-left: 3px solid $finops-primary;
+
+    &--summary {
+        border-left-color: $finops-gold;
+        background: rgba($finops-gold, 0.1);
+    }
+
+    &--storage {
+        border-left-color: #8b5cf6;
+    }
+
+    &--api {
+        border-left-color: $finops-primary;
+    }
+}
+
+.recommendation-card__header {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-sm;
+}
+
+.recommendation-card__icon {
+    font-size: $ej-font-size-xl;
+}
+
+.recommendation-card__message {
+    font-size: $ej-font-size-sm;
+    color: $finops-text-muted;
+    margin: 0;
+}
+
+.recommendation-card__savings {
+    margin-top: $ej-spacing-sm;
+    padding-top: $ej-spacing-sm;
+    border-top: $ej-border-width solid $finops-border;
+    font-size: $ej-font-size-sm;
+    color: $finops-success;
+}
+
+// ---------------------------------------------------------------------------
+// QUICK ACTIONS
+// ---------------------------------------------------------------------------
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-md;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+    }
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    text-decoration: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+    border: $ej-border-width solid $finops-border;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--primary {
+        background: $finops-primary;
+        color: white;
+        border-color: $finops-primary;
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $finops-text;
+    }
+
+    &--external {
+        background: rgba(139, 92, 246, 0.1);
+        color: #a78bfa;
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    @media (max-width: $ej-breakpoint-md) {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.action-btn__icon {
+    font-size: $ej-font-size-md;
+}
+
+// ---------------------------------------------------------------------------
+// BUTTONS
+// ---------------------------------------------------------------------------
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    cursor: pointer;
+    border: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+}
+
+.btn-primary {
+    background: $finops-primary;
+    color: white;
+
+    &:hover {
+        background: darken($ej-color-primary-fallback, 10%);
+    }
+}
+
+.btn__icon {
+    font-size: $ej-font-size-md;
+}

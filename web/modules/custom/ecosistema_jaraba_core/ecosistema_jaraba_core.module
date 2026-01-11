@@ -144,6 +144,22 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'health-dashboard',
       'path' => $path . '/templates',
     ],
+
+    // Dashboard FinOps (Cost Optimization)
+    // Ruta: /admin/finops
+    // Muestra costes por tenant, proyecciones y recomendaciones de ahorro
+    'finops_dashboard' => [
+      'variables' => [
+        'tenants' => [],
+        'totals' => [],
+        'projections' => [],
+        'alerts' => [],
+        'recommendations' => [],
+        'last_updated' => NULL,
+      ],
+      'template' => 'finops-dashboard',
+      'path' => $path . '/templates',
+    ],
   ];
 }
 

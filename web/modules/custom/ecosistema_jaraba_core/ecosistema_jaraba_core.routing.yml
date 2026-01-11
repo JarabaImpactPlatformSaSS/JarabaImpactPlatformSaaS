@@ -456,3 +456,28 @@ ecosistema_jaraba_core.health.api:
   requirements:
     _permission: 'administer site configuration'
   methods: [GET]
+
+# ---------------------------------------------------------------------------
+# FINOPS DASHBOARD - COST OPTIMIZATION
+# ---------------------------------------------------------------------------
+
+# Dashboard principal de FinOps
+ecosistema_jaraba_core.finops.dashboard:
+  path: '/admin/finops'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\FinOpsDashboardController::dashboard'
+    _title: 'FinOps Dashboard'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# API para obtener datos de FinOps en tiempo real
+ecosistema_jaraba_core.finops.api:
+  path: '/admin/finops/api'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\FinOpsDashboardController::finopsApi'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+

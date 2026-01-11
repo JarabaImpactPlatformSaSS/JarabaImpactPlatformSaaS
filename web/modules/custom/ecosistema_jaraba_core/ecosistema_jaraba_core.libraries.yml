@@ -108,3 +108,19 @@ health-dashboard:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL DASHBOARD FINOPS
+# ---------------------------------------------------------------------------
+# Dashboard de optimización de costes con métricas por tenant,
+# proyecciones y recomendaciones de ahorro.
+
+finops-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+

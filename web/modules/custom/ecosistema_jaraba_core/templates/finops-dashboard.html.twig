@@ -1,0 +1,237 @@
+{#
+/**
+ * @file
+ * Template for FinOps (Cost Optimization) Dashboard.
+ *
+ * Variables:
+ * - tenants: Array of tenant cost data
+ * - totals: Aggregate cost totals
+ * - projections: Monthly cost projections
+ * - alerts: Cost alerts
+ * - recommendations: Optimization recommendations
+ * - last_updated: Timestamp of last update
+ */
+#}
+<div class="finops-dashboard">
+  {# Header Section #}
+  <div class="finops-header">
+    <div class="finops-header__content">
+      <h1 class="finops-header__title">
+        <span class="finops-header__icon">💰</span>
+        {% trans %}FinOps Dashboard{% endtrans %}
+      </h1>
+      <p class="finops-header__subtitle">{% trans %}Cost optimization and resource usage{% endtrans %}</p>
+    </div>
+    <div class="finops-header__actions">
+      <button class="btn btn-primary" id="refresh-finops" title="{% trans %}Refresh data{% endtrans %}">
+        <span class="btn__icon">🔄</span> {% trans %}Refresh{% endtrans %}
+      </button>
+      <span class="finops-header__updated">
+        {% trans %}Last updated{% endtrans %}: <strong id="last-updated">{{ last_updated }}</strong>
+      </span>
+    </div>
+  </div>
+
+  {# Alerts Section #}
+  {% if alerts is not empty %}
+  <div class="finops-alerts">
+    {% for alert in alerts %}
+    <div class="alert-card alert-card--{{ alert.type }}">
+      <span class="alert-card__icon">
+        {% if alert.type == 'critical' %}🚨{% elseif alert.type == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+      </span>
+      <div class="alert-card__content">
+        <strong>{{ alert.title }}</strong>
+        <p>{{ alert.message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# Cost Overview Cards #}
+  <div class="finops-metrics">
+    <div class="metric-card metric-card--cost">
+      <div class="metric-card__icon">💵</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">€{{ totals.cost_total }}</span>
+        <span class="metric-card__label">{% trans %}Current Month{% endtrans %}</span>
+      </div>
+      <div class="metric-card__indicator metric-card__indicator--{{ projections.trend }}"></div>
+    </div>
+
+    <div class="metric-card metric-card--projection">
+      <div class="metric-card__icon">📊</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">€{{ projections.monthly_projected }}</span>
+        <span class="metric-card__label">{% trans %}Projected Monthly{% endtrans %}</span>
+      </div>
+      <div class="metric-card__trend metric-card__trend--{{ projections.trend }}">
+        {% if projections.trend == 'up' %}📈{% elseif projections.trend == 'down' %}📉{% else %}➡️{% endif %}
+      </div>
+    </div>
+
+    <div class="metric-card metric-card--budget">
+      <div class="metric-card__icon">🎯</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ projections.budget_usage_percent }}%</span>
+        <span class="metric-card__label">{% trans %}Budget Usage{% endtrans %}</span>
+      </div>
+      <div class="metric-card__progress">
+        <div class="progress-bar" style="width: {{ projections.budget_usage_percent|default(0) }}%"></div>
+      </div>
+    </div>
+
+    <div class="metric-card metric-card--tenants">
+      <div class="metric-card__icon">🏢</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ totals.tenant_count }}</span>
+        <span class="metric-card__label">{% trans %}Active Tenants{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Resource Usage Summary #}
+  <div class="finops-section">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">📈</span>
+      {% trans %}Resource Usage{% endtrans %}
+    </h2>
+    <div class="resource-cards">
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="resource-card__icon">💾</span>
+          <span class="resource-card__title">{% trans %}Storage{% endtrans %}</span>
+        </div>
+        <div class="resource-card__value">{{ totals.storage_mb }} MB</div>
+        <div class="resource-card__cost">€{{ totals.cost_storage }}</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="resource-card__icon">🔌</span>
+          <span class="resource-card__title">{% trans %}API Requests{% endtrans %}</span>
+        </div>
+        <div class="resource-card__value">{{ totals.api_requests|number_format }}</div>
+        <div class="resource-card__cost">€{{ totals.cost_api }}</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="resource-card__icon">⚡</span>
+          <span class="resource-card__title">{% trans %}CPU Hours{% endtrans %}</span>
+        </div>
+        <div class="resource-card__value">{{ totals.cpu_hours }} h</div>
+        <div class="resource-card__cost">€{{ totals.cost_cpu }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Tenant Costs Table #}
+  <div class="finops-section">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">🏢</span>
+      {% trans %}Cost by Tenant{% endtrans %}
+    </h2>
+    <div class="tenant-table">
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Tenant{% endtrans %}</th>
+            <th>{% trans %}Tier{% endtrans %}</th>
+            <th>{% trans %}Storage{% endtrans %}</th>
+            <th>{% trans %}API Requests{% endtrans %}</th>
+            <th>{% trans %}CPU{% endtrans %}</th>
+            <th>{% trans %}Total Cost{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="tenant-costs">
+          {% for tenant in tenants %}
+          <tr class="tenant-row tenant-row--{{ tenant.status }}">
+            <td class="tenant-row__name">
+              <strong>{{ tenant.name }}</strong>
+              <span class="tenant-row__id">{{ tenant.id }}</span>
+            </td>
+            <td class="tenant-row__tier">
+              <span class="tier-badge tier-badge--{{ tenant.tier }}">{{ tenant.tier|capitalize }}</span>
+            </td>
+            <td class="tenant-row__storage">{{ tenant.storage_mb }} MB</td>
+            <td class="tenant-row__api">{{ tenant.api_requests|number_format }}</td>
+            <td class="tenant-row__cpu">{{ tenant.cpu_hours }} h</td>
+            <td class="tenant-row__cost">
+              <strong>€{{ tenant.costs.total }}</strong>
+            </td>
+            <td class="tenant-row__status">
+              <span class="status-badge status-badge--{{ tenant.status }}">
+                {% if tenant.status == 'normal' %}✅{% elseif tenant.status == 'warning' %}⚠️{% else %}🚨{% endif %}
+                {{ tenant.status|upper }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# Recommendations Section #}
+  {% if recommendations is not empty %}
+  <div class="finops-section">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">💡</span>
+      {% trans %}Optimization Recommendations{% endtrans %}
+    </h2>
+    <div class="recommendations-grid">
+      {% for rec in recommendations %}
+      <div class="recommendation-card recommendation-card--{{ rec.type }}">
+        <div class="recommendation-card__header">
+          {% if rec.type == 'summary' %}
+            <span class="recommendation-card__icon">📊</span>
+          {% elseif rec.type == 'storage' %}
+            <span class="recommendation-card__icon">💾</span>
+          {% elseif rec.type == 'api' %}
+            <span class="recommendation-card__icon">🔌</span>
+          {% else %}
+            <span class="recommendation-card__icon">💡</span>
+          {% endif %}
+          <strong>{{ rec.title }}</strong>
+        </div>
+        <p class="recommendation-card__message">{{ rec.message }}</p>
+        {% if rec.potential_savings %}
+        <div class="recommendation-card__savings">
+          {% trans %}Potential Savings{% endtrans %}: <strong>€{{ rec.potential_savings }}</strong>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Quick Actions #}
+  <div class="finops-section">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">⚡</span>
+      {% trans %}Quick Actions{% endtrans %}
+    </h2>
+    <div class="quick-actions">
+      <a href="/admin/structure/tenants" class="action-btn action-btn--primary">
+        <span class="action-btn__icon">🏢</span>
+        {% trans %}Manage Tenants{% endtrans %}
+      </a>
+      <a href="/admin/structure/saas-plans" class="action-btn action-btn--secondary">
+        <span class="action-btn__icon">📋</span>
+        {% trans %}Manage Plans{% endtrans %}
+      </a>
+      <a href="/admin/health" class="action-btn action-btn--secondary">
+        <span class="action-btn__icon">🏥</span>
+        {% trans %}Health Dashboard{% endtrans %}
+      </a>
+      <a href="/admin/reports" class="action-btn action-btn--external">
+        <span class="action-btn__icon">📊</span>
+        {% trans %}Full Reports{% endtrans %}
+      </a>
+    </div>
+  </div>
+</div>

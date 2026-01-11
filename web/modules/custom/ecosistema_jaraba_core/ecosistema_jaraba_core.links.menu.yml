@@ -103,3 +103,12 @@ ecosistema_jaraba_core.prometheus:
       class:
         - external-link
 
+# Dashboard FinOps (Cost Optimization)
+ecosistema_jaraba_core.finops_dashboard_menu:
+  title: 'FinOps Dashboard'
+  description: 'Optimización de costes, uso por tenant y proyecciones'
+  route_name: ecosistema_jaraba_core.finops.dashboard
+  parent: system.admin_reports
+  weight: 98
+
+
