@@ -65,35 +65,16 @@ services:
         start_period: 10s
 
   # ─────────────────────────────────────────────────────
-  # PROMETHEUS - Recolección de Métricas
+  # PROMETHEUS & GRAFANA - DESACTIVADOS TEMPORALMENTE
   # ─────────────────────────────────────────────────────
-  # URL: http://prometheus.jaraba-saas.lndo.site:9090
+  # Causa inestabilidad con Lando en Docker Desktop 4.55.0
+  # El Dashboard de Salud de Drupal (/admin/health) cubre
+  # las necesidades de monitoreo.
+  # 
+  # Para usar Grafana/Prometheus, ejecutar directamente:
+  #   docker run -d -p 3000:3000 grafana/grafana
+  #   docker run -d -p 9090:9090 prom/prometheus
   # ─────────────────────────────────────────────────────
-  prometheus:
-    type: compose
-    services:
-      image: prom/prometheus:latest
-      user: root
-      ports:
-        - "9090:9090"
-
-  # ─────────────────────────────────────────────────────
-  # GRAFANA - Dashboard de Observabilidad
-  # ─────────────────────────────────────────────────────
-  # URL: http://grafana.jaraba-saas.lndo.site:3000
-  # Credenciales: admin / jaraba123
-  # ─────────────────────────────────────────────────────
-  grafana:
-    type: compose
-    services:
-      image: grafana/grafana:latest
-      user: root
-      ports:
-        - "3000:3000"
-      environment:
-        GF_SECURITY_ADMIN_USER: admin
-        GF_SECURITY_ADMIN_PASSWORD: jaraba123
-        GF_USERS_ALLOW_SIGN_UP: "false"
 
 # =============================================================================
 # PROXY
@@ -113,11 +94,6 @@ proxy:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:
     - qdrant.jaraba-saas.lndo.site:6333
-  # Observability Stack - acceso via proxy en puertos estándar
-  grafana:
-    - grafana.jaraba-saas.lndo.site
-  prometheus:
-    - prometheus.jaraba-saas.lndo.site
 
 # =============================================================================
 # TOOLING
