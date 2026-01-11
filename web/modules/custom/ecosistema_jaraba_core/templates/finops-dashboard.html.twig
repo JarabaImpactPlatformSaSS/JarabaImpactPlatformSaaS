@@ -9,6 +9,8 @@
  * - projections: Monthly cost projections
  * - alerts: Cost alerts
  * - recommendations: Optimization recommendations
+ * - help_info: Help information with metric sources
+ * - data_sources: Info about what data is real vs estimated
  * - last_updated: Timestamp of last update
  */
 #}
@@ -234,4 +236,96 @@
       </a>
     </div>
   </div>
+
+  {# Help & Data Sources Section #}
+  {% if help_info or data_sources %}
+  <div class="finops-section finops-help">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">ℹ️</span>
+      {% trans %}About this Dashboard{% endtrans %}
+    </h2>
+    
+    {# Setup Required Alert #}
+    {% if data_sources.setup_required %}
+    <div class="alert-card alert-card--warning" style="margin-bottom: 1rem;">
+      <span class="alert-card__icon">⚠️</span>
+      <div class="alert-card__content">
+        <strong>{% trans %}Setup Required{% endtrans %}</strong>
+        <p>{% trans %}Run the following command to enable real-time tracking:{% endtrans %}</p>
+        <code style="display: block; margin-top: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 4px;">
+          {{ data_sources.setup_command }}
+        </code>
+      </div>
+    </div>
+    {% endif %}
+    
+    {# Data Sources Table #}
+    {% if data_sources.sources %}
+    <div class="finops-help__sources">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">{% trans %}Data Sources{% endtrans %}</h3>
+      <table class="table table--modern" style="margin-bottom: 1rem;">
+        <thead>
+          <tr>
+            <th>{% trans %}Metric{% endtrans %}</th>
+            <th>{% trans %}Type{% endtrans %}</th>
+            <th>{% trans %}Description{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, source in data_sources.sources %}
+          <tr>
+            <td><strong>{{ key|replace({'_': ' '})|capitalize }}</strong></td>
+            <td>
+              <span class="tier-badge tier-badge--{% if source.type|render == 'Real' %}professional{% else %}basic{% endif %}">
+                {{ source.type }}
+              </span>
+            </td>
+            <td>{{ source.description }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    
+    {# Pricing Info #}
+    {% if help_info.pricing %}
+    <div class="finops-help__pricing">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">{% trans %}Unit Pricing{% endtrans %}</h3>
+      <div class="resource-cards" style="margin-bottom: 1rem;">
+        <div class="resource-card">
+          <div class="resource-card__header">
+            <span class="resource-card__icon">💾</span>
+            <span class="resource-card__title">{% trans %}Storage{% endtrans %}</span>
+          </div>
+          <div class="resource-card__value">{{ help_info.pricing.storage }}</div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card__header">
+            <span class="resource-card__icon">🔌</span>
+            <span class="resource-card__title">{% trans %}API{% endtrans %}</span>
+          </div>
+          <div class="resource-card__value">{{ help_info.pricing.api }}</div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card__header">
+            <span class="resource-card__icon">⚡</span>
+            <span class="resource-card__title">{% trans %}CPU{% endtrans %}</span>
+          </div>
+          <div class="resource-card__value">{{ help_info.pricing.cpu }}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    {# Note #}
+    {% if help_info.note %}
+    <p class="finops-help__note" style="font-size: 0.875rem; color: var(--finops-text-muted, #94a3b8); margin: 0;">
+      <span style="margin-right: 0.5rem;">💡</span>{{ help_info.note }}
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+
 </div>
+

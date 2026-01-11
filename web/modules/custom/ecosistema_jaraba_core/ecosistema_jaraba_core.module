@@ -155,6 +155,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'projections' => [],
         'alerts' => [],
         'recommendations' => [],
+        'help_info' => [],
+        'data_sources' => [],
         'last_updated' => NULL,
       ],
       'template' => 'finops-dashboard',

@@ -420,6 +420,60 @@ function ecosistema_jaraba_core_schema() {
     ],
   ];
 
+  // ---------------------------------------------------------------------------
+  // Tabla: finops_usage_log
+  // ---------------------------------------------------------------------------
+  // Registra uso de recursos por tenant para métricas FinOps reales.
+  // Trackea: API requests, storage, CPU time.
+  $schema['finops_usage_log'] = [
+    'description' => 'Log de uso de recursos por tenant para FinOps.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único del registro.',
+      ],
+      'timestamp' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp Unix del registro.',
+      ],
+      'tenant_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'metric_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Tipo de métrica: api_request, storage_update, cpu_time.',
+      ],
+      'value' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Valor de la métrica.',
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+        'description' => 'Metadata adicional en JSON.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'timestamp' => ['timestamp'],
+      'tenant_id' => ['tenant_id'],
+      'metric_type' => ['metric_type'],
+      'tenant_metric' => ['tenant_id', 'metric_type'],
+    ],
+  ];
+
   return $schema;
 }
 
@@ -438,3 +492,20 @@ function ecosistema_jaraba_core_update_9006() {
 
   return t('Tabla health_check_log ya existe.');
 }
+
+/**
+ * Crea la tabla finops_usage_log para tracking de uso por tenant.
+ */
+function ecosistema_jaraba_core_update_9007() {
+  $schema = ecosistema_jaraba_core_schema();
+  $database = \Drupal::database();
+
+  if (!$database->schema()->tableExists('finops_usage_log')) {
+    $database->schema()->createTable('finops_usage_log', $schema['finops_usage_log']);
+    \Drupal::logger('ecosistema_jaraba_core')->notice('Tabla finops_usage_log creada.');
+    return t('Tabla finops_usage_log creada para métricas FinOps reales.');
+  }
+
+  return t('Tabla finops_usage_log ya existe.');
+}
+

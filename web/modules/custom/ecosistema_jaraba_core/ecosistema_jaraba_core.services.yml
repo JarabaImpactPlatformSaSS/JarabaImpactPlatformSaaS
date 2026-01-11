@@ -78,3 +78,26 @@ services:
   logger.channel.ecosistema_jaraba_core:
     parent: logger.channel_base
     arguments: ['ecosistema_jaraba_core']
+
+  # ===========================================
+  # FINOPS - TRACKING DE USO POR TENANT
+  # ===========================================
+
+  # Servicio de tracking de métricas FinOps
+  # Registra API requests, storage y CPU por tenant
+  ecosistema_jaraba_core.finops_tracking:
+    class: Drupal\ecosistema_jaraba_core\Service\FinOpsTrackingService
+    arguments:
+      - '@database'
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Event subscriber para tracking automático de requests
+  # Se ejecuta en TERMINATE para no impactar performance
+  ecosistema_jaraba_core.request_tracking_subscriber:
+    class: Drupal\ecosistema_jaraba_core\EventSubscriber\RequestTrackingSubscriber
+    arguments:
+      - '@ecosistema_jaraba_core.finops_tracking'
+    tags:
+      - { name: event_subscriber }
+

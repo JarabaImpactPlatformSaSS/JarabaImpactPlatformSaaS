@@ -3,19 +3,48 @@
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\FinOpsTrackingService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Controller for the FinOps (Cost Optimization) Dashboard.
  *
- * Provides cost metrics and resource usage visualization:
- * - Resource usage per tenant
- * - Monthly cost projections
- * - Overspend alerts
- * - Optimization recommendations
+ * PROPÓSITO:
+ * Proporciona visualización de métricas de coste por tenant:
+ * - Uso de recursos por tenant (storage real, API requests trackeados)
+ * - Proyecciones mensuales de coste
+ * - Alertas de sobregasto
+ * - Recomendaciones de optimización
+ *
+ * FUENTES DE DATOS:
+ * - Storage: Calculado desde archivos y nodos reales
+ * - API Requests: Trackeados via RequestTrackingSubscriber
+ * - CPU: Estimado desde actividad
  */
 class FinOpsDashboardController extends ControllerBase
 {
+
+    /**
+     * Servicio de tracking FinOps.
+     */
+    protected ?FinOpsTrackingService $finopsTracking = NULL;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static
+    {
+        $instance = parent::create($container);
+
+        try {
+            $instance->finopsTracking = $container->get('ecosistema_jaraba_core.finops_tracking');
+        } catch (\Exception $e) {
+            // Service may not be available yet
+        }
+
+        return $instance;
+    }
 
     /**
      * Renders the FinOps dashboard page.
@@ -39,6 +68,8 @@ class FinOpsDashboardController extends ControllerBase
             '#projections' => $finops_data['projections'],
             '#alerts' => $finops_data['alerts'],
             '#recommendations' => $finops_data['recommendations'],
+            '#help_info' => $this->getHelpInfo(),
+            '#data_sources' => $finops_data['data_sources'],
             '#last_updated' => date('Y-m-d H:i:s'),
             '#cache' => [
                 'max-age' => 300, // Cache for 5 minutes
@@ -71,6 +102,7 @@ class FinOpsDashboardController extends ControllerBase
         $projections = $this->calculateProjections($totals);
         $alerts = $this->checkCostAlerts($tenants, $projections);
         $recommendations = $this->getOptimizationRecommendations($tenants);
+        $data_sources = $this->getDataSourceInfo($tenants);
 
         return [
             'tenants' => $tenants,
@@ -78,6 +110,7 @@ class FinOpsDashboardController extends ControllerBase
             'projections' => $projections,
             'alerts' => $alerts,
             'recommendations' => $recommendations,
+            'data_sources' => $data_sources,
             'timestamp' => time(),
         ];
     }
@@ -145,38 +178,62 @@ class FinOpsDashboardController extends ControllerBase
 
     /**
      * Calculate storage usage for a tenant.
+     * 
+     * FUENTE: Datos reales si FinOpsTrackingService disponible,
+     * estimación basada en nodos si no.
      */
     protected function calculateTenantStorage(string $tenant_id): float
     {
-        // Estimate based on content count
+        // Intentar usar servicio de tracking real
+        if ($this->finopsTracking) {
+            $storage = $this->finopsTracking->getStorageUsage($tenant_id);
+            if ($storage > 0) {
+                return $storage;
+            }
+        }
+
+        // Fallback: Estimar basado en content count
         try {
             $node_count = \Drupal::entityQuery('node')
                 ->accessCheck(FALSE)
-                ->condition('field_tenant', $tenant_id)
                 ->count()
                 ->execute();
 
-            // Estimate 0.5MB per node average
-            return $node_count * 0.5;
+            // Estimar 0.5MB por nodo (promedio)
+            // NOTA: Esta es una estimación, no datos reales por tenant
+            return max(10, $node_count * 0.5 / 3); // Dividir entre tenants estimados
         } catch (\Exception $e) {
-            // Fallback estimate
-            return rand(10, 500);
+            return 50.0; // Valor por defecto
         }
     }
 
     /**
      * Get API request count for a tenant.
+     * 
+     * FUENTE: Datos reales de tabla finops_usage_log si disponible,
+     * estimación desde State API si no.
      */
     protected function getTenantApiRequests(string $tenant_id): int
     {
+        // Intentar usar servicio de tracking real
+        if ($this->finopsTracking) {
+            // Obtener requests del último mes
+            $since = strtotime('-30 days');
+            $requests = $this->finopsTracking->getApiRequestCount($tenant_id, $since);
+            if ($requests > 0) {
+                return $requests;
+            }
+        }
+
+        // Fallback: State API (puede ser real si hay datos previos)
         $state = \Drupal::state();
-        $key = "finops_api_requests_{$tenant_id}";
+        $key = "finops_api_count_{$tenant_id}";
         $requests = $state->get($key, 0);
 
-        // If no data, generate estimate based on tenant activity
+        // Si no hay datos, estimar basado en tenant existente
         if ($requests === 0) {
-            $requests = rand(100, 10000);
-            $state->set($key, $requests);
+            // NOTA: Esto es estimación, se irá reemplazando con datos reales
+            $requests = 500; // Base inicial
         }
 
         return $requests;
@@ -444,6 +501,110 @@ class FinOpsDashboardController extends ControllerBase
                 ],
                 'status' => 'warning',
             ],
+        ];
+    }
+
+    /**
+     * Obtiene información de ayuda para el dashboard.
+     *
+     * @return array
+     *   Array con información de ayuda traducible.
+     */
+    protected function getHelpInfo(): array
+    {
+        return [
+            'title' => $this->t('About FinOps Dashboard'),
+            'description' => $this->t('This dashboard shows cost metrics and resource usage per tenant.'),
+            'metrics' => [
+                [
+                    'name' => $this->t('Storage (MB)'),
+                    'source' => $this->t('File system + content estimation'),
+                    'realtime' => FALSE,
+                ],
+                [
+                    'name' => $this->t('API Requests'),
+                    'source' => $this->t('Tracked automatically via RequestTrackingSubscriber'),
+                    'realtime' => TRUE,
+                ],
+                [
+                    'name' => $this->t('CPU Hours'),
+                    'source' => $this->t('Estimated from API and storage activity'),
+                    'realtime' => FALSE,
+                ],
+                [
+                    'name' => $this->t('Costs'),
+                    'source' => $this->t('Calculated from usage × unit prices'),
+                    'realtime' => FALSE,
+                ],
+            ],
+            'pricing' => [
+                'storage' => $this->t('€0.02 per MB'),
+                'api' => $this->t('€0.001 per request'),
+                'cpu' => $this->t('€0.10 per CPU hour'),
+            ],
+            'note' => $this->t('Data is collected automatically. API requests are tracked in real-time. Storage is recalculated periodically. Run "drush updb" to create the tracking table.'),
+        ];
+    }
+
+    /**
+     * Obtiene información sobre las fuentes de datos.
+     *
+     * @param array $tenants
+     *   Lista de tenants.
+     *
+     * @return array
+     *   Información sobre qué datos son reales vs estimados.
+     */
+    protected function getDataSourceInfo(array $tenants): array
+    {
+        $has_real_data = FALSE;
+        $has_tracking_table = FALSE;
+
+        // Verificar si existe la tabla de tracking
+        try {
+            $has_tracking_table = \Drupal::database()->schema()->tableExists('finops_usage_log');
+        } catch (\Exception $e) {
+            // Ignore
+        }
+
+        // Verificar si hay datos reales en la tabla
+        if ($has_tracking_table) {
+            try {
+                $count = \Drupal::database()->select('finops_usage_log', 'f')
+                    ->countQuery()
+                    ->execute()
+                    ->fetchField();
+                $has_real_data = $count > 0;
+            } catch (\Exception $e) {
+                // Ignore
+            }
+        }
+
+        return [
+            'tracking_enabled' => $has_tracking_table,
+            'has_real_data' => $has_real_data,
+            'sources' => [
+                'storage' => [
+                    'type' => $this->t('Estimated'),
+                    'description' => $this->t('Based on file count and content nodes'),
+                ],
+                'api_requests' => [
+                    'type' => $has_real_data ? $this->t('Real') : $this->t('Estimated'),
+                    'description' => $has_real_data
+                        ? $this->t('Tracked from actual HTTP requests')
+                        : $this->t('Will become real once tracking starts'),
+                ],
+                'cpu_hours' => [
+                    'type' => $this->t('Estimated'),
+                    'description' => $this->t('Calculated from activity patterns'),
+                ],
+                'costs' => [
+                    'type' => $this->t('Calculated'),
+                    'description' => $this->t('Usage × unit price (configurable)'),
+                ],
+            ],
+            'setup_required' => !$has_tracking_table,
+            'setup_command' => 'lando drush updb -y && lando drush cr',
         ];
     }
 
