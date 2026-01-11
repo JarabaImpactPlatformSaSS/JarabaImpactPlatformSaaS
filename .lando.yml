@@ -122,3 +122,28 @@ tooling:
   import-config:
     service: appserver
     cmd: drush cim -y
+
+  # ─────────────────────────────────────────────────────
+  # SELF-HEALING - Comandos de auto-recuperación
+  # Basado en Game Day #1 (2026-01-11)
+  # ─────────────────────────────────────────────────────
+  
+  self-heal:
+    service: appserver
+    description: Ejecutar todos los checks de self-healing
+    cmd: /app/scripts/self-healing/run-all.sh
+
+  self-heal-db:
+    service: appserver
+    description: Check y recovery de base de datos
+    cmd: /app/scripts/self-healing/db-health.sh
+
+  self-heal-qdrant:
+    service: appserver
+    description: Check y recovery de Qdrant
+    cmd: /app/scripts/self-healing/qdrant-health.sh
+
+  self-heal-cache:
+    service: appserver
+    description: Check y recovery de cache
+    cmd: /app/scripts/self-healing/cache-recovery.sh
