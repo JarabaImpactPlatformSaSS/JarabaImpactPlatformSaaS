@@ -1,0 +1,398 @@
+# =============================================================================
+# JARABA IMPACT PLATFORM - ARCHITECTURE AS CODE
+# =============================================================================
+# Este archivo define la arquitectura completa de la plataforma de forma
+# declarativa. Sirve como fuente de verdad para:
+#   - Documentación de infraestructura
+#   - Validación de drift en CI/CD
+#   - Onboarding de nuevos desarrolladores
+#   - Disaster Recovery Planning
+#
+# Versión: 1.0.0
+# Última actualización: 2026-01-11
+# Sprint: Level 5 - Sprint 4 (Architecture as Code)
+# =============================================================================
+
+version: "1.0"
+name: jaraba-impact-platform
+environment: development  # development | staging | production
+
+# =============================================================================
+# METADATA
+# =============================================================================
+metadata:
+  project: Jaraba Impact Platform SaaS
+  description: Plataforma multi-tenant para ecosistemas de productores
+  repository: https://github.com/JarabaImpactPlatformSaSS/JarabaImpactPlatformSaaS
+  documentation: docs/
+  owner: Pepe Jaraba
+  contact: contacto@pepejaraba.es
+  
+  # Nivel de madurez arquitectónica
+  maturity:
+    level: 4.7
+    target: 5.0
+    last_assessment: "2026-01-11"
+
+# =============================================================================
+# SERVICES
+# =============================================================================
+services:
+  # ---------------------------------------------------------------------------
+  # DRUPAL APPLICATION
+  # ---------------------------------------------------------------------------
+  drupal:
+    type: php-application
+    framework: drupal
+    version: "11.3.2"
+    php_version: "8.4"
+    
+    resources:
+      development:
+        memory: 512Mi
+        cpu: 1
+      staging:
+        memory: 1Gi
+        cpu: 2
+      production:
+        memory: 2Gi
+        cpu: 4
+        replicas: 2
+    
+    modules:
+      core:
+        - ecosistema_jaraba_core
+        - jaraba_rag
+      commerce:
+        - jaraba_commerce
+        - jaraba_social_commerce
+      contrib:
+        - commerce
+        - group
+        - domain
+        - domain_access
+    
+    healthcheck:
+      endpoint: /health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    # SLA por tier
+    sla:
+      starter:
+        uptime: 99.0%
+        support_response: 48h
+      professional:
+        uptime: 99.5%
+        support_response: 24h
+      enterprise:
+        uptime: 99.9%
+        support_response: 4h
+
+  # ---------------------------------------------------------------------------
+  # DATABASE
+  # ---------------------------------------------------------------------------
+  database:
+    type: mariadb
+    version: "10.11"
+    
+    resources:
+      development:
+        memory: 512Mi
+        storage: 10Gi
+      staging:
+        memory: 1Gi
+        storage: 50Gi
+      production:
+        memory: 4Gi
+        storage: 200Gi
+        replicas: 2  # Primary + Replica
+    
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      retention: 30  # days
+      type: full
+    
+    healthcheck:
+      command: mysqladmin ping
+      interval: 30s
+      timeout: 5s
+    
+    # Game Day #1 finding: container pause causes indefinite timeout
+    monitoring:
+      pause_detection: true
+      auto_unpause: true
+
+  # ---------------------------------------------------------------------------
+  # QDRANT (VECTOR DATABASE)
+  # ---------------------------------------------------------------------------
+  qdrant:
+    type: vector-database
+    version: latest
+    
+    resources:
+      development:
+        memory: 512Mi
+        storage: 5Gi
+      production:
+        memory: 2Gi
+        storage: 50Gi
+    
+    config:
+      grpc_port: 6334
+      http_port: 6333
+      collection: jaraba_kb
+      vector_dimensions: 1536  # OpenAI text-embedding-3-small
+    
+    # Game Day #1 optimization
+    timeouts:
+      connect: 2s
+      request: 3s  # Reduced from 30s
+    
+    healthcheck:
+      endpoint: /
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # CACHE (Future: Redis)
+  # ---------------------------------------------------------------------------
+  cache:
+    type: database-cache  # Current: Drupal DB cache
+    future: redis
+    
+    config:
+      backend: Drupal\Core\Cache\DatabaseBackend
+      bins:
+        - cache_default
+        - cache_render
+        - cache_page
+        - cache_dynamic_page_cache
+
+# =============================================================================
+# SELF-HEALING
+# =============================================================================
+self_healing:
+  enabled: true
+  scripts_path: scripts/self-healing/
+  
+  runbooks:
+    database:
+      script: db-health.sh
+      mttr_target: 10s
+      triggers:
+        - container_paused
+        - connection_timeout
+      actions:
+        - docker_unpause
+        - docker_restart
+    
+    qdrant:
+      script: qdrant-health.sh
+      mttr_target: 30s
+      triggers:
+        - container_paused
+        - http_timeout
+      actions:
+        - docker_unpause
+        - docker_restart
+    
+    cache:
+      script: cache-recovery.sh
+      mttr_target: 60s
+      triggers:
+        - slow_response
+        - error_rate_high
+      actions:
+        - drush_cr
+        - warm_critical_pages
+  
+  notifications:
+    email: contacto@pepejaraba.es
+    on_success: true
+    on_failure: true
+  
+  schedule:
+    master_check: "* * * * *"  # Every minute
+    cache_check: "*/5 * * * *"  # Every 5 minutes
+
+# =============================================================================
+# SECURITY POLICIES
+# =============================================================================
+security:
+  encryption:
+    at_rest: true
+    in_transit: true
+    algorithm: AES-256
+  
+  secrets:
+    manager: drupal_key
+    rotation: 90  # days
+  
+  authentication:
+    mfa_required: false  # Per tenant configuration
+    session_timeout: 3600  # seconds
+  
+  gdpr:
+    enabled: true
+    data_retention: 365  # days
+    right_to_erasure: true
+
+# =============================================================================
+# RELIABILITY POLICIES
+# =============================================================================
+reliability:
+  # SLA Tiers (defined per service above)
+  default_tier: starter
+  
+  # Disaster Recovery
+  disaster_recovery:
+    rpo: 24h  # Recovery Point Objective
+    rto: 4h   # Recovery Time Objective
+    backup_location: offsite
+  
+  # Chaos Engineering
+  chaos_engineering:
+    game_days:
+      - date: "2026-01-11"
+        experiments: 5
+        passed: 5
+        next_scheduled: "Q2 2026"
+  
+  # MTTR Targets
+  mttr:
+    p50: 5m
+    p95: 15m
+    p99: 30m
+
+# =============================================================================
+# OBSERVABILITY
+# =============================================================================
+observability:
+  logging:
+    driver: drupal_watchdog
+    retention: 30  # days
+    levels:
+      - error
+      - warning
+      - info
+  
+  metrics:
+    enabled: true
+    endpoints:
+      - /admin/reports/status
+    
+  health_endpoints:
+    - path: /
+      expected_status: 200
+      timeout: 3s
+
+# =============================================================================
+# COST MANAGEMENT (FinOps)
+# =============================================================================
+cost:
+  budget:
+    monthly: 500  # EUR
+    alerts:
+      - threshold: 80%
+        action: notify
+      - threshold: 100%
+        action: notify_and_throttle
+  
+  optimization:
+    auto_scaling: false  # Manual for now
+    reserved_instances: false
+    spot_instances: false
+
+# =============================================================================
+# MULTI-TENANCY
+# =============================================================================
+multi_tenancy:
+  isolation: group_based
+  modules:
+    - group
+    - domain
+    - domain_access
+  
+  tenant_types:
+    - name: starter
+      max_products: 50
+      max_users: 5
+      features:
+        - basic_store
+        - email_support
+    
+    - name: professional
+      max_products: 500
+      max_users: 25
+      features:
+        - advanced_analytics
+        - priority_support
+        - custom_domain
+    
+    - name: enterprise
+      max_products: unlimited
+      max_users: unlimited
+      features:
+        - dedicated_resources
+        - sla_99_9
+        - white_label
+
+# =============================================================================
+# CI/CD
+# =============================================================================
+ci_cd:
+  provider: github_actions
+  
+  pipelines:
+    ci:
+      trigger: pull_request
+      steps:
+        - lint
+        - unit_tests
+        - security_scan
+    
+    deploy:
+      trigger: push_to_main
+      steps:
+        - backup
+        - deploy
+        - smoke_test
+        - notify
+  
+  fitness_functions:
+    enabled: true
+    checks:
+      - max_file_size: 500KB
+      - no_hardcoded_secrets: true
+      - dependency_freshness: 180  # days
+
+# =============================================================================
+# ENVIRONMENTS
+# =============================================================================
+environments:
+  development:
+    provider: lando
+    url: https://jaraba-saas.lndo.site
+    features:
+      - hot_reload
+      - debug_mode
+      - self_healing_scripts
+  
+  staging:
+    provider: ionos
+    url: https://staging.plataformadeecosistemas.com
+    features:
+      - pre_production_testing
+      - chaos_engineering
+  
+  production:
+    provider: ionos
+    url: https://plataformadeecosistemas.com
+    features:
+      - ssl_required
+      - backup_enabled
+      - monitoring_enabled
