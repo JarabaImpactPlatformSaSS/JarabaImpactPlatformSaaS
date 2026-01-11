@@ -64,6 +64,44 @@ services:
         retries: 3
         start_period: 10s
 
+  # ─────────────────────────────────────────────────────
+  # PROMETHEUS - Recolección de Métricas
+  # ─────────────────────────────────────────────────────
+  # URL: http://prometheus.jaraba-saas.lndo.site:9090
+  # ─────────────────────────────────────────────────────
+  prometheus:
+    type: compose
+    services:
+      image: prom/prometheus:latest
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus'
+        - '--web.enable-lifecycle'
+      ports:
+        - "9090:9090"
+      volumes:
+        - ./monitoring/prometheus:/etc/prometheus
+
+  # ─────────────────────────────────────────────────────
+  # GRAFANA - Dashboard de Observabilidad
+  # ─────────────────────────────────────────────────────
+  # URL: http://grafana.jaraba-saas.lndo.site:3000
+  # Credenciales: admin / jaraba123
+  # ─────────────────────────────────────────────────────
+  grafana:
+    type: compose
+    services:
+      image: grafana/grafana:latest
+      ports:
+        - "3000:3000"
+      environment:
+        GF_SECURITY_ADMIN_USER: admin
+        GF_SECURITY_ADMIN_PASSWORD: jaraba123
+        GF_USERS_ALLOW_SIGN_UP: "false"
+      volumes:
+        - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+        - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+
 # =============================================================================
 # PROXY
 # =============================================================================
@@ -82,6 +120,11 @@ proxy:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:
     - qdrant.jaraba-saas.lndo.site:6333
+  # Observability Stack
+  grafana:
+    - grafana.jaraba-saas.lndo.site:3000
+  prometheus:
+    - prometheus.jaraba-saas.lndo.site:9090
 
 # =============================================================================
 # TOOLING

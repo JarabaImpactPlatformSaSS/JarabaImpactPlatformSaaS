@@ -1,0 +1,60 @@
+# Prometheus Configuration for Jaraba Impact Platform
+# ===================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alerting configuration
+alerting:
+  alertmanagers: []
+
+# Rule files (for alerting)
+rule_files: []
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Drupal application metrics (via custom endpoint)
+  - job_name: 'drupal'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['appserver:80']
+        labels:
+          service: 'drupal'
+          environment: 'development'
+    # Skip if endpoint doesn't exist
+    scrape_timeout: 5s
+
+  # Qdrant vector database
+  - job_name: 'qdrant'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['qdrant:6333']
+        labels:
+          service: 'qdrant'
+          environment: 'development'
+    scrape_timeout: 5s
+
+  # Blackbox probe for site availability
+  - job_name: 'site_availability'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://jaraba-saas.lndo.site
+        labels:
+          service: 'site'
+          environment: 'development'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
