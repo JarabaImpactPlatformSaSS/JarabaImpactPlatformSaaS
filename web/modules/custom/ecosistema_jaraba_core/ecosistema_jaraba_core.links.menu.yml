@@ -111,4 +111,10 @@ ecosistema_jaraba_core.finops_dashboard_menu:
   parent: system.admin_reports
   weight: 98
 
-
+# Configuración FinOps (Admin > Configuration)
+ecosistema_jaraba_core.finops_settings_menu:
+  title: 'FinOps Settings'
+  description: 'Configurar precios unitarios y umbrales de presupuesto'
+  route_name: ecosistema_jaraba_core.finops.settings
+  parent: system.admin_config_system
+  weight: 50

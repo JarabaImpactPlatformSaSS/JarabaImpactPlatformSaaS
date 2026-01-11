@@ -263,6 +263,13 @@
     {% if data_sources.sources %}
     <div class="finops-help__sources">
       <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">{% trans %}Data Sources{% endtrans %}</h3>
+      {# Diccionario de traducciones para keys de métrica #}
+      {% set metric_labels = {
+        'storage': 'Storage'|trans,
+        'api_requests': 'API Requests'|trans,
+        'cpu_hours': 'CPU Hours'|trans,
+        'costs': 'Costs'|trans
+      } %}
       <table class="table table--modern" style="margin-bottom: 1rem;">
         <thead>
           <tr>
@@ -274,7 +281,7 @@
         <tbody>
           {% for key, source in data_sources.sources %}
           <tr>
-            <td><strong>{{ key|replace({'_': ' '})|capitalize }}</strong></td>
+            <td><strong>{{ metric_labels[key]|default(key|replace({'_': ' '})|capitalize) }}</strong></td>
             <td>
               <span class="tier-badge tier-badge--{% if source.type|render == 'Real' %}professional{% else %}basic{% endif %}">
                 {{ source.type }}
@@ -323,6 +330,16 @@
     <p class="finops-help__note" style="font-size: 0.875rem; color: var(--finops-text-muted, #94a3b8); margin: 0;">
       <span style="margin-right: 0.5rem;">💡</span>{{ help_info.note }}
     </p>
+    {% endif %}
+    
+    {# Link to Settings #}
+    {% if help_info.settings_url %}
+    <div style="margin-top: 1rem;">
+      <a href="{{ help_info.settings_url }}" class="action-btn action-btn--primary">
+        <span class="action-btn__icon">⚙️</span>
+        {% trans %}Configure Pricing{% endtrans %}
+      </a>
+    </div>
     {% endif %}
   </div>
   {% endif %}

@@ -143,10 +143,11 @@ class FinOpsDashboardController extends ControllerBase
                 $plan = $tenant->get('plan')->entity;
                 $tier = $plan ? $plan->id() : 'basic';
 
-                // Calculate costs
-                $storage_cost = $storage_mb * 0.02; // €0.02 per MB
-                $api_cost = $api_requests * 0.001; // €0.001 per request
-                $cpu_cost = $cpu_hours * 0.10; // €0.10 per CPU hour
+                // Calculate costs from config (NOT hardcoded)
+                $config = $this->getFinOpsConfig();
+                $storage_cost = $storage_mb * $config['price_storage_mb'];
+                $api_cost = $api_requests * $config['price_api_request'];
+                $cpu_cost = $cpu_hours * $config['price_cpu_hour'];
                 $total_cost = $storage_cost + $api_cost + $cpu_cost;
 
                 $tenants[] = [
@@ -253,10 +254,22 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function getTenantCostStatus(float $cost, string $tier): string
     {
+        // Leer thresholds desde config (NOT hardcoded)
+        $config = $this->getFinOpsConfig();
+
         $thresholds = [
-            'basic' => ['warning' => 50, 'critical' => 100],
-            'professional' => ['warning' => 200, 'critical' => 500],
-            'enterprise' => ['warning' => 1000, 'critical' => 2500],
+            'basic' => [
+                'warning' => $config['tier_limits']['basic']['warning'],
+                'critical' => $config['tier_limits']['basic']['critical'],
+            ],
+            'professional' => [
+                'warning' => $config['tier_limits']['professional']['warning'],
+                'critical' => $config['tier_limits']['professional']['critical'],
+            ],
+            'enterprise' => [
+                'warning' => $config['tier_limits']['enterprise']['warning'],
+                'critical' => $config['tier_limits']['enterprise']['critical'],
+            ],
         ];
 
         $limits = $thresholds[$tier] ?? $thresholds['basic'];
@@ -310,15 +323,19 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function calculateProjections(array $totals): array
     {
+        $config = $this->getFinOpsConfig();
         $daily_cost = $totals['cost_total'];
         $days_in_month = date('t');
         $current_day = date('j');
+        $monthly_budget = $config['monthly_budget'];
+
+        $monthly_projected = round(($daily_cost / max($current_day, 1)) * $days_in_month, 2);
 
         return [
             'daily_average' => round($daily_cost / max($current_day, 1), 2),
-            'monthly_projected' => round(($daily_cost / max($current_day, 1)) * $days_in_month, 2),
-            'monthly_budget' => 5000.00, // Configurable
-            'budget_usage_percent' => round((($daily_cost / max($current_day, 1)) * $days_in_month / 5000) * 100, 1),
+            'monthly_projected' => $monthly_projected,
+            'monthly_budget' => $monthly_budget,
+            'budget_usage_percent' => round(($monthly_projected / $monthly_budget) * 100, 1),
             'trend' => $this->calculateCostTrend(),
         ];
     }
@@ -351,10 +368,11 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function checkCostAlerts(array $tenants, array $projections): array
     {
+        $config = $this->getFinOpsConfig();
         $alerts = [];
 
-        // Budget alert
-        if ($projections['budget_usage_percent'] > 90) {
+        // Budget alert - usar thresholds desde config
+        if ($projections['budget_usage_percent'] > $config['critical_threshold']) {
             $alerts[] = [
                 'type' => 'critical',
                 'title' => $this->t('Budget Alert'),
@@ -362,7 +380,7 @@ class FinOpsDashboardController extends ControllerBase
                     '@percent' => $projections['budget_usage_percent'],
                 ]),
             ];
-        } elseif ($projections['budget_usage_percent'] > 75) {
+        } elseif ($projections['budget_usage_percent'] > $config['warning_threshold']) {
             $alerts[] = [
                 'type' => 'warning',
                 'title' => $this->t('Budget Warning'),
@@ -512,6 +530,8 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function getHelpInfo(): array
     {
+        $config = $this->getFinOpsConfig();
+
         return [
             'title' => $this->t('About FinOps Dashboard'),
             'description' => $this->t('This dashboard shows cost metrics and resource usage per tenant.'),
@@ -538,11 +558,12 @@ class FinOpsDashboardController extends ControllerBase
                 ],
             ],
             'pricing' => [
-                'storage' => $this->t('€0.02 per MB'),
-                'api' => $this->t('€0.001 per request'),
-                'cpu' => $this->t('€0.10 per CPU hour'),
+                'storage' => $this->t('€@price per MB', ['@price' => $config['price_storage_mb']]),
+                'api' => $this->t('€@price per request', ['@price' => $config['price_api_request']]),
+                'cpu' => $this->t('€@price per CPU hour', ['@price' => $config['price_cpu_hour']]),
             ],
             'note' => $this->t('Data is collected automatically. API requests are tracked in real-time. Storage is recalculated periodically. Run "drush updb" to create the tracking table.'),
+            'settings_url' => '/admin/config/finops',
         ];
     }
 
@@ -606,6 +627,56 @@ class FinOpsDashboardController extends ControllerBase
             'setup_required' => !$has_tracking_table,
             'setup_command' => 'lando drush updb -y && lando drush cr',
         ];
+    }
+
+    /**
+     * Obtiene la configuración de FinOps desde Config API.
+     *
+     * Lee los precios unitarios y umbrales desde la configuración,
+     * con valores por defecto si no están configurados.
+     *
+     * @return array
+     *   Array con todos los valores de configuración.
+     */
+    protected function getFinOpsConfig(): array
+    {
+        static $config_cache = NULL;
+
+        if ($config_cache !== NULL) {
+            return $config_cache;
+        }
+
+        $config = \Drupal::config('ecosistema_jaraba_core.finops');
+
+        $config_cache = [
+            // Precios unitarios
+            'price_storage_mb' => (float) ($config->get('price_storage_mb') ?: 0.02),
+            'price_api_request' => (float) ($config->get('price_api_request') ?: 0.001),
+            'price_cpu_hour' => (float) ($config->get('price_cpu_hour') ?: 0.10),
+
+            // Presupuesto
+            'monthly_budget' => (float) ($config->get('monthly_budget') ?: 5000),
+            'warning_threshold' => (int) ($config->get('warning_threshold') ?: 75),
+            'critical_threshold' => (int) ($config->get('critical_threshold') ?: 90),
+
+            // Límites por tier
+            'tier_limits' => [
+                'basic' => [
+                    'warning' => (float) ($config->get('tier_limits.basic.warning') ?: 50),
+                    'critical' => (float) ($config->get('tier_limits.basic.critical') ?: 100),
+                ],
+                'professional' => [
+                    'warning' => (float) ($config->get('tier_limits.professional.warning') ?: 200),
+                    'critical' => (float) ($config->get('tier_limits.professional.critical') ?: 500),
+                ],
+                'enterprise' => [
+                    'warning' => (float) ($config->get('tier_limits.enterprise.warning') ?: 1000),
+                    'critical' => (float) ($config->get('tier_limits.enterprise.critical') ?: 2500),
+                ],
+            ],
+        ];
+
+        return $config_cache;
     }
 
 }

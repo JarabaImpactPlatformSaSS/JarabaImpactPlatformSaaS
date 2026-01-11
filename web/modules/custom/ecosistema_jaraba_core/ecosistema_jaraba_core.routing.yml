@@ -481,3 +481,13 @@ ecosistema_jaraba_core.finops.api:
     _permission: 'administer site configuration'
   methods: [GET]
 
+# Configuración de precios FinOps
+ecosistema_jaraba_core.finops.settings:
+  path: '/admin/config/finops'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\FinOpsSettingsForm'
+    _title: 'FinOps Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
