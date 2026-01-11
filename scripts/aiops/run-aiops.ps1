@@ -45,16 +45,20 @@ Write-Host "============================================================" -Foreg
 Write-Host ""
 
 # Step 1: Collect metrics
-Write-Log "INFO" "Step 1/4: Collecting metrics..."
+Write-Log "INFO" "Step 1/5: Collecting metrics..."
 $metrics = & (Join-Path $PSScriptRoot "collect-metrics.ps1") -Verbose:$Verbose
 
 # Step 2: Detect anomalies
-Write-Log "INFO" "Step 2/4: Detecting anomalies..."
+Write-Log "INFO" "Step 2/5: Detecting anomalies..."
 $anomalies = & (Join-Path $PSScriptRoot "detect-anomalies.ps1") -Verbose:$Verbose
+
+# Step 2.5: Predict capacity (if enough data)
+Write-Log "INFO" "Step 3/5: Predicting capacity..."
+$predictions = & (Join-Path $PSScriptRoot "predict-capacity.ps1") -ForecastHours 24 -Verbose:$Verbose
 
 # Step 3: Auto-remediate if enabled
 if ($AutoRemediate -and $anomalies.Count -gt 0) {
-    Write-Log "ACTION" "Step 3/4: Auto-remediating..."
+    Write-Log "ACTION" "Step 4/5: Auto-remediating..."
     
     foreach ($anomaly in $anomalies) {
         switch ($anomaly.name) {

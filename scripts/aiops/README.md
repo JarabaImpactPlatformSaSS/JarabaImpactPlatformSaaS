@@ -48,7 +48,8 @@ Sistema de operaciones inteligentes basado en detección de anomalías.
 |--------|---------|
 | `collect-metrics.ps1` | Recolecta métricas del sistema |
 | `detect-anomalies.ps1` | Detecta anomalías con análisis estadístico |
-| `run-aiops.ps1` | Pipeline completo |
+| `predict-capacity.ps1` | Predicción de capacidad con regresión lineal |
+| `run-aiops.ps1` | Pipeline completo (5 pasos) |
 
 ## Métricas Recolectadas
 
