@@ -84,7 +84,7 @@ tenant_dashboard:
   version: 1.x
   css:
     theme:
-      css/tenant-dashboard.css: {}
+      css/ecosistema-jaraba-core.css: {}
   js:
     js/ecosistema-jaraba-billing.js: {}
   dependencies:
@@ -101,7 +101,7 @@ health-dashboard:
   version: 1.x
   css:
     theme:
-      css/health-dashboard.css: {}
+      css/ecosistema-jaraba-core.css: {}
   js:
     js/health-dashboard.js: {}
   dependencies:
