@@ -551,95 +551,141 @@ function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percenta
  * Añade la librería de estilos premium a las páginas de estructura del admin.
  */
 function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
-  $route_name = \Drupal::routeMatch()->getRouteName();
+  // Obtener el path actual (sin el prefijo de idioma)
+  $current_path = \Drupal::service('path.current')->getPath();
   
-  // Rutas de estructura que necesitan UX Premium
-  $premium_routes = [
-    'entity.tenant.collection',
-    'entity.vertical.collection',
-    'entity.saas_feature.collection',
-    'entity.ai_agent.collection',
-    'entity.saas_plan.collection',
+  // Paths de estructura que necesitan UX Premium
+  $premium_paths = [
+    '/admin/structure/tenants',
+    '/admin/structure/verticales',
+    '/admin/structure/features',
+    '/admin/structure/ai-agents',
+    '/admin/structure/saas-plans',
   ];
   
-  // También incluir rutas que empiecen con estas bases
-  $premium_route_prefixes = [
-    'entity.tenant.',
-    'entity.vertical.',
-    'entity.saas_feature.',
-    'entity.ai_agent.',
-    'entity.saas_plan.',
-    'view.tenants.',
-    'view.verticales.',
-  ];
-  
-  $load_premium = in_array($route_name, $premium_routes);
-  
-  if (!$load_premium) {
-    foreach ($premium_route_prefixes as $prefix) {
-      if (strpos($route_name, $prefix) === 0) {
-        $load_premium = TRUE;
-        break;
-      }
+  $load_premium = FALSE;
+  foreach ($premium_paths as $path) {
+    if (strpos($current_path, $path) === 0) {
+      $load_premium = TRUE;
+      break;
     }
   }
   
   if ($load_premium) {
     $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/global';
+    // Usar CSS más específico con selectores que funcionen
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
         '#tag' => 'style',
         '#value' => '
           /* UX Premium para páginas de estructura */
-          .page-admin-structure .layout-container,
-          .page-admin-structure .block-system-main-block,
-          [class*="entity-list"],
-          .view-tenants,
-          .view-verticales {
+          body.path-admin {
             background: #0f172a !important;
-            color: #e2e8f0 !important;
-            border-radius: 14px;
-            padding: 1.5rem;
+          }
+          
+          body.path-admin .layout-container {
+            background: #0f172a !important;
             min-height: 100vh;
           }
-          .page-admin-structure table {
-            background: rgba(30, 41, 59, 0.8) !important;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            overflow: hidden;
-          }
-          .page-admin-structure table thead th {
-            background: rgba(30, 41, 59, 0.9) !important;
-            color: #94a3b8 !important;
-            border-bottom: 1px solid #eee;
-          }
-          .page-admin-structure table tbody td {
+          
+          body.path-admin .gin-layer-wrapper,
+          body.path-admin .region-content {
+            background: #0f172a !important;
             color: #e2e8f0 !important;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 1.5rem;
+            border-radius: 14px;
           }
-          .page-admin-structure table tbody tr:hover td {
+          
+          body.path-admin h1.page-title,
+          body.path-admin .block-page-title-block h1 {
+            color: #e2e8f0 !important;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          
+          body.path-admin table {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 1px solid #eee !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+            border-collapse: separate !important;
+          }
+          
+          body.path-admin table thead tr {
+            background: rgba(30, 41, 59, 0.95) !important;
+          }
+          
+          body.path-admin table thead th {
+            background: transparent !important;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid #eee !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+          }
+          
+          body.path-admin table tbody td {
+            color: #e2e8f0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+            background: transparent !important;
+          }
+          
+          body.path-admin table tbody tr:hover td {
             background: rgba(30, 41, 59, 0.6) !important;
           }
-          .page-admin-structure .action-links a,
-          .page-admin-structure .button--primary {
+          
+          body.path-admin .action-links a,
+          body.path-admin a.button--primary,
+          body.path-admin .button--primary {
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: white !important;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            border: none;
+            border-radius: 8px !important;
+            padding: 0.75rem 1.5rem !important;
+            border: none !important;
+            text-decoration: none !important;
+            display: inline-block;
+            font-weight: 500;
           }
-          .page-admin-structure h1,
-          .page-admin-structure .page-title {
-            color: #e2e8f0 !important;
+          
+          body.path-admin .action-links a:hover,
+          body.path-admin a.button--primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            transform: translateY(-1px);
           }
-          .page-admin-structure a {
+          
+          body.path-admin a:not(.button) {
             color: #60a5fa;
           }
-          .page-admin-structure .dropbutton-wrapper .dropbutton-widget {
-            background: rgba(30, 41, 59, 0.9) !important;
-            border: 1px solid #eee;
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-widget {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border: 1px solid #eee !important;
+            border-radius: 8px !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-widget button,
+          body.path-admin .dropbutton-wrapper .dropbutton-widget a {
+            color: #e2e8f0 !important;
+            background: transparent !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-widget a:hover {
+            background: rgba(96, 165, 250, 0.2) !important;
+          }
+          
+          body.path-admin .messages {
             border-radius: 8px;
+          }
+          
+          body.path-admin .breadcrumb ol li a {
+            color: #94a3b8 !important;
+          }
+          
+          body.path-admin .breadcrumb ol li a:hover {
+            color: #60a5fa !important;
           }
         ',
       ],
@@ -647,3 +693,4 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ];
   }
 }
+
