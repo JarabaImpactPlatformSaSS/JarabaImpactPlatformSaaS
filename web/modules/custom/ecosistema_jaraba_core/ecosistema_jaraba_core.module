@@ -587,16 +587,25 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           body.path-admin .layout-container {
             background: #0f172a !important;
             min-height: 100vh;
+            padding: 0 !important;
           }
           
-          body.path-admin .gin-layer-wrapper,
+          /* Contenedor principal con padding y diseño mejorado */
+          body.path-admin main.page-content,
           body.path-admin .region-content {
-            background: #0f172a !important;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
             color: #e2e8f0 !important;
-            padding: 1.5rem;
-            border-radius: 14px;
+            padding: 2rem !important;
+            margin: 0 !important;
+            min-height: calc(100vh - 80px);
           }
           
+          body.path-admin .gin-layer-wrapper {
+            background: transparent !important;
+            padding: 0 !important;
+          }
+          
+          /* Título con margen reducido */
           body.path-admin h1.page-title,
           body.path-admin .block-page-title-block h1 {
             color: #e2e8f0 !important;
@@ -604,14 +613,34 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            margin-bottom: 1.5rem !important;
+            font-size: 1.75rem;
+          }
+          
+          /* Reducir espacio de bloques intermedios */
+          body.path-admin .block-page-title-block {
+            margin-bottom: 0 !important;
+          }
+          
+          body.path-admin .block-local-tasks-block,
+          body.path-admin .block-local-actions-block {
+            margin-top: 0 !important;
+            margin-bottom: 1rem !important;
+          }
+          
+          /* Tabla sin scroll excesivo */
+          body.path-admin .view-content,
+          body.path-admin .views-element-container {
+            margin-top: 0 !important;
           }
           
           body.path-admin table {
             background: rgba(30, 41, 59, 0.8) !important;
-            border: 1px solid #eee !important;
+            border: 1px solid rgba(238, 238, 238, 0.3) !important;
             border-radius: 12px !important;
             overflow: hidden;
             border-collapse: separate !important;
+            margin-top: 1rem !important;
           }
           
           body.path-admin table thead tr {
@@ -621,29 +650,33 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           body.path-admin table thead th {
             background: rgba(30, 41, 59, 0.95) !important;
             color: #94a3b8 !important;
-            border-bottom: 1px solid #eee !important;
+            border-bottom: 1px solid rgba(238, 238, 238, 0.3) !important;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
+            padding: 1rem !important;
           }
           
           body.path-admin table tbody tr {
-            background: rgba(30, 41, 59, 0.8) !important;
+            background: rgba(30, 41, 59, 0.6) !important;
           }
           
           body.path-admin table tbody td {
             color: #e2e8f0 !important;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
-            background: rgba(30, 41, 59, 0.8) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15) !important;
+            background: rgba(30, 41, 59, 0.6) !important;
+            padding: 0.875rem 1rem !important;
           }
           
           body.path-admin table tbody tr:hover td {
-            background: rgba(30, 41, 59, 0.95) !important;
+            background: rgba(30, 41, 59, 0.9) !important;
           }
           
+          /* Botones sin subrayado y con estilo premium */
           body.path-admin .action-links a,
           body.path-admin a.button--primary,
-          body.path-admin .button--primary {
+          body.path-admin .button--primary,
+          body.path-admin .btn.btn-primary {
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: white !important;
             border-radius: 8px !important;
@@ -652,21 +685,30 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             text-decoration: none !important;
             display: inline-block;
             font-weight: 500;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
           }
           
           body.path-admin .action-links a:hover,
-          body.path-admin a.button--primary:hover {
+          body.path-admin a.button--primary:hover,
+          body.path-admin .btn.btn-primary:hover {
             background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
             transform: translateY(-1px);
+            text-decoration: none !important;
           }
           
-          body.path-admin a:not(.button) {
+          /* Links sin subrayado en botones */
+          body.path-admin a.btn,
+          body.path-admin .premium-header__actions a {
+            text-decoration: none !important;
+          }
+          
+          body.path-admin a:not(.button):not(.btn) {
             color: #60a5fa;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-widget {
             background: rgba(30, 41, 59, 0.95) !important;
-            border: 1px solid #eee !important;
+            border: 1px solid rgba(238, 238, 238, 0.3) !important;
             border-radius: 8px !important;
           }
           
@@ -674,6 +716,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           body.path-admin .dropbutton-wrapper .dropbutton-widget a {
             color: #e2e8f0 !important;
             background: transparent !important;
+            text-decoration: none !important;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-widget a:hover {
@@ -682,14 +725,32 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           
           body.path-admin .messages {
             border-radius: 8px;
+            margin-bottom: 1rem;
           }
           
           body.path-admin .breadcrumb ol li a {
             color: #94a3b8 !important;
+            text-decoration: none !important;
           }
           
           body.path-admin .breadcrumb ol li a:hover {
             color: #60a5fa !important;
+          }
+          
+          /* Tabs locales */
+          body.path-admin .tabs--primary {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            margin-bottom: 1rem;
+          }
+          
+          body.path-admin .tabs--primary a {
+            color: #94a3b8 !important;
+            text-decoration: none !important;
+          }
+          
+          body.path-admin .tabs--primary a.is-active {
+            color: #60a5fa !important;
+            border-bottom: 2px solid #60a5fa;
           }
         ',
       ],
