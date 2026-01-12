@@ -73,6 +73,7 @@ class FinOpsDashboardController extends ControllerBase
             '#data_sources' => $finops_data['data_sources'],
             '#revenue' => $finops_data['revenue'],
             '#net_results' => $finops_data['net_results'],
+            '#feature_costs' => $finops_data['feature_costs'],
             '#last_updated' => date('Y-m-d H:i:s'),
             '#cache' => [
                 'max-age' => 300, // Cache for 5 minutes
@@ -111,6 +112,9 @@ class FinOpsDashboardController extends ControllerBase
         $revenue = $this->getRevenueData($tenants);
         $net_results = $this->calculateNetResults($totals, $revenue);
 
+        // Datos de costes por Feature
+        $feature_costs = $this->getFeatureCostsData();
+
         return [
             'tenants' => $tenants,
             'totals' => $totals,
@@ -120,6 +124,7 @@ class FinOpsDashboardController extends ControllerBase
             'data_sources' => $data_sources,
             'revenue' => $revenue,
             'net_results' => $net_results,
+            'feature_costs' => $feature_costs,
             'timestamp' => time(),
         ];
     }
@@ -760,6 +765,89 @@ class FinOpsDashboardController extends ControllerBase
         ];
 
         return $config_cache;
+    }
+
+    /**
+     * Obtiene datos de costes por Feature.
+     *
+     * Calcula los costes asociados a cada Feature habilitada,
+     * basándose en los campos FinOps configurados en la entidad Feature.
+     *
+     * @return array
+     *   Datos de features: por categoría, totales, detalles.
+     */
+    protected function getFeatureCostsData(): array
+    {
+        $features = [];
+        $by_category = [
+            'compute' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Compute')],
+            'storage' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Storage')],
+            'ai' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('AI')],
+            'api' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('API')],
+            'bandwidth' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Bandwidth')],
+        ];
+        $total_base_cost = 0;
+        $total_unit_cost_potential = 0;
+
+        try {
+            $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
+            $feature_entities = $feature_storage->loadMultiple();
+
+            foreach ($feature_entities as $feature) {
+                if (!$feature->status()) {
+                    continue; // Solo features habilitadas
+                }
+
+                $base_cost = $feature->getBaseCostMonthly();
+                $unit_cost = $feature->getUnitCost();
+                $category = $feature->getCostCategory();
+                $usage_metric = $feature->getUsageMetric();
+
+                // Saltar features sin costes configurados
+                if ($base_cost <= 0 && $unit_cost <= 0) {
+                    continue;
+                }
+
+                $features[] = [
+                    'id' => $feature->id(),
+                    'label' => $feature->label(),
+                    'description' => $feature->getDescription(),
+                    'category' => $category,
+                    'base_cost_monthly' => round($base_cost, 2),
+                    'unit_cost' => round($unit_cost, 4),
+                    'usage_metric' => $usage_metric,
+                    'icon' => $feature->getIcon(),
+                ];
+
+                $total_base_cost += $base_cost;
+                $total_unit_cost_potential += $unit_cost * 1000; // Estimado: 1000 unidades
+
+                // Agrupar por categoría
+                if (isset($by_category[$category])) {
+                    $by_category[$category]['count']++;
+                    $by_category[$category]['base_cost'] += $base_cost;
+                }
+            }
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->warning(
+                'FinOps: Error loading features: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+
+        // Ordenar features por coste base
+        usort($features, fn($a, $b) => $b['base_cost_monthly'] <=> $a['base_cost_monthly']);
+
+        return [
+            'features' => $features,
+            'by_category' => $by_category,
+            'totals' => [
+                'count' => count($features),
+                'base_cost_monthly' => round($total_base_cost, 2),
+                'unit_cost_potential' => round($total_unit_cost_potential, 2),
+            ],
+            'has_costs' => count($features) > 0,
+        ];
     }
 
 }

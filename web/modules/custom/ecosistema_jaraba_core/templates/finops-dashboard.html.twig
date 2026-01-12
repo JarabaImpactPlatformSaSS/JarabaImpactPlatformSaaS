@@ -131,6 +131,102 @@
     </div>
   </div>
 
+  {# Feature Costs Section #}
+  {% if feature_costs.has_costs %}
+  <div class="finops-section finops-section--features">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">⚙️</span>
+      {% trans %}Feature Costs{% endtrans %}
+      <a href="/admin/structure/features" class="finops-section__link" title="{% trans %}Manage Features{% endtrans %}">
+        {% trans %}Configure{% endtrans %} →
+      </a>
+    </h2>
+    
+    {# Feature costs by category summary #}
+    <div class="feature-cost-summary">
+      <div class="feature-cost-total">
+        <span class="feature-cost-total__icon">💰</span>
+        <span class="feature-cost-total__value">€{{ feature_costs.totals.base_cost_monthly }}/{% trans %}month{% endtrans %}</span>
+        <span class="feature-cost-total__label">{% trans %}Base Cost from Features{% endtrans %}</span>
+      </div>
+      <div class="feature-cost-categories">
+        {% for key, category in feature_costs.by_category %}
+          {% if category.count > 0 %}
+          <div class="feature-category-card">
+            <span class="feature-category-card__icon">
+              {% if key == 'ai' %}🤖{% elseif key == 'api' %}🔌{% elseif key == 'storage' %}💾{% elseif key == 'compute' %}⚡{% else %}🌐{% endif %}
+            </span>
+            <span class="feature-category-card__label">{{ category.label }}</span>
+            <span class="feature-category-card__count">{{ category.count }} {% trans %}features{% endtrans %}</span>
+            <span class="feature-category-card__cost">€{{ category.base_cost|number_format(2) }}</span>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Detailed feature costs table #}
+    <div class="feature-costs-table">
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Feature{% endtrans %}</th>
+            <th>{% trans %}Category{% endtrans %}</th>
+            <th>{% trans %}Base Cost (Monthly){% endtrans %}</th>
+            <th>{% trans %}Unit Cost{% endtrans %}</th>
+            <th>{% trans %}Usage Metric{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for feature in feature_costs.features %}
+          <tr class="feature-row">
+            <td class="feature-row__name">
+              {% if feature.icon %}<span class="feature-row__icon">{{ feature.icon }}</span>{% endif %}
+              <strong>{{ feature.label }}</strong>
+              {% if feature.description %}
+              <span class="feature-row__desc">{{ feature.description|slice(0, 50) }}{% if feature.description|length > 50 %}...{% endif %}</span>
+              {% endif %}
+            </td>
+            <td class="feature-row__category">
+              <span class="category-badge category-badge--{{ feature.category }}">{{ feature.category|capitalize }}</span>
+            </td>
+            <td class="feature-row__cost">€{{ feature.base_cost_monthly }}</td>
+            <td class="feature-row__unit">
+              {% if feature.unit_cost > 0 %}
+                €{{ feature.unit_cost }}/{% trans %}unit{% endtrans %}
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td class="feature-row__metric">
+              {% if feature.usage_metric %}
+                {{ feature.usage_metric|replace({'_': ' '})|capitalize }}
+              {% else %}
+                <span class="text-muted">{% trans %}Fixed cost{% endtrans %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="finops-section finops-section--features">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">⚙️</span>
+      {% trans %}Feature Costs{% endtrans %}
+    </h2>
+    <div class="finops-empty-state" style="text-align: center; padding: 2rem; color: var(--finops-text-muted, #94a3b8);">
+      <span style="font-size: 2rem;">📭</span>
+      <p>{% trans %}No feature costs configured yet.{% endtrans %}</p>
+      <a href="/admin/structure/features" class="btn btn-primary">
+        {% trans %}Configure Feature Costs{% endtrans %}
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
   {# Tenant Costs Table - Desglose por inquilino #}
   <div class="finops-section">
     <h2 class="finops-section__title">
