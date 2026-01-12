@@ -531,9 +531,9 @@ Dashboard de optimización de costes con datos reales:
 ```
 
 **Tareas Futuras:**
-- [ ] Sección de ingresos reales por facturación
-- [ ] Proyección mensual basada en suscripciones activas
-- [ ] Panel de resultados netos actuales y previstos
+- [x] Sección de ingresos reales por facturación ✅ (2026-01-12)
+- [x] Proyección mensual basada en suscripciones activas ✅ (2026-01-12)
+- [x] Panel de resultados netos actuales y previstos ✅ (2026-01-12)
 - [ ] Trasladar UX Premium de `/admin/finops` a toda la interfaz de estructura admin
 
 ### 10.3 Acceso desde Menú Admin
