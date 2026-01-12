@@ -1,0 +1,632 @@
+// =============================================================================
+// ADMIN PREMIUM - COMPONENTES REUTILIZABLES PARA DASHBOARDS
+// =============================================================================
+// Extraídos del FinOps Dashboard premium. Usables en Health, Tenant y otros.
+// Tema oscuro con backdrop-filter, cards modernas y tipografía elegante.
+//
+// USO:
+// 1. Añadir clase .admin-premium al container principal
+// 2. Usar las clases .premium-* para componentes
+//
+// PERSONALIZACIÓN:
+// Las variables CSS --ej-* permiten sobrescribir colores por vertical/tenant.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// VARIABLES PREMIUM (tema oscuro)
+// ---------------------------------------------------------------------------
+
+$premium-bg: #0f172a !default;
+$premium-bg-secondary: #1e293b !default;
+$premium-card-bg: rgba(30, 41, 59, 0.8) !default;
+$premium-border: rgba(148, 163, 184, 0.1) !default;
+$premium-text: #e2e8f0 !default;
+$premium-text-muted: #94a3b8 !default;
+
+// Colores semánticos usando variables CSS inyectables
+$premium-primary: var(--ej-color-primary, #{$ej-color-primary-fallback});
+$premium-success: var(--ej-color-success, #{$ej-color-success});
+$premium-warning: var(--ej-color-warning, #{$ej-color-warning});
+$premium-error: var(--ej-color-error, #{$ej-color-error});
+$premium-gold: #fbbf24;
+
+// ---------------------------------------------------------------------------
+// CONTAINER BASE
+// ---------------------------------------------------------------------------
+
+.admin-premium {
+    background: $premium-bg;
+    min-height: 100vh;
+    padding: $ej-spacing-xl;
+    color: $premium-text;
+    font-family: $ej-font-family-fallback;
+
+    // Tema claro opcional
+    &.theme-light {
+        background: var(--ej-bg-color, #f8fafc);
+        color: var(--ej-text-color, #1e293b);
+
+        .premium-card,
+        .premium-section {
+            background: white;
+            border-color: var(--ej-border-color, #e2e8f0);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// HEADER PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-xl;
+    padding-bottom: $ej-spacing-lg;
+    border-bottom: $ej-border-width solid $premium-border;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $ej-spacing-md;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__title {
+        font-size: $ej-font-size-3xl;
+        font-weight: $ej-font-weight-bold;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+        background: linear-gradient(135deg, $premium-gold, $premium-success);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-4xl;
+    }
+
+    &__subtitle {
+        color: $premium-text-muted;
+        margin: $ej-spacing-xs 0 0;
+        font-size: $ej-font-size-sm;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-md;
+    }
+
+    &__settings {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: $ej-border-radius-sm;
+        font-size: $ej-font-size-lg;
+        color: $premium-text-muted;
+        text-decoration: none;
+        transition: all $ej-transition-duration-normal $ej-transition-easing;
+        background: transparent;
+        border: $ej-border-width solid transparent;
+
+        &:hover {
+            color: $premium-text;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: $premium-border;
+            transform: rotate(90deg);
+        }
+    }
+
+    &__updated {
+        font-size: $ej-font-size-xs;
+        color: $premium-text-muted;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SECCIÓN PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-section {
+    background: $premium-card-bg;
+    border: $ej-border-width solid $premium-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+    backdrop-filter: blur(10px);
+
+    &__title {
+        font-size: $ej-font-size-lg;
+        font-weight: $ej-font-weight-semibold;
+        margin: 0 0 $ej-spacing-lg;
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+        color: $premium-text;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-xl;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CARDS PREMIUM (métricas)
+// ---------------------------------------------------------------------------
+
+.premium-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.premium-card {
+    background: $premium-card-bg;
+    border: $ej-border-width solid $premium-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    // Variantes por tipo
+    &--primary {
+        border-top: 3px solid $premium-primary;
+    }
+
+    &--success {
+        border-top: 3px solid $premium-success;
+        background: rgba($ej-color-success, 0.05);
+    }
+
+    &--warning {
+        border-top: 3px solid $premium-warning;
+    }
+
+    &--error {
+        border-top: 3px solid $premium-error;
+    }
+
+    &--gold {
+        border-top: 3px solid $premium-gold;
+    }
+
+    &--purple {
+        border-top: 3px solid #8b5cf6;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-4xl;
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__value {
+        font-size: $ej-font-size-4xl;
+        font-weight: $ej-font-weight-bold;
+        color: $premium-text;
+    }
+
+    &__label {
+        font-size: $ej-font-size-xs;
+        color: $premium-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__trend {
+        position: absolute;
+        top: $ej-spacing-md;
+        right: $ej-spacing-md;
+        font-size: $ej-font-size-2xl;
+    }
+
+    &__progress {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: $ej-spacing-sm;
+
+        .progress-bar {
+            height: 100%;
+            background: $premium-success;
+            transition: width $ej-transition-duration-slow $ej-transition-easing;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// RESOURCE CARDS (uso de recursos)
+// ---------------------------------------------------------------------------
+
+.premium-resource-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+.premium-resource-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-lg;
+    text-align: center;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $ej-spacing-sm;
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-xl;
+    }
+
+    &__title {
+        font-size: $ej-font-size-xs;
+        color: $premium-text-muted;
+        text-transform: uppercase;
+    }
+
+    &__value {
+        font-size: $ej-font-size-2xl;
+        font-weight: $ej-font-weight-bold;
+        color: $premium-text;
+    }
+
+    &__cost {
+        font-size: $ej-font-size-sm;
+        color: $premium-gold;
+        margin-top: $ej-spacing-xs;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TABLA PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-table {
+    overflow-x: auto;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: $ej-spacing-md;
+            text-align: left;
+            border-bottom: $ej-border-width solid $premium-border;
+        }
+
+        th {
+            font-size: $ej-font-size-xs;
+            text-transform: uppercase;
+            color: $premium-text-muted;
+            font-weight: $ej-font-weight-semibold;
+        }
+
+        td {
+            font-size: $ej-font-size-sm;
+        }
+    }
+
+    // Filas con estado
+    tr.row--warning {
+        background: rgba($ej-color-warning, 0.05);
+    }
+
+    tr.row--error {
+        background: rgba($ej-color-error, 0.05);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// BADGES PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-badge {
+    display: inline-block;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+
+    &--basic {
+        background: rgba(148, 163, 184, 0.2);
+        color: #94a3b8;
+    }
+
+    &--professional {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+    }
+
+    &--enterprise {
+        background: rgba(139, 92, 246, 0.2);
+        color: #a78bfa;
+    }
+
+    &--success {
+        background: rgba($ej-color-success, 0.2);
+        color: $premium-success;
+    }
+
+    &--warning {
+        background: rgba($ej-color-warning, 0.2);
+        color: $premium-warning;
+    }
+
+    &--error {
+        background: rgba($ej-color-error, 0.2);
+        color: $premium-error;
+    }
+}
+
+.premium-status {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+
+    &--normal,
+    &--healthy {
+        background: rgba($ej-color-success, 0.2);
+        color: $premium-success;
+    }
+
+    &--warning,
+    &--degraded {
+        background: rgba($ej-color-warning, 0.2);
+        color: $premium-warning;
+    }
+
+    &--critical,
+    &--error {
+        background: rgba($ej-color-error, 0.2);
+        color: $premium-error;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ALERTAS PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.premium-alert {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    background: $premium-card-bg;
+    border-left: 4px solid;
+
+    &--critical {
+        border-left-color: $premium-error;
+        background: rgba($ej-color-error, 0.1);
+    }
+
+    &--warning {
+        border-left-color: $premium-warning;
+        background: rgba($ej-color-warning, 0.1);
+    }
+
+    &--success {
+        border-left-color: $premium-success;
+        background: rgba($ej-color-success, 0.1);
+    }
+
+    &__icon {
+        font-size: $ej-font-size-2xl;
+    }
+
+    &__content p {
+        margin: $ej-spacing-xs 0 0;
+        font-size: $ej-font-size-sm;
+        color: $premium-text-muted;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// BOTONES PREMIUM
+// ---------------------------------------------------------------------------
+
+.premium-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    cursor: pointer;
+    border: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+
+    &--primary {
+        background: $premium-primary;
+        color: white;
+
+        &:hover {
+            filter: brightness(1.1);
+        }
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $premium-text;
+        border: $ej-border-width solid $premium-border;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    &__icon {
+        font-size: $ej-font-size-md;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ACCIONES RÁPIDAS
+// ---------------------------------------------------------------------------
+
+.premium-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-md;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+    }
+}
+
+.premium-action {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    text-decoration: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+    border: $ej-border-width solid $premium-border;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--primary {
+        background: $premium-primary;
+        color: white;
+        border-color: $premium-primary;
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $premium-text;
+    }
+
+    &--external {
+        background: rgba(139, 92, 246, 0.1);
+        color: #a78bfa;
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    @media (max-width: $ej-breakpoint-md) {
+        width: 100%;
+        justify-content: center;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-md;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACÍO
+// ---------------------------------------------------------------------------
+
+.premium-empty {
+    text-align: center;
+    padding: $ej-spacing-2xl;
+    color: $premium-text-muted;
+
+    &__icon {
+        font-size: 3rem;
+        margin-bottom: $ej-spacing-md;
+    }
+
+    &__message {
+        font-size: $ej-font-size-sm;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GRID DE RECOMENDACIONES
+// ---------------------------------------------------------------------------
+
+.premium-recommendations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+.premium-recommendation {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-lg;
+    border-left: 3px solid $premium-primary;
+
+    &--summary {
+        border-left-color: $premium-gold;
+        background: rgba($premium-gold, 0.1);
+    }
+
+    &--storage {
+        border-left-color: #8b5cf6;
+    }
+
+    &--api {
+        border-left-color: $premium-primary;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-xl;
+    }
+
+    &__message {
+        font-size: $ej-font-size-sm;
+        color: $premium-text-muted;
+        margin: 0;
+    }
+
+    &__savings {
+        margin-top: $ej-spacing-sm;
+        padding-top: $ej-spacing-sm;
+        border-top: $ej-border-width solid $premium-border;
+        font-size: $ej-font-size-sm;
+        color: $premium-success;
+    }
+}

@@ -26,11 +26,17 @@
 // 4. Componentes base - Botones, formularios, cards, etc.
 @use 'components';
 
-// 5. Estilos de páginas de onboarding
+// 5. Componentes Premium para Dashboards Admin
+@use 'admin-premium';
+
+// 6. Estilos de páginas de onboarding
 @use 'onboarding';
 
-// 6. Dashboard de administración del Tenant
+// 7. Dashboard de administración del Tenant
 @use 'tenant-dashboard';
 
-// 7. Dashboard FinOps (Cost Optimization)
+// 8. Dashboard FinOps (Cost Optimization)
 @use 'finops-dashboard';
+
+// 9. Dashboard Health (Monitoreo de Servicios)
+@use 'health-dashboard';

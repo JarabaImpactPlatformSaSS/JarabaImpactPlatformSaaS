@@ -514,3 +514,159 @@ button.quick-action {
         padding: 1.25rem;
     }
 }
+
+// --------------------------------------------------------------------------
+// TEMA OSCURO PREMIUM (cuando tiene clase .admin-premium)
+// --------------------------------------------------------------------------
+
+.admin-premium.tenant-dashboard {
+    background: #0f172a;
+    color: #e2e8f0;
+    max-width: 100%;
+    min-height: 100vh;
+
+    .tenant-dashboard__header {
+        border-bottom-color: rgba(148, 163, 184, 0.1);
+    }
+
+    .tenant-dashboard__title {
+        color: #e2e8f0;
+        background: linear-gradient(135deg, #fbbf24, $success-color);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .tenant-dashboard__vertical {
+        color: #94a3b8;
+    }
+
+    .section-title {
+        color: #e2e8f0;
+    }
+
+    .dashboard-card {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(148, 163, 184, 0.1);
+        backdrop-filter: blur(10px);
+
+        &:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        &__title {
+            color: #94a3b8;
+        }
+    }
+
+    .plan-info__name {
+        color: #e2e8f0;
+    }
+
+    .plan-info__price {
+        color: #94a3b8;
+    }
+
+    .no-plan {
+        color: #64748b;
+    }
+
+    .metric-display__value {
+        color: #e2e8f0;
+    }
+
+    .metric-display__limit {
+        color: #64748b;
+    }
+
+    .metric-display__label {
+        color: #94a3b8;
+    }
+
+    .usage-bar {
+        background: rgba(148, 163, 184, 0.1);
+    }
+
+    .usage-bar__label {
+        color: #94a3b8;
+    }
+
+    .trial-progress {
+        background: rgba(148, 163, 184, 0.1);
+    }
+
+    .quick-action {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(148, 163, 184, 0.1);
+
+        &:hover {
+            background: rgba(30, 41, 59, 1);
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        &__title {
+            color: #e2e8f0;
+        }
+
+        &__description {
+            color: #94a3b8;
+        }
+
+        &__arrow {
+            color: #64748b;
+        }
+
+        &__icon {
+            background: rgba(0, 0, 0, 0.2);
+            color: #94a3b8;
+        }
+
+        &:hover &__icon {
+            background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+            color: $white;
+        }
+    }
+
+    .tenant-dashboard__tech-info {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(148, 163, 184, 0.1);
+    }
+
+    .tech-info-item__label {
+        color: #94a3b8;
+    }
+
+    .tech-info-item__value {
+        color: #e2e8f0;
+
+        a {
+            color: #60a5fa;
+        }
+    }
+
+    .status-badge {
+        &--trial {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        &--active {
+            background: rgba($success-color, 0.2);
+            color: $success-color;
+        }
+
+        &--past_due {
+            background: rgba($danger-color, 0.2);
+            color: $danger-color;
+        }
+
+        &--suspended {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+    }
+
+    .trial-countdown {
+        color: #fbbf24;
+    }
+}

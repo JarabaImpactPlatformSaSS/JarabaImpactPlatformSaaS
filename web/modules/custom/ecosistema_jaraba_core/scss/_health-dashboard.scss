@@ -1,0 +1,476 @@
+// =============================================================================
+// HEALTH DASHBOARD - ESTILOS ESPECÍFICOS
+// =============================================================================
+// Extiende los componentes premium de _admin-premium.scss
+// con personalizaciones específicas para el dashboard de salud.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// VARIABLES ESPECÍFICAS HEALTH
+// ---------------------------------------------------------------------------
+
+$health-bg: #0f172a !default;
+$health-card-bg: rgba(30, 41, 59, 0.8) !default;
+$health-border: rgba(148, 163, 184, 0.1) !default;
+$health-text: #e2e8f0 !default;
+$health-text-muted: #94a3b8 !default;
+
+// Colores de estado
+$health-healthy: var(--ej-color-success, #{$ej-color-success});
+$health-degraded: var(--ej-color-warning, #{$ej-color-warning});
+$health-critical: var(--ej-color-error, #{$ej-color-error});
+
+// ---------------------------------------------------------------------------
+// HEADER (compatible con premium-header)
+// ---------------------------------------------------------------------------
+
+.health-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-xl;
+    padding-bottom: $ej-spacing-lg;
+    border-bottom: $ej-border-width solid $health-border;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $ej-spacing-md;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__title {
+        font-size: $ej-font-size-3xl;
+        font-weight: $ej-font-weight-bold;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+        background: linear-gradient(135deg, $health-healthy, #4ade80);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-4xl;
+    }
+
+    &__subtitle {
+        color: $health-text-muted;
+        margin: $ej-spacing-xs 0 0;
+        font-size: $ej-font-size-sm;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-md;
+    }
+
+    &__updated {
+        font-size: $ej-font-size-xs;
+        color: $health-text-muted;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// MÉTRICAS
+// ---------------------------------------------------------------------------
+
+.health-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.health-dashboard .metric-card {
+    background: $health-card-bg;
+    border: $ej-border-width solid $health-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &--health {
+        border-top: 3px solid $health-healthy;
+    }
+
+    &--services {
+        border-top: 3px solid #3b82f6;
+    }
+
+    &--uptime {
+        border-top: 3px solid #8b5cf6;
+    }
+
+    &--external {
+        border-top: 3px solid #f59e0b;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-3xl;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__value {
+        font-size: $ej-font-size-3xl;
+        font-weight: $ej-font-weight-bold;
+        color: $health-text;
+        display: block;
+    }
+
+    &__label {
+        font-size: $ej-font-size-xs;
+        color: $health-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__link {
+        font-size: $ej-font-size-lg;
+        font-weight: $ej-font-weight-bold;
+        color: #f59e0b;
+        text-decoration: none;
+        display: block;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__indicator {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin: $ej-spacing-md;
+
+        &--good {
+            background: $health-healthy;
+            box-shadow: 0 0 8px $health-healthy;
+        }
+
+        &--warning {
+            background: $health-degraded;
+            box-shadow: 0 0 8px $health-degraded;
+            animation: pulse 2s infinite;
+        }
+
+        &--critical {
+            background: $health-critical;
+            box-shadow: 0 0 8px $health-critical;
+            animation: pulse 1s infinite;
+        }
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SECCIONES
+// ---------------------------------------------------------------------------
+
+.health-section {
+    background: $health-card-bg;
+    border: $ej-border-width solid $health-border;
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+    backdrop-filter: blur(10px);
+
+    &__title {
+        font-size: $ej-font-size-lg;
+        font-weight: $ej-font-weight-semibold;
+        margin: 0 0 $ej-spacing-lg;
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+        color: $health-text;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-xl;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GRID DE SERVICIOS
+// ---------------------------------------------------------------------------
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+.service-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-lg;
+    border-left: 4px solid $health-text-muted;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--healthy {
+        border-left-color: $health-healthy;
+    }
+
+    &--degraded {
+        border-left-color: $health-degraded;
+        background: rgba($ej-color-warning, 0.1);
+    }
+
+    &--critical {
+        border-left-color: $health-critical;
+        background: rgba($ej-color-error, 0.1);
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-2xl;
+    }
+
+    &__status-badge {
+        display: inline-block;
+        padding: $ej-spacing-xs $ej-spacing-sm;
+        border-radius: $ej-border-radius-sm;
+        font-size: $ej-font-size-xs;
+        font-weight: $ej-font-weight-semibold;
+
+        &--healthy {
+            background: rgba($ej-color-success, 0.2);
+            color: $health-healthy;
+        }
+
+        &--degraded {
+            background: rgba($ej-color-warning, 0.2);
+            color: $health-degraded;
+        }
+
+        &--critical {
+            background: rgba($ej-color-error, 0.2);
+            color: $health-critical;
+        }
+    }
+
+    &__name {
+        font-size: $ej-font-size-md;
+        font-weight: $ej-font-weight-semibold;
+        margin: 0 0 $ej-spacing-xs;
+        color: $health-text;
+    }
+
+    &__message {
+        font-size: $ej-font-size-sm;
+        color: $health-text-muted;
+        margin: 0;
+    }
+
+    &__latency {
+        margin-top: $ej-spacing-sm;
+        padding-top: $ej-spacing-sm;
+        border-top: $ej-border-width solid $health-border;
+        font-size: $ej-font-size-xs;
+
+        &-label {
+            color: $health-text-muted;
+        }
+
+        &-value {
+            color: $health-text;
+            font-weight: $ej-font-weight-semibold;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TABLA DE VERIFICACIONES
+// ---------------------------------------------------------------------------
+
+.checks-table {
+    overflow-x: auto;
+
+    .table--modern {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: $ej-spacing-md;
+            text-align: left;
+            border-bottom: $ej-border-width solid $health-border;
+        }
+
+        th {
+            font-size: $ej-font-size-xs;
+            text-transform: uppercase;
+            color: $health-text-muted;
+            font-weight: $ej-font-weight-semibold;
+        }
+
+        td {
+            font-size: $ej-font-size-sm;
+            color: $health-text;
+        }
+    }
+}
+
+.check-row {
+    &--fail {
+        background: rgba($ej-color-error, 0.05);
+    }
+}
+
+.result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+
+    &--pass {
+        background: rgba($ej-color-success, 0.2);
+        color: $health-healthy;
+    }
+
+    &--fail {
+        background: rgba($ej-color-error, 0.2);
+        color: $health-critical;
+    }
+
+    &--recovery {
+        background: rgba($ej-color-warning, 0.2);
+        color: $health-degraded;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ACCIONES RÁPIDAS
+// ---------------------------------------------------------------------------
+
+.health-dashboard .quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-md;
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+    }
+}
+
+.health-dashboard .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    text-decoration: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+    border: $ej-border-width solid $health-border;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--primary {
+        background: $health-healthy;
+        color: white;
+        border-color: $health-healthy;
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $health-text;
+    }
+
+    &--external {
+        background: rgba(139, 92, 246, 0.1);
+        color: #a78bfa;
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    @media (max-width: $ej-breakpoint-md) {
+        width: 100%;
+        justify-content: center;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-md;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// BOTONES
+// ---------------------------------------------------------------------------
+
+.health-dashboard .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    cursor: pointer;
+    border: none;
+    transition: all $ej-transition-duration-normal $ej-transition-easing;
+}
+
+.health-dashboard .btn-primary {
+    background: $health-healthy;
+    color: white;
+
+    &:hover {
+        filter: brightness(1.1);
+    }
+}
+
+.health-dashboard .btn__icon {
+    font-size: $ej-font-size-md;
+}
