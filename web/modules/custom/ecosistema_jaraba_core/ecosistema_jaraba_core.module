@@ -604,17 +604,18 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           body.path-admin .region-breadcrumb {
             background: #0f172a !important;
             margin: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
           }
           
-          /* Contenedor a ancho completo sin márgenes laterales */
+          /* Contenedor a ancho completo */
           body.path-admin .layout-container,
           body.path-admin .gin-layer-wrapper {
             margin: 0 !important;
             padding: 0 !important;
             max-width: 100% !important;
             width: 100% !important;
+            background: #0f172a !important;
           }
           
           body.path-admin .region-content {
@@ -622,6 +623,13 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             color: #e2e8f0 !important;
             padding: 1rem 2rem !important;
             margin: 0 !important;
+          }
+          
+          /* Breadcrumb con margen izquierdo */
+          body.path-admin .breadcrumb,
+          body.path-admin .gin-breadcrumb-wrapper {
+            padding-left: 1rem !important;
+            background: #0f172a !important;
           }
           
           /* Título con estilo gradient */
@@ -738,37 +746,60 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           }
           
           /* Toggle del dropbutton más visible */
-          body.path-admin .dropbutton-wrapper .dropbutton-toggle {
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle,
+          body.path-admin .dropbutton .dropbutton__toggle {
             background: rgba(59, 130, 246, 0.5) !important;
             border-left: 1px solid rgba(238, 238, 238, 0.5) !important;
           }
           
-          body.path-admin .dropbutton-wrapper .dropbutton-toggle button {
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle button,
+          body.path-admin .dropbutton__toggle {
             color: white !important;
-            background: transparent !important;
+            background: rgba(59, 130, 246, 0.5) !important;
           }
           
-          /* Icono SVG del toggle en blanco */
+          /* Icono SVG y CSS del toggle en blanco */
           body.path-admin .dropbutton-wrapper .dropbutton-toggle button::before,
           body.path-admin .dropbutton-wrapper .dropbutton-toggle button::after,
           body.path-admin .dropbutton__toggle::before,
-          body.path-admin .dropbutton__toggle::after {
+          body.path-admin .dropbutton__toggle::after,
+          body.path-admin .dropbutton-arrow::before,
+          body.path-admin .dropbutton-arrow::after {
             border-color: white !important;
+            background-color: white !important;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-toggle svg,
-          body.path-admin .dropbutton__toggle svg {
+          body.path-admin .dropbutton__toggle svg,
+          body.path-admin .dropbutton-arrow svg {
             fill: white !important;
             stroke: white !important;
           }
           
-          body.path-admin .dropbutton__toggle {
-            background: rgba(59, 130, 246, 0.5) !important;
-            color: white !important;
+          /* Imagen de fondo del caret en blanco (Gin usa imagen CSS) */
+          body.path-admin .dropbutton__toggle,
+          body.path-admin .dropbutton-toggle button {
+            background-image: none !important;
+            position: relative;
           }
           
-          body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover {
-            background: rgba(59, 130, 246, 0.5) !important;
+          body.path-admin .dropbutton__toggle::after {
+            content: "" !important;
+            display: block !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-left: 5px solid transparent !important;
+            border-right: 5px solid transparent !important;
+            border-top: 6px solid white !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover,
+          body.path-admin .dropbutton__toggle:hover {
+            background: rgba(59, 130, 246, 0.7) !important;
           }
           
           /* Dropbutton principal con mejor contraste */
