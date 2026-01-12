@@ -13,7 +13,9 @@
 
 $rag-bg: #0f172a !default;
 $rag-card-bg: rgba(30, 41, 59, 0.8) !default;
-$rag-border: rgba(148, 163, 184, 0.1) !default;
+// Borde visible como en FinOps (rgb(238, 238, 238) = #eee)
+$rag-border: #eee !default;
+$rag-border-subtle: rgba(148, 163, 184, 0.2) !default;
 $rag-text: #e2e8f0 !default;
 $rag-text-muted: #94a3b8 !default;
 
