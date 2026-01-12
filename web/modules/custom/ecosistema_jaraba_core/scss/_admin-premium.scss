@@ -305,42 +305,469 @@ $premium-gold: #fbbf24;
 }
 
 // ---------------------------------------------------------------------------
-// TABLA PREMIUM
+// TABLA PREMIUM - UX DE ALTO NIVEL
+// ---------------------------------------------------------------------------
+// Diseño premium con glassmorphism, row highlights, sticky headers,
+// micro-animaciones y colores semánticos.
 // ---------------------------------------------------------------------------
 
-.premium-table {
+.premium-table,
+.table--modern {
     overflow-x: auto;
+    border-radius: $ej-border-radius-lg;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: $ej-border-width solid $premium-border;
 
     table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
 
-        th,
-        td {
-            padding: $ej-spacing-md;
-            text-align: left;
-            border-bottom: $ej-border-width solid $premium-border;
+    // HEADER - Sticky con gradiente sutil
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+
+        tr {
+            background: linear-gradient(180deg,
+                    rgba(15, 23, 42, 0.98) 0%,
+                    rgba(30, 41, 59, 0.95) 100%);
+            backdrop-filter: blur(20px);
         }
 
         th {
+            padding: $ej-spacing-md $ej-spacing-lg;
+            text-align: left;
             font-size: $ej-font-size-xs;
-            text-transform: uppercase;
-            color: $premium-text-muted;
             font-weight: $ej-font-weight-semibold;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: $premium-text-muted;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.15);
+            white-space: nowrap;
+            position: relative;
+
+            // Línea indicadora sutil
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(90deg,
+                        transparent 0%,
+                        rgba(59, 130, 246, 0.5) 50%,
+                        transparent 100%);
+                opacity: 0;
+                transition: opacity $ej-transition-duration-normal $ej-transition-easing;
+            }
+
+            &:hover::after {
+                opacity: 1;
+            }
+
+            // Ordenable (preparado para JS)
+            &.sortable {
+                cursor: pointer;
+                user-select: none;
+
+                &:hover {
+                    color: $premium-text;
+                }
+
+                &::before {
+                    content: '⇅';
+                    font-size: 0.65em;
+                    margin-left: 0.5em;
+                    opacity: 0.4;
+                }
+
+                &.sorted-asc::before {
+                    content: '↑';
+                    opacity: 1;
+                    color: $premium-primary;
+                }
+
+                &.sorted-desc::before {
+                    content: '↓';
+                    opacity: 1;
+                    color: $premium-primary;
+                }
+            }
+        }
+    }
+
+    // CUERPO - Filas con hover y zebra
+    tbody {
+        tr {
+            background: transparent;
+            transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+            // Zebra striping sutil
+            &:nth-child(even) {
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            // Hover effect premium
+            &:hover {
+                background: rgba(59, 130, 246, 0.08);
+                transform: scale(1.002);
+                box-shadow:
+                    inset 4px 0 0 $premium-primary,
+                    0 2px 8px rgba(0, 0, 0, 0.15);
+
+                td {
+                    color: $premium-text;
+                }
+
+                td:first-child {
+                    font-weight: $ej-font-weight-semibold;
+                }
+            }
+
+            // Focus para accesibilidad
+            &:focus-within {
+                outline: 2px solid $premium-primary;
+                outline-offset: -2px;
+            }
         }
 
         td {
+            padding: $ej-spacing-md $ej-spacing-lg;
+            font-size: $ej-font-size-sm;
+            color: rgba($premium-text, 0.9);
+            border-bottom: $ej-border-width solid rgba(148, 163, 184, 0.06);
+            vertical-align: middle;
+            transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+            // Primera columna destacada
+            &:first-child {
+                font-weight: $ej-font-weight-medium;
+                color: $premium-text;
+            }
+
+            // Última fila sin borde
+            tr:last-child & {
+                border-bottom: none;
+            }
+
+            // Valores numéricos alineados
+            &.text-right,
+            &.numeric {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            }
+
+            // Moneda con estilo
+            &.currency {
+                font-weight: $ej-font-weight-semibold;
+                color: $premium-gold;
+
+                &.positive {
+                    color: $premium-success;
+                }
+
+                &.negative {
+                    color: $premium-error;
+                }
+            }
+        }
+    }
+
+    // ESTADOS DE FILA
+    tr {
+
+        // Normal (por defecto) - usa estilos base
+        &.row--normal,
+        &.tenant-row--normal {
+            background: transparent; // Explícito para evitar ruleset vacío
+        }
+
+        // Warning
+        &.row--warning,
+        &.tenant-row--warning {
+            background: rgba($ej-color-warning, 0.08) !important;
+
+            &:hover {
+                background: rgba($ej-color-warning, 0.15) !important;
+                box-shadow: inset 4px 0 0 $premium-warning;
+            }
+
+            td:first-child::before {
+                content: '⚠️';
+                margin-right: $ej-spacing-sm;
+            }
+        }
+
+        // Critical / Error
+        &.row--critical,
+        &.row--error,
+        &.tenant-row--critical {
+            background: rgba($ej-color-error, 0.08) !important;
+            animation: subtle-pulse 3s infinite;
+
+            &:hover {
+                background: rgba($ej-color-error, 0.15) !important;
+                box-shadow: inset 4px 0 0 $premium-error;
+            }
+
+            td:first-child::before {
+                content: '🚨';
+                margin-right: $ej-spacing-sm;
+            }
+        }
+
+        // Success
+        &.row--success {
+            background: rgba($ej-color-success, 0.05) !important;
+
+            &:hover {
+                background: rgba($ej-color-success, 0.12) !important;
+                box-shadow: inset 4px 0 0 $premium-success;
+            }
+        }
+
+        // Seleccionada
+        &.selected {
+            background: rgba($premium-primary, 0.15) !important;
+            box-shadow: inset 4px 0 0 $premium-primary;
+        }
+
+        // Expandible
+        &.expandable {
+            cursor: pointer;
+
+            &::after {
+                content: '▸';
+                float: right;
+                transition: transform $ej-transition-duration-fast $ej-transition-easing;
+            }
+
+            &.expanded::after {
+                transform: rotate(90deg);
+            }
+        }
+    }
+
+    // ANIMACIONES
+    @keyframes subtle-pulse {
+
+        0%,
+        100% {
+            background: rgba($ej-color-error, 0.08);
+        }
+
+        50% {
+            background: rgba($ej-color-error, 0.04);
+        }
+    }
+
+    // ELEMENTOS INTERACTIVOS EN CELDAS
+    td {
+
+        // Links
+        a {
+            color: $premium-primary;
+            text-decoration: none;
+            transition: color $ej-transition-duration-fast $ej-transition-easing;
+
+            &:hover {
+                color: lighten($ej-color-primary-fallback, 15%);
+                text-decoration: underline;
+            }
+        }
+
+        // Botones inline
+        .btn-inline {
+            padding: $ej-spacing-xs $ej-spacing-sm;
+            font-size: $ej-font-size-xs;
+            border-radius: $ej-border-radius-sm;
+            background: rgba(255, 255, 255, 0.1);
+            color: $premium-text;
+            border: none;
+            cursor: pointer;
+            transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+            &:hover {
+                background: $premium-primary;
+                color: white;
+            }
+        }
+
+        // Tooltips
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted $premium-text-muted;
+
+            &::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-5px);
+                padding: $ej-spacing-sm $ej-spacing-md;
+                background: #1e293b;
+                color: $premium-text;
+                font-size: $ej-font-size-xs;
+                border-radius: $ej-border-radius-sm;
+                white-space: nowrap;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity $ej-transition-duration-fast $ej-transition-easing;
+                box-shadow: $ej-shadow-lg;
+                z-index: 100;
+            }
+
+            &:hover::after {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+
+    // BADGES EN TABLA (tier, status)
+    .tier-badge,
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        padding: $ej-spacing-xs $ej-spacing-sm;
+        border-radius: 9999px;
+        font-size: $ej-font-size-xs;
+        font-weight: $ej-font-weight-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        // Tier badges
+        &--basic {
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.1));
+            color: #94a3b8;
+        }
+
+        &--professional,
+        &--pro {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
+            color: #60a5fa;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        &--enterprise {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
+            color: #a78bfa;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        // Status badges
+        &--normal,
+        &--healthy,
+        &--active {
+            background: linear-gradient(135deg, rgba($ej-color-success, 0.25), rgba($ej-color-success, 0.1));
+            color: $premium-success;
+        }
+
+        &--warning,
+        &--degraded {
+            background: linear-gradient(135deg, rgba($ej-color-warning, 0.25), rgba($ej-color-warning, 0.1));
+            color: $premium-warning;
+        }
+
+        &--critical,
+        &--error,
+        &--inactive {
+            background: linear-gradient(135deg, rgba($ej-color-error, 0.25), rgba($ej-color-error, 0.1));
+            color: $premium-error;
+        }
+    }
+
+    // FOOTER DE TABLA (totales, paginación)
+    tfoot {
+        tr {
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        td {
+            padding: $ej-spacing-md $ej-spacing-lg;
+            font-weight: $ej-font-weight-semibold;
+            color: $premium-text;
+            border-top: 2px solid rgba(148, 163, 184, 0.15);
+
+            &.total-label {
+                text-transform: uppercase;
+                font-size: $ej-font-size-xs;
+                letter-spacing: 0.05em;
+            }
+
+            &.total-value {
+                font-size: $ej-font-size-lg;
+                color: $premium-gold;
+            }
+        }
+    }
+
+    // TABLA VACÍA
+    .empty-state {
+        text-align: center;
+        padding: $ej-spacing-2xl;
+        color: $premium-text-muted;
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: $ej-spacing-md;
+            opacity: 0.5;
+        }
+
+        .empty-message {
             font-size: $ej-font-size-sm;
         }
     }
 
-    // Filas con estado
-    tr.row--warning {
-        background: rgba($ej-color-warning, 0.05);
+    // RESPONSIVE
+    @media (max-width: $ej-breakpoint-md) {
+
+        thead th,
+        tbody td,
+        tfoot td {
+            padding: $ej-spacing-sm $ej-spacing-md;
+            font-size: $ej-font-size-xs;
+        }
+
+        .tier-badge,
+        .status-badge {
+            padding: 2px 6px;
+            font-size: 0.65rem;
+        }
     }
 
-    tr.row--error {
-        background: rgba($ej-color-error, 0.05);
+    // LOADING STATE
+    &.loading {
+        opacity: 0.6;
+        pointer-events: none;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 3px solid $premium-border;
+            border-top-color: $premium-primary;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 }
 
