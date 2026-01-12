@@ -723,6 +723,65 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             background: rgba(96, 165, 250, 0.2) !important;
           }
           
+          /* Toggle del dropbutton más visible */
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle {
+            background: rgba(59, 130, 246, 0.3) !important;
+            border-left: 1px solid rgba(238, 238, 238, 0.5) !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle button {
+            color: white !important;
+            background: transparent !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover {
+            background: rgba(59, 130, 246, 0.5) !important;
+          }
+          
+          /* Dropbutton principal con mejor contraste */
+          body.path-admin .dropbutton-wrapper .dropbutton-action a {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            padding: 0.5rem 1rem !important;
+          }
+          
+          /* Panel dropdown con fondo sólido oscuro */
+          body.path-admin .dropbutton-wrapper .secondary-action {
+            background: #1e293b !important;
+            border: 1px solid rgba(238, 238, 238, 0.3) !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .secondary-action a {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+            padding: 0.5rem 1rem !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .secondary-action a:hover {
+            background: #334155 !important;
+          }
+          
+          /* Dropdown menu lista completa */
+          body.path-admin .dropbutton .dropbutton-widget ul {
+            background: #1e293b !important;
+            border: 1px solid rgba(238, 238, 238, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+          }
+          
+          body.path-admin .dropbutton .dropbutton-widget ul li {
+            background: #1e293b !important;
+          }
+          
+          body.path-admin .dropbutton .dropbutton-widget ul li a {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+            padding: 0.5rem 1rem !important;
+          }
+          
+          body.path-admin .dropbutton .dropbutton-widget ul li a:hover {
+            background: #334155 !important;
+          }
+          
           body.path-admin .messages {
             border-radius: 8px;
             margin-bottom: 1rem;
