@@ -1,0 +1,72 @@
+// =============================================================================
+// JARABA RAG DASHBOARD - ESTILOS ESPECÍFICOS
+// =============================================================================
+// Extiende los componentes premium de _admin-premium.scss con ajustes
+// específicos para el dashboard de analítica RAG.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// VARIABLES ESPECÍFICAS RAG
+// ---------------------------------------------------------------------------
+
+$rag-bg: #0f172a !default;
+$rag-card-bg: rgba(30, 41, 59, 0.8) !default;
+$rag-border: rgba(148, 163, 184, 0.1) !default;
+$rag-text: #e2e8f0 !default;
+$rag-text-muted: #94a3b8 !default;
+
+// ---------------------------------------------------------------------------
+// OVERRIDE: Cards con borde izquierdo (como Health)
+// ---------------------------------------------------------------------------
+// Las cards de RAG deben usar border-left para el indicador de estado,
+// manteniendo el borde sutil blanco en los otros 3 lados.
+
+.rag-dashboard {
+
+    // Cards con indicador lateral (no superior)
+    .premium-card {
+        border: $ej-border-width solid $rag-border;
+        border-left: 4px solid $rag-text-muted;
+        border-top-width: $ej-border-width;
+        backdrop-filter: blur(10px);
+
+        // Variantes con color en borde izquierdo
+        &--primary {
+            border-left-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        }
+
+        &--success {
+            border-left-color: var(--ej-color-success, #{$ej-color-success});
+        }
+
+        &--warning {
+            border-left-color: var(--ej-color-warning, #{$ej-color-warning});
+        }
+
+        &--error {
+            border-left-color: var(--ej-color-error, #{$ej-color-error});
+        }
+
+        &--gold {
+            border-left-color: #fbbf24;
+        }
+
+        &--purple {
+            border-left-color: #8b5cf6;
+        }
+    }
+
+    // Sections con borde sutil
+    .premium-section {
+        border: $ej-border-width solid $rag-border;
+        backdrop-filter: blur(10px);
+    }
+
+    // Recommendations con borde sutil adicional
+    .premium-recommendation {
+        border: $ej-border-width solid rgba(148, 163, 184, 0.15);
+        border-left-width: 3px;
+    }
+}
