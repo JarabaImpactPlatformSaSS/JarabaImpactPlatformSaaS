@@ -128,9 +128,127 @@
         </div>
         <div class="resource-card__value">{{ totals.cpu_hours }} h</div>
         <div class="resource-card__cost">€{{ totals.cost_cpu }}</div>
-      </div>
     </div>
   </div>
+
+  {# Revenue Section (MRR/ARR) #}
+  {% if revenue %}
+  <div class="finops-section finops-section--revenue">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">💵</span>
+      {% trans %}Revenue{% endtrans %}
+    </h2>
+    <div class="finops-metrics">
+      <div class="metric-card metric-card--revenue">
+        <span class="metric-card__icon">📊</span>
+        <span class="metric-card__value">€{{ revenue.mrr }}</span>
+        <span class="metric-card__label">{% trans %}MRR (Monthly Recurring){% endtrans %}</span>
+      </div>
+      <div class="metric-card metric-card--revenue">
+        <span class="metric-card__icon">📈</span>
+        <span class="metric-card__value">€{{ revenue.arr }}</span>
+        <span class="metric-card__label">{% trans %}ARR (Annual Recurring){% endtrans %}</span>
+      </div>
+      <div class="metric-card metric-card--tenants">
+        <span class="metric-card__icon">🏢</span>
+        <span class="metric-card__value">{{ revenue.active_subscriptions }}</span>
+        <span class="metric-card__label">{% trans %}Active Subscriptions{% endtrans %}</span>
+      </div>
+      <div class="metric-card metric-card--projection">
+        <span class="metric-card__icon">🎯</span>
+        <span class="metric-card__value">€{{ revenue.monthly_projected }}</span>
+        <span class="metric-card__label">{% trans %}Projected This Month{% endtrans %}</span>
+      </div>
+    </div>
+    
+    {# Revenue by Tier #}
+    {% if revenue.by_tier %}
+    <div class="resource-cards" style="margin-top: 1rem;">
+      {% for tier, data in revenue.by_tier %}
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="tier-badge tier-badge--{{ tier }}">{{ tier|capitalize }}</span>
+        </div>
+        <div class="resource-card__value">{{ data.count }} {% trans %}tenants{% endtrans %}</div>
+        <div class="resource-card__cost">€{{ data.monthly }}/{% trans %}month{% endtrans %}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# Net Results (P&L) Section #}
+  {% if net_results %}
+  <div class="finops-section finops-section--netresults">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">📉</span>
+      {% trans %}Net Results (P&L){% endtrans %}
+    </h2>
+    <div class="finops-metrics">
+      <div class="metric-card metric-card--revenue">
+        <span class="metric-card__icon">💰</span>
+        <span class="metric-card__value">€{{ net_results.revenue_current }}</span>
+        <span class="metric-card__label">{% trans %}Revenue (Current){% endtrans %}</span>
+      </div>
+      <div class="metric-card metric-card--cost">
+        <span class="metric-card__icon">💸</span>
+        <span class="metric-card__value">€{{ net_results.costs_current }}</span>
+        <span class="metric-card__label">{% trans %}Costs (Current){% endtrans %}</span>
+      </div>
+      <div class="metric-card metric-card--{% if net_results.status == 'profitable' %}budget{% else %}cost{% endif %}">
+        <span class="metric-card__icon">{% if net_results.status == 'profitable' %}✅{% else %}⚠️{% endif %}</span>
+        <span class="metric-card__value" style="color: {% if net_results.net_current >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">
+          €{{ net_results.net_current }}
+        </span>
+        <span class="metric-card__label">{% trans %}Net Result{% endtrans %}</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-card__icon">📊</span>
+        <span class="metric-card__value" style="color: {% if net_results.margin_current >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">
+          {{ net_results.margin_current }}%
+        </span>
+        <span class="metric-card__label">{% trans %}Profit Margin{% endtrans %}</span>
+      </div>
+    </div>
+    
+    {# Projected Results #}
+    <div class="finops-help__sources" style="margin-top: 1rem;">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--finops-text-muted, #94a3b8);">{% trans %}Monthly Projection{% endtrans %}</h3>
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Metric{% endtrans %}</th>
+            <th>{% trans %}Current{% endtrans %}</th>
+            <th>{% trans %}Projected{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{% trans %}Revenue{% endtrans %}</td>
+            <td>€{{ net_results.revenue_current }}</td>
+            <td>€{{ net_results.revenue_projected }}</td>
+          </tr>
+          <tr>
+            <td>{% trans %}Costs{% endtrans %}</td>
+            <td>€{{ net_results.costs_current }}</td>
+            <td>€{{ net_results.costs_projected }}</td>
+          </tr>
+          <tr style="font-weight: bold;">
+            <td>{% trans %}Net Result{% endtrans %}</td>
+            <td style="color: {% if net_results.net_current >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">€{{ net_results.net_current }}</td>
+            <td style="color: {% if net_results.net_projected >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">€{{ net_results.net_projected }}</td>
+          </tr>
+          <tr>
+            <td>{% trans %}Margin{% endtrans %}</td>
+            <td>{{ net_results.margin_current }}%</td>
+            <td>{{ net_results.margin_projected }}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
 
   {# Tenant Costs Table #}
   <div class="finops-section">

@@ -197,6 +197,11 @@ $finops-gold: #fbbf24;
     &--tenants {
         border-top: 3px solid #8b5cf6;
     }
+
+    &--revenue {
+        border-top: 3px solid $finops-success;
+        background: rgba($ej-color-success, 0.05);
+    }
 }
 
 .metric-card__icon {

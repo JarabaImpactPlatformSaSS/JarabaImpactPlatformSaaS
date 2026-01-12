@@ -71,6 +71,8 @@ class FinOpsDashboardController extends ControllerBase
             '#recommendations' => $finops_data['recommendations'],
             '#help_info' => $this->getHelpInfo(),
             '#data_sources' => $finops_data['data_sources'],
+            '#revenue' => $finops_data['revenue'],
+            '#net_results' => $finops_data['net_results'],
             '#last_updated' => date('Y-m-d H:i:s'),
             '#cache' => [
                 'max-age' => 300, // Cache for 5 minutes
@@ -105,6 +107,10 @@ class FinOpsDashboardController extends ControllerBase
         $recommendations = $this->getOptimizationRecommendations($tenants);
         $data_sources = $this->getDataSourceInfo($tenants);
 
+        // Datos de ingresos y resultados netos
+        $revenue = $this->getRevenueData($tenants);
+        $net_results = $this->calculateNetResults($totals, $revenue);
+
         return [
             'tenants' => $tenants,
             'totals' => $totals,
@@ -112,6 +118,8 @@ class FinOpsDashboardController extends ControllerBase
             'alerts' => $alerts,
             'recommendations' => $recommendations,
             'data_sources' => $data_sources,
+            'revenue' => $revenue,
+            'net_results' => $net_results,
             'timestamp' => time(),
         ];
     }
@@ -484,6 +492,117 @@ class FinOpsDashboardController extends ControllerBase
         }
 
         return $recommendations;
+    }
+
+    /**
+     * Obtiene datos de ingresos por suscripciones.
+     *
+     * Calcula MRR (Monthly Recurring Revenue) y ARR (Annual Recurring Revenue)
+     * basándose en los planes activos de cada tenant.
+     *
+     * @param array $tenants
+     *   Lista de tenants con sus datos.
+     *
+     * @return array
+     *   Datos de ingresos: MRR, ARR, por tier, proyección.
+     */
+    protected function getRevenueData(array $tenants): array
+    {
+        $mrr = 0;
+        $revenue_by_tier = [
+            'basic' => ['count' => 0, 'monthly' => 0],
+            'professional' => ['count' => 0, 'monthly' => 0],
+            'enterprise' => ['count' => 0, 'monthly' => 0],
+        ];
+
+        try {
+            $tenant_storage = \Drupal::entityTypeManager()->getStorage('tenant');
+            $tenant_entities = $tenant_storage->loadMultiple();
+
+            foreach ($tenant_entities as $tenant) {
+                // Obtener plan del tenant
+                $plan = NULL;
+                try {
+                    if ($tenant->hasField('plan') && !$tenant->get('plan')->isEmpty()) {
+                        $plan = $tenant->get('plan')->entity;
+                    }
+                } catch (\Exception $e) {
+                    // Plan no disponible
+                }
+
+                if ($plan) {
+                    $monthly_price = $plan->getPriceMonthly();
+                    $tier = $plan->id() ?: 'basic';
+
+                    $mrr += $monthly_price;
+
+                    if (isset($revenue_by_tier[$tier])) {
+                        $revenue_by_tier[$tier]['count']++;
+                        $revenue_by_tier[$tier]['monthly'] += $monthly_price;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->warning(
+                'FinOps: Error calculating revenue: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+
+        $arr = $mrr * 12;
+        $days_in_month = (int) date('t');
+        $current_day = (int) date('j');
+        $monthly_projected = $current_day > 0 ? ($mrr / $current_day) * $days_in_month : $mrr;
+
+        return [
+            'mrr' => round($mrr, 2),
+            'arr' => round($arr, 2),
+            'monthly_projected' => round($monthly_projected, 2),
+            'by_tier' => $revenue_by_tier,
+            'active_subscriptions' => array_sum(array_column($revenue_by_tier, 'count')),
+        ];
+    }
+
+    /**
+     * Calcula resultados netos (P&L).
+     *
+     * @param array $totals
+     *   Totales de costes.
+     * @param array $revenue
+     *   Datos de ingresos.
+     *
+     * @return array
+     *   Resultados netos: actual, proyectado, margen.
+     */
+    protected function calculateNetResults(array $totals, array $revenue): array
+    {
+        $current_revenue = $revenue['mrr'];
+        $current_costs = $totals['cost_total'];
+        $net_current = $current_revenue - $current_costs;
+
+        $projected_revenue = $revenue['monthly_projected'];
+        $projected_costs = $totals['cost_total']; // Asumir costes similares
+        $net_projected = $projected_revenue - $projected_costs;
+
+        // Margen de beneficio
+        $margin_current = $current_revenue > 0
+            ? round(($net_current / $current_revenue) * 100, 1)
+            : 0;
+        $margin_projected = $projected_revenue > 0
+            ? round(($net_projected / $projected_revenue) * 100, 1)
+            : 0;
+
+        return [
+            'revenue_current' => round($current_revenue, 2),
+            'costs_current' => round($current_costs, 2),
+            'net_current' => round($net_current, 2),
+            'margin_current' => $margin_current,
+            'revenue_projected' => round($projected_revenue, 2),
+            'costs_projected' => round($projected_costs, 2),
+            'net_projected' => round($net_projected, 2),
+            'margin_projected' => $margin_projected,
+            'status' => $net_current >= 0 ? 'profitable' : 'loss',
+        ];
     }
 
     /**
