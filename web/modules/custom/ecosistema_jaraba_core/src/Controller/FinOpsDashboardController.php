@@ -169,12 +169,42 @@ class FinOpsDashboardController extends ControllerBase
                     // Plan no disponible, usar basic
                 }
 
+                // Calculate feature costs from tenant's vertical
+                $feature_cost = 0;
+                $feature_count = 0;
+                $feature_details = [];
+                try {
+                    $vertical = $tenant->getVertical();
+                    if ($vertical) {
+                        $enabled_features = $vertical->getEnabledFeatures();
+                        $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
+
+                        foreach ($enabled_features as $feature_id) {
+                            $feature = $feature_storage->load($feature_id);
+                            if ($feature && $feature->status()) {
+                                $base_cost = $feature->getBaseCostMonthly();
+                                if ($base_cost > 0) {
+                                    $feature_cost += $base_cost;
+                                    $feature_count++;
+                                    $feature_details[] = [
+                                        'id' => $feature_id,
+                                        'label' => $feature->label(),
+                                        'cost' => $base_cost,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Features no disponibles
+                }
+
                 // Calculate costs from config (NOT hardcoded)
                 $config = $this->getFinOpsConfig();
                 $storage_cost = $storage_mb * $config['price_storage_mb'];
                 $api_cost = $api_requests * $config['price_api_request'];
                 $cpu_cost = $cpu_hours * $config['price_cpu_hour'];
-                $total_cost = $storage_cost + $api_cost + $cpu_cost;
+                $total_cost = $storage_cost + $api_cost + $cpu_cost + $feature_cost;
 
                 $tenants[] = [
                     'id' => $tenant_id,
@@ -183,12 +213,15 @@ class FinOpsDashboardController extends ControllerBase
                     'storage_mb' => round($storage_mb, 2),
                     'api_requests' => $api_requests,
                     'cpu_hours' => round($cpu_hours, 2),
+                    'feature_count' => $feature_count,
                     'costs' => [
                         'storage' => round($storage_cost, 2),
                         'api' => round($api_cost, 2),
                         'cpu' => round($cpu_cost, 2),
+                        'features' => round($feature_cost, 2),
                         'total' => round($total_cost, 2),
                     ],
+                    'feature_details' => $feature_details,
                     'status' => $this->getTenantCostStatus($total_cost, $tier),
                 ];
             }

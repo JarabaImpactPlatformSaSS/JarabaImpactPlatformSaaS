@@ -243,6 +243,7 @@
             <th>{% trans %}Storage{% endtrans %}</th>
             <th>{% trans %}API Requests{% endtrans %}</th>
             <th>{% trans %}CPU{% endtrans %}</th>
+            <th>{% trans %}Features{% endtrans %}</th>
             <th>{% trans %}Total Cost{% endtrans %}</th>
             <th>{% trans %}Status{% endtrans %}</th>
           </tr>
@@ -260,6 +261,15 @@
             <td class="tenant-row__storage">{{ tenant.storage_mb }} MB</td>
             <td class="tenant-row__api">{{ tenant.api_requests|number_format }}</td>
             <td class="tenant-row__cpu">{{ tenant.cpu_hours }} h</td>
+            <td class="tenant-row__features">
+              {% if tenant.feature_count > 0 %}
+                <span title="{% for f in tenant.feature_details %}{{ f.label }}: €{{ f.cost }}{% if not loop.last %}, {% endif %}{% endfor %}">
+                  {{ tenant.feature_count }} ⚙️ <span class="feature-cost">€{{ tenant.costs.features }}</span>
+                </span>
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
             <td class="tenant-row__cost">
               <strong>€{{ tenant.costs.total }}</strong>
             </td>
