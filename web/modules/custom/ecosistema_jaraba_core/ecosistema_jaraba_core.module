@@ -573,39 +573,30 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   
   if ($load_premium) {
     $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/global';
-    // Usar CSS más específico con selectores que funcionen
+    // CSS simplificado sin min-height que causa gaps
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
         '#tag' => 'style',
         '#value' => '
-          /* UX Premium para páginas de estructura */
+          /* UX Premium para páginas de estructura - v2 sin gaps */
           body.path-admin {
             background: #0f172a !important;
           }
           
           body.path-admin .layout-container {
             background: #0f172a !important;
-            min-height: 100vh;
-            padding: 0 !important;
           }
           
-          /* Contenedor principal con padding y diseño mejorado */
-          body.path-admin main.page-content,
-          body.path-admin .region-content {
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
+          body.path-admin .gin-layer-wrapper,
+          body.path-admin .region-content,
+          body.path-admin main.page-content {
+            background: #0f172a !important;
             color: #e2e8f0 !important;
-            padding: 2rem !important;
-            margin: 0 !important;
-            min-height: calc(100vh - 80px);
+            padding: 1rem 2rem !important;
           }
           
-          body.path-admin .gin-layer-wrapper {
-            background: transparent !important;
-            padding: 0 !important;
-          }
-          
-          /* Título con margen reducido */
+          /* Título con estilo gradient */
           body.path-admin h1.page-title,
           body.path-admin .block-page-title-block h1 {
             color: #e2e8f0 !important;
@@ -613,25 +604,20 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            margin-top: 0 !important;
             font-size: 1.75rem;
           }
           
-          /* Reducir espacio de bloques intermedios */
-          body.path-admin .block-page-title-block {
-            margin-bottom: 0 !important;
-          }
-          
+          /* Bloques sin márgenes extra */
+          body.path-admin .block-page-title-block,
           body.path-admin .block-local-tasks-block,
-          body.path-admin .block-local-actions-block {
-            margin-top: 0 !important;
-            margin-bottom: 1rem !important;
-          }
-          
-          /* Tabla sin scroll excesivo */
+          body.path-admin .block-local-actions-block,
+          body.path-admin .region-content > *,
           body.path-admin .view-content,
           body.path-admin .views-element-container {
             margin-top: 0 !important;
+            margin-bottom: 0.75rem !important;
           }
           
           body.path-admin table {
