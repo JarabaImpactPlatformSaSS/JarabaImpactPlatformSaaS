@@ -776,25 +776,17 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             stroke: white !important;
           }
           
-          /* Imagen de fondo del caret en blanco (Gin usa imagen CSS) */
-          body.path-admin .dropbutton__toggle,
-          body.path-admin .dropbutton-toggle button {
-            background-image: none !important;
-            position: relative;
+          /* Imagen de fondo del caret en blanco (Gin usa SVG con fill oscuro) */
+          body.path-admin .dropbutton__toggle::before,
+          body.path-admin .dropbutton-toggle button::before,
+          body.path-admin button.dropbutton__toggle::before {
+            filter: brightness(0) invert(1) !important;
           }
           
-          body.path-admin .dropbutton__toggle::after {
-            content: "" !important;
-            display: block !important;
-            width: 0 !important;
-            height: 0 !important;
-            border-left: 5px solid transparent !important;
-            border-right: 5px solid transparent !important;
-            border-top: 6px solid white !important;
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
+          body.path-admin .dropbutton__toggle,
+          body.path-admin .dropbutton-toggle button,
+          body.path-admin button.dropbutton__toggle {
+            position: relative;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover,
