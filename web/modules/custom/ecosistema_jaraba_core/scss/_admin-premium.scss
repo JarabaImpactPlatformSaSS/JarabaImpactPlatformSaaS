@@ -42,6 +42,7 @@ $premium-gold: #fbbf24;
     padding: $ej-spacing-xl;
     color: $premium-text;
     font-family: $ej-font-family-fallback;
+    border-radius: $ej-border-radius-lg;
 
     // Tema claro opcional
     &.theme-light {

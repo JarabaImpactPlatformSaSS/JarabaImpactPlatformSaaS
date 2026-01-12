@@ -13,6 +13,14 @@
  */
 #}
 
+{# Diccionario de etiquetas de status traducibles #}
+{% set status_labels = {
+  'healthy': 'Saludable'|t,
+  'degraded': 'Degradado'|t,
+  'critical': 'Crítico'|t,
+  'unknown': 'Desconocido'|t,
+} %}
+
 <div class="admin-premium health-dashboard">
   {# Header Section #}
   <div class="health-header">
@@ -88,7 +96,7 @@
               {% if service.icon == 'globe' %}🌐{% endif %}
             </span>
             <span class="service-card__status-badge service-card__status-badge--{{ service.status }}">
-              {{ service.status|upper }}
+              {{ status_labels[service.status]|default(service.status|capitalize) }}
             </span>
           </div>
           <h3 class="service-card__name">{{ service.name }}</h3>
