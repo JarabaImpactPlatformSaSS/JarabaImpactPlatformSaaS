@@ -27,3 +27,16 @@ ecosistema_jaraba_core.feature.*:
     status:
       type: boolean
       label: 'Status'
+    # FinOps Cost Fields
+    base_cost_monthly:
+      type: float
+      label: 'Base monthly cost (EUR)'
+    unit_cost:
+      type: float
+      label: 'Unit cost per usage (EUR)'
+    cost_category:
+      type: string
+      label: 'Cost category (compute, storage, ai, api, bandwidth)'
+    usage_metric:
+      type: string
+      label: 'Usage metric type (api_calls, rag_queries, storage_mb, etc.)'

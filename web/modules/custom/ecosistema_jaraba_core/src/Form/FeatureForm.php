@@ -82,6 +82,64 @@ class FeatureForm extends EntityForm
             '#description' => $this->t('Si está deshabilitada, no aparece como opción en las verticales.'),
         ];
 
+        // =====================================================================
+        // FINOPS COST FIELDSET
+        // =====================================================================
+        $form['finops_costs'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Costes FinOps'),
+            '#open' => FALSE,
+            '#description' => $this->t('Configura los costes asociados a esta feature para cálculos de FinOps.'),
+        ];
+
+        $form['finops_costs']['base_cost_monthly'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Coste base mensual (€)'),
+            '#default_value' => $feature->getBaseCostMonthly(),
+            '#description' => $this->t('Coste fijo mensual por tener esta feature activa.'),
+            '#min' => 0,
+            '#step' => 0.01,
+        ];
+
+        $form['finops_costs']['unit_cost'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Coste por unidad (€)'),
+            '#default_value' => $feature->getUnitCost(),
+            '#description' => $this->t('Coste por cada unidad de uso (llamada API, consulta RAG, etc.).'),
+            '#min' => 0,
+            '#step' => 0.0001,
+        ];
+
+        $form['finops_costs']['cost_category'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Categoría de coste'),
+            '#options' => [
+                'compute' => $this->t('Compute (CPU/Procesamiento)'),
+                'storage' => $this->t('Storage (Almacenamiento)'),
+                'ai' => $this->t('AI (Inteligencia Artificial)'),
+                'api' => $this->t('API (Llamadas externas)'),
+                'bandwidth' => $this->t('Bandwidth (Transferencia)'),
+            ],
+            '#default_value' => $feature->getCostCategory(),
+            '#description' => $this->t('Categoría para agrupar costes en el dashboard FinOps.'),
+        ];
+
+        $form['finops_costs']['usage_metric'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Métrica de uso'),
+            '#options' => [
+                '' => $this->t('- Sin métrica (solo coste fijo) -'),
+                'api_calls' => $this->t('Llamadas API'),
+                'rag_queries' => $this->t('Consultas RAG'),
+                'storage_mb' => $this->t('Almacenamiento (MB)'),
+                'webhooks' => $this->t('Webhooks enviados'),
+                'ai_tokens' => $this->t('Tokens IA consumidos'),
+                'transactions' => $this->t('Transacciones'),
+            ],
+            '#default_value' => $feature->getUsageMetric(),
+            '#description' => $this->t('Tipo de uso que genera coste variable.'),
+        ];
+
         return $form;
     }
 
