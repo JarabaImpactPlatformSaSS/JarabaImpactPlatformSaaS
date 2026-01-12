@@ -596,6 +596,34 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             padding: 1rem 2rem !important;
           }
           
+          /* Eliminar gap del header - extender fondo a todo ancho */
+          body.path-admin .region-header,
+          body.path-admin .layout-container > header,
+          body.path-admin .gin-secondary-toolbar,
+          body.path-admin .region-sticky,
+          body.path-admin .region-breadcrumb {
+            background: #0f172a !important;
+            margin: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+          
+          /* Contenedor a ancho completo sin márgenes laterales */
+          body.path-admin .layout-container,
+          body.path-admin .gin-layer-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          
+          body.path-admin .region-content {
+            background: #0f172a !important;
+            color: #e2e8f0 !important;
+            padding: 1rem 2rem !important;
+            margin: 0 !important;
+          }
+          
           /* Título con estilo gradient */
           body.path-admin h1.page-title,
           body.path-admin .block-page-title-block h1 {
@@ -711,13 +739,32 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           
           /* Toggle del dropbutton más visible */
           body.path-admin .dropbutton-wrapper .dropbutton-toggle {
-            background: rgba(59, 130, 246, 0.3) !important;
+            background: rgba(59, 130, 246, 0.5) !important;
             border-left: 1px solid rgba(238, 238, 238, 0.5) !important;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-toggle button {
             color: white !important;
             background: transparent !important;
+          }
+          
+          /* Icono SVG del toggle en blanco */
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle button::before,
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle button::after,
+          body.path-admin .dropbutton__toggle::before,
+          body.path-admin .dropbutton__toggle::after {
+            border-color: white !important;
+          }
+          
+          body.path-admin .dropbutton-wrapper .dropbutton-toggle svg,
+          body.path-admin .dropbutton__toggle svg {
+            fill: white !important;
+            stroke: white !important;
+          }
+          
+          body.path-admin .dropbutton__toggle {
+            background: rgba(59, 130, 246, 0.5) !important;
+            color: white !important;
           }
           
           body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover {
