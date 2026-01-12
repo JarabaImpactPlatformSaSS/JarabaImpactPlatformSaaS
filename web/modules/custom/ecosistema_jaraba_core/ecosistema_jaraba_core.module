@@ -752,48 +752,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             background: rgba(96, 165, 250, 0.2) !important;
           }
           
-          /* Toggle del dropbutton - icono CSS puro visible */
-          body.path-admin .dropbutton-wrapper .dropbutton-toggle,
-          body.path-admin .dropbutton .dropbutton__toggle,
-          body.path-admin button.dropbutton__toggle {
-            background: #3b82f6 !important;
-            border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
-            min-width: 32px !important;
-            min-height: 32px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            position: relative !important;
-          }
-          
-          /* Ocultar icono original de Gin */
-          body.path-admin .dropbutton__toggle::before,
-          body.path-admin button.dropbutton__toggle::before {
-            display: none !important;
-          }
-          
-          /* Crear triángulo blanco CSS puro */
-          body.path-admin .dropbutton__toggle::after,
-          body.path-admin button.dropbutton__toggle::after {
-            content: "" !important;
-            display: block !important;
-            width: 0 !important;
-            height: 0 !important;
-            border-left: 6px solid transparent !important;
-            border-right: 6px solid transparent !important;
-            border-top: 8px solid white !important;
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            background: none !important;
-          }
-          
-          body.path-admin .dropbutton-wrapper .dropbutton-toggle:hover,
-          body.path-admin .dropbutton__toggle:hover,
-          body.path-admin button.dropbutton__toggle:hover {
-            background: #2563eb !important;
-          }
+          /* Dropbutton - mantener estilos originales de Gin */
           
           /* Dropbutton principal con mejor contraste */
           body.path-admin .dropbutton-wrapper .dropbutton-action a {
