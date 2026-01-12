@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template para estadísticas de un tenant específico en Jaraba RAG.
+ *
+ * Variables disponibles:
+ * - tenant_id: ID del tenant
+ * - week_stats: Estadísticas de la última semana
+ * - month_stats: Estadísticas del último mes
+ *
+ * @see Drupal\jaraba_rag\Controller\RagAdminController::tenantStats()
+ */
+#}
+
+<div class="admin-premium rag-tenant-stats">
+  <div class="premium-header">
+    <div class="premium-header__content">
+      <h1 class="premium-header__title">
+        <span class="premium-header__icon">🏢</span>
+        {% trans %}Estadísticas del Tenant{% endtrans %} #{{ tenant_id }}
+      </h1>
+    </div>
+    <div class="premium-header__actions">
+      <a href="{{ path('jaraba_rag.dashboard') }}" class="premium-btn premium-btn--secondary">
+        ← {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Contenido similar al dashboard principal pero para un tenant específico #}
+  <div class="premium-section">
+    <h2 class="premium-section__title">
+      <span class="premium-section__icon">📊</span>
+      {% trans %}Esta Semana{% endtrans %}
+    </h2>
+    {% if week_stats %}
+    <div class="premium-cards">
+      <div class="premium-card premium-card--primary">
+        <span class="premium-card__icon">💬</span>
+        <span class="premium-card__value">{{ week_stats.total_queries|default(0)|number_format }}</span>
+        <span class="premium-card__label">{% trans %}Consultas{% endtrans %}</span>
+      </div>
+      <div class="premium-card premium-card--success">
+        <span class="premium-card__icon">✅</span>
+        <span class="premium-card__value">{{ week_stats.success_rate|default(0)|number_format(1) }}%</span>
+        <span class="premium-card__label">{% trans %}Éxito{% endtrans %}</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="premium-empty">
+      <span class="premium-empty__icon">📭</span>
+      <p class="premium-empty__message">{% trans %}Sin datos disponibles{% endtrans %}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>

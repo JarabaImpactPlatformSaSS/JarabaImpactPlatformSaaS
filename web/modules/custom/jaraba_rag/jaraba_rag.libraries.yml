@@ -1,0 +1,9 @@
+# Librerías del módulo Jaraba RAG
+
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal

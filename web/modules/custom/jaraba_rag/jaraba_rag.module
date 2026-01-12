@@ -16,6 +16,31 @@ declare(strict_types=1);
 use Drupal\Core\Entity\EntityInterface;
 
 /**
+ * Implements hook_theme().
+ */
+function jaraba_rag_theme(): array {
+  return [
+    'jaraba_rag_dashboard' => [
+      'variables' => [
+        'week_stats' => [],
+        'month_stats' => [],
+      ],
+      'template' => 'jaraba-rag-dashboard',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_rag') . '/templates',
+    ],
+    'jaraba_rag_tenant_stats' => [
+      'variables' => [
+        'tenant_id' => NULL,
+        'week_stats' => [],
+        'month_stats' => [],
+      ],
+      'template' => 'jaraba-rag-tenant-stats',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_rag') . '/templates',
+    ],
+  ];
+}
+
+/**
  * Implements hook_entity_insert().
  *
  * Indexa nuevas entidades en la Knowledge Base.
