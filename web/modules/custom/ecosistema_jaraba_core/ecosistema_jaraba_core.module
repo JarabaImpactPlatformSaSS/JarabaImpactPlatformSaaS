@@ -738,18 +738,26 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             border: none !important;
           }
           
-          /* Botón Cancelar / Danger */
+          /* Botón Cancelar / Danger / Eliminar */
           body.path-admin .button--danger,
-          body.path-admin a.button--danger {
-            background: linear-gradient(135deg, #64748b, #475569) !important;
+          body.path-admin a.button--danger,
+          body.path-admin .button--delete,
+          body.path-admin a.button--delete,
+          body.path-admin input.button--danger,
+          body.path-admin button.button--danger,
+          body.path-admin .form-actions a[href*="delete"] {
+            background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
             color: white !important;
             border-radius: 8px !important;
-            box-shadow: 0 4px 6px rgba(71, 85, 105, 0.3) !important;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3) !important;
           }
           
           body.path-admin .button--danger:hover,
-          body.path-admin a.button--danger:hover {
-            background: linear-gradient(135deg, #475569, #334155) !important;
+          body.path-admin a.button--danger:hover,
+          body.path-admin .button--delete:hover,
+          body.path-admin a.button--delete:hover,
+          body.path-admin .form-actions a[href*="delete"]:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
             transform: translateY(-1px);
           }
           
