@@ -544,3 +544,106 @@ function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percenta
     );
   }
 }
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Añade la librería de estilos premium a las páginas de estructura del admin.
+ */
+function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  
+  // Rutas de estructura que necesitan UX Premium
+  $premium_routes = [
+    'entity.tenant.collection',
+    'entity.vertical.collection',
+    'entity.saas_feature.collection',
+    'entity.ai_agent.collection',
+    'entity.saas_plan.collection',
+  ];
+  
+  // También incluir rutas que empiecen con estas bases
+  $premium_route_prefixes = [
+    'entity.tenant.',
+    'entity.vertical.',
+    'entity.saas_feature.',
+    'entity.ai_agent.',
+    'entity.saas_plan.',
+    'view.tenants.',
+    'view.verticales.',
+  ];
+  
+  $load_premium = in_array($route_name, $premium_routes);
+  
+  if (!$load_premium) {
+    foreach ($premium_route_prefixes as $prefix) {
+      if (strpos($route_name, $prefix) === 0) {
+        $load_premium = TRUE;
+        break;
+      }
+    }
+  }
+  
+  if ($load_premium) {
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/global';
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'style',
+        '#value' => '
+          /* UX Premium para páginas de estructura */
+          .page-admin-structure .layout-container,
+          .page-admin-structure .block-system-main-block,
+          [class*="entity-list"],
+          .view-tenants,
+          .view-verticales {
+            background: #0f172a !important;
+            color: #e2e8f0 !important;
+            border-radius: 14px;
+            padding: 1.5rem;
+            min-height: 100vh;
+          }
+          .page-admin-structure table {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            overflow: hidden;
+          }
+          .page-admin-structure table thead th {
+            background: rgba(30, 41, 59, 0.9) !important;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid #eee;
+          }
+          .page-admin-structure table tbody td {
+            color: #e2e8f0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+          }
+          .page-admin-structure table tbody tr:hover td {
+            background: rgba(30, 41, 59, 0.6) !important;
+          }
+          .page-admin-structure .action-links a,
+          .page-admin-structure .button--primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            border: none;
+          }
+          .page-admin-structure h1,
+          .page-admin-structure .page-title {
+            color: #e2e8f0 !important;
+          }
+          .page-admin-structure a {
+            color: #60a5fa;
+          }
+          .page-admin-structure .dropbutton-wrapper .dropbutton-widget {
+            background: rgba(30, 41, 59, 0.9) !important;
+            border: 1px solid #eee;
+            border-radius: 8px;
+          }
+        ',
+      ],
+      'ecosistema_jaraba_premium_structure_styles',
+    ];
+  }
+}
