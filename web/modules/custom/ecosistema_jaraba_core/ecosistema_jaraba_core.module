@@ -754,13 +754,6 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           
           /* Dropbutton - mantener estilos originales de Gin */
           
-          /* Dropbutton principal con mejor contraste */
-          body.path-admin .dropbutton-wrapper .dropbutton-action a {
-            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
-            color: white !important;
-            padding: 0.5rem 1rem !important;
-          }
-          
           /* Panel dropdown con fondo sólido oscuro */
           body.path-admin .dropbutton-wrapper .secondary-action {
             background: #1e293b !important;
