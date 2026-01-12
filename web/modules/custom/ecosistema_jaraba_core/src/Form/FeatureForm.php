@@ -164,4 +164,26 @@ class FeatureForm extends EntityForm
         $form_state->setRedirectUrl($feature->toUrl('collection'));
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function actions(array $form, FormStateInterface $form_state)
+    {
+        $actions = parent::actions($form, $form_state);
+
+        // Añadir botón de cancelar
+        $actions['cancel'] = [
+            '#type' => 'link',
+            '#title' => $this->t('Cancelar'),
+            '#url' => $this->entity->toUrl('collection'),
+            '#attributes' => [
+                'class' => ['button', 'button--danger'],
+            ],
+            '#weight' => 10,
+        ];
+
+        return $actions;
+    }
+
 }
+
