@@ -13,9 +13,19 @@
 
 $health-bg: #0f172a !default;
 $health-card-bg: rgba(30, 41, 59, 0.8) !default;
-$health-border: rgba(148, 163, 184, 0.1) !default;
+// Borde visible como en FinOps (#eee = rgb(238, 238, 238))
+$health-border: #eee !default;
+$health-border-subtle: rgba(148, 163, 184, 0.2) !default;
 $health-text: #e2e8f0 !default;
 $health-text-muted: #94a3b8 !default;
+
+// ---------------------------------------------------------------------------
+// CONTAINER PRINCIPAL - Asegurar esquinas redondeadas
+// ---------------------------------------------------------------------------
+
+.health-dashboard {
+    border-radius: $ej-border-radius-lg;
+}
 
 // Colores de estado
 $health-healthy: var(--ej-color-success, #{$ej-color-success});
@@ -330,6 +340,10 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
 
 .checks-table {
     overflow-x: auto;
+    border: 1px solid $health-border;
+    border-radius: $ej-border-radius-md;
+    background: $health-card-bg;
+    backdrop-filter: blur(10px);
 
     .table--modern {
         width: 100%;
@@ -339,7 +353,7 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
         td {
             padding: $ej-spacing-md;
             text-align: left;
-            border-bottom: $ej-border-width solid $health-border;
+            border-bottom: 1px solid $health-border-subtle;
         }
 
         th {
@@ -347,11 +361,20 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
             text-transform: uppercase;
             color: $health-text-muted;
             font-weight: $ej-font-weight-semibold;
+            background: rgba(30, 41, 59, 0.6);
         }
 
         td {
             font-size: $ej-font-size-sm;
             color: $health-text;
+        }
+
+        tr:hover td {
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
         }
     }
 }
