@@ -177,10 +177,23 @@ class FeatureForm extends EntityForm
             '#title' => $this->t('Cancelar'),
             '#url' => $this->entity->toUrl('collection'),
             '#attributes' => [
-                'class' => ['button', 'button--danger'],
+                'class' => ['button'],
             ],
             '#weight' => 10,
         ];
+
+        // Añadir botón de eliminar (solo si no es nueva entidad)
+        if (!$this->entity->isNew()) {
+            $actions['delete'] = [
+                '#type' => 'link',
+                '#title' => $this->t('Eliminar'),
+                '#url' => $this->entity->toUrl('delete-form'),
+                '#attributes' => [
+                    'class' => ['button', 'button--danger'],
+                ],
+                '#weight' => 20,
+            ];
+        }
 
         return $actions;
     }
