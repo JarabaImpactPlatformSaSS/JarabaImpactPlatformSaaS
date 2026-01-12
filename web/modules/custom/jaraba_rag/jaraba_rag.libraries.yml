@@ -7,3 +7,5 @@ dashboard:
       /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
   dependencies:
     - core/drupal
+    - core/drupal.ajax
+    - core/drupal.dialog.ajax

@@ -26,7 +26,7 @@
       </p>
     </div>
     <div class="premium-header__actions">
-      <a href="{{ path('jaraba_rag.settings') }}" class="btn btn-primary" title="{% trans %}Configurar RAG{% endtrans %}">
+      <a href="{{ path('jaraba_rag.settings') }}" class="btn btn-primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"{% trans %}Configuración de RAG{% endtrans %}"}' title="{% trans %}Configurar RAG{% endtrans %}">
         <span class="btn__icon">⚙️</span> {% trans %}Configurar RAG{% endtrans %}
       </a>
     </div>
