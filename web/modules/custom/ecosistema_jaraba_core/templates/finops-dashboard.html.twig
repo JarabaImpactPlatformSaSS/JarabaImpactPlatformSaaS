@@ -131,6 +131,61 @@
     </div>
   </div>
 
+  {# Tenant Costs Table - Desglose por inquilino #}
+  <div class="finops-section">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">🏢</span>
+      {% trans %}Cost by Tenant{% endtrans %}
+    </h2>
+    <div class="tenant-table">
+      {% if tenants is not empty %}
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Tenant{% endtrans %}</th>
+            <th>{% trans %}Tier{% endtrans %}</th>
+            <th>{% trans %}Storage{% endtrans %}</th>
+            <th>{% trans %}API Requests{% endtrans %}</th>
+            <th>{% trans %}CPU{% endtrans %}</th>
+            <th>{% trans %}Total Cost{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="tenant-costs">
+          {% for tenant in tenants %}
+          <tr class="tenant-row tenant-row--{{ tenant.status }}">
+            <td class="tenant-row__name">
+              <strong>{{ tenant.name }}</strong>
+              <span class="tenant-row__id">{{ tenant.id }}</span>
+            </td>
+            <td class="tenant-row__tier">
+              <span class="tier-badge tier-badge--{{ tenant.tier }}">{{ tenant.tier|capitalize }}</span>
+            </td>
+            <td class="tenant-row__storage">{{ tenant.storage_mb }} MB</td>
+            <td class="tenant-row__api">{{ tenant.api_requests|number_format }}</td>
+            <td class="tenant-row__cpu">{{ tenant.cpu_hours }} h</td>
+            <td class="tenant-row__cost">
+              <strong>€{{ tenant.costs.total }}</strong>
+            </td>
+            <td class="tenant-row__status">
+              <span class="status-badge status-badge--{{ tenant.status }}">
+                {% if tenant.status == 'normal' %}✅{% elseif tenant.status == 'warning' %}⚠️{% else %}🚨{% endif %}
+                {{ tenant.status|upper }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="finops-empty-state" style="text-align: center; padding: 2rem; color: var(--finops-text-muted, #94a3b8);">
+        <span style="font-size: 2rem;">📭</span>
+        <p>{% trans %}No tenants found. Create tenants to see cost breakdown.{% endtrans %}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
   {# Revenue Section (MRR/ARR) #}
   {% if revenue %}
   <div class="finops-section finops-section--revenue">
@@ -249,54 +304,6 @@
     </div>
   </div>
   {% endif %}
-
-  {# Tenant Costs Table #}
-  <div class="finops-section">
-    <h2 class="finops-section__title">
-      <span class="finops-section__icon">🏢</span>
-      {% trans %}Cost by Tenant{% endtrans %}
-    </h2>
-    <div class="tenant-table">
-      <table class="table table--modern">
-        <thead>
-          <tr>
-            <th>{% trans %}Tenant{% endtrans %}</th>
-            <th>{% trans %}Tier{% endtrans %}</th>
-            <th>{% trans %}Storage{% endtrans %}</th>
-            <th>{% trans %}API Requests{% endtrans %}</th>
-            <th>{% trans %}CPU{% endtrans %}</th>
-            <th>{% trans %}Total Cost{% endtrans %}</th>
-            <th>{% trans %}Status{% endtrans %}</th>
-          </tr>
-        </thead>
-        <tbody id="tenant-costs">
-          {% for tenant in tenants %}
-          <tr class="tenant-row tenant-row--{{ tenant.status }}">
-            <td class="tenant-row__name">
-              <strong>{{ tenant.name }}</strong>
-              <span class="tenant-row__id">{{ tenant.id }}</span>
-            </td>
-            <td class="tenant-row__tier">
-              <span class="tier-badge tier-badge--{{ tenant.tier }}">{{ tenant.tier|capitalize }}</span>
-            </td>
-            <td class="tenant-row__storage">{{ tenant.storage_mb }} MB</td>
-            <td class="tenant-row__api">{{ tenant.api_requests|number_format }}</td>
-            <td class="tenant-row__cpu">{{ tenant.cpu_hours }} h</td>
-            <td class="tenant-row__cost">
-              <strong>€{{ tenant.costs.total }}</strong>
-            </td>
-            <td class="tenant-row__status">
-              <span class="status-badge status-badge--{{ tenant.status }}">
-                {% if tenant.status == 'normal' %}✅{% elseif tenant.status == 'warning' %}⚠️{% else %}🚨{% endif %}
-                {{ tenant.status|upper }}
-              </span>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 
   {# Recommendations Section #}
   {% if recommendations is not empty %}
