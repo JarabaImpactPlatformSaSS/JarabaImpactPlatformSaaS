@@ -619,7 +619,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
           }
           
           body.path-admin table thead th {
-            background: transparent !important;
+            background: rgba(30, 41, 59, 0.95) !important;
             color: #94a3b8 !important;
             border-bottom: 1px solid #eee !important;
             font-weight: 600;
@@ -627,14 +627,18 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
             font-size: 0.75rem;
           }
           
+          body.path-admin table tbody tr {
+            background: rgba(30, 41, 59, 0.8) !important;
+          }
+          
           body.path-admin table tbody td {
             color: #e2e8f0 !important;
             border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
-            background: transparent !important;
+            background: rgba(30, 41, 59, 0.8) !important;
           }
           
           body.path-admin table tbody tr:hover td {
-            background: rgba(30, 41, 59, 0.6) !important;
+            background: rgba(30, 41, 59, 0.95) !important;
           }
           
           body.path-admin .action-links a,
