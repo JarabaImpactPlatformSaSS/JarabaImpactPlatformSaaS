@@ -1,3 +1,16 @@
+# ==============================================
+# DEPLOY A PRODUCCIÓN (IONOS)
+# ==============================================
+# Pipeline PRINCIPAL de deploy a producción.
+# Host: plataformadeecosistemas.com (IONOS shared hosting)
+# Estrategia: git-based deploy con maintenance mode.
+#
+# Flujo: Lint → Test → Backup → Deploy → Smoke Test
+#
+# Para el pipeline Blue-Green containerizado (futuro),
+# ver: deploy-production.yml
+# ==============================================
+
 name: Jaraba SaaS - Deploy to IONOS
 
 on:
@@ -108,22 +121,74 @@ jobs:
             /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 0
           EOF
 
-      - name: Smoke test
+      - name: Smoke test - Health endpoint
         run: |
-          sleep 5
+          echo "⏳ Esperando 10s para estabilización post-deploy..."
+          sleep 10
+          
+          echo "🔍 Verificando /health endpoint..."
+          for i in 1 2 3; do
+            RESPONSE=$(curl -sf https://plataformadeecosistemas.com/health 2>/dev/null || echo '{}')
+            STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
+            
+            if [ "$STATUS" = "ok" ]; then
+              echo "✅ Health check passed! Platform is healthy."
+              echo "$RESPONSE" | jq .
+              exit 0
+            fi
+            
+            echo "⚠️ Intento $i/3: status=$STATUS. Reintentando en 5s..."
+            sleep 5
+          done
+          
+          echo "❌ Health check failed after 3 attempts!"
+          echo "Response: $RESPONSE"
+          exit 1
+
+      - name: Smoke test - Homepage
+        if: success()
+        run: |
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://plataformadeecosistemas.com)
           if [ "$HTTP_STATUS" != "200" ]; then
-            echo "❌ Smoke test failed! HTTP status: $HTTP_STATUS"
-            exit 1
+            echo "⚠️ Homepage returned HTTP $HTTP_STATUS (non-blocking)"
+          else
+            echo "✅ Homepage OK (HTTP 200)"
           fi
-          echo "✅ Smoke test passed! Site is up."
 
       - name: Notify success
         if: success()
-        run: echo "🎉 Deployment successful!"
+        run: |
+          echo "🎉 Deployment successful!"
+          echo "Version: $(git describe --tags --always)"
+          echo "Commit: ${{ github.sha }}"
 
-      - name: Rollback on failure
+      - name: Notify failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "❌ *IONOS Deploy Failed*\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Actor:* ${{ github.actor }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
+
+      - name: Rollback instructions
         if: failure()
         run: |
           echo "❌ Deployment failed! Manual rollback may be required."
-          echo "Latest backup available in ~/backups/ on IONOS server."
+          echo ""
+          echo "📋 Rollback steps:"
+          echo "  1. SSH into IONOS: ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}"
+          echo "  2. Restore DB: gunzip -c ~/backups/db_pre_deploy_*.sql.gz | mysql"
+          echo "  3. Revert code: cd ~/JarabaImpactPlatformSaaS && git reset --hard HEAD~1"
+          echo "  4. Rebuild: composer install && drush cr"

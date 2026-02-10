@@ -491,3 +491,638 @@ ecosistema_jaraba_core.finops.settings:
     _permission: 'administer site configuration'
   options:
     _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# TENANT SELF-SERVICE PORTAL
+# ---------------------------------------------------------------------------
+
+# Dashboard Self-Service para tenants
+# Permite a los tenants ver sus propias métricas sin acceso admin
+ecosistema_jaraba_core.tenant_self_service.dashboard:
+  path: '/my-dashboard'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::dashboard'
+    _title: 'Mi Dashboard'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# Configuración Self-Service del tenant
+ecosistema_jaraba_core.tenant_self_service.settings:
+  path: '/my-settings'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::settings'
+    _title: 'Configuración'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# ---------------------------------------------------------------------------
+# TENANT ANALYTICS API - GRÁFICOS DE TENDENCIAS
+# ---------------------------------------------------------------------------
+
+# API para datos de tendencias de ventas
+ecosistema_jaraba_core.api.tenant_analytics.sales:
+  path: '/api/tenant/analytics/sales'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::salesTrend'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# API para datos de MRR
+ecosistema_jaraba_core.api.tenant_analytics.mrr:
+  path: '/api/tenant/analytics/mrr'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::mrrTrend'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# API para datos de clientes
+ecosistema_jaraba_core.api.tenant_analytics.customers:
+  path: '/api/tenant/analytics/customers'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::customersTrend'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# API para productos top
+ecosistema_jaraba_core.api.tenant_analytics.products:
+  path: '/api/tenant/analytics/products'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::topProducts'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# TENANT SELF-SERVICE - CONFIGURACIÓN
+# ---------------------------------------------------------------------------
+
+# Formulario de configuración de dominio personalizado
+ecosistema_jaraba_core.tenant_self_service.domain:
+  path: '/my-settings/domain'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\TenantDomainSettingsForm'
+    _title: 'Dominio Personalizado'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# Formulario de gestión de API Keys
+ecosistema_jaraba_core.tenant_self_service.api_keys:
+  path: '/my-settings/api-keys'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\TenantApiKeysForm'
+    _title: 'API Keys'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# Formulario de configuración de Webhooks
+ecosistema_jaraba_core.tenant_self_service.webhooks:
+  path: '/my-settings/webhooks'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\TenantWebhooksForm'
+    _title: 'Webhooks'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# ---------------------------------------------------------------------------
+# MARKETPLACE - PHASE 13: CROSS-TENANT VISIBILITY
+# ---------------------------------------------------------------------------
+
+# Landing page del Marketplace
+ecosistema_jaraba_core.marketplace.landing:
+  path: '/marketplace'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\MarketplaceController::landing'
+    _title: 'Marketplace'
+  requirements:
+    _access: 'TRUE'
+
+# Búsqueda en del Marketplace
+ecosistema_jaraba_core.marketplace.search:
+  path: '/marketplace/search'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\MarketplaceController::search'
+    _title: 'Buscar Productos'
+  requirements:
+    _access: 'TRUE'
+
+# Vista de producto individual en Marketplace
+ecosistema_jaraba_core.marketplace.product:
+  path: '/marketplace/product/{id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\MarketplaceController::viewProduct'
+    _title: 'Producto'
+  requirements:
+    _access: 'TRUE'
+    id: '\d+'
+
+# ---------------------------------------------------------------------------
+# PHASE 12: ALERTING CONFIGURATION
+# ---------------------------------------------------------------------------
+
+# Configuración de alertas Slack/Teams
+ecosistema_jaraba_core.alerting_settings:
+  path: '/admin/config/system/alerting'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\AlertingSettingsForm'
+    _title: 'Configuración de Alertas'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# PHASE 13: AI PROTECTION SETTINGS
+# ---------------------------------------------------------------------------
+
+# Configuración de Rate Limiting y protección AI
+ecosistema_jaraba_core.rate_limit_settings:
+  path: '/admin/config/system/rate-limits'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\RateLimitSettingsForm'
+    _title: 'Rate Limiting y Protección AI'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# SEC-08: Configuración de headers de seguridad (CORS, CSP, HSTS)
+ecosistema_jaraba_core.security_headers_settings:
+  path: '/admin/config/system/security-headers'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\SecurityHeadersSettingsForm'
+    _title: 'Headers de Seguridad'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# Q1 2027: DEMO INTERACTIVA - TIME-TO-VALUE < 60s
+# ---------------------------------------------------------------------------
+
+# Landing de selección de perfil de demo (PÚBLICA)
+ecosistema_jaraba_core.demo_landing:
+  path: '/demo'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::demoLanding'
+    _title: 'Prueba la Plataforma'
+  requirements:
+    _access: 'TRUE'
+
+# Iniciar demo con perfil específico (PÚBLICA)
+ecosistema_jaraba_core.demo_start:
+  path: '/demo/start/{profileId}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::startDemo'
+    _title: 'Demo Interactiva'
+  requirements:
+    _access: 'TRUE'
+    profileId: '[a-z_]+'
+
+# Dashboard de demo con sesión activa
+ecosistema_jaraba_core.demo_dashboard:
+  path: '/demo/dashboard/{sessionId}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::demoDashboard'
+    _title: 'Dashboard Demo'
+  requirements:
+    _access: 'TRUE'
+    sessionId: '[a-zA-Z0-9_-]+'
+
+# Demo de storytelling con IA
+ecosistema_jaraba_core.demo_storytelling:
+  path: '/demo/ai/storytelling/{sessionId}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::demoAiStorytelling'
+    _title: 'Genera tu Historia'
+  requirements:
+    _access: 'TRUE'
+    sessionId: '[a-zA-Z0-9_-]+'
+
+# API: Track demo action
+ecosistema_jaraba_core.demo_api_track:
+  path: '/api/demo/track'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::trackAction'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# API: Get session data
+ecosistema_jaraba_core.demo_api_session:
+  path: '/api/demo/session/{sessionId}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::getSessionData'
+  requirements:
+    _access: 'TRUE'
+    sessionId: '[a-zA-Z0-9_-]+'
+  methods: [GET]
+
+# API: Convert demo to real account
+ecosistema_jaraba_core.demo_api_convert:
+  path: '/api/demo/convert'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::convertToReal'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# ===========================================================================
+# API REST V1 - API-FIRST ARCHITECTURE (Q1 2027)
+# ===========================================================================
+# Documentación: /api/docs
+# Spec OpenAPI: /api/openapi.yaml
+# ===========================================================================
+
+# Documentación Swagger UI
+ecosistema_jaraba_core.api.docs:
+  path: '/api/docs'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::docs'
+    _title: 'API Documentation'
+  requirements:
+    _access: 'TRUE'
+
+# OpenAPI Spec (YAML)
+ecosistema_jaraba_core.api.openapi:
+  path: '/api/openapi.yaml'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::openApiSpec'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# TENANTS API
+# ---------------------------------------------------------------------------
+
+# Listar tenants del usuario (requiere autenticación)
+ecosistema_jaraba_core.api.v1.tenants:
+  path: '/api/v1/tenants'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::listTenants'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# Obtener tenant específico (requiere autenticación)
+ecosistema_jaraba_core.api.v1.tenant:
+  path: '/api/v1/tenants/{tenantId}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::getTenant'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    tenantId: \d+
+  methods: [GET]
+
+# Métricas de uso del tenant (requiere autenticación)
+ecosistema_jaraba_core.api.v1.tenant.usage:
+  path: '/api/v1/tenants/{tenantId}/usage'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::getTenantUsage'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    tenantId: \d+
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# PLANS API
+# ---------------------------------------------------------------------------
+
+# Listar planes disponibles
+ecosistema_jaraba_core.api.v1.plans:
+  path: '/api/v1/plans'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::listPlans'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# MARKETPLACE API
+# ---------------------------------------------------------------------------
+
+# Listar productos del marketplace
+ecosistema_jaraba_core.api.v1.marketplace.products:
+  path: '/api/v1/marketplace/products'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::listMarketplaceProducts'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# Listar categorías del marketplace
+ecosistema_jaraba_core.api.v1.marketplace.categories:
+  path: '/api/v1/marketplace/categories'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::listMarketplaceCategories'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# ===========================================================================
+# CONTEXTUAL AI COPILOT API (Q1 2027)
+# ===========================================================================
+
+# Obtener contexto de página para copilot
+ecosistema_jaraba_core.api.copilot.context:
+  path: '/api/copilot/context'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::getContext'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# Generar contenido con IA
+ecosistema_jaraba_core.api.copilot.generate:
+  path: '/api/copilot/generate'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::generateContent'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+
+# Autocompletado inteligente
+ecosistema_jaraba_core.api.copilot.autocomplete:
+  path: '/api/copilot/autocomplete/{field}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::autocomplete'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# ===========================================================================
+# SANDBOX API - TIME-TO-VALUE < 60s (Q1 2027)
+# ===========================================================================
+
+# Crear nuevo sandbox temporal
+ecosistema_jaraba_core.api.sandbox.create:
+  path: '/api/sandbox/create'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::createSandbox'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# Obtener sandbox por ID
+ecosistema_jaraba_core.api.sandbox.get:
+  path: '/api/sandbox/{id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::get'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# Registrar engagement en sandbox
+ecosistema_jaraba_core.api.sandbox.track:
+  path: '/api/sandbox/{id}/track'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::track'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# Convertir sandbox a cuenta real
+ecosistema_jaraba_core.api.sandbox.convert:
+  path: '/api/sandbox/{id}/convert'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::convert'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# Listar templates disponibles
+ecosistema_jaraba_core.api.sandbox.templates:
+  path: '/api/sandbox/templates'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::templates'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# Estadísticas de sandboxes
+ecosistema_jaraba_core.api.sandbox.stats:
+  path: '/api/sandbox/stats'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::stats'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# DASHBOARD UNIFICADO - RUTAS ALIAS PARA AVATARES
+# ---------------------------------------------------------------------------
+# Estas rutas proporcionan una experiencia unificada /dashboard/{avatar}
+# mientras redirigen a los dashboards específicos de cada módulo.
+# Permite enlaces consistentes desde la homepage y navegación.
+
+# Dashboard Job Seeker - Alias → /jobseeker
+ecosistema_jaraba_core.dashboard.career:
+  path: '/dashboard/career'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToCareer'
+    _title: 'Mi Carrera'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Dashboard Recruiter - Alias → /employer
+ecosistema_jaraba_core.dashboard.recruiter:
+  path: '/dashboard/recruiter'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToRecruiter'
+    _title: 'Panel del Reclutador'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Dashboard Emprendedor - Alias → /entrepreneur/dashboard
+ecosistema_jaraba_core.dashboard.entrepreneur:
+  path: '/dashboard/entrepreneur'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToEntrepreneur'
+    _title: 'Mi Emprendimiento'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Dashboard Productor/Comercio - Alias → /my-company
+ecosistema_jaraba_core.dashboard.producer:
+  path: '/dashboard/producer'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToProducer'
+    _title: 'Mi Negocio'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Dashboard Mentor - Alias → /mentor/dashboard
+ecosistema_jaraba_core.dashboard.mentor:
+  path: '/dashboard/mentor'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToMentor'
+    _title: 'Panel del Mentor'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# LANDING PAGES PÚBLICAS - VERTICALES
+# ---------------------------------------------------------------------------
+# Páginas de aterrizaje desde las intention cards de la homepage.
+# Cada landing presenta el valor del vertical + CTA registro/login.
+
+# Landing Empleabilidad - Candidatos
+ecosistema_jaraba_core.vertical.empleo:
+  path: '/empleo'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::empleo'
+    _title: 'Encuentra tu próximo empleo'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Empleabilidad - Empresas/Reclutadores
+ecosistema_jaraba_core.vertical.talento:
+  path: '/talento'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::talento'
+    _title: 'Encuentra el talento que necesitas'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Emprendimiento
+ecosistema_jaraba_core.vertical.emprender:
+  path: '/emprender'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::emprender'
+    _title: 'Valida tu idea con metodología'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Comercio/Marketplace
+ecosistema_jaraba_core.vertical.comercio:
+  path: '/comercio'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::comercio'
+    _title: 'Vende tus productos y servicios'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Instituciones B2G
+ecosistema_jaraba_core.vertical.instituciones:
+  path: '/instituciones'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::instituciones'
+    _title: 'Impulsa tu territorio'
+  requirements:
+    _access: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# IMPERSONATION API - Login As Tenant (D.1)
+# ---------------------------------------------------------------------------
+
+# Iniciar sesión de impersonación
+ecosistema_jaraba_core.api.impersonate.start:
+  path: '/api/v1/admin/impersonate/start'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ImpersonationApiController::start'
+  requirements:
+    _permission: 'impersonate tenants'
+  methods: [POST]
+
+# Terminar sesión de impersonación
+ecosistema_jaraba_core.api.impersonate.end:
+  path: '/api/v1/admin/impersonate/end'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ImpersonationApiController::end'
+  requirements:
+    _permission: 'impersonate tenants'
+  methods: [POST]
+
+# Estado de sesión de impersonación
+ecosistema_jaraba_core.api.impersonate.status:
+  path: '/api/v1/admin/impersonate/status'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ImpersonationApiController::status'
+  requirements:
+    _permission: 'impersonate tenants'
+  methods: [GET]
+
+# Logs de impersonación
+ecosistema_jaraba_core.api.impersonate.logs:
+  path: '/api/v1/admin/impersonate/logs'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ImpersonationApiController::logs'
+  requirements:
+    _permission: 'view impersonation logs'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
+# RBAC MATRIX - Gestión Visual de Permisos (D.2)
+# ---------------------------------------------------------------------------
+
+# Dashboard RBAC Matrix
+ecosistema_jaraba_core.admin.rbac_matrix:
+  path: '/admin/people/rbac-matrix'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\RbacMatrixController::matrix'
+    _title: 'Matriz de Permisos RBAC'
+  requirements:
+    _permission: 'administer permissions'
+  options:
+    _admin_route: TRUE
+
+# API: Obtener matriz de permisos
+ecosistema_jaraba_core.api.rbac.matrix:
+  path: '/api/v1/admin/rbac/matrix'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\RbacMatrixController::getMatrix'
+  requirements:
+    _permission: 'administer permissions'
+  methods: [GET]
+
+# API: Toggle permiso
+ecosistema_jaraba_core.api.rbac.toggle:
+  path: '/api/v1/admin/rbac/toggle'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\RbacMatrixController::togglePermission'
+  requirements:
+    _permission: 'administer permissions'
+  methods: [POST]
+
+# Export CSV
+ecosistema_jaraba_core.admin.rbac_export:
+  path: '/admin/people/rbac-matrix/export'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\RbacMatrixController::exportCsv'
+  requirements:
+    _permission: 'administer permissions'
+
+# ---------------------------------------------------------------------------
+# HEALTH CHECK PÚBLICO - CI/CD Y MONITORING EXTERNO
+# ---------------------------------------------------------------------------
+# Endpoint ligero sin autenticación para:
+# - GitHub Actions deploy.yml smoke test
+# - Load balancer health checks (Blue-Green)
+# - UptimeRobot / Pingdom / monitoring externo
+#
+# Para el dashboard administrativo completo → /admin/health
+# ---------------------------------------------------------------------------
+
+ecosistema_jaraba_core.health.check:
+  path: '/health'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\HealthCheckController::check'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+  options:
+    no_cache: TRUE

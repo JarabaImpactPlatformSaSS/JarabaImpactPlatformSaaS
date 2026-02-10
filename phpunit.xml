@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PHPUnit configuration for JarabaImpactPlatformSaaS.
+  
+  Usado por:
+  - GitHub Actions ci.yml (./vendor/bin/phpunit --testsuite Unit)
+  - Desarrollo local (lando drush phpunit)
+  
+  Referencia: https://www.drupal.org/docs/testing/phpunit-in-drupal
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="web/core/tests/bootstrap.php"
+         colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         cacheResult="false"
+>
+  <php>
+    <!-- Drupal Test Settings -->
+    <ini name="error_reporting" value="32767"/>
+    <ini name="memory_limit" value="-1"/>
+
+    <!-- Base URL para tests funcionales -->
+    <env name="SIMPLETEST_BASE_URL" value="http://localhost"/>
+
+    <!-- Conexión a la base de datos de test -->
+    <env name="SIMPLETEST_DB" value="mysql://root:root@127.0.0.1:3306/drupal_test"/>
+
+    <!-- Directorio para browser output -->
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>
+
+    <!-- Drupal root -->
+    <env name="DRUPAL_DEV_SITE_PATH" value="sites/default"/>
+  </php>
+
+  <testsuites>
+    <!-- Tests unitarios puros (sin Drupal bootstrap) -->
+    <testsuite name="Unit">
+      <directory>web/modules/custom/*/tests/src/Unit</directory>
+    </testsuite>
+
+    <!-- Tests con Drupal kernel bootstrap -->
+    <testsuite name="Kernel">
+      <directory>web/modules/custom/*/tests/src/Kernel</directory>
+    </testsuite>
+
+    <!-- Tests funcionales con navegador -->
+    <testsuite name="Functional">
+      <directory>web/modules/custom/*/tests/src/Functional</directory>
+    </testsuite>
+  </testsuites>
+
+  <source>
+    <include>
+      <directory suffix=".php">web/modules/custom</directory>
+    </include>
+    <exclude>
+      <directory>web/modules/custom/*/tests</directory>
+      <directory>web/modules/custom/*/node_modules</directory>
+    </exclude>
+  </source>
+</phpunit>

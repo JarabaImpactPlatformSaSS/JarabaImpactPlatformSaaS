@@ -12,6 +12,7 @@
  * @see https://www.drupal.org/docs/8/creating-custom-modules
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -44,6 +45,20 @@ function ecosistema_jaraba_core_help($route_name, RouteMatchInterface $route_mat
  */
 function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
   return [
+    // =========================================================================
+    // API DOCUMENTATION (Q1 2027)
+    // =========================================================================
+    
+    // Swagger UI para documentación interactiva de la API
+    // Ruta: /api/docs
+    'api_docs' => [
+      'variables' => [
+        'title' => 'API Documentation',
+      ],
+      'template' => 'api-docs',
+      'path' => $path . '/templates',
+    ],
+
     // Template del formulario de registro de nuevos tenants
     // Ruta: /registro/{vertical}
     'ecosistema_jaraba_register_form' => [
@@ -112,6 +127,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'is_on_trial' => FALSE,
         'trial_days_remaining' => 0,
         'quick_actions' => [],
+        'ai_usage' => [],
       ],
       'template' => 'ecosistema-jaraba-tenant-dashboard',
       'path' => $path . '/templates',
@@ -159,12 +175,207 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'data_sources' => [],
         'revenue' => [],
         'net_results' => [],
+        'feature_costs' => [],
+        'unit_economics' => [],
+        'vertical_profitability' => [],
         'last_updated' => NULL,
       ],
       'template' => 'finops-dashboard',
       'path' => $path . '/templates',
     ],
+
+    // Dashboard Self-Service para Tenants
+    // Ruta: /my-dashboard
+    // Permite a los tenants ver sus propias métricas sin acceso admin
+    'tenant_self_service_dashboard' => [
+      'variables' => [
+        'tenant' => NULL,
+        'metrics' => [],
+        'subscription_info' => [],
+        'recent_activity' => [],
+      ],
+      'template' => 'tenant-self-service-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Configuración Self-Service del Tenant
+    // Ruta: /my-settings
+    'tenant_self_service_settings' => [
+      'variables' => [
+        'tenant' => NULL,
+        'current_plan' => NULL,
+        'settings_sections' => [],
+      ],
+      'template' => 'tenant-self-service-settings',
+      'path' => $path . '/templates',
+    ],
+
+    // ---------------------------------------------------------------------------
+    // MARKETPLACE - PHASE 13
+    // ---------------------------------------------------------------------------
+
+    // Landing page del Marketplace
+    // Ruta: /marketplace
+    'marketplace_landing' => [
+      'variables' => [
+        'featured_products' => [],
+        'categories' => [],
+        'active_tenants' => [],
+        'stats' => [],
+      ],
+      'template' => 'marketplace-landing',
+      'path' => $path . '/templates',
+    ],
+
+    // Página de búsqueda del Marketplace
+    // Ruta: /marketplace/search
+    'marketplace_search' => [
+      'variables' => [
+        'query' => '',
+        'category' => '',
+        'products' => [],
+        'categories' => [],
+      ],
+      'template' => 'marketplace-search',
+      'path' => $path . '/templates',
+    ],
+
+    // Vista de producto individual en Marketplace
+    // Ruta: /marketplace/product/{id}
+    'marketplace_product' => [
+      'variables' => [
+        'product' => [],
+        'related' => [],
+      ],
+      'template' => 'marketplace-product',
+      'path' => $path . '/templates',
+    ],
+
+    // ---------------------------------------------------------------------------
+    // Q1 2027: DEMO INTERACTIVA - TIME-TO-VALUE < 60s
+    // ---------------------------------------------------------------------------
+
+    // Landing de selección de demo
+    // Ruta: /demo
+    'demo_landing' => [
+      'variables' => [
+        'profiles' => [],
+      ],
+      'template' => 'demo-landing',
+      'path' => $path . '/templates',
+    ],
+
+    // Dashboard de demo interactiva
+    // Ruta: /demo/start/{profileId}, /demo/dashboard/{sessionId}
+    'demo_dashboard' => [
+      'variables' => [
+        'session_id' => '',
+        'profile' => [],
+        'tenant_name' => '',
+        'metrics' => [],
+        'products' => [],
+        'sales_history' => [],
+        'magic_actions' => [],
+        'tour' => NULL,
+      ],
+      'template' => 'demo-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Vista ampliada del dashboard demo
+    // Ruta: /demo/dashboard/{sessionId}
+    'demo_dashboard_view' => [
+      'variables' => [
+        'session' => [],
+      ],
+      'template' => 'demo-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Demo de storytelling con IA
+    // Ruta: /demo/ai/storytelling/{sessionId}
+    'demo_ai_storytelling' => [
+      'variables' => [
+        'session' => [],
+        'generated_story' => '',
+      ],
+      'template' => 'demo-ai-storytelling',
+      'path' => $path . '/templates',
+    ],
+
+    // =========================================================================
+    // HERO LANDING - HOMEPAGE (2026-01-24)
+    // =========================================================================
+    
+    // Hero Landing para homepage con Progressive Profiling
+    // Ruta: / (homepage)
+    'hero_landing' => [
+      'variables' => [
+        'eyebrow' => NULL,
+        'title' => NULL,
+        'subtitle' => NULL,
+        'dark' => FALSE,
+        'intentions' => [],
+        'cta_primary' => [],
+        'cta_secondary' => [],
+      ],
+      'template' => 'page/hero-landing',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
+
+    // =========================================================================
+    // CONTEXTUAL COPILOT FAB (Q1 2027)
+    // =========================================================================
+    
+    // FAB de Copiloto contextual reutilizable para todos los avatares
+    // Se configura por avatar: jobseeker, recruiter, entrepreneur, producer, mentor
+    'contextual_copilot_fab' => [
+      'variables' => [
+        'agent_context' => 'general_copilot',
+        'greeting' => NULL,
+        'avatar_type' => 'general',
+        'fab_color' => '#FF8C42',
+        'quick_actions' => [],
+        'user' => NULL,
+      ],
+      'template' => 'contextual-copilot-fab',
+      'path' => $path . '/templates',
+    ],
+
+    // =========================================================================
+    // VERTICAL LANDING PAGES (Q1 2027)
+    // =========================================================================
+    
+    // Contenido de landing pages de verticales (empleo, talento, emprender, etc.)
+    // Usa jaraba_icon() para iconos SVG
+    'vertical_landing_content' => [
+      'variables' => [
+        'vertical_data' => [],
+      ],
+      'template' => 'partials/vertical-landing-content',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
+
+    // =========================================================================
+    // ADMIN CENTER - RBAC MATRIX (D.2)
+    // =========================================================================
+    
+    // Matriz visual RBAC para gestión de permisos
+    // Ruta: /admin/people/rbac-matrix
+    'rbac_matrix' => [
+      'variables' => [
+        'roles' => [],
+        'permissions' => [],
+        'matrix' => [],
+        'modules' => [],
+        'module_groups' => [],
+      ],
+      'template' => 'rbac-matrix',
+      'path' => $path . '/templates',
+    ],
   ];
+
+
 }
 
 /**
@@ -308,6 +519,212 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
         '@url' => $params['upgrade_url'],
       ]);
       break;
+
+    // =========================================================================
+    // REVERSE TRIAL EMAILS (Q1 2027)
+    // =========================================================================
+
+    // Email de recordatorio de reverse trial expirando
+    case 'reverse_trial_expiring':
+      if ($params['days_remaining'] == 0) {
+        $message['subject'] = t('⚠️ Tu acceso Pro termina HOY - @tenant', [
+          '@tenant' => $params['tenant_name'],
+        ]);
+      } else {
+        $message['subject'] = t('⏰ Te quedan @days días de acceso Pro - @tenant', [
+          '@days' => $params['days_remaining'],
+          '@tenant' => $params['tenant_name'],
+        ]);
+      }
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      if ($params['days_remaining'] == 0) {
+        $message['body'][] = t('Tu período de prueba Pro en @tenant termina HOY.', [
+          '@tenant' => $params['tenant_name'],
+        ]);
+        $message['body'][] = t('Si no añades un método de pago, mañana tu cuenta cambiará automáticamente al plan Starter (gratuito).');
+      } elseif ($params['days_remaining'] == 1) {
+        $message['body'][] = t('Tu período de prueba Pro en @tenant termina MAÑANA.', [
+          '@tenant' => $params['tenant_name'],
+        ]);
+        $message['body'][] = t('Esta es tu última oportunidad para mantener todas las funcionalidades Pro.');
+      } else {
+        $message['body'][] = t('Tu período de prueba Pro en @tenant termina en @days días.', [
+          '@tenant' => $params['tenant_name'],
+          '@days' => $params['days_remaining'],
+        ]);
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('🚀 Con el plan Pro tienes acceso a:');
+      $message['body'][] = t('• Agentes IA completos');
+      $message['body'][] = t('• Trazabilidad avanzada');
+      $message['body'][] = t('• Soporte prioritario');
+      $message['body'][] = t('• Analíticas avanzadas');
+
+      $message['body'][] = '';
+      $message['body'][] = t('👉 Mantén tu acceso Pro: @url', [
+        '@url' => $params['upgrade_url'],
+      ]);
+
+      $message['body'][] = '---';
+      $message['body'][] = t('El equipo de Jaraba Impact Platform');
+      break;
+
+    // Email de confirmación de downgrade
+    case 'reverse_trial_downgraded':
+      $message['subject'] = t('📋 Tu cuenta ha cambiado a @plan - @tenant', [
+        '@plan' => $params['new_plan'],
+        '@tenant' => $params['tenant_name'],
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['admin_name'],
+      ]);
+
+      $message['body'][] = t('Tu período de prueba Pro ha terminado. Tu cuenta @tenant ha cambiado automáticamente al plan @plan.', [
+        '@tenant' => $params['tenant_name'],
+        '@plan' => $params['new_plan'],
+      ]);
+
+      $message['body'][] = '';
+      $message['body'][] = t('Con el plan @plan puedes:', [
+        '@plan' => $params['new_plan'],
+      ]);
+      $message['body'][] = t('• Gestionar hasta 3 productos');
+      $message['body'][] = t('• Usar trazabilidad básica');
+      $message['body'][] = t('• Acceder al marketplace');
+
+      $message['body'][] = '';
+      $message['body'][] = t('¿Quieres recuperar todas las funcionalidades Pro?');
+      $message['body'][] = t('👉 Actualizar ahora: @url', [
+        '@url' => $params['upgrade_url'],
+      ]);
+
+      $message['body'][] = '---';
+      $message['body'][] = t('El equipo de Jaraba Impact Platform');
+      break;
+
+    // =========================================================================
+    // AI COST ALERTS (Q1 2027)
+    // =========================================================================
+    case 'ai_cost_alert':
+      $level = $params['level'] ?? 'warning';
+      $emoji = $level === 'critical' ? '🚨' : '⚠️';
+
+      $message['subject'] = t('@emoji Alerta de costes IA (@level) - Jaraba Impact Platform', [
+        '@emoji' => $emoji,
+        '@level' => strtoupper($level),
+      ]);
+
+      $message['body'][] = t('Alerta de costes de Inteligencia Artificial');
+      $message['body'][] = '';
+      $message['body'][] = t('Nivel: @level', ['@level' => strtoupper($level)]);
+      $message['body'][] = t('Coste diario actual: €@cost', ['@cost' => number_format($params['daily_cost'] ?? 0, 2)]);
+      $message['body'][] = t('Umbral configurado: €@threshold', ['@threshold' => number_format($params['threshold'] ?? 0, 2)]);
+      $message['body'][] = '';
+      $message['body'][] = t('Desglose por proveedor:');
+
+      foreach ($params['breakdown'] ?? [] as $provider => $data) {
+        $message['body'][] = t('  - @provider: €@cost (@tokens tokens)', [
+          '@provider' => ucfirst($provider),
+          '@cost' => number_format($data['cost'] ?? 0, 2),
+          '@tokens' => number_format($data['tokens'] ?? 0),
+        ]);
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('Acciones recomendadas:');
+      $message['body'][] = t('  1. Revisar el Dashboard FinOps: @url', [
+        '@url' => $params['dashboard_url'] ?? '/admin/finops',
+      ]);
+      $message['body'][] = t('  2. Considerar activar más caché de respuestas');
+      $message['body'][] = t('  3. Ajustar umbrales en configuración si es apropiado');
+
+      $message['body'][] = '';
+      $message['body'][] = '---';
+      $message['body'][] = t('Sistema de monitorización FinOps - Jaraba Impact Platform');
+      break;
+
+    // =========================================================================
+    // HEALTH ALERTS (Fase 2 Hardening)
+    // =========================================================================
+    case 'health_alert':
+      $status = $params['status'] ?? 'degraded';
+      $failedServices = $params['failed_services'] ?? [];
+
+      $message['subject'] = t('🔴 Alerta de salud de plataforma - Jaraba Impact Platform');
+
+      $message['body'][] = t('El health check automático ha detectado problemas en la plataforma.');
+      $message['body'][] = '';
+      $message['body'][] = t('Estado: @status', ['@status' => strtoupper($status)]);
+      $message['body'][] = t('Fecha: @timestamp', ['@timestamp' => $params['timestamp'] ?? date('Y-m-d H:i:s')]);
+      $message['body'][] = '';
+      $message['body'][] = t('Servicios afectados:');
+
+      foreach ($failedServices as $service) {
+        $message['body'][] = t('  ❌ @service', ['@service' => ucfirst($service)]);
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('Acciones:');
+      $message['body'][] = t('  1. Verificar dashboard: /admin/health');
+      $message['body'][] = t('  2. Endpoint público: /health');
+      $message['body'][] = t('  3. Revisar logs del servidor');
+
+      $message['body'][] = '';
+      $message['body'][] = '---';
+      $message['body'][] = t('Sistema de monitorización automática - Jaraba Impact Platform');
+      break;
+  }
+}
+
+// ===========================================================================
+// Q1 2027: MICRO-AUTOMATIONS (INVISIBLE AI)
+// ===========================================================================
+
+/**
+ * Implements hook_node_presave().
+ *
+ * @deprecated in ecosistema_jaraba_core:1.x. Use
+ *   \Drupal\ecosistema_jaraba_core\Hook\NodePresaveHooks instead.
+ */
+#[LegacyHook]
+function ecosistema_jaraba_core_node_presave(\Drupal\node\NodeInterface $node) {
+  // Solo para productos.
+  if ($node->bundle() !== 'product') {
+    return;
+  }
+
+  // Solo si el producto es nuevo o no tiene tags.
+  $hasTags = $node->hasField('field_tags') && !$node->get('field_tags')->isEmpty();
+  
+  if ($node->isNew() || !$hasTags) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\MicroAutomationService $microAutomation */
+      $microAutomation = \Drupal::service('ecosistema_jaraba_core.micro_automation');
+      $suggestedTags = $microAutomation->autoTagProduct($node);
+      
+      // Guardar tags sugeridos en el campo (si existe y acepta strings).
+      if ($node->hasField('field_auto_tags')) {
+        $node->set('field_auto_tags', implode(', ', $suggestedTags));
+      }
+      
+      \Drupal::logger('micro_automation')->info(
+        '🏷️ Auto-tagged product "@title" on save',
+        ['@title' => $node->getTitle()]
+      );
+      
+    } catch (\Exception $e) {
+      // Silenciosamente ignorar errores para no bloquear guardado.
+      \Drupal::logger('micro_automation')->warning(
+        'Failed to auto-tag product: @error',
+        ['@error' => $e->getMessage()]
+      );
+    }
   }
 }
 
@@ -317,14 +734,231 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
  * Tareas programadas del módulo que se ejecutan con cada cron.
  */
 function ecosistema_jaraba_core_cron() {
-  // Verificar tenants con trial próximo a expirar
-  _ecosistema_jaraba_core_check_expiring_trials();
+  // BE-05: Encolar tareas pesadas en QueueWorker en vez de ejecutar síncrono.
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $tenantStorage = $entityTypeManager->getStorage('tenant');
 
-  // Verificar tenants con pagos pendientes
-  _ecosistema_jaraba_core_check_past_due_subscriptions();
+  // 1. Encolar tenants con trial próximo a expirar.
+  $thresholdDate = (new \DateTime())->add(new \DateInterval('P3D'))->format('Y-m-d\TH:i:s');
+  $now = (new \DateTime())->format('Y-m-d\TH:i:s');
+  $expiringIds = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', 'trial')
+    ->condition('trial_ends', $now, '>')
+    ->condition('trial_ends', $thresholdDate, '<=')
+    ->execute();
 
-  // Verificar tenants que se acercan a sus límites de uso
-  _ecosistema_jaraba_core_check_usage_limits();
+  $trialsQueue = \Drupal::queue('ecosistema_jaraba_expiring_trials');
+  foreach ($expiringIds as $id) {
+    $trialsQueue->createItem(['tenant_id' => $id]);
+  }
+
+  // 2. Encolar tenants con pagos pendientes (past_due > 7 días).
+  $pastDueThreshold = (new \DateTime())->sub(new \DateInterval('P7D'))->format('Y-m-d\TH:i:s');
+  $pastDueIds = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', 'past_due')
+    ->condition('changed', strtotime($pastDueThreshold), '<')
+    ->execute();
+
+  $pastDueQueue = \Drupal::queue('ecosistema_jaraba_past_due_subscriptions');
+  foreach ($pastDueIds as $id) {
+    $pastDueQueue->createItem(['tenant_id' => $id]);
+  }
+
+  // 3. Encolar verificación de límites de uso por tenant.
+  $activeIds = $tenantStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('subscription_status', ['active', 'trial'], 'IN')
+    ->execute();
+
+  $usageQueue = \Drupal::queue('ecosistema_jaraba_usage_limits');
+  foreach ($activeIds as $id) {
+    $usageQueue->createItem(['tenant_id' => $id]);
+  }
+
+  // 4. Reverse Trial: se mantiene síncrono (opera en batch internamente).
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReverseTrialService $reverseTrialService */
+    $reverseTrialService = \Drupal::service('ecosistema_jaraba_core.reverse_trial');
+    $downgraded = $reverseTrialService->processExpiredTrials();
+    if ($downgraded > 0) {
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        'Reverse Trial: @count tenants downgraded',
+        ['@count' => $downgraded]
+      );
+    }
+    $notifications = $reverseTrialService->processTrialNotifications();
+    if ($notifications > 0) {
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        'Reverse Trial: @count notificaciones enviadas',
+        ['@count' => $notifications]
+      );
+    }
+  } catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Error en Reverse Trials: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  // 5. AI Cost Monitoring (ligero, con throttling interno de 1h).
+  try {
+    _ecosistema_jaraba_core_check_ai_costs();
+  } catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Error en costes IA: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  // 6. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
+  _ecosistema_jaraba_core_cron_extended();
+}
+
+/**
+ * Verifica costes de IA y envía alertas si se superan umbrales.
+ *
+ * Umbrales configurables:
+ * - Warning: €3/día
+ * - Critical: €5/día
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_check_ai_costs() {
+  $state = \Drupal::state();
+  
+  // Throttling: solo verificar una vez por hora
+  $lastCheck = $state->get('ai_cost_last_check', 0);
+  if (time() - $lastCheck < 3600) {
+    return;
+  }
+  $state->set('ai_cost_last_check', time());
+  
+  // Obtener métricas del servicio AICostOptimizationService
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService $aiCostService */
+    $aiCostService = \Drupal::service('ecosistema_jaraba_core.ai_cost_optimization');
+    $metrics = $aiCostService->getDailyMetrics();
+  } catch (\Exception $e) {
+    // Servicio no disponible, usar State API directamente
+    $metrics = _ecosistema_jaraba_core_get_ai_metrics_from_state();
+  }
+  
+  $dailyCost = $metrics['daily_cost'] ?? 0;
+  
+  // Umbrales (configurables via settings.php)
+  $config = \Drupal::config('ecosistema_jaraba_core.settings');
+  $warningThreshold = $config->get('ai_cost.warning_threshold') ?? 3.0;
+  $criticalThreshold = $config->get('ai_cost.critical_threshold') ?? 5.0;
+  
+  if ($dailyCost >= $criticalThreshold) {
+    _ecosistema_jaraba_core_send_ai_cost_alert('critical', $dailyCost, $criticalThreshold, $metrics);
+  } elseif ($dailyCost >= $warningThreshold) {
+    _ecosistema_jaraba_core_send_ai_cost_alert('warning', $dailyCost, $warningThreshold, $metrics);
+  }
+}
+
+/**
+ * Obtiene métricas de IA desde State API (fallback).
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_get_ai_metrics_from_state(): array {
+  $state = \Drupal::state();
+  $key = 'ai_usage_' . date('Y-m');
+  $monthlyData = $state->get($key, []);
+  
+  $totalCost = 0;
+  $totalTokens = 0;
+  $breakdown = [];
+  
+  foreach ($monthlyData as $provider => $data) {
+    $cost = $data['cost'] ?? 0;
+    $tokens = ($data['tokens_in'] ?? 0) + ($data['tokens_out'] ?? 0);
+    $totalCost += $cost;
+    $totalTokens += $tokens;
+    $breakdown[$provider] = [
+      'cost' => $cost,
+      'tokens' => $tokens,
+      'calls' => $data['calls'] ?? 0,
+    ];
+  }
+  
+  // Estimar coste diario (dividir por día del mes)
+  $dayOfMonth = (int) date('d');
+  $dailyCost = $dayOfMonth > 0 ? $totalCost / $dayOfMonth : $totalCost;
+  
+  return [
+    'daily_cost' => $dailyCost,
+    'monthly_cost' => $totalCost,
+    'total_tokens' => $totalTokens,
+    'breakdown' => $breakdown,
+  ];
+}
+
+/**
+ * Envía alerta de costes IA por email.
+ *
+ * @param string $level
+ *   Nivel de alerta: 'warning' o 'critical'.
+ * @param float $dailyCost
+ *   Coste diario actual.
+ * @param float $threshold
+ *   Umbral superado.
+ * @param array $metrics
+ *   Métricas detalladas.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_send_ai_cost_alert(string $level, float $dailyCost, float $threshold, array $metrics) {
+  $state = \Drupal::state();
+  
+  // Throttling: solo una alerta por nivel por día
+  $alertKey = "ai_cost_alert_{$level}_" . date('Y-m-d');
+  if ($state->get($alertKey, FALSE)) {
+    return; // Ya se envió hoy
+  }
+  
+  // Obtener email del admin
+  $config = \Drupal::config('system.site');
+  $adminEmail = $config->get('mail');
+  
+  if (empty($adminEmail)) {
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'No se pudo enviar alerta de costes IA: email de admin no configurado'
+    );
+    return;
+  }
+  
+  $params = [
+    'level' => $level,
+    'daily_cost' => $dailyCost,
+    'threshold' => $threshold,
+    'breakdown' => $metrics['breakdown'] ?? [],
+    'dashboard_url' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.finops_dashboard', [], ['absolute' => TRUE])->toString(),
+  ];
+  
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  $result = $mailManager->mail(
+    'ecosistema_jaraba_core',
+    'ai_cost_alert',
+    $adminEmail,
+    'es',
+    $params
+  );
+  
+  if ($result['result']) {
+    $state->set($alertKey, TRUE);
+    \Drupal::logger('ecosistema_jaraba_core')->info(
+      '💰 AI Cost Alert (@level): €@cost/día enviado a @email',
+      [
+        '@level' => strtoupper($level),
+        '@cost' => number_format($dailyCost, 2),
+        '@email' => $adminEmail,
+      ]
+    );
+  }
 }
 
 /**
@@ -548,9 +1182,119 @@ function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percenta
 /**
  * Implements hook_page_attachments_alter().
  *
- * Añade la librería de estilos premium a las páginas de estructura del admin.
+ * @deprecated in ecosistema_jaraba_core:1.x. Use
+ *   \Drupal\ecosistema_jaraba_core\Hook\PageAttachmentsHooks instead.
  */
+#[LegacyHook]
 function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
+  // ---------------------------------------------------------------------------
+  // PWA META TAGS Y SERVICE WORKER
+  // ---------------------------------------------------------------------------
+  
+  // Web App Manifest
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'link',
+      '#attributes' => [
+        'rel' => 'manifest',
+        'href' => '/manifest.webmanifest',
+      ],
+    ],
+    'pwa_manifest',
+  ];
+  
+  // Theme Color
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'theme-color',
+        'content' => '#3b82f6',
+      ],
+    ],
+    'pwa_theme_color',
+  ];
+  
+  // Apple Mobile Web App Capable
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'apple-mobile-web-app-capable',
+        'content' => 'yes',
+      ],
+    ],
+    'pwa_apple_capable',
+  ];
+  
+  // Apple Status Bar Style
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'apple-mobile-web-app-status-bar-style',
+        'content' => 'black-translucent',
+      ],
+    ],
+    'pwa_apple_status_bar',
+  ];
+  
+  // Apple Mobile Web App Title
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'apple-mobile-web-app-title',
+        'content' => 'Jaraba',
+      ],
+    ],
+    'pwa_apple_title',
+  ];
+  
+  // Apple Touch Icon
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'link',
+      '#attributes' => [
+        'rel' => 'apple-touch-icon',
+        'href' => '/themes/custom/ecosistema_jaraba_theme/images/icons/icon-192x192.png',
+      ],
+    ],
+    'pwa_apple_touch_icon',
+  ];
+  
+  // Service Worker Registration Script
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => "
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(function(registration) {
+                console.log('[PWA] Service Worker registrado:', registration.scope);
+              })
+              .catch(function(error) {
+                console.log('[PWA] Error al registrar Service Worker:', error);
+              });
+          });
+        }
+      ",
+    ],
+    'pwa_service_worker',
+  ];
+  
+  // ---------------------------------------------------------------------------
+  // ESTILOS PREMIUM PARA ESTRUCTURA ADMIN
+  // ---------------------------------------------------------------------------
+  
   // Obtener el path actual (sin el prefijo de idioma)
   $current_path = \Drupal::service('path.current')->getPath();
   
@@ -569,6 +1313,14 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
       $load_premium = TRUE;
       break;
     }
+  }
+  
+  // ---------------------------------------------------------------------------
+  // FIX PARA PESTAÑAS ADMIN QUE TRUNCAN TEXTO EN ESPAÑOL
+  // ---------------------------------------------------------------------------
+  // Cargar siempre en páginas /admin/content para evitar rotura de tabs
+  if (strpos($current_path, '/admin/content') === 0 || strpos($current_path, '/es/admin/content') !== FALSE) {
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/admin-tabs-fix';
   }
   
   if ($load_premium) {
@@ -863,3 +1615,172 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   }
 }
 
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta tareas operacionales periódicas del SaaS:
+ * - Health checks automáticos (cada hora)
+ * - Verificación de costes IA (cada hora)
+ * - Verificación de trials expirando (cada 6h)
+ * - Verificación de suscripciones pendientes (cada 6h)
+ * - Verificación de límites de uso por tenant (cada 6h)
+ */
+function _ecosistema_jaraba_core_cron_extended() {
+  $state = \Drupal::state();
+
+  // -------------------------------------------------------------------------
+  // HEALTH CHECK PERIÓDICO (cada hora)
+  // -------------------------------------------------------------------------
+  $lastHealthCheck = $state->get('health_check_cron_last', 0);
+  if (time() - $lastHealthCheck >= 3600) {
+    _ecosistema_jaraba_core_cron_health_check();
+    $state->set('health_check_cron_last', time());
+  }
+
+  // -------------------------------------------------------------------------
+  // VERIFICACIÓN COSTES IA (cada hora)
+  // -------------------------------------------------------------------------
+  _ecosistema_jaraba_core_check_ai_costs();
+
+  // -------------------------------------------------------------------------
+  // TAREAS CADA 6 HORAS
+  // -------------------------------------------------------------------------
+  $lastSixHourCheck = $state->get('six_hour_check_last', 0);
+  if (time() - $lastSixHourCheck >= 21600) {
+    _ecosistema_jaraba_core_check_expiring_trials();
+    _ecosistema_jaraba_core_check_past_due_subscriptions();
+    _ecosistema_jaraba_core_check_usage_limits();
+    $state->set('six_hour_check_last', time());
+  }
+}
+
+/**
+ * Ejecuta health check periódico desde cron y alerta si hay degradación.
+ *
+ * Utiliza el HealthCheckController para verificar: DB, filesystem, cache, Qdrant.
+ * Loguea resultados en health_check_log y envía email si status != 'ok'.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_cron_health_check() {
+  $logger = \Drupal::logger('ecosistema_jaraba_core');
+
+  try {
+    // Ejecutar los mismos checks que el endpoint /health.
+    $components = [];
+    $healthy = TRUE;
+
+    // Check Database.
+    try {
+      $start = microtime(TRUE);
+      \Drupal::database()->query('SELECT 1')->fetchField();
+      $latency = round((microtime(TRUE) - $start) * 1000, 2);
+      $components['database'] = ['status' => 'ok', 'latency_ms' => $latency];
+    }
+    catch (\Exception $e) {
+      $components['database'] = ['status' => 'error'];
+      $healthy = FALSE;
+    }
+
+    // Check Filesystem.
+    try {
+      $fileSystem = \Drupal::service('file_system');
+      $tempFile = $fileSystem->getTempDirectory() . '/health_cron_' . time();
+      file_put_contents($tempFile, 'ok');
+      $content = file_get_contents($tempFile);
+      @unlink($tempFile);
+      $components['filesystem'] = ['status' => ($content === 'ok') ? 'ok' : 'error'];
+      if ($content !== 'ok') {
+        $healthy = FALSE;
+      }
+    }
+    catch (\Exception $e) {
+      $components['filesystem'] = ['status' => 'error'];
+      $healthy = FALSE;
+    }
+
+    // Check Cache.
+    try {
+      $cache = \Drupal::cache();
+      $testKey = 'health_cron_' . time();
+      $cache->set($testKey, 'ok', time() + 60);
+      $item = $cache->get($testKey);
+      $cache->delete($testKey);
+      $components['cache'] = ['status' => ($item && $item->data === 'ok') ? 'ok' : 'warning'];
+    }
+    catch (\Exception $e) {
+      $components['cache'] = ['status' => 'warning'];
+    }
+
+    $status = $healthy ? 'ok' : 'degraded';
+
+    // Loguear en health_check_log (si existe la tabla).
+    try {
+      $connection = \Drupal::database();
+      if ($connection->schema()->tableExists('health_check_log')) {
+        foreach ($components as $service => $data) {
+          $connection->insert('health_check_log')
+            ->fields([
+              'timestamp' => time(),
+              'service' => $service,
+              'status' => $data['status'],
+              'latency' => $data['latency_ms'] ?? NULL,
+              'message' => 'Cron health check',
+              'overall_health' => $healthy ? 100 : 50,
+            ])
+            ->execute();
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // No fallar por errores en logging.
+    }
+
+    // Alertar si hay degradación.
+    if (!$healthy) {
+      $state = \Drupal::state();
+      $lastAlert = $state->get('health_cron_last_alert', 0);
+
+      // Throttle: máximo 1 alerta cada 30 minutos.
+      if (time() - $lastAlert >= 1800) {
+        $failedServices = array_keys(array_filter(
+          $components,
+          fn($c) => $c['status'] !== 'ok'
+        ));
+
+        $logger->error('🔴 Health check degraded via cron. Failed: @services', [
+          '@services' => implode(', ', $failedServices),
+        ]);
+
+        // Enviar email al admin del sitio.
+        $adminEmail = \Drupal::config('system.site')->get('mail');
+        if ($adminEmail) {
+          $mailManager = \Drupal::service('plugin.manager.mail');
+          $mailManager->mail(
+            'ecosistema_jaraba_core',
+            'health_alert',
+            $adminEmail,
+            'es',
+            [
+              'status' => $status,
+              'failed_services' => $failedServices,
+              'timestamp' => date('Y-m-d H:i:s'),
+            ]
+          );
+        }
+
+        $state->set('health_cron_last_alert', time());
+      }
+    }
+    else {
+      $logger->info('✅ Cron health check: all services ok (DB @latency ms)', [
+        '@latency' => $components['database']['latency_ms'] ?? '?',
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    $logger->error('❌ Cron health check failed: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}

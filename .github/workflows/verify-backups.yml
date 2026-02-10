@@ -1,0 +1,152 @@
+# ==============================================
+# VERIFICACIÓN DE BACKUPS (IONOS)
+# ==============================================
+# Cron semanal que verifica vía SSH que existen
+# backups recientes y válidos en el servidor IONOS.
+#
+# Si no hay backup en las últimas 48h o el archivo
+# es sospechosamente pequeño, alerta vía Slack.
+# ==============================================
+
+name: Jaraba SaaS - Verify Backups
+
+on:
+  schedule:
+    # Cada lunes a las 7:00 UTC (9:00 CET)
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+env:
+  IONOS_HOST: 'access834313033.webspace-data.io'
+  IONOS_USER: 'u101456434'
+  BACKUP_DIR: '~/backups'
+  # Tamaño mínimo aceptable para un backup SQL (1KB)
+  MIN_BACKUP_SIZE: 1024
+  # Máximo de horas sin backup antes de alertar
+  MAX_HOURS_WITHOUT_BACKUP: 48
+
+jobs:
+  verify:
+    name: 🔍 Verify Backups
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.IONOS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Check backup existence and validity
+        id: check
+        run: |
+          echo "🔍 Verificando backups en IONOS..."
+
+          # Obtener listado de backups con tamaño y fecha
+          BACKUP_LIST=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            if [ -d ~/backups ]; then
+              # Listar backups ordenados por fecha (más reciente primero)
+              ls -lt ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | head -5
+              echo "---SEPARATOR---"
+              # Contar total de backups
+              TOTAL=$(ls ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | wc -l)
+              echo "TOTAL_BACKUPS=$TOTAL"
+              # Info del backup más reciente
+              LATEST=$(ls -t ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | head -1)
+              if [ -n "$LATEST" ]; then
+                SIZE=$(stat -c %s "$LATEST" 2>/dev/null || echo "0")
+                MODIFIED=$(stat -c %Y "$LATEST" 2>/dev/null || echo "0")
+                NOW=$(date +%s)
+                AGE_HOURS=$(( (NOW - MODIFIED) / 3600 ))
+                echo "LATEST_FILE=$LATEST"
+                echo "LATEST_SIZE=$SIZE"
+                echo "LATEST_AGE_HOURS=$AGE_HOURS"
+              else
+                echo "LATEST_FILE=NONE"
+                echo "LATEST_SIZE=0"
+                echo "LATEST_AGE_HOURS=9999"
+              fi
+            else
+              echo "TOTAL_BACKUPS=0"
+              echo "LATEST_FILE=NONE"
+              echo "LATEST_SIZE=0"
+              echo "LATEST_AGE_HOURS=9999"
+            fi
+          EOF
+          )
+
+          echo "$BACKUP_LIST"
+
+          # Extraer variables
+          TOTAL=$(echo "$BACKUP_LIST" | grep "TOTAL_BACKUPS=" | cut -d= -f2)
+          LATEST_FILE=$(echo "$BACKUP_LIST" | grep "LATEST_FILE=" | cut -d= -f2)
+          LATEST_SIZE=$(echo "$BACKUP_LIST" | grep "LATEST_SIZE=" | cut -d= -f2)
+          LATEST_AGE=$(echo "$BACKUP_LIST" | grep "LATEST_AGE_HOURS=" | cut -d= -f2)
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "latest_file=$LATEST_FILE" >> $GITHUB_OUTPUT
+          echo "latest_size=$LATEST_SIZE" >> $GITHUB_OUTPUT
+          echo "latest_age=$LATEST_AGE" >> $GITHUB_OUTPUT
+
+          # Evaluar estado
+          STATUS="ok"
+          ISSUES=""
+
+          if [ "$TOTAL" -eq 0 ] || [ "$LATEST_FILE" = "NONE" ]; then
+            STATUS="critical"
+            ISSUES="No se encontraron backups en $BACKUP_DIR"
+          elif [ "$LATEST_SIZE" -lt ${{ env.MIN_BACKUP_SIZE }} ]; then
+            STATUS="warning"
+            ISSUES="Backup más reciente tiene tamaño sospechoso: ${LATEST_SIZE} bytes"
+          elif [ "$LATEST_AGE" -gt ${{ env.MAX_HOURS_WITHOUT_BACKUP }} ]; then
+            STATUS="warning"
+            ISSUES="Último backup tiene ${LATEST_AGE}h de antigüedad (máximo: ${{ env.MAX_HOURS_WITHOUT_BACKUP }}h)"
+          fi
+
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "issues=$ISSUES" >> $GITHUB_OUTPUT
+
+          if [ "$STATUS" = "ok" ]; then
+            echo "✅ Backups OK: $TOTAL archivos, último hace ${LATEST_AGE}h (${LATEST_SIZE} bytes)"
+          else
+            echo "⚠️ Estado: $STATUS — $ISSUES"
+          fi
+
+      - name: Notify success
+        if: steps.check.outputs.status == 'ok'
+        run: |
+          echo "✅ Backup verification passed!"
+          echo "  Total backups: ${{ steps.check.outputs.total }}"
+          echo "  Latest: ${{ steps.check.outputs.latest_file }}"
+          echo "  Size: ${{ steps.check.outputs.latest_size }} bytes"
+          echo "  Age: ${{ steps.check.outputs.latest_age }}h"
+
+      - name: Notify failure via Slack
+        if: steps.check.outputs.status != 'ok'
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "⚠️ *Backup Verification Failed*\n*Status:* `${{ steps.check.outputs.status }}`\n*Issue:* ${{ steps.check.outputs.issues }}\n*Total backups:* ${{ steps.check.outputs.total }}\n*Latest age:* ${{ steps.check.outputs.latest_age }}h\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
+
+      - name: Fail if backups are critical
+        if: steps.check.outputs.status == 'critical'
+        run: |
+          echo "❌ CRITICAL: ${{ steps.check.outputs.issues }}"
+          exit 1
