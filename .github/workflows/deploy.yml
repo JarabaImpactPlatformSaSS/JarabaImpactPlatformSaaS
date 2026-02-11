@@ -392,14 +392,17 @@ jobs:
           ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -f ~/JarabaImpactPlatformSaaS/web/${DIAG_FILE} ~/JarabaImpactPlatformSaaS/web/_boot_test.php"
           echo "✅ Diagnostic files cleaned up"
 
-      - name: Smoke test - Health endpoint
+      - name: Smoke test - Platform status endpoint
         run: |
           echo "⏳ Esperando 10s para estabilización post-deploy..."
           sleep 10
 
-          echo "🔍 Verificando /health endpoint..."
+          # Path changed from /health to /api/v1/platform/status to avoid IONOS WAF blocking.
+          HEALTH_URL="https://plataformadeecosistemas.com/api/v1/platform/status"
+
+          echo "🔍 Verificando platform status endpoint..."
           for i in 1 2 3; do
-            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" https://plataformadeecosistemas.com/health 2>/dev/null || echo '000')
+            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo '000')
             RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
             STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
 
@@ -419,8 +422,8 @@ jobs:
 
           # Show full response headers for debugging
           echo ""
-          echo "=== Full response headers for /health ==="
-          curl -sI https://plataformadeecosistemas.com/health 2>&1
+          echo "=== Full response headers for status endpoint ==="
+          curl -sI "$HEALTH_URL" 2>&1
           echo ""
           echo "=== Full response headers for / ==="
           curl -sI https://plataformadeecosistemas.com/ 2>&1

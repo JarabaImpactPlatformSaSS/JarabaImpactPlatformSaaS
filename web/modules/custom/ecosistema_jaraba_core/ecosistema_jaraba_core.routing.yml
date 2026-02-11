@@ -1118,7 +1118,9 @@ ecosistema_jaraba_core.admin.rbac_export:
 # ---------------------------------------------------------------------------
 
 ecosistema_jaraba_core.health.check:
-  path: '/health'
+  # Path changed from /health to avoid IONOS WAF blocking.
+  # IONOS shared hosting blocks common monitoring endpoints like /health.
+  path: '/api/v1/platform/status'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\HealthCheckController::check'
   requirements:
