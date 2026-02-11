@@ -1,0 +1,56 @@
+# =============================================================================
+# Permisos del módulo Jaraba Events
+# Estructura: permisos por entidad y funcionalidad del marketplace de eventos
+# Lógica: control granular de acceso multi-tenant para organizadores y asistentes
+# =============================================================================
+
+# --- Eventos de Marketing ---
+manage marketing events:
+  title: 'Gestionar eventos de marketing'
+  description: 'Acceso completo a CRUD de todos los eventos de marketing del tenant.'
+  restrict access: true
+
+view marketing events:
+  title: 'Ver eventos de marketing'
+  description: 'Ver eventos publicados en el marketplace público de eventos.'
+
+create marketing events:
+  title: 'Crear eventos de marketing'
+  description: 'Crear nuevos eventos de marketing para el tenant.'
+
+edit own marketing events:
+  title: 'Editar eventos propios'
+  description: 'Editar eventos de marketing creados por el usuario actual.'
+
+delete own marketing events:
+  title: 'Eliminar eventos propios'
+  description: 'Eliminar eventos de marketing creados por el usuario actual.'
+
+# --- Registros de Asistentes ---
+manage event registrations:
+  title: 'Gestionar registros de eventos'
+  description: 'Acceso completo a todos los registros de asistentes del tenant.'
+  restrict access: true
+
+register for events:
+  title: 'Registrarse en eventos'
+  description: 'Permite a usuarios registrarse como asistente a eventos.'
+
+view own event registrations:
+  title: 'Ver registros propios'
+  description: 'Ver los registros de eventos del usuario actual.'
+
+cancel own event registrations:
+  title: 'Cancelar registros propios'
+  description: 'Cancelar registros a eventos del usuario actual.'
+
+# --- Analítica ---
+view event analytics:
+  title: 'Ver analítica de eventos'
+  description: 'Acceder al dashboard de analítica y estadísticas de eventos.'
+
+# --- Administración ---
+administer events settings:
+  title: 'Administrar configuración de eventos'
+  description: 'Acceso a la configuración global del módulo de eventos.'
+  restrict access: true

@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Evento" en la colección de eventos
+jaraba_events.marketing_event.add:
+  title: 'Añadir Evento'
+  route_name: entity.marketing_event.add_form
+  appears_on:
+    - entity.marketing_event.collection
+
+# Botón "Añadir Registro" en la colección de registros
+jaraba_events.event_registration.add:
+  title: 'Añadir Registro'
+  route_name: entity.event_registration.add_form
+  appears_on:
+    - entity.event_registration.collection

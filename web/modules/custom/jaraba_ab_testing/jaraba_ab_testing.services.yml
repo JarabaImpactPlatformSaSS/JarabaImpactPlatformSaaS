@@ -1,0 +1,47 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Jaraba A/B Testing
+  # =====================================================================
+  logger.channel.jaraba_ab_testing:
+    parent: logger.channel_base
+    arguments: ['jaraba_ab_testing']
+
+  # =====================================================================
+  # StatisticalEngineService: Motor estadístico centralizado
+  # Responsabilidad: Z-score, chi-cuadrado, intervalos de confianza,
+  #   cálculo de tamaño muestral, detección de ganador, potencia
+  # Relaciones: consume ABExperiment, ABVariant
+  # =====================================================================
+  jaraba_ab_testing.statistical_engine:
+    class: Drupal\jaraba_ab_testing\Service\StatisticalEngineService
+    arguments:
+      - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # VariantAssignmentService: Asignación de visitantes a variantes
+  # Responsabilidad: asignación ponderada, persistencia cookie/session,
+  #   segmentación por audiencia, exclusiones
+  # Relaciones: consume ABExperiment, ABVariant, RequestStack
+  # =====================================================================
+  jaraba_ab_testing.variant_assignment:
+    class: Drupal\jaraba_ab_testing\Service\VariantAssignmentService
+    arguments:
+      - '@entity_type.manager'
+      - '@request_stack'
+      - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # ExperimentAggregatorService: Agregador de datos multi-fuente
+  # Responsabilidad: recopilar métricas de las 3 implementaciones
+  #   existentes (page_builder, skills, copilot) y los experimentos
+  #   nativos. Dashboard unificado.
+  # Relaciones: consume ABExperiment, ExperimentService (page_builder),
+  #   ABTestingService (skills)
+  # =====================================================================
+  jaraba_ab_testing.experiment_aggregator:
+    class: Drupal\jaraba_ab_testing\Service\ExperimentAggregatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_ab_testing.statistical_engine'
+      - '@logger.channel.jaraba_ab_testing'

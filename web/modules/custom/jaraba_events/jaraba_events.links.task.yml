@@ -1,0 +1,19 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Jaraba Events
+# Cada entidad aparece como una pestaña en la sección de contenido
+# permitiendo listar, filtrar y gestionar los datos de negocio
+# =============================================================================
+
+# Tab Eventos en admin/content
+jaraba_events.marketing_event.collection:
+  title: 'Eventos'
+  route_name: entity.marketing_event.collection
+  base_route: system.admin_content
+  weight: 70
+
+# Tab Registros en admin/content
+jaraba_events.event_registration.collection:
+  title: 'Registros Eventos'
+  route_name: entity.event_registration.collection
+  base_route: system.admin_content
+  weight: 71

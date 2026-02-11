@@ -1,0 +1,27 @@
+# =============================================================================
+# Permisos del módulo Jaraba Addons
+# Estructura: permisos por entidad y funcionalidad del sistema de add-ons
+# Lógica: control granular de acceso multi-tenant para catálogo y suscripciones
+# =============================================================================
+
+# --- Administración ---
+administer addons settings:
+  title: 'Administrar configuración de add-ons'
+  description: 'Acceso a la configuración global del módulo de add-ons.'
+  restrict access: true
+
+# --- Gestión de Add-ons ---
+manage addons:
+  title: 'Gestionar add-ons'
+  description: 'Crear, editar y eliminar add-ons del catálogo.'
+  restrict access: true
+
+# --- Compra de Add-ons ---
+purchase addons:
+  title: 'Comprar add-ons'
+  description: 'Suscribirse a add-ons del catálogo para el tenant actual.'
+
+# --- Catálogo ---
+view addon catalog:
+  title: 'Ver catálogo de add-ons'
+  description: 'Acceder al catálogo público de add-ons disponibles.'

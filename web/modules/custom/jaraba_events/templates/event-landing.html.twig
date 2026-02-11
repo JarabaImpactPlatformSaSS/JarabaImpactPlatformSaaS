@@ -1,0 +1,247 @@
+{#
+/**
+ * @file
+ * Landing page individual de evento (/eventos/{slug}).
+ *
+ * ESTRUCTURA:
+ * Plantilla Zero Region que renderiza la landing completa de un evento:
+ * hero con imagen y countdown, detalles (fecha, formato, ubicación,
+ * speakers), descripción larga, pricing, CTA de registro y eventos
+ * relacionados. El Schema.org JSON-LD se inyecta en <head> desde el
+ * controlador, no desde esta plantilla.
+ *
+ * LÓGICA:
+ * - Si el evento es futuro y publicado, muestra countdown y CTA.
+ * - Si tiene early bird activo, muestra precio tachado + early bird.
+ * - Si las plazas son limitadas, muestra barra de progreso.
+ * - Eventos relacionados se muestran en grid de 3 columnas.
+ *
+ * RELACIONES:
+ * - event-landing.html.twig <- EventFrontendController::eventLanding()
+ * - event-landing.html.twig -> partials/event-card.html.twig (para relacionados)
+ * - event-landing.html.twig -> _event-landing.scss (estilado por)
+ *
+ * Variables:
+ *   - event (array): Datos completos del evento.
+ *   - schema_org (array): Datos Schema.org (inyectados en head, no aquí).
+ *   - meta_tags (array): Meta tags (inyectados en head, no aquí).
+ *   - related_events (array): Eventos relacionados para tarjetas.
+ *   - countdown (array|null): {days, hours, minutes, seconds, timestamp}.
+ *   - registration_open (bool): Si acepta registros.
+ *   - spots_remaining (int|null): Plazas disponibles.
+ */
+#}
+
+<div class="ej-event-landing">
+
+  {# ===== HERO ===== #}
+  <section class="ej-event-landing__hero">
+    {% if event.image_url %}
+      <div class="ej-event-landing__hero-image" style="background-image: url('{{ event.image_url }}');">
+      </div>
+    {% endif %}
+
+    <div class="ej-event-landing__hero-content">
+      {# Breadcrumb #}
+      <nav class="ej-event-landing__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+        <a href="/eventos">{% trans %}Events{% endtrans %}</a>
+        <span class="ej-event-landing__breadcrumb-sep">/</span>
+        <span>{{ event.title }}</span>
+      </nav>
+
+      {# Badges #}
+      <div class="ej-event-landing__badges">
+        <span class="ej-event-landing__badge ej-event-landing__badge--type">
+          {{ event.event_type|capitalize }}
+        </span>
+        <span class="ej-event-landing__badge ej-event-landing__badge--format">
+          {% if event.format == 'online' %}
+            {% trans %}Online{% endtrans %}
+          {% elseif event.format == 'presencial' %}
+            {% trans %}In-person{% endtrans %}
+          {% else %}
+            {% trans %}Hybrid{% endtrans %}
+          {% endif %}
+        </span>
+        {% if event.featured %}
+          <span class="ej-event-landing__badge ej-event-landing__badge--featured">
+            {% trans %}Featured{% endtrans %}
+          </span>
+        {% endif %}
+      </div>
+
+      {# Título #}
+      <h1 class="ej-event-landing__title">{{ event.title }}</h1>
+
+      {# Meta info #}
+      <div class="ej-event-landing__meta">
+        <div class="ej-event-landing__meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <time datetime="{{ event.start_date }}">
+            {{ event.start_date|date('d M Y · H:i') }}
+            {% if event.end_date %}
+              — {{ event.end_date|date('H:i') }}
+            {% endif %}
+          </time>
+        </div>
+
+        {% if event.location %}
+          <div class="ej-event-landing__meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>{{ event.location }}</span>
+          </div>
+        {% endif %}
+
+        <div class="ej-event-landing__meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>{{ event.timezone }}</span>
+        </div>
+      </div>
+
+      {# Countdown #}
+      {% if countdown %}
+        <div class="ej-event-landing__countdown" data-countdown-target="{{ countdown.timestamp }}">
+          <div class="ej-event-landing__countdown-item">
+            <span class="ej-event-landing__countdown-number" data-countdown-days>{{ countdown.days }}</span>
+            <span class="ej-event-landing__countdown-label">{% trans %}days{% endtrans %}</span>
+          </div>
+          <div class="ej-event-landing__countdown-item">
+            <span class="ej-event-landing__countdown-number" data-countdown-hours>{{ countdown.hours }}</span>
+            <span class="ej-event-landing__countdown-label">{% trans %}hours{% endtrans %}</span>
+          </div>
+          <div class="ej-event-landing__countdown-item">
+            <span class="ej-event-landing__countdown-number" data-countdown-minutes>{{ countdown.minutes }}</span>
+            <span class="ej-event-landing__countdown-label">{% trans %}min{% endtrans %}</span>
+          </div>
+          <div class="ej-event-landing__countdown-item">
+            <span class="ej-event-landing__countdown-number" data-countdown-seconds>{{ countdown.seconds }}</span>
+            <span class="ej-event-landing__countdown-label">{% trans %}sec{% endtrans %}</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {# ===== CONTENIDO PRINCIPAL (2 columnas) ===== #}
+  <section class="ej-event-landing__body">
+
+    {# Columna izquierda: contenido #}
+    <div class="ej-event-landing__main">
+
+      {# Descripción #}
+      {% if event.description %}
+        <div class="ej-event-landing__description">
+          <h2>{% trans %}About this event{% endtrans %}</h2>
+          <div class="ej-event-landing__description-text">
+            {{ event.description|raw }}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Speakers #}
+      {% if event.speakers %}
+        <div class="ej-event-landing__speakers">
+          <h2>{% trans %}Speakers{% endtrans %}</h2>
+          <div class="ej-event-landing__speakers-text">
+            {{ event.speakers|raw }}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Columna derecha: sidebar con pricing + CTA #}
+    <aside class="ej-event-landing__sidebar">
+
+      {# Card de pricing #}
+      <div class="ej-event-landing__pricing-card">
+        <div class="ej-event-landing__pricing-header">
+          {% if event.is_free %}
+            <span class="ej-event-landing__price ej-event-landing__price--free">
+              {% trans %}Free{% endtrans %}
+            </span>
+          {% elseif event.early_bird_active %}
+            <span class="ej-event-landing__price ej-event-landing__price--original">
+              {{ event.price|number_format(2, ',', '.') }} &euro;
+            </span>
+            <span class="ej-event-landing__price ej-event-landing__price--early-bird">
+              {{ event.early_bird_price|number_format(2, ',', '.') }} &euro;
+            </span>
+            <span class="ej-event-landing__early-bird-label">
+              {% trans %}Early bird{% endtrans %}
+            </span>
+          {% else %}
+            <span class="ej-event-landing__price">
+              {{ event.current_price|number_format(2, ',', '.') }} &euro;
+            </span>
+          {% endif %}
+        </div>
+
+        {# Plazas #}
+        {% if spots_remaining is not null %}
+          <div class="ej-event-landing__spots">
+            {% if spots_remaining > 0 %}
+              <div class="ej-event-landing__spots-bar">
+                {% set fill_pct = ((event.max_attendees - spots_remaining) / event.max_attendees * 100)|round %}
+                <div class="ej-event-landing__spots-fill" style="width: {{ fill_pct }}%"></div>
+              </div>
+              <span class="ej-event-landing__spots-text">
+                {% trans %}{{ spots_remaining }} spots remaining{% endtrans %}
+              </span>
+            {% else %}
+              <span class="ej-event-landing__spots-text ej-event-landing__spots-text--sold-out">
+                {% trans %}Sold out{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {# CTA de registro #}
+        {% if registration_open %}
+          <a href="/eventos/{{ event.slug }}/registro" class="ej-event-landing__cta-button">
+            {% if spots_remaining is not null and spots_remaining == 0 %}
+              {% trans %}Join waitlist{% endtrans %}
+            {% elseif event.is_free %}
+              {% trans %}Register for free{% endtrans %}
+            {% else %}
+              {% trans %}Register now{% endtrans %}
+            {% endif %}
+          </a>
+        {% else %}
+          <span class="ej-event-landing__cta-button ej-event-landing__cta-button--disabled">
+            {% trans %}Registration closed{% endtrans %}
+          </span>
+        {% endif %}
+
+        {# Meeting URL para online #}
+        {% if event.format == 'online' and event.meeting_url %}
+          <div class="ej-event-landing__meeting-info">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span>{% trans %}Online event — link provided after registration{% endtrans %}</span>
+          </div>
+        {% endif %}
+      </div>
+
+    </aside>
+  </section>
+
+  {# ===== EVENTOS RELACIONADOS ===== #}
+  {% if related_events is not empty %}
+    <section class="ej-event-landing__related">
+      <h2 class="ej-event-landing__related-title">{% trans %}Related events{% endtrans %}</h2>
+      <div class="ej-event-landing__related-grid">
+        {% for rel_event in related_events %}
+          {% include '@jaraba_events/partials/event-card.html.twig' with { event: rel_event } only %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>

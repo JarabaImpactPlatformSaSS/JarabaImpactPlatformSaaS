@@ -1,0 +1,36 @@
+# =============================================================================
+# Bibliotecas CSS/JS del módulo Jaraba A/B Testing
+# =============================================================================
+
+# Dashboard principal de A/B testing
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ab-testing-dashboard.css: {}
+  js:
+    js/ab-testing-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Detalle de experimento individual
+experiment-detail:
+  version: 1.x
+  css:
+    theme:
+      css/ab-testing-experiment-detail.css: {}
+  js:
+    js/ab-testing-experiment-detail.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Client-side variant assignment (para uso en frontend)
+variant-tracker:
+  version: 1.x
+  js:
+    js/variant-tracker.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

@@ -1,0 +1,11 @@
+name: 'Jaraba Addons'
+type: module
+description: 'Sistema de add-ons de precios multi-tenant: catálogo de add-ons (features, storage, API calls, soporte, custom), gestión de suscripciones por tenant, ciclos de facturación (mensual/anual), activación/cancelación/renovación y API REST. Integra con ecosistema_jaraba_core para la gestión de planes y límites.'
+package: 'Jaraba Platform Features'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:views
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

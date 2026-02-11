@@ -1,0 +1,164 @@
+// =============================================================================
+// Referral Landing — Página pública de invitación
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-referral-landing {
+  @include ref-container;
+  padding-block: $ref-space-2xl;
+
+  // --- Hero ---
+  &__hero {
+    text-align: center;
+    margin-bottom: $ref-space-2xl;
+  }
+
+  &__title {
+    margin: 0 0 $ref-space-sm;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--ej-heading-color, #212121);
+
+    @media (min-width: $ref-bp-md) {
+      font-size: 3rem;
+    }
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--ej-text-color, #616161);
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  // --- Code Card ---
+  &__card {
+    @include ref-card-glass;
+    max-width: 480px;
+    margin: 0 auto $ref-space-2xl;
+    padding: $ref-space-xl;
+    text-align: center;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $ref-space-xs;
+    margin-bottom: $ref-space-md;
+    padding: $ref-space-xs $ref-space-md;
+    background: color-mix(in srgb, var(--ej-primary-color, $ref-primary) 10%, white);
+    border-radius: $ref-radius-xl;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-primary-color, $ref-primary);
+  }
+
+  &__badge-icon { font-size: 1.25rem; }
+
+  &__code {
+    display: block;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--ej-primary-color, $ref-primary);
+    margin-bottom: $ref-space-md;
+    padding: $ref-space-md;
+    background: color-mix(in srgb, var(--ej-primary-color, $ref-primary) 5%, white);
+    border-radius: $ref-radius-sm;
+  }
+
+  &__benefit {
+    margin: 0 0 $ref-space-lg;
+    color: var(--ej-text-color, #616161);
+    line-height: 1.6;
+  }
+
+  &__cta {
+    @include ref-button-primary;
+    width: 100%;
+    padding: $ref-space-md $ref-space-xl;
+    font-size: 1rem;
+  }
+
+  // --- Steps ---
+  &__steps {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__steps-title {
+    text-align: center;
+    margin: 0 0 $ref-space-xl;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  &__steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $ref-space-lg;
+
+    @media (min-width: $ref-bp-md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__step {
+    @include ref-card;
+    padding: $ref-space-lg;
+    text-align: center;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+    }
+
+    h3 {
+      margin: $ref-space-sm 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ej-heading-color, #212121);
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--ej-text-color, #616161);
+      line-height: 1.5;
+    }
+  }
+
+  &__step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ej-primary-color, $ref-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  // --- Invalid ---
+  &__invalid {
+    text-align: center;
+    padding: $ref-space-2xl;
+
+    h1 {
+      margin: 0 0 $ref-space-md;
+      font-size: 2rem;
+      color: $ref-error;
+    }
+
+    p {
+      margin: 0 0 $ref-space-lg;
+      color: var(--ej-text-color, #616161);
+    }
+  }
+}

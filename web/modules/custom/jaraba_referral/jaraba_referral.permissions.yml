@@ -1,0 +1,27 @@
+# =============================================================================
+# Permisos del módulo Jaraba Referral
+# Estructura: permisos por entidad y funcionalidad del programa de referidos
+# Lógica: control granular de acceso multi-tenant para referidores y referidos
+# =============================================================================
+
+# --- Administración ---
+administer referral settings:
+  title: 'Administrar configuración de referidos'
+  description: 'Acceso a la configuración global del módulo de referidos.'
+  restrict access: true
+
+# --- Códigos de Referido ---
+create referral codes:
+  title: 'Crear códigos de referido'
+  description: 'Generar nuevos códigos de referido para compartir.'
+
+# --- Dashboard ---
+view referral dashboard:
+  title: 'Ver dashboard de referidos'
+  description: 'Acceder al panel de seguimiento de referidos y estadísticas personales.'
+
+# --- Recompensas ---
+manage referral rewards:
+  title: 'Gestionar recompensas de referidos'
+  description: 'Administrar, aprobar y modificar recompensas del programa de referidos.'
+  restrict access: true

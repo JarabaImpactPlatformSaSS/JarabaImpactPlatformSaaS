@@ -1,0 +1,128 @@
+{#
+/**
+ * @file
+ * Template: Catálogo de Add-ons (/addons).
+ *
+ * ESTRUCTURA:
+ * Plantilla que renderiza el catálogo público de add-ons con filtros por tipo
+ * y grid de tarjetas. Sigue el patrón BEM ej-addons-* y usa CSS variables
+ * inyectables con var(--ej-*, $fallback).
+ *
+ * VARIABLES:
+ * - addons: Array de add-ons con keys: id, label, description, addon_type,
+ *     addon_type_label, price_monthly, price_yearly, is_subscribed.
+ * - addon_types: Array asociativo de tipos válidos (key => label).
+ * - active_type: Tipo activo actual para filtro ('' = todos).
+ * - tenant_subscriptions: Array de suscripciones del tenant actual.
+ *
+ * RELACIONES:
+ * - addons-catalog.html.twig <- AddonCatalogController::catalog() (renderizado por)
+ * - addons-catalog.html.twig <- jaraba_addons.module hook_theme (registrado en)
+ * - addons-catalog.html.twig <- addons-catalog.css (estilizado por)
+ * - addons-catalog.html.twig <- addon-catalog.js (interactividad por)
+ */
+#}
+
+<div class="ej-addons-catalog">
+
+  {# ===== Cabecera del catálogo ===== #}
+  <header class="ej-addons-catalog__header">
+    <h1 class="ej-addons-catalog__title">
+      {% trans %}Available Add-ons{% endtrans %}
+    </h1>
+    <p class="ej-addons-catalog__subtitle">
+      {% trans %}Enhance your platform with additional features, storage, API calls, and support options.{% endtrans %}
+    </p>
+  </header>
+
+  {# ===== Filtros por tipo (chips) ===== #}
+  <nav class="ej-addons-catalog__filters" aria-label="{% trans %}Filter by add-on type{% endtrans %}">
+    <a href="{{ path('jaraba_addons.catalog') }}"
+       class="ej-addons-catalog__filter-chip {{ active_type == '' ? 'ej-addons-catalog__filter-chip--active' : '' }}"
+       data-type="">
+      {% trans %}All{% endtrans %}
+    </a>
+    {% for type_key, type_label in addon_types %}
+      <a href="{{ path('jaraba_addons.catalog', {'type': type_key}) }}"
+         class="ej-addons-catalog__filter-chip ej-addons-catalog__filter-chip--{{ type_key }} {{ active_type == type_key ? 'ej-addons-catalog__filter-chip--active' : '' }}"
+         data-type="{{ type_key }}">
+        {{ type_label }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  {# ===== Grid de add-ons ===== #}
+  {% if addons|length > 0 %}
+    <div class="ej-addons-catalog__grid">
+      {% for addon in addons %}
+        <article class="ej-addons-card ej-addons-card--{{ addon.addon_type }}"
+                 data-addon-id="{{ addon.id }}"
+                 data-addon-type="{{ addon.addon_type }}">
+
+          {# Cabecera de la tarjeta #}
+          <div class="ej-addons-card__header">
+            <span class="ej-addons-card__type-badge ej-addons-card__type-badge--{{ addon.addon_type }}">
+              {{ addon.addon_type_label }}
+            </span>
+            {% if addon.is_subscribed %}
+              <span class="ej-addons-card__subscribed-badge">
+                {% trans %}Subscribed{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+
+          {# Cuerpo de la tarjeta #}
+          <div class="ej-addons-card__body">
+            <h3 class="ej-addons-card__name">{{ addon.label }}</h3>
+            <p class="ej-addons-card__description">
+              {{ addon.description|striptags|length > 120 ? addon.description|striptags|slice(0, 120) ~ '...' : addon.description|striptags }}
+            </p>
+          </div>
+
+          {# Pie de la tarjeta: precio y CTA #}
+          <div class="ej-addons-card__footer">
+            <div class="ej-addons-card__price">
+              <span class="ej-addons-card__price-amount">
+                {{ addon.price_monthly|number_format(2, ',', '.') }} &euro;
+              </span>
+              <span class="ej-addons-card__price-cycle">
+                /{% trans %}month{% endtrans %}
+              </span>
+            </div>
+            <a href="{{ path('jaraba_addons.catalog.detail', {'addon_id': addon.id}) }}"
+               class="ej-addons-card__cta">
+              {% if addon.is_subscribed %}
+                {% trans %}View Details{% endtrans %}
+              {% else %}
+                {% trans %}Learn More{% endtrans %}
+              {% endif %}
+            </a>
+          </div>
+
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    {# ===== Estado vacío ===== #}
+    <div class="ej-addons-catalog__empty">
+      <div class="ej-addons-catalog__empty-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <h3 class="ej-addons-catalog__empty-title">
+        {% trans %}No add-ons available{% endtrans %}
+      </h3>
+      <p class="ej-addons-catalog__empty-message">
+        {% if active_type %}
+          {% trans %}No add-ons found for the selected type. Try a different filter.{% endtrans %}
+        {% else %}
+          {% trans %}There are no add-ons available at this time. Check back later for new options.{% endtrans %}
+        {% endif %}
+      </p>
+    </div>
+  {% endif %}
+
+</div>

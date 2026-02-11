@@ -1,0 +1,13 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para Jaraba Ads
+# La entidad tiene su entrada en el menú de estructura de Drupal
+# para acceder a Field UI y configuración de campos
+# =============================================================================
+
+# Campañas de Ads en Structure
+jaraba_ads.ad_campaign.settings:
+  title: 'Campañas Ads'
+  description: 'Configuración de la entidad Campaña Publicitaria. Acceso a Field UI para añadir campos personalizados.'
+  route_name: jaraba_ads.ad_campaign.settings
+  parent: system.admin_structure
+  weight: 95

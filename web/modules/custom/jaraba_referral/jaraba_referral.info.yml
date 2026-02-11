@@ -1,0 +1,11 @@
+name: 'Jaraba Referral'
+type: module
+description: 'Programa de referidos multi-tenant: entidades de almacenamiento de referidos, generación de códigos únicos, tracking de conversiones, sistema de recompensas (descuento/crédito/feature/custom), dashboard de referidos y API REST. Extiende ReferralProgramService de ecosistema_jaraba_core con Content Entities propias.'
+package: 'Jaraba Platform Features'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:views
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

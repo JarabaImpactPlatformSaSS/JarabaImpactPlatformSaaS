@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Componente tarjeta de evento reutilizable.
+ *
+ * ESTRUCTURA:
+ * Partial Twig reutilizable que renderiza una tarjeta de evento para el
+ * marketplace y la sección de eventos relacionados. Incluye imagen,
+ * badge de tipo, fecha, título, descripción corta, precio y CTA.
+ *
+ * LÓGICA:
+ * - Si el evento es featured, añade clase CSS para estilo destacado.
+ * - Si es gratuito, muestra badge "Gratis" en vez de precio.
+ * - Si hay plazas limitadas, muestra contador de plazas restantes.
+ * - Early bird: muestra precio tachado + precio early bird si activo.
+ *
+ * RELACIONES:
+ * - event-card.html.twig <- events-marketplace.html.twig (incluido por)
+ * - event-card.html.twig <- event-landing.html.twig (incluido por, relacionados)
+ * - event-card.html.twig -> _event-card.scss (estilado por)
+ *
+ * Variables:
+ *   - event (array): Datos del evento con claves:
+ *     - id, title, slug, event_type, format, start_date, short_desc,
+ *       is_free, price, featured, image_url, spots_remaining
+ */
+#}
+
+{% set card_classes = ['ej-event-card'] %}
+{% if event.featured %}
+  {% set card_classes = card_classes|merge(['ej-event-card--featured']) %}
+{% endif %}
+
+<article class="{{ card_classes|join(' ') }}" data-event-id="{{ event.id }}">
+  {# --- Imagen del evento --- #}
+  <div class="ej-event-card__image">
+    {% if event.image_url %}
+      <img src="{{ event.image_url }}" alt="{{ event.title }}" loading="lazy" />
+    {% else %}
+      <div class="ej-event-card__image-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+    {% endif %}
+
+    {# Badge de tipo de evento #}
+    <span class="ej-event-card__badge ej-event-card__badge--{{ event.event_type }}">
+      {{ event.event_type|capitalize }}
+    </span>
+
+    {# Badge de formato #}
+    <span class="ej-event-card__format">
+      {% if event.format == 'online' %}
+        {% trans %}Online{% endtrans %}
+      {% elseif event.format == 'presencial' %}
+        {% trans %}In-person{% endtrans %}
+      {% else %}
+        {% trans %}Hybrid{% endtrans %}
+      {% endif %}
+    </span>
+  </div>
+
+  {# --- Contenido de la tarjeta --- #}
+  <div class="ej-event-card__content">
+    {# Fecha #}
+    <time class="ej-event-card__date" datetime="{{ event.start_date }}">
+      {{ event.start_date|date('d M Y · H:i') }}
+    </time>
+
+    {# Título #}
+    <h3 class="ej-event-card__title">
+      <a href="/eventos/{{ event.slug }}">{{ event.title }}</a>
+    </h3>
+
+    {# Descripción corta #}
+    {% if event.short_desc %}
+      <p class="ej-event-card__desc">{{ event.short_desc|length > 120 ? event.short_desc|slice(0, 120) ~ '...' : event.short_desc }}</p>
+    {% endif %}
+  </div>
+
+  {# --- Footer de la tarjeta --- #}
+  <div class="ej-event-card__footer">
+    {# Precio #}
+    <div class="ej-event-card__price">
+      {% if event.is_free %}
+        <span class="ej-event-card__price-free">{% trans %}Free{% endtrans %}</span>
+      {% else %}
+        <span class="ej-event-card__price-amount">{{ event.price|number_format(2, ',', '.') }} &euro;</span>
+      {% endif %}
+    </div>
+
+    {# Plazas restantes #}
+    {% if event.spots_remaining is not null and event.spots_remaining <= 10 and event.spots_remaining > 0 %}
+      <span class="ej-event-card__spots ej-event-card__spots--limited">
+        {% trans %}{{ event.spots_remaining }} spots left{% endtrans %}
+      </span>
+    {% elseif event.spots_remaining is not null and event.spots_remaining == 0 %}
+      <span class="ej-event-card__spots ej-event-card__spots--sold-out">
+        {% trans %}Sold out{% endtrans %}
+      </span>
+    {% endif %}
+
+    {# CTA #}
+    <a href="/eventos/{{ event.slug }}" class="ej-event-card__cta">
+      {% trans %}View details{% endtrans %}
+    </a>
+  </div>
+</article>

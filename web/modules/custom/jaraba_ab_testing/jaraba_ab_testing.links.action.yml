@@ -1,0 +1,15 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# =============================================================================
+
+jaraba_ab_testing.experiment.add:
+  title: 'Añadir Experimento A/B'
+  route_name: entity.ab_experiment.add_form
+  appears_on:
+    - entity.ab_experiment.collection
+
+jaraba_ab_testing.variant.add:
+  title: 'Añadir Variante'
+  route_name: entity.ab_variant.add_form
+  appears_on:
+    - entity.ab_variant.collection

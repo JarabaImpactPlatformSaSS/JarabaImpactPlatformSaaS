@@ -1,0 +1,21 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para Jaraba Events
+# Cada entidad tiene su entrada en el menú de estructura de Drupal
+# para acceder a Field UI y configuración de campos
+# =============================================================================
+
+# Eventos de Marketing en Structure
+jaraba_events.marketing_event.settings:
+  title: 'Eventos Marketing'
+  description: 'Configuración de la entidad Evento de Marketing. Acceso a Field UI para añadir campos personalizados.'
+  route_name: jaraba_events.marketing_event.settings
+  parent: system.admin_structure
+  weight: 90
+
+# Registros de Eventos en Structure
+jaraba_events.event_registration.settings:
+  title: 'Registros de Eventos'
+  description: 'Configuración de la entidad Registro de Evento. Acceso a Field UI para campos de asistente.'
+  route_name: jaraba_events.event_registration.settings
+  parent: system.admin_structure
+  weight: 91

@@ -1,0 +1,10 @@
+ads-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ads-dashboard.css: { weight: 10 }
+  js:
+    js/ads-dashboard.js: { weight: 10 }
+  dependencies:
+    - core/drupal
+    - core/once

@@ -1,0 +1,81 @@
+# =============================================================================
+# Rutas del módulo Jaraba Addons
+# Estructura: rutas de settings (Field UI), catálogo público y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente.
+#   El catálogo es una página pública con templates propios.
+#   Las rutas API requieren autenticación y filtran por tenant automáticamente.
+# =============================================================================
+
+# --- Settings Routes (para Field UI de cada entidad) ---
+
+jaraba_addons.addon.settings:
+  path: '/admin/structure/addons'
+  defaults:
+    _form: '\Drupal\jaraba_addons\Form\AddonSettingsForm'
+    _title: 'Configuración Add-ons'
+  requirements:
+    _permission: 'administer addons settings'
+
+jaraba_addons.addon_subscription.settings:
+  path: '/admin/structure/addon-subscriptions'
+  defaults:
+    _form: '\Drupal\jaraba_addons\Form\AddonSubscriptionSettingsForm'
+    _title: 'Configuración Suscripciones Add-ons'
+  requirements:
+    _permission: 'administer addons settings'
+
+# --- Rutas Frontend del Catálogo ---
+
+jaraba_addons.catalog:
+  path: '/addons'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonCatalogController::catalog'
+    _title: 'Add-ons Disponibles'
+  requirements:
+    _permission: 'view addon catalog'
+
+jaraba_addons.catalog.detail:
+  path: '/addons/{addon_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonCatalogController::detail'
+    _title: 'Detalle Add-on'
+  requirements:
+    _permission: 'view addon catalog'
+    addon_id: '\d+'
+
+# --- Rutas API REST ---
+
+jaraba_addons.api.addons:
+  path: '/api/v1/addons'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::listAddons'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_addons.api.addons.subscribe:
+  path: '/api/v1/addons/{addon_id}/subscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::subscribe'
+  methods: [POST]
+  requirements:
+    _permission: 'purchase addons'
+    addon_id: '\d+'
+
+jaraba_addons.api.addons.cancel:
+  path: '/api/v1/addons/subscriptions/{subscription_id}/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::cancel'
+  methods: [POST]
+  requirements:
+    _permission: 'purchase addons'
+    subscription_id: '\d+'
+
+jaraba_addons.api.addons.subscriptions:
+  path: '/api/v1/addons/subscriptions'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::listSubscriptions'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'

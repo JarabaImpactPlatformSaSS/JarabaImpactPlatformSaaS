@@ -1,0 +1,116 @@
+{#
+ # Referral Dashboard — Panel personal de referidos.
+ #
+ # ESTRUCTURA: Template Zero Region que muestra estadísticas personales
+ # y listado de referidos del usuario autenticado.
+ #
+ # VARIABLES:
+ #   - kpis (array): total_referrals, confirmed, rewarded, total_rewards, conversion_rate
+ #   - referrals (array): items con code, status, referred_name, reward_type, reward_value, created
+ #
+ # RELACIONES:
+ #   - Renderizado por ReferralFrontendController::dashboard()
+ #   - Body class: page--referido-dashboard (vía hook_preprocess_html)
+ #}
+
+<div class="ej-referral-dashboard">
+
+  {# --- Header --- #}
+  <div class="ej-referral-dashboard__header">
+    <h1 class="ej-referral-dashboard__title">{% trans %}Mis Referidos{% endtrans %}</h1>
+    <p class="ej-referral-dashboard__subtitle">
+      {% trans %}Invita a otros y gana recompensas por cada referido confirmado.{% endtrans %}
+    </p>
+    <a href="/referidos/mi-codigo" class="ej-referral-dashboard__cta">
+      {% trans %}Obtener Mi Código{% endtrans %}
+    </a>
+  </div>
+
+  {# --- KPIs --- #}
+  <div class="ej-referral-dashboard__kpis">
+    <div class="ej-referral-dashboard__kpi-card">
+      <span class="ej-referral-dashboard__kpi-value">{{ kpis.total_referrals|default(0) }}</span>
+      <span class="ej-referral-dashboard__kpi-label">{% trans %}Total Referidos{% endtrans %}</span>
+    </div>
+    <div class="ej-referral-dashboard__kpi-card">
+      <span class="ej-referral-dashboard__kpi-value">{{ kpis.confirmed|default(0) }}</span>
+      <span class="ej-referral-dashboard__kpi-label">{% trans %}Confirmados{% endtrans %}</span>
+    </div>
+    <div class="ej-referral-dashboard__kpi-card">
+      <span class="ej-referral-dashboard__kpi-value">{{ kpis.rewarded|default(0) }}</span>
+      <span class="ej-referral-dashboard__kpi-label">{% trans %}Recompensados{% endtrans %}</span>
+    </div>
+    <div class="ej-referral-dashboard__kpi-card">
+      <span class="ej-referral-dashboard__kpi-value">{{ kpis.total_rewards|default(0)|number_format(2, ',', '.') }} €</span>
+      <span class="ej-referral-dashboard__kpi-label">{% trans %}Recompensas Totales{% endtrans %}</span>
+    </div>
+    <div class="ej-referral-dashboard__kpi-card">
+      <span class="ej-referral-dashboard__kpi-value">{{ kpis.conversion_rate|default(0) }}%</span>
+      <span class="ej-referral-dashboard__kpi-label">{% trans %}Tasa Conversión{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# --- Listado de Referidos --- #}
+  <div class="ej-referral-dashboard__table-section">
+    <h2 class="ej-referral-dashboard__section-title">{% trans %}Historial de Referidos{% endtrans %}</h2>
+
+    {% if referrals is not empty %}
+      <div class="ej-referral-dashboard__table-wrapper">
+        <table class="ej-referral-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Código{% endtrans %}</th>
+              <th>{% trans %}Referido{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}Recompensa{% endtrans %}</th>
+              <th>{% trans %}Fecha{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for referral in referrals %}
+              <tr class="ej-referral-dashboard__row ej-referral-dashboard__row--{{ referral.status }}">
+                <td>
+                  <code class="ej-referral-dashboard__code">{{ referral.code }}</code>
+                </td>
+                <td>
+                  {% if referral.referred_name %}
+                    {{ referral.referred_name }}
+                  {% else %}
+                    <span class="ej-referral-dashboard__pending">{% trans %}Pendiente{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% set status_labels = {
+                    'pending': 'Pendiente'|trans,
+                    'confirmed': 'Confirmado'|trans,
+                    'rewarded': 'Recompensado'|trans,
+                    'expired': 'Expirado'|trans,
+                  } %}
+                  <span class="ej-referral-dashboard__status ej-referral-dashboard__status--{{ referral.status }}">
+                    {{ status_labels[referral.status]|default(referral.status) }}
+                  </span>
+                </td>
+                <td>
+                  {% if referral.reward_value > 0 %}
+                    {{ referral.reward_value|number_format(2, ',', '.') }} €
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>{{ referral.created|date('d/m/Y') }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ej-referral-dashboard__empty">
+        <p>{% trans %}Aún no tienes referidos. ¡Comparte tu código para empezar!{% endtrans %}</p>
+        <a href="/referidos/mi-codigo" class="ej-referral-dashboard__cta">
+          {% trans %}Obtener Mi Código{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>

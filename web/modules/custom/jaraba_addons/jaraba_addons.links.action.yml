@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Add-on" en la colección de add-ons
+jaraba_addons.addon.add:
+  title: 'Añadir Add-on'
+  route_name: entity.addon.add_form
+  appears_on:
+    - entity.addon.collection
+
+# Botón "Añadir Suscripción" en la colección de suscripciones
+jaraba_addons.addon_subscription.add:
+  title: 'Añadir Suscripción'
+  route_name: entity.addon_subscription.add_form
+  appears_on:
+    - entity.addon_subscription.collection

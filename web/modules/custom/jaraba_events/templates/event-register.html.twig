@@ -1,0 +1,188 @@
+{#
+/**
+ * @file
+ * Formulario de registro público para evento (/eventos/{slug}/registro).
+ *
+ * ESTRUCTURA:
+ * Plantilla Zero Region con formulario de registro de asistente.
+ * Muestra resumen del evento (precio, fecha, plazas) y campos de
+ * formulario (nombre, email, teléfono). Maneja estados de éxito y error.
+ *
+ * LÓGICA:
+ * - Si registration_success es TRUE, muestra mensaje de confirmación.
+ * - Si form_errors contiene errores, muestra mensajes inline.
+ * - Si el registro está cerrado, muestra aviso informativo.
+ * - El formulario usa POST nativo (sin AJAX en fase 1).
+ *
+ * Variables:
+ *   - event (array): Datos del evento.
+ *   - form_errors (array): Errores de validación por campo.
+ *   - registration_success (bool): Si el registro fue exitoso.
+ *   - submitted_data (array): Datos enviados (para repoblar campos).
+ *   - registration_open (bool): Si acepta registros.
+ */
+#}
+
+<div class="ej-event-register">
+
+  {# Breadcrumb #}
+  <nav class="ej-event-register__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+    <a href="/eventos">{% trans %}Events{% endtrans %}</a>
+    <span>/</span>
+    <a href="/eventos/{{ event.slug }}">{{ event.title }}</a>
+    <span>/</span>
+    <span>{% trans %}Registration{% endtrans %}</span>
+  </nav>
+
+  {# ===== ÉXITO ===== #}
+  {% if registration_success %}
+    <div class="ej-event-register__success">
+      <div class="ej-event-register__success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="64" height="64">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2>{% trans %}Registration successful!{% endtrans %}</h2>
+      <p>{% trans %}We have sent you a confirmation email. Please check your inbox to confirm your attendance.{% endtrans %}</p>
+      <a href="/eventos/{{ event.slug }}" class="ej-event-register__back-link">
+        {% trans %}Back to event{% endtrans %}
+      </a>
+    </div>
+
+  {% else %}
+
+    <div class="ej-event-register__layout">
+
+      {# Columna principal: formulario #}
+      <div class="ej-event-register__main">
+        <h1 class="ej-event-register__title">{% trans %}Register for this event{% endtrans %}</h1>
+
+        {# Error general #}
+        {% if form_errors.general is defined %}
+          <div class="ej-event-register__alert ej-event-register__alert--error" role="alert">
+            {{ form_errors.general }}
+          </div>
+        {% endif %}
+
+        {% if not registration_open %}
+          <div class="ej-event-register__alert ej-event-register__alert--warning" role="alert">
+            {% trans %}This event is not currently accepting registrations.{% endtrans %}
+          </div>
+        {% endif %}
+
+        {# Formulario #}
+        <form method="post" action="/eventos/{{ event.slug }}/registro" class="ej-event-register__form" novalidate>
+
+          {# Nombre #}
+          <div class="ej-event-register__field {{ form_errors.name is defined ? 'ej-event-register__field--error' : '' }}">
+            <label for="reg-name" class="ej-event-register__label">
+              {% trans %}Full name{% endtrans %} <span class="ej-event-register__required">*</span>
+            </label>
+            <input type="text" id="reg-name" name="name"
+                   value="{{ submitted_data.name|default('') }}"
+                   placeholder="{% trans %}Enter your full name{% endtrans %}"
+                   required
+                   class="ej-event-register__input"
+                   autocomplete="name" />
+            {% if form_errors.name is defined %}
+              <span class="ej-event-register__error-msg" role="alert">{{ form_errors.name }}</span>
+            {% endif %}
+          </div>
+
+          {# Email #}
+          <div class="ej-event-register__field {{ form_errors.email is defined ? 'ej-event-register__field--error' : '' }}">
+            <label for="reg-email" class="ej-event-register__label">
+              {% trans %}Email address{% endtrans %} <span class="ej-event-register__required">*</span>
+            </label>
+            <input type="email" id="reg-email" name="email"
+                   value="{{ submitted_data.email|default('') }}"
+                   placeholder="{% trans %}Enter your email{% endtrans %}"
+                   required
+                   class="ej-event-register__input"
+                   autocomplete="email" />
+            {% if form_errors.email is defined %}
+              <span class="ej-event-register__error-msg" role="alert">{{ form_errors.email }}</span>
+            {% endif %}
+          </div>
+
+          {# Teléfono #}
+          <div class="ej-event-register__field">
+            <label for="reg-phone" class="ej-event-register__label">
+              {% trans %}Phone{% endtrans %} <span class="ej-event-register__optional">({% trans %}optional{% endtrans %})</span>
+            </label>
+            <input type="tel" id="reg-phone" name="phone"
+                   value="{{ submitted_data.phone|default('') }}"
+                   placeholder="{% trans %}Enter your phone number{% endtrans %}"
+                   class="ej-event-register__input"
+                   autocomplete="tel" />
+          </div>
+
+          {# Submit #}
+          <button type="submit" class="ej-event-register__submit" {{ not registration_open ? 'disabled' : '' }}>
+            {% if event.is_free %}
+              {% trans %}Complete free registration{% endtrans %}
+            {% else %}
+              {% trans %}Register — {{ event.current_price|number_format(2, ',', '.') }} €{% endtrans %}
+            {% endif %}
+          </button>
+
+          <p class="ej-event-register__privacy">
+            {% trans %}By registering, you agree to our privacy policy. We will only use your data to manage your event attendance.{% endtrans %}
+          </p>
+        </form>
+      </div>
+
+      {# Sidebar: resumen del evento #}
+      <aside class="ej-event-register__sidebar">
+        <div class="ej-event-register__summary-card">
+          <h3 class="ej-event-register__summary-title">{{ event.title }}</h3>
+
+          <div class="ej-event-register__summary-meta">
+            <div class="ej-event-register__summary-item">
+              <strong>{% trans %}Date{% endtrans %}:</strong>
+              <span>{{ event.start_date|date('d M Y · H:i') }}</span>
+            </div>
+            <div class="ej-event-register__summary-item">
+              <strong>{% trans %}Format{% endtrans %}:</strong>
+              <span>
+                {% if event.format == 'online' %}{% trans %}Online{% endtrans %}
+                {% elseif event.format == 'presencial' %}{% trans %}In-person{% endtrans %}
+                {% else %}{% trans %}Hybrid{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+            {% if event.location %}
+              <div class="ej-event-register__summary-item">
+                <strong>{% trans %}Location{% endtrans %}:</strong>
+                <span>{{ event.location }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="ej-event-register__summary-price">
+            {% if event.is_free %}
+              <span class="ej-event-register__price-tag ej-event-register__price-tag--free">{% trans %}Free{% endtrans %}</span>
+            {% elseif event.early_bird_active %}
+              <span class="ej-event-register__price-tag ej-event-register__price-tag--original">{{ event.price|number_format(2, ',', '.') }} &euro;</span>
+              <span class="ej-event-register__price-tag ej-event-register__price-tag--early">{{ event.early_bird_price|number_format(2, ',', '.') }} &euro;</span>
+              <span class="ej-event-register__early-label">{% trans %}Early bird discount{% endtrans %}</span>
+            {% else %}
+              <span class="ej-event-register__price-tag">{{ event.current_price|number_format(2, ',', '.') }} &euro;</span>
+            {% endif %}
+          </div>
+
+          {% if event.spots_remaining is not null %}
+            <div class="ej-event-register__summary-spots">
+              {% if event.spots_remaining > 0 %}
+                {% trans %}{{ event.spots_remaining }} spots remaining{% endtrans %}
+              {% else %}
+                {% trans %}Event full — joining waitlist{% endtrans %}
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </aside>
+
+    </div>
+  {% endif %}
+</div>

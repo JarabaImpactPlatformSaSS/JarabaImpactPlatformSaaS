@@ -1,0 +1,48 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Jaraba Events
+  # Permite filtrar mensajes del módulo en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_events:
+    parent: logger.channel_base
+    arguments: ['jaraba_events']
+
+  # =====================================================================
+  # EventRegistrationService: Orquesta el flujo completo de registro
+  # Responsabilidad: registro, confirmación, cancelación, check-in,
+  #   lista de espera, métricas de asistencia
+  # Relaciones: consume MarketingEvent, EventRegistration, jaraba_email
+  # =====================================================================
+  jaraba_events.registration:
+    class: Drupal\jaraba_events\Service\EventRegistrationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_events'
+
+  # =====================================================================
+  # EventAnalyticsService: Métricas y analítica de eventos
+  # Responsabilidad: tasa de asistencia, funnel de conversión,
+  #   ROI por evento, engagement por tipo, métricas agregadas
+  # Relaciones: consume MarketingEvent, EventRegistration
+  # =====================================================================
+  jaraba_events.analytics:
+    class: Drupal\jaraba_events\Service\EventAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_events'
+
+  # =====================================================================
+  # EventLandingService: Datos para landing pages automáticas
+  # Responsabilidad: construir datos de landing, Schema.org JSON-LD,
+  #   meta tags SEO, eventos relacionados, countdown
+  # Relaciones: consume MarketingEvent para GEO
+  # =====================================================================
+  jaraba_events.landing:
+    class: Drupal\jaraba_events\Service\EventLandingService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_events'

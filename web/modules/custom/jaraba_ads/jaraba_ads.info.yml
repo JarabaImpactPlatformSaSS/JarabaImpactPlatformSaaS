@@ -1,0 +1,11 @@
+name: 'Jaraba Ads'
+type: module
+description: 'Dashboard de campañas de publicidad pagada multi-tenant: gestión de campañas en Google Ads, Meta Ads, LinkedIn Ads y TikTok Ads, tracking de presupuesto/gasto, métricas de rendimiento (CTR, CPC, ROAS), analítica por plataforma y API REST. Integra con jaraba_pixels para atribución de conversiones.'
+package: 'Jaraba Platform Features'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:views
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

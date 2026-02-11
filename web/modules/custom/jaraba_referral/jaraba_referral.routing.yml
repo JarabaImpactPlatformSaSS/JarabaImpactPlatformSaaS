@@ -1,0 +1,79 @@
+# =============================================================================
+# Rutas del módulo Jaraba Referral
+# Estructura: rutas de settings (Field UI), frontend público y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente.
+#   Las rutas frontend son páginas limpias con templates propios.
+#   Las rutas API requieren autenticación y filtran por tenant automáticamente.
+# =============================================================================
+
+# --- Settings Route (para Field UI de la entidad) ---
+
+jaraba_referral.referral.settings:
+  path: '/admin/structure/referrals'
+  defaults:
+    _form: '\Drupal\jaraba_referral\Form\ReferralSettingsForm'
+    _title: 'Configuración Referidos'
+  requirements:
+    _permission: 'administer referral settings'
+
+# --- Rutas Frontend del Programa de Referidos ---
+
+jaraba_referral.dashboard:
+  path: '/referidos'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralFrontendController::dashboard'
+    _title: 'Mis Referidos'
+  requirements:
+    _permission: 'view referral dashboard'
+
+jaraba_referral.my_code:
+  path: '/referidos/mi-codigo'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralFrontendController::myCode'
+    _title: 'Mi Código de Referido'
+  requirements:
+    _permission: 'create referral codes'
+
+jaraba_referral.landing:
+  path: '/ref/{code}'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralFrontendController::referralLanding'
+    _title: 'Invitación'
+  requirements:
+    _permission: 'access content'
+    code: '[A-Za-z0-9]{8}'
+
+# --- Rutas API REST ---
+
+jaraba_referral.api.referrals:
+  path: '/api/v1/referrals'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listReferrals'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.referrals.generate:
+  path: '/api/v1/referrals/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::generateCode'
+  methods: [POST]
+  requirements:
+    _permission: 'create referral codes'
+
+jaraba_referral.api.referrals.process:
+  path: '/api/v1/referrals/process'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::processReferral'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.referrals.stats:
+  path: '/api/v1/referrals/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'manage referral rewards'

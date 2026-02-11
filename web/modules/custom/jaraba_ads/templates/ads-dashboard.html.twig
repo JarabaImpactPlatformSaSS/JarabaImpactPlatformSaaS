@@ -1,0 +1,280 @@
+{#
+ # @file
+ # Template: Dashboard de Campañas Publicitarias.
+ #
+ # ESTRUCTURA:
+ # Plantilla principal del dashboard de ads que muestra:
+ # 1. KPI cards con métricas consolidadas
+ # 2. Distribución de gasto por plataforma
+ # 3. Tabla de campañas con estado y métricas
+ #
+ # VARIABLES:
+ # - campaigns: array de campañas normalizadas
+ # - metrics: métricas agregadas (total_spend, total_impressions, etc.)
+ # - spend_by_platform: gasto por plataforma (google_ads, meta_ads, etc.)
+ # - active_campaigns: número de campañas activas
+ # - total_spend: gasto total acumulado
+ #
+ # RELACIONES:
+ # - ads-dashboard.html.twig <- AdsDashboardController (datos)
+ # - ads-dashboard.html.twig <- jaraba_ads_theme (hook_theme)
+ # - ads-dashboard.html.twig -> ads-dashboard.css (estilos)
+ # - ads-dashboard.html.twig -> ads-dashboard.js (comportamiento)
+ #}
+
+{# --- Mapa de etiquetas de plataforma --- #}
+{% set platform_labels = {
+  'google_ads': 'Google Ads'|t,
+  'meta_ads': 'Meta Ads'|t,
+  'linkedin_ads': 'LinkedIn Ads'|t,
+  'tiktok_ads': 'TikTok Ads'|t,
+} %}
+
+{# --- Mapa de etiquetas de estado --- #}
+{% set status_labels = {
+  'draft': 'Borrador'|t,
+  'active': 'Activa'|t,
+  'paused': 'Pausada'|t,
+  'completed': 'Completada'|t,
+} %}
+
+<div class="ej-ads-dashboard">
+
+  {# =============================================================== #}
+  {# HEADER                                                          #}
+  {# =============================================================== #}
+  <header class="ej-ads-dashboard__header">
+    <h1 class="ej-ads-dashboard__title">{% trans %}Dashboard de Publicidad{% endtrans %}</h1>
+    <p class="ej-ads-dashboard__subtitle">
+      {% trans %}Rendimiento consolidado de campañas publicitarias en todas las plataformas.{% endtrans %}
+    </p>
+  </header>
+
+  {# =============================================================== #}
+  {# KPI CARDS                                                       #}
+  {# =============================================================== #}
+  <section class="ej-ads-kpi" aria-label="{% trans %}Indicadores clave de rendimiento{% endtrans %}">
+    <h2 class="visually-hidden">{% trans %}Métricas principales{% endtrans %}</h2>
+
+    <div class="ej-ads-kpi__grid">
+
+      {# --- Gasto Total --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--spend" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">&euro;{{ metrics.total_spend|default(0)|number_format(2, ',', '.') }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Gasto Total{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- Campañas Activas --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--active" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ active_campaigns|default(0) }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Campañas Activas{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- Impresiones --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--impressions" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ metrics.total_impressions|default(0)|number_format(0, ',', '.') }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Impresiones{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- Clics --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--clicks" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ metrics.total_clicks|default(0)|number_format(0, ',', '.') }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Clics{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- Conversiones --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--conversions" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ metrics.total_conversions|default(0)|number_format(0, ',', '.') }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Conversiones{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- CTR Medio --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--ctr" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ metrics.avg_ctr|default(0)|number_format(2, ',', '.') }}%</span>
+          <span class="ej-ads-kpi__label">{% trans %}CTR Medio{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- CPC Medio --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--cpc" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">&euro;{{ metrics.avg_cpc|default(0)|number_format(4, ',', '.') }}</span>
+          <span class="ej-ads-kpi__label">{% trans %}CPC Medio{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# --- ROAS Medio --- #}
+      <div class="ej-ads-kpi__card ej-ads-kpi__card--roas" data-ads-animate>
+        <div class="ej-ads-kpi__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="ej-ads-kpi__content">
+          <span class="ej-ads-kpi__value">{{ metrics.avg_roas|default(0)|number_format(2, ',', '.') }}x</span>
+          <span class="ej-ads-kpi__label">{% trans %}ROAS Medio{% endtrans %}</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  {# =============================================================== #}
+  {# PLATAFORMAS - DISTRIBUCIÓN DE GASTO                             #}
+  {# =============================================================== #}
+  <section class="ej-ads-platforms" aria-label="{% trans %}Distribución por plataforma{% endtrans %}">
+    <h2 class="ej-ads-platforms__title">{% trans %}Gasto por Plataforma{% endtrans %}</h2>
+
+    <div class="ej-ads-platforms__grid">
+
+      {% for platform_key, platform_data in spend_by_platform %}
+        <div class="ej-ads-platforms__card ej-ads-platforms__card--{{ platform_key }}" data-ads-animate>
+          <div class="ej-ads-platforms__card-header">
+            <span class="ej-ads-platforms__platform-badge ej-ads-platforms__platform-badge--{{ platform_key }}">
+              {{ platform_labels[platform_key]|default(platform_key) }}
+            </span>
+          </div>
+          <div class="ej-ads-platforms__card-body">
+            <div class="ej-ads-platforms__metric ej-ads-platforms__metric--spend">
+              <span class="ej-ads-platforms__metric-value">&euro;{{ platform_data.spend|default(0)|number_format(2, ',', '.') }}</span>
+              <span class="ej-ads-platforms__metric-label">{% trans %}Gasto{% endtrans %}</span>
+            </div>
+            <div class="ej-ads-platforms__metrics-row">
+              <div class="ej-ads-platforms__metric">
+                <span class="ej-ads-platforms__metric-value">{{ platform_data.campaigns|default(0) }}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Campañas{% endtrans %}</span>
+              </div>
+              <div class="ej-ads-platforms__metric">
+                <span class="ej-ads-platforms__metric-value">{{ platform_data.impressions|default(0)|number_format(0, ',', '.') }}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Impresiones{% endtrans %}</span>
+              </div>
+              <div class="ej-ads-platforms__metric">
+                <span class="ej-ads-platforms__metric-value">{{ platform_data.clicks|default(0)|number_format(0, ',', '.') }}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Clics{% endtrans %}</span>
+              </div>
+              <div class="ej-ads-platforms__metric">
+                <span class="ej-ads-platforms__metric-value">{{ platform_data.conversions|default(0)|number_format(0, ',', '.') }}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Conversiones{% endtrans %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  </section>
+
+  {# =============================================================== #}
+  {# TABLA DE CAMPAÑAS                                               #}
+  {# =============================================================== #}
+  <section class="ej-ads-campaigns" aria-label="{% trans %}Listado de campañas{% endtrans %}">
+    <h2 class="ej-ads-campaigns__title">{% trans %}Campañas{% endtrans %}</h2>
+
+    {% if campaigns|length > 0 %}
+      <div class="ej-ads-campaigns__table-wrapper">
+        <table class="ej-ads-campaigns__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Nombre{% endtrans %}</th>
+              <th>{% trans %}Plataforma{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Presupuesto{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Gasto{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Uso{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}CTR{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}CPC{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}ROAS{% endtrans %}</th>
+              <th>{% trans %}Acciones{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for campaign in campaigns %}
+              <tr class="ej-ads-campaigns__row">
+                <td class="ej-ads-campaigns__cell-name">
+                  <strong>{{ campaign.label }}</strong>
+                </td>
+                <td>
+                  <span class="ej-ads-platforms__platform-badge ej-ads-platforms__platform-badge--{{ campaign.platform }}">
+                    {{ platform_labels[campaign.platform]|default(campaign.platform) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="ej-ads-status ej-ads-status--{{ campaign.status }}">
+                    {{ status_labels[campaign.status]|default(campaign.status) }}
+                  </span>
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  &euro;{{ campaign.budget_total|default(0)|number_format(2, ',', '.') }}
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  &euro;{{ campaign.spend_to_date|default(0)|number_format(2, ',', '.') }}
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  <div class="ej-ads-budget-bar">
+                    <div class="ej-ads-budget-bar__fill
+                      {% if campaign.budget_utilization > 90 %}ej-ads-budget-bar__fill--danger{% elseif campaign.budget_utilization > 70 %}ej-ads-budget-bar__fill--warning{% endif %}"
+                      style="width: {{ [campaign.budget_utilization|default(0), 100]|min }}%;">
+                    </div>
+                    <span class="ej-ads-budget-bar__label">{{ campaign.budget_utilization|default(0)|number_format(1) }}%</span>
+                  </div>
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  {{ campaign.ctr|default(0)|number_format(2, ',', '.') }}%
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  &euro;{{ campaign.cpc|default(0)|number_format(4, ',', '.') }}
+                </td>
+                <td class="ej-ads-campaigns__cell-number">
+                  {{ campaign.roas|default(0)|number_format(2, ',', '.') }}x
+                </td>
+                <td>
+                  <a href="{{ campaign.edit_url }}" class="ej-ads-campaigns__edit-link" title="{% trans %}Editar campaña{% endtrans %}">
+                    {% trans %}Editar{% endtrans %}
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ej-ads-campaigns__empty">
+        <p>{% trans %}No hay campañas publicitarias configuradas.{% endtrans %}</p>
+        <a href="/admin/content/ad-campaign/add" class="ej-ads-btn ej-ads-btn--primary">
+          {% trans %}Crear primera campaña{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </section>
+
+</div>

@@ -1,0 +1,294 @@
+// =============================================================================
+// CATALOG STYLES - JARABA ADDONS MODULE
+// =============================================================================
+// Estilos para la página del catálogo de add-ons (/addons).
+// Mobile-first responsive design con BEM naming ej-addons-*.
+// Glassmorphism premium con backdrop-filter: blur(12px).
+// color-mix() en lugar de darken()/lighten() (Modern Dart Sass).
+//
+// RELACIONES:
+// - _catalog.scss <- main.scss (importado por)
+// - _catalog.scss -> _variables.scss (usa mixins y tokens)
+// - _catalog.scss -> addons-catalog.html.twig (estiliza)
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// CATÁLOGO CONTENEDOR
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog {
+  @include addons-container;
+  padding-block: $addons-spacing-2xl;
+  font-family: var(--ej-font-family, #{$addons-font-family-fallback});
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// CABECERA
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog__header {
+  text-align: center;
+  margin-bottom: $addons-spacing-2xl;
+}
+
+.ej-addons-catalog__title {
+  font-size: $addons-font-size-2xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-title-color, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-sm;
+  line-height: 1.2;
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: $addons-font-size-3xl;
+  }
+}
+
+.ej-addons-catalog__subtitle {
+  font-size: $addons-font-size-md;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  margin: 0;
+  max-width: 600px;
+  margin-inline: auto;
+  line-height: 1.6;
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: $addons-font-size-lg;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FILTROS (CHIPS)
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $addons-spacing-sm;
+  justify-content: center;
+  margin-bottom: $addons-spacing-2xl;
+  padding-inline: $addons-spacing-sm;
+}
+
+.ej-addons-catalog__filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: $addons-spacing-sm $addons-spacing-md;
+  border-radius: $addons-border-radius-full;
+  font-size: $addons-font-size-sm;
+  font-weight: $addons-font-weight-medium;
+  text-decoration: none;
+  border: 1px solid var(--ej-addons-border, #{$addons-color-border-fallback});
+  background: var(--ej-addons-chip-bg, #{$addons-color-surface-elevated-fallback});
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  cursor: pointer;
+  transition:
+    background #{$addons-transition-fast} #{$addons-transition-easing},
+    color #{$addons-transition-fast} #{$addons-transition-easing},
+    border-color #{$addons-transition-fast} #{$addons-transition-easing},
+    transform #{$addons-transition-fast} #{$addons-transition-easing};
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+    color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+  }
+
+  &--active {
+    background: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+    color: #FFFFFF;
+    border-color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+
+    &:hover {
+      background: var(--ej-addons-primary-hover, color-mix(in srgb, #{$addons-color-primary-fallback} 85%, black));
+      color: #FFFFFF;
+    }
+  }
+
+  // Colores por tipo de add-on.
+  &--feature.ej-addons-catalog__filter-chip--active {
+    background: $addons-type-feature;
+    border-color: $addons-type-feature;
+  }
+
+  &--storage.ej-addons-catalog__filter-chip--active {
+    background: $addons-type-storage;
+    border-color: $addons-type-storage;
+  }
+
+  &--api_calls.ej-addons-catalog__filter-chip--active {
+    background: $addons-type-api-calls;
+    border-color: $addons-type-api-calls;
+  }
+
+  &--support.ej-addons-catalog__filter-chip--active {
+    background: $addons-type-support;
+    border-color: $addons-type-support;
+  }
+
+  &--custom.ej-addons-catalog__filter-chip--active {
+    background: $addons-type-custom;
+    border-color: $addons-type-custom;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GRID DE TARJETAS
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $addons-spacing-lg;
+
+  @media (min-width: $addons-breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $addons-breakpoint-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TARJETA DE ADD-ON
+// ---------------------------------------------------------------------------
+
+.ej-addons-card {
+  @include addons-card-glass;
+  display: flex;
+  flex-direction: column;
+
+  // Animación de entrada (controlada por JS IntersectionObserver).
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity #{$addons-transition-slow} #{$addons-transition-easing},
+    transform #{$addons-transition-normal} #{$addons-transition-easing},
+    box-shadow #{$addons-transition-normal} #{$addons-transition-easing};
+
+  &.ej-addons-card--visible {
+    opacity: 1;
+    transform: translateY(0);
+
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: var(--ej-addons-card-shadow-hover, #{$addons-shadow-xl});
+    }
+  }
+}
+
+.ej-addons-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $addons-spacing-md;
+}
+
+.ej-addons-card__type-badge {
+  @include addons-badge;
+
+  &--feature { @include addons-badge($addons-type-feature); }
+  &--storage { @include addons-badge($addons-type-storage); }
+  &--api_calls { @include addons-badge($addons-type-api-calls); }
+  &--support { @include addons-badge($addons-type-support); }
+  &--custom { @include addons-badge($addons-type-custom); }
+}
+
+.ej-addons-card__subscribed-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2em 0.7em;
+  font-size: $addons-font-size-xs;
+  font-weight: $addons-font-weight-semibold;
+  border-radius: $addons-border-radius-full;
+  background: color-mix(in srgb, #{$addons-color-success} 15%, transparent);
+  color: $addons-color-success;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ej-addons-card__body {
+  flex: 1;
+  margin-bottom: $addons-spacing-md;
+}
+
+.ej-addons-card__name {
+  font-size: $addons-font-size-lg;
+  font-weight: $addons-font-weight-semibold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-sm;
+  line-height: 1.3;
+}
+
+.ej-addons-card__description {
+  font-size: $addons-font-size-sm;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ej-addons-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $addons-spacing-md;
+  border-top: 1px solid var(--ej-addons-border, #{$addons-color-border-fallback});
+  margin-top: auto;
+}
+
+.ej-addons-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
+}
+
+.ej-addons-card__price-amount {
+  font-size: $addons-font-size-xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+}
+
+.ej-addons-card__price-cycle {
+  font-size: $addons-font-size-xs;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+}
+
+.ej-addons-card__cta {
+  @include addons-button-primary;
+  font-size: $addons-font-size-sm;
+  padding: $addons-spacing-sm $addons-spacing-md;
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACÍO
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog__empty {
+  text-align: center;
+  padding: $addons-spacing-3xl $addons-spacing-lg;
+}
+
+.ej-addons-catalog__empty-icon {
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  opacity: 0.4;
+  margin-bottom: $addons-spacing-lg;
+}
+
+.ej-addons-catalog__empty-title {
+  font-size: $addons-font-size-xl;
+  font-weight: $addons-font-weight-semibold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-sm;
+}
+
+.ej-addons-catalog__empty-message {
+  font-size: $addons-font-size-md;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  margin: 0;
+  max-width: 480px;
+  margin-inline: auto;
+  line-height: 1.6;
+}

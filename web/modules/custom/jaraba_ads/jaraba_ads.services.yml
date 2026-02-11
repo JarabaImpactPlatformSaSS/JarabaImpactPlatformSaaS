@@ -1,0 +1,34 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Jaraba Ads
+  # Permite filtrar mensajes del módulo en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_ads:
+    parent: logger.channel_base
+    arguments: ['jaraba_ads']
+
+  # =====================================================================
+  # CampaignManagerService: Gestión CRUD de campañas publicitarias
+  # Responsabilidad: creación, actualización, pausa, completar campañas,
+  #   sincronización de estado con plataformas externas
+  # Relaciones: consume AdCampaign entity, TenantContextService
+  # =====================================================================
+  jaraba_ads.campaign_manager:
+    class: Drupal\jaraba_ads\Service\CampaignManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # AdsAnalyticsService: Métricas y analítica de campañas
+  # Responsabilidad: métricas por tenant, rendimiento por campaña,
+  #   gasto por plataforma, ROAS, CTR, CPC agregados
+  # Relaciones: consume AdCampaign entity, TenantContextService
+  # =====================================================================
+  jaraba_ads.ads_analytics:
+    class: Drupal\jaraba_ads\Service\AdsAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_ads'

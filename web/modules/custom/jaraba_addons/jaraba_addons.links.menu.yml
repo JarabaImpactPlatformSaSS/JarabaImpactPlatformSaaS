@@ -1,0 +1,21 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para Jaraba Addons
+# Cada entidad tiene su entrada en el menú de estructura de Drupal
+# para acceder a Field UI y configuración de campos
+# =============================================================================
+
+# Add-ons en Structure
+jaraba_addons.addon.settings:
+  title: 'Add-ons'
+  description: 'Configuración de la entidad Add-on. Acceso a Field UI para añadir campos personalizados.'
+  route_name: jaraba_addons.addon.settings
+  parent: system.admin_structure
+  weight: 96
+
+# Suscripciones Add-ons en Structure
+jaraba_addons.addon_subscription.settings:
+  title: 'Suscripciones Add-ons'
+  description: 'Configuración de la entidad Suscripción a Add-on. Acceso a Field UI para campos de suscripción.'
+  route_name: jaraba_addons.addon_subscription.settings
+  parent: system.admin_structure
+  weight: 97

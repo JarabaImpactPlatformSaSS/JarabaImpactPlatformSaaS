@@ -1,0 +1,515 @@
+// =============================================================================
+// DASHBOARD SCSS - JARABA ADS
+// =============================================================================
+// Estilos del dashboard de campañas publicitarias.
+// Patrón BEM: ej-ads-* | Glassmorphism Premium | Mobile-first responsive.
+// Usa color-mix() (Dart Sass moderno) en lugar de darken()/lighten().
+// Variables CSS inyectables via var(--ej-*, $fallback).
+// =============================================================================
+
+@use 'variables' as *;
+
+// =============================================================================
+// DASHBOARD CONTAINER
+// =============================================================================
+
+.ej-ads-dashboard {
+  @include ads-container;
+  padding-block: var(--ej-spacing-xl, #{$ads-spacing-xl});
+  font-family: var(--ej-font-family, #{$ads-font-family-fallback});
+  color: var(--ej-color-text, #{$ads-gray-900});
+}
+
+// =============================================================================
+// HEADER
+// =============================================================================
+
+.ej-ads-dashboard__header {
+  margin-block-end: var(--ej-spacing-2xl, #{$ads-spacing-2xl});
+}
+
+.ej-ads-dashboard__title {
+  font-size: $ads-font-size-3xl;
+  font-weight: $ads-font-weight-bold;
+  color: var(--ej-color-text, #{$ads-gray-900});
+  margin: 0 0 $ads-spacing-sm 0;
+  line-height: 1.2;
+}
+
+.ej-ads-dashboard__subtitle {
+  font-size: $ads-font-size-lg;
+  color: var(--ej-color-text-muted, #{$ads-gray-600});
+  margin: 0;
+  line-height: 1.5;
+}
+
+// =============================================================================
+// KPI CARDS
+// =============================================================================
+
+.ej-ads-kpi {
+  margin-block-end: var(--ej-spacing-2xl, #{$ads-spacing-2xl});
+}
+
+.ej-ads-kpi__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ej-spacing-md, #{$ads-spacing-md});
+
+  @media (min-width: $ads-breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $ads-breakpoint-lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.ej-ads-kpi__card {
+  @include ads-card-glass;
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, #{$ads-spacing-md});
+  opacity: 0;
+  transform: translateY(20px);
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--ej-shadow-lg, #{$ads-shadow-lg});
+  }
+
+  // Animation class applied by IntersectionObserver
+  &.ej-ads-kpi__card--visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity $ads-transition-duration-slow $ads-transition-easing,
+      transform $ads-transition-duration-normal $ads-transition-easing,
+      box-shadow $ads-transition-duration-normal $ads-transition-easing;
+  }
+}
+
+.ej-ads-kpi__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: var(--ej-border-radius-md, #{$ads-border-radius-md});
+  color: $ads-white;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// KPI card color accents
+.ej-ads-kpi__card--spend .ej-ads-kpi__icon {
+  background: var(--ej-color-primary, #{$ads-color-primary-fallback});
+}
+
+.ej-ads-kpi__card--active .ej-ads-kpi__icon {
+  background: $ads-status-active;
+}
+
+.ej-ads-kpi__card--impressions .ej-ads-kpi__icon {
+  background: $ads-color-info;
+}
+
+.ej-ads-kpi__card--clicks .ej-ads-kpi__icon {
+  background: $ads-color-google;
+}
+
+.ej-ads-kpi__card--conversions .ej-ads-kpi__icon {
+  background: $ads-color-success;
+}
+
+.ej-ads-kpi__card--ctr .ej-ads-kpi__icon {
+  background: $ads-color-meta;
+}
+
+.ej-ads-kpi__card--cpc .ej-ads-kpi__icon {
+  background: $ads-color-linkedin;
+}
+
+.ej-ads-kpi__card--roas .ej-ads-kpi__icon {
+  background: color-mix(in srgb, #{$ads-color-primary-fallback} 80%, #{$ads-color-accent-fallback});
+}
+
+.ej-ads-kpi__content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ej-ads-kpi__value {
+  font-size: $ads-font-size-2xl;
+  font-weight: $ads-font-weight-bold;
+  color: var(--ej-color-text, #{$ads-gray-900});
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ej-ads-kpi__label {
+  font-size: $ads-font-size-sm;
+  color: var(--ej-color-text-muted, #{$ads-gray-600});
+  font-weight: $ads-font-weight-medium;
+  margin-block-start: 2px;
+}
+
+// =============================================================================
+// PLATFORMS SECTION
+// =============================================================================
+
+.ej-ads-platforms {
+  margin-block-end: var(--ej-spacing-2xl, #{$ads-spacing-2xl});
+}
+
+.ej-ads-platforms__title {
+  font-size: $ads-font-size-xl;
+  font-weight: $ads-font-weight-bold;
+  color: var(--ej-color-text, #{$ads-gray-900});
+  margin: 0 0 var(--ej-spacing-lg, #{$ads-spacing-lg}) 0;
+}
+
+.ej-ads-platforms__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ej-spacing-md, #{$ads-spacing-md});
+
+  @media (min-width: $ads-breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $ads-breakpoint-xl) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.ej-ads-platforms__card {
+  @include ads-card;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    height: 4px;
+  }
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--ej-shadow-lg, #{$ads-shadow-lg});
+  }
+
+  &.ej-ads-kpi__card--visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity $ads-transition-duration-slow $ads-transition-easing,
+      transform $ads-transition-duration-normal $ads-transition-easing,
+      box-shadow $ads-transition-duration-normal $ads-transition-easing;
+  }
+}
+
+// Platform accent colors (top border)
+.ej-ads-platforms__card--google_ads::before {
+  background: $ads-color-google;
+}
+
+.ej-ads-platforms__card--meta_ads::before {
+  background: $ads-color-meta;
+}
+
+.ej-ads-platforms__card--linkedin_ads::before {
+  background: $ads-color-linkedin;
+}
+
+.ej-ads-platforms__card--tiktok_ads::before {
+  background: $ads-color-tiktok;
+}
+
+.ej-ads-platforms__card-header {
+  margin-block-end: var(--ej-spacing-md, #{$ads-spacing-md});
+}
+
+.ej-ads-platforms__platform-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $ads-spacing-xs $ads-spacing-sm;
+  font-size: $ads-font-size-xs;
+  font-weight: $ads-font-weight-semibold;
+  border-radius: $ads-border-radius-full;
+  color: $ads-white;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ej-ads-platforms__platform-badge--google_ads {
+  background: $ads-color-google;
+}
+
+.ej-ads-platforms__platform-badge--meta_ads {
+  background: $ads-color-meta;
+}
+
+.ej-ads-platforms__platform-badge--linkedin_ads {
+  background: $ads-color-linkedin;
+}
+
+.ej-ads-platforms__platform-badge--tiktok_ads {
+  background: $ads-color-tiktok;
+}
+
+.ej-ads-platforms__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-md, #{$ads-spacing-md});
+}
+
+.ej-ads-platforms__metric--spend {
+  .ej-ads-platforms__metric-value {
+    font-size: $ads-font-size-2xl;
+    font-weight: $ads-font-weight-bold;
+  }
+}
+
+.ej-ads-platforms__metrics-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $ads-spacing-sm;
+
+  @media (min-width: $ads-breakpoint-xl) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ej-ads-platforms__metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.ej-ads-platforms__metric-value {
+  font-size: $ads-font-size-md;
+  font-weight: $ads-font-weight-semibold;
+  color: var(--ej-color-text, #{$ads-gray-900});
+}
+
+.ej-ads-platforms__metric-label {
+  font-size: $ads-font-size-xs;
+  color: var(--ej-color-text-muted, #{$ads-gray-600});
+  font-weight: $ads-font-weight-medium;
+}
+
+// =============================================================================
+// CAMPAIGNS TABLE
+// =============================================================================
+
+.ej-ads-campaigns {
+  margin-block-end: var(--ej-spacing-2xl, #{$ads-spacing-2xl});
+}
+
+.ej-ads-campaigns__title {
+  font-size: $ads-font-size-xl;
+  font-weight: $ads-font-weight-bold;
+  color: var(--ej-color-text, #{$ads-gray-900});
+  margin: 0 0 var(--ej-spacing-lg, #{$ads-spacing-lg}) 0;
+}
+
+.ej-ads-campaigns__table-wrapper {
+  @include ads-card;
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ej-ads-campaigns__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $ads-font-size-sm;
+  min-width: 900px;
+
+  thead {
+    background: var(--ej-color-surface, #{$ads-gray-50});
+    border-block-end: 2px solid var(--ej-border-color, #{$ads-gray-200});
+  }
+
+  th {
+    padding: $ads-spacing-md;
+    font-weight: $ads-font-weight-semibold;
+    color: var(--ej-color-text-muted, #{$ads-gray-600});
+    text-align: start;
+    white-space: nowrap;
+    font-size: $ads-font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: $ads-spacing-md;
+    color: var(--ej-color-text, #{$ads-gray-900});
+    border-block-end: $ads-border-width solid var(--ej-border-color, #{$ads-gray-200});
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background $ads-transition-duration-fast $ads-transition-easing;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-primary, #{$ads-color-primary-fallback}) 4%, transparent);
+    }
+
+    &:last-child td {
+      border-block-end: none;
+    }
+  }
+}
+
+.ej-ads-campaigns__th-number,
+.ej-ads-campaigns__cell-number {
+  text-align: end;
+}
+
+.ej-ads-campaigns__cell-name {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ej-ads-campaigns__edit-link {
+  @include ads-button-primary;
+  font-size: $ads-font-size-xs;
+  padding: $ads-spacing-xs $ads-spacing-sm;
+}
+
+// =============================================================================
+// STATUS BADGES
+// =============================================================================
+
+.ej-ads-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $ads-spacing-sm;
+  font-size: $ads-font-size-xs;
+  font-weight: $ads-font-weight-semibold;
+  border-radius: $ads-border-radius-full;
+  white-space: nowrap;
+}
+
+.ej-ads-status--active {
+  background: color-mix(in srgb, #{$ads-status-active} 15%, transparent);
+  color: $ads-status-active;
+}
+
+.ej-ads-status--paused {
+  background: color-mix(in srgb, #{$ads-status-paused} 15%, transparent);
+  color: color-mix(in srgb, #{$ads-status-paused} 80%, black);
+}
+
+.ej-ads-status--completed {
+  background: color-mix(in srgb, #{$ads-status-completed} 15%, transparent);
+  color: $ads-status-completed;
+}
+
+.ej-ads-status--draft {
+  background: color-mix(in srgb, #{$ads-status-draft} 15%, transparent);
+  color: $ads-status-draft;
+}
+
+// =============================================================================
+// BUDGET UTILIZATION BAR
+// =============================================================================
+
+.ej-ads-budget-bar {
+  position: relative;
+  height: 22px;
+  background: var(--ej-color-surface, #{$ads-gray-100});
+  border-radius: $ads-border-radius-full;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.ej-ads-budget-bar__fill {
+  position: absolute;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  background: var(--ej-color-primary, #{$ads-color-primary-fallback});
+  border-radius: $ads-border-radius-full;
+  transition: width $ads-transition-duration-slow $ads-transition-easing;
+}
+
+.ej-ads-budget-bar__fill--warning {
+  background: $ads-color-warning;
+}
+
+.ej-ads-budget-bar__fill--danger {
+  background: $ads-color-error;
+}
+
+.ej-ads-budget-bar__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $ads-font-size-xs;
+  font-weight: $ads-font-weight-semibold;
+  color: var(--ej-color-text, #{$ads-gray-800});
+  z-index: 1;
+}
+
+// =============================================================================
+// EMPTY STATE
+// =============================================================================
+
+.ej-ads-campaigns__empty {
+  @include ads-card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ej-spacing-2xl, #{$ads-spacing-2xl});
+  text-align: center;
+  gap: var(--ej-spacing-md, #{$ads-spacing-md});
+
+  p {
+    font-size: $ads-font-size-lg;
+    color: var(--ej-color-text-muted, #{$ads-gray-600});
+    margin: 0;
+  }
+}
+
+// =============================================================================
+// PRIMARY BUTTON (standalone)
+// =============================================================================
+
+.ej-ads-btn--primary {
+  @include ads-button-primary;
+}
+
+// =============================================================================
+// VISUALLY HIDDEN (a11y)
+// =============================================================================
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

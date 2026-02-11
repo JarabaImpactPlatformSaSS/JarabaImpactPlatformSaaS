@@ -1,0 +1,11 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Campaña" en la colección de campañas
+jaraba_ads.ad_campaign.add:
+  title: 'Añadir Campaña'
+  route_name: entity.ad_campaign.add_form
+  appears_on:
+    - entity.ad_campaign.collection

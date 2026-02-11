@@ -1,0 +1,346 @@
+// =============================================================================
+// DETAIL STYLES - JARABA ADDONS MODULE
+// =============================================================================
+// Estilos para la página de detalle de add-on (/addons/{addon_id}).
+// Mobile-first responsive design con BEM naming ej-addons-detail-*.
+// Glassmorphism premium con backdrop-filter: blur(12px).
+// color-mix() en lugar de darken()/lighten() (Modern Dart Sass).
+//
+// RELACIONES:
+// - _detail.scss <- main.scss (importado por)
+// - _detail.scss -> _variables.scss (usa mixins y tokens)
+// - _detail.scss -> addons-detail.html.twig (estiliza)
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// CONTENEDOR PRINCIPAL
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail {
+  @include addons-container;
+  padding-block: $addons-spacing-xl;
+  font-family: var(--ej-font-family, #{$addons-font-family-fallback});
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// BREADCRUMB
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__breadcrumb {
+  margin-bottom: $addons-spacing-xl;
+}
+
+.ej-addons-detail__breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: $addons-spacing-xs;
+  font-size: $addons-font-size-sm;
+  font-weight: $addons-font-weight-medium;
+  color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+  text-decoration: none;
+  transition: color #{$addons-transition-fast} #{$addons-transition-easing};
+
+  &:hover {
+    color: var(--ej-addons-primary-hover, color-mix(in srgb, #{$addons-color-primary-fallback} 75%, black));
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// HERO SECTION
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__hero {
+  @include addons-card-glass;
+  padding: $addons-spacing-xl;
+  margin-bottom: $addons-spacing-xl;
+  text-align: center;
+
+  // Override hover on hero (no hover lift for section).
+  &:hover {
+    transform: none;
+    box-shadow: var(--ej-addons-card-shadow, #{$addons-shadow-md});
+  }
+
+  @media (min-width: $addons-breakpoint-md) {
+    padding: $addons-spacing-2xl $addons-spacing-3xl;
+    text-align: left;
+  }
+}
+
+.ej-addons-detail__hero-content {
+  max-width: 720px;
+
+  @media (min-width: $addons-breakpoint-md) {
+    max-width: none;
+  }
+}
+
+.ej-addons-detail__type-badge {
+  @include addons-badge;
+  margin-bottom: $addons-spacing-md;
+
+  &--feature { @include addons-badge($addons-type-feature); }
+  &--storage { @include addons-badge($addons-type-storage); }
+  &--api_calls { @include addons-badge($addons-type-api-calls); }
+  &--support { @include addons-badge($addons-type-support); }
+  &--custom { @include addons-badge($addons-type-custom); }
+}
+
+.ej-addons-detail__title {
+  font-size: $addons-font-size-2xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-title-color, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-md;
+  line-height: 1.2;
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: $addons-font-size-3xl;
+  }
+}
+
+.ej-addons-detail__description {
+  font-size: $addons-font-size-md;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  line-height: 1.7;
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: $addons-font-size-lg;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PRICING SECTION
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__pricing {
+  @include addons-card;
+  margin-bottom: $addons-spacing-xl;
+  text-align: center;
+}
+
+.ej-addons-detail__section-title {
+  font-size: $addons-font-size-xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-lg;
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: $addons-font-size-2xl;
+  }
+}
+
+// Toggle mensual / anual.
+.ej-addons-detail__pricing-toggle {
+  display: inline-flex;
+  border-radius: $addons-border-radius-full;
+  border: 1px solid var(--ej-addons-border, #{$addons-color-border-fallback});
+  background: var(--ej-addons-surface, #{$addons-color-surface-fallback});
+  padding: 4px;
+  margin-bottom: $addons-spacing-xl;
+}
+
+.ej-addons-detail__toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $addons-spacing-xs;
+  padding: $addons-spacing-sm $addons-spacing-lg;
+  border-radius: $addons-border-radius-full;
+  border: none;
+  background: transparent;
+  font-family: var(--ej-font-family, #{$addons-font-family-fallback});
+  font-size: $addons-font-size-sm;
+  font-weight: $addons-font-weight-medium;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  cursor: pointer;
+  transition:
+    background #{$addons-transition-fast} #{$addons-transition-easing},
+    color #{$addons-transition-fast} #{$addons-transition-easing},
+    box-shadow #{$addons-transition-fast} #{$addons-transition-easing};
+
+  &:hover {
+    color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  }
+
+  &--active {
+    background: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+    color: #FFFFFF;
+    box-shadow: $addons-shadow-sm;
+
+    &:hover {
+      color: #FFFFFF;
+      background: var(--ej-addons-primary-hover, color-mix(in srgb, #{$addons-color-primary-fallback} 85%, black));
+    }
+  }
+}
+
+.ej-addons-detail__savings-badge {
+  display: inline-flex;
+  padding: 0.1em 0.5em;
+  font-size: $addons-font-size-xs;
+  font-weight: $addons-font-weight-bold;
+  border-radius: $addons-border-radius-full;
+  background: color-mix(in srgb, #{$addons-color-success} 20%, transparent);
+  color: $addons-color-success;
+
+  .ej-addons-detail__toggle-btn--active & {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+  }
+}
+
+// Precio grande.
+.ej-addons-detail__price-display {
+  margin-bottom: $addons-spacing-md;
+}
+
+.ej-addons-detail__price-card {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.2em;
+}
+
+.ej-addons-detail__price-amount {
+  font-size: $addons-font-size-3xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  transition: opacity #{$addons-transition-fast} #{$addons-transition-easing};
+
+  @media (min-width: $addons-breakpoint-md) {
+    font-size: 3rem;
+  }
+}
+
+.ej-addons-detail__price-period {
+  font-size: $addons-font-size-md;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// FEATURES SECTION
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__features {
+  @include addons-card;
+  margin-bottom: $addons-spacing-xl;
+}
+
+.ej-addons-detail__features-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ej-addons-detail__feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $addons-spacing-sm;
+  padding: $addons-spacing-sm 0;
+  font-size: $addons-font-size-md;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  line-height: 1.5;
+
+  & + & {
+    border-top: 1px solid var(--ej-addons-border-light, color-mix(in srgb, #{$addons-color-border-fallback} 50%, transparent));
+  }
+}
+
+.ej-addons-detail__feature-check {
+  flex-shrink: 0;
+  color: $addons-color-success;
+  margin-top: 2px;
+}
+
+// ---------------------------------------------------------------------------
+// LIMITS SECTION
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__limits {
+  @include addons-card;
+  margin-bottom: $addons-spacing-xl;
+}
+
+.ej-addons-detail__limits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $addons-spacing-sm;
+
+  @media (min-width: $addons-breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $addons-spacing-md;
+  }
+}
+
+.ej-addons-detail__limit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $addons-spacing-md;
+  background: var(--ej-addons-surface, #{$addons-color-surface-fallback});
+  border-radius: $addons-border-radius-md;
+  border: 1px solid var(--ej-addons-border, #{$addons-color-border-fallback});
+}
+
+.ej-addons-detail__limit-key {
+  font-size: $addons-font-size-sm;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  font-weight: $addons-font-weight-medium;
+}
+
+.ej-addons-detail__limit-value {
+  font-size: $addons-font-size-lg;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// CTA SECTION
+// ---------------------------------------------------------------------------
+
+.ej-addons-detail__cta-section {
+  text-align: center;
+  padding: $addons-spacing-xl 0 $addons-spacing-2xl;
+}
+
+.ej-addons-detail__subscribe-btn {
+  @include addons-button-primary;
+  font-size: $addons-font-size-lg;
+  padding: $addons-spacing-md $addons-spacing-2xl;
+  min-width: 240px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.ej-addons-detail__cta-note {
+  font-size: $addons-font-size-sm;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  margin: $addons-spacing-md 0 0;
+}
+
+.ej-addons-detail__subscribed-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: $addons-spacing-sm;
+  padding: $addons-spacing-md $addons-spacing-xl;
+  background: color-mix(in srgb, #{$addons-color-success} 10%, transparent);
+  color: $addons-color-success;
+  border-radius: $addons-border-radius-md;
+  font-size: $addons-font-size-md;
+  font-weight: $addons-font-weight-semibold;
+  border: 1px solid color-mix(in srgb, #{$addons-color-success} 25%, transparent);
+
+  svg {
+    flex-shrink: 0;
+  }
+}

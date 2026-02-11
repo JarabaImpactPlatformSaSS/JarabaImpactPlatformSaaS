@@ -1,0 +1,347 @@
+// =============================================================================
+// Página: Landing de evento individual (/eventos/{slug})
+//
+// ESTRUCTURA:
+// Hero con imagen de fondo y countdown, layout de 2 columnas (contenido +
+// sidebar de pricing), y sección de eventos relacionados.
+//
+// PATRÓN:
+// - Mobile-first: columna única → 2 columnas en desktop
+// - var(--ej-*, $fallback) para inyección desde Drupal UI
+// - Glassmorphism premium para pricing card
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-event-landing {
+
+  // --- Hero ---
+  &__hero {
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    align-items: flex-end;
+    padding: $events-spacing-2xl $events-spacing-md;
+    background: linear-gradient(
+      135deg,
+      var(--ej-primary-color, $events-primary) 0%,
+      color-mix(in srgb, var(--ej-primary-color, $events-primary) 60%, black) 100%
+    );
+    color: #ffffff;
+
+    @media (min-width: $events-bp-md) {
+      min-height: 480px;
+      padding: $events-spacing-3xl $events-spacing-xl;
+    }
+  }
+
+  &__hero-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 60%);
+    }
+  }
+
+  &__hero-content {
+    position: relative;
+    z-index: 2;
+    @include events-container;
+    width: 100%;
+  }
+
+  // --- Breadcrumb ---
+  &__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: $events-spacing-xs;
+    font-size: 0.8125rem;
+    margin-bottom: $events-spacing-lg;
+    opacity: 0.8;
+
+    a {
+      color: #ffffff;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &-sep {
+      opacity: 0.5;
+    }
+  }
+
+  // --- Badges ---
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $events-spacing-xs;
+    margin-bottom: $events-spacing-md;
+  }
+
+  &__badge {
+    @include events-badge;
+
+    &--type { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); }
+    &--format { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); }
+    &--featured { background: $events-accent; }
+  }
+
+  // --- Título ---
+  &__title {
+    margin: 0 0 $events-spacing-md;
+    font-size: 1.75rem;
+    font-weight: $events-heading-weight;
+    line-height: 1.2;
+    color: #ffffff;
+
+    @media (min-width: $events-bp-md) {
+      font-size: 2.5rem;
+    }
+  }
+
+  // --- Meta info ---
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $events-spacing-md;
+    margin-bottom: $events-spacing-lg;
+  }
+
+  &__meta-item {
+    display: flex;
+    align-items: center;
+    gap: $events-spacing-xs;
+    font-size: 0.9375rem;
+    opacity: 0.9;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // --- Countdown ---
+  &__countdown {
+    display: flex;
+    gap: $events-spacing-md;
+    margin-top: $events-spacing-lg;
+  }
+
+  &__countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    padding: $events-spacing-sm $events-spacing-md;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: $events-radius-md;
+  }
+
+  &__countdown-number {
+    font-size: 1.75rem;
+    font-weight: $events-heading-weight;
+    line-height: 1;
+
+    @media (min-width: $events-bp-md) {
+      font-size: 2.25rem;
+    }
+  }
+
+  &__countdown-label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    margin-top: $events-spacing-xs;
+  }
+
+  // --- Body: 2 columnas ---
+  &__body {
+    @include events-container;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $events-spacing-xl;
+    padding-block: $events-spacing-2xl;
+
+    @media (min-width: $events-bp-lg) {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  // --- Main content ---
+  &__main {
+    min-width: 0;
+  }
+
+  &__description,
+  &__speakers {
+    margin-bottom: $events-spacing-xl;
+
+    h2 {
+      margin: 0 0 $events-spacing-md;
+      font-size: 1.375rem;
+      font-weight: $events-heading-weight;
+      color: var(--ej-heading-color, #212121);
+    }
+  }
+
+  &__description-text,
+  &__speakers-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ej-text-color, #424242);
+
+    p {
+      margin: 0 0 $events-spacing-md;
+    }
+  }
+
+  // --- Sidebar ---
+  &__sidebar {
+    @media (min-width: $events-bp-lg) {
+      position: sticky;
+      top: $events-spacing-xl;
+      align-self: start;
+    }
+  }
+
+  // --- Pricing card ---
+  &__pricing-card {
+    background: var(--ej-card-bg, #ffffff);
+    border: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+    border-radius: $events-radius-lg;
+    box-shadow: $events-shadow-md;
+    overflow: hidden;
+  }
+
+  &__pricing-header {
+    padding: $events-spacing-lg;
+    text-align: center;
+    border-bottom: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  }
+
+  &__price {
+    font-size: 2rem;
+    font-weight: $events-heading-weight;
+    color: var(--ej-heading-color, #212121);
+
+    &--free {
+      color: $events-success;
+      font-size: 1.5rem;
+    }
+
+    &--original {
+      font-size: 1.125rem;
+      text-decoration: line-through;
+      opacity: 0.5;
+      margin-right: $events-spacing-sm;
+    }
+
+    &--early-bird {
+      color: $events-success;
+    }
+  }
+
+  &__early-bird-label {
+    display: block;
+    margin-top: $events-spacing-xs;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $events-success;
+    text-transform: uppercase;
+  }
+
+  // --- Spots bar ---
+  &__spots {
+    padding: $events-spacing-md $events-spacing-lg;
+  }
+
+  &__spots-bar {
+    height: 6px;
+    background: var(--ej-surface-color, #e0e0e0);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: $events-spacing-xs;
+  }
+
+  &__spots-fill {
+    height: 100%;
+    background: var(--ej-primary-color, $events-primary);
+    border-radius: 3px;
+    transition: width $events-transition-slow;
+  }
+
+  &__spots-text {
+    font-size: 0.8125rem;
+    color: var(--ej-text-color, #616161);
+
+    &--sold-out {
+      color: $events-error;
+      font-weight: 600;
+    }
+  }
+
+  // --- CTA Button ---
+  &__cta-button {
+    @include events-button-primary;
+    display: block;
+    width: calc(100% - #{$events-spacing-lg * 2});
+    margin: $events-spacing-md $events-spacing-lg;
+    padding: $events-spacing-md;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  // --- Meeting info ---
+  &__meeting-info {
+    display: flex;
+    align-items: center;
+    gap: $events-spacing-sm;
+    padding: $events-spacing-md $events-spacing-lg;
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #9e9e9e);
+    border-top: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // --- Eventos relacionados ---
+  &__related {
+    @include events-container;
+    padding-block: $events-spacing-2xl;
+    border-top: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  }
+
+  &__related-title {
+    margin: 0 0 $events-spacing-lg;
+    font-size: 1.5rem;
+    font-weight: $events-heading-weight;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  &__related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $events-spacing-lg;
+
+    @media (min-width: $events-bp-sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: $events-bp-lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}

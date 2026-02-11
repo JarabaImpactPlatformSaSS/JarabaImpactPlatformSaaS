@@ -1,0 +1,13 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para Jaraba Referral
+# La entidad tiene su entrada en el menú de estructura de Drupal
+# para acceder a Field UI y configuración de campos
+# =============================================================================
+
+# Referidos en Structure
+jaraba_referral.referral.settings:
+  title: 'Referidos'
+  description: 'Configuración de la entidad Referido. Acceso a Field UI para añadir campos personalizados.'
+  route_name: jaraba_referral.referral.settings
+  parent: system.admin_structure
+  weight: 94

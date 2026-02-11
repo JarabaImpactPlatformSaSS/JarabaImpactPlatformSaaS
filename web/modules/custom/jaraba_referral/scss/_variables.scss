@@ -1,0 +1,79 @@
+// =============================================================================
+// Variables y Design Tokens — Jaraba Referral
+// Injectable via CSS custom properties from Drupal UI
+// =============================================================================
+
+// --- Colores ---
+$ref-primary: #6C63FF;
+$ref-success: #4CAF50;
+$ref-warning: #FF9800;
+$ref-error: #F44336;
+$ref-info: #2196F3;
+
+// --- Espaciado ---
+$ref-space-xs: 0.25rem;
+$ref-space-sm: 0.5rem;
+$ref-space-md: 1rem;
+$ref-space-lg: 1.5rem;
+$ref-space-xl: 2rem;
+$ref-space-2xl: 3rem;
+
+// --- Radios ---
+$ref-radius-sm: 6px;
+$ref-radius-md: 12px;
+$ref-radius-lg: 16px;
+$ref-radius-xl: 24px;
+
+// --- Breakpoints ---
+$ref-bp-sm: 576px;
+$ref-bp-md: 768px;
+$ref-bp-lg: 1024px;
+$ref-bp-xl: 1280px;
+
+// --- Mixins ---
+@mixin ref-container {
+  max-width: $ref-bp-xl;
+  margin-inline: auto;
+  padding-inline: $ref-space-md;
+
+  @media (min-width: $ref-bp-md) {
+    padding-inline: $ref-space-xl;
+  }
+}
+
+@mixin ref-card {
+  background: var(--ej-card-bg, #ffffff);
+  border-radius: $ref-radius-md;
+  border: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+@mixin ref-card-glass {
+  background: var(--ej-card-bg, rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: $ref-radius-md;
+  border: 1px solid var(--ej-card-border, rgba(255, 255, 255, 0.25));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+@mixin ref-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $ref-space-sm $ref-space-lg;
+  background: var(--ej-primary-color, $ref-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: $ref-radius-sm;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-primary-color, $ref-primary) 85%, black);
+    transform: translateY(-2px);
+  }
+}

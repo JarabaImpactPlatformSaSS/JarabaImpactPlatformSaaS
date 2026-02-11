@@ -1,0 +1,262 @@
+// =============================================================================
+// Página: Formulario de registro (/eventos/{slug}/registro)
+//
+// ESTRUCTURA:
+// Layout de 2 columnas: formulario principal + sidebar con resumen del evento.
+// Maneja estados de éxito, error y formulario deshabilitado.
+//
+// PATRÓN:
+// - Mobile-first: columna única → 2 columnas en desktop
+// - var(--ej-*, $fallback) para inyección desde Drupal UI
+// - Accesibilidad: roles ARIA, focus visible, labels explícitos
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-event-register {
+
+  @include events-container;
+  padding-block: $events-spacing-2xl;
+
+  // --- Breadcrumb ---
+  &__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: $events-spacing-xs;
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #9e9e9e);
+    margin-bottom: $events-spacing-xl;
+
+    a {
+      color: var(--ej-primary-color, $events-primary);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    span {
+      opacity: 0.5;
+    }
+  }
+
+  // --- Estado de éxito ---
+  &__success {
+    text-align: center;
+    padding: $events-spacing-3xl $events-spacing-md;
+  }
+
+  &__success-icon {
+    color: $events-success;
+    margin-bottom: $events-spacing-lg;
+
+    svg {
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  &__back-link {
+    @include events-button-primary;
+    margin-top: $events-spacing-lg;
+  }
+
+  // --- Layout 2 columnas ---
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $events-spacing-xl;
+
+    @media (min-width: $events-bp-lg) {
+      grid-template-columns: 1fr 360px;
+    }
+  }
+
+  // --- Main: formulario ---
+  &__main {
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0 0 $events-spacing-lg;
+    font-size: 1.5rem;
+    font-weight: $events-heading-weight;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  // --- Alertas ---
+  &__alert {
+    padding: $events-spacing-md;
+    border-radius: $events-radius-sm;
+    margin-bottom: $events-spacing-lg;
+    font-size: 0.9375rem;
+
+    &--error {
+      background: color-mix(in srgb, $events-error 10%, white);
+      border: 1px solid color-mix(in srgb, $events-error 30%, white);
+      color: $events-error;
+    }
+
+    &--warning {
+      background: color-mix(in srgb, $events-warning 10%, white);
+      border: 1px solid color-mix(in srgb, $events-warning 30%, white);
+      color: color-mix(in srgb, $events-warning 60%, black);
+    }
+  }
+
+  // --- Formulario ---
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $events-spacing-lg;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $events-spacing-xs;
+
+    &--error {
+      .ej-event-register__input {
+        border-color: $events-error;
+        box-shadow: 0 0 0 3px color-mix(in srgb, $events-error 15%, transparent);
+      }
+    }
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  &__required {
+    color: $events-error;
+  }
+
+  &__optional {
+    font-weight: 400;
+    color: var(--ej-text-muted, #9e9e9e);
+  }
+
+  &__input {
+    padding: $events-spacing-sm $events-spacing-md;
+    border: 1px solid var(--ej-card-border, #d0d0d0);
+    border-radius: $events-radius-sm;
+    font-family: $events-font-family;
+    font-size: 1rem;
+    color: var(--ej-text-color, #212121);
+    background: var(--ej-card-bg, #ffffff);
+    transition: border-color $events-transition-fast, box-shadow $events-transition-fast;
+
+    &::placeholder {
+      color: var(--ej-text-muted, #bdbdbd);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-primary-color, $events-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-primary-color, $events-primary) 15%, transparent);
+    }
+  }
+
+  &__error-msg {
+    font-size: 0.8125rem;
+    color: $events-error;
+  }
+
+  &__submit {
+    @include events-button-primary;
+    padding: $events-spacing-md $events-spacing-xl;
+    font-size: 1rem;
+    align-self: flex-start;
+  }
+
+  &__privacy {
+    font-size: 0.75rem;
+    color: var(--ej-text-muted, #9e9e9e);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  // --- Sidebar ---
+  &__sidebar {
+    @media (min-width: $events-bp-lg) {
+      position: sticky;
+      top: $events-spacing-xl;
+      align-self: start;
+    }
+  }
+
+  &__summary-card {
+    background: var(--ej-card-bg, #ffffff);
+    border: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+    border-radius: $events-radius-lg;
+    box-shadow: $events-shadow-md;
+    padding: $events-spacing-lg;
+  }
+
+  &__summary-title {
+    margin: 0 0 $events-spacing-md;
+    font-size: 1.125rem;
+    font-weight: $events-heading-weight;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  &__summary-meta {
+    display: flex;
+    flex-direction: column;
+    gap: $events-spacing-sm;
+    margin-bottom: $events-spacing-md;
+    padding-bottom: $events-spacing-md;
+    border-bottom: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  }
+
+  &__summary-item {
+    font-size: 0.875rem;
+    color: var(--ej-text-color, #616161);
+
+    strong {
+      color: var(--ej-heading-color, #212121);
+    }
+  }
+
+  &__summary-price {
+    margin-bottom: $events-spacing-md;
+  }
+
+  &__price-tag {
+    font-size: 1.5rem;
+    font-weight: $events-heading-weight;
+    color: var(--ej-heading-color, #212121);
+
+    &--free {
+      color: $events-success;
+    }
+
+    &--original {
+      font-size: 1rem;
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    &--early {
+      color: $events-success;
+    }
+  }
+
+  &__early-label {
+    display: block;
+    font-size: 0.75rem;
+    color: $events-success;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  &__summary-spots {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #9e9e9e);
+    font-weight: 600;
+  }
+}

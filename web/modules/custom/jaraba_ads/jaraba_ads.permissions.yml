@@ -1,0 +1,27 @@
+# =============================================================================
+# Permisos del módulo Jaraba Ads
+# Estructura: permisos por entidad y funcionalidad del dashboard de ads
+# Lógica: control granular de acceso multi-tenant para gestores de campañas
+# =============================================================================
+
+# --- Administración ---
+administer ads settings:
+  title: 'Administrar configuración de ads'
+  description: 'Acceso a la configuración global del módulo de publicidad pagada.'
+  restrict access: true
+
+# --- Campañas ---
+manage ad campaigns:
+  title: 'Gestionar campañas publicitarias'
+  description: 'Crear, editar y eliminar campañas publicitarias en todas las plataformas.'
+
+# --- Dashboard ---
+view ads dashboard:
+  title: 'Ver dashboard de ads'
+  description: 'Acceder al panel de analítica de campañas publicitarias y métricas de rendimiento.'
+
+# --- Cuentas de Ads ---
+connect ad accounts:
+  title: 'Conectar cuentas de publicidad'
+  description: 'Vincular y desvincular cuentas de Google Ads, Meta Ads, LinkedIn Ads y TikTok Ads.'
+  restrict access: true

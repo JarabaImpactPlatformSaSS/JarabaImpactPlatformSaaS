@@ -1,0 +1,17 @@
+# =============================================================================
+# Entradas en /admin/structure para entidades A/B Testing
+# =============================================================================
+
+jaraba_ab_testing.experiment.settings:
+  title: 'Experimentos A/B'
+  description: 'Gestionar la configuración de experimentos A/B.'
+  route_name: jaraba_ab_testing.experiment.settings
+  parent: system.admin_structure
+  weight: 92
+
+jaraba_ab_testing.variant.settings:
+  title: 'Variantes A/B'
+  description: 'Gestionar la configuración de variantes de experimentos.'
+  route_name: jaraba_ab_testing.variant.settings
+  parent: system.admin_structure
+  weight: 93

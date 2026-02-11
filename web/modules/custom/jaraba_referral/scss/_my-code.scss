@@ -1,0 +1,190 @@
+// =============================================================================
+// Mi Código de Referido — Compartición y generación
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-referral-code {
+  @include ref-container;
+  padding-block: $ref-space-xl;
+  max-width: 720px;
+
+  // --- Header ---
+  &__back {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--ej-primary-color, $ref-primary);
+    text-decoration: none;
+    margin-bottom: $ref-space-md;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__title {
+    margin: 0 0 $ref-space-sm;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  &__subtitle {
+    margin: 0 0 $ref-space-xl;
+    color: var(--ej-text-color, #616161);
+    line-height: 1.6;
+  }
+
+  // --- Code Card ---
+  &__card {
+    @include ref-card-glass;
+    padding: $ref-space-xl;
+    text-align: center;
+    margin-bottom: $ref-space-xl;
+  }
+
+  &__display {
+    margin-bottom: $ref-space-xl;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #9e9e9e);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: $ref-space-sm;
+  }
+
+  &__value {
+    display: block;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ej-primary-color, $ref-primary);
+    letter-spacing: 0.2em;
+    padding: $ref-space-md;
+    background: color-mix(in srgb, var(--ej-primary-color, $ref-primary) 6%, white);
+    border-radius: $ref-radius-md;
+  }
+
+  // --- Share ---
+  &__share {
+    margin-bottom: $ref-space-xl;
+  }
+
+  &__share-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #9e9e9e);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: $ref-space-sm;
+  }
+
+  &__share-input {
+    display: flex;
+    gap: 0;
+    border-radius: $ref-radius-sm;
+    overflow: hidden;
+    border: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.12));
+  }
+
+  &__url-input {
+    flex: 1;
+    padding: $ref-space-sm $ref-space-md;
+    border: none;
+    font-size: 0.875rem;
+    color: var(--ej-text-color, #424242);
+    background: var(--ej-surface-color, #fafafa);
+    outline: none;
+  }
+
+  &__copy-btn {
+    padding: $ref-space-sm $ref-space-lg;
+    background: var(--ej-primary-color, $ref-primary);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-primary-color, $ref-primary) 85%, black);
+    }
+  }
+
+  // --- Social ---
+  &__social {
+    padding-top: $ref-space-lg;
+    border-top: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  }
+
+  &__social-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #9e9e9e);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: $ref-space-md;
+  }
+
+  &__social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: $ref-space-sm;
+    flex-wrap: wrap;
+  }
+
+  &__social-btn {
+    padding: $ref-space-sm $ref-space-lg;
+    border-radius: $ref-radius-sm;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+
+    &:hover { transform: translateY(-2px); }
+
+    &--whatsapp { background: #25D366; color: #fff; }
+    &--telegram { background: #0088cc; color: #fff; }
+    &--email { background: var(--ej-surface-color, #e0e0e0); color: var(--ej-text-color, #424242); }
+  }
+
+  // --- Instructions ---
+  &__instructions {
+    @include ref-card;
+    padding: $ref-space-lg;
+
+    h2 {
+      margin: 0 0 $ref-space-md;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--ej-heading-color, #212121);
+    }
+
+    ol {
+      margin: 0;
+      padding-left: $ref-space-lg;
+
+      li {
+        margin-bottom: $ref-space-sm;
+        line-height: 1.6;
+        color: var(--ej-text-color, #616161);
+      }
+    }
+  }
+
+  // --- Error ---
+  &__error {
+    @include ref-card;
+    padding: $ref-space-xl;
+    text-align: center;
+
+    p {
+      margin: 0;
+      color: $ref-error;
+    }
+  }
+}

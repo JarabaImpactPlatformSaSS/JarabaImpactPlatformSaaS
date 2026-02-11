@@ -1,0 +1,111 @@
+# =============================================================================
+# Rutas del módulo Jaraba Events
+# Estructura: rutas de settings (Field UI), frontend público y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente.
+#   Las rutas frontend son páginas limpias (Zero Region) con templates propios.
+#   Las rutas API requieren autenticación y filtran por tenant automáticamente.
+# =============================================================================
+
+# --- Settings Routes (para Field UI de cada entidad) ---
+
+jaraba_events.marketing_event.settings:
+  path: '/admin/structure/marketing-events'
+  defaults:
+    _form: '\Drupal\jaraba_events\Form\MarketingEventSettingsForm'
+    _title: 'Configuración Eventos'
+  requirements:
+    _permission: 'administer events settings'
+
+jaraba_events.event_registration.settings:
+  path: '/admin/structure/event-registrations'
+  defaults:
+    _form: '\Drupal\jaraba_events\Form\EventRegistrationSettingsForm'
+    _title: 'Configuración Registros de Eventos'
+  requirements:
+    _permission: 'administer events settings'
+
+# --- Rutas Frontend del Marketplace de Eventos (Zero Region) ---
+
+jaraba_events.marketplace:
+  path: '/eventos'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventFrontendController::marketplace'
+    _title: 'Eventos'
+  requirements:
+    _permission: 'access content'
+
+jaraba_events.event_landing:
+  path: '/eventos/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventFrontendController::eventLanding'
+    _title: 'Evento'
+  requirements:
+    _permission: 'access content'
+    slug: '[a-z0-9\-]+'
+
+jaraba_events.register_form:
+  path: '/eventos/{slug}/registro'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventFrontendController::registerForm'
+    _title: 'Registro'
+  requirements:
+    _permission: 'access content'
+    slug: '[a-z0-9\-]+'
+
+jaraba_events.confirm_registration:
+  path: '/eventos/{slug}/confirmacion/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventFrontendController::confirmRegistration'
+    _title: 'Confirmación de Registro'
+  requirements:
+    _permission: 'access content'
+    slug: '[a-z0-9\-]+'
+    token: '[a-f0-9]{64}'
+
+# --- Rutas API REST ---
+
+jaraba_events.api.events:
+  path: '/api/v1/events'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::listEvents'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_events.api.events.detail:
+  path: '/api/v1/events/{event_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::getEvent'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    event_id: '\d+'
+
+jaraba_events.api.events.register:
+  path: '/api/v1/events/{event_id}/register'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::registerAttendee'
+  methods: [POST]
+  requirements:
+    _permission: 'register for events'
+    event_id: '\d+'
+
+jaraba_events.api.events.checkin:
+  path: '/api/v1/events/{event_id}/registrations/{registration_id}/checkin'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::checkIn'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage event registrations'
+    event_id: '\d+'
+    registration_id: '\d+'
+
+jaraba_events.api.events.stats:
+  path: '/api/v1/events/{event_id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::eventStats'
+  methods: [GET]
+  requirements:
+    _permission: 'view event analytics'
+    event_id: '\d+'

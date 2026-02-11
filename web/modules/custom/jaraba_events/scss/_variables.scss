@@ -1,0 +1,154 @@
+// =============================================================================
+// Variables SCSS del módulo Jaraba Events
+//
+// PATRÓN SSOT (Single Source of Truth):
+// Las variables SCSS definen fallbacks que se sobreescriben con CSS custom
+// properties inyectables desde la UI de Drupal. Cada variable sigue el
+// patrón: var(--ej-variable-name, $scss-fallback).
+//
+// RELACIONES:
+// - Hereda tokens de ecosistema_jaraba_core/scss/_variables.scss
+// - Las CSS custom properties se definen en ecosistema_jaraba_core/scss/_injectable.scss
+// - Los valores se configuran desde /admin/appearance/settings/ecosistema_jaraba_theme
+// =============================================================================
+
+// --- Colores del módulo (fallbacks) ---
+$events-primary: #2E7D32;
+$events-primary-light: #4CAF50;
+$events-primary-dark: #1B5E20;
+$events-accent: #FF8C42;
+$events-corporate: #233D63;
+
+// --- Colores de estado ---
+$events-success: #2E7D32;
+$events-warning: #F57C00;
+$events-error: #D32F2F;
+$events-info: #1976D2;
+
+// --- Colores de tipo de evento ---
+$events-type-webinar: #1976D2;
+$events-type-workshop: #7B1FA2;
+$events-type-conference: #233D63;
+$events-type-meetup: #00897B;
+$events-type-demo: #FF8C42;
+$events-type-networking: #C2185B;
+
+// --- Tipografía ---
+$events-font-family: var(--ej-font-family, 'Inter', system-ui, -apple-system, sans-serif);
+$events-heading-weight: 700;
+$events-body-weight: 400;
+
+// --- Espaciado ---
+$events-spacing-xs: 0.25rem;
+$events-spacing-sm: 0.5rem;
+$events-spacing-md: 1rem;
+$events-spacing-lg: 1.5rem;
+$events-spacing-xl: 2rem;
+$events-spacing-2xl: 3rem;
+$events-spacing-3xl: 4rem;
+
+// --- Border radius ---
+$events-radius-sm: 6px;
+$events-radius-md: 10px;
+$events-radius-lg: 16px;
+$events-radius-pill: 100px;
+
+// --- Sombras (glassmorphism premium) ---
+$events-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$events-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+$events-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+$events-shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.15);
+
+// --- Breakpoints (mobile-first) ---
+$events-bp-sm: 576px;
+$events-bp-md: 768px;
+$events-bp-lg: 992px;
+$events-bp-xl: 1200px;
+
+// --- Transiciones ---
+$events-transition-fast: 150ms ease;
+$events-transition-base: 250ms ease;
+$events-transition-slow: 400ms ease;
+
+// --- Z-index ---
+$events-z-card: 1;
+$events-z-badge: 5;
+$events-z-countdown: 10;
+
+// --- Mixins reutilizables ---
+
+/// Container genérico con max-width y padding
+@mixin events-container {
+  max-width: var(--ej-content-max-width, 1200px);
+  margin-inline: auto;
+  padding-inline: $events-spacing-md;
+
+  @media (min-width: $events-bp-lg) {
+    padding-inline: $events-spacing-xl;
+  }
+}
+
+/// Card con glassmorphism premium
+@mixin events-card {
+  background: var(--ej-card-bg, #ffffff);
+  border: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.06));
+  border-radius: $events-radius-md;
+  box-shadow: $events-shadow-sm;
+  transition: transform $events-transition-base, box-shadow $events-transition-base;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: $events-shadow-hover;
+  }
+}
+
+/// Botón primario
+@mixin events-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $events-spacing-sm;
+  padding: $events-spacing-sm $events-spacing-lg;
+  background: var(--ej-primary-color, $events-primary);
+  color: #ffffff;
+  font-family: $events-font-family;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  border: none;
+  border-radius: $events-radius-sm;
+  cursor: pointer;
+  transition: background $events-transition-fast, transform $events-transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-primary-color, $events-primary) 85%, black);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled,
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/// Badge/chip
+@mixin events-badge($bg: $events-primary) {
+  display: inline-flex;
+  align-items: center;
+  padding: $events-spacing-xs $events-spacing-sm;
+  background: $bg;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: $events-radius-sm;
+  line-height: 1;
+}

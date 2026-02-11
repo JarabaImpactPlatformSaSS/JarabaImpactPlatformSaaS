@@ -1,0 +1,13 @@
+name: 'Jaraba Events'
+type: module
+description: 'Eventos y Webinars de marketing: registro de asistentes, landing pages automáticas, analítica de eventos, secuencias de email pre/post evento y certificados de asistencia. Integra con jaraba_email, jaraba_crm, jaraba_credentials y jaraba_pixels.'
+package: 'Jaraba Platform Features'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - drupal:datetime
+  - drupal:link
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

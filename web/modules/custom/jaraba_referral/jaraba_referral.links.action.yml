@@ -1,0 +1,11 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Referido" en la colección de referidos
+jaraba_referral.referral.add:
+  title: 'Añadir Referido'
+  route_name: entity.referral.add_form
+  appears_on:
+    - entity.referral.collection

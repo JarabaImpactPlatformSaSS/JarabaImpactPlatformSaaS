@@ -1,0 +1,68 @@
+# =============================================================================
+# Rutas del módulo Jaraba A/B Testing
+# Settings para Field UI, dashboard frontend y API REST
+# =============================================================================
+
+# --- Settings Routes (Field UI) ---
+
+jaraba_ab_testing.experiment.settings:
+  path: '/admin/structure/ab-experiments'
+  defaults:
+    _form: '\Drupal\jaraba_ab_testing\Form\ExperimentSettingsForm'
+    _title: 'Configuración Experimentos A/B'
+  requirements:
+    _permission: 'administer ab testing'
+
+jaraba_ab_testing.variant.settings:
+  path: '/admin/structure/ab-variants'
+  defaults:
+    _form: '\Drupal\jaraba_ab_testing\Form\VariantSettingsForm'
+    _title: 'Configuración Variantes A/B'
+  requirements:
+    _permission: 'administer ab testing'
+
+# --- Dashboard Frontend ---
+
+jaraba_ab_testing.dashboard:
+  path: '/admin/ab-testing'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingDashboardController::dashboard'
+    _title: 'Dashboard A/B Testing'
+  requirements:
+    _permission: 'view experiment dashboard'
+
+jaraba_ab_testing.experiment_detail:
+  path: '/admin/ab-testing/{experiment_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingDashboardController::experimentDetail'
+    _title: 'Detalle de Experimento'
+  requirements:
+    _permission: 'view experiment results'
+    experiment_id: '\d+'
+
+# --- API REST ---
+
+jaraba_ab_testing.api.assign:
+  path: '/api/v1/ab-testing/assign'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::assignVariant'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_ab_testing.api.convert:
+  path: '/api/v1/ab-testing/convert'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::recordConversion'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_ab_testing.api.results:
+  path: '/api/v1/ab-testing/experiments/{experiment_id}/results'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::getResults'
+  methods: [GET]
+  requirements:
+    _permission: 'view experiment results'
+    experiment_id: '\d+'

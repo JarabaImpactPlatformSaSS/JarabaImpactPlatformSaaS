@@ -1,0 +1,34 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Jaraba Addons
+  # Permite filtrar mensajes del módulo en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_addons:
+    parent: logger.channel_base
+    arguments: ['jaraba_addons']
+
+  # =====================================================================
+  # AddonCatalogService: Gestión del catálogo de add-ons
+  # Responsabilidad: listar add-ons disponibles, filtrar por tipo,
+  #   obtener precios, verificar disponibilidad
+  # Relaciones: consume Addon entity, TenantContextService
+  # =====================================================================
+  jaraba_addons.catalog:
+    class: Drupal\jaraba_addons\Service\AddonCatalogService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_addons'
+
+  # =====================================================================
+  # AddonSubscriptionService: Gestión de suscripciones a add-ons
+  # Responsabilidad: suscripción, cancelación, renovación,
+  #   consulta de suscripciones por tenant, verificación de actividad
+  # Relaciones: consume AddonSubscription entity, Addon entity
+  # =====================================================================
+  jaraba_addons.subscription:
+    class: Drupal\jaraba_addons\Service\AddonSubscriptionService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_addons'

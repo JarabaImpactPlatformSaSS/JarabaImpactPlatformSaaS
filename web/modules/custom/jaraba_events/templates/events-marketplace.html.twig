@@ -1,0 +1,150 @@
+{#
+/**
+ * @file
+ * Página marketplace de eventos (/eventos).
+ *
+ * ESTRUCTURA:
+ * Plantilla Zero Region que renderiza el listado de eventos con filtros
+ * por tipo y formato, sección de eventos destacados (hero), grid de
+ * tarjetas y paginación. No usa regiones de Drupal.
+ *
+ * LÓGICA:
+ * - Sección hero con hasta 3 eventos destacados (featured).
+ * - Barra de filtros horizontal con chips de tipo y formato.
+ * - Grid responsive de tarjetas de eventos (12 por página).
+ * - Paginación con navegación directa.
+ *
+ * RELACIONES:
+ * - events-marketplace.html.twig <- EventFrontendController::marketplace()
+ * - events-marketplace.html.twig -> partials/event-card.html.twig (incluye)
+ * - events-marketplace.html.twig -> _events-marketplace.scss (estilado por)
+ *
+ * Variables:
+ *   - events (array): Lista de eventos para tarjetas.
+ *   - featured_events (array): Eventos destacados (máx 3).
+ *   - event_types (array): Tipos disponibles para filtro.
+ *   - formats (array): Formatos disponibles para filtro.
+ *   - active_type (string|null): Filtro activo de tipo.
+ *   - active_format (string|null): Filtro activo de formato.
+ *   - pagination (array): Datos de paginación.
+ */
+#}
+
+<div class="ej-events-marketplace">
+
+  {# ===== HERO: Eventos destacados ===== #}
+  {% if featured_events is not empty %}
+    <section class="ej-events-marketplace__hero">
+      <div class="ej-events-marketplace__hero-inner">
+        <h1 class="ej-events-marketplace__title">{% trans %}Upcoming Events{% endtrans %}</h1>
+        <p class="ej-events-marketplace__subtitle">
+          {% trans %}Discover webinars, workshops and networking opportunities to boost your business{% endtrans %}
+        </p>
+
+        <div class="ej-events-marketplace__featured">
+          {% for event in featured_events %}
+            {% include '@jaraba_events/partials/event-card.html.twig' with { event: event } only %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% else %}
+    <section class="ej-events-marketplace__hero ej-events-marketplace__hero--simple">
+      <div class="ej-events-marketplace__hero-inner">
+        <h1 class="ej-events-marketplace__title">{% trans %}Events{% endtrans %}</h1>
+        <p class="ej-events-marketplace__subtitle">
+          {% trans %}Browse our catalog of events, webinars and workshops{% endtrans %}
+        </p>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== FILTROS ===== #}
+  <section class="ej-events-marketplace__filters">
+    <div class="ej-events-marketplace__filters-inner">
+
+      {# Filtro por tipo #}
+      <div class="ej-events-marketplace__filter-group">
+        <span class="ej-events-marketplace__filter-label">{% trans %}Type{% endtrans %}:</span>
+        <a href="/eventos" class="ej-events-marketplace__chip {{ active_type is null ? 'ej-events-marketplace__chip--active' : '' }}">
+          {% trans %}All{% endtrans %}
+        </a>
+        {% for key, label in event_types %}
+          <a href="/eventos?type={{ key }}{{ active_format ? '&format=' ~ active_format : '' }}"
+             class="ej-events-marketplace__chip {{ active_type == key ? 'ej-events-marketplace__chip--active' : '' }}">
+            {{ label }}
+          </a>
+        {% endfor %}
+      </div>
+
+      {# Filtro por formato #}
+      <div class="ej-events-marketplace__filter-group">
+        <span class="ej-events-marketplace__filter-label">{% trans %}Format{% endtrans %}:</span>
+        <a href="/eventos{{ active_type ? '?type=' ~ active_type : '' }}"
+           class="ej-events-marketplace__chip {{ active_format is null ? 'ej-events-marketplace__chip--active' : '' }}">
+          {% trans %}All{% endtrans %}
+        </a>
+        {% for key, label in formats %}
+          <a href="/eventos?format={{ key }}{{ active_type ? '&type=' ~ active_type : '' }}"
+             class="ej-events-marketplace__chip {{ active_format == key ? 'ej-events-marketplace__chip--active' : '' }}">
+            {{ label }}
+          </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+  {# ===== GRID DE EVENTOS ===== #}
+  <section class="ej-events-marketplace__grid-section">
+    {% if events is not empty %}
+      <div class="ej-events-marketplace__grid">
+        {% for event in events %}
+          {% include '@jaraba_events/partials/event-card.html.twig' with { event: event } only %}
+        {% endfor %}
+      </div>
+
+      {# Paginación #}
+      {% if pagination.total_pages > 1 %}
+        <nav class="ej-events-marketplace__pagination" aria-label="{% trans %}Event pages{% endtrans %}">
+          {% if pagination.current_page > 0 %}
+            <a href="/eventos?page={{ pagination.current_page - 1 }}{{ active_type ? '&type=' ~ active_type : '' }}{{ active_format ? '&format=' ~ active_format : '' }}"
+               class="ej-events-marketplace__page-link ej-events-marketplace__page-link--prev"
+               aria-label="{% trans %}Previous page{% endtrans %}">
+              &larr; {% trans %}Previous{% endtrans %}
+            </a>
+          {% endif %}
+
+          <span class="ej-events-marketplace__page-info">
+            {% trans %}Page {{ pagination.current_page + 1 }} of {{ pagination.total_pages }}{% endtrans %}
+          </span>
+
+          {% if pagination.current_page < pagination.total_pages - 1 %}
+            <a href="/eventos?page={{ pagination.current_page + 1 }}{{ active_type ? '&type=' ~ active_type : '' }}{{ active_format ? '&format=' ~ active_format : '' }}"
+               class="ej-events-marketplace__page-link ej-events-marketplace__page-link--next"
+               aria-label="{% trans %}Next page{% endtrans %}">
+              {% trans %}Next{% endtrans %} &rarr;
+            </a>
+          {% endif %}
+        </nav>
+      {% endif %}
+
+      {# Resumen #}
+      <p class="ej-events-marketplace__summary">
+        {% trans %}Showing {{ events|length }} of {{ pagination.total_events }} events{% endtrans %}
+      </p>
+
+    {% else %}
+      <div class="ej-events-marketplace__empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h3>{% trans %}No upcoming events{% endtrans %}</h3>
+        <p>{% trans %}Check back soon for new webinars, workshops and networking events.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+</div>

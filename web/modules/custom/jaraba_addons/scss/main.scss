@@ -1,0 +1,15 @@
+// =============================================================================
+// MAIN SCSS - JARABA ADDONS MODULE
+// =============================================================================
+// Punto de entrada para compilación Sass.
+// Importa variables/mixins compartidos y los parciales de cada página.
+//
+// RELACIONES:
+// - main.scss -> _variables.scss (importa)
+// - main.scss -> _catalog.scss (importa)
+// - main.scss -> _detail.scss (importa)
+// =============================================================================
+
+@use 'variables' as *;
+@use 'catalog';
+@use 'detail';

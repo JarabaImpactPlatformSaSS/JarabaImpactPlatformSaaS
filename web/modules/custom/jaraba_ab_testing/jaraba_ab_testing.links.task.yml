@@ -1,0 +1,15 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de A/B Testing
+# =============================================================================
+
+jaraba_ab_testing.experiment.collection:
+  title: 'Experimentos A/B'
+  route_name: entity.ab_experiment.collection
+  base_route: system.admin_content
+  weight: 80
+
+jaraba_ab_testing.variant.collection:
+  title: 'Variantes A/B'
+  route_name: entity.ab_variant.collection
+  base_route: system.admin_content
+  weight: 81

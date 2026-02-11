@@ -1,0 +1,41 @@
+# =============================================================================
+# Permisos del módulo Jaraba A/B Testing
+# Granularidad: administración, gestión de experimentos y vista de resultados
+# =============================================================================
+
+# --- Permisos de administración ---
+administer ab testing:
+  title: 'Administer A/B testing settings'
+  description: 'Access A/B testing configuration and Field UI.'
+  restrict access: true
+
+# --- Permisos de experimentos ---
+create experiments:
+  title: 'Create A/B testing experiments'
+  description: 'Create new experiments with variants.'
+
+edit any experiment:
+  title: 'Edit any experiment'
+  description: 'Edit any existing experiment regardless of ownership.'
+
+delete any experiment:
+  title: 'Delete any experiment'
+  description: 'Delete any existing experiment.'
+
+# --- Permisos de resultados ---
+view experiment results:
+  title: 'View experiment results'
+  description: 'Access the analytics dashboard and view experiment results.'
+
+view experiment dashboard:
+  title: 'View experiment dashboard'
+  description: 'Access the centralized A/B testing dashboard.'
+
+# --- Permisos de variantes ---
+manage experiment variants:
+  title: 'Manage experiment variants'
+  description: 'Create, edit, and delete variants within experiments.'
+
+declare experiment winner:
+  title: 'Declare experiment winner'
+  description: 'Declare a winning variant and complete an experiment.'

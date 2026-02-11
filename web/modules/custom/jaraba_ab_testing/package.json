@@ -1,0 +1,14 @@
+{
+  "name": "jaraba-ab-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dart Sass build para el módulo Jaraba A/B Testing",
+  "scripts": {
+    "sass:build": "sass scss/main.scss css/ab-testing-dashboard.css --style=compressed --no-source-map",
+    "build:individual": "sass scss/_dashboard.scss css/ab-testing-dashboard.css --style=compressed --no-source-map && sass scss/_experiment-detail.scss css/ab-testing-experiment-detail.css --style=compressed --no-source-map",
+    "build": "npm run build:individual"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

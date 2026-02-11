@@ -1,0 +1,172 @@
+// =============================================================================
+// Dashboard de A/B Testing
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-ab-dashboard {
+  @include ab-container;
+  padding-block: $ab-space-xl;
+
+  // --- KPI Cards ---
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $ab-space-md;
+    margin-bottom: $ab-space-2xl;
+
+    @media (min-width: $ab-bp-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__kpi-card {
+    @include ab-card;
+    padding: $ab-space-lg;
+    text-align: center;
+    transition: transform $ab-transition, box-shadow $ab-transition;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $ab-shadow-md;
+    }
+  }
+
+  &__kpi-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-primary-color, $ab-primary);
+    line-height: 1;
+    margin-bottom: $ab-space-xs;
+  }
+
+  &__kpi-label {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #9e9e9e);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  // --- Secciones ---
+  &__section {
+    margin-bottom: $ab-space-2xl;
+  }
+
+  &__section-title {
+    margin: 0 0 $ab-space-md;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-heading-color, #212121);
+  }
+
+  // --- Tabla ---
+  &__table-wrapper {
+    overflow-x: auto;
+    @include ab-card;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th, td {
+      padding: $ab-space-sm $ab-space-md;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--ej-surface-color, #fafafa);
+      font-weight: 600;
+      color: var(--ej-text-color, #616161);
+      border-bottom: 2px solid var(--ej-card-border, rgba(0, 0, 0, 0.08));
+    }
+
+    td {
+      border-bottom: 1px solid var(--ej-card-border, rgba(0, 0, 0, 0.04));
+    }
+
+    tbody tr:hover {
+      background: var(--ej-surface-color, #fafafa);
+    }
+  }
+
+  // --- Badges ---
+  &__type-badge {
+    display: inline-block;
+    padding: $ab-space-xs $ab-space-sm;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: $ab-radius-sm;
+    background: color-mix(in srgb, $ab-primary 15%, white);
+    color: $ab-primary;
+  }
+
+  &__rate {
+    font-weight: 600;
+
+    &--good {
+      color: $ab-success;
+    }
+  }
+
+  &__result {
+    font-weight: 600;
+    font-size: 0.8125rem;
+
+    &--winner {
+      color: $ab-success;
+    }
+
+    &--inconclusive {
+      color: var(--ej-text-muted, #9e9e9e);
+    }
+  }
+
+  &__exp-link {
+    color: var(--ej-primary-color, $ab-primary);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__action-link {
+    color: var(--ej-primary-color, $ab-primary);
+    text-decoration: none;
+    font-size: 0.8125rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // --- Empty state ---
+  &__empty {
+    text-align: center;
+    padding: $ab-space-2xl $ab-space-md;
+    @include ab-card;
+    color: var(--ej-text-muted, #9e9e9e);
+  }
+
+  &__cta {
+    display: inline-block;
+    margin-top: $ab-space-md;
+    padding: $ab-space-sm $ab-space-lg;
+    background: var(--ej-primary-color, $ab-primary);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: $ab-radius-sm;
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-primary-color, $ab-primary) 85%, black);
+    }
+  }
+}

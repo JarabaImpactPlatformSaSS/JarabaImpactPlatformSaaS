@@ -1,0 +1,156 @@
+{#
+/**
+ * @file
+ * Template: Detalle de Add-on (/addons/{addon_id}).
+ *
+ * ESTRUCTURA:
+ * Plantilla que renderiza la página de detalle de un add-on individual
+ * con hero, pricing toggle (mensual/anual), features, limits, y CTA.
+ * Sigue el patrón BEM ej-addons-detail-* y usa CSS variables inyectables.
+ *
+ * VARIABLES:
+ * - addon: Array con keys: id, label, description, addon_type,
+ *     addon_type_label, machine_name.
+ * - features: Array de strings con las features incluidas.
+ * - limits: Array asociativo con los límites (key => value).
+ * - price_monthly: Precio mensual (float).
+ * - price_yearly: Precio anual (float).
+ * - is_subscribed: Boolean si el tenant actual está suscrito.
+ *
+ * RELACIONES:
+ * - addons-detail.html.twig <- AddonCatalogController::detail() (renderizado por)
+ * - addons-detail.html.twig <- jaraba_addons.module hook_theme (registrado en)
+ * - addons-detail.html.twig <- addons-detail.css (estilizado por)
+ * - addons-detail.html.twig <- addon-detail.js (interactividad por)
+ */
+#}
+
+<div class="ej-addons-detail" data-addon-id="{{ addon.id }}">
+
+  {# ===== Breadcrumb ===== #}
+  <nav class="ej-addons-detail__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+    <a href="{{ path('jaraba_addons.catalog') }}" class="ej-addons-detail__breadcrumb-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      {% trans %}Back to Catalog{% endtrans %}
+    </a>
+  </nav>
+
+  {# ===== Hero Section ===== #}
+  <section class="ej-addons-detail__hero">
+    <div class="ej-addons-detail__hero-content">
+      <span class="ej-addons-detail__type-badge ej-addons-detail__type-badge--{{ addon.addon_type }}">
+        {{ addon.addon_type_label }}
+      </span>
+      <h1 class="ej-addons-detail__title">{{ addon.label }}</h1>
+      <div class="ej-addons-detail__description">
+        {{ addon.description|raw }}
+      </div>
+    </div>
+  </section>
+
+  {# ===== Pricing Section ===== #}
+  <section class="ej-addons-detail__pricing" aria-label="{% trans %}Pricing{% endtrans %}">
+    <h2 class="ej-addons-detail__section-title">{% trans %}Pricing{% endtrans %}</h2>
+
+    {# Toggle mensual/anual #}
+    <div class="ej-addons-detail__pricing-toggle" role="radiogroup" aria-label="{% trans %}Billing cycle{% endtrans %}">
+      <button type="button"
+              class="ej-addons-detail__toggle-btn ej-addons-detail__toggle-btn--active"
+              data-cycle="monthly"
+              role="radio"
+              aria-checked="true">
+        {% trans %}Monthly{% endtrans %}
+      </button>
+      <button type="button"
+              class="ej-addons-detail__toggle-btn"
+              data-cycle="yearly"
+              role="radio"
+              aria-checked="false">
+        {% trans %}Yearly{% endtrans %}
+        {% if price_monthly > 0 and price_yearly > 0 %}
+          {% set yearly_equivalent = price_monthly * 12 %}
+          {% set savings_pct = ((yearly_equivalent - price_yearly) / yearly_equivalent * 100)|round %}
+          {% if savings_pct > 0 %}
+            <span class="ej-addons-detail__savings-badge">
+              -{{ savings_pct }}%
+            </span>
+          {% endif %}
+        {% endif %}
+      </button>
+    </div>
+
+    {# Display de precio #}
+    <div class="ej-addons-detail__price-display">
+      <div class="ej-addons-detail__price-card">
+        <span class="ej-addons-detail__price-amount" data-price-monthly="{{ price_monthly }}" data-price-yearly="{{ price_yearly }}">
+          {{ price_monthly|number_format(2, ',', '.') }} &euro;
+        </span>
+        <span class="ej-addons-detail__price-period" data-period-monthly="{% trans %}/month{% endtrans %}" data-period-yearly="{% trans %}/year{% endtrans %}">
+          /{% trans %}month{% endtrans %}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  {# ===== Features Section ===== #}
+  {% if features|length > 0 %}
+    <section class="ej-addons-detail__features" aria-label="{% trans %}Features included{% endtrans %}">
+      <h2 class="ej-addons-detail__section-title">{% trans %}Features Included{% endtrans %}</h2>
+      <ul class="ej-addons-detail__features-list">
+        {% for feature in features %}
+          <li class="ej-addons-detail__feature-item">
+            <svg class="ej-addons-detail__feature-check" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>{{ feature }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# ===== Limits Section ===== #}
+  {% if limits|length > 0 %}
+    <section class="ej-addons-detail__limits" aria-label="{% trans %}Limits and quotas{% endtrans %}">
+      <h2 class="ej-addons-detail__section-title">{% trans %}Limits &amp; Quotas{% endtrans %}</h2>
+      <div class="ej-addons-detail__limits-grid">
+        {% for limit_key, limit_value in limits %}
+          <div class="ej-addons-detail__limit-item">
+            <span class="ej-addons-detail__limit-key">
+              {{ limit_key|replace({'_': ' '})|capitalize }}
+            </span>
+            <span class="ej-addons-detail__limit-value">
+              {{ limit_value }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== CTA Section ===== #}
+  <section class="ej-addons-detail__cta-section">
+    {% if is_subscribed %}
+      <div class="ej-addons-detail__subscribed-notice">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span>{% trans %}You are already subscribed to this add-on.{% endtrans %}</span>
+      </div>
+    {% else %}
+      <button type="button"
+              class="ej-addons-detail__subscribe-btn"
+              data-addon-id="{{ addon.id }}"
+              data-billing-cycle="monthly">
+        {% trans %}Subscribe Now{% endtrans %}
+      </button>
+      <p class="ej-addons-detail__cta-note">
+        {% trans %}You can cancel your subscription at any time.{% endtrans %}
+      </p>
+    {% endif %}
+  </section>
+
+</div>

@@ -1,0 +1,67 @@
+{#
+ # Mi Código de Referido — Página de generación y compartición.
+ #
+ # VARIABLES:
+ #   - code (string|null): código de 8 caracteres
+ #   - share_url (string|null): URL completa para compartir
+ #   - user_name (string): nombre del usuario
+ #}
+
+<div class="ej-referral-code">
+
+  <div class="ej-referral-code__header">
+    <a href="/referidos" class="ej-referral-code__back">← {% trans %}Volver a Mis Referidos{% endtrans %}</a>
+    <h1 class="ej-referral-code__title">{% trans %}Mi Código de Referido{% endtrans %}</h1>
+    <p class="ej-referral-code__subtitle">
+      {% trans %}Comparte este código con tus contactos. Cuando se registren, ambos recibiréis una recompensa.{% endtrans %}
+    </p>
+  </div>
+
+  {% if code %}
+    <div class="ej-referral-code__card">
+      <div class="ej-referral-code__display">
+        <span class="ej-referral-code__label">{% trans %}Tu código único{% endtrans %}</span>
+        <code class="ej-referral-code__value" id="referral-code">{{ code }}</code>
+      </div>
+
+      <div class="ej-referral-code__share">
+        <span class="ej-referral-code__share-label">{% trans %}Enlace para compartir{% endtrans %}</span>
+        <div class="ej-referral-code__share-input">
+          <input type="text" readonly value="{{ share_url }}" id="referral-url" class="ej-referral-code__url-input">
+          <button type="button" class="ej-referral-code__copy-btn" data-copy-target="#referral-url">
+            {% trans %}Copiar{% endtrans %}
+          </button>
+        </div>
+      </div>
+
+      <div class="ej-referral-code__social">
+        <span class="ej-referral-code__social-label">{% trans %}Compartir en{% endtrans %}</span>
+        <div class="ej-referral-code__social-buttons">
+          <a href="https://wa.me/?text={{ share_url|url_encode }}" target="_blank" rel="noopener" class="ej-referral-code__social-btn ej-referral-code__social-btn--whatsapp">
+            WhatsApp
+          </a>
+          <a href="https://t.me/share/url?url={{ share_url|url_encode }}" target="_blank" rel="noopener" class="ej-referral-code__social-btn ej-referral-code__social-btn--telegram">
+            Telegram
+          </a>
+          <a href="mailto:?subject={{ 'Invitación'|trans|url_encode }}&body={{ share_url|url_encode }}" class="ej-referral-code__social-btn ej-referral-code__social-btn--email">
+            Email
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ej-referral-code__instructions">
+      <h2>{% trans %}¿Cómo funciona?{% endtrans %}</h2>
+      <ol>
+        <li>{% trans %}Comparte tu enlace o código con tus contactos.{% endtrans %}</li>
+        <li>{% trans %}Cuando se registren usando tu código, el referido se confirma.{% endtrans %}</li>
+        <li>{% trans %}Ambos recibiréis la recompensa configurada por el programa.{% endtrans %}</li>
+      </ol>
+    </div>
+  {% else %}
+    <div class="ej-referral-code__error">
+      <p>{% trans %}No se pudo generar tu código de referido. Inténtalo de nuevo más tarde.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+</div>

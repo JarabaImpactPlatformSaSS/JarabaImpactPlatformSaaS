@@ -1,0 +1,172 @@
+{#
+/**
+ * @file
+ * Detalle de un experimento A/B individual.
+ *
+ * ESTRUCTURA:
+ * Cabecera con info del experimento, tabla de variantes con métricas,
+ * análisis estadístico (Z-score, confianza), y recomendación.
+ *
+ * Variables:
+ *   - experiment (array): Datos del experimento.
+ *   - variants (array): Variantes con métricas.
+ *   - analysis (array): Resultado del análisis estadístico.
+ *   - funnel (array): Datos del funnel de conversión.
+ */
+#}
+
+<div class="ej-ab-detail">
+
+  {# ===== CABECERA ===== #}
+  <section class="ej-ab-detail__header">
+    <div class="ej-ab-detail__header-main">
+      <nav class="ej-ab-detail__breadcrumb">
+        <a href="/admin/ab-testing">{% trans %}A/B Testing{% endtrans %}</a>
+        <span>/</span>
+        <span>{{ experiment.name }}</span>
+      </nav>
+
+      <h1 class="ej-ab-detail__title">{{ experiment.name }}</h1>
+
+      <div class="ej-ab-detail__meta">
+        <span class="ej-ab-detail__status ej-ab-detail__status--{{ experiment.status }}">
+          {{ experiment.status|capitalize }}
+        </span>
+        <span class="ej-ab-detail__type">{{ experiment.type|replace({'_': ' '})|capitalize }}</span>
+        {% if experiment.start_date %}
+          <span class="ej-ab-detail__dates">
+            {{ experiment.start_date|date('d M Y') }}
+            {% if experiment.end_date %} — {{ experiment.end_date|date('d M Y') }}{% endif %}
+          </span>
+        {% endif %}
+      </div>
+
+      {% if experiment.hypothesis %}
+        <div class="ej-ab-detail__hypothesis">
+          <strong>{% trans %}Hypothesis{% endtrans %}:</strong> {{ experiment.hypothesis }}
+        </div>
+      {% endif %}
+    </div>
+
+    {# KPIs del experimento #}
+    <div class="ej-ab-detail__header-kpis">
+      <div class="ej-ab-detail__kpi">
+        <span class="ej-ab-detail__kpi-value">{{ experiment.total_visitors|number_format(0, ',', '.') }}</span>
+        <span class="ej-ab-detail__kpi-label">{% trans %}Visitors{% endtrans %}</span>
+      </div>
+      <div class="ej-ab-detail__kpi">
+        <span class="ej-ab-detail__kpi-value">{{ experiment.total_conversions|number_format(0, ',', '.') }}</span>
+        <span class="ej-ab-detail__kpi-label">{% trans %}Conversions{% endtrans %}</span>
+      </div>
+      <div class="ej-ab-detail__kpi">
+        <span class="ej-ab-detail__kpi-value">{{ experiment.overall_rate }}%</span>
+        <span class="ej-ab-detail__kpi-label">{% trans %}Conv. Rate{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# ===== TABLA DE VARIANTES ===== #}
+  <section class="ej-ab-detail__variants">
+    <h2>{% trans %}Variants{% endtrans %}</h2>
+
+    {% if variants is not empty %}
+      <div class="ej-ab-detail__table-wrapper">
+        <table class="ej-ab-detail__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Variant{% endtrans %}</th>
+              <th>{% trans %}Weight{% endtrans %}</th>
+              <th>{% trans %}Visitors{% endtrans %}</th>
+              <th>{% trans %}Conversions{% endtrans %}</th>
+              <th>{% trans %}Conv. Rate{% endtrans %}</th>
+              <th>{% trans %}Lift{% endtrans %}</th>
+              <th>{% trans %}Confidence{% endtrans %}</th>
+              <th>{% trans %}Status{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for variant in variants %}
+              <tr class="{{ variant.is_winner ? 'ej-ab-detail__variant--winner' : '' }} {{ variant.is_control ? 'ej-ab-detail__variant--control' : '' }}">
+                <td>
+                  <span class="ej-ab-detail__variant-name">
+                    {{ variant.name }}
+                    {% if variant.is_control %}
+                      <span class="ej-ab-detail__control-badge">{% trans %}Control{% endtrans %}</span>
+                    {% endif %}
+                  </span>
+                </td>
+                <td>{{ variant.traffic_weight }}%</td>
+                <td>{{ variant.visitors|number_format(0, ',', '.') }}</td>
+                <td>{{ variant.conversions|number_format(0, ',', '.') }}</td>
+                <td>
+                  <strong>{{ variant.conversion_rate }}%</strong>
+                </td>
+                <td>
+                  {% if variant.lift is defined and not variant.is_control %}
+                    <span class="ej-ab-detail__lift {{ variant.lift > 0 ? 'ej-ab-detail__lift--positive' : 'ej-ab-detail__lift--negative' }}">
+                      {{ variant.lift > 0 ? '+' : '' }}{{ variant.lift }}%
+                    </span>
+                  {% else %}
+                    <span class="ej-ab-detail__lift--baseline">{% trans %}Baseline{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if variant.confidence is defined and not variant.is_control %}
+                    <span class="ej-ab-detail__confidence {{ variant.confidence >= 95 ? 'ej-ab-detail__confidence--high' : '' }}">
+                      {{ variant.confidence }}%
+                    </span>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>
+                  {% if variant.is_winner %}
+                    <span class="ej-ab-detail__winner-badge">{% trans %}Winner{% endtrans %}</span>
+                  {% elseif variant.is_significant %}
+                    <span class="ej-ab-detail__significant-badge">{% trans %}Significant{% endtrans %}</span>
+                  {% else %}
+                    <span class="ej-ab-detail__pending-badge">{% trans %}Collecting data{% endtrans %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+
+  {# ===== ANÁLISIS ESTADÍSTICO ===== #}
+  {% if analysis is not empty %}
+    <section class="ej-ab-detail__analysis">
+      <h2>{% trans %}Statistical Analysis{% endtrans %}</h2>
+
+      <div class="ej-ab-detail__analysis-card">
+        {% if analysis.has_winner %}
+          <div class="ej-ab-detail__analysis-result ej-ab-detail__analysis-result--winner">
+            <strong>{% trans %}Winner detected!{% endtrans %}</strong>
+            <p>{{ analysis.recommended_action }}</p>
+          </div>
+        {% else %}
+          <div class="ej-ab-detail__analysis-result ej-ab-detail__analysis-result--pending">
+            <strong>{% trans %}No winner yet{% endtrans %}</strong>
+            <p>{{ analysis.recommended_action|default('Continue collecting data to reach statistical significance.') }}</p>
+          </div>
+        {% endif %}
+
+        <div class="ej-ab-detail__analysis-meta">
+          <span>{% trans %}Confidence threshold{% endtrans %}: {{ experiment.confidence_threshold|default(95) }}%</span>
+          <span>{% trans %}Minimum sample{% endtrans %}: {{ experiment.minimum_sample_size|default(100) }}</span>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== ACCIONES ===== #}
+  <section class="ej-ab-detail__actions">
+    <a href="/admin/ab-testing" class="ej-ab-detail__back-link">
+      {% trans %}Back to Dashboard{% endtrans %}
+    </a>
+  </section>
+
+</div>

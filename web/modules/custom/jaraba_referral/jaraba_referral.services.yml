@@ -1,0 +1,21 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Jaraba Referral
+  # Permite filtrar mensajes del módulo en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_referral:
+    parent: logger.channel_base
+    arguments: ['jaraba_referral']
+
+  # =====================================================================
+  # ReferralManagerService: Gestión integral del programa de referidos
+  # Responsabilidad: generación de códigos, procesamiento de referidos,
+  #   consulta de referidos por usuario, estadísticas por tenant
+  # Relaciones: consume Referral entity, TenantContextService
+  # =====================================================================
+  jaraba_referral.manager:
+    class: Drupal\jaraba_referral\Service\ReferralManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_referral'

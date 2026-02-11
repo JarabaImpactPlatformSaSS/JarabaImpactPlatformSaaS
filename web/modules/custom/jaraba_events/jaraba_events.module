@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Events: Eventos y webinars de marketing multi-tenant.
+ *
+ * ESTRUCTURA:
+ * Implementa hooks de Drupal para: registro de templates (hook_theme),
+ * body classes para páginas de eventos (hook_preprocess_html),
+ * auto-generación de slugs (hook_entity_presave), y texto de ayuda.
+ *
+ * LÓGICA:
+ * - hook_theme: Registra 4 templates Twig para las páginas frontend.
+ * - hook_preprocess_html: Añade clases CSS al <body> para identificar
+ *   páginas de eventos y permitir estilos específicos desde SCSS.
+ * - hook_entity_presave: Genera slug automático a partir del título
+ *   si el campo slug está vacío.
+ *
+ * RELACIONES:
+ * - jaraba_events.module -> templates/ (define templates)
+ * - jaraba_events.module -> EventFrontendController (templates consumidos por)
+ * - jaraba_events.module <- Drupal core (invocado por)
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_events_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_events':
+      $output = '<h3>' . t('About Jaraba Events') . '</h3>';
+      $output .= '<p>' . t('Provides marketing events and webinar management with registration, check-in, analytics, and Schema.org JSON-LD for Generative Engine Optimization (GEO).') . '</p>';
+      $output .= '<h4>' . t('Features') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Marketing event creation with multiple types (webinar, workshop, conference, meetup, demo, networking)') . '</li>';
+      $output .= '<li>' . t('Online, in-person, and hybrid event formats') . '</li>';
+      $output .= '<li>' . t('Attendee registration with double opt-in confirmation') . '</li>';
+      $output .= '<li>' . t('Automatic waitlist management with promotion') . '</li>';
+      $output .= '<li>' . t('Check-in tracking for attendance analytics') . '</li>';
+      $output .= '<li>' . t('Early bird pricing with configurable deadlines') . '</li>';
+      $output .= '<li>' . t('Schema.org Event JSON-LD for AI search engines (GEO)') . '</li>';
+      $output .= '<li>' . t('Conversion funnel analytics (registration → confirmation → attendance → feedback)') . '</li>';
+      $output .= '<li>' . t('REST API for programmatic integration') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra las plantillas Twig del módulo de eventos.
+ * Cada plantilla corresponde a una página frontend (Zero Region):
+ * - marketplace: listado/grid de eventos con filtros
+ * - landing: landing page individual con Schema.org
+ * - register: formulario de registro público
+ * - confirmation: página de confirmación de double opt-in
+ */
+function jaraba_events_theme($existing, $type, $theme, $path) {
+  return [
+    // Marketplace de eventos (/eventos)
+    'jaraba_events_marketplace' => [
+      'variables' => [
+        'events' => [],
+        'featured_events' => [],
+        'event_types' => [],
+        'formats' => [],
+        'active_type' => NULL,
+        'active_format' => NULL,
+        'pagination' => [],
+      ],
+      'template' => 'events-marketplace',
+      'path' => $path . '/templates',
+    ],
+
+    // Landing page de evento individual (/eventos/{slug})
+    'jaraba_events_landing' => [
+      'variables' => [
+        'event' => [],
+        'schema_org' => [],
+        'meta_tags' => [],
+        'related_events' => [],
+        'countdown' => NULL,
+        'registration_open' => FALSE,
+        'spots_remaining' => NULL,
+      ],
+      'template' => 'event-landing',
+      'path' => $path . '/templates',
+    ],
+
+    // Formulario de registro público (/eventos/{slug}/registro)
+    'jaraba_events_register' => [
+      'variables' => [
+        'event' => [],
+        'form_errors' => [],
+        'registration_success' => FALSE,
+        'submitted_data' => [],
+        'registration_open' => FALSE,
+      ],
+      'template' => 'event-register',
+      'path' => $path . '/templates',
+    ],
+
+    // Confirmación de registro (/eventos/{slug}/confirmacion/{token})
+    'jaraba_events_confirmation' => [
+      'variables' => [
+        'event' => [],
+        'confirmed' => FALSE,
+        'registration' => [],
+        'error_message' => '',
+      ],
+      'template' => 'event-confirmation',
+      'path' => $path . '/templates',
+    ],
+
+    // Tarjeta de evento reutilizable (partial)
+    'jaraba_events_card' => [
+      'variables' => [
+        'event' => [],
+      ],
+      'template' => 'partials/event-card',
+      'path' => $path . '/templates',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * LÓGICA:
+ * Añade clases CSS al <body> cuando el usuario navega por páginas de eventos.
+ * Estas clases permiten aplicar estilos específicos desde SCSS sin
+ * necesidad de modificar las plantillas del tema. Las clases siguen
+ * el patrón page--eventos, page--evento-landing, etc.
+ *
+ * Patrón: body classes via hook_preprocess_html() ÚNICAMENTE.
+ * NO se usa attributes.addClass() en templates Twig.
+ */
+function jaraba_events_preprocess_html(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if (!$route_name) {
+    return;
+  }
+
+  // Mapeo de rutas a clases CSS del body
+  $route_classes = [
+    'jaraba_events.marketplace' => ['page--eventos', 'page--eventos-marketplace'],
+    'jaraba_events.event_landing' => ['page--eventos', 'page--evento-landing'],
+    'jaraba_events.register_form' => ['page--eventos', 'page--evento-registro'],
+    'jaraba_events.confirm_registration' => ['page--eventos', 'page--evento-confirmacion'],
+  ];
+
+  if (isset($route_classes[$route_name])) {
+    foreach ($route_classes[$route_name] as $class) {
+      $variables['attributes']['class'][] = $class;
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_presave() for marketing_event entities.
+ *
+ * LÓGICA:
+ * Genera automáticamente el slug URL-friendly a partir del título
+ * del evento si el campo slug está vacío. El slug se normaliza a
+ * minúsculas, sin caracteres especiales, con guiones como separadores.
+ * Se verifica unicidad añadiendo un sufijo numérico si es necesario.
+ */
+function jaraba_events_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'marketing_event') {
+    return;
+  }
+
+  // Auto-generar slug si está vacío
+  $slug = $entity->get('slug')->value;
+  if (empty($slug)) {
+    $title = $entity->get('title')->value ?? '';
+    $slug = jaraba_events_generate_slug($title);
+
+    // Verificar unicidad del slug
+    $slug = jaraba_events_ensure_unique_slug($slug, $entity->id());
+    $entity->set('slug', $slug);
+  }
+}
+
+/**
+ * Genera un slug URL-friendly a partir de un texto.
+ *
+ * @param string $text
+ *   Texto a convertir en slug.
+ *
+ * @return string
+ *   Slug normalizado (minúsculas, sin acentos, guiones como separadores).
+ */
+function jaraba_events_generate_slug(string $text): string {
+  // Transliterar caracteres especiales
+  $slug = \Drupal::transliteration()->transliterate($text, 'es');
+
+  // Convertir a minúsculas
+  $slug = mb_strtolower($slug);
+
+  // Reemplazar caracteres no alfanuméricos por guiones
+  $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+
+  // Eliminar guiones al inicio y final
+  $slug = trim($slug, '-');
+
+  // Limitar longitud a 128 caracteres
+  if (mb_strlen($slug) > 128) {
+    $slug = mb_substr($slug, 0, 128);
+    $slug = rtrim($slug, '-');
+  }
+
+  return $slug ?: 'evento';
+}
+
+/**
+ * Asegura que un slug sea único en la base de datos.
+ *
+ * @param string $slug
+ *   Slug candidato.
+ * @param int|null $exclude_id
+ *   ID del evento a excluir (para ediciones, no generar conflicto consigo mismo).
+ *
+ * @return string
+ *   Slug único, posiblemente con sufijo numérico.
+ */
+function jaraba_events_ensure_unique_slug(string $slug, $exclude_id = NULL): string {
+  $storage = \Drupal::entityTypeManager()->getStorage('marketing_event');
+  $original_slug = $slug;
+  $counter = 1;
+
+  while (TRUE) {
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('slug', $slug)
+      ->count();
+
+    if ($exclude_id) {
+      $query->condition('id', $exclude_id, '<>');
+    }
+
+    if ((int) $query->execute() === 0) {
+      return $slug;
+    }
+
+    $counter++;
+    $slug = $original_slug . '-' . $counter;
+  }
+}

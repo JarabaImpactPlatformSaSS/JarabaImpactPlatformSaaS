@@ -1,0 +1,216 @@
+// =============================================================================
+// VARIABLES SCSS - JARABA ADDONS MODULE
+// =============================================================================
+// Design tokens con prefijo $addons- y CSS variables inyectables var(--ej-*, $fallback).
+// Usa Modern Dart Sass: color-mix() en lugar de darken()/lighten().
+//
+// RELACIONES:
+// - _variables.scss <- _catalog.scss (importado por)
+// - _variables.scss <- _detail.scss (importado por)
+// - _variables.scss <- main.scss (importado por)
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// COLORES BASE - ADD-ONS (con fallback para CSS variables inyectables)
+// ---------------------------------------------------------------------------
+
+$addons-color-primary-fallback: #6C63FF !default;
+$addons-color-secondary-fallback: #3D37B3 !default;
+$addons-color-surface-fallback: #FAFAF8 !default;
+$addons-color-surface-elevated-fallback: #FFFFFF !default;
+$addons-color-text-fallback: #1A1A2E !default;
+$addons-color-text-muted-fallback: #64748B !default;
+$addons-color-border-fallback: #E2E8F0 !default;
+
+// Colores semánticos
+$addons-color-success: #10B981 !default;
+$addons-color-warning: #F59E0B !default;
+$addons-color-error: #EF4444 !default;
+
+// ---------------------------------------------------------------------------
+// COLORES POR TIPO DE ADD-ON
+// ---------------------------------------------------------------------------
+
+$addons-type-feature: #6C63FF !default;
+$addons-type-storage: #FF6B35 !default;
+$addons-type-api-calls: #00BCD4 !default;
+$addons-type-support: #9C27B0 !default;
+$addons-type-custom: #607D8B !default;
+
+// ---------------------------------------------------------------------------
+// TIPOGRAFIA
+// ---------------------------------------------------------------------------
+
+$addons-font-family-fallback: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !default;
+
+$addons-font-size-xs: 0.75rem !default;
+$addons-font-size-sm: 0.875rem !default;
+$addons-font-size-md: 1rem !default;
+$addons-font-size-lg: 1.125rem !default;
+$addons-font-size-xl: 1.25rem !default;
+$addons-font-size-2xl: 1.5rem !default;
+$addons-font-size-3xl: 2rem !default;
+
+$addons-font-weight-normal: 400 !default;
+$addons-font-weight-medium: 500 !default;
+$addons-font-weight-semibold: 600 !default;
+$addons-font-weight-bold: 700 !default;
+
+// ---------------------------------------------------------------------------
+// ESPACIADO
+// ---------------------------------------------------------------------------
+
+$addons-spacing-xs: 0.25rem !default;
+$addons-spacing-sm: 0.5rem !default;
+$addons-spacing-md: 1rem !default;
+$addons-spacing-lg: 1.5rem !default;
+$addons-spacing-xl: 2rem !default;
+$addons-spacing-2xl: 3rem !default;
+$addons-spacing-3xl: 4rem !default;
+
+// ---------------------------------------------------------------------------
+// BORDES Y ESQUINAS
+// ---------------------------------------------------------------------------
+
+$addons-border-radius-sm: 6px !default;
+$addons-border-radius-md: 12px !default;
+$addons-border-radius-lg: 16px !default;
+$addons-border-radius-xl: 20px !default;
+$addons-border-radius-full: 9999px !default;
+
+// ---------------------------------------------------------------------------
+// SOMBRAS
+// ---------------------------------------------------------------------------
+
+$addons-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06) !default;
+$addons-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08) !default;
+$addons-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12) !default;
+$addons-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16) !default;
+
+// ---------------------------------------------------------------------------
+// GLASSMORPHISM PREMIUM
+// ---------------------------------------------------------------------------
+
+$addons-glass-bg: rgba(255, 255, 255, 0.6) !default;
+$addons-glass-bg-hover: rgba(255, 255, 255, 0.8) !default;
+$addons-glass-blur: 12px !default;
+$addons-glass-border: 1px solid rgba(255, 255, 255, 0.25) !default;
+
+// ---------------------------------------------------------------------------
+// TRANSICIONES
+// ---------------------------------------------------------------------------
+
+$addons-transition-fast: 150ms !default;
+$addons-transition-normal: 250ms !default;
+$addons-transition-slow: 400ms !default;
+$addons-transition-easing: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$addons-transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1) !default;
+
+// ---------------------------------------------------------------------------
+// BREAKPOINTS (mobile-first)
+// ---------------------------------------------------------------------------
+
+$addons-breakpoint-sm: 576px !default;
+$addons-breakpoint-md: 768px !default;
+$addons-breakpoint-lg: 992px !default;
+$addons-breakpoint-xl: 1200px !default;
+
+// ---------------------------------------------------------------------------
+// LAYOUT
+// ---------------------------------------------------------------------------
+
+$addons-container-max-width: 1200px !default;
+$addons-container-padding: $addons-spacing-md !default;
+
+// ---------------------------------------------------------------------------
+// MIXINS
+// ---------------------------------------------------------------------------
+
+/// Contenedor centrado con max-width y padding responsive.
+@mixin addons-container {
+  max-width: var(--ej-addons-container-max-width, #{$addons-container-max-width});
+  margin-inline: auto;
+  padding-inline: var(--ej-addons-container-padding, #{$addons-container-padding});
+  width: 100%;
+}
+
+/// Tarjeta base con glassmorphism premium.
+@mixin addons-card {
+  background: var(--ej-addons-card-bg, #{$addons-color-surface-elevated-fallback});
+  border-radius: var(--ej-addons-card-radius, #{$addons-border-radius-lg});
+  border: var(--ej-addons-card-border, #{$addons-glass-border});
+  box-shadow: var(--ej-addons-card-shadow, #{$addons-shadow-md});
+  padding: var(--ej-addons-card-padding, #{$addons-spacing-lg});
+  transition:
+    transform #{$addons-transition-normal} #{$addons-transition-easing},
+    box-shadow #{$addons-transition-normal} #{$addons-transition-easing};
+  will-change: transform;
+}
+
+/// Tarjeta con efecto glassmorphism premium y hover elevado.
+@mixin addons-card-glass {
+  @include addons-card;
+  background: var(--ej-addons-glass-bg, #{$addons-glass-bg});
+  backdrop-filter: blur(#{$addons-glass-blur});
+  -webkit-backdrop-filter: blur(#{$addons-glass-blur});
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--ej-addons-card-shadow-hover, #{$addons-shadow-xl});
+    background: var(--ej-addons-glass-bg-hover, #{$addons-glass-bg-hover});
+  }
+}
+
+/// Botón primario premium.
+@mixin addons-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $addons-spacing-sm;
+  padding: $addons-spacing-sm $addons-spacing-lg;
+  background: var(--ej-addons-btn-bg, #{$addons-color-primary-fallback});
+  color: var(--ej-addons-btn-color, #FFFFFF);
+  border: none;
+  border-radius: var(--ej-addons-btn-radius, #{$addons-border-radius-md});
+  font-family: var(--ej-font-family, #{$addons-font-family-fallback});
+  font-size: $addons-font-size-md;
+  font-weight: $addons-font-weight-semibold;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background #{$addons-transition-fast} #{$addons-transition-easing},
+    transform #{$addons-transition-fast} #{$addons-transition-easing},
+    box-shadow #{$addons-transition-fast} #{$addons-transition-easing};
+
+  &:hover {
+    background: var(--ej-addons-btn-bg-hover, color-mix(in srgb, #{$addons-color-primary-fallback} 85%, black));
+    transform: translateY(-2px);
+    box-shadow: $addons-shadow-md;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 3px solid color-mix(in srgb, #{$addons-color-primary-fallback} 40%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+/// Badge de tipo de add-on con color dinámico.
+/// @param {Color} $color - Color del tipo de add-on.
+@mixin addons-badge($color: $addons-type-custom) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2em 0.7em;
+  font-size: $addons-font-size-xs;
+  font-weight: $addons-font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: $addons-border-radius-full;
+  background: color-mix(in srgb, #{$color} 15%, transparent);
+  color: $color;
+  line-height: 1.5;
+  white-space: nowrap;
+}

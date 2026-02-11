@@ -1,0 +1,132 @@
+{#
+/**
+ * @file
+ * Página de confirmación de registro (/eventos/{slug}/confirmacion/{token}).
+ *
+ * ESTRUCTURA:
+ * Plantilla Zero Region que muestra el resultado de la confirmación
+ * de double opt-in: éxito con datos del ticket o error si el token
+ * es inválido/expirado.
+ *
+ * LÓGICA:
+ * - Si confirmed es TRUE, muestra datos del ticket y detalles del evento.
+ * - Si confirmed es FALSE, muestra mensaje de error.
+ *
+ * Variables:
+ *   - event (array): Datos del evento.
+ *   - confirmed (bool): Si la confirmación fue exitosa.
+ *   - registration (array): Datos del registro confirmado.
+ *   - error_message (string): Mensaje de error si falla.
+ */
+#}
+
+<div class="ej-event-confirmation">
+
+  {# Breadcrumb #}
+  <nav class="ej-event-confirmation__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+    <a href="/eventos">{% trans %}Events{% endtrans %}</a>
+    <span>/</span>
+    <a href="/eventos/{{ event.slug }}">{{ event.title }}</a>
+    <span>/</span>
+    <span>{% trans %}Confirmation{% endtrans %}</span>
+  </nav>
+
+  {% if confirmed %}
+
+    {# ===== CONFIRMACIÓN EXITOSA ===== #}
+    <div class="ej-event-confirmation__success">
+      <div class="ej-event-confirmation__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="80" height="80">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+
+      <h1 class="ej-event-confirmation__title">{% trans %}Registration confirmed!{% endtrans %}</h1>
+      <p class="ej-event-confirmation__subtitle">
+        {% trans %}Your spot is secured. See you at the event!{% endtrans %}
+      </p>
+
+      {# Ticket card #}
+      <div class="ej-event-confirmation__ticket">
+        <div class="ej-event-confirmation__ticket-header">
+          <h2>{{ event.title }}</h2>
+        </div>
+
+        <div class="ej-event-confirmation__ticket-body">
+          <div class="ej-event-confirmation__ticket-row">
+            <span class="ej-event-confirmation__ticket-label">{% trans %}Attendee{% endtrans %}</span>
+            <span class="ej-event-confirmation__ticket-value">{{ registration.attendee_name }}</span>
+          </div>
+          <div class="ej-event-confirmation__ticket-row">
+            <span class="ej-event-confirmation__ticket-label">{% trans %}Email{% endtrans %}</span>
+            <span class="ej-event-confirmation__ticket-value">{{ registration.attendee_email }}</span>
+          </div>
+          <div class="ej-event-confirmation__ticket-row">
+            <span class="ej-event-confirmation__ticket-label">{% trans %}Date{% endtrans %}</span>
+            <span class="ej-event-confirmation__ticket-value">
+              <time datetime="{{ event.start_date }}">{{ event.start_date|date('d M Y · H:i') }}</time>
+              {% if event.end_date %}
+                — {{ event.end_date|date('H:i') }}
+              {% endif %}
+            </span>
+          </div>
+          <div class="ej-event-confirmation__ticket-row">
+            <span class="ej-event-confirmation__ticket-label">{% trans %}Format{% endtrans %}</span>
+            <span class="ej-event-confirmation__ticket-value">
+              {% if event.format == 'online' %}{% trans %}Online{% endtrans %}
+              {% elseif event.format == 'presencial' %}{% trans %}In-person{% endtrans %}
+              {% else %}{% trans %}Hybrid{% endtrans %}
+              {% endif %}
+            </span>
+          </div>
+          {% if event.location %}
+            <div class="ej-event-confirmation__ticket-row">
+              <span class="ej-event-confirmation__ticket-label">{% trans %}Location{% endtrans %}</span>
+              <span class="ej-event-confirmation__ticket-value">{{ event.location }}</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="ej-event-confirmation__ticket-footer">
+          <span class="ej-event-confirmation__ticket-code-label">{% trans %}Ticket code{% endtrans %}</span>
+          <span class="ej-event-confirmation__ticket-code">{{ registration.ticket_code }}</span>
+        </div>
+      </div>
+
+      {# Instrucciones #}
+      <div class="ej-event-confirmation__instructions">
+        {% if event.format == 'online' %}
+          <p>{% trans %}You will receive the meeting link by email before the event starts.{% endtrans %}</p>
+        {% elseif event.format == 'presencial' %}
+          <p>{% trans %}Please present your ticket code at the event entrance.{% endtrans %}</p>
+        {% else %}
+          <p>{% trans %}You will receive connection details and venue information by email.{% endtrans %}</p>
+        {% endif %}
+      </div>
+
+      <a href="/eventos/{{ event.slug }}" class="ej-event-confirmation__back-link">
+        {% trans %}Back to event details{% endtrans %}
+      </a>
+    </div>
+
+  {% else %}
+
+    {# ===== ERROR ===== #}
+    <div class="ej-event-confirmation__error">
+      <div class="ej-event-confirmation__icon ej-event-confirmation__icon--error">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="80" height="80">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+
+      <h1 class="ej-event-confirmation__title">{% trans %}Confirmation failed{% endtrans %}</h1>
+      <p class="ej-event-confirmation__error-text">{{ error_message }}</p>
+
+      <a href="/eventos/{{ event.slug }}" class="ej-event-confirmation__back-link">
+        {% trans %}Back to event{% endtrans %}
+      </a>
+    </div>
+
+  {% endif %}
+
+</div>

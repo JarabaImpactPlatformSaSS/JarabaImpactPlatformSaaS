@@ -1,0 +1,143 @@
+{#
+/**
+ * @file
+ * Dashboard centralizado de A/B testing.
+ *
+ * ESTRUCTURA:
+ * KPI cards superiores, tabla de experimentos activos con métricas
+ * resumidas, y sección de experimentos completados.
+ *
+ * Variables:
+ *   - kpis (array): Métricas KPI agregadas.
+ *   - active_experiments (array): Experimentos en ejecución.
+ *   - completed_experiments (array): Últimos 10 completados.
+ *   - all_experiments (array): Todos los experimentos.
+ */
+#}
+
+<div class="ej-ab-dashboard">
+
+  {# ===== KPI CARDS ===== #}
+  <section class="ej-ab-dashboard__kpis">
+    <div class="ej-ab-dashboard__kpi-card">
+      <span class="ej-ab-dashboard__kpi-value">{{ kpis.active_experiments }}</span>
+      <span class="ej-ab-dashboard__kpi-label">{% trans %}Active Experiments{% endtrans %}</span>
+    </div>
+    <div class="ej-ab-dashboard__kpi-card">
+      <span class="ej-ab-dashboard__kpi-value">{{ kpis.total_visitors|number_format(0, ',', '.') }}</span>
+      <span class="ej-ab-dashboard__kpi-label">{% trans %}Total Visitors{% endtrans %}</span>
+    </div>
+    <div class="ej-ab-dashboard__kpi-card">
+      <span class="ej-ab-dashboard__kpi-value">{{ kpis.avg_conversion_rate }}%</span>
+      <span class="ej-ab-dashboard__kpi-label">{% trans %}Avg. Conversion Rate{% endtrans %}</span>
+    </div>
+    <div class="ej-ab-dashboard__kpi-card">
+      <span class="ej-ab-dashboard__kpi-value">{{ kpis.experiments_with_winner }}</span>
+      <span class="ej-ab-dashboard__kpi-label">{% trans %}Winners Found{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# ===== EXPERIMENTOS ACTIVOS ===== #}
+  <section class="ej-ab-dashboard__section">
+    <h2 class="ej-ab-dashboard__section-title">{% trans %}Active Experiments{% endtrans %}</h2>
+
+    {% if active_experiments is not empty %}
+      <div class="ej-ab-dashboard__table-wrapper">
+        <table class="ej-ab-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Experiment{% endtrans %}</th>
+              <th>{% trans %}Type{% endtrans %}</th>
+              <th>{% trans %}Visitors{% endtrans %}</th>
+              <th>{% trans %}Conversions{% endtrans %}</th>
+              <th>{% trans %}Conv. Rate{% endtrans %}</th>
+              <th>{% trans %}Days Running{% endtrans %}</th>
+              <th>{% trans %}Actions{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in active_experiments %}
+              <tr>
+                <td>
+                  <a href="/admin/ab-testing/{{ exp.id }}" class="ej-ab-dashboard__exp-link">
+                    {{ exp.name }}
+                  </a>
+                </td>
+                <td>
+                  <span class="ej-ab-dashboard__type-badge ej-ab-dashboard__type-badge--{{ exp.type }}">
+                    {{ exp.type|replace({'_': ' '})|capitalize }}
+                  </span>
+                </td>
+                <td>{{ exp.total_visitors|number_format(0, ',', '.') }}</td>
+                <td>{{ exp.total_conversions|number_format(0, ',', '.') }}</td>
+                <td>
+                  <span class="ej-ab-dashboard__rate {{ exp.overall_rate > 5 ? 'ej-ab-dashboard__rate--good' : '' }}">
+                    {{ exp.overall_rate }}%
+                  </span>
+                </td>
+                <td>{{ exp.days_running }} {% trans %}days{% endtrans %}</td>
+                <td>
+                  <a href="/admin/ab-testing/{{ exp.id }}" class="ej-ab-dashboard__action-link">
+                    {% trans %}View{% endtrans %}
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ej-ab-dashboard__empty">
+        <p>{% trans %}No active experiments. Create a new experiment to start testing.{% endtrans %}</p>
+        <a href="/admin/content/ab-experiments" class="ej-ab-dashboard__cta">
+          {% trans %}Manage Experiments{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </section>
+
+  {# ===== EXPERIMENTOS COMPLETADOS ===== #}
+  {% if completed_experiments is not empty %}
+    <section class="ej-ab-dashboard__section">
+      <h2 class="ej-ab-dashboard__section-title">{% trans %}Recently Completed{% endtrans %}</h2>
+
+      <div class="ej-ab-dashboard__table-wrapper">
+        <table class="ej-ab-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Experiment{% endtrans %}</th>
+              <th>{% trans %}Type{% endtrans %}</th>
+              <th>{% trans %}Result{% endtrans %}</th>
+              <th>{% trans %}Conv. Rate{% endtrans %}</th>
+              <th>{% trans %}Winner{% endtrans %}</th>
+              <th>{% trans %}Actions{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in completed_experiments %}
+              <tr>
+                <td>
+                  <a href="/admin/ab-testing/{{ exp.id }}">{{ exp.name }}</a>
+                </td>
+                <td>{{ exp.type|replace({'_': ' '})|capitalize }}</td>
+                <td>
+                  {% if exp.has_winner %}
+                    <span class="ej-ab-dashboard__result ej-ab-dashboard__result--winner">{% trans %}Winner found{% endtrans %}</span>
+                  {% else %}
+                    <span class="ej-ab-dashboard__result ej-ab-dashboard__result--inconclusive">{% trans %}Inconclusive{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td>{{ exp.overall_rate }}%</td>
+                <td>{{ exp.winner_name|default('-') }}</td>
+                <td>
+                  <a href="/admin/ab-testing/{{ exp.id }}">{% trans %}Details{% endtrans %}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+</div>

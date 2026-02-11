@@ -1,0 +1,63 @@
+# =============================================================================
+# Rutas del módulo Jaraba Ads
+# Estructura: rutas de settings (Field UI), dashboard admin y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente.
+#   El dashboard admin muestra analítica consolidada.
+#   Las rutas API requieren autenticación y filtran por tenant automáticamente.
+# =============================================================================
+
+# --- Settings Route (para Field UI de la entidad) ---
+
+jaraba_ads.ad_campaign.settings:
+  path: '/admin/structure/ad-campaigns'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdCampaignSettingsForm'
+    _title: 'Configuración Campañas Ads'
+  requirements:
+    _permission: 'administer ads settings'
+
+# --- Dashboard Admin de Ads ---
+
+jaraba_ads.dashboard:
+  path: '/admin/ads'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsDashboardController::dashboard'
+    _title: 'Dashboard de Publicidad'
+  requirements:
+    _permission: 'view ads dashboard'
+
+# --- Rutas API REST ---
+
+jaraba_ads.api.campaigns:
+  path: '/api/v1/ads'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::listCampaigns'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_ads.api.campaigns.detail:
+  path: '/api/v1/ads/{campaign_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::getCampaign'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    campaign_id: '\d+'
+
+jaraba_ads.api.campaigns.metrics:
+  path: '/api/v1/ads/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::getMetrics'
+  methods: [GET]
+  requirements:
+    _permission: 'view ads dashboard'
+
+jaraba_ads.api.campaigns.spend:
+  path: '/api/v1/ads/spend-by-platform'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::getSpendByPlatform'
+  methods: [GET]
+  requirements:
+    _permission: 'view ads dashboard'

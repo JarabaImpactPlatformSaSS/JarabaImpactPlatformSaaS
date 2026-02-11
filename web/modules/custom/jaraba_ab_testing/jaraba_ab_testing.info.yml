@@ -1,0 +1,10 @@
+name: 'Jaraba A/B Testing'
+type: module
+description: 'Framework unificado de A/B testing con motor estadístico, asignación de variantes y dashboard de experimentos. Complementa las implementaciones existentes en page_builder, skills y copilot_v2 con una capa centralizada de estadística y agregación.'
+package: 'Jaraba Platform Features'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:field
+  - drupal:user
+  - drupal:views
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

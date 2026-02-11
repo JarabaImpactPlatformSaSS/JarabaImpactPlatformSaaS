@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-ads",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dart Sass build para el modulo Jaraba Ads",
+  "scripts": {
+    "build:individual": "sass scss/_dashboard.scss css/ads-dashboard.css --style=compressed --no-source-map",
+    "build": "npm run build:individual"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

@@ -1,0 +1,20 @@
+// =============================================================================
+// Jaraba Events — SCSS Principal
+//
+// ESTRUCTURA:
+// Punto de entrada que importa todos los parciales SCSS del módulo.
+// Compila a css/jaraba-events.css con Dart Sass.
+//
+// PATRÓN:
+// - Variables inyectables: var(--ej-*, $fallback) configurables desde Drupal UI
+// - Tokens de diseño federados: hereda de ecosistema_jaraba_core/_variables.scss
+// - color-mix() en vez de darken()/lighten() (Dart Sass moderno)
+// - Mobile-first: media queries de min-width
+// =============================================================================
+
+@use 'variables' as *;
+@use 'event-card';
+@use 'events-marketplace';
+@use 'event-landing';
+@use 'event-registration';
+@use 'event-confirmation';

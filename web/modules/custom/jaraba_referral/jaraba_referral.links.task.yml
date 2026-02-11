@@ -1,0 +1,12 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Jaraba Referral
+# La entidad aparece como una pestaña en la sección de contenido
+# permitiendo listar, filtrar y gestionar los datos de negocio
+# =============================================================================
+
+# Tab Referidos en admin/content
+jaraba_referral.referral.collection:
+  title: 'Referidos'
+  route_name: entity.referral.collection
+  base_route: system.admin_content
+  weight: 82

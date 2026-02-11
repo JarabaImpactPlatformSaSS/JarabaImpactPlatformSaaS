@@ -1,0 +1,35 @@
+# =============================================================================
+# Bibliotecas del módulo Jaraba Referral
+# Estructura: cada página tiene su propia biblioteca CSS + JS
+# Lógica: se adjuntan vía #attached['library'] en los controladores
+# =============================================================================
+
+referral-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/referral-dashboard.css: { weight: 10 }
+  js:
+    js/referral-dashboard.js: { weight: 10 }
+  dependencies:
+    - core/drupal
+    - core/once
+
+referral-share:
+  version: 1.x
+  css:
+    theme:
+      css/referral-my-code.css: { weight: 10 }
+  js:
+    js/referral-share.js: { weight: 10 }
+  dependencies:
+    - core/drupal
+    - core/once
+
+referral-landing:
+  version: 1.x
+  css:
+    theme:
+      css/referral-landing.css: { weight: 10 }
+  dependencies:
+    - core/drupal
