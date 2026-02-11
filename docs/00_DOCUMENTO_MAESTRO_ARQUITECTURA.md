@@ -1,10 +1,10 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v3.0
+## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-01-11  
-**Versión:** 3.0.0  
+**Fecha:** 2026-02-11  
+**Versión:** 5.6.0 (G114-4 FAQ Bot Contextual — Centro de Ayuda Público)  
 **Estado:** Producción (IONOS)  
-**Nivel de Madurez:** 4.5 / 5.0
+**Nivel de Madurez:** 5.0 / 5.0
 
 ---
 
@@ -456,11 +456,23 @@
 │                      MÓDULOS CUSTOM                                      │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   📦 ecosistema_jaraba_core                                             │
-│   ├── Entidades: Vertical, SaasPlan, Tenant                             │
-│   ├── Servicios: TenantManager, PlanValidator, OnboardingService        │
-│   ├── Controladores: Onboarding, TenantDashboard, Webhooks              │
-│   └── Estado: ✅ Producción                                             │
+│   📦 ecosistema_jaraba_core (120+ archivos)                             │
+│   ├── Entidades: Vertical, SaasPlan, Tenant, AIAgent, Feature           │
+│   ├── Servicios Core: TenantManager, PlanValidator, OnboardingService   │
+│   ├── Servicios Q1 2027 (12 nuevos):                                    │
+│   │   ├── ReverseTrialService - Reverse Trial + downgrade automático   │
+│   │   ├── AgentAutonomyService - 4 niveles autonomía agentes IA        │
+│   │   ├── ContextualCopilotService - Copilot contextual embebido       │
+│   │   ├── MicroAutomationService - Auto-tagging, smart sorting         │
+│   │   ├── AICostOptimizationService - FinOps IA, model routing         │
+│   │   ├── ExpansionRevenueService - PQA scoring, NRR tracking          │
+│   │   ├── VideoGeoService - Video Schema.org, YouTube SEO              │
+│   │   ├── MultilingualGeoService - hreflang, Answer Capsules           │
+│   │   └── SandboxTenantService - Demo pre-registro temporal            │
+│   ├── Controllers: ApiController, CopilotController, SandboxController │
+│   ├── API REST: OpenAPI 3.0, Swagger UI, 25+ endpoints                  │
+│   ├── PWA: manifest.json, sw.js (offline-first), push notifications    │
+│   └── Estado: ✅ Producción (Q1 2027)                                   │
 │                                                                         │
 │   📦 jaraba_commerce                                                    │
 │   ├── Integración Drupal Commerce 3.x                                   │
@@ -475,10 +487,218 @@
 │   ├── Indexación automática de productos                                │
 │   └── Estado: ✅ Producción (v5.1)                                      │
 │                                                                         │
+│   📦 jaraba_tenant_knowledge ✅ (Knowledge Training + Help Center)       │
+│   ├── Entrenamiento KB del Tenant: FAQs, Políticas, Documentos          │
+│   ├── Centro de Ayuda Público: /ayuda (G114)                            │
+│   │   ├── G114-1: Landing categorías + búsqueda + artículos populares  │
+│   │   ├── G114-2: Versionado con diff visual para FAQs/Políticas       │
+│   │   ├── G114-3: Soporte multilingüe                                   │
+│   │   └── G114-4: FAQ Bot Contextual (chat widget público)              │
+│   ├── FaqBotService: embedding → Qdrant → LLM grounded → escalación    │
+│   │   └── 3-tier scoring: ≥0.75 grounded, 0.55-0.75 low, <0.55 escala │
+│   ├── API: POST /api/v1/help/chat (público, rate limited 10/min/IP)    │
+│   ├── KnowledgeIndexerService: Indexación automática en Qdrant          │
+│   └── Estado: ✅ Producción (G114 completo, 4/4 gaps cerrados)          │
+│                                                                         │
 │   📦 jaraba_social_commerce                                             │
 │   ├── Integración Make.com                                              │
 │   ├── Facebook, Instagram, TikTok, Pinterest                            │
 │   └── Estado: 🔄 Desarrollo                                             │
+│                                                                         │
+│   📦 jaraba_agroconecta_core ✅ (Vertical AgroConecta)                   │
+│   ├── 20 Content Entities, 6 Controllers, 7 Services, 15 Forms         │
+│   ├── Fases 1-3: Commerce Core + Orders + Producer/Customer Portal     │
+│   ├── Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)          │
+│   ├── Sprint AC6-2: Partner Document Hub B2B (Doc 82)                  │
+│   │   ├── PartnerRelationship + ProductDocument + DocumentDownloadLog  │
+│   │   ├── PartnerDocumentService: 12+ métodos (CRUD, magic link, CSV)  │
+│   │   ├── 17 API endpoints: 9 productor + 8 portal público (token)     │
+│   │   └── Frontend: _partner-hub.scss, partner-hub.js, 2 Twig          │
+│   ├── Patrón: Clean Twig pages + var(--ej-*) + hook_preprocess_html    │
+│   └── Estado: ✅ Producción (Sprint AC6-2, ~720h total)                │
+│                                                                         │
+│   📦 jaraba_agroconecta_traceability 📋                                 │
+│   ├── Entidades: AgroBatch, TraceEvent, TraceCertificate, AgroQR       │
+│   ├── Hash Anchoring: SHA-256 → OpenTimestamps/Polygon                  │
+│   ├── QR Dinámico: Analytics + lead capture                             │
+│   └── Estado: 📋 Planificado (Fase 5)                                   │
+│                                                                         │
+│   📦 jaraba_agroconecta_ai 📋                                           │
+│   ├── Producer Copilot: SEO, pricing, stock alerts, market spy          │
+│   ├── Sales Agent: WhatsApp/Web, recommendations, abandoned cart        │
+│   ├── RAG: Colecciones agro_products, agro_producers, agro_regulations │
+│   └── Estado: 📋 Planificado (Fase 6)                                   │
+│                                                                         │
+│   📦 jaraba_servicios_conecta ✅ (Vertical ServiciosConecta)              │
+│   ├── 5 Content Entities, 3 Controllers, 4 Services, 2 Taxonomías     │
+│   ├── Fase 1: Marketplace + Provider Portal + Booking Engine           │
+│   │   ├── ProviderProfile, ServiceOffering, Booking                    │
+│   │   ├── AvailabilitySlot, ServicePackage                             │
+│   │   └── Taxonomías: servicios_category, servicios_modality           │
+│   ├── Frontend: 4 SCSS partials + Twig templates (Dart Sass @use)      │
+│   ├── Patrón: Clean Twig pages + var(--ej-*) + hook_preprocess_html    │
+│   └── Estado: ✅ Producción (Fase 1, ~40h)                             │
+│                                                                         │
+│   📦 jaraba_foc                                                          │
+│   ├── Centro de Operaciones Financieras (FOC)                           │
+│   ├── Entidades: FinancialTransaction, CostAllocation, MetricSnapshot  │
+│   ├── Stripe Connect: Destination Charges + Application Fee            │
+│   ├── Motor FinOps: Métricas SaaS 2.0 + Triple Motor Económico          │
+│   ├── ETL: Webhooks Stripe + ActiveCampaign + Make.com                  │
+│   ├── Alertas: Sistema ECA con Playbooks automatizados                  │
+│   └── Estado: ✅ Producción                                             │
+│                                                                         │
+│   📦 jaraba_business_tools (Vertical Emprendimiento)                     │
+│   ├── Entidades: BusinessModelCanvas (9 bloques)                        │
+│   ├── CanvasAiService: Sugerencias IA por sector (7 sectores)           │
+│   ├── PDF Export: jsPDF con branding personalizado                       │
+│   ├── Drag-Drop: SortableJS para reordenar elementos                    │
+│   └── Estado: ✅ Producción                                              │
+│                                                                         │
+│   📦 jaraba_mentoring                                                    │
+│   ├── Entidades: MentorProfile, MentoringPackage, MentoringEngagement   │
+│   ├── Stripe Connect: Pagos a mentores con split                         │
+│   ├── Calendario: FullCalendar para disponibilidad                       │
+│   └── Estado: ✅ Producción                                              │
+│                                                                         │
+│   📦 jaraba_paths                                                        │
+│   ├── Entidades: DigitalizationPath, PathMilestone                       │
+│   ├── Catálogo: Itinerarios de digitalización por sector                  │
+│   └── Estado: ✅ Producción                                              │
+│                                                                         │
+│   📦 jaraba_groups                                                       │
+│   ├── Entidades: CollaborationGroup, GroupDiscussion                     │
+│   ├── Círculos de Responsabilidad: Grupos de 3 emprendedores             │
+│   └── Estado: ✅ Producción                                              │
+│                                                                         │
+│   📦 jaraba_copilot_v2 ✅                                                │
+│   ├── Copiloto IA Emprendimiento: 7 modos adaptativos                    │
+│   │   └── coach, consultor, sparring, cfo, fiscal, laboral, devil        │
+│   ├── ModeDetectorService: Router inteligente con scoring por triggers   │
+│   │   └── +100 triggers, modificadores por carril, análisis emocional    │
+│   ├── NormativeRAGService: RAG semántico Qdrant + fallback keyword       │
+│   │   └── Colección: normative_knowledge (33 docs indexados)             │
+│   ├── CopilotOrchestratorService: Multi-proveedor con failover           │
+│   │   ├── Proveedores: Anthropic → OpenAI → Google Gemini                │
+│   │   └── AI Usage Tracking: tokens, costes, métricas State API          │
+│   ├── Biblioteca: 44 experimentos Osterwalder                            │
+│   ├── Patrón: Desbloqueo Progresivo UX (12 semanas)                       │
+│   ├── Entidades: entrepreneur_profile, hypothesis, experiment            │
+│   └── Estado: ✅ Producción (v2.0 - Smart Router + RAG)                  │
+│                                                                         │
+│   📦 jaraba_journey ✅ (Block C Journey Engine)                           │
+│   ├── Motor de navegación inteligente: 7 verticales, 19 avatares         │
+│   ├── JourneyState Entity: 7 estados (discovery → advocacy + at_risk)    │
+│   ├── JourneyEngineService: Transiciones, eventos, KPIs                   │
+│   ├── JourneyContextService: Análisis contexto + risk_score               │
+│   ├── JourneyTriggerService: 11 tipos triggers IA + NO_INTRUSION_RULES   │
+│   ├── JourneyDefinitionLoader: 7 definiciones por vertical                │
+│   ├── API REST: 6 endpoints (/api/v1/journey/*)                           │
+│   ├── Dashboard Admin: /admin/config/jaraba/journey                       │
+│   └── Estado: ✅ Producción (v1.0 - 100% avatares implementados)          │
+│                                                                         │
+│   📦 jaraba_heatmap 🔄 (Native Analytics)                                │
+│   ├── Tracking: Clics, movimiento mouse, scroll depth                    │
+│   ├── API: POST /api/heatmap/collect (Beacon API)                         │
+│   ├── Storage: 4 tablas (events, aggregated, scroll_depth, screenshots)  │
+│   ├── Agregación: Cron diario, buckets 5%/50px                            │
+│   ├── Visualización: Canvas overlay con gradientes                        │
+│   └── Estado: 🔄 Planificado (55-70h)                                     │
+│                                                                         │
+│   📦 jaraba_ai_agents ✅ (Agentic Workflows Framework)                    │
+│   ├── Sistema Agentic: Workflows multi-step con herramientas autónomas  │
+│   ├── Entidades: AgentTool, AiAgentExecution, AiToolExecution            │
+│   ├── ToolRegistryService: Registro dinámico de herramientas IA          │
+│   │   └── 12+ tools: knowledge_base, email_sender, calendar, etc.        │
+│   ├── AgentOrchestrator: Ejecutor de agentes con LLM router              │
+│   │   └── Proveedores: Anthropic → OpenAI → Google Gemini (failover)     │
+│   ├── AgentExecutionService: Tracking de ejecuciones + costes            │
+│   ├── API REST: /api/v1/agents/*, /api/v1/tools/*                        │
+│   └── Estado: ✅ Producción (v1.0 - Tool Use nativo)                     │
+│                                                                         │
+│   📦 jaraba_social ✅ (AI Social Manager - Marketing A.4)                 │
+│   ├── Entidades: SocialAccount, SocialPost                               │
+│   ├── SocialPostService: Generación IA + scheduling + publish            │
+│   │   └── Plataformas: Facebook, Instagram, LinkedIn, Twitter, TikTok   │
+│   ├── Dashboard: /social con estadísticas y calendario                   │
+│   ├── API REST: /api/v1/social/generate, /api/v1/social/schedule         │
+│   └── Estado: ✅ Producción (v1.0)                                       │
+│                                                                         │
+│   📦 jaraba_crm ✅ (CRM Pipeline + Kanban)                                │
+│   ├── Entidades: Company, Contact, Opportunity, Activity                 │
+│   ├── PipelineKanbanController: Vista Kanban drag & drop                 │
+│   │   └── Ruta: /crm/kanban con JS vanilla + SCSS premium                │
+│   ├── CrmDashboardController: Dashboard unificado /crm                   │
+│   └── Estado: ✅ Producción (v2.0 - Kanban añadido)                      │
+│                                                                         │
+│   📦 jaraba_email ✅ (Email Marketing + AI)                               │
+│   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate  │
+│   ├── EmailAIService: Generación de subjects y copy con IA               │
+│   │   └── generateSubjectLines(), generateEmailCopy(), A/B variants      │
+│   ├── MJML Compiler: Templates responsive                                │
+│   └── Estado: ✅ Producción (v2.0 - AI Integration)                      │
+│                                                                         │
+│   📦 ecosistema_jaraba_core Admin Center D ✅                            │
+│   ├── Impersonation System: Login como usuario de tenant                │
+│   │   ├── ImpersonationAuditLog: Entity audit trail completo            │
+│   │   ├── ImpersonationService: Sesión 30min, bloqueo UID 1             │
+│   │   └── API: /api/v1/admin/impersonate/* (start, end, status, logs)   │
+│   ├── RBAC Matrix: Vista visual gestión permisos por rol                │
+│   │   ├── Toggle AJAX: Activar/desactivar permisos en tiempo real       │
+│   │   ├── Filtro módulo: Localización rápida de permisos                │
+│   │   └── Export CSV: Documentación y auditoría                         │
+│   ├── Scheduled Reports: Reportes automáticos programados               │
+│   │   ├── ScheduledReport Entity: 5 tipos, 3 frecuencias                │
+│   │   └── AlertRule Entity: Métricas monitoreables + cooldown           │
+│   └── Estado: ✅ Producción (v1.0 - Feb 2026)                            │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 Arquitectura de Theming (Federated Design Tokens)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    THEMING ARCHITECTURE                                  │
+│                 Federated Design Tokens v2.1                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   SINGLE SOURCE OF TRUTH (SSOT)                                         │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  📦 ecosistema_jaraba_core                                       │  │
+│   │  ├── scss/_variables.scss    → $ej-* (compile-time tokens)      │  │
+│   │  ├── scss/_injectable.scss   → var(--ej-*) (runtime tokens)     │  │
+│   │  └── 33 parciales SCSS       → 7 dashboards, componentes        │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                              │                                          │
+│                              ▼                                          │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                    MÓDULOS SATÉLITE                              │  │
+│   │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐             │  │
+│   │  │ page_builder │ │ interactive  │ │ credentials  │             │  │
+│   │  │ 7 SCSS       │ │ 2 SCSS       │ │ 1 SCSS       │             │  │
+│   │  │ package.json │ │ package.json │ │ package.json │             │  │
+│   │  └──────────────┘ └──────────────┘ └──────────────┘             │  │
+│   │  Solo consumen: var(--ej-*, $fallback)                          │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                              │                                          │
+│                              ▼                                          │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                    TEMA DRUPAL                                   │  │
+│   │  📦 ecosistema_jaraba_theme                                      │  │
+│   │  ├── 45 archivos SCSS      → components, features               │  │
+│   │  ├── SDC Components (2)    → Card, Hero                         │  │
+│   │  └── Inyección runtime     → hook_page_attachments              │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   MÉTRICAS CONSOLIDACIÓN (Feb 2026):                                    │
+│   ✅ 102 archivos SCSS documentados                                     │
+│   ✅ 14 módulos con package.json estandarizado                          │
+│   ✅ 0 funciones darken()/lighten() deprecadas                          │
+│   ✅ 100% módulos satélite usando var(--ej-*)                           │
+│                                                                         │
+│   📚 DOCUMENTO DETALLADO:                                               │
+│   docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md      │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -556,6 +776,16 @@
 │   │ http://qdrant:6333     │    │ https://qdrant.cloud    │             │
 │   └────────────────────────┘    └────────────────────────┘             │
 │                                                                         │
+│   FAQ BOT CONTEXTUAL (G114-4):                                          │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │   Cliente      ──▶   Embedding   ──▶   Qdrant    ──▶  Scoring  │  │
+│   │   /ayuda chat        Query           Search         3-tier     │  │
+│   │                                                                  │  │
+│   │   ≥0.75 ──▶ LLM Grounded (Haiku, max_tokens=512, temp=0.3)     │  │
+│   │   0.55-0.75 ──▶ Baja confianza + sugerir contacto              │  │
+│   │   <0.55 ──▶ Escalación con datos de contacto del negocio       │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -596,7 +826,31 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 9.2 Cumplimiento GDPR
+### 9.2 Hallazgos de Auditoría de Seguridad (2026-02-06)
+
+> **Referencia:** [Auditoría Profunda SaaS Multidimensional v1](./tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md)
+
+La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos de seguridad** (5 críticos + 4 altos):
+
+| ID | Severidad | Hallazgo | Estado |
+|----|-----------|----------|--------|
+| SEC-01 | CRITICA | Inyección de prompts vía configuración de tenant | Pendiente |
+| SEC-02 | CRITICA | Webhook público sin verificación de firma HMAC | Pendiente |
+| SEC-03 | CRITICA | Claves Stripe en config DB en vez de env vars | Pendiente |
+| SEC-04 | CRITICA | Qdrant sin autenticación por API key | Pendiente |
+| SEC-05 | CRITICA | APIs públicas `/api/v1/*` sin autenticación | Pendiente |
+| SEC-06 | ALTA | Rutas demo sin restricción de tipo en parámetros | Pendiente |
+| SEC-07 | ALTA | Mensajes de error internos expuestos al usuario | Pendiente |
+| SEC-08 | ALTA | Sin configuración CORS ni CSP headers | Pendiente |
+| SEC-09 | ALTA | Re-index sin verificación de tenant ownership | Pendiente |
+
+**Nuevas directrices derivadas:**
+- Toda clave API debe almacenarse en variables de entorno, nunca en configuración de Drupal
+- Todo endpoint que invoque LLM/embedding debe tener rate limiting por tenant y usuario
+- Toda interpolación en prompts del sistema debe sanitizarse contra whitelist
+- Filtros Qdrant para tenant deben usar `must` (AND), nunca `should` (OR)
+
+### 9.3 Cumplimiento GDPR
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -720,13 +974,17 @@
 │                                                                         │
 │   ENE ──●── KB RAG Qdrant operativo ✅                                  │
 │         │                                                               │
-│   FEB ──●── Fitness Functions automatizadas                             │
+│   ENE ──●── FOC v2 Diseño + Documentación 🔄                             │
+│         │                                                               │
+│   FEB ──●── FOC Fase 1: Entidades Financieras                           │
+│         │                                                               │
+│   FEB ──●── FOC Fase 2: Stripe Connect Destination Charges              │
 │         │                                                               │
 │   MAR ──●── Game Day #1 Chaos Engineering                               │
 │         │                                                               │
-│   ABR ──●── Architecture as Code                                        │
+│   ABR ──●── FOC Fase 3: Motor Proyecciones PHP-ML                       │
 │         │                                                               │
-│   MAY ──●── Piloto AIOps                                                │
+│   MAY ──●── FOC Fase 4: Alertas ECA + Playbooks                         │
 │         │                                                               │
 │   JUN ──●── Predictive Capacity Planning                                │
 │         │                                                               │
@@ -736,6 +994,7 @@
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
+
 
 ---
 
@@ -749,7 +1008,42 @@
 | Planes SaaS | `docs/logica/2026-01-09_1908_definicion-planes-saas.md` |
 | Roadmap Nivel 5 | `docs/planificacion/2026-01-11_1503_roadmap-nivel5-arquitectura.md` |
 | Guía KB RAG | `docs/tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md` |
+| Documento FOC v2 | `docs/tecnicos/20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md` |
+| README FOC (API) | `web/modules/custom/jaraba_foc/README.md` |
+| **Plan Estratégico v4.0** | `docs/planificacion/20260114-Plan_Estrategico_SaaS_Q1Q4_2026.md` |
+| **Auditoría Profunda SaaS v1** | `docs/tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md` |
+| **Plan Elevación Page Builder v1.2** ⭐ | `docs/arquitectura/2026-02-08_plan_elevacion_page_builder_clase_mundial.md` |
+| **Aprendizajes Elevación Page Builder** | `docs/tecnicos/aprendizajes/2026-02-08_elevacion_page_builder_clase_mundial.md` |
+| **Aprendizajes Auditoría v2.1** ⭐ | `docs/tecnicos/aprendizajes/2026-02-09_auditoria_v2_falsos_positivos_page_builder.md` |
+| **Plan v2.1 Falsos Positivos** ⭐ | `docs/planificacion/20260209-Plan_Elevacion_Page_Site_Builder_v2.md` |
+| **Aprendizajes Auditoría** | `docs/tecnicos/aprendizajes/2026-02-06_auditoria_profunda_saas_multidimensional.md` |
+| **Aprendizajes PHPUnit 11** ⭐ | `docs/tecnicos/aprendizajes/2026-02-11_phpunit11_kernel_test_remediation.md` |
+| **Plan ServiciosConecta Fase 1** ⭐ | `docs/implementacion/20260209-Plan_Implementacion_ServiciosConecta_v1.md` |
+| **Aprendizajes ServiciosConecta** | `docs/tecnicos/aprendizajes/2026-02-09_servicios_conecta_fase1_implementation.md` |
+| **Plan Maestro Unificado v3.0** ⭐ | `docs/planificacion/20260123-Plan_Maestro_Unificado_SaaS_v3_Claude.md` |
+| **Bloque G: AI Skills System** ⭐ | `docs/implementacion/20260123g-Bloque_G_AI_Skills_Implementacion_Claude.md` |
+| **Auditoría Gap Q1 2027** | `docs/tecnicos/20260115g-Auditoria_Gap_Arquitectura_v1_Claude.md` |
+| **Mapeo Arquitectónico Integral** | `docs/arquitectura/2026-01-19_1858_mapeo-arquitectonico-integral-saas.md` |
+| **Vertical Emprendimiento Gap Analysis** | `docs/tecnicos/20260115h-Gap_Analysis_Documentacion_Tecnica_Emprendimiento_v1_Claude.md` |
+| **Copiloto v2 Especificaciones** | `docs/tecnicos/20260121a-Especificaciones_Tecnicas_Copiloto_v2_Claude.md` |
+| **Programa Andalucía +ei** | `docs/tecnicos/20260115c-Programa%20Maestro%20Andaluc%C3%ADa%20+ei%20V2.0_Gemini.md` |
 
 ---
 
-> **Versión:** 3.0.0 | **Fecha:** 2026-01-11 | **Autor:** IA Asistente
+## 📊 Plan Maestro v3.0 (Auditoría 2026-01-23)
+
+| Bloque | Descripción | Horas |
+|--------|-------------|-------|
+| **A** | Gaps Auditoría: SEPE, Frontend, AgroConecta, Expansión | 1,690h |
+| **B** | Copiloto v3: Osterwalder/Blank | 96h |
+| **C** | Journey Engine: 19 avatares, 7 estados | 530h |
+| **D** | Admin Center: 8 módulos premium | 635h |
+| **E** | Training System: 6 peldaños certificación | 124h |
+| **F** | AI Content Hub: Blog, Newsletter, AI Writing | 340-410h |
+| **G** | AI Skills System: Especialización agentes IA | 200-250h |
+| **TOTAL** | **7 bloques, 24 meses** | **~4,500h** |
+
+---
+
+> **Versión:** 5.5.0 | **Fecha:** 2026-02-11 | **Autor:** IA Asistente
+

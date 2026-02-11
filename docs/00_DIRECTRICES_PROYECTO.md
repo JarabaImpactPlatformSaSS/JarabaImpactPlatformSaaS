@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-01-11 14:50  
-**Versión:** 2.1.0 (KB AI-Nativa + RAG Qdrant)
+**Última actualización:** 2026-02-11 18:30
+**Versión:** 6.5.0 (G114-4 FAQ Bot Contextual — Centro de Ayuda Público)
 
 ---
 
@@ -46,6 +46,19 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Certificación Digital**: Firma electrónica con FNMT/AutoFirma
 - **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
 - **Theming**: Personalización visual por Tenant
+- **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorías, Template Registry SSoT v5.0, Feature Flags)
+- **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 módulos, Sprint AC6-2 ✅):
+  - `jaraba_agroconecta_core` ✅: 20 Content Entities, 6 Controllers, 7 Services, 15 Forms
+    - Fases 1-3: Commerce Core + Orders + Producer/Customer Portal
+    - Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)
+    - Sprint AC6-2: Partner Document Hub B2B (magic link auth, 17 API endpoints, audit log)
+  - `jaraba_agroconecta_traceability` 📋: Trazabilidad hash-anchoring, QR dinámico, certificados
+  - `jaraba_agroconecta_ai` 📋: Producer Copilot + Sales Agent (RAG Qdrant)
+- **ServiciosConecta** ⭐: Marketplace de servicios profesionales (1 módulo, Fase 1 ✅):
+  - `jaraba_servicios_conecta` ✅: 5 Content Entities, 3 Controllers, 4 Services, 2 Taxonomías
+    - Fase 1: Marketplace + Provider Portal + Booking Engine
+    - Entidades: ProviderProfile, ServiceOffering, Booking, AvailabilitySlot, ServicePackage
+    - Frontend: 4 SCSS partials (Dart Sass @use), Twig templates, BEM + var(--ej-*)
 
 ### 1.5 Idioma de Documentación
 - **Documentación**: Español
@@ -63,6 +76,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 | **Drupal** | 11.x | CMS principal, gestión de contenido y entidades |
 | **PHP** | 8.4+ | Lenguaje backend |
 | **MySQL/MariaDB** | 8.0+ / 10.5+ | Base de datos |
+| **Redis** | 7.x | Cache backend (render, page, copilot_responses) |
 | **Composer** | 2.x | Gestión de dependencias PHP |
 
 ### 2.2 Frontend
@@ -107,6 +121,217 @@ npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
 - Importar parciales en `main.scss` con `@use 'nombre-sin-guion-bajo'`
 - Usar variables definidas en `_variables.scss`
 - Compilar antes de commitear cambios de estilos
+- **Usar Dart Sass moderno**: `color.adjust()` en lugar de `darken()`/`lighten()` deprecados
+
+> **📚 ARQUITECTURA THEMING**
+> 
+> El proyecto implementa el patrón **"Federated Design Tokens"** para SCSS:
+> - **SSOT**: `ecosistema_jaraba_core/scss/_variables.scss` + `_injectable.scss`
+> - **Módulos satélite**: Solo consumen CSS Custom Properties `var(--ej-*)`
+> - **14 módulos con package.json**: Compilación estandarizada (core, agroconecta, candidate, comercio, credentials, foc, i18n, interactive, page_builder, self_discovery, servicios, site_builder, social, tenant_knowledge)
+> - **Documento maestro**: [docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md](./arquitectura/2026-02-05_arquitectura_theming_saas_master.md)
+
+#### 2.2.2 Plantillas Twig Limpias (Sin Regiones)
+
+> **⚠️ PATRÓN CRÍTICO**: Para páginas que requieren control total del layout (landings, homepages, páginas de producto).
+
+**Ubicación:** `web/themes/custom/ecosistema_jaraba_theme/templates/`
+
+**Plantillas disponibles:**
+
+| Plantilla | Ruta | Propósito |
+|-----------|------|-----------|
+| `page--front.html.twig` | `/` | Homepage / Landing page |
+| `page--content-hub.html.twig` | `/content-hub` | Dashboard editor |
+| `page--dashboard.html.twig` | `/employer`, `/jobseeker`, etc. | Dashboards de verticales |
+| `page--vertical-landing.html.twig` | `/empleo`, `/talento`, etc. | Landing pages de verticales |
+
+**Cuándo usar:**
+- ✅ Landings de marketing con secciones hero, features, CTA
+- ✅ Dashboards frontend para usuarios autenticados
+- ✅ Páginas de producto con diseño custom
+- ✅ Portales de entrada (login, onboarding)
+- ❌ Páginas administrativas (usar layout estándar con regiones)
+
+**Estructura de plantilla limpia (HTML COMPLETO):**
+
+```twig
+{#
+ * page--{route}.html.twig - Página frontend sin regiones Drupal.
+ *
+ * PROPÓSITO: Renderizar página full-width sin sidebar ni elementos de admin.
+ * PATRÓN: HTML completo con {% include %} de parciales reutilizables.
+ #}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-content-hub', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN - Full-width #}
+  <main id="main-content" class="dashboard-main">
+    <div class="dashboard-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial reutilizable #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>
+```
+
+> **Referencia completa**: [docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md](./tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md)
+
+
+**Cómo activar para una ruta:**
+1. Crear `page--RUTA.html.twig` en el tema
+2. Implementar `hook_theme_suggestions_page_alter()` si es ruta dinámica
+3. Limpiar caché: `drush cr`
+
+**Ejemplo hook en .theme:**
+
+```php
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ */
+function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  // Páginas de landing sin regiones
+  $route = \Drupal::routeMatch()->getRouteName();
+  if (str_starts_with($route, 'ecosistema_jaraba_core.landing')) {
+    $suggestions[] = 'page__clean';
+  }
+}
+```
+
+> **⚠️ LECCIÓN CRÍTICA: Clases del Body**
+> 
+> Las clases añadidas con `attributes.addClass()` en templates Twig **NO funcionan para el `<body>`**.
+> Drupal renderiza el `<body>` en `html.html.twig`, no en `page.html.twig`.
+> 
+> **Siempre usar `hook_preprocess_html()`** para añadir clases al body:
+> 
+> ```php
+> function ecosistema_jaraba_theme_preprocess_html(&$variables) {
+>   $route = \Drupal::routeMatch()->getRouteName();
+>   
+>   if ($route === 'mi_modulo.mi_ruta') {
+>     $variables['attributes']['class'][] = 'page-mi-ruta';
+>     $variables['attributes']['class'][] = 'dashboard-page';
+>   }
+> }
+> ```
+> 
+> **Referencia**: [2026-01-29_site_builder_frontend_fullwidth.md](./tecnicos/aprendizajes/2026-01-29_site_builder_frontend_fullwidth.md)
+
+
+#### 2.2.3 Include Twig Global para Componentes Persistentes
+
+> **⚠️ PATRÓN CRÍTICO**: Para componentes que aparecen en **todas** las páginas con detección de contexto automática.
+
+**Problema que resuelve:** Evitar configuración dispersa de bloques en BD para FABs, banners de cookies, feedback widgets, etc.
+
+**Ubicación del partial:** `web/themes/custom/ecosistema_jaraba_theme/templates/partials/_componente.html.twig`
+
+**Cuándo usar:**
+- ✅ FABs (Floating Action Buttons) como copilotos IA
+- ✅ Banners de cookies/GDPR
+- ✅ Widgets de feedback
+- ✅ Cualquier UX global con contextualización por usuario/ruta
+- ❌ Componentes específicos de una sola página (usar parciales locales)
+
+**Arquitectura:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  page.html.twig (o page--*.html.twig)                       │
+│                                                              │
+│  {% if componente_context %}                                 │
+│    {% include '@tema/partials/_componente.html.twig'         │
+│       with { context: componente_context } only %}          │
+│  {% endif %}                                                 │
+│                                                              │
+│            ▲                                                 │
+│            │                                                 │
+│  ┌─────────┴─────────────────────────────────────────────┐  │
+│  │  hook_preprocess_page()                               │  │
+│  │  $variables['componente_context'] = $service->get()   │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Ejemplo: Copiloto Contextual FAB**
+
+1. **Servicio de Contexto:**
+```php
+// CopilotContextService.php - Detecta avatar, tenant, vertical
+public function getContext(): array {
+    return [
+        'avatar' => $this->detectAvatar(),     // por roles del usuario
+        'user_name' => $this->getUserName(),   // personalización
+        'vertical' => $this->detectVertical(), // por tenant o ruta
+    ];
+}
+```
+
+2. **Hook en .theme:**
+```php
+function tema_preprocess_page(&$variables) {
+    $variables['copilot_context'] = NULL;
+    
+    // No mostrar en admin
+    if (!\Drupal::service('router.admin_context')->isAdminRoute()) {
+        $variables['copilot_context'] = \Drupal::service('modulo.copilot_context')->getContext();
+    }
+}
+```
+
+3. **Include en page.html.twig:**
+```twig
+{# Después del footer, antes de cerrar .page-wrapper #}
+{% if copilot_context %}
+  {% include '@tema/partials/_copilot-fab.html.twig' 
+     with { context: copilot_context } only %}
+{% endif %}
+```
+
+**Ventajas sobre Bloques Drupal:**
+| Aspecto | Bloques BD | Include Global |
+|---------|------------|----------------|
+| Configuración | Dispersa en cada bloque | Un único punto |
+| Contextualización | Manual por bloque | Automática por servicio |
+| Mantenibilidad | Difícil auditar | Fácil de auditar |
+| Consistencia | Puede variar | Garantizada |
+
+**Referencia:** [Arquitectura Copiloto Contextual](./arquitectura/2026-01-26_arquitectura_copiloto_contextual.md)
 
 ### 2.3 Integraciones Externas
 
@@ -160,13 +385,353 @@ $value = $config->get('key') ?: 'default';
 - `/admin/config/jaraba/rag` - Configuración general
 - Ver logs: `/admin/reports/dblog?type[]=jaraba_rag`
 
-### 2.4 Desarrollo Local
+#### 2.3.3 FAQ Bot Contextual (G114-4)
+
+> **Módulo**: `jaraba_tenant_knowledge` | **Estado**: ✅ Operativo (2026-02-11)
+
+Widget chat público integrado en `/ayuda` que responde preguntas de clientes finales usando **exclusivamente** la KB del tenant (FAQs + Políticas) indexada en Qdrant. Escalación automática cuando no puede responder.
+
+| Componente | Descripción |
+|------------|-------------|
+| **FaqBotService** | Orquestación: embedding → Qdrant search → LLM grounded → escalación |
+| **FaqBotApiController** | API pública `POST /api/v1/help/chat` + feedback |
+| **Similarity 3-tier** | ≥0.75 grounded, 0.55–0.75 baja confianza, <0.55 escalación |
+| **Rate Limiting** | Flood API: 10 req/min/IP |
+| **LLM** | claude-3-haiku con failover multi-proveedor |
+| **Frontend** | FAB widget + panel chat (faq-bot.js + _faq-bot.scss) |
+
+**Diferencia con jaraba_copilot_v2:** El copiloto v2 es para emprendedores (5 modos creativos, normative RAG). El FAQ Bot es para **clientes finales** del tenant — respuestas estrictamente grounded en la KB, sin conocimiento general.
+
+### 2.4 Centro de Operaciones Financieras (FOC)
+
+> **Módulo**: `jaraba_foc` | **Estado**: 🟡 Parcial (~35-40%)
+> Ver: [Documento Técnico FOC v2](./tecnicos/20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md)
+
+| Componente | Descripción |
+|------------|-------------|
+| **Modelo Económico** | Triple Motor: Institucional (30%), Mercado Privado (40%), Licencias (30%) |
+| **Stripe Connect** | Destination Charges con split automático (Application Fee) |
+| **Entidades Inmutables** | `financial_transaction`, `cost_allocation`, `foc_metric_snapshot` |
+| **ETL Automatizado** | Webhooks Stripe + ActiveCampaign + Make.com |
+
+> [!IMPORTANT]
+> **Servicios Billing en `ecosistema_jaraba_core`:** Además del módulo FOC, existen 4 servicios
+> de billing distribuidos en core: `JarabaStripeConnect`, `TenantSubscriptionService`,
+> `TenantMeteringService` y `WebhookService`. Se requiere consolidación para evitar duplicación
+> con `StripeConnectService` en FOC. Ver auditoría coherencia 2026-02-11.
+
+**Métricas SaaS 2.0 Implementadas:**
+
+| Categoría | Métricas |
+|-----------|----------|
+| **Salud y Crecimiento** | MRR, ARR, Gross Margin, ARPU, Rule of 40 |
+| **Retención** | NRR (>100%), GRR (85-95%), Logo Churn (<5%), Revenue Churn (<4.67%) |
+| **Unit Economics** | CAC, LTV, LTV:CAC (≥3:1), CAC Payback (<12 meses), Magic Number (>0.75) |
+| **Modelo Híbrido** | Grant Burn Rate, GMV, Application Fee Rate, Tenant Margin |
+
+**Arquitectura Técnica:**
+
+```php
+// Entidad inmutable (append-only) - Libro mayor contable
+// ❌ NO permite edit/delete - Solo compensaciones
+/**
+ * @ContentEntityType(
+ *   id = "financial_transaction",
+ *   label = @Translation("Transacción Financiera"),
+ *   handlers = {
+ *     "views_data" = "Drupal\\views\\EntityViewsData",
+ *   },
+ *   base_table = "financial_transaction",
+ * )
+ */
+class FinancialTransaction extends ContentEntityBase {
+    // amount: Decimal(10,4) - NUNCA usar float para dinero
+    // timestamp: DateTime UTC - Sin conflictos timezone
+    // external_id: String - Evita duplicados, permite auditoría
+}
+```
+
+**Stripe Connect - Destination Charges:**
+
+```
+Cliente paga €100 → Stripe retiene €3.20 (fees)
+                  → Plataforma recibe €5.00 (application_fee 5%)
+                  → Vendedor recibe €91.80
+
+✅ Plataforma NO es Merchant of Record
+✅ Solo tributa por comisiones, no GMV
+✅ Riesgo financiero mínimo
+```
+
+### 2.5 Desarrollo Local
 
 | Herramienta | Propósito |
 |-------------|----------|
 | **Lando** | Entorno de desarrollo local containerizado |
 | **Drush** | CLI para administración Drupal |
 | **WSL2 + Ubuntu** | Subsistema Linux en Windows |
+
+### 2.6 Servicios Core Q1-Q4 2026
+
+> **Estado**: ✅ Implementados (2026-01-14)
+> **Módulo**: `ecosistema_jaraba_core`
+
+| Quarter | Sprint | Servicio | Función |
+|---------|--------|----------|---------|
+| **Q1** | 1-4 | `AlertingService` | Notificaciones Slack/Teams via webhooks |
+| **Q1** | 1-4 | `MarketplaceRecommendationService` | Recomendaciones cross-tenant |
+| **Q1** | 1-4 | `TenantCollaborationService` | Partnerships, mensajería, bundles |
+| **Q2** | 5-6 | `UserIntentClassifierService` | Clasificación intención usuario |
+| **Q2** | 5-6 | `TimeToFirstValueService` | Métricas TTFV y análisis |
+| **Q2** | 5-6 | `GuidedTourService` | Tours contextuales |
+| **Q2** | 5-6 | `InAppMessagingService` | Mensajería adaptativa |
+| **Q2** | 7-8 | `UsageLimitsService` | Monitoreo límites y upgrades |
+| **Q2** | 7-8 | `ReferralProgramService` | Programa de referidos |
+| **Q2** | 7-8 | `PricingRecommendationService` | Sugerencias de plan |
+| **Q3** | 9-10 | `AIGuardrailsService` | Validación prompts, PII |
+| **Q3** | 9-10 | `AIPromptABTestingService` | Experimentos A/B |
+| **Q3** | 11-12 | `SelfHealingService` | Runbooks automatizados |
+| **Q4** | 13-14 | `TenantMeteringService` | Metering usage-based |
+| **Q4** | 13-14 | `AIValueDashboardService` | ROI de IA, insights |
+| **Q4** | 15-16 | `AIOpsService` | Predicción incidentes |
+
+**Total: 17 servicios**
+
+### 2.7 Servicios Q1 2027 - Gap Implementation
+
+> **Estado**: ✅ Implementados (2026-01-15)
+> **Auditoría**: Multi-Disciplinaria SaaS
+
+| Categoría | Servicio | Función |
+|-----------|----------|---------|
+| **PLG 2.0** | `ReverseTrialService` | Reverse Trial 14d + downgrade automático |
+| **PLG 2.0** | `SandboxTenantService` | Demo pre-registro temporal (24h) |
+| **AI Agent** | `AgentAutonomyService` | 4 niveles autonomía (Suggest→Silent) |
+| **AI Agent** | `ContextualCopilotService` | Copilot contextual embebido |
+| **AI Agent** | `MicroAutomationService` | Auto-tagging, smart sorting |
+| **FinOps** | `AICostOptimizationService` | Token budgets, model routing |
+| **Revenue** | `ExpansionRevenueService` | PQA scoring, NRR tracking |
+| **GEO** | `VideoGeoService` | Video Schema.org, YouTube SEO |
+| **GEO** | `MultilingualGeoService` | hreflang, Answer Capsules |
+
+**API REST Q1 2027:**
+- `ApiController` - OpenAPI 3.0, Swagger UI, endpoints `/api/v1/*`
+- `CopilotController` - Endpoints `/api/copilot/*`
+- `SandboxController` - Endpoints `/api/sandbox/*`
+
+**Mobile PWA:**
+- `manifest.json` - Web App Manifest con iconos y shortcuts
+- `sw.js` - Service Worker offline-first, push notifications
+- `offline.html` - Página offline elegante
+
+**Total: 12 nuevos servicios + 3 controllers + PWA**
+
+### 2.8 Servicios Q1 2026 - Cierre de Gaps Empleabilidad
+
+> **Estado**: ✅ Completado (2026-01-17)
+> **Auditoría**: 100% servicios PHP implementados
+
+| Fase | Servicio | Estado | Función |
+|------|----------|--------|----------|
+| **Fase 1** | `CopilotInsightsService` | ✅ | Autoaprendizaje IA - Tracking intents y escucha usuarios |
+| **Fase 1** | `CopilotConversation` Entity | ✅ | Persistencia de conversaciones copilots |
+| **Fase 1** | `CopilotMessage` Entity | ✅ | Mensajes con intent, entidades, feedback |
+| **Fase 1** | `CopilotInsightsDashboard` | ✅ | Dashboard Admin `/admin/insights/copilot` |
+| **Fase 2** | `EmbeddingService` | ✅ | Pipeline embeddings para jobs/candidates |
+| **Fase 2** | `MatchingService` | ✅ | Matching híbrido rules + Qdrant |
+| **Fase 3** | `OpenBadgeService` | ✅ | Credenciales Open Badges 3.0 |
+| **Fase 3** | `GamificationService` | ✅ | XP, rachas (10 niveles), leaderboard |
+| **Fase 4** | `RecommendationService` | ✅ | Collaborative Filtering + Hybrid ML |
+
+**Best Practices Implementadas (2026-01-17):**
+
+| Práctica | Servicio | Estado |
+|----------|----------|--------|
+| **Feedback Loop** | `recordMatchFeedback()`, `getRecommendationsWithFeedback()` | ✅ |
+| **Rate Limiting** | `RateLimiterService` (sliding window) | ✅ |
+| **Telemetría** | `EmbeddingTelemetryService` (latencia, costos, cache hits) | ✅ |
+| **Unit Tests** | `RecommendationServiceTest`, `RateLimiterServiceTest` | ✅ |
+
+**Automatizaciones ECA (Hooks Nativos) - Implementado 2026-01-17:**
+
+| Flujo | Servicio | Estado |
+|-------|----------|--------|
+| **Auto-Enrollment** | `DiagnosticEnrollmentService` (perfil → learning path) | ✅ |
+| **Badge Automático** | `jaraba_lms_entity_update()` → `OpenBadgeService` | ✅ |
+| **XP Automático** | `jaraba_lms_entity_insert()` → `GamificationService` | ✅ |
+| **Notif. Candidaturas** | `ApplicationNotificationService` (email queue) | ✅ |
+| **Créditos Impacto** | `ImpactCreditService` (+20 apply, +500 hired) | ✅ |
+| **Job Alerts** | `JobAlertMatchingService` (matching + company follow) | ✅ |
+| **Web Push** | `WebPushService` (VAPID, sin FCM) | ✅ |
+| **Cron Digest** | `jaraba_job_board_cron()` (9:00 AM diario) | ✅ |
+| **Embedding Auto** | `jaraba_matching_entity_insert/update()` | ✅ |
+
+**Gaps Cerrados (2026-01-17):**
+
+| Gap | Solución Implementada |
+|-----|----------------------|
+| ~~Triggers ECA~~ | Hooks nativos de Drupal (no depende de módulo ECA) |
+| ~~i18n Completa~~ | Revisar en próxima iteración (bajo impacto) |
+
+**Dashboard de Insights:**
+- Top 10 preguntas frecuentes de usuarios
+- Intents más comunes (job_search, cv_help, interview_prep)
+- Tasa de resolución y queries sin resolver
+- Tendencias semanales por copilot tipo
+
+**APIs Autoaprendizaje:**
+- `POST /api/v1/copilot/conversations` - Crear conversación
+- `POST /api/v1/copilot/messages` - Registrar mensaje
+- `POST /api/v1/copilot/messages/{id}/feedback` - Feedback útil/no útil
+- `GET /api/v1/insights/copilot/summary` - Resumen admin
+
+### 2.9 Servicios Q1 2026 - Vertical Emprendimiento Digital
+
+> **Estado**: 🚧 En desarrollo (Plan v3.1 aprobado 2026-01-21)
+> **Módulo**: `jaraba_copilot_v2` (planificado)
+> **Programa**: Andalucía +ei v2.0
+
+**Entregables Copiloto v2 (Listos para integración):**
+
+| Componente | Archivo | Estado |
+|------------|---------|--------|
+| **Prompt Maestro** | `copilot_prompt_master_v2.md` | ✅ |
+| **Catálogo Experimentos** | `experiment_library_catalog.json` (44 exp) | ✅ |
+| **Schema Perfil** | `entrepreneur_profile.schema.json` | ✅ |
+| **OpenAPI** | `openapi_copiloto_v2.yaml` | ✅ |
+| **Migraciones SQL** | `migraciones_sql_copiloto_v2.sql` | ✅ |
+| **Módulo Drupal** | `copilot_integration.module` | ✅ |
+| **Widget React** | `CopilotChatWidget.jsx` | ✅ |
+| **Dashboard BMC** | `BMCValidationDashboard.jsx` | ✅ |
+| **Formularios** | `TestCard.html`, `LearningCard.html` | ✅ |
+
+**5 Modos del Copiloto:**
+
+| Modo | Trigger | Comportamiento |
+|------|---------|----------------|
+| 🧠 **Coach Emocional** | miedo, bloqueo, impostor | Valida emoción → Kit Primeros Auxilios |
+| 🔧 **Consultor Táctico** | cómo hago, paso a paso | Instrucciones clic a clic |
+| 🥊 **Sparring Partner** | qué te parece, feedback | Actúa como cliente escéptico |
+| 💰 **CFO Sintético** | precio, cobrar, rentable | Calculadora de la Verdad |
+| 😈 **Abogado del Diablo** | estoy seguro, funcionará | Desafía hipótesis |
+
+**Patrón de Desbloqueo Progresivo UX:**
+
+> **Principio Rector**: El emprendedor ve **exactamente lo que necesita cuando lo necesita**.
+> La plataforma "crece" con él a lo largo de las 12 semanas del programa.
+
+```php
+// FeatureUnlockService.php
+const UNLOCK_MAP = [
+    0 => ['dime_test', 'profile_basic'],                    // Semana 0
+    1 => ['copilot_coach', 'pills_1_3', 'kit_emocional'],   // Semanas 1-3
+    4 => ['canvas_vpc', 'canvas_bmc', 'experiments_discovery'], // Semanas 4-6
+    7 => ['copilot_cfo', 'calculadora_precio', 'test_card'],   // Semanas 7-9
+    10 => ['mentoring_marketplace', 'calendar_sessions'],    // Semanas 10-11
+    12 => ['experiments_commitment', 'demo_day', 'certificado'] // Semana 12
+];
+```
+
+**Mapa de Desbloqueo por Semana:**
+
+| Semana | Funcionalidades Desbloqueadas |
+|--------|------------------------------|
+| **0** | DIME + Clasificación Carril + Perfil Básico |
+| **1-3** | Copiloto Coach + Píldoras 1-3 + Kit Emocional |
+| **4-6** | +Canvas VPC/BMC + Experimentos DISCOVERY |
+| **7-9** | +Copiloto CFO/Devil + Calculadora + Dashboard Validación |
+| **10-11** | +Mentores + Calendario + Círculos Responsabilidad |
+| **12** | +Demo Day + Certificado + Club Alumni |
+
+**Módulos Vertical Emprendimiento:**
+
+| Módulo | Estado | Descripción |
+|--------|--------|-------------|
+| `jaraba_business_tools` | ✅ Implementado | BMC 9 bloques, Drag-Drop, PDF Export, CanvasAiService |
+| `jaraba_mentoring` | ✅ Implementado | Perfiles mentor, sesiones, Stripe Connect, 7 ECA hooks |
+| `jaraba_paths` | ✅ Implementado | Itinerarios digitalización, hitos |
+| `jaraba_groups` | ✅ Implementado | Círculos Responsabilidad, discusiones |
+| `jaraba_copilot_v2` | ✅ Implementado | Copiloto IA 5 modos, FeatureUnlockService, 8 servicios |
+
+**Métricas de Éxito UX:**
+
+| Métrica | Target |
+|---------|--------|
+| Time-to-First-Value | < 5 min |
+| Feature Discovery Rate | > 80% |
+| Drop-off semanal | < 5% |
+| Program Completion | > 85% |
+
+> **Ver**: [Plan de Implementación v3.1](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan.md)
+
+### 2.10 AI Orchestration (Arquitectura Multiproveedor)
+
+> **Módulo**: Drupal AI (`ai`) | **Estado**: ✅ Configurado
+> **Proveedores**: Anthropic (Claude) + OpenAI (GPT-4)
+
+**Principio Rector: NUNCA implementar clientes HTTP directos a APIs de IA.**
+
+El proyecto usa el **módulo AI de Drupal** (`@ai.provider`) como capa de abstracción para todos los LLMs. Esto proporciona:
+
+| Beneficio | Descripción |
+|-----------|-------------|
+| **Gestión centralizada** | Claves API en módulo Key, config en `/admin/config/ai` |
+| **Failover automático** | Si Claude falla → GPT-4 → Error graceful |
+| **Moderación integrada** | Filtros de contenido pre-configurados |
+| **FinOps** | Tracking de tokens/costos por proveedor |
+
+**Configuración de Moderación (Recomendada):**
+
+| Proveedor | Moderación | Justificación |
+|-----------|------------|---------------|
+| **Anthropic** | "No Moderation Needed" | Claude 3.x tiene filtros internos robustos |
+| **OpenAI** | "Enable OpenAI Moderation" | Añade capa extra para contenido sensible |
+
+> [!IMPORTANT]
+> **Lección Aprendida (2026-01-21)**: El `ClaudeApiService` original duplicaba funcionalidad existente en `@ai.provider`. 
+> Refactorizado a `CopilotOrchestratorService` que usa la abstracción del módulo AI.
+
+**Patrón Correcto de Integración:**
+
+```php
+// ✅ CORRECTO: Usar módulo AI de Drupal
+use Drupal\ai\AiProviderPluginManager;
+
+class CopilotOrchestratorService {
+    
+    public function __construct(
+        private AiProviderPluginManager $aiProvider,
+    ) {}
+    
+    public function chat(string $message, string $mode): array {
+        $provider = $this->getProviderForMode($mode);
+        $llm = $this->aiProvider->createInstance($provider);
+        
+        return $llm->chat([
+            ['role' => 'user', 'content' => $message]
+        ], $this->getModelForMode($mode));
+    }
+}
+```
+
+```php
+// ❌ INCORRECTO: Cliente HTTP directo
+$response = $this->httpClient->request('POST', 'https://api.anthropic.com/v1/messages', [
+    'headers' => ['x-api-key' => $apiKey],
+    'json' => $payload,
+]);
+```
+
+**Especialización por Modo del Copiloto:**
+
+| Modo | Proveedor | Modelo | Razón |
+|------|-----------|--------|-------|
+| Coach Emocional | Anthropic | claude-3-5-sonnet | Empatía superior |
+| CFO Sintético | OpenAI | gpt-4o | Mejor en cálculos |
+| Fiscal/Laboral | Anthropic | claude-3-5-sonnet | RAG + Grounding |
+| Detección modo | Anthropic | claude-3-haiku | Económico |
+
+> **Ver**: [Plan AI Multiproveedor](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan_ai_multiprovider.md)
 
 ---
 
@@ -275,6 +840,29 @@ graph TB
 - Usar Form API de Drupal con validadores
 - Sanitizar salidas con `check_plain()` / `Html::escape()`
 - Prevenir XSS, CSRF, SQL Injection
+
+### 4.5 Seguridad de Endpoints AI/LLM (Directriz 2026-02-06)
+
+> **Referencia:** [Auditoría Profunda SaaS Multidimensional](./tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md) - Hallazgos SEC-01, AI-01, AI-02, BE-02
+
+| Directriz | Descripción | Prioridad |
+|-----------|-------------|-----------|
+| **Rate Limiting Obligatorio** | Todo endpoint que invoque LLM/embedding DEBE tener rate limiting por tenant y por usuario. Recomendado: 100 req/hora RAG, 50 req/hora Copilot | P0 |
+| **Sanitización de Prompts** | Toda interpolación de datos en system prompts (nombre tenant, vertical, contexto) DEBE sanitizarse contra whitelist. Los inputs a LLMs requieren la misma rigurosidad que inputs SQL | P0 |
+| **Circuit Breaker LLM** | El sistema DEBE implementar circuit breaker para proveedores LLM: skip proveedor por 5 min tras 5 fallos consecutivos. Evita 3x costes durante caídas | P0 |
+| **Claves API en Env Vars** | Toda clave API (Stripe, OpenAI, Anthropic, Gemini) DEBE almacenarse en variables de entorno. NUNCA en configuración de Drupal exportable | P0 |
+| **Aislamiento Qdrant Multi-Tenant** | Filtros de tenant en Qdrant DEBEN usar `must` (AND), NUNCA `should` (OR) para tenant_id. Verificar aislamiento en TODAS las capas: DB, vector store, cache, API | P0 |
+| **Context Window Management** | Todo prompt del sistema DEBE respetar un MAX_CONTEXT_TOKENS configurable. Truncar con resumen cuando el contexto excede el límite | P1 |
+| **Autenticación Qdrant** | El servicio Qdrant DEBE tener autenticación por API key habilitada. Acceso sin autenticación prohibido incluso en desarrollo | P1 |
+
+### 4.6 Seguridad de Webhooks (Directriz 2026-02-06)
+
+| Directriz | Descripción |
+|-----------|-------------|
+| **HMAC Obligatorio** | Todo webhook custom DEBE implementar verificación de firma HMAC. La validación de token opcional NO es aceptable |
+| **APIs Públicas** | Todo endpoint `/api/v1/*` DEBE requerir autenticación (`_user_is_logged_in` o API key). `_access: 'TRUE'` prohibido en endpoints que devuelven datos de tenant |
+| **Parámetros de Ruta** | Toda ruta con parámetros dinámicos DEBE incluir restricciones regex (ej: `profileId: '[a-z_]+'`) |
+| **Mensajes de Error** | NUNCA exponer mensajes de excepción internos al usuario. Logging detallado + mensajes genéricos al frontend |
 
 ---
 
@@ -967,6 +1555,42 @@ El asistente IA debe:
 | 2026-01-10 | 1.7.0 | Añadidas Config Entities (Feature, AIAgent) para admin zero-code |
 | 2026-01-10 | 2.0.1 | AI-First Commerce desplegado en IONOS |
 | 2026-01-11 | 2.1.0 | **KB AI-Nativa:** Sección 2.3.2 con Qdrant, servicios RAG, lecciones aprendidas |
+| 2026-01-13 | 2.2.0 | **FinOps 3.0:** Feature Costs integrados (€120/mes base, 7 features), atribución granular Tenant→Vertical→Features, visualización dashboard |
+| 2026-01-13 | 2.3.0 | **FOC v2:** Centro de Operaciones Financieras con Triple Motor Económico, Stripe Connect Destination Charges, entidades financieras inmutables, métricas SaaS 2.0, sistema de alertas ECA |
+| 2026-01-14 | 2.4.0 | **FOC Implementación Completa:** Módulo `jaraba_foc` 100% operativo con dashboard verificado, transacciones de prueba, hook_cron para alertas automáticas, documentación API (README.md) |
+| 2026-01-14 | 2.5.0 | **Plan Estratégico v4.0:** Roadmap multi-disciplinario Q1-Q4 2026, GEO, PLG, AI-First, procedimiento de revisión trimestral implementado |
+| 2026-01-14 | 2.6.0 | **Q1-Q4 2026 Servicios:** 17 servicios implementados - AlertingService, AIOpsService, SelfHealingService, TenantMeteringService, etc. |
+| 2026-01-15 | 2.7.0 | **Documentación Técnica Extendida:** Especificaciones de métodos, constantes y dependencias de servicios. Walkthrough completo con diagramas |
+| 2026-01-15 | 2.8.0 | **Auditoría Multi-Disciplinaria:** Análisis desde 5 perspectivas, 10 gaps priorizados (Time-to-Value, Mobile PWA, API-First, AI Autonomy), roadmap Q1-Q2 2027 |
+| 2026-01-15 | 3.0.0 | **Q1 2027 Gap Implementation:** 12 nuevos servicios (ReverseTrialService, AgentAutonomyService, ContextualCopilotService, MicroAutomationService, AICostOptimizationService, ExpansionRevenueService, VideoGeoService, MultilingualGeoService, SandboxTenantService), API REST (OpenAPI + Swagger), Mobile PWA (manifest.json, sw.js), Nivel Madurez 5.0 certificado |
+| 2026-01-16 | 3.1.0 | **Vertical Empleabilidad Implementado:** 3 módulos (jaraba_lms, jaraba_job_board, jaraba_candidate). 5 Content Entities con Field UI + Views. Filtros en ListBuilders. 47 permisos. Pestañas /admin/content. Directriz ConfigEntity vs ContentEntity en workflow |
+| 2026-01-19 | 3.4.0 | **Mapeo Arquitectónico Integral:** Documento 6 perspectivas (Negocio, Técnica, Funcional, IA, UX, SEO/GEO). Estándares UI/UX 28.19-28.36 |
+| 2026-01-21 | 3.5.0 | **Copiloto Canvas UX:** Auto-scroll chat, rating buttons 👍👎, botón Analizar→FAB, PDF Export con header/footer branding, Drag-Drop SortableJS, CanvasAiService con 7 sectores y sugerencias contextuales |
+| 2026-01-21 | 3.6.0 | **Vertical Emprendimiento v3.1:** Copiloto v2 (18 entregables, 5 modos, 44 experimentos). Patrón Desbloqueo Progresivo UX (Feature Unlock by Program Week). 21 especificaciones técnicas documentadas. Andalucía +ei 12 semanas |
+| 2026-01-21 | 3.7.0 | **AI Orchestration Multiproveedor:** Sección 2.10 con patrón @ai.provider. Refactor ClaudeApiService → CopilotOrchestratorService. Configuración moderación por proveedor. Workflow ai-integration.md. Lección aprendida: NUNCA HTTP directo a APIs de IA |
+| 2026-01-22 | 3.8.0 | **Stack IA Completo:** Redis conectado (PhpRedis 7.4.7), Tika configurado, NormativeRAGService + Qdrant, ModeDetectorService, CopilotCacheService 1h TTL, Chart.js FinOps |
+| 2026-01-22 | 3.9.0 | **Vertical Emprendimiento 100%:** jaraba_copilot_v2 implementado (8 servicios, FeatureUnlockService 17KB), jaraba_mentoring 100% (7 ECA hooks), jaraba_business_tools 100% (CanvasAiService 22KB). AIUsageLimitService para límites tokens/plan. 30+ iconos SVG creados. 7 aprendizajes documentados |
+| 2026-01-28 | **4.6.0** | **Auditoría Page Builder Clase Mundial:** Calificación 7.5/10. 6 entidades, 66 templates, Form Builder + RBAC funcionando. Gaps críticos: Schema.org (0%), Site Structure Manager (0%), A/B Testing (0%), WCAG (0%). Inversión restante: 550-720h (€44k-58k). Roadmap 9-12 meses. 28 aprendizajes documentados |
+| 2026-01-28 | 4.5.0 | **Auditoría Ecosistema 10/10:** Documento Maestro Consolidado (auditoria UX + specs 178-187 + evaluación Lenis). **Lenis aprobado** para smooth scroll en landings (8-12h). Inversión total gaps: 710-970h (€46k-63k). Roadmap 8 sprints. 10 nuevas specs para cierre UX |
+| 2026-01-24 | 4.4.0 | **Page Builder Fase 1:** Entity References aprobado, HomepageContent + FeatureCard/StatItem/IntentionCard. Navegación admin correcta. Compliance 100%. |
+| 2026-01-24 | 4.0.0 | **Consolidación Q1 2027:** Auditoría UX Homepage completada (Score 2/10 → Plan aprobado). Roadmap pendientes: Persistencia ratings backend, iconos PDF, tests unitarios. Documentación aprendizajes actualizada |
+| 2026-01-29 | 4.7.0 | **Site Builder Frontend:** Template full-width verificado, clases body vía preprocess_html, lección documentada |
+| 2026-01-30 | 4.8.0 | **Page Builder A/B Testing Dashboard (Gap 2):** Dashboard UI premium completado. Header con partículas + icono duotone A/B. KPIs clickables con filtros de estado. Template full-width integrado. Auditoría actualizada (0% → 40%) |
+| 2026-02-02 | 4.9.0 | **Análisis Page Builder Rendering Bug:** Identificada causa raíz (themes dinámicos no registrados en hook_theme). Solución propuesta: registro dinámico de themes leyendo PageTemplate entities. Alternativa: inline_template. Plan 3 fases: arreglar bug (4-6h), onboarding meta-sitio (20-30h), SEO/GEO (15-20h). Documento multi-perspectiva (Negocio, Finanzas, Arquitectura, UX, SEO/GEO, IA) |
+| 2026-02-08 | **5.4.0** | **Elevación Page Builder Clase Mundial:** Diagnóstico exhaustivo cruzando 6 docs + 8 archivos código. 7 gaps identificados (Dual Architecture, Hot-Swap, Tests E2E, Traits Commerce). Plan 4 sprints (21h). Nuevo doc arquitectura + aprendizaje #47. Tareas pendientes actualizadas. Score objetivo 9.2→9.8/10 |
+| 2026-02-08 | **5.5.0** | **Auditoría GrapesJS changeProp + Model Defaults:** 14 componentes auditados. Regla GRAPEJS-001: todo trait `changeProp: true` DEBE tener propiedad model-level en `defaults`. Stats Counter corregido (13 model defaults + título `<h2>` + labels `display:block`). Timeline dots duplicados eliminados. Pricing Toggle ↔ Table desconexión documentada. Aprendizaje `2026-02-08_grapesjs_changeprop_model_defaults_audit.md` |
+| 2026-02-11 | **6.5.0** | **G114-4 FAQ Bot Contextual:** Widget chat público en `/ayuda` para clientes finales del tenant. FaqBotService (embedding → Qdrant search → LLM grounded → escalación 3-tier). FaqBotApiController (POST /api/v1/help/chat + feedback). Rate limiting 10 req/min/IP. Frontend FAB widget (faq-bot.js, _faq-bot.scss, faq-bot-widget.html.twig). Diferenciación explícita vs jaraba_copilot_v2. HelpCenterController integrado. Sección §2.3.3 documentada. Aprendizaje #58 |
+| 2026-02-11 | **6.4.0** | **PHPUnit 11 Remediación Testing:** 199 tests pasan (186 Unit + 13 Kernel). `EcosistemaJarabaCoreServiceProvider` creado para registrar servicios condicionalmente (stripe_connect, unified_prompt_builder). Fixes: `text` module missing, entity_reference a contrib (group/domain) no bootstrappable en Kernel, getMonthlyPrice()→getPriceMonthly(), isPublished()→get('status'). phpunit.xml con SQLite para Lando. 4 reglas: KERNEL-001, TEST-001, ENV-001, DI-001. Aprendizaje #57 documentado |
+| 2026-02-11 | **6.3.0** | **Auditoría Coherencia 9 Roles:** Cross-referencia specs 20260118 vs codebase real desde 9 perspectivas senior. Corrección crítica: Stripe Billing no es 0% sino ~35-40% (JarabaStripeConnect, TenantSubscriptionService, TenantMeteringService, WebhookService en core + StripeConnectService, SaasMetricsService, FinancialTransaction en FOC). 10 incoherencias detectadas: duplicación Stripe Connect, 0 PHPUnit tests, 14 modules con package.json (no 8). Nota billing añadida a §2.4 FOC. Estadísticas SCSS corregidas. Aprendizaje #56 documentado |
+| 2026-02-10 | **6.2.0** | **Plan Implementación Integral v2:** Guía maestra unificada mejorada con 6 gaps cerrados. +§4.10 Seguridad AI/LLM (verificada en codebase: RateLimiterService, CopilotOrchestratorService circuit breaker, AIGuardrailsService, TenantContextService Qdrant). +§5.6 Patrón Creación Nuevo Vertical (5 pasos replicables). §6.7 expandida con mapeo 20260118 (12/30 implementados = 40%). Parciales Twig actualizados 7→17. Estadísticas corregidas (55 aprendizajes). Changelog formal añadido |
+| 2026-02-10 | **6.1.0** | **Mapeo Especificaciones 20260118:** 37 archivos con prefijo 20260118 mapeados exhaustivamente. 7 implementados (AI Trilogy 100%), 2 parciales (Testing, Email), 14 pendientes (Infra, Marca Personal, Websites). Nuevo doc implementación + aprendizaje #55. Directrices, Índice General y estadísticas actualizados |
+| 2026-02-09 | **6.0.0** | **ServiciosConecta Fase 1:** Vertical marketplace servicios profesionales. Módulo `jaraba_servicios_conecta` con 5 Content Entities (ProviderProfile, ServiceOffering, Booking, AvailabilitySlot, ServicePackage), 3 Controllers (Marketplace, Provider Detail, Provider Dashboard), 4 Services (booking, search, availability, statistics), 2 Taxonomías (servicios_category, servicios_modality), Frontend BEM + Dart Sass @use + var(--ej-*), Schema.org ProfessionalService SEO ready |
+| 2026-02-09 | **5.9.0** | **Plan Mejoras Page/Site Builder v3.0:** 8 propuestas en 3 fases (93-119h). A: Onboarding Tour Driver.js (G5), SVG Thumbnails (G6), Drag&Drop Polish. B: Site Builder Frontend Premium, SEO Assistant integrado (score 0-100). C: Template Marketplace (44+ por vertical), Multi-Page Editor tabs, Responsive Preview 8 viewports. Plan documentado en `20260209-Plan_Mejoras_Page_Site_Builder_v3.md` |
+| 2026-02-09 | **5.7.0** | **Auditoría v2.1 Page Builder — Corrección Falsos Positivos:** 3 de 4 gaps de la auditoría v1.0 eran falsos positivos causados por grep (G1=PostMessage, G2=Dual Architecture, G7=E2E tests). Único fix real: G4 AI endpoint URL+payload corregido en `grapesjs-jaraba-ai.js`. Score real: 10/10. Nueva regla: NUNCA confiar solo en grep para verificar ausencia de código. Aprendizaje #52: `2026-02-09_auditoria_v2_falsos_positivos_page_builder.md`. Workflow `auditoria-exhaustiva.md` actualizado con protocolo verificación obligatorio |
+| 2026-02-08 | **5.6.0** | **Sprint 3 E2E Tests Robustez:** 5 anti-patrones eliminados en `canvas-editor.cy.js` (condicionales `if` que silenciaban fallos en Tests 3, 4, 6, 7). Nuevo Test 12: validación automática regla GRAPEJS-001 (verifica model defaults en 5 bloques interactivos). Suite final: 12 suites, ~670 líneas. Score Page Builder: 9.8/10 ✅ |
+| 2026-02-06 | **5.3.0** | **Auditoría Profunda SaaS Multidimensional:** 87 hallazgos (17 críticos, 32 altos, 26 medios, 12 bajos) desde 10 disciplinas. Nuevas directrices: Sección 4.5 (Seguridad Endpoints AI/LLM: rate limiting, sanitización prompts, circuit breaker, env vars, aislamiento Qdrant) y Sección 4.6 (Seguridad Webhooks: HMAC, auth APIs, restricciones rutas). Plan remediación 3 fases |
+| 2026-02-05 | 5.1.0 | **Arquitectura Theming Federated Tokens:** Patrón SSOT para SCSS implementado. 8 módulos satélite con package.json. 10 funciones darken()→color.adjust() migradas. 102 archivos SCSS documentados. Documento maestro: `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` |
+| 2026-02-02 | 5.0.0 | **Frontend Limpio Page Builder (Zero Region Policy):** Template ultra-limpia para PageContent entities. Header inline sin menú ecosistema. Body classes via `hook_preprocess_html()` (`page-page-builder`, `full-width-layout`). SCSS reset grid. Sin breadcrumbs/sidebars heredados. Documento aprendizaje #34 |
 
 ---
 
