@@ -855,22 +855,26 @@ $settings['migrate_node_migrate_type_classic'] = FALSE;
  *
  * Keep this code block at the end of this file to take full effect.
  */
-#
-# if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
-#   include $app_root . '/' . $site_path . '/settings.local.php';
-# }
-$databases['default']['default'] = array (
-  'database' => 'drupal_jaraba',
-  'username' => 'drupal',
-  'password' => 'drupal',
-  'prefix' => '',
-  'host' => 'database',
-  'port' => 3306,
-  'isolation_level' => 'READ COMMITTED',
-  'driver' => 'mysql',
-  'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
-  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
-);
+/**
+ * Environment-aware database configuration.
+ *
+ * Lando (dev): credenciales hardcodeadas para el contenedor.
+ * Producción: settings.local.php provee las credenciales reales.
+ */
+if (getenv('LANDO') === 'ON') {
+  $databases['default']['default'] = [
+    'database' => 'drupal_jaraba',
+    'username' => 'drupal',
+    'password' => 'drupal',
+    'prefix' => '',
+    'host' => 'database',
+    'port' => 3306,
+    'isolation_level' => 'READ COMMITTED',
+    'driver' => 'mysql',
+    'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+    'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+  ];
+}
 
 $settings['config_sync_directory'] = 'sites/default/files/config_N9RMPpp-TBpzUeXFquIUSSr56TmsudkY6DrDHrJgb-zWcc08TD0T6pYS6GSqKMq6s2sPaPex-Q/sync';
 
@@ -892,17 +896,33 @@ $settings['trusted_host_patterns'] = [
   '^.+\.jaraba-saas\.lndo\.site$',
   '^localhost$',
   // Production domains
+  '^plataformadeecosistemas\.com$',
+  '^.+\.plataformadeecosistemas\.com$',
   '^plataformadeecosistemas\.es$',
   '^.+\.plataformadeecosistemas\.es$',
   '^jaraba\.es$',
   '^.+\.jaraba\.es$',
 ];
 
-// REDIS CACHE BACKEND - Configuración directa
-if (extension_loaded('redis') && class_exists('Redis')) {
+// REDIS CACHE BACKEND - Solo en Lando (contenedor Redis)
+if (getenv('LANDO') === 'ON' && extension_loaded('redis') && class_exists('Redis')) {
   $settings['redis.connection']['interface'] = 'PhpRedis';
   $settings['redis.connection']['host'] = 'redis';
   $settings['redis.connection']['port'] = 6379;
   $settings['cache_prefix'] = 'jaraba_';
   $settings['cache']['default'] = 'cache.backend.redis';
+}
+
+/**
+ * Load local development override configuration, if available.
+ *
+ * En producción (IONOS): settings.local.php contiene credenciales BD,
+ * trusted_host_patterns adicionales, y configuración específica del servidor.
+ * En Lando: opcionalmente permite overrides locales.
+ *
+ * IMPORTANTE: Este include DEBE estar al final del archivo para que
+ * settings.local.php pueda sobrescribir cualquier configuración anterior.
+ */
+if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
+  include $app_root . '/' . $site_path . '/settings.local.php';
 }
