@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Template para Fortalezas.
+ */
+#}
+
+<div class="strengths-page page-wrapper--clean">
+  <header class="st-header">
+    <a href="/my-profile/self-discovery" class="st-header__back">← {% trans %}Volver{% endtrans %}</a>
+    <h1 class="st-header__title">{{ labels.title }}</h1>
+    <p class="st-header__subtitle">{{ labels.subtitle }}</p>
+  </header>
+  
+  <main class="st-main">
+    <div class="st-intro">
+      <div class="st-intro__icon">
+        {{ jaraba_icon('analytics', 'strength-star', { color: 'amarillo-oportunidad', size: '64px' }) }}
+      </div>
+      <div class="st-intro__content">
+        <h2>{% trans %}Identifica tus talentos{% endtrans %}</h2>
+        <p>{% trans %}Compara pares de fortalezas para descubrir cuáles te representan mejor. Al final obtendrás tu Top 5 de talentos principales.{% endtrans %}</p>
+      </div>
+    </div>
+    
+    <div class="st-form-container">
+      {{ form }}
+    </div>
+  </main>
+</div>

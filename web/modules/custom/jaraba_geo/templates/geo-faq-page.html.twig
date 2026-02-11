@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * Template para página de FAQ optimizada para GEO.
+ *
+ * Esta página está estructurada para que los motores de IA generativa
+ * (ChatGPT, Perplexity, Claude, Google AI) puedan extraer y citar
+ * las respuestas directamente.
+ *
+ * Variables:
+ * - faqs: Array de preguntas frecuentes con 'category', 'question', 'answer', 'keywords'
+ */
+#}
+
+<div class="geo-faq-page">
+  
+  {# Introducción optimizada para GEO - Answer Capsule #}
+  <div class="geo-answer-capsule geo-faq-intro">
+    <p class="geo-answer-capsule__answer">
+      <strong>{{ 'Jaraba Impact Platform es una plataforma SaaS AI-First para productores locales.'|t }}</strong>
+    </p>
+    <p class="geo-answer-capsule__context">
+      {{ 'Aquí encontrarás respuestas a las preguntas más frecuentes sobre nuestra plataforma, precios, funcionalidades y más.'|t }}
+    </p>
+  </div>
+
+  {# Navegación por categorías #}
+  {% set categories = [] %}
+  {% for faq in faqs %}
+    {% if faq.category not in categories %}
+      {% set categories = categories|merge([faq.category]) %}
+    {% endif %}
+  {% endfor %}
+
+  <nav class="geo-faq-nav" aria-label="{{ 'Categorías de FAQ'|t }}">
+    <ul class="geo-faq-nav__list">
+      {% for category in categories %}
+      <li class="geo-faq-nav__item">
+        <a href="#{{ category|clean_class }}" class="geo-faq-nav__link">
+          {{ category }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  {# Contenido de FAQ por categorías #}
+  {% for category in categories %}
+  <section class="geo-faq-section" id="{{ category|clean_class }}">
+    <h2 class="geo-faq-section__title">{{ category }}</h2>
+    
+    <div class="geo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      {% for faq in faqs if faq.category == category %}
+      <article class="geo-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        
+        {# Pregunta - H3 con texto exacto de consulta de usuario #}
+        <h3 class="geo-faq-item__question" itemprop="name">
+          {{ faq.question }}
+        </h3>
+        
+        {# Respuesta - Directa y concisa #}
+        <div class="geo-faq-item__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text">
+            {{ faq.answer }}
+          </p>
+        </div>
+        
+        {# Keywords ocultas para SEO/GEO #}
+        {% if faq.keywords %}
+        <meta itemprop="keywords" content="{{ faq.keywords|join(', ') }}">
+        {% endif %}
+        
+      </article>
+      {% endfor %}
+    </div>
+    
+  </section>
+  {% endfor %}
+
+  {# CTA al final #}
+  <div class="geo-faq-cta">
+    <h3>{{ '¿No encuentras lo que buscas?'|t }}</h3>
+    <p>{{ 'Contacta con nuestro equipo de soporte o prueba la plataforma gratis durante 14 días.'|t }}</p>
+    <div class="geo-faq-cta__buttons">
+      <a href="/contact" class="geo-btn geo-btn--secondary">{{ 'Contactar'|t }}</a>
+      <a href="/register" class="geo-btn geo-btn--primary">{{ 'Probar Gratis'|t }}</a>
+    </div>
+  </div>
+
+</div>

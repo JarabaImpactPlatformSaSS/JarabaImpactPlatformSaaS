@@ -1,0 +1,353 @@
+<?php
+
+/**
+ * @file
+ * Instalación del módulo Jaraba Heatmap.
+ *
+ * Define el schema de las tablas para almacenamiento de eventos
+ * y datos agregados de heatmaps.
+ *
+ * Ref: Doc Técnico #180 - Native Heatmaps System
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Define 4 tablas:
+ * - heatmap_events: Eventos raw antes de agregación (7 días retención)
+ * - heatmap_aggregated: Datos agregados por buckets (90 días retención)
+ * - heatmap_scroll_depth: Análisis de profundidad de scroll
+ * - heatmap_page_screenshots: Capturas para overlay de heatmap
+ */
+function jaraba_heatmap_schema() {
+  $schema = [];
+
+  // =========================================================================
+  // Tabla: heatmap_events (Raw Data)
+  // Almacena eventos individuales antes de agregación. Purga tras 7 días.
+  // =========================================================================
+  $schema['heatmap_events'] = [
+    'description' => 'Eventos raw de heatmap antes de agregación.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental del evento.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'ID del tenant (multi-tenancy).',
+      ],
+      'session_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'ID de sesión único del visitante.',
+      ],
+      'page_path' => [
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => TRUE,
+        'description' => 'URL path de la página.',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'description' => 'Tipo de evento: click, move, scroll, visibility.',
+      ],
+      'x_percent' => [
+        'type' => 'numeric',
+        'precision' => 5,
+        'scale' => 2,
+        'description' => 'Posición X en porcentaje del viewport (0-100).',
+      ],
+      'y_pixel' => [
+        'type' => 'int',
+        'description' => 'Posición Y en píxeles absolutos (incluye scroll offset).',
+      ],
+      'viewport_width' => [
+        'type' => 'int',
+        'size' => 'small',
+        'description' => 'Ancho del viewport para normalización.',
+      ],
+      'viewport_height' => [
+        'type' => 'int',
+        'size' => 'small',
+        'description' => 'Alto del viewport.',
+      ],
+      'scroll_depth' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Profundidad de scroll en % (0-100), solo para eventos scroll.',
+      ],
+      'element_selector' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'description' => 'Selector CSS del elemento clickeado.',
+      ],
+      'element_text' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'description' => 'Texto del elemento (truncado a 100 chars).',
+      ],
+      'device_type' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'default' => 'desktop',
+        'description' => 'Tipo de dispositivo: desktop, tablet, mobile.',
+      ],
+      'created_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp del evento.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'tenant_page' => ['tenant_id', 'page_path'],
+      'created' => ['created_at'],
+      'session' => ['session_id'],
+      'event_type' => ['event_type'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: heatmap_aggregated (Processed Data)
+  // Datos agregados por buckets para visualización eficiente. Retención: 90 días.
+  // =========================================================================
+  $schema['heatmap_aggregated'] = [
+    'description' => 'Datos de heatmap agregados por buckets para visualización.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'page_path' => [
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => TRUE,
+        'description' => 'URL path de la página.',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'description' => 'Tipo de evento: click, move.',
+      ],
+      'x_bucket' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'description' => 'Bucket X (0-20, cada 5% del ancho).',
+      ],
+      'y_bucket' => [
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'description' => 'Bucket Y (cada 50px de altura).',
+      ],
+      'device_type' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'default' => 'all',
+        'description' => 'Segmentación por dispositivo.',
+      ],
+      'event_count' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Número de eventos en este bucket.',
+      ],
+      'unique_sessions' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Sesiones únicas en este bucket.',
+      ],
+      'date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'description' => 'Fecha de agregación (YYYY-MM-DD).',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'lookup' => ['tenant_id', 'page_path', 'date', 'event_type'],
+      'date' => ['date'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: heatmap_scroll_depth
+  // Análisis específico de profundidad de scroll por página.
+  // =========================================================================
+  $schema['heatmap_scroll_depth'] = [
+    'description' => 'Análisis de profundidad de scroll por página.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'page_path' => [
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => TRUE,
+        'description' => 'URL path de la página.',
+      ],
+      'depth_25' => [
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'Sesiones que alcanzaron 25%.',
+      ],
+      'depth_50' => [
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'Sesiones que alcanzaron 50%.',
+      ],
+      'depth_75' => [
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'Sesiones que alcanzaron 75%.',
+      ],
+      'depth_100' => [
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'Sesiones que alcanzaron 100%.',
+      ],
+      'avg_max_depth' => [
+        'type' => 'numeric',
+        'precision' => 5,
+        'scale' => 2,
+        'description' => 'Profundidad máxima promedio (0-100).',
+      ],
+      'total_sessions' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Total de sesiones analizadas.',
+      ],
+      'device_type' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'default' => 'all',
+        'description' => 'Segmentación por dispositivo.',
+      ],
+      'date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'description' => 'Fecha de agregación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'lookup' => ['tenant_id', 'page_path', 'date'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: heatmap_page_screenshots
+  // Capturas de página para overlay de heatmap.
+  // =========================================================================
+  $schema['heatmap_page_screenshots'] = [
+    'description' => 'Capturas de página para overlay de heatmap.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'page_path' => [
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => TRUE,
+        'description' => 'URL path de la página.',
+      ],
+      'screenshot_uri' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'description' => 'URI del archivo de captura en files/.',
+      ],
+      'page_height' => [
+        'type' => 'int',
+        'description' => 'Altura total de la página en píxeles.',
+      ],
+      'viewport_width' => [
+        'type' => 'int',
+        'size' => 'small',
+        'default' => 1280,
+        'description' => 'Ancho de la captura.',
+      ],
+      'captured_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp de la captura.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'tenant_page' => ['tenant_id', 'page_path'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ *
+ * Configura valores por defecto al instalar el módulo.
+ */
+function jaraba_heatmap_install() {
+  // Establecer configuración por defecto.
+  \Drupal::configFactory()->getEditable('jaraba_heatmap.settings')
+    ->set('enabled', TRUE)
+    ->set('buffer_size', 50)
+    ->set('flush_interval', 10000)
+    ->set('throttle_move', 100)
+    ->set('throttle_scroll', 200)
+    ->set('retention_raw_days', 7)
+    ->set('retention_aggregated_days', 90)
+    ->save();
+
+  \Drupal::messenger()->addStatus(t('Jaraba Heatmap instalado correctamente. Configure el módulo en /admin/config/jaraba/heatmap.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Limpieza al desinstalar el módulo.
+ */
+function jaraba_heatmap_uninstall() {
+  // Eliminar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_heatmap.settings')->delete();
+
+  // Limpiar estado.
+  \Drupal::state()->delete('jaraba_heatmap.last_aggregation');
+
+  \Drupal::messenger()->addStatus(t('Jaraba Heatmap desinstalado. Las tablas de datos han sido eliminadas.'));
+}

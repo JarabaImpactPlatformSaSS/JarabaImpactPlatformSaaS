@@ -1,0 +1,7 @@
+services:
+  jaraba_self_discovery.context:
+    class: Drupal\jaraba_self_discovery\Service\SelfDiscoveryContextService
+    arguments:
+      - '@current_user'
+      - '@user.data'
+      - '@entity_type.manager'

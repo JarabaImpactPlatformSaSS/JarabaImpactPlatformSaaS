@@ -1,0 +1,10 @@
+name: 'Jaraba GEO (Generative Engine Optimization)'
+type: module
+description: 'Optimización para motores generativos de IA: Schema.org, Answer Capsules, E-E-A-T'
+package: Jaraba SaaS
+core_version_requirement: ^10.3 || ^11
+lifecycle: stable
+
+dependencies:
+  - drupal:node
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

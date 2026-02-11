@@ -1,0 +1,7 @@
+administer theme config:
+  title: 'Administrar configuración de tema'
+  description: 'Gestionar Design Tokens y configuración visual por tenant.'
+
+edit own theme config:
+  title: 'Editar propia configuración de tema'
+  description: 'Permite a los tenants personalizar su tema.'

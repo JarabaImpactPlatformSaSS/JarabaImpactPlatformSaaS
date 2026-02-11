@@ -1,0 +1,323 @@
+/**
+ * @file
+ * Estilos para el dashboard de traducciones i18n.
+ *
+ * PROPÓSITO:
+ * Dashboard central para visualizar y gestionar el estado de traducciones
+ * de todas las entidades del sistema (PageContent, BlogPost, etc.)
+ *
+ * PATRÓN:
+ * Operational Tower - Hero con partículas, cards de métricas, tabla de estado.
+ *
+ * DIRECTRICES SCSS CUMPLIDAS:
+ * ✅ Variables inyectables var(--ej-*)
+ * ✅ Paleta Jaraba (--ej-color-*)
+ * ✅ Dart Sass moderno (@use en lugar de @import)
+ * ✅ Mobile-first responsive
+ *
+ * @see templates/i18n-dashboard.html.twig
+ */
+
+// =============================================================================
+// CONTENEDOR PRINCIPAL
+// =============================================================================
+
+.i18n-dashboard__content {
+    padding: var(--ej-spacing-6, 1.5rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+// =============================================================================
+// TARJETAS DE RESUMEN POR IDIOMA
+// =============================================================================
+
+.i18n-dashboard__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--ej-spacing-4, 1rem);
+    margin-bottom: var(--ej-spacing-8, 2rem);
+}
+
+.i18n-dashboard__card {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PATRÓN PREMIUM: Glassmorphism + Hover 3D + Shine
+    // ═══════════════════════════════════════════════════════════════════════════
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(249, 250, 251, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--ej-radius-xl, 1rem);
+    padding: var(--ej-spacing-6, 1.5rem);
+    text-align: center;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ej-spacing-3, 0.75rem);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease;
+
+    // Efecto shine en hover
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.4) 50%,
+                transparent 70%);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow:
+            0 16px 40px rgba(139, 92, 246, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+
+        &::after {
+            transform: translateX(150%);
+        }
+
+        .i18n-dashboard__card-flag {
+            transform: scale(1.1) rotate(3deg);
+        }
+    }
+}
+
+.i18n-dashboard__card-flag {
+    width: 32px;
+    height: 24px;
+    border-radius: 4px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.i18n-dashboard__card-label {
+    font-weight: 600;
+    color: var(--ej-color-text-primary);
+}
+
+.i18n-dashboard__card-value {
+    font-size: var(--ej-font-size-3xl, 1.875rem);
+    font-weight: 700;
+    color: var(--ej-color-primary, #8b5cf6);
+}
+
+.i18n-dashboard__card-desc {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-text-muted);
+}
+
+// =============================================================================
+// SECCIONES DE TABLA Y ACCIONES
+// =============================================================================
+
+.i18n-dashboard__table-section,
+.i18n-dashboard__actions-section {
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-lg, 0.75rem);
+    padding: var(--ej-spacing-6, 1.5rem);
+    margin-bottom: var(--ej-spacing-6, 1.5rem);
+    box-shadow: var(--ej-shadow-md);
+
+    h2 {
+        margin-bottom: var(--ej-spacing-4, 1rem);
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        color: var(--ej-color-text-primary);
+    }
+}
+
+// =============================================================================
+// TABLA DE ESTADO POR TIPO DE ENTIDAD
+// =============================================================================
+
+.i18n-dashboard__table-container {
+    overflow-x: auto;
+}
+
+.i18n-dashboard__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: var(--ej-spacing-3, 0.75rem);
+        text-align: left;
+        border-bottom: 1px solid var(--ej-color-border, #e5e7eb);
+    }
+
+    th {
+        background: var(--ej-color-surface-elevated, #f9fafb);
+        font-weight: 600;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+    }
+}
+
+.i18n-dashboard__lang-header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+}
+
+.i18n-dashboard__type-cell strong {
+    color: var(--ej-color-text-primary);
+}
+
+.i18n-dashboard__count-cell {
+    font-weight: 600;
+    color: var(--ej-color-text-muted);
+}
+
+// =============================================================================
+// BADGES DE ESTADO
+// =============================================================================
+
+.i18n-dashboard__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+}
+
+.i18n-dashboard__badge--complete {
+    background: var(--ej-color-success-alpha, rgba(16, 185, 129, 0.1));
+    color: var(--ej-color-success, #10b981);
+}
+
+.i18n-dashboard__badge--outdated {
+    background: var(--ej-color-warning-alpha, rgba(245, 158, 11, 0.1));
+    color: var(--ej-color-warning, #f59e0b);
+    margin-left: var(--ej-spacing-1, 0.25rem);
+}
+
+.i18n-dashboard__badge--missing {
+    background: var(--ej-color-surface-elevated, #f3f4f6);
+    color: var(--ej-color-text-muted, #6b7280);
+}
+
+// =============================================================================
+// BARRA DE PROGRESO DE COBERTURA
+// =============================================================================
+
+.i18n-dashboard__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+    min-width: 120px;
+}
+
+.i18n-dashboard__progress-bar {
+    flex: 1;
+    height: 8px;
+    background: linear-gradient(90deg,
+            var(--ej-color-primary, #8b5cf6),
+            var(--ej-color-secondary, #06b6d4));
+    border-radius: 4px;
+}
+
+.i18n-dashboard__progress-label {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+    min-width: 40px;
+}
+
+// =============================================================================
+// CELDA VACÍA
+// =============================================================================
+
+.i18n-dashboard__empty-cell {
+    text-align: center;
+    color: var(--ej-color-text-muted);
+    padding: var(--ej-spacing-8, 2rem) !important;
+}
+
+// =============================================================================
+// ACCIONES RÁPIDAS
+// =============================================================================
+
+.i18n-dashboard__actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ej-spacing-4, 1rem);
+}
+
+.i18n-dashboard__action-card {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PATRÓN PREMIUM: Glassmorphism + Hover 3D + Icon Pulse
+    // ═══════════════════════════════════════════════════════════════════════════
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ej-spacing-3, 0.75rem);
+    padding: var(--ej-spacing-6, 1.5rem);
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(249, 250, 251, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--ej-radius-xl, 1rem);
+    text-decoration: none;
+    color: var(--ej-color-text-primary);
+    cursor: pointer;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease;
+
+    // Efecto shine en hover
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.4) 50%,
+                transparent 70%);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow:
+            0 16px 40px rgba(139, 92, 246, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+
+        &::after {
+            transform: translateX(150%);
+        }
+
+        // Icono pulsa en hover
+        img.jaraba-icon,
+        .jaraba-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+    }
+
+    // Iconos con transición suave
+    img.jaraba-icon,
+    .jaraba-icon {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    span {
+        font-weight: 600;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+    }
+}

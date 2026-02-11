@@ -1,0 +1,12 @@
+name: 'Jaraba i18n'
+type: module
+description: 'Sistema de internacionalización avanzado con traducción asistida por IA para múltiples tipos de contenido.'
+package: 'Jaraba - Platform'
+core_version_requirement: ^10 || ^11
+lifecycle: experimental
+
+dependencies:
+  - drupal:language
+  - drupal:content_translation
+  - drupal:locale
+  - jaraba_ai_agents:jaraba_ai_agents

@@ -1,0 +1,47 @@
+# Librerías del módulo Jaraba Analytics.
+
+# Tracker JavaScript principal.
+analytics-tracker:
+  version: 1.0
+  js:
+    js/analytics-tracker.js:
+      preprocess: false
+      weight: -100
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# Dashboard con Chart.js.
+# CSS está en el tema (ecosistema_jaraba_theme) para cumplir con directrices.
+analytics-dashboard:
+  version: 1.0
+  js:
+    js/analytics-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_analytics/chartjs
+    - ecosistema_jaraba_theme/global
+
+# Chart.js CDN.
+chartjs:
+  version: 4.4.1
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js:
+      type: external
+      minified: true
+
+# Banner de Consentimiento GDPR.
+consent-banner:
+  version: 1.0
+  js:
+    js/consent-banner.js:
+      preprocess: false
+      weight: -90
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global
+

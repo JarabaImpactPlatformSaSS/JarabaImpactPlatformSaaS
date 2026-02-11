@@ -1,0 +1,386 @@
+/**
+ * @file
+ * Estilos para el selector de idioma y traducción con IA.
+ *
+ * PROPÓSITO:
+ * Proporciona estilos para el componente i18n-selector que incluye:
+ * - Dropdown de idiomas con indicadores de estado
+ * - Botón de traducción con IA
+ * - Modal de configuración de traducción
+ * - Animaciones de progreso
+ *
+ * DIRECTRICES SCSS CUMPLIDAS:
+ * ✅ Variables inyectables var(--ej-*)
+ * ✅ Paleta Jaraba (--ej-color-*)
+ * ✅ Iconos vía jaraba_icon() en Twig
+ * ✅ Compatibilidad Dart Sass
+ *
+ * @see templates/i18n-selector.html.twig
+ */
+
+// =============================================================================
+// SELECTOR DE IDIOMA - CONTENEDOR PRINCIPAL
+// =============================================================================
+
+.i18n-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-3, 0.75rem);
+    position: relative;
+    z-index: 100;
+}
+
+// =============================================================================
+// DROPDOWN DE IDIOMAS
+// =============================================================================
+
+.i18n-selector__dropdown {
+    position: relative;
+}
+
+.i18n-selector__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+    padding: var(--ej-spacing-2, 0.5rem) var(--ej-spacing-3, 0.75rem);
+    background: var(--ej-color-surface-elevated, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--ej-color-border, rgba(255, 255, 255, 0.12));
+    border-radius: var(--ej-radius-md, 0.5rem);
+    color: var(--ej-color-text-primary, #fff);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-color-surface-hover, rgba(255, 255, 255, 0.12));
+        border-color: var(--ej-color-border-hover, rgba(255, 255, 255, 0.2));
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ej-color-primary, #8b5cf6);
+        outline-offset: 2px;
+    }
+}
+
+.i18n-selector__arrow {
+    transition: transform 0.2s ease;
+
+    [aria-expanded="true"] & {
+        transform: rotate(180deg);
+    }
+}
+
+.i18n-selector__menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 200px;
+    margin: 0;
+    padding: var(--ej-spacing-1, 0.25rem);
+    background: var(--ej-color-surface-overlay, rgba(20, 20, 30, 0.95));
+    border: 1px solid var(--ej-color-border, rgba(255, 255, 255, 0.12));
+    border-radius: var(--ej-radius-lg, 0.75rem);
+    box-shadow: var(--ej-shadow-xl, 0 25px 50px -12px rgba(0, 0, 0, 0.5));
+    list-style: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+// =============================================================================
+// ITEMS DEL MENÚ
+// =============================================================================
+
+.i18n-selector__item {
+    margin: 0;
+}
+
+.i18n-selector__link {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+    padding: var(--ej-spacing-2, 0.5rem) var(--ej-spacing-3, 0.75rem);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    color: var(--ej-color-text-secondary, rgba(255, 255, 255, 0.7));
+    text-decoration: none;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: var(--ej-color-surface-hover, rgba(255, 255, 255, 0.08));
+        color: var(--ej-color-text-primary, #fff);
+    }
+}
+
+.i18n-selector__item--active .i18n-selector__link {
+    background: var(--ej-color-primary-alpha, rgba(139, 92, 246, 0.2));
+    color: var(--ej-color-primary-light, #a78bfa);
+}
+
+.i18n-selector__lang-label {
+    flex: 1;
+}
+
+.i18n-selector__status {
+    display: flex;
+    align-items: center;
+}
+
+// =============================================================================
+// BADGES DE ESTADO
+// =============================================================================
+
+.i18n-selector__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+
+    svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.i18n-selector__badge--original {
+    color: var(--ej-color-warning, #f59e0b);
+}
+
+.i18n-selector__badge--complete {
+    color: var(--ej-color-success, #10b981);
+}
+
+.i18n-selector__badge--outdated {
+    color: var(--ej-color-warning, #f59e0b);
+}
+
+.i18n-selector__badge--missing {
+    color: var(--ej-color-text-muted, rgba(255, 255, 255, 0.4));
+}
+
+// =============================================================================
+// BANDERAS DE IDIOMA
+// =============================================================================
+
+.i18n-selector__flag {
+    display: inline-block;
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+    // Banderas como emojis (más compatible que imágenes)
+    &::before {
+        font-size: 14px;
+        line-height: 14px;
+    }
+}
+
+.i18n-selector__flag--es {
+    background: linear-gradient(180deg, #ad1519 33%, #fabd00 33%, #fabd00 66%, #ad1519 66%);
+}
+
+.i18n-selector__flag--en {
+    background: linear-gradient(180deg, #00247d 0%, #00247d 100%);
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(180deg, transparent 40%, #cf142b 40%, #cf142b 60%, transparent 60%),
+            linear-gradient(90deg, transparent 45%, #cf142b 45%, #cf142b 55%, transparent 55%);
+    }
+}
+
+.i18n-selector__flag--ca {
+    background: linear-gradient(180deg,
+            #da2a27 10%, #fcdd09 10%, #fcdd09 20%,
+            #da2a27 20%, #da2a27 30%, #fcdd09 30%, #fcdd09 40%,
+            #da2a27 40%, #da2a27 50%, #fcdd09 50%, #fcdd09 60%,
+            #da2a27 60%, #da2a27 70%, #fcdd09 70%, #fcdd09 80%,
+            #da2a27 80%, #da2a27 90%, #fcdd09 90%);
+}
+
+.i18n-selector__flag--eu {
+    background: linear-gradient(180deg, #0f722b 33%, #fff 33%, #fff 66%, #ac1b1c 66%);
+}
+
+.i18n-selector__flag--fr {
+    background: linear-gradient(90deg, #002654 33%, #fff 33%, #fff 66%, #ce1126 66%);
+}
+
+.i18n-selector__flag--de {
+    background: linear-gradient(180deg, #000 33%, #dd0000 33%, #dd0000 66%, #ffcc00 66%);
+}
+
+.i18n-selector__flag--pt {
+    background: linear-gradient(90deg, #006600 40%, #ff0000 40%);
+}
+
+// =============================================================================
+// BOTÓN DE TRADUCCIÓN IA
+// =============================================================================
+
+.i18n-selector__actions {
+    display: flex;
+    gap: var(--ej-spacing-2, 0.5rem);
+}
+
+.i18n-selector__ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.i18n-selector__ai-icon {
+    display: flex;
+
+    svg {
+        color: var(--ej-color-primary, #8b5cf6);
+    }
+}
+
+.i18n-selector__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--ej-color-primary-alpha, rgba(139, 92, 246, 0.3));
+    border-top-color: var(--ej-color-primary, #8b5cf6);
+    border-radius: 50%;
+    animation: i18n-spin 0.8s linear infinite;
+}
+
+@keyframes i18n-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// =============================================================================
+// MODAL DE TRADUCCIÓN
+// =============================================================================
+
+.i18n-selector__modal {
+    .jaraba-modal__title {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-2, 0.5rem);
+
+        svg {
+            color: var(--ej-color-primary, #8b5cf6);
+        }
+    }
+}
+
+.i18n-selector__modal-intro {
+    color: var(--ej-color-text-secondary, rgba(255, 255, 255, 0.7));
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    line-height: 1.5;
+    margin-bottom: var(--ej-spacing-4, 1rem);
+}
+
+// =============================================================================
+// SELECTOR DE IDIOMAS DESTINO
+// =============================================================================
+
+.i18n-selector__targets {
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    legend {
+        font-weight: 600;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-primary, #fff);
+        margin-bottom: var(--ej-spacing-3, 0.75rem);
+    }
+}
+
+.i18n-selector__target-option {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+    padding: var(--ej-spacing-2, 0.5rem) var(--ej-spacing-3, 0.75rem);
+    margin-bottom: var(--ej-spacing-1, 0.25rem);
+    border: 1px solid var(--ej-color-border, rgba(255, 255, 255, 0.12));
+    border-radius: var(--ej-radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: var(--ej-color-surface-hover, rgba(255, 255, 255, 0.05));
+        border-color: var(--ej-color-border-hover, rgba(255, 255, 255, 0.2));
+    }
+
+    input[type="checkbox"] {
+        accent-color: var(--ej-color-primary, #8b5cf6);
+    }
+}
+
+.i18n-selector__target-option--selected {
+    background: var(--ej-color-primary-alpha, rgba(139, 92, 246, 0.15));
+    border-color: var(--ej-color-primary, #8b5cf6);
+}
+
+.i18n-selector__target-note {
+    color: var(--ej-color-text-muted, rgba(255, 255, 255, 0.5));
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-style: italic;
+}
+
+// =============================================================================
+// BARRA DE PROGRESO
+// =============================================================================
+
+.i18n-selector__progress {
+    margin-top: var(--ej-spacing-4, 1rem);
+}
+
+.i18n-selector__progress-bar {
+    height: 6px;
+    background: var(--ej-color-surface-elevated, rgba(255, 255, 255, 0.08));
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.i18n-selector__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ej-color-primary, #8b5cf6), var(--ej-color-secondary, #06b6d4));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.i18n-selector__progress-label {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-text-secondary, rgba(255, 255, 255, 0.7));
+    margin-top: var(--ej-spacing-2, 0.5rem);
+    text-align: center;
+}
+
+// =============================================================================
+// MENSAJES DE ERROR
+// =============================================================================
+
+.i18n-selector__error {
+    margin-top: var(--ej-spacing-3, 0.75rem);
+    padding: var(--ej-spacing-3, 0.75rem);
+    background: var(--ej-color-error-alpha, rgba(239, 68, 68, 0.15));
+    border: 1px solid var(--ej-color-error, #ef4444);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    color: var(--ej-color-error-light, #fca5a5);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    p {
+        margin: 0;
+    }
+}

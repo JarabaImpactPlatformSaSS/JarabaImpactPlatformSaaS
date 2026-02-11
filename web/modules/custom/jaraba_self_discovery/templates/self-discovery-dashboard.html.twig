@@ -1,0 +1,122 @@
+{#
+/**
+ * @file
+ * Template para el Dashboard de Autodescubrimiento.
+ *
+ * PROPÓSITO:
+ * Muestra las 4 herramientas disponibles con su estado (pendiente/completado/bloqueado).
+ * Layout mobile-first, cards de herramientas.
+ *
+ * Variables:
+ * - assessments: Array con estado de cada herramienta.
+ * - labels: Textos traducibles desde el controlador.
+ */
+#}
+{{ attach_library('jaraba_self_discovery/global') }}
+
+<div class="self-discovery-dashboard page-wrapper--clean">
+  {# Incluir header partial si existe #}
+  
+  <header class="sd-header">
+    <h1 class="sd-header__title">{{ labels.title }}</h1>
+    <p class="sd-header__subtitle">{{ labels.subtitle }}</p>
+  </header>
+  
+  <main class="sd-main">
+    <div class="sd-tools-grid">
+      
+      {# Rueda de la Vida #}
+      <a href="{{ assessments.life_wheel.url }}" class="sd-tool-card sd-tool-card--{{ assessments.life_wheel.status }}">
+        <div class="sd-tool-card__icon">
+          {{ jaraba_icon('analytics', 'life-wheel', { color: 'verde-innovacion', size: '48px' }) }}
+        </div>
+        <h2 class="sd-tool-card__title">{{ labels.life_wheel }}</h2>
+        <p class="sd-tool-card__description">{{ labels.life_wheel_desc }}</p>
+        <span class="sd-tool-card__cta">
+          {% if assessments.life_wheel.status == 'completed' %}
+            {{ labels.view }}
+          {% elseif assessments.life_wheel.status == 'pending' %}
+            {{ labels.start }}
+          {% else %}
+            {{ labels.continue }}
+          {% endif %}
+        </span>
+        {% if assessments.life_wheel.status == 'completed' %}
+          <span class="sd-tool-card__badge sd-tool-card__badge--completed">✓</span>
+        {% endif %}
+      </a>
+      
+      {# Timeline #}
+      <a href="{{ assessments.timeline.url }}" class="sd-tool-card sd-tool-card--{{ assessments.timeline.status }}">
+        <div class="sd-tool-card__icon">
+          {{ jaraba_icon('analytics', 'chart-line', { color: 'naranja-impulso', size: '48px' }) }}
+        </div>
+        <h2 class="sd-tool-card__title">{{ labels.timeline }}</h2>
+        <p class="sd-tool-card__description">{{ labels.timeline_desc }}</p>
+        <span class="sd-tool-card__cta">
+          {% if assessments.timeline.status == 'completed' %}
+            {{ labels.view }}
+          {% elseif assessments.timeline.status == 'pending' %}
+            {{ labels.start }}
+          {% else %}
+            {{ labels.continue }}
+          {% endif %}
+        </span>
+      </a>
+      
+      {# Intereses RIASEC #}
+      <div class="sd-tool-card sd-tool-card--{{ assessments.interests.status }}" 
+           {% if assessments.interests.status == 'locked' %}
+             aria-disabled="true"
+             data-tooltip="{% trans %}Completa la Rueda de la Vida y la Línea de Vida para desbloquear{% endtrans %}"
+           {% endif %}>
+        <div class="sd-tool-card__icon">
+          {{ jaraba_icon('ai', 'brain', { color: 'azul-corporativo', size: '48px' }) }}
+        </div>
+        <h2 class="sd-tool-card__title">{{ labels.interests }}</h2>
+        <p class="sd-tool-card__description">{{ labels.interests_desc }}</p>
+        {% if assessments.interests.status == 'locked' %}
+          <span class="sd-tool-card__lock">
+            {{ jaraba_icon('ui', 'lock', { color: 'gris-texto', size: '24px' }) }}
+          </span>
+          <div class="sd-tool-card__tooltip">
+            <span class="sd-tool-card__tooltip-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </span>
+            <span class="sd-tool-card__tooltip-text">{% trans %}Primero completa la Rueda de la Vida y la Línea de Vida{% endtrans %}</span>
+          </div>
+        {% endif %}
+      </div>
+      
+      {# Fortalezas #}
+      <div class="sd-tool-card sd-tool-card--{{ assessments.strengths.status }}" 
+           {% if assessments.strengths.status == 'locked' %}
+             aria-disabled="true"
+             data-tooltip="{% trans %}Completa las herramientas anteriores para desbloquear{% endtrans %}"
+           {% endif %}>
+        <div class="sd-tool-card__icon">
+          {{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '48px' }) }}
+        </div>
+        <h2 class="sd-tool-card__title">{{ labels.strengths }}</h2>
+        <p class="sd-tool-card__description">{{ labels.strengths_desc }}</p>
+        {% if assessments.strengths.status == 'locked' %}
+          <span class="sd-tool-card__lock">
+            {{ jaraba_icon('ui', 'lock', { color: 'gris-texto', size: '24px' }) }}
+          </span>
+          <div class="sd-tool-card__tooltip">
+            <span class="sd-tool-card__tooltip-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </span>
+            <span class="sd-tool-card__tooltip-text">{% trans %}Primero completa la Rueda de la Vida, Línea de Vida e Intereses{% endtrans %}</span>
+          </div>
+        {% endif %}
+      </div>
+      
+    </div>
+  </main>
+  
+</div>

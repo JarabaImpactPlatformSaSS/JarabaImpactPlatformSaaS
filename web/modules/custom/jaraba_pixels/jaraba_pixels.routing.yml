@@ -1,0 +1,112 @@
+# =============================================================================
+# Rutas del módulo Jaraba Pixel Manager
+# Siguen el patrón de /page-builder (frontend limpio, sin admin_route)
+# =============================================================================
+
+# Dashboard principal de Pixels - Frontend limpio
+jaraba_pixels.settings:
+  path: '/pixels'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelSettingsController::dashboard'
+    _title: 'Gestión de Pixels'
+  requirements:
+    _permission: 'administer pixels'
+  options:
+    _admin_route: FALSE
+
+# API: Guardar credenciales
+jaraba_pixels.api.save_credential:
+  path: '/api/pixels/credentials'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::saveCredential'
+  methods: [POST]
+  requirements:
+    _permission: 'administer pixels'
+  options:
+    no_cache: TRUE
+
+# API: Obtener credenciales por plataforma
+jaraba_pixels.api.get_credentials:
+  path: '/api/pixels/credentials/{platform}'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getCredential'
+  methods: [GET]
+  requirements:
+    _permission: 'administer pixels'
+    platform: 'meta|google|linkedin|tiktok'
+
+# API: Eliminar credencial
+jaraba_pixels.api.delete_credential:
+  path: '/api/pixels/credentials/{platform}'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::deleteCredential'
+  methods: [DELETE]
+  requirements:
+    _permission: 'administer pixels'
+    platform: 'meta|google|linkedin|tiktok'
+
+# API: Test de conexión
+jaraba_pixels.api.test_connection:
+  path: '/api/pixels/test/{platform}'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::testConnection'
+  methods: [POST]
+  requirements:
+    _permission: 'administer pixels'
+    platform: 'meta|google|linkedin|tiktok'
+
+# API: Estadísticas de eventos
+jaraba_pixels.api.stats:
+  path: '/api/pixels/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'administer pixels'
+
+# API: Formulario de configuración (para slide-panel)
+jaraba_pixels.api.config_form:
+  path: '/api/pixels/config-form/{platform}'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getConfigForm'
+  methods: [GET]
+  requirements:
+    _permission: 'administer pixels'
+    platform: 'meta|google|linkedin|tiktok'
+
+# =============================================================================
+# Dashboard de Estadísticas V2
+# =============================================================================
+
+# Dashboard de estadísticas - Página
+jaraba_pixels.stats:
+  path: '/pixels/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelStatsController::dashboard'
+    _title: 'Estadísticas de Pixels'
+  requirements:
+    _permission: 'administer pixels'
+  options:
+    _admin_route: FALSE
+
+# API: Estadísticas completas JSON
+jaraba_pixels.api.stats_full:
+  path: '/api/pixels/stats/full'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelStatsController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'administer pixels'
+  options:
+    no_cache: TRUE
+
+# API: Datos para gráficos Chart.js
+jaraba_pixels.api.chart_data:
+  path: '/api/pixels/stats/chart-data'
+  defaults:
+    _controller: '\Drupal\jaraba_pixels\Controller\PixelStatsController::getChartData'
+  methods: [GET]
+  requirements:
+    _permission: 'administer pixels'
+  options:
+    no_cache: TRUE

@@ -1,0 +1,29 @@
+# Librerías del módulo jaraba_i18n
+#
+# PROPÓSITO:
+# Define las librerías CSS/JS para el sistema de internacionalización
+# incluyendo el selector de idiomas y la traducción con IA.
+#
+# NOTA IMPORTANTE:
+# Los estilos SCSS están compilados en el tema principal (ecosistema_jaraba_theme).
+# Ver main.scss líneas 76-78 para los imports de i18n-selector e i18n-dashboard.
+# Por eso no se definen archivos CSS aquí para evitar duplicación.
+
+# Selector de idioma con dropdown y traducción IA
+i18n-selector:
+  version: 1.x
+  js:
+    js/i18n-selector.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - ecosistema_jaraba_theme/alpine
+
+# Dashboard de traducciones (Operational Tower pattern)
+# CSS ya incluido en tema vía @use de SCSS
+i18n-dashboard:
+  version: 1.x
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - ecosistema_jaraba_theme/global-styles

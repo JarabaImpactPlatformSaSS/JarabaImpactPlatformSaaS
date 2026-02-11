@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Template para Intereses RIASEC.
+ */
+#}
+{{ attach_library('jaraba_self_discovery/riasec') }}
+
+<div class="interests-page page-wrapper--clean">
+  <header class="ri-header">
+    <a href="/my-profile/self-discovery" class="ri-header__back">← {% trans %}Volver{% endtrans %}</a>
+    <h1 class="ri-header__title">{{ labels.title }}</h1>
+    <p class="ri-header__subtitle">{{ labels.subtitle }}</p>
+  </header>
+  
+  <main class="ri-main">
+    <div class="ri-intro">
+      <div class="ri-intro__icon">
+        {{ jaraba_icon('ai', 'brain', { color: 'azul-corporativo', size: '64px' }) }}
+      </div>
+      <div class="ri-intro__content">
+        <h2>{% trans %}Descubre tu perfil vocacional{% endtrans %}</h2>
+        <p>{% trans %}El test RIASEC identifica tus intereses profesionales en 6 áreas. Responde según tus preferencias genuinas para obtener un perfil preciso.{% endtrans %}</p>
+      </div>
+    </div>
+    
+    <div class="ri-form-container">
+      {{ form }}
+    </div>
+  </main>
+</div>

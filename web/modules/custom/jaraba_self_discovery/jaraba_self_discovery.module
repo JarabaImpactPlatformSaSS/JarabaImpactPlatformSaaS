@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for Jaraba Self-Discovery module.
+ */
+
+/**
+ * Implements hook_theme().
+ *
+ * Define los templates Twig para el módulo.
+ */
+function jaraba_self_discovery_theme(): array {
+  return [
+    'self_discovery_dashboard' => [
+      'variables' => [
+        'assessments' => [],
+        'labels' => [],
+      ],
+      'template' => 'self-discovery-dashboard',
+    ],
+    'self_discovery_life_wheel' => [
+      'variables' => [
+        'scores' => [],
+        'last_assessment' => NULL,
+        'labels' => [],
+      ],
+      'template' => 'self-discovery-life-wheel',
+    ],
+    'self_discovery_timeline' => [
+      'variables' => [
+        'events' => [],
+        'labels' => [],
+      ],
+      'template' => 'self-discovery-timeline',
+    ],
+    'self_discovery_interests' => [
+      'variables' => [
+        'form' => NULL,
+        'labels' => [],
+      ],
+      'template' => 'self-discovery-interests',
+    ],
+    'self_discovery_strengths' => [
+      'variables' => [
+        'form' => NULL,
+        'labels' => [],
+      ],
+      'template' => 'self-discovery-strengths',
+    ],
+  ];
+}

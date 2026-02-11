@@ -1,0 +1,68 @@
+{#
+/**
+ * @file
+ * Template para Answer Capsule optimizada para GEO.
+ *
+ * Esta estructura está diseñada para que los motores de IA generativa
+ * (ChatGPT, Perplexity, Claude) puedan citar directamente el contenido.
+ *
+ * Variables:
+ * - capsule: Array con 'answer', 'context', 'details', 'intent_type'
+ * - entity: La entidad asociada
+ */
+#}
+
+{# Answer Capsule Container - Optimizado para crawlers de IA #}
+<div class="geo-answer-capsule" 
+     data-intent="{{ capsule.intent_type|default('what') }}"
+     itemscope 
+     itemtype="https://schema.org/Answer">
+  
+  {# Respuesta Directa (primeros 50 caracteres) - CRÍTICO PARA GEO #}
+  <p class="geo-answer-capsule__answer" itemprop="text">
+    <strong>{{ capsule.answer }}</strong>
+  </p>
+  
+  {# Contexto de Autoridad #}
+  {% if capsule.context %}
+  <p class="geo-answer-capsule__context">
+    <small>{{ capsule.context }}</small>
+  </p>
+  {% endif %}
+  
+  {# Detalles Expandidos #}
+  {% if capsule.details %}
+  <div class="geo-answer-capsule__details" itemprop="description">
+    {{ capsule.details|raw }}
+  </div>
+  {% endif %}
+  
+</div>
+
+{# Estilos inline para garantizar visibilidad en crawlers #}
+<style>
+  .geo-answer-capsule {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-left: 4px solid var(--ej-color-primary, #3b82f6);
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  
+  .geo-answer-capsule__answer {
+    font-size: 1.125rem;
+    margin: 0 0 0.5rem;
+    color: var(--ej-text-primary, #1e293b);
+  }
+  
+  .geo-answer-capsule__context {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #64748b);
+    margin: 0 0 0.5rem;
+  }
+  
+  .geo-answer-capsule__details {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+</style>

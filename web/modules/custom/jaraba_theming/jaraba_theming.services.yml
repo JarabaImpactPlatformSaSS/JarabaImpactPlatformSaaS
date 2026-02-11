@@ -1,0 +1,10 @@
+services:
+  jaraba_theming.token_service:
+    class: Drupal\jaraba_theming\Service\ThemeTokenService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+
+  jaraba_theming.industry_preset_service:
+    class: Drupal\jaraba_theming\Service\IndustryPresetService
+

@@ -1,0 +1,20 @@
+# Permisos del módulo Self-Discovery
+# Textos traducibles y granulares por rol
+
+administer self discovery:
+  title: 'Administrar Self-Discovery'
+  description: 'Acceso completo a configuración y datos de autodescubrimiento.'
+  restrict access: true
+
+access self discovery tools:
+  title: 'Acceder a herramientas de autodescubrimiento'
+  description: 'Permite usar las herramientas de autodescubrimiento (Rueda de la Vida, Timeline, RIASEC, Fortalezas).'
+
+view own self discovery results:
+  title: 'Ver resultados propios de autodescubrimiento'
+  description: 'Ver los resultados de sus propias evaluaciones.'
+
+view any self discovery results:
+  title: 'Ver resultados de autodescubrimiento de otros'
+  description: 'Ver resultados de evaluaciones de cualquier usuario (para mentores/coaches).'
+  restrict access: true

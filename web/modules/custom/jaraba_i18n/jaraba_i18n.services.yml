@@ -1,0 +1,61 @@
+services:
+  # ============================================================================
+  # SERVICIOS DE TRADUCCIÓN - jaraba_i18n
+  # ============================================================================
+  #
+  # Este módulo proporciona servicios de traducción para múltiples tipos de
+  # entidades de la plataforma Jaraba:
+  #
+  # - PageContent (Page Builder)
+  # - BlogPost (AI Content Hub)
+  # - Course, Lesson, Activity (LMS)
+  # - HomepageContent (Site Builder)
+  #
+  # Los servicios están diseñados para ser extensibles y soportar nuevos
+  # tipos de entidad mediante el patrón adaptador.
+  # ============================================================================
+
+  # Logger channel para jaraba_i18n
+  logger.channel.jaraba_i18n:
+    parent: logger.channel_base
+    arguments: ['jaraba_i18n']
+
+  # ---------------------------------------------------------------------------
+  # TranslationManagerService
+  # ---------------------------------------------------------------------------
+  # Servicio central para gestión del estado de traducciones.
+  # Detecta idiomas disponibles, estados de traducción y sincronización.
+  #
+  jaraba_i18n.translation_manager:
+    class: Drupal\jaraba_i18n\Service\TranslationManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@language_manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_i18n'
+
+  # ---------------------------------------------------------------------------
+  # AITranslationService
+  # ---------------------------------------------------------------------------
+  # Servicio de traducción asistida por IA.
+  # Utiliza el sistema de agentes para traducir contenido preservando
+  # tono de marca (Brand Voice) y estructura HTML/Markdown.
+  #
+  jaraba_i18n.ai_translation:
+    class: Drupal\jaraba_i18n\Service\AITranslationService
+    arguments:
+      - '@jaraba_ai_agents.orchestrator'
+      - '@jaraba_ai_agents.model_router'
+      - '@config.factory'
+      - '@logger.channel.jaraba_i18n'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  # ---------------------------------------------------------------------------
+  # Twig Loader Filesystem - Namespace @jaraba_i18n
+  # ---------------------------------------------------------------------------
+  # Permite usar {% include '@jaraba_i18n/template.html.twig' %} en otros módulos.
+  #
+  jaraba_i18n.twig.loader.filesystem:
+    class: Drupal\jaraba_i18n\TwigLoader\JarabaI18nTwigLoader
+    tags:
+      - { name: twig.loader }

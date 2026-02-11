@@ -1,0 +1,11 @@
+name: 'Jaraba Pixel Manager'
+type: module
+description: 'Gestión nativa de pixels de marketing (Meta CAPI, Google Measurement Protocol). Reemplaza GTM con tracking server-side soberano.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+dependencies:
+  - jaraba_analytics:jaraba_analytics
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+# Configuración adicional
+configure: jaraba_pixels.settings

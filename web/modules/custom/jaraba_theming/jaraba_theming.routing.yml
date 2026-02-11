@@ -1,0 +1,34 @@
+# Admin collection (solo para superadmins)
+entity.tenant_theme_config.collection:
+  path: '/admin/appearance/theme-configs'
+  defaults:
+    _entity_list: 'tenant_theme_config'
+    _title: 'Configuraciones de Tema'
+  requirements:
+    _permission: 'administer theme config'
+
+# Visual customizer para TENANTS (ruta frontend con Form)
+jaraba_theming.customizer:
+  path: '/mi-cuenta/personalizar-tema'
+  defaults:
+    _form: '\Drupal\jaraba_theming\Form\TenantThemeCustomizerForm'
+    _title: 'Personalizar Tema'
+  requirements:
+    _permission: 'edit own theme config'
+  options:
+    _admin_route: FALSE
+    no_cache: TRUE
+    parameters: {}
+
+# Alias alternativo para dashboard
+jaraba_theming.dashboard_customizer:
+  path: '/dashboard/tema'
+  defaults:
+    _form: '\Drupal\jaraba_theming\Form\TenantThemeCustomizerForm'
+    _title: 'Personalizar Tema'
+  requirements:
+    _permission: 'edit own theme config'
+  options:
+    _admin_route: FALSE
+    no_cache: TRUE
+    parameters: {}

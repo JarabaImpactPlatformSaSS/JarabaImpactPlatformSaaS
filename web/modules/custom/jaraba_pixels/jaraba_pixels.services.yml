@@ -1,0 +1,88 @@
+services:
+  # =========================================================================
+  # Servicio Principal: Dispatcher
+  # =========================================================================
+  jaraba_pixels.dispatcher:
+    class: Drupal\jaraba_pixels\Service\PixelDispatcherService
+    arguments:
+      - '@database'
+      - '@jaraba_pixels.event_mapper'
+      - '@jaraba_pixels.credential_manager'
+      - '@jaraba_analytics.consent'
+      - '@logger.factory'
+      - '@http_client'
+
+  # =========================================================================
+  # Servicio: Cola Redis Asíncrona (V2)
+  # =========================================================================
+  jaraba_pixels.queue:
+    class: Drupal\jaraba_pixels\Service\RedisQueueService
+    arguments:
+      - '@?redis.factory'
+      - '@logger.factory'
+
+  # =========================================================================
+  # Servicio: Batch Processor (V2)
+  # =========================================================================
+  jaraba_pixels.batch_processor:
+    class: Drupal\jaraba_pixels\Service\BatchProcessorService
+    arguments:
+      - '@jaraba_pixels.queue'
+      - '@jaraba_pixels.dispatcher'
+      - '@entity_type.manager'
+      - '@logger.factory'
+
+  # =========================================================================
+  # Servicio: Verificación de Tokens (V2)
+  # =========================================================================
+  jaraba_pixels.token_verification:
+    class: Drupal\jaraba_pixels\Service\TokenVerificationService
+    arguments:
+      - '@jaraba_pixels.credential_manager'
+      - '@plugin.manager.mail'
+      - '@state'
+      - '@logger.factory'
+
+  # =========================================================================
+  # Servicio: Mapeo de Eventos
+  # =========================================================================
+  jaraba_pixels.event_mapper:
+    class: Drupal\jaraba_pixels\Service\EventMapperService
+    arguments:
+      - '@string_translation'
+
+  # =========================================================================
+  # Servicio: Gestor de Credenciales
+  # =========================================================================
+  jaraba_pixels.credential_manager:
+    class: Drupal\jaraba_pixels\Service\CredentialManagerService
+    arguments:
+      - '@database'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  # =========================================================================
+  # Clientes HTTP por Plataforma
+  # =========================================================================
+  jaraba_pixels.meta_client:
+    class: Drupal\jaraba_pixels\Client\MetaCapiClient
+    arguments:
+      - '@http_client'
+      - '@logger.factory'
+
+  jaraba_pixels.google_client:
+    class: Drupal\jaraba_pixels\Client\GoogleMeasurementClient
+    arguments:
+      - '@http_client'
+      - '@logger.factory'
+
+  jaraba_pixels.linkedin_client:
+    class: Drupal\jaraba_pixels\Client\LinkedInCapiClient
+    arguments:
+      - '@http_client'
+      - '@logger.factory'
+
+  jaraba_pixels.tiktok_client:
+    class: Drupal\jaraba_pixels\Client\TikTokEventsClient
+    arguments:
+      - '@http_client'
+      - '@logger.factory'

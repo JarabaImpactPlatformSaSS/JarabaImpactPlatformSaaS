@@ -1,0 +1,22 @@
+{
+    "name": "jaraba-self-discovery",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo Self-Discovery de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/self-discovery.scss:css/self-discovery.css --style=compressed",
+        "build:all": "npm run build && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "self-discovery",
+        "career",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Módulo de internacionalización avanzada para Jaraba Platform.
+ *
+ * PROPÓSITO:
+ * Proporciona UI de traducción asistida por IA para múltiples tipos de
+ * entidades (PageContent, BlogPost, Course, etc.)
+ *
+ * CARACTERÍSTICAS:
+ * - Selector de idioma como parcial reutilizable
+ * - Botón "Traducir con IA" que abre slide-panel
+ * - Dashboard de estado de traducciones
+ * - API REST para operaciones de traducción
+ *
+ * @see docs/planificacion/20260202-Gap_E_i18n_UI_v1.md
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig del módulo.
+ */
+function jaraba_i18n_theme(): array {
+  return [
+    // Selector de idioma (parcial para incluir en otros templates).
+    'i18n_selector' => [
+      'template' => 'i18n-selector',
+      'variables' => [
+        'entity_id' => NULL,
+        'entity_type' => NULL,
+        'current_language' => 'es',
+        'translation_status' => [],
+        'can_translate' => FALSE,
+      ],
+    ],
+    // Dashboard de traducciones.
+    'i18n_dashboard' => [
+      'template' => 'i18n-dashboard',
+      'variables' => [
+        'entity_types' => [],
+        'stats' => [],
+        'languages' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() para i18n_selector.
+ *
+ * Añade las librerías necesarias y prepara variables.
+ */
+function jaraba_i18n_preprocess_i18n_selector(array &$variables): void {
+  // Añadir librería del componente.
+  $variables['#attached']['library'][] = 'jaraba_i18n/i18n-selector';
+
+  // Asegurar que can_translate está definido.
+  if (!isset($variables['can_translate'])) {
+    $variables['can_translate'] = \Drupal::currentUser()
+      ->hasPermission('translate any entity');
+  }
+}

@@ -1,0 +1,9 @@
+# Links de menú - /admin/structure para Field UI
+# Patrón: parent system.admin_structure
+
+entity.life_wheel_assessment.settings:
+  title: 'Rueda de la Vida'
+  description: 'Configurar campos y display de Rueda de la Vida.'
+  route_name: entity.life_wheel_assessment.settings
+  parent: system.admin_structure
+  weight: 50

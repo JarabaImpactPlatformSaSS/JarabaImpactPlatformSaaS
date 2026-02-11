@@ -1,0 +1,23 @@
+# Configuración por defecto del módulo Jaraba Heatmap
+# Ref: Doc Técnico #180 - Native Heatmaps System
+
+# Habilitar tracking de heatmaps
+enabled: true
+
+# Tamaño del buffer de eventos antes de enviar al servidor
+buffer_size: 50
+
+# Intervalo de flush automático en milisegundos
+flush_interval: 10000
+
+# Throttle para eventos de movimiento de mouse (ms)
+throttle_move: 100
+
+# Throttle para eventos de scroll (ms)
+throttle_scroll: 200
+
+# Días de retención para eventos raw
+retention_raw_days: 7
+
+# Días de retención para datos agregados
+retention_aggregated_days: 90

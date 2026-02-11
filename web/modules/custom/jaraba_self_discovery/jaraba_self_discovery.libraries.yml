@@ -1,0 +1,50 @@
+# Libraries del módulo Self-Discovery
+# Patrón: Dependencia del CSS global + JS específico
+
+global:
+  version: 1.x
+  css:
+    theme:
+      css/self-discovery.css: {}
+  dependencies:
+    - ecosistema_jaraba_core/global
+    - core/drupal
+    - core/drupalSettings
+
+life-wheel:
+  version: 1.x
+  js:
+    js/life-wheel-chart.js: {}
+  dependencies:
+    - jaraba_self_discovery/global
+    - core/once
+
+timeline:
+  version: 1.x
+  js:
+    js/timeline-interactive.js: {}
+  dependencies:
+    - jaraba_self_discovery/global
+    - jaraba_self_discovery/slide-panel
+    - core/once
+
+slide-panel:
+  version: 1.x
+  js:
+    js/slide-panel.js: {}
+  css:
+    component:
+      css/slide-panel.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+riasec:
+  version: 1.x
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+    js/riasec-chart.js: {}
+  dependencies:
+    - jaraba_self_discovery/global
+    - core/once
+    - core/drupal.ajax

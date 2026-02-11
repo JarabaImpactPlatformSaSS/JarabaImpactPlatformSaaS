@@ -1,0 +1,7 @@
+services:
+  jaraba_performance.critical_css:
+    class: Drupal\jaraba_performance\Service\CriticalCssService
+    arguments:
+      - '@current_route_match'
+      - '@extension.list.theme'
+      - '@config.factory'

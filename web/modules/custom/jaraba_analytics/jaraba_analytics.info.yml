@@ -1,0 +1,8 @@
+name: 'Jaraba Analytics'
+type: module
+description: 'Sistema de analytics 100% nativo para el Ecosistema Jaraba. Tracking de eventos, métricas agregadas, multi-tenant.'
+package: Jaraba
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:system
+configure: jaraba_analytics.settings

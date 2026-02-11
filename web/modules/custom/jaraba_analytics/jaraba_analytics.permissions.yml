@@ -1,0 +1,14 @@
+# Permisos del módulo Jaraba Analytics.
+
+'access jaraba analytics':
+  title: 'Acceder a Jaraba Analytics'
+  description: 'Ver dashboard y métricas de analytics del tenant.'
+
+'administer jaraba analytics':
+  title: 'Administrar Jaraba Analytics'
+  description: 'Configurar opciones de tracking y analytics.'
+  restrict access: TRUE
+
+'export analytics data':
+  title: 'Exportar datos de Analytics'
+  description: 'Descargar métricas en formato CSV/Excel.'

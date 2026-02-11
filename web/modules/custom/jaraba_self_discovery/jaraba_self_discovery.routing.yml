@@ -1,0 +1,183 @@
+# Rutas de Content Entities - Self-Discovery
+# Patrón: /admin/content para collections, /admin/structure para Field UI
+
+# ============================================
+# LIFE WHEEL ASSESSMENT
+# ============================================
+
+entity.life_wheel_assessment.collection:
+  path: '/admin/content/life-wheel-assessments'
+  defaults:
+    _entity_list: 'life_wheel_assessment'
+    _title: 'Evaluaciones Rueda de la Vida'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_wheel_assessment.add_form:
+  path: '/admin/content/life-wheel-assessments/add'
+  defaults:
+    _entity_form: 'life_wheel_assessment.add'
+    _title: 'Añadir Evaluación'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_wheel_assessment.edit_form:
+  path: '/admin/content/life-wheel-assessment/{life_wheel_assessment}/edit'
+  defaults:
+    _entity_form: 'life_wheel_assessment.edit'
+    _title: 'Editar Evaluación'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_wheel_assessment.delete_form:
+  path: '/admin/content/life-wheel-assessment/{life_wheel_assessment}/delete'
+  defaults:
+    _entity_form: 'life_wheel_assessment.delete'
+    _title: 'Eliminar Evaluación'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_wheel_assessment.canonical:
+  path: '/admin/content/life-wheel-assessment/{life_wheel_assessment}'
+  defaults:
+    _entity_view: 'life_wheel_assessment'
+    _title: 'Evaluación Rueda de la Vida'
+  requirements:
+    _permission: 'administer self discovery'
+
+# Settings para Field UI
+entity.life_wheel_assessment.settings:
+  path: '/admin/structure/life-wheel-assessment'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\LifeWheelSettingsForm'
+    _title: 'Configurar Rueda de la Vida'
+  requirements:
+    _permission: 'administer self discovery'
+
+# ============================================
+# LIFE TIMELINE
+# ============================================
+
+entity.life_timeline.collection:
+  path: '/admin/content/life-timeline'
+  defaults:
+    _entity_list: 'life_timeline'
+    _title: 'Eventos de Línea de Vida'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_timeline.add_form:
+  path: '/admin/content/life-timeline/add'
+  defaults:
+    _entity_form: 'life_timeline.add'
+    _title: 'Añadir Evento'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_timeline.edit_form:
+  path: '/admin/content/life-timeline/{life_timeline}/edit'
+  defaults:
+    _entity_form: 'life_timeline.edit'
+    _title: 'Editar Evento'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_timeline.delete_form:
+  path: '/admin/content/life-timeline/{life_timeline}/delete'
+  defaults:
+    _entity_form: 'life_timeline.delete'
+    _title: 'Eliminar Evento'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.life_timeline.canonical:
+  path: '/admin/content/life-timeline/{life_timeline}'
+  defaults:
+    _entity_view: 'life_timeline'
+    _title: 'Evento de Línea de Vida'
+  requirements:
+    _permission: 'administer self discovery'
+
+# ============================================
+# FRONTEND ROUTES (Usuario)
+# ============================================
+
+jaraba_self_discovery.dashboard:
+  path: '/my-profile/self-discovery'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::dashboard'
+    _title: 'Autodescubrimiento'
+  requirements:
+    _permission: 'access self discovery tools'
+
+jaraba_self_discovery.life_wheel:
+  path: '/my-profile/self-discovery/life-wheel'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::lifeWheel'
+    _title: 'Rueda de la Vida'
+  requirements:
+    _permission: 'access self discovery tools'
+
+jaraba_self_discovery.timeline:
+  path: '/my-profile/self-discovery/timeline'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::timeline'
+    _title: 'Mi Línea de Vida'
+  requirements:
+    _permission: 'access self discovery tools'
+
+jaraba_self_discovery.interests:
+  path: '/my-profile/self-discovery/interests'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::interests'
+    _title: 'Mis Intereses (RIASEC)'
+  requirements:
+    _permission: 'access self discovery tools'
+
+jaraba_self_discovery.strengths:
+  path: '/my-profile/self-discovery/strengths'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::strengths'
+    _title: 'Mis Fortalezas'
+  requirements:
+    _permission: 'access self discovery tools'
+
+# ============================================
+# API ENDPOINTS
+# ============================================
+
+jaraba_self_discovery.api.life_wheel.save:
+  path: '/api/v1/self-discovery/life-wheel'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryApiController::saveLifeWheel'
+  methods: [POST]
+  requirements:
+    _permission: 'access self discovery tools'
+    _format: json
+
+jaraba_self_discovery.api.timeline.event:
+  path: '/api/v1/self-discovery/timeline/events'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryApiController::saveTimelineEvent'
+  methods: [POST]
+  requirements:
+    _permission: 'access self discovery tools'
+    _format: json
+
+jaraba_self_discovery.api.timeline.event.delete:
+  path: '/api/v1/self-discovery/timeline/events/{event_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryApiController::deleteTimelineEvent'
+  methods: [DELETE]
+  requirements:
+    _permission: 'access self discovery tools'
+
+# Endpoint para respuestas contextuales del Copilot
+jaraba_self_discovery.api.copilot.context:
+  path: '/api/v1/self-discovery/copilot/context'
+  defaults:
+    _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryApiController::getCopilotContext'
+  methods: [POST]
+  requirements:
+    _permission: 'access self discovery tools'
+

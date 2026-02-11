@@ -1,0 +1,131 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Analytics.
+ *
+ * Sistema de analytics 100% nativo para el Ecosistema Jaraba SaaS.
+ * Proporciona tracking de eventos, métricas agregadas, y dashboards
+ * de rendimiento sin dependencias externas.
+ *
+ * @see https://docs/tecnicos/20260130b-178_Platform_Native_Tracking_Architecture_v1_Claude.md
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_analytics_theme() {
+  return [
+    'analytics_dashboard' => [
+      'variables' => [
+        'tenant_id' => NULL,
+      ],
+      'template' => 'analytics-dashboard',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_analytics_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_analytics':
+      $output = '<h3>' . t('Acerca de') . '</h3>';
+      $output .= '<p>' . t('Sistema de analytics 100% nativo para el Ecosistema Jaraba.') . '</p>';
+      $output .= '<h4>' . t('Características') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Tracking de eventos e-commerce') . '</li>';
+      $output .= '<li>' . t('Métricas agregadas diarias') . '</li>';
+      $output .= '<li>' . t('Multi-tenant con aislamiento de datos') . '</li>';
+      $output .= '<li>' . t('APIs REST para consultas') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Agrega métricas diarias del día anterior para cada tenant.
+ * Se recomienda ejecutar a las 02:00 UTC via cron externo.
+ */
+function jaraba_analytics_cron() {
+  // Solo ejecutar una vez al día (verificar última ejecución).
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_analytics.last_aggregation', 0);
+  $today = strtotime('today midnight');
+
+  // Si ya se ejecutó hoy, salir.
+  if ($lastRun >= $today) {
+    return;
+  }
+
+  // Ejecutar agregación.
+  try {
+    /** @var \Drupal\jaraba_analytics\Service\AnalyticsAggregatorService $aggregator */
+    $aggregator = \Drupal::service('jaraba_analytics.analytics_aggregator');
+    $aggregator->aggregateDailyMetrics();
+
+    // Marcar como ejecutado.
+    $state->set('jaraba_analytics.last_aggregation', time());
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_analytics')->error('Cron aggregation failed: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adjunta el JavaScript tracker a todas las páginas del frontend.
+ */
+function jaraba_analytics_page_attachments(array &$attachments) {
+  // No cargar en rutas admin.
+  $route_match = \Drupal::routeMatch();
+  $route = $route_match->getRouteObject();
+
+  if ($route && $route->getOption('_admin_route')) {
+    return;
+  }
+
+  // Verificar si el tracking está habilitado.
+  $config = \Drupal::config('jaraba_analytics.settings');
+
+  if (!$config->get('enable_tracking')) {
+    return;
+  }
+
+  // Respetar Do Not Track si está configurado.
+  if ($config->get('respect_dnt')) {
+    $request = \Drupal::request();
+    $dnt = $request->headers->get('DNT');
+    if ($dnt === '1') {
+      return;
+    }
+  }
+
+  // Adjuntar librería de tracking.
+  $attachments['#attached']['library'][] = 'jaraba_analytics/analytics-tracker';
+
+  // Adjuntar banner de consentimiento GDPR.
+  $attachments['#attached']['library'][] = 'jaraba_analytics/consent-banner';
+
+  // Pasar configuración a JS.
+  $attachments['#attached']['drupalSettings']['jarabaAnalytics'] = [
+    'tenantId' => NULL, // @todo Detectar tenant del contexto.
+    'autoTrackPageViews' => $config->get('track_page_views') ?? TRUE,
+    'debug' => FALSE,
+  ];
+
+  // Configuración de consent para JS.
+  $attachments['#attached']['drupalSettings']['jarabaConsent'] = [
+    'policyVersion' => '1.0',
+    'showBanner' => TRUE,
+  ];
+}
+

@@ -1,0 +1,9 @@
+name: 'Jaraba Theming'
+type: module
+description: 'Sistema de Design Tokens y personalización visual multi-tenant'
+package: 'Jaraba Impact Platform'
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+dependencies:
+  - drupal:system
+configure: jaraba_theming.settings

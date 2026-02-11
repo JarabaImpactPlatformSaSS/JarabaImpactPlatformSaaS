@@ -1,0 +1,10 @@
+name: 'Jaraba Self-Discovery'
+type: module
+description: 'Herramientas de autodescubrimiento profesional: Rueda de la Vida, Timeline, RIASEC, Fortalezas.'
+package: 'Jaraba Empleabilidad'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - jaraba_candidate:jaraba_candidate
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: entity.self_discovery_config.settings

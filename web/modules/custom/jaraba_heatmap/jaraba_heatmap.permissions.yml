@@ -1,0 +1,12 @@
+# Permisos del módulo Jaraba Heatmap
+# Ref: Doc Técnico #180 - Native Heatmaps System
+
+access heatmap data:
+  title: 'Acceder a datos de Heatmaps'
+  description: 'Permite visualizar los datos de heatmaps y métricas de interacción de usuarios.'
+  restrict access: TRUE
+
+administer heatmap settings:
+  title: 'Administrar configuración de Heatmaps'
+  description: 'Permite configurar los parámetros del sistema de heatmaps (throttling, retención, etc.).'
+  restrict access: TRUE

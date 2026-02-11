@@ -1,0 +1,25 @@
+# Bibliotecas del módulo Jaraba Heatmap
+# Ref: Doc Técnico #180 - Native Heatmaps System
+
+# Tracker JavaScript (carga en frontend)
+tracker:
+  version: 1.0.0
+  js:
+    js/heatmap-tracker.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Visor de Heatmaps (carga bajo demanda en dashboard)
+viewer:
+  version: 1.0.0
+  js:
+    js/heatmap-viewer.js: { minified: false }
+  css:
+    component:
+      css/heatmap-viewer.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

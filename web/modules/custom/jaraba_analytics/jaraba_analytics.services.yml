@@ -1,0 +1,27 @@
+services:
+  jaraba_analytics.analytics_service:
+    class: Drupal\jaraba_analytics\Service\AnalyticsService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@cache.default'
+      - '@logger.factory'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_analytics.analytics_aggregator:
+    class: Drupal\jaraba_analytics\Service\AnalyticsAggregatorService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@cache.default'
+      - '@logger.factory'
+
+  jaraba_analytics.consent:
+    class: Drupal\jaraba_analytics\Service\ConsentService
+    arguments:
+      - '@entity_type.manager'
+      - '@request_stack'
+      - '@current_user'
+

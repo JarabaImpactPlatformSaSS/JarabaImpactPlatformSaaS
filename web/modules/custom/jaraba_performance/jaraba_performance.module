@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * @file
+ * Módulo de optimizaciones de rendimiento para Jaraba Impact Platform.
+ *
+ * PROPÓSITO
+ * =========
+ * Este módulo implementa optimizaciones de rendimiento para mejorar las
+ * métricas Core Web Vitals, especialmente LCP (Largest Contentful Paint)
+ * y FCP (First Contentful Paint).
+ *
+ * FUNCIONALIDADES IMPLEMENTADAS
+ * =============================
+ *
+ * 1. CSS CRÍTICO (Gap F del Plan de Elevación a Clase Mundial)
+ *    - Inyecta CSS crítico inline en el <head> para evitar render-blocking.
+ *    - El CSS crítico se genera offline via script NPM (generate-critical.js).
+ *    - El CSS restante se carga de forma asíncrona después del paint inicial.
+ *
+ * FLUJO DEL CSS CRÍTICO
+ * =====================
+ *
+ *   [Petición HTTP] → [Drupal procesa] → [hook_page_attachments_alter]
+ *                                               ↓
+ *                     [CriticalCssService determina qué CSS aplicar]
+ *                                               ↓
+ *                     [Lee archivo css/critical/{ruta}.css]
+ *                                               ↓
+ *                     [Inyecta contenido en <style id="critical-css">]
+ *                                               ↓
+ *                     [JavaScript carga CSS restante de forma async]
+ *
+ * ARCHIVOS RELACIONADOS
+ * =====================
+ * - src/Service/CriticalCssService.php: Lógica de selección de CSS crítico
+ * - js/critical-css-loader.js: Cargador async de CSS restante
+ * - (theme)/css/critical/*.css: Archivos CSS críticos pre-generados
+ * - (theme)/scripts/generate-critical.js: Script de generación
+ *
+ * MÉTRICAS OBJETIVO
+ * =================
+ * - LCP: De 2.5s a <2.0s (-20%)
+ * - FCP: De 1.8s a <1.2s (-33%)
+ * - CSS bloqueante: De 778KB a <50KB inline (-94%)
+ *
+ * @see docs/planificacion/20260202-Auditoria_Plan_Elevacion_Clase_Mundial_v1.md
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Este hook se ejecuta en cada página antes de enviar la respuesta al cliente.
+ * Su función es inyectar el CSS crítico correspondiente a la ruta actual.
+ *
+ * El CSS crítico es el conjunto mínimo de estilos necesarios para renderizar
+ * el contenido visible sin scroll ("above the fold"). Al inyectarlo inline
+ * en el <head>, evitamos que los archivos CSS externos bloqueen el renderizado.
+ *
+ * EXCLUSIONES
+ * ===========
+ * No aplicamos CSS crítico en:
+ * - Rutas de administración de Drupal core (system.*, entity.*, views_ui.*)
+ * - Esto es porque el admin theme tiene su propio CSS y no queremos interferir.
+ *
+ * @param array &$attachments
+ *   Array de adjuntos de la página, incluyendo bibliotecas, settings y html_head.
+ */
+function jaraba_performance_page_attachments_alter(array &$attachments): void {
+  // -------------------------------------------------------------------------
+  // PASO 1: Determinar si debemos aplicar CSS crítico en esta ruta.
+  // -------------------------------------------------------------------------
+
+  $routeMatch = \Drupal::routeMatch();
+  $routeName = $routeMatch->getRouteName() ?? '';
+
+  // Lista de prefijos de rutas que NO deben recibir CSS crítico.
+  // Estas son rutas del admin de Drupal core que usan el admin theme.
+  $rutasExcluidas = [
+    'system.',         // Rutas del sistema (batch, cron, etc.)
+    'entity.',         // CRUD de entidades genérico
+    'views_ui.',       // Editor de Views
+    'field_ui.',       // Configuración de campos
+    'config.',         // Importar/exportar config
+    'devel.',          // Herramientas de desarrollo
+  ];
+
+  foreach ($rutasExcluidas as $prefijo) {
+    if (str_starts_with($routeName, $prefijo)) {
+      // Esta es una ruta de admin core, no aplicar CSS crítico.
+      return;
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // PASO 2: Obtener el CSS crítico correspondiente a esta ruta.
+  // -------------------------------------------------------------------------
+
+  /** @var \Drupal\jaraba_performance\Service\CriticalCssService $criticalCss */
+  $criticalCss = \Drupal::service('jaraba_performance.critical_css');
+
+  // El servicio determina qué archivo CSS crítico usar y lee su contenido.
+  // Retorna NULL si no hay CSS crítico disponible o está deshabilitado.
+  $cssContent = $criticalCss->getCriticalCssContent();
+
+  if ($cssContent === NULL) {
+    // No hay CSS crítico para esta ruta, continuar con flujo normal.
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // PASO 3: Inyectar el CSS crítico inline en el <head>.
+  // -------------------------------------------------------------------------
+
+  // Añadimos el CSS como un tag <style> con peso muy bajo (-100) para que
+  // se renderice antes que cualquier otro CSS o JavaScript.
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'style',
+      '#value' => $cssContent,
+      '#attributes' => [
+        // ID único para identificar el CSS crítico en el DOM.
+        'id' => 'critical-css',
+        // Atributo data para que el JavaScript sepa que este es CSS crítico.
+        'data-critical' => 'true',
+      ],
+      // Peso negativo = se renderiza primero.
+      '#weight' => -100,
+    ],
+    // Clave única para este attachment.
+    'jaraba_critical_css_inline',
+  ];
+
+  // -------------------------------------------------------------------------
+  // PASO 4: Añadir JavaScript para carga diferida del CSS restante.
+  // -------------------------------------------------------------------------
+
+  // Este JavaScript convierte los stylesheets con media="print" a media="all"
+  // después de que la página termine de cargar, permitiendo carga no-bloqueante.
+  $attachments['#attached']['library'][] = 'jaraba_performance/critical_css_loader';
+
+  // Pasamos información al JavaScript para debugging y métricas.
+  $attachments['#attached']['drupalSettings']['jarabaPerformance'] = [
+    'criticalCss' => [
+      'enabled' => TRUE,
+      'file' => $criticalCss->getCriticalCssFile(),
+    ],
+  ];
+}
+

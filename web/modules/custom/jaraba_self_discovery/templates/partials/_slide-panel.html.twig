@@ -1,0 +1,63 @@
+{#
+/**
+ * @file
+ * Slide Panel - Componente modal deslizante desde la derecha.
+ *
+ * PROPÓSITO:
+ * Reemplaza los modales centrados tradicionales por un panel lateral
+ * que permite acciones CRUD sin abandonar la página actual.
+ * Patrón UX moderno usado en Notion, Linear, Figma.
+ *
+ * USO:
+ * {% include '@jaraba_self_discovery/partials/_slide-panel.html.twig' with {
+ *   panel_id: 'add-event-panel',
+ *   panel_title: 'Añadir Evento'|t,
+ *   panel_size: 'medium'  {# small|medium|large|full #}
+ * } %}
+ *
+ * ACTIVACIÓN (JS):
+ * Drupal.behaviors.slidePanel.open('add-event-panel');
+ * Drupal.behaviors.slidePanel.close('add-event-panel');
+ */
+#}
+{% set panel_id = panel_id|default('slide-panel') %}
+{% set panel_size = panel_size|default('medium') %}
+{% set panel_title = panel_title|default('Panel'|t) %}
+
+<div class="slide-panel slide-panel--{{ panel_size }}" id="{{ panel_id }}" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="{{ panel_id }}-title">
+  
+  {# Overlay oscuro #}
+  <div class="slide-panel__overlay" data-close-panel="{{ panel_id }}"></div>
+  
+  {# Panel content #}
+  <div class="slide-panel__content">
+    
+    {# Header #}
+    <header class="slide-panel__header">
+      <h2 class="slide-panel__title" id="{{ panel_id }}-title">{{ panel_title }}</h2>
+      <button type="button" class="slide-panel__close" data-close-panel="{{ panel_id }}" aria-label="{% trans %}Cerrar{% endtrans %}">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+    
+    {# Body - Se renderiza contenido dinámico aquí #}
+    <div class="slide-panel__body" id="{{ panel_id }}-body">
+      {{ panel_content|default('') }}
+    </div>
+    
+    {# Footer con acciones (opcional) #}
+    {% if panel_actions|default(true) %}
+    <footer class="slide-panel__footer">
+      <button type="button" class="btn btn--secondary" data-close-panel="{{ panel_id }}">
+        {% trans %}Cancelar{% endtrans %}
+      </button>
+      <button type="submit" class="btn btn--primary" id="{{ panel_id }}-submit">
+        {% trans %}Guardar{% endtrans %}
+      </button>
+    </footer>
+    {% endif %}
+    
+  </div>
+</div>

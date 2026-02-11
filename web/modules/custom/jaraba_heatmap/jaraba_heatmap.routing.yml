@@ -1,0 +1,77 @@
+# Rutas del módulo Jaraba Heatmap
+# Ref: Doc Técnico #180 - Native Heatmaps System
+
+# =============================================================================
+# API: Colector de Eventos (POST)
+# =============================================================================
+
+jaraba_heatmap.collect:
+  path: '/api/heatmap/collect'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapCollectorController::collect'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+# =============================================================================
+# API: Consulta de Datos (GET)
+# =============================================================================
+
+jaraba_heatmap.pages:
+  path: '/api/heatmap/pages'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::listPages'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+
+jaraba_heatmap.page_clicks:
+  path: '/api/heatmap/pages/{path}/clicks'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getClickData'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+    path: .+
+
+jaraba_heatmap.page_scroll:
+  path: '/api/heatmap/pages/{path}/scroll'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getScrollData'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+    path: .+
+
+jaraba_heatmap.page_movement:
+  path: '/api/heatmap/pages/{path}/movement'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getMovementData'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+    path: .+
+
+jaraba_heatmap.summary:
+  path: '/api/heatmap/summary'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getSummary'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+
+# =============================================================================
+# Administración: Configuración
+# =============================================================================
+
+jaraba_heatmap.settings:
+  path: '/admin/config/jaraba/heatmap'
+  defaults:
+    _form: '\Drupal\jaraba_heatmap\Form\HeatmapSettingsForm'
+    _title: 'Configuración de Heatmaps'
+  requirements:
+    _permission: 'administer heatmap settings'
+  options:
+    _admin_route: TRUE

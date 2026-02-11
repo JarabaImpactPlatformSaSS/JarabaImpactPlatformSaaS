@@ -1,0 +1,222 @@
+{#
+/**
+ * @file
+ * Selector de idioma y botón de traducción con IA.
+ *
+ * PROPÓSITO:
+ * Proporciona controles de internacionalización para cualquier editor
+ * de contenido (Page Builder, Blog, LMS, etc.).
+ *
+ * CARACTERÍSTICAS:
+ * - Selector dropdown de idiomas disponibles
+ * - Indicador de estado de traducción
+ * - Botón "Traducir con IA"
+ * - Feedback visual de progreso
+ *
+ * VARIABLES:
+ * - entity_id: ID de la entidad
+ * - entity_type: Tipo de entidad (page_content, blog_post, etc.)
+ * - current_language: Idioma actual
+ * - translation_status: Estado de traducciones por idioma
+ * - can_translate: Permiso para traducir
+ *
+ * INTEGRACIÓN:
+ * Este componente se comunica con:
+ * - jaraba_i18n.translation_manager (estado)
+ * - jaraba_i18n.ai_translation (traducción IA)
+ *
+ * @see AITranslationService
+ * @see TranslationManagerService
+ */
+#}
+
+<div class="i18n-selector"
+     x-data="i18nSelector()"
+     x-init="init()"
+     data-entity-id="{{ entity_id }}"
+     data-entity-type="{{ entity_type }}"
+     data-current-lang="{{ current_language }}">
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SELECTOR DE IDIOMA
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="i18n-selector__dropdown" x-ref="dropdown">
+    <button type="button"
+            class="i18n-selector__trigger"
+            @click="toggleDropdown()"
+            :aria-expanded="isOpen">
+      {# Bandera del idioma actual #}
+      <span class="i18n-selector__flag" :class="'i18n-selector__flag--' + currentLang"></span>
+      <span class="i18n-selector__label" x-text="languages[currentLang]?.label || currentLang"></span>
+      <svg class="i18n-selector__arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    <ul class="i18n-selector__menu"
+        x-show="isOpen"
+        x-cloak
+        @click.outside="closeDropdown()">
+
+      <template x-for="(info, langcode) in languages" :key="langcode">
+        <li class="i18n-selector__item"
+            :class="{
+              'i18n-selector__item--active': langcode === currentLang,
+              'i18n-selector__item--original': info.is_original,
+              'i18n-selector__item--missing': !info.exists && !info.is_original,
+              'i18n-selector__item--outdated': info.outdated
+            }">
+          <a class="i18n-selector__link"
+             :href="getLanguageUrl(langcode)"
+             @click.prevent="switchLanguage(langcode)">
+
+            <span class="i18n-selector__flag" :class="'i18n-selector__flag--' + langcode"></span>
+            <span class="i18n-selector__lang-label" x-text="info.label"></span>
+
+            {# Indicadores de estado #}
+            <span class="i18n-selector__status">
+              <template x-if="info.is_original">
+                <span class="i18n-selector__badge i18n-selector__badge--original" title="{% trans %}Original{% endtrans %}">
+                  {{ jaraba_icon('star', 'micro') }}
+                </span>
+              </template>
+              <template x-if="info.exists && !info.is_original && !info.outdated">
+                <span class="i18n-selector__badge i18n-selector__badge--complete" title="{% trans %}Traducido{% endtrans %}">
+                  {{ jaraba_icon('check-circle', 'micro') }}
+                </span>
+              </template>
+              <template x-if="info.outdated">
+                <span class="i18n-selector__badge i18n-selector__badge--outdated" title="{% trans %}Desactualizado{% endtrans %}">
+                  {{ jaraba_icon('alert-triangle', 'micro') }}
+                </span>
+              </template>
+              <template x-if="!info.exists && !info.is_original">
+                <span class="i18n-selector__badge i18n-selector__badge--missing" title="{% trans %}Sin traducir{% endtrans %}">
+                  {{ jaraba_icon('plus-circle', 'micro') }}
+                </span>
+              </template>
+            </span>
+          </a>
+        </li>
+      </template>
+    </ul>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     BOTÓN TRADUCIR CON IA
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  {% if can_translate %}
+    <div class="i18n-selector__actions">
+      <button type="button"
+              class="i18n-selector__ai-btn jaraba-btn jaraba-btn--secondary jaraba-btn--sm"
+              @click="openTranslateModal()"
+              :disabled="isTranslating"
+              title="{% trans %}Traducir contenido con IA{% endtrans %}">
+        <template x-if="!isTranslating">
+          <span class="i18n-selector__ai-icon">
+            {{ jaraba_icon('sparkles', 'small') }}
+          </span>
+        </template>
+        <template x-if="isTranslating">
+          <span class="i18n-selector__spinner"></span>
+        </template>
+        <span class="i18n-selector__ai-label">
+          <template x-if="!isTranslating">
+            <span>{% trans %}Traducir{% endtrans %}</span>
+          </template>
+          <template x-if="isTranslating">
+            <span>{% trans %}Traduciendo...{% endtrans %}</span>
+          </template>
+        </span>
+      </button>
+    </div>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     MODAL DE TRADUCCIÓN
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="jaraba-modal i18n-selector__modal"
+       x-show="showTranslateModal"
+       x-cloak
+       @keydown.escape.window="closeTranslateModal()">
+
+    <div class="jaraba-modal__overlay" @click="closeTranslateModal()"></div>
+
+    <div class="jaraba-modal__content" @click.stop>
+      <header class="jaraba-modal__header">
+        <h2 class="jaraba-modal__title">
+          {{ jaraba_icon('globe', 'medium') }}
+          {% trans %}Traducir con IA{% endtrans %}
+        </h2>
+        <button type="button"
+                class="jaraba-modal__close"
+                @click="closeTranslateModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="jaraba-modal__body">
+        <p class="i18n-selector__modal-intro">
+          {% trans %}Selecciona los idiomas a los que quieres traducir este contenido. La traducción se realizará preservando el formato y tono de tu marca.{% endtrans %}
+        </p>
+
+        {# Selector de idiomas destino #}
+        <fieldset class="i18n-selector__targets">
+          <legend>{% trans %}Idiomas de destino{% endtrans %}</legend>
+
+          <template x-for="(info, langcode) in languages" :key="langcode">
+            <template x-if="!info.is_original">
+              <label class="i18n-selector__target-option"
+                     :class="{ 'i18n-selector__target-option--selected': targetLanguages.includes(langcode) }">
+                <input type="checkbox"
+                       :value="langcode"
+                       x-model="targetLanguages"
+                       :disabled="isTranslating">
+                <span class="i18n-selector__flag" :class="'i18n-selector__flag--' + langcode"></span>
+                <span x-text="info.label"></span>
+                <template x-if="info.exists">
+                  <span class="i18n-selector__target-note">
+                    {% trans %}(actualizar){% endtrans %}
+                  </span>
+                </template>
+              </label>
+            </template>
+          </template>
+        </fieldset>
+
+        {# Progreso de traducción #}
+        <div class="i18n-selector__progress" x-show="isTranslating">
+          <div class="i18n-selector__progress-bar">
+            <div class="i18n-selector__progress-fill"
+                 :style="'width: ' + translationProgress + '%'"></div>
+          </div>
+          <p class="i18n-selector__progress-label" x-text="translationStatus"></p>
+        </div>
+
+        {# Mensajes de error #}
+        <div class="i18n-selector__error" x-show="translationError" x-cloak>
+          <p x-text="translationError"></p>
+        </div>
+      </div>
+
+      <footer class="jaraba-modal__footer">
+        <button type="button"
+                class="jaraba-btn jaraba-btn--ghost"
+                @click="closeTranslateModal()"
+                :disabled="isTranslating">
+          {% trans %}Cancelar{% endtrans %}
+        </button>
+        <button type="button"
+                class="jaraba-btn jaraba-btn--primary"
+                @click="startTranslation()"
+                :disabled="isTranslating || targetLanguages.length === 0">
+          {{ jaraba_icon('sparkles', 'small') }}
+          {% trans %}Iniciar traducción{% endtrans %}
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>

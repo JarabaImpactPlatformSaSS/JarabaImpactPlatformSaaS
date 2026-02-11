@@ -1,0 +1,10 @@
+# Permisos del módulo Jaraba Pixel Manager
+
+administer pixels:
+  title: 'Administrar configuración de Pixels'
+  description: 'Permite gestionar credenciales de Meta CAPI, Google, LinkedIn y TikTok.'
+  restrict access: true
+
+view pixel stats:
+  title: 'Ver estadísticas de Pixels'
+  description: 'Permite ver métricas de eventos enviados a plataformas de marketing.'

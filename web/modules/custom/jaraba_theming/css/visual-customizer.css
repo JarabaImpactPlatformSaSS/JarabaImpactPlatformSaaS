@@ -1,0 +1,273 @@
+/**
+ * @file
+ * Visual Customizer Styles for Tenant Theme Form.
+ * 
+ * Styling for vertical tabs and form elements.
+ * Uses CSS variables for tenant customization.
+ */
+
+/* Customizer Header */
+.customizer-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--ej-border-color, #E2E8F0);
+}
+
+.customizer-header h1 {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem 0;
+}
+
+.customizer-subtitle {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #64748B);
+    margin: 0;
+}
+
+/* Main container */
+.jaraba-theme-customizer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* =============================================
+ * VERTICAL TABS - Override Drupal defaults
+ * ============================================= */
+
+.vertical-tabs {
+    display: flex;
+    gap: 2rem;
+    border: none;
+    background: transparent;
+}
+
+.vertical-tabs__menu {
+    flex: 0 0 220px;
+    background: var(--ej-color-bg-surface, #FFFFFF);
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    margin: 0;
+}
+
+.vertical-tabs__menu-item {
+    margin: 0;
+    padding: 0;
+}
+
+.vertical-tabs__menu-item a {
+    display: block;
+    padding: 0.75rem 1rem;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-text-primary, #1A1A2E);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.vertical-tabs__menu-item a:hover {
+    background: var(--ej-color-bg-body, #F8FAFC);
+    color: var(--ej-color-primary, #FF8C42);
+}
+
+.vertical-tabs__menu-item.is-selected a,
+.vertical-tabs__menu-item a[aria-selected="true"] {
+    background: var(--ej-color-primary, #FF8C42);
+    color: #FFFFFF;
+}
+
+.vertical-tabs__panes-wrapper,
+.vertical-tabs__pane {
+    flex: 1;
+    background: var(--ej-color-bg-surface, #FFFFFF);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide all panes except active */
+.vertical-tabs__pane:not(.is-selected) {
+    display: none;
+}
+
+/* =============================================
+ * FORM ELEMENTS
+ * ============================================= */
+
+.form-item {
+    margin-bottom: 1.5rem;
+}
+
+.form-item label {
+    display: block;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #1A1A2E);
+    margin-bottom: 0.5rem;
+}
+
+.form-item .description {
+    font-size: 0.75rem;
+    color: var(--ej-text-muted, #64748B);
+    margin-top: 0.25rem;
+}
+
+/* Text inputs */
+input[type="text"],
+input[type="url"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    border: 1px solid var(--ej-border-color, #E2E8F0);
+    border-radius: 6px;
+    background: #FFFFFF;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--ej-color-primary, #FF8C42);
+    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+}
+
+/* Color inputs */
+input[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid var(--ej-border-color, #E2E8F0);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ej-color-primary, #FF8C42);
+}
+
+/* Fieldsets */
+fieldset {
+    border: 1px solid var(--ej-border-color, #E2E8F0);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+fieldset legend {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    padding: 0 0.5rem;
+}
+
+/* =============================================
+ * VISUAL PICKER (Radio buttons as cards)
+ * ============================================= */
+
+.visual-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.visual-picker .form-type-radio {
+    margin: 0;
+}
+
+.visual-picker label {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 2px solid var(--ej-border-color, #E2E8F0);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.visual-picker label:hover {
+    border-color: var(--ej-color-primary, #FF8C42);
+    background: rgba(255, 140, 66, 0.05);
+}
+
+.visual-picker input[type="radio"]:checked+label,
+.visual-picker input[type="radio"]:checked~label {
+    border-color: var(--ej-color-primary, #FF8C42);
+    background: rgba(255, 140, 66, 0.1);
+}
+
+/* =============================================
+ * ACTION BUTTONS
+ * ============================================= */
+
+.customizer-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--ej-border-color, #E2E8F0);
+}
+
+.button--primary,
+input[type="submit"].button--primary {
+    background: var(--ej-color-primary, #FF8C42);
+    color: #FFFFFF;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.button--primary:hover {
+    background: #E67A30;
+}
+
+.button--secondary {
+    background: transparent;
+    color: var(--ej-text-primary, #1A1A2E);
+    border: 1px solid var(--ej-border-color, #E2E8F0);
+    padding: 0.75rem 2rem;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button--secondary:hover {
+    border-color: var(--ej-color-primary, #FF8C42);
+    color: var(--ej-color-primary, #FF8C42);
+}
+
+/* Color fieldsets grid */
+.color-fieldset {
+    margin-bottom: 1.5rem;
+}
+
+.color-fieldset .form-item {
+    display: inline-flex;
+    flex-direction: column;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+}

@@ -1,0 +1,144 @@
+{#
+/**
+ * @file
+ * Template for professional profile with Schema.org LocalBusiness JSON-LD.
+ *
+ * Variables:
+ * - professional: User entity of the professional.
+ * - services: Array of services offered.
+ * - reviews: Array of client reviews.
+ * - portfolio: Array of portfolio items.
+ * - schema_org_json_ld: Pre-built JSON-LD script tag (injected by hook_preprocess).
+ */
+#}
+
+{{ schema_org_json_ld|raw }}
+
+<article class="professional-profile" itemscope itemtype="https://schema.org/LocalBusiness">
+  <header class="professional-profile__header">
+    {% if professional.user_picture is not empty %}
+      <div class="professional-profile__avatar">
+        <img src="{{ file_url(professional.user_picture.entity.uri.value) }}"
+             alt="{{ professional.display_name }}"
+             itemprop="image"
+             class="professional-profile__image"
+             loading="lazy">
+      </div>
+    {% endif %}
+
+    <div class="professional-profile__info">
+      <h1 class="professional-profile__name" itemprop="name">
+        {% if professional.field_company_name is not empty %}
+          {{ professional.field_company_name.value }}
+        {% else %}
+          {{ professional.display_name }}
+        {% endif %}
+      </h1>
+
+      {% if professional.field_bio is not empty %}
+        <p class="professional-profile__bio" itemprop="description">
+          {{ professional.field_bio.value }}
+        </p>
+      {% endif %}
+
+      <div class="professional-profile__meta">
+        {% if professional.field_city is not empty %}
+          <span class="professional-profile__location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+            <span itemprop="addressLocality">{{ professional.field_city.value }}</span>
+            {% if professional.field_region is not empty %}
+              , <span itemprop="addressRegion">{{ professional.field_region.value }}</span>
+            {% endif %}
+          </span>
+        {% endif %}
+
+        {% if professional.field_phone is not empty %}
+          <a href="tel:{{ professional.field_phone.value }}" class="professional-profile__phone" itemprop="telephone">
+            {{ professional.field_phone.value }}
+          </a>
+        {% endif %}
+
+        {% if professional.field_public_email is not empty %}
+          <a href="mailto:{{ professional.field_public_email.value }}" class="professional-profile__email" itemprop="email">
+            {{ professional.field_public_email.value }}
+          </a>
+        {% endif %}
+      </div>
+
+      {% if professional.field_average_rating is not empty %}
+        <div class="professional-profile__rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+          <span itemprop="ratingValue">{{ professional.field_average_rating.value }}</span>/5
+          {% if professional.field_review_count is not empty %}
+            (<span itemprop="reviewCount">{{ professional.field_review_count.value }}</span> {{ 'reviews'|t }})
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if professional.field_price_range is not empty %}
+        <span class="professional-profile__price-range" itemprop="priceRange">
+          {{ professional.field_price_range.value }}
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if services is not empty %}
+    <section class="professional-profile__services">
+      <h2>{{ 'Services'|t }}</h2>
+      <div itemprop="hasOfferCatalog" itemscope itemtype="https://schema.org/OfferCatalog">
+        <ul class="professional-profile__services-list">
+          {% for service in services %}
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/Offer">
+              <span itemprop="itemOffered" itemscope itemtype="https://schema.org/Service">
+                <span itemprop="name">{{ service }}</span>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if reviews is not empty %}
+    <section class="professional-profile__reviews">
+      <h2>{{ 'Client Reviews'|t }}</h2>
+      {% for review in reviews %}
+        <div class="professional-profile__review" itemprop="review" itemscope itemtype="https://schema.org/Review">
+          {% if review.rating is defined %}
+            <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+              <span itemprop="ratingValue">{{ review.rating }}</span>/5
+            </div>
+          {% endif %}
+          {% if review.text is defined %}
+            <p itemprop="reviewBody">{{ review.text }}</p>
+          {% endif %}
+          {% if review.author is defined %}
+            <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+              <span itemprop="name">{{ review.author }}</span>
+            </span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  {% if portfolio is not empty %}
+    <section class="professional-profile__portfolio">
+      <h2>{{ 'Portfolio'|t }}</h2>
+      <div class="professional-profile__portfolio-grid">
+        {% for item in portfolio %}
+          <div class="professional-profile__portfolio-item">
+            {% if item.image is defined %}
+              <img src="{{ item.image }}" alt="{{ item.title|default('') }}" loading="lazy">
+            {% endif %}
+            {% if item.title is defined %}
+              <h3>{{ item.title }}</h3>
+            {% endif %}
+            {% if item.description is defined %}
+              <p>{{ item.description }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</article>

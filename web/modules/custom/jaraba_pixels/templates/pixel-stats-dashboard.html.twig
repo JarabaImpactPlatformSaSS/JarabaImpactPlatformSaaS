@@ -1,0 +1,260 @@
+{#
+/**
+ * @file
+ * Dashboard de estadísticas de Pixel Manager V2.
+ *
+ * Variables:
+ * - stats: Estadísticas de eventos por plataforma y estado.
+ * - queue: Estado de la cola Redis.
+ * - tenant_id: ID del tenant actual.
+ */
+#}
+
+<div class="full-width-page analytics-dashboard pixel-stats-dashboard">
+  {# Hero Header (siguiendo patrón pixel-settings-dashboard) #}
+  <header class="analytics-dashboard__hero pixel-stats__hero">
+    <canvas class="analytics-dashboard__particles" id="pixel-particles"></canvas>
+    <div class="analytics-dashboard__hero-content">
+      <div class="analytics-dashboard__nav">
+        <a href="{{ path('jaraba_pixels.settings') }}" class="analytics-dashboard__back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          {% trans %}Volver a Gestión{% endtrans %}
+        </a>
+      </div>
+      <div class="analytics-dashboard__hero-info">
+        <div class="analytics-dashboard__hero-icon">
+          {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', size: '56px', color: 'white' }) }}
+        </div>
+        <div class="analytics-dashboard__titles">
+          <h1 class="analytics-dashboard__title">{% trans %}Estadísticas de Pixels{% endtrans %}</h1>
+          <p class="analytics-dashboard__subtitle">{% trans %}Métricas de eventos enviados a plataformas de marketing{% endtrans %}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {# Contenido principal #}
+  <div class="pixel-stats-dashboard__content">
+
+    {# Resumen de métricas #}
+    <section class="pixel-stats-dashboard__summary">
+      <h2 class="visually-hidden">{% trans %}Resumen{% endtrans %}</h2>
+      <div class="pixel-stats-dashboard__cards">
+        <div class="pixel-stats-dashboard__card pixel-stats-dashboard__card--primary">
+          <span class="pixel-stats-dashboard__card-label">{% trans %}Total Eventos{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__card-value" id="stat-total">{{ stats.total|default(0) }}</span>
+        </div>
+        <div class="pixel-stats-dashboard__card pixel-stats-dashboard__card--success">
+          <span class="pixel-stats-dashboard__card-label">{% trans %}Enviados{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__card-value" id="stat-sent">{{ stats.by_status.sent|default(0) }}</span>
+        </div>
+        <div class="pixel-stats-dashboard__card pixel-stats-dashboard__card--danger">
+          <span class="pixel-stats-dashboard__card-label">{% trans %}Fallidos{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__card-value" id="stat-failed">{{ stats.by_status.failed|default(0) }}</span>
+        </div>
+        <div class="pixel-stats-dashboard__card pixel-stats-dashboard__card--warning">
+          <span class="pixel-stats-dashboard__card-label">{% trans %}En Cola{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__card-value" id="stat-queue">{{ queue.queue_length|default(0) }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# Gráfico por plataforma #}
+    <section class="pixel-stats-dashboard__chart-section">
+      <h2>{% trans %}Eventos por Plataforma (últimos 7 días){% endtrans %}</h2>
+      <div class="pixel-stats-dashboard__chart-container">
+        <canvas id="platform-chart" width="800" height="400"></canvas>
+      </div>
+    </section>
+
+    {# Estado del sistema #}
+    <section class="pixel-stats-dashboard__system">
+      <h2>{% trans %}Estado del Sistema{% endtrans %}</h2>
+      <div class="pixel-stats-dashboard__system-grid">
+        <div class="pixel-stats-dashboard__system-item">
+          <span class="pixel-stats-dashboard__system-label">{% trans %}Cola Redis{% endtrans %}</span>
+          {% if queue.available %}
+            <span class="pixel-stats-dashboard__system-status pixel-stats-dashboard__system-status--ok">
+              ✓ {% trans %}Disponible{% endtrans %}
+            </span>
+          {% else %}
+            <span class="pixel-stats-dashboard__system-status pixel-stats-dashboard__system-status--error">
+              ✗ {% trans %}No disponible (fallback sync){% endtrans %}
+            </span>
+          {% endif %}
+        </div>
+        <div class="pixel-stats-dashboard__system-item">
+          <span class="pixel-stats-dashboard__system-label">{% trans %}TTL Mensajes{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__system-value">{{ queue.message_ttl|default(86400) // 3600 }}h</span>
+        </div>
+        <div class="pixel-stats-dashboard__system-item">
+          <span class="pixel-stats-dashboard__system-label">{% trans %}Batch Size{% endtrans %}</span>
+          <span class="pixel-stats-dashboard__system-value">100 eventos</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // Cargar datos del gráfico vía API.
+  fetch('/api/pixels/stats/chart-data')
+    .then(response => response.json())
+    .then(data => {
+      if (!data.success) return;
+
+      // Actualizar contadores.
+      const summary = data.data.summary;
+      document.getElementById('stat-total').textContent = summary.total || 0;
+      document.getElementById('stat-sent').textContent = summary.sent || 0;
+      document.getElementById('stat-failed').textContent = summary.failed || 0;
+      document.getElementById('stat-queue').textContent = summary.queue_length || 0;
+
+      // Crear gráfico.
+      const ctx = document.getElementById('platform-chart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: data.data.bar_chart,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: false,
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                }
+              }
+            }
+          }
+        });
+      }
+    })
+    .catch(err => console.error('Error loading chart data:', err));
+
+  // Inicializar partículas (reutilizar de analytics-dashboard).
+  if (window.initParticles) {
+    window.initParticles('particles-canvas');
+  }
+})();
+</script>
+
+<style>
+.pixel-stats-dashboard__content {
+  padding: var(--space-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pixel-stats-dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.pixel-stats-dashboard__card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.pixel-stats-dashboard__card-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.pixel-stats-dashboard__card-value {
+  display: block;
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+}
+
+.pixel-stats-dashboard__card--primary .pixel-stats-dashboard__card-value {
+  color: var(--color-primary);
+}
+
+.pixel-stats-dashboard__card--success .pixel-stats-dashboard__card-value {
+  color: var(--color-success);
+}
+
+.pixel-stats-dashboard__card--danger .pixel-stats-dashboard__card-value {
+  color: var(--color-danger);
+}
+
+.pixel-stats-dashboard__card--warning .pixel-stats-dashboard__card-value {
+  color: var(--color-warning);
+}
+
+.pixel-stats-dashboard__chart-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.pixel-stats-dashboard__chart-section h2 {
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+}
+
+.pixel-stats-dashboard__chart-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pixel-stats-dashboard__system {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.pixel-stats-dashboard__system h2 {
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+}
+
+.pixel-stats-dashboard__system-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.pixel-stats-dashboard__system-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm);
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+}
+
+.pixel-stats-dashboard__system-status--ok {
+  color: var(--color-success);
+}
+
+.pixel-stats-dashboard__system-status--error {
+  color: var(--color-danger);
+}
+</style>

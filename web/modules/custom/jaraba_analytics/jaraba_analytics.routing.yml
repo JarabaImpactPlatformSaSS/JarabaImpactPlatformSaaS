@@ -1,0 +1,128 @@
+# Rutas del módulo Jaraba Analytics.
+
+# Dashboard de Analytics.
+jaraba_analytics.dashboard:
+  path: '/admin/jaraba/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsDashboardController::dashboard'
+    _title: 'Analytics Dashboard'
+  requirements:
+    _permission: 'access jaraba analytics'
+  options:
+    _admin_route: FALSE
+
+# Configuración del módulo.
+jaraba_analytics.settings:
+  path: '/admin/config/jaraba/analytics'
+  defaults:
+    _form: '\Drupal\jaraba_analytics\Form\AnalyticsSettingsForm'
+    _title: 'Configuración de Analytics'
+  requirements:
+    _permission: 'administer jaraba analytics'
+  options:
+    _admin_route: TRUE
+
+# API: Registrar evento.
+jaraba_analytics.api.event:
+  path: '/api/v1/analytics/event'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::trackEvent'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+
+# API: Registrar eventos en batch.
+jaraba_analytics.api.batch:
+  path: '/api/v1/analytics/batch'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::trackBatch'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+
+# API: Dashboard KPIs.
+jaraba_analytics.api.dashboard:
+  path: '/api/v1/analytics/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::getDashboard'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Visitantes en tiempo real.
+jaraba_analytics.api.realtime:
+  path: '/api/v1/analytics/realtime'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::getRealtime'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Funnel de conversión.
+jaraba_analytics.api.funnel:
+  path: '/api/v1/analytics/funnel'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::getFunnel'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Top páginas.
+jaraba_analytics.api.top_pages:
+  path: '/api/v1/analytics/pages/top'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::getTopPages'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Fuentes de tráfico.
+jaraba_analytics.api.traffic_sources:
+  path: '/api/v1/analytics/traffic-sources'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsApiController::getTrafficSources'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# ==========================================================================
+# CONSENT MANAGEMENT API (GDPR/RGPD)
+# ==========================================================================
+
+# API: Estado de consentimiento.
+jaraba_analytics.api.consent.status:
+  path: '/api/consent/status'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::status'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+# API: Guardar consentimiento.
+jaraba_analytics.api.consent.grant:
+  path: '/api/consent/grant'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::grant'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+# API: Revocar consentimiento.
+jaraba_analytics.api.consent.revoke:
+  path: '/api/consent/revoke'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::revoke'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+

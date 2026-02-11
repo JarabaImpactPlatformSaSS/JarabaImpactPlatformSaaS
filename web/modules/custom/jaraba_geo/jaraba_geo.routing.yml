@@ -1,0 +1,7 @@
+jaraba_geo.faq:
+  path: '/faq'
+  defaults:
+    _controller: '\Drupal\jaraba_geo\Controller\FaqController::faqPage'
+    _title: 'Preguntas Frecuentes'
+  requirements:
+    _permission: 'access content'

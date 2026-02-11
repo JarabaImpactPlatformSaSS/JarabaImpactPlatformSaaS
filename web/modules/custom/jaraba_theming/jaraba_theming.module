@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Theming module.
+ *
+ * Sistema de Design Tokens y personalización visual multi-tenant.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_theming_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_theming') {
+    return '<p>' . t('Sistema de Design Tokens para personalización visual multi-tenant. Soporta cascada Plataforma → Vertical → Tenant.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Inyecta los CSS Custom Properties según la configuración del tenant.
+ */
+function jaraba_theming_page_attachments(array &$attachments): void {
+  /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
+  $tokenService = \Drupal::service('jaraba_theming.token_service');
+
+  $css = $tokenService->generateCss();
+
+  // Inyectar CSS inline con los tokens.
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'style',
+      '#value' => $css,
+      '#attributes' => [
+        'id' => 'jaraba-design-tokens',
+      ],
+    ],
+    'jaraba_design_tokens',
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al HTML basadas en la configuración de tema.
+ */
+function jaraba_theming_preprocess_html(array &$variables): void {
+  /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
+  $tokenService = \Drupal::service('jaraba_theming.token_service');
+
+  // Añadir clase de variante de header.
+  $headerVariant = $tokenService->getHeaderVariant();
+  $variables['attributes']['class'][] = 'header--' . $headerVariant;
+
+  // Añadir clase de variante de hero.
+  $heroVariant = $tokenService->getHeroVariant();
+  $variables['attributes']['class'][] = 'hero--' . $heroVariant;
+
+  // Detectar y añadir vertical.
+  $config = $tokenService->getActiveConfig();
+  if ($config) {
+    $vertical = $config->get('vertical')->value ?? 'platform';
+    $variables['attributes']['class'][] = 'vertical--' . $vertical;
+
+    // Dark mode.
+    if ($config->get('dark_mode_enabled')->value) {
+      $variables['attributes']['class'][] = 'dark-mode-enabled';
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ *
+ * Añade sugerencias de template basadas en variantes de componentes.
+ */
+function jaraba_theming_theme_suggestions_alter(array &$suggestions, array $variables, $hook): void {
+  if ($hook === 'page') {
+    /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
+    $tokenService = \Drupal::service('jaraba_theming.token_service');
+    $config = $tokenService->getActiveConfig();
+
+    if ($config) {
+      $vertical = $config->get('vertical')->value ?? 'platform';
+      // page--vertical--emprendimiento, etc.
+      $suggestions[] = 'page__vertical__' . $vertical;
+    }
+  }
+}

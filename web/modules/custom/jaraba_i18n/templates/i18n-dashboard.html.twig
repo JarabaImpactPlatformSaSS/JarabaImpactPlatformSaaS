@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * Dashboard de gestión de traducciones.
+ *
+ * PROPÓSITO:
+ * Dashboard central para visualizar y gestionar el estado de traducciones
+ * de todas las entidades del sistema (PageContent, BlogPost, etc.)
+ *
+ * PATRÓN:
+ * Operational Tower - Hero con partículas, cards de métricas, tabla de estado.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * ✅ Sin estilos inline - SCSS en _i18n-dashboard.scss
+ * ✅ Textos traducibles con {% trans %}
+ * ✅ Iconos con jaraba_icon()
+ * ✅ Variables inyectables var(--ej-*)
+ * ✅ Full-width layout mobile-first
+ *
+ * VARIABLES:
+ * - entity_types: Tipos de entidad soportados
+ * - stats: Estadísticas por tipo de entidad
+ * - languages: Idiomas disponibles
+ *
+ * @see TranslationDashboardController
+ * @see TranslationManagerService
+ */
+#}
+
+<div class="full-width-page analytics-dashboard i18n-dashboard">
+  {# ═══════════════════════════════════════════════════════════════════════════
+     HERO HEADER
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <header class="analytics-dashboard__hero i18n-dashboard__hero">
+    <canvas class="analytics-dashboard__particles" id="i18n-particles"></canvas>
+    <div class="analytics-dashboard__hero-content">
+      <div class="analytics-dashboard__nav">
+        <a href="{{ path('system.admin_content') }}" class="analytics-dashboard__back">
+          {{ jaraba_icon('ui', 'arrow-left', { size: '20px', color: 'white' }) }}
+          {% trans %}Volver a Contenido{% endtrans %}
+        </a>
+      </div>
+      <div class="analytics-dashboard__hero-info">
+        <div class="analytics-dashboard__hero-icon">
+          {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '56px', color: 'white' }) }}
+        </div>
+        <div class="analytics-dashboard__titles">
+          <h1 class="analytics-dashboard__title">{% trans %}Gestión de Traducciones{% endtrans %}</h1>
+          <p class="analytics-dashboard__subtitle">{% trans %}Estado de traducciones por idioma y tipo de entidad{% endtrans %}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     CONTENIDO PRINCIPAL
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="i18n-dashboard__content">
+
+    {# ─────────────────────────────────────────────────────────────────────────
+       TARJETAS DE RESUMEN
+       ───────────────────────────────────────────────────────────────────────── #}
+    <section class="i18n-dashboard__summary">
+      <h2 class="visually-hidden">{% trans %}Resumen{% endtrans %}</h2>
+      <div class="i18n-dashboard__cards">
+        {% for langcode, lang_name in languages %}
+          <div class="i18n-dashboard__card" data-lang="{{ langcode }}">
+            <div class="i18n-dashboard__card-flag i18n-selector__flag i18n-selector__flag--{{ langcode }}"></div>
+            <span class="i18n-dashboard__card-label">{{ lang_name }}</span>
+            <span class="i18n-dashboard__card-value" id="lang-count-{{ langcode }}">-</span>
+            <span class="i18n-dashboard__card-desc">{% trans %}traducciones{% endtrans %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {# ─────────────────────────────────────────────────────────────────────────
+       TABLA DE ESTADO POR TIPO DE ENTIDAD
+       ───────────────────────────────────────────────────────────────────────── #}
+    <section class="i18n-dashboard__table-section">
+      <h2>{% trans %}Estado por Tipo de Contenido{% endtrans %}</h2>
+      
+      <div class="i18n-dashboard__table-container">
+        <table class="i18n-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Tipo{% endtrans %}</th>
+              <th>{% trans %}Total{% endtrans %}</th>
+              {% for langcode, lang_name in languages %}
+                <th>
+                  <span class="i18n-dashboard__lang-header">
+                    <span class="i18n-selector__flag i18n-selector__flag--{{ langcode }}"></span>
+                    {{ lang_name }}
+                  </span>
+                </th>
+              {% endfor %}
+              <th>{% trans %}Cobertura{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for type_id, type_stats in stats %}
+              <tr>
+                <td class="i18n-dashboard__type-cell">
+                  <strong>{{ type_stats.label }}</strong>
+                </td>
+                <td class="i18n-dashboard__count-cell">
+                  {{ type_stats.total|default(0) }}
+                </td>
+                {% for langcode, lang_name in languages %}
+                  {% set lang_stats = type_stats.by_language[langcode]|default({}) %}
+                  <td class="i18n-dashboard__status-cell">
+                    {% if lang_stats.count|default(0) > 0 %}
+                      <span class="i18n-dashboard__badge i18n-dashboard__badge--complete">
+                        {{ lang_stats.count }}
+                      </span>
+                      {% if lang_stats.outdated|default(0) > 0 %}
+                        <span class="i18n-dashboard__badge i18n-dashboard__badge--outdated" title="{% trans %}Desactualizadas{% endtrans %}">
+                          {{ jaraba_icon('ui', 'alert-triangle', { size: '12px' }) }} {{ lang_stats.outdated }}
+                        </span>
+                      {% endif %}
+                    {% else %}
+                      <span class="i18n-dashboard__badge i18n-dashboard__badge--missing">
+                        0
+                      </span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+                <td class="i18n-dashboard__coverage-cell">
+                  {% set coverage = type_stats.coverage|default(0) %}
+                  <div class="i18n-dashboard__progress">
+                    <div class="i18n-dashboard__progress-bar" style="width: {{ coverage }}%"></div>
+                    <span class="i18n-dashboard__progress-label">{{ coverage }}%</span>
+                  </div>
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="{{ languages|length + 3 }}" class="i18n-dashboard__empty-cell">
+                  {% trans %}No hay datos de traducción disponibles{% endtrans %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {# ─────────────────────────────────────────────────────────────────────────
+       ACCIONES RÁPIDAS
+       ───────────────────────────────────────────────────────────────────────── #}
+    <section class="i18n-dashboard__actions-section">
+      <h2>{% trans %}Acciones Rápidas{% endtrans %}</h2>
+      <div class="i18n-dashboard__actions-grid">
+        <a href="{{ path('jaraba_i18n.api.stats', {entity_type: 'page_content'}) }}" 
+           class="i18n-dashboard__action-card"
+           target="_blank">
+          {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          <span>{% trans %}Ver API Páginas{% endtrans %}</span>
+        </a>
+        <button type="button" 
+                class="i18n-dashboard__action-card"
+                data-action="translate-all">
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '24px', color: 'innovation' }) }}
+          <span>{% trans %}Traducir Todo con IA{% endtrans %}</span>
+        </button>
+        <a href="{{ path('locale.translate_page') }}" 
+           class="i18n-dashboard__action-card">
+          {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '24px', color: 'neutral' }) }}
+          <span>{% trans %}Configurar Idiomas{% endtrans %}</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</div>

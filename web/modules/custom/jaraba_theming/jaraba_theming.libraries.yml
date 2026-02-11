@@ -1,0 +1,12 @@
+visual_customizer:
+  version: 1.x
+  css:
+    theme:
+      css/visual-customizer.css: {}
+  js:
+    js/visual-customizer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.vertical-tabs
+    - core/jquery
+    - core/once

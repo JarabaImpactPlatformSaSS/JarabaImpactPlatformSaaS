@@ -1,0 +1,23 @@
+{
+    "name": "jaraba-i18n",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo de Internacionalización de Jaraba SaaS",
+    "scripts": {
+        "build:dashboard": "sass scss/_i18n-dashboard.scss:css/i18n-dashboard.css --style=compressed",
+        "build:selector": "sass scss/_i18n-selector.scss:css/i18n-selector.css --style=compressed",
+        "build:all": "npm run build:dashboard && npm run build:selector && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "i18n",
+        "translation",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

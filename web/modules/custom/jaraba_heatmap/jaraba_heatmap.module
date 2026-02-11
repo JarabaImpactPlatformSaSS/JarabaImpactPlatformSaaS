@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * @file
+ * Módulo principal del sistema de Heatmaps nativo Jaraba.
+ *
+ * Proporciona tracking de interacciones de usuario (clics, scroll, movimiento)
+ * y visualización mediante Canvas con gradientes de calor.
+ *
+ * Ref: Doc Técnico #180 - Native Heatmaps System
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ *
+ * Proporciona documentación contextual del módulo en la interfaz de ayuda.
+ */
+function jaraba_heatmap_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_heatmap':
+      $output = '<h3>' . t('Acerca de Jaraba Heatmap') . '</h3>';
+      $output .= '<p>' . t('Sistema de heatmaps 100% nativo para la plataforma Jaraba. Elimina dependencias de servicios externos (Hotjar, MS Clarity) proporcionando tracking completo de interacciones.') . '</p>';
+      $output .= '<h4>' . t('Capacidades') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Click Heatmaps: Visualización de zonas de mayor interacción') . '</li>';
+      $output .= '<li>' . t('Scroll Depth: Análisis de profundidad de scroll') . '</li>';
+      $output .= '<li>' . t('Mouse Movement: Tracking de movimiento para atención') . '</li>';
+      $output .= '<li>' . t('Canvas Render: Visualización con gradientes de calor') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Inyecta el tracker JavaScript en páginas frontend.
+ * Respeta el consentimiento GDPR y excluye rutas administrativas.
+ */
+function jaraba_heatmap_page_attachments(array &$attachments) {
+  // No cargar en rutas de administración.
+  $admin_context = \Drupal::service('router.admin_context');
+  if ($admin_context->isAdminRoute()) {
+    return;
+  }
+
+  // Respetar cabecera Do Not Track.
+  $request = \Drupal::request();
+  if ($request->headers->get('DNT') === '1') {
+    return;
+  }
+
+  // Verificar si el módulo de configuración tiene el tracking habilitado.
+  $config = \Drupal::config('jaraba_heatmap.settings');
+  if (!$config->get('enabled')) {
+    return;
+  }
+
+  // Obtener contexto de tenant para multi-tenancy.
+  $tenant_id = NULL;
+  if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+    $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    $tenant = $tenant_context->getCurrentTenant();
+    if ($tenant) {
+      $tenant_id = $tenant->id();
+    }
+  }
+
+  // Generar o recuperar session ID.
+  $session = \Drupal::request()->getSession();
+  $session_id = $session->get('jaraba_heatmap_session');
+  if (!$session_id) {
+    $session_id = 'hm_' . base_convert(time(), 10, 36) . substr(md5(uniqid()), 0, 9);
+    $session->set('jaraba_heatmap_session', $session_id);
+  }
+
+  // Adjuntar biblioteca y configuración.
+  $attachments['#attached']['library'][] = 'jaraba_heatmap/tracker';
+  $attachments['#attached']['drupalSettings']['jarabaHeatmap'] = [
+    'enabled' => TRUE,
+    'tenantId' => $tenant_id,
+    'sessionId' => $session_id,
+    'endpoint' => '/api/heatmap/collect',
+    'bufferSize' => (int) $config->get('buffer_size') ?: 50,
+    'flushInterval' => (int) $config->get('flush_interval') ?: 10000,
+    'throttleMove' => (int) $config->get('throttle_move') ?: 100,
+    'throttleScroll' => (int) $config->get('throttle_scroll') ?: 200,
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta la agregación diaria de eventos de heatmap y la purga de datos antiguos.
+ * Se recomienda ejecutar este cron durante horas de baja actividad (02:00 UTC).
+ */
+function jaraba_heatmap_cron() {
+  // Solo ejecutar una vez al día.
+  $state = \Drupal::state();
+  $last_run = $state->get('jaraba_heatmap.last_aggregation', 0);
+  $today = strtotime('today');
+
+  if ($last_run >= $today) {
+    return;
+  }
+
+  // Ejecutar agregación si el servicio está disponible.
+  if (\Drupal::hasService('jaraba_heatmap.aggregator')) {
+    try {
+      $aggregator = \Drupal::service('jaraba_heatmap.aggregator');
+      $aggregator->aggregateDaily();
+      $aggregator->purgeOldEvents();
+      $state->set('jaraba_heatmap.last_aggregation', time());
+      
+      \Drupal::logger('jaraba_heatmap')->info('Agregación diaria de heatmaps completada.');
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_heatmap')->error('Error en agregación de heatmaps: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+}

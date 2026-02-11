@@ -1,0 +1,25 @@
+# Permisos del módulo jaraba_i18n
+#
+# PROPÓSITO:
+# Define permisos granulares para operaciones de traducción.
+#
+# NOTA:
+# El permiso 'translate any entity' es del core content_translation.
+# Estos permisos adicionales permiten control más fino.
+
+# Permiso para usar traducción con IA.
+use ai translation:
+  title: 'Usar traducción con IA'
+  description: 'Permite usar el servicio de traducción asistida por IA para traducir contenido.'
+  restrict access: true
+
+# Permiso para ver el dashboard de traducciones.
+view translation dashboard:
+  title: 'Ver dashboard de traducciones'
+  description: 'Permite ver el dashboard con el estado de traducciones de todas las entidades.'
+
+# Permiso para administrar configuración de i18n.
+administer jaraba i18n:
+  title: 'Administrar configuración de i18n'
+  description: 'Permite configurar opciones avanzadas de internacionalización.'
+  restrict access: true

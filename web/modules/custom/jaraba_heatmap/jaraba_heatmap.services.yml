@@ -1,0 +1,20 @@
+# Servicios del módulo Jaraba Heatmap
+# Ref: Doc Técnico #180 - Native Heatmaps System
+
+services:
+
+  # Servicio de recolección de eventos del tracker
+  jaraba_heatmap.collector:
+    class: Drupal\jaraba_heatmap\Service\HeatmapCollectorService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+      - '@state'
+
+  # Servicio de agregación diaria para dashboards
+  jaraba_heatmap.aggregator:
+    class: Drupal\jaraba_heatmap\Service\HeatmapAggregatorService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+      - '@config.factory'

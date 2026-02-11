@@ -1,0 +1,671 @@
+<?php
+
+/**
+ * @file
+ * Módulo de Generative Engine Optimization (GEO).
+ *
+ * Implementa estrategias para que la plataforma sea citada por motores
+ * de IA generativa como ChatGPT, Perplexity, Claude y Google AI Overviews.
+ *
+ * COMPONENTES PRINCIPALES:
+ * - Schema.org estructurado (Organization, Product, FAQ, HowTo, Review)
+ * - Answer Capsules (respuestas directas en primeros 50 caracteres)
+ * - E-E-A-T signals (Expertise, Experience, Authoritativeness, Trustworthiness)
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Añade Schema.org Organization en todas las páginas.
+ * Añade Schema.org WebSite con SearchAction solo en homepage.
+ */
+function jaraba_geo_page_attachments(array &$attachments): void {
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+
+  // Schema.org Organization para toda la plataforma.
+  $organization_schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Organization',
+    'name' => 'Jaraba Impact Platform',
+    'description' => 'Plataforma SaaS AI-First para productores locales con e-commerce, trazabilidad, certificación digital y agentes de IA.',
+    'url' => $base_url,
+    'logo' => $base_url . '/themes/custom/ecosistema_jaraba_theme/logo.png',
+    'sameAs' => [
+      'https://www.linkedin.com/company/jaraba-impact-platform',
+      // TODO: Añadir Wikidata, Crunchbase cuando estén disponibles.
+    ],
+    'contactPoint' => [
+      '@type' => 'ContactPoint',
+      'contactType' => 'customer service',
+      'availableLanguage' => ['Spanish', 'English'],
+    ],
+    'foundingDate' => '2024',
+    'areaServed' => 'ES',
+    'knowsAbout' => [
+      'E-commerce para productores locales',
+      'Trazabilidad de productos agroalimentarios',
+      'Certificación digital con firma electrónica',
+      'Agentes de IA para marketing y ventas',
+      'Plataformas SaaS multi-tenant',
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($organization_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+    ],
+    'jaraba_geo_organization_schema',
+  ];
+
+  // Schema.org WebSite con SearchAction solo en homepage.
+  // Mejora SEO: Permite sitelinks search box en Google.
+  if (\Drupal::service('path.matcher')->isFrontPage()) {
+    $website_schema = [
+      '@context' => 'https://schema.org',
+      '@type' => 'WebSite',
+      'name' => 'Jaraba Impact Platform',
+      'alternateName' => 'Jaraba',
+      'url' => $base_url,
+      'description' => 'Plataforma de impacto para empleabilidad, emprendimiento y comercio local.',
+      'potentialAction' => [
+        '@type' => 'SearchAction',
+        'target' => [
+          '@type' => 'EntryPoint',
+          'urlTemplate' => $base_url . '/search?q={search_term_string}',
+        ],
+        'query-input' => 'required name=search_term_string',
+      ],
+      'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'Jaraba Impact Platform',
+        'logo' => [
+          '@type' => 'ImageObject',
+          'url' => $base_url . '/themes/custom/ecosistema_jaraba_theme/logo.png',
+        ],
+      ],
+    ];
+
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($website_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+      ],
+      'jaraba_geo_website_schema',
+    ];
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for node entities.
+ *
+ * Añade Schema.org específico según el tipo de contenido.
+ */
+function jaraba_geo_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+  if ($view_mode !== 'full') {
+    return;
+  }
+
+  $bundle = $entity->bundle();
+  $schema = NULL;
+
+  switch ($bundle) {
+    case 'product':
+    case 'producto':
+      $schema = _jaraba_geo_build_product_schema($entity);
+      break;
+
+    case 'faq':
+    case 'pregunta_frecuente':
+      $schema = _jaraba_geo_build_faq_schema($entity);
+      break;
+
+    case 'article':
+    case 'articulo':
+    case 'blog':
+      $schema = _jaraba_geo_build_article_schema($entity);
+      break;
+
+    case 'page':
+    case 'pagina':
+      // Las páginas genéricas usan el schema de Organization ya añadido.
+      break;
+  }
+
+  if ($schema) {
+    $build['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+      ],
+      'jaraba_geo_entity_schema_' . $entity->id(),
+    ];
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for job_posting entities.
+ *
+ * Añade Schema.org JobPosting para ofertas de empleo.
+ * Mejora Google for Jobs y SEO para vertical Empleabilidad.
+ */
+function jaraba_geo_job_posting_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+  if ($view_mode !== 'full') {
+    return;
+  }
+
+  $schema = _jaraba_geo_build_job_posting_schema($entity);
+
+  if ($schema) {
+    $build['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+      ],
+      'jaraba_geo_job_posting_schema_' . $entity->id(),
+    ];
+  }
+}
+
+/**
+ * Construye Schema.org JobPosting para ofertas de empleo.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad job_posting.
+ *
+ * @return array
+ *   Schema.org JobPosting estructurado.
+ */
+function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
+  /** @var \Drupal\jaraba_job_board\Entity\JobPostingInterface $entity */
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+
+  // Mapeo de job_type a employmentType de Schema.org
+  $employment_type_map = [
+    'full_time' => 'FULL_TIME',
+    'part_time' => 'PART_TIME',
+    'contract' => 'CONTRACTOR',
+    'temporary' => 'TEMPORARY',
+    'internship' => 'INTERN',
+    'volunteer' => 'VOLUNTEER',
+  ];
+
+  $job_type = $entity->getJobType();
+  $employment_type = $employment_type_map[$job_type] ?? 'FULL_TIME';
+
+  // Schema base
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'JobPosting',
+    'title' => $entity->getTitle(),
+    'description' => _jaraba_geo_get_field_value($entity, ['description', 'body', 'field_description']),
+    'datePosted' => date('c', (int) $entity->getCreatedTime()),
+    'validThrough' => date('c', strtotime('+30 days', (int) $entity->getCreatedTime())),
+    'employmentType' => $employment_type,
+    'url' => $entity->toUrl()->setAbsolute()->toString(),
+    'identifier' => [
+      '@type' => 'PropertyValue',
+      'name' => 'Jaraba Impact Platform',
+      'value' => $entity->getReferenceCode() ?: 'JOB-' . $entity->id(),
+    ],
+  ];
+
+  // Ubicación
+  $city = $entity->getLocationCity();
+  $remote_type = $entity->getRemoteType();
+
+  if ($remote_type === 'full_remote') {
+    $schema['jobLocationType'] = 'TELECOMMUTE';
+  }
+  elseif (!empty($city)) {
+    $schema['jobLocation'] = [
+      '@type' => 'Place',
+      'address' => [
+        '@type' => 'PostalAddress',
+        'addressLocality' => $city,
+        'addressCountry' => 'ES',
+      ],
+    ];
+  }
+
+  // Salario si está disponible
+  $salary = $entity->getSalaryRange();
+  if (!empty($salary['min']) && !empty($salary['max'])) {
+    $schema['baseSalary'] = [
+      '@type' => 'MonetaryAmount',
+      'currency' => 'EUR',
+      'value' => [
+        '@type' => 'QuantitativeValue',
+        'minValue' => $salary['min'],
+        'maxValue' => $salary['max'],
+        'unitText' => 'YEAR',
+      ],
+    ];
+  }
+
+  // Empleador
+  $employer_id = $entity->getEmployerId();
+  if ($employer_id) {
+    $employer = \Drupal::entityTypeManager()->getStorage('user')->load($employer_id);
+    if ($employer) {
+      $schema['hiringOrganization'] = [
+        '@type' => 'Organization',
+        'name' => $employer->getDisplayName(),
+        'sameAs' => $base_url . '/user/' . $employer_id,
+      ];
+    }
+  }
+
+  // Habilidades requeridas
+  $skills = $entity->getSkillsRequired();
+  if (!empty($skills)) {
+    $schema['skills'] = $skills;
+  }
+
+  return $schema;
+}
+
+
+/**
+ * Construye Schema.org Product para un nodo de producto.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad de producto.
+ *
+ * @return array
+ *   Schema.org Product estructurado.
+ */
+function _jaraba_geo_build_product_schema(EntityInterface $entity): array {
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Product',
+    'name' => $entity->label(),
+    'description' => _jaraba_geo_get_field_value($entity, ['body', 'field_description', 'field_descripcion']),
+    'url' => $entity->toUrl()->setAbsolute()->toString(),
+  ];
+
+  // Imagen del producto.
+  if ($entity->hasField('field_image') && !$entity->get('field_image')->isEmpty()) {
+    $image = $entity->get('field_image')->entity;
+    if ($image) {
+      $schema['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->getFileUri());
+    }
+  }
+
+  // Precio si está disponible.
+  if ($entity->hasField('field_price') && !$entity->get('field_price')->isEmpty()) {
+    $price = $entity->get('field_price')->value;
+    $schema['offers'] = [
+      '@type' => 'Offer',
+      'price' => $price,
+      'priceCurrency' => 'EUR',
+      'availability' => 'https://schema.org/InStock',
+    ];
+  }
+
+  // Productor como marca.
+  if ($entity->hasField('field_producer') && !$entity->get('field_producer')->isEmpty()) {
+    $producer = $entity->get('field_producer')->entity;
+    if ($producer) {
+      $schema['brand'] = [
+        '@type' => 'Brand',
+        'name' => $producer->label(),
+      ];
+    }
+  }
+
+  return $schema;
+}
+
+/**
+ * Construye Schema.org FAQPage para un nodo de FAQ.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad de FAQ.
+ *
+ * @return array
+ *   Schema.org FAQPage estructurado.
+ */
+function _jaraba_geo_build_faq_schema(EntityInterface $entity): array {
+  $answer = _jaraba_geo_get_field_value($entity, ['body', 'field_answer', 'field_respuesta']);
+
+  return [
+    '@context' => 'https://schema.org',
+    '@type' => 'FAQPage',
+    'mainEntity' => [
+      [
+        '@type' => 'Question',
+        'name' => $entity->label(),
+        'acceptedAnswer' => [
+          '@type' => 'Answer',
+          'text' => $answer,
+        ],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Construye Schema.org Article para un nodo de artículo.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad de artículo.
+ *
+ * @return array
+ *   Schema.org Article estructurado.
+ */
+function _jaraba_geo_build_article_schema(EntityInterface $entity): array {
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => $entity->label(),
+    'description' => _jaraba_geo_get_field_value($entity, ['body', 'field_summary', 'field_resumen']),
+    'url' => $entity->toUrl()->setAbsolute()->toString(),
+    'datePublished' => date('c', (int) $entity->getCreatedTime()),
+    'dateModified' => date('c', (int) $entity->getChangedTime()),
+    'publisher' => [
+      '@type' => 'Organization',
+      'name' => 'Jaraba Impact Platform',
+    ],
+  ];
+
+  // Autor del artículo.
+  $author = $entity->getOwner();
+  if ($author) {
+    $schema['author'] = [
+      '@type' => 'Person',
+      'name' => $author->getDisplayName(),
+    ];
+  }
+
+  return $schema;
+}
+
+/**
+ * Helper para obtener el valor de un campo de texto.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad.
+ * @param array $field_names
+ *   Lista de nombres de campo a probar.
+ *
+ * @return string
+ *   El valor del campo o cadena vacía.
+ */
+function _jaraba_geo_get_field_value(EntityInterface $entity, array $field_names): string {
+  foreach ($field_names as $field_name) {
+    if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
+      $value = $entity->get($field_name)->value;
+      // Limpiar HTML y limitar a 300 caracteres para descripciones.
+      return mb_substr(strip_tags($value), 0, 300);
+    }
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_geo_theme(): array {
+  return [
+    'geo_answer_capsule' => [
+      'variables' => [
+        'capsule' => [],
+        'entity' => NULL,
+      ],
+      'template' => 'geo-answer-capsule',
+    ],
+    'geo_faq_page' => [
+      'variables' => [
+        'faqs' => [],
+      ],
+      'template' => 'geo-faq-page',
+    ],
+    'professional_profile' => [
+      'variables' => [
+        'professional' => NULL,
+        'services' => [],
+        'reviews' => [],
+        'portfolio' => [],
+      ],
+      'template' => 'professional-profile',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for user entities.
+ *
+ * Añade Schema.org LocalBusiness para profesionales de ServiciosConecta.
+ */
+function jaraba_geo_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+  if ($view_mode !== 'full') {
+    return;
+  }
+
+  // Solo procesar si es un profesional verificado (tiene rol de proveedor).
+  $roles = $entity->getRoles();
+  $professional_roles = ['proveedor', 'profesional', 'provider', 'professional', 'freelancer'];
+  
+  $is_professional = FALSE;
+  foreach ($professional_roles as $role) {
+    if (in_array($role, $roles)) {
+      $is_professional = TRUE;
+      break;
+    }
+  }
+
+  if (!$is_professional) {
+    return;
+  }
+
+  $schema = _jaraba_geo_build_local_business_schema($entity);
+
+  if ($schema) {
+    $build['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+      ],
+      'jaraba_geo_local_business_schema_' . $entity->id(),
+    ];
+  }
+}
+
+/**
+ * Construye Schema.org LocalBusiness para un perfil de profesional.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad de usuario (profesional).
+ *
+ * @return array|null
+ *   Schema.org LocalBusiness estructurado o NULL si no hay datos suficientes.
+ */
+function _jaraba_geo_build_local_business_schema(EntityInterface $entity): ?array {
+  $name = $entity->getDisplayName();
+  
+  // Si tiene nombre de empresa, usarlo.
+  if ($entity->hasField('field_company_name') && !$entity->get('field_company_name')->isEmpty()) {
+    $name = $entity->get('field_company_name')->value;
+  }
+
+  if (empty($name)) {
+    return NULL;
+  }
+
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+
+  // Tipo de negocio específico si está disponible.
+  $business_type = 'ProfessionalService';
+  if ($entity->hasField('field_business_type') && !$entity->get('field_business_type')->isEmpty()) {
+    $business_type = $entity->get('field_business_type')->value;
+  }
+
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => $business_type,
+    'name' => $name,
+    'url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
+  ];
+
+  // Descripción.
+  $description = _jaraba_geo_get_field_value($entity, ['field_bio', 'field_biografia', 'field_description', 'field_about']);
+  if ($description) {
+    $schema['description'] = $description;
+  }
+
+  // Imagen del perfil.
+  if ($entity->hasField('user_picture') && !$entity->get('user_picture')->isEmpty()) {
+    $image = $entity->get('user_picture')->entity;
+    if ($image) {
+      $schema['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->getFileUri());
+    }
+  }
+
+  // Teléfono.
+  if ($entity->hasField('field_phone') && !$entity->get('field_phone')->isEmpty()) {
+    $schema['telephone'] = $entity->get('field_phone')->value;
+  }
+
+  // Email (solo si el usuario lo permite).
+  if ($entity->hasField('field_public_email') && !$entity->get('field_public_email')->isEmpty()) {
+    $schema['email'] = $entity->get('field_public_email')->value;
+  }
+
+  // Ubicación/Dirección.
+  $address_parts = [];
+  if ($entity->hasField('field_city') && !$entity->get('field_city')->isEmpty()) {
+    $address_parts['addressLocality'] = $entity->get('field_city')->value;
+  }
+  if ($entity->hasField('field_region') && !$entity->get('field_region')->isEmpty()) {
+    $address_parts['addressRegion'] = $entity->get('field_region')->value;
+  }
+  if ($entity->hasField('field_postal_code') && !$entity->get('field_postal_code')->isEmpty()) {
+    $address_parts['postalCode'] = $entity->get('field_postal_code')->value;
+  }
+
+  if (!empty($address_parts)) {
+    $address_parts['@type'] = 'PostalAddress';
+    $address_parts['addressCountry'] = 'ES';
+    $schema['address'] = $address_parts;
+  }
+
+  // Coordenadas geográficas.
+  if ($entity->hasField('field_geolocation') && !$entity->get('field_geolocation')->isEmpty()) {
+    $geo = $entity->get('field_geolocation')->first();
+    if ($geo) {
+      $schema['geo'] = [
+        '@type' => 'GeoCoordinates',
+        'latitude' => $geo->lat ?? 0,
+        'longitude' => $geo->lng ?? 0,
+      ];
+    }
+  }
+
+  // Rango de precios si está disponible.
+  if ($entity->hasField('field_price_range') && !$entity->get('field_price_range')->isEmpty()) {
+    $schema['priceRange'] = $entity->get('field_price_range')->value;
+  }
+
+  // Área de servicio.
+  if ($entity->hasField('field_service_area') && !$entity->get('field_service_area')->isEmpty()) {
+    $areas = [];
+    foreach ($entity->get('field_service_area') as $area) {
+      if ($area->entity) {
+        $areas[] = [
+          '@type' => 'GeoCircle',
+          'name' => $area->entity->label(),
+        ];
+      }
+    }
+    if (!empty($areas)) {
+      $schema['areaServed'] = count($areas) === 1 ? $areas[0] : $areas;
+    }
+  }
+
+  // Servicios ofrecidos.
+  if ($entity->hasField('field_services') && !$entity->get('field_services')->isEmpty()) {
+    $services = [];
+    foreach ($entity->get('field_services') as $service) {
+      if ($service->entity) {
+        $services[] = $service->entity->label();
+      } elseif ($service->value) {
+        $services[] = $service->value;
+      }
+    }
+    if (!empty($services)) {
+      $schema['hasOfferCatalog'] = [
+        '@type' => 'OfferCatalog',
+        'name' => 'Servicios',
+        'itemListElement' => array_map(function($s) {
+          return ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => $s]];
+        }, $services),
+      ];
+    }
+  }
+
+  // Redes sociales.
+  $social_links = [];
+  $social_fields = ['field_linkedin', 'field_twitter', 'field_instagram', 'field_facebook'];
+  foreach ($social_fields as $field) {
+    if ($entity->hasField($field) && !$entity->get($field)->isEmpty()) {
+      $social_links[] = $entity->get($field)->value;
+    }
+  }
+  if (!empty($social_links)) {
+    $schema['sameAs'] = $social_links;
+  }
+
+  // Rating agregado si está disponible.
+  if ($entity->hasField('field_average_rating') && !$entity->get('field_average_rating')->isEmpty()) {
+    $rating = $entity->get('field_average_rating')->value;
+    $reviewCount = 1;
+    if ($entity->hasField('field_review_count') && !$entity->get('field_review_count')->isEmpty()) {
+      $reviewCount = (int) $entity->get('field_review_count')->value;
+    }
+    $schema['aggregateRating'] = [
+      '@type' => 'AggregateRating',
+      'ratingValue' => (string) $rating,
+      'reviewCount' => (string) $reviewCount,
+    ];
+  }
+
+  return $schema;
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for professional_profile.
+ *
+ * Inyecta Schema.org LocalBusiness JSON-LD en template.
+ */
+function jaraba_geo_preprocess_professional_profile(array &$variables): void {
+  $professional = $variables['professional'] ?? NULL;
+  if (!$professional) {
+    return;
+  }
+
+  $schema = _jaraba_geo_build_local_business_schema($professional);
+
+  if ($schema) {
+    $variables['schema_org_json_ld'] = '<script type="application/ld+json">' . 
+      json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . 
+      '</script>';
+  }
+}
+
+

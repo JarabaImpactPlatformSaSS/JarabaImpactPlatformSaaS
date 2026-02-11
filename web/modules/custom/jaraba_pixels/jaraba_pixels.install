@@ -1,0 +1,211 @@
+<?php
+
+/**
+ * @file
+ * Schema para el módulo Jaraba Pixel Manager.
+ *
+ * Define las tablas para almacenar credenciales de pixel por tenant
+ * y logs de eventos enviados para auditoría y deduplicación.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_pixels_schema() {
+  $schema = [];
+
+  // =========================================================================
+  // Tabla: pixel_credentials
+  // Almacena las credenciales de cada plataforma por tenant.
+  // =========================================================================
+  $schema['pixel_credentials'] = [
+    'description' => 'Credenciales de pixel por tenant y plataforma.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único de la credencial.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID del tenant propietario.',
+      ],
+      'platform' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Plataforma: meta, google, linkedin, tiktok.',
+      ],
+      'pixel_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'ID del pixel o measurement ID.',
+      ],
+      'access_token' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+        'description' => 'Token de acceso encriptado (Meta CAPI, etc.).',
+      ],
+      'api_secret' => [
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+        'description' => 'API secret encriptado (Google MP, etc.).',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'enabled',
+        'description' => 'Estado: enabled, disabled, error.',
+      ],
+      'test_mode' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Si está en modo test (1) o producción (0).',
+      ],
+      'test_event_code' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'description' => 'Código de evento de test (Meta).',
+      ],
+      'last_verified' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Timestamp de última verificación exitosa.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de creación.',
+      ],
+      'updated' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de última actualización.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'tenant_platform' => ['tenant_id', 'platform'],
+    ],
+    'indexes' => [
+      'tenant' => ['tenant_id'],
+      'platform' => ['platform'],
+      'status' => ['status'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: pixel_event_log
+  // Log de eventos enviados para auditoría y monitoreo.
+  // =========================================================================
+  $schema['pixel_event_log'] = [
+    'description' => 'Log de eventos enviados a plataformas de pixels.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único del log.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'platform' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Plataforma destino.',
+      ],
+      'event_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'UUID del evento (para deduplicación).',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Tipo de evento interno (page_view, purchase, etc.).',
+      ],
+      'platform_event' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Nombre del evento en la plataforma destino.',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'pending',
+        'description' => 'Estado: pending, sent, failed, skipped.',
+      ],
+      'response_code' => [
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => FALSE,
+        'description' => 'Código HTTP de respuesta.',
+      ],
+      'error_message' => [
+        'type' => 'text',
+        'size' => 'small',
+        'not null' => FALSE,
+        'description' => 'Mensaje de error si falló.',
+      ],
+      'payload_hash' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'description' => 'Hash del payload (para auditoría sin PII).',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de creación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'tenant_platform' => ['tenant_id', 'platform'],
+      'event_id' => ['event_id'],
+      'status' => ['status'],
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_pixels_install() {
+  \Drupal::messenger()->addStatus(t('Jaraba Pixel Manager instalado. Configure las credenciales en el panel de Marketing.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_pixels_uninstall() {
+  // Limpiar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_pixels.settings')->delete();
+}

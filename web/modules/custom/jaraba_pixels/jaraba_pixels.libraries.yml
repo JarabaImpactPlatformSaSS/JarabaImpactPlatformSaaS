@@ -1,0 +1,9 @@
+pixel-settings:
+  version: 1.x
+  js:
+    js/pixel-settings.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel

@@ -1,0 +1,56 @@
+# Rutas del módulo jaraba_i18n
+#
+# PROPÓSITO:
+# Define las rutas para el dashboard de traducciones y la API REST.
+# Siguiendo el patrón de frontend limpio con layout full-width.
+
+# =============================================================================
+# DASHBOARD DE TRADUCCIONES (Frontend Limpio)
+# =============================================================================
+
+jaraba_i18n.dashboard:
+  path: '/i18n'
+  defaults:
+    _controller: '\Drupal\jaraba_i18n\Controller\TranslationDashboardController::dashboard'
+    _title: 'Traducciones'
+  requirements:
+    _permission: 'translate any entity'
+  options:
+    _admin_route: FALSE
+
+# =============================================================================
+# API REST PARA TRADUCCIÓN
+# =============================================================================
+
+# Obtener estado de traducciones de una entidad
+jaraba_i18n.api.status:
+  path: '/api/jaraba-i18n/status/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::getStatus'
+  requirements:
+    _permission: 'access content'
+  methods: [GET]
+  options:
+    _format: 'json'
+
+# Traducir entidad con IA
+jaraba_i18n.api.translate:
+  path: '/api/jaraba-i18n/translate'
+  defaults:
+    _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::translate'
+  requirements:
+    _permission: 'translate any entity'
+  methods: [POST]
+  options:
+    _format: 'json'
+
+# Obtener estadísticas de traducción
+jaraba_i18n.api.stats:
+  path: '/api/jaraba-i18n/stats/{entity_type}'
+  defaults:
+    _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::getStats'
+  requirements:
+    _permission: 'translate any entity'
+  methods: [GET]
+  options:
+    _format: 'json'

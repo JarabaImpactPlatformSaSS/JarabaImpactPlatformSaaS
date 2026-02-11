@@ -1,0 +1,200 @@
+<?php
+
+/**
+ * @file
+ * Módulo principal Jaraba Pixel Manager.
+ *
+ * Gestiona el dispatch de eventos a plataformas de marketing
+ * (Meta CAPI, Google Measurement Protocol) de forma nativa,
+ * reemplazando la dependencia de Google Tag Manager.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for analytics_event.
+ *
+ * V2: Encola eventos en Redis para procesamiento asíncrono.
+ * Fallback: Si Redis no está disponible, dispatch síncrono (V1).
+ */
+function jaraba_pixels_analytics_event_insert(EntityInterface $entity) {
+  try {
+    /** @var \Drupal\jaraba_pixels\Service\RedisQueueService $queue */
+    $queue = \Drupal::service('jaraba_pixels.queue');
+
+    // Extraer datos del evento para encolar.
+    $event_data = _jaraba_pixels_extract_event_data($entity);
+
+    if (empty($event_data)) {
+      return;
+    }
+
+    // Intentar encolar en Redis (V2 async).
+    if ($queue->isAvailable() && $queue->enqueue($event_data)) {
+      return; // Evento encolado, será procesado por cron.
+    }
+
+    // Fallback: dispatch síncrono (V1).
+    \Drupal::logger('jaraba_pixels')->info('Redis unavailable, using sync dispatch');
+    /** @var \Drupal\jaraba_pixels\Service\PixelDispatcherService $dispatcher */
+    $dispatcher = \Drupal::service('jaraba_pixels.dispatcher');
+    $dispatcher->dispatch($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_pixels')->error('Error dispatching pixel event: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Extrae datos del evento de analytics para encolar.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   Entidad del evento.
+ *
+ * @return array
+ *   Datos extraídos o array vacío si no es válido.
+ */
+function _jaraba_pixels_extract_event_data(EntityInterface $entity): array {
+  if ($entity->getEntityTypeId() !== 'analytics_event') {
+    return [];
+  }
+
+  return [
+    'entity_id' => $entity->id(),
+    'event_id' => $entity->get('event_id')->value ?? uniqid('px_'),
+    'event_type' => $entity->get('event_type')->value ?? 'page_view',
+    'tenant_id' => (int) $entity->get('tenant_id')->value,
+    'visitor_id' => $entity->get('visitor_id')->value ?? '',
+    'session_id' => $entity->get('session_id')->value ?? '',
+    'page_url' => $entity->get('page_url')->value ?? '',
+    'page_title' => $entity->get('page_title')->value ?? '',
+    'referrer' => $entity->get('referrer')->value ?? '',
+    'user_agent' => $entity->get('user_agent')->value ?? '',
+    'ip_address' => $entity->get('ip_hash')->value ?? '',
+    'timestamp' => $entity->get('created')->value ?? time(),
+    'value' => $entity->get('value')->value ?? NULL,
+    'currency' => $entity->get('currency')->value ?? 'EUR',
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * V2: Procesa eventos pendientes en cola Redis.
+ * También limpia logs de eventos antiguos y verifica tokens.
+ */
+function jaraba_pixels_cron() {
+  // Procesar batch de eventos en cola (V2).
+  try {
+    /** @var \Drupal\jaraba_pixels\Service\BatchProcessorService $processor */
+    $processor = \Drupal::service('jaraba_pixels.batch_processor');
+    $processed = $processor->process(100);
+
+    if ($processed > 0) {
+      \Drupal::logger('jaraba_pixels')->info('Cron: Processed @count pixel events', [
+        '@count' => $processed,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_pixels')->error('Cron batch error: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+
+  // Verificación diaria de tokens (V2).
+  try {
+    /** @var \Drupal\jaraba_pixels\Service\TokenVerificationService $tokenService */
+    $tokenService = \Drupal::service('jaraba_pixels.token_verification');
+
+    if ($tokenService->shouldRunDailyCheck()) {
+      $results = $tokenService->verifyAllCredentials();
+      \Drupal::logger('jaraba_pixels')->info('Token verification: @expired expired, @expiring expiring soon', [
+        '@expired' => count($results['expired']),
+        '@expiring' => count($results['expiring_soon']),
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_pixels')->error('Token verification error: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+
+  // Limpiar logs de eventos > 30 días.
+  $threshold = strtotime('-30 days');
+  \Drupal::database()->delete('pixel_event_log')
+    ->condition('created', $threshold, '<')
+    ->execute();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_pixels_theme() {
+  return [
+    'pixel_settings_dashboard' => [
+      'variables' => [
+        'platforms' => [],
+        'stats' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'pixel-settings-dashboard',
+    ],
+    'pixel_stats_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'queue' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'pixel-stats-dashboard',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Asegura que las rutas de pixels usen los templates de página correctos
+ * para layout full-width premium.
+ */
+function jaraba_pixels_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  // Forzar template page--pixels--stats para estadísticas.
+  if ($route === 'jaraba_pixels.stats') {
+    $suggestions[] = 'page__pixels__stats';
+  }
+
+  // Forzar template page--pixels para configuración.
+  if ($route === 'jaraba_pixels.settings') {
+    $suggestions[] = 'page__pixels';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body para rutas de pixels.
+ * IMPORTANTE: attributes.addClass() en templates NO funciona para el body,
+ * por eso usamos este hook según el workflow frontend-page-pattern.
+ */
+function jaraba_pixels_preprocess_html(&$variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  // Añadir clases al body para /pixels/stats.
+  if ($route === 'jaraba_pixels.stats') {
+    $variables['attributes']['class'][] = 'page-pixels-stats';
+    $variables['attributes']['class'][] = 'dashboard-page';
+  }
+
+  // Añadir clases al body para /pixels.
+  if ($route === 'jaraba_pixels.settings') {
+    $variables['attributes']['class'][] = 'page-pixels';
+    $variables['attributes']['class'][] = 'dashboard-page';
+  }
+}
+
+

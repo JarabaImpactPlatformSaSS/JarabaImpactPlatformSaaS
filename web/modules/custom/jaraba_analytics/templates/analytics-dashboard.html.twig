@@ -1,0 +1,182 @@
+{#
+/**
+ * @file
+ * Template del Dashboard de Analytics.
+ *
+ * Variables disponibles:
+ * - tenant_id: ID del tenant actual.
+ *
+ * Cumple con:
+ * - Todas las cadenas envueltas en {% trans %}
+ * - Iconos via jaraba_icon() helper
+ * - Estructura Mobile-First
+ *
+ * @see \Drupal\jaraba_analytics\Controller\AnalyticsDashboardController
+ */
+#}
+
+<div class="analytics-dashboard" data-tenant-id="{{ tenant_id }}">
+  {# Header Premium #}
+  <header class="analytics-dashboard__header">
+    <h1 class="analytics-dashboard__title">
+      {% trans %}Analytics{% endtrans %} <span>{% trans %}Dashboard{% endtrans %}</span>
+    </h1>
+    <select class="analytics-dashboard__date-range" aria-label="{% trans %}Rango de fechas{% endtrans %}">
+      <option value="7d">{% trans %}Últimos 7 días{% endtrans %}</option>
+      <option value="30d" selected>{% trans %}Últimos 30 días{% endtrans %}</option>
+      <option value="90d">{% trans %}Últimos 90 días{% endtrans %}</option>
+    </select>
+  </header>
+
+  {# KPIs - Renderizado por JS #}
+  <section class="analytics-dashboard__kpis" aria-label="{% trans %}Indicadores Clave{% endtrans %}">
+    {# Los KPIs se renderizan dinámicamente via JavaScript #}
+  </section>
+
+  {# Charts Row 1 #}
+  <section class="analytics-dashboard__charts">
+    {# Gráfico de tendencias #}
+    <div class="analytics-card">
+      <header class="analytics-card__header">
+        <h2 class="analytics-card__title">
+          {{ jaraba_icon('analytics', 'chart-line', { variant: 'duotone', size: '24px' }) }}
+          {% trans %}Tendencias de Tráfico{% endtrans %}
+        </h2>
+      </header>
+      <div class="analytics-card__body">
+        <div class="analytics-chart">
+          <canvas id="chart-trends" aria-label="{% trans %}Gráfico de tendencias{% endtrans %}"></canvas>
+        </div>
+      </div>
+    </div>
+
+    {# Gráfico de dispositivos #}
+    <div class="analytics-card">
+      <header class="analytics-card__header">
+        <h2 class="analytics-card__title">
+          {{ jaraba_icon('ui', 'device-mobile', { variant: 'duotone', size: '24px' }) }}
+          {% trans %}Dispositivos{% endtrans %}
+        </h2>
+      </header>
+      <div class="analytics-card__body">
+        <div class="analytics-chart analytics-chart--small">
+          <canvas id="chart-devices" aria-label="{% trans %}Distribución por dispositivo{% endtrans %}"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# Bottom Row #}
+  <section class="analytics-dashboard__bottom">
+    {# Funnel de conversión #}
+    <div class="analytics-card">
+      <header class="analytics-card__header">
+        <h2 class="analytics-card__title">
+          {{ jaraba_icon('analytics', 'conversion', { variant: 'duotone', size: '24px' }) }}
+          {% trans %}Funnel de Conversión{% endtrans %}
+        </h2>
+      </header>
+      <div class="analytics-card__body">
+        <div class="analytics-chart">
+          <canvas id="chart-funnel" aria-label="{% trans %}Embudo de conversión{% endtrans %}"></canvas>
+        </div>
+      </div>
+    </div>
+
+    {# Top Páginas #}
+    <div class="analytics-card">
+      <header class="analytics-card__header">
+        <h2 class="analytics-card__title">
+          {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '24px' }) }}
+          {% trans %}Top Páginas{% endtrans %}
+        </h2>
+      </header>
+      <div class="analytics-card__body analytics-dashboard__top-pages">
+        {# Renderizado por JS #}
+      </div>
+    </div>
+
+    {# Tiempo Real #}
+    <div class="analytics-card">
+      <header class="analytics-card__header">
+        <h2 class="analytics-card__title">
+          {{ jaraba_icon('ui', 'broadcast', { variant: 'duotone', size: '24px' }) }}
+          {% trans %}Tiempo Real{% endtrans %}
+        </h2>
+      </header>
+      <div class="analytics-card__body analytics-dashboard__realtime">
+        {# Renderizado por JS #}
+      </div>
+    </div>
+  </section>
+
+  {# Quick Actions - Native Tools #}
+  <section class="analytics-dashboard__actions" aria-label="{% trans %}Herramientas Nativas{% endtrans %}">
+    <h2 class="analytics-dashboard__section-title">{% trans %}Herramientas Nativas{% endtrans %}</h2>
+    <div class="analytics-dashboard__action-grid">
+      {# Heatmaps Button - Opens in Slide Panel #}
+      <button type="button" 
+              class="analytics-action-btn js-open-heatmap-panel"
+              data-slide-panel-target="#heatmap-slide-panel"
+              aria-haspopup="dialog">
+        <span class="analytics-action-btn__icon">
+          {{ jaraba_icon('ui', 'eye', { variant: 'duotone', size: '32px' }) }}
+        </span>
+        <span class="analytics-action-btn__label">{% trans %}Heatmaps{% endtrans %}</span>
+        <span class="analytics-action-btn__desc">{% trans %}Visualiza interacciones de usuario{% endtrans %}</span>
+      </button>
+
+      {# Scroll Depth Button #}
+      <button type="button" 
+              class="analytics-action-btn js-open-scroll-panel"
+              data-slide-panel-target="#heatmap-slide-panel"
+              data-heatmap-type="scroll"
+              aria-haspopup="dialog">
+        <span class="analytics-action-btn__icon">
+          {{ jaraba_icon('ui', 'arrows-vertical', { variant: 'duotone', size: '32px' }) }}
+        </span>
+        <span class="analytics-action-btn__label">{% trans %}Scroll Depth{% endtrans %}</span>
+        <span class="analytics-action-btn__desc">{% trans %}Analiza profundidad de lectura{% endtrans %}</span>
+      </button>
+
+      {# Consent Status Button #}
+      <a href="/page-builder/analytics/consent" 
+         class="analytics-action-btn">
+        <span class="analytics-action-btn__icon">
+          {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '32px' }) }}
+        </span>
+        <span class="analytics-action-btn__label">{% trans %}Consentimiento{% endtrans %}</span>
+        <span class="analytics-action-btn__desc">{% trans %}Estado GDPR/RGPD{% endtrans %}</span>
+      </a>
+    </div>
+  </section>
+</div>
+
+{# ========================================================================= #}
+{# SLIDE PANEL: Heatmap Viewer (Zero-Abandonment Pattern)                    #}
+{# ========================================================================= #}
+<aside id="heatmap-slide-panel" 
+       class="slide-panel slide-panel--right" 
+       aria-hidden="true"
+       role="dialog"
+       aria-labelledby="heatmap-panel-title">
+  <div class="slide-panel__backdrop"></div>
+  <div class="slide-panel__content">
+    <header class="slide-panel__header">
+      <h2 id="heatmap-panel-title" class="slide-panel__title">
+        {{ jaraba_icon('ui', 'eye', { variant: 'duotone', size: '24px' }) }}
+        {% trans %}Heatmaps Nativos{% endtrans %}
+      </h2>
+      <button type="button" 
+              class="slide-panel__close js-close-panel" 
+              aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '20px' }) }}
+      </button>
+    </header>
+    <div class="slide-panel__body">
+      {# El visor de heatmaps se inicializa aquí #}
+      <div class="heatmap-viewer-container"></div>
+    </div>
+  </div>
+</aside>
+

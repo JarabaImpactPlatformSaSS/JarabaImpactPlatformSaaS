@@ -1,0 +1,13 @@
+services:
+  jaraba_geo.answer_capsule:
+    class: Drupal\jaraba_geo\Service\AnswerCapsuleService
+    arguments: ['@entity_type.manager', '@config.factory']
+
+  jaraba_geo.schema_manager:
+    class: Drupal\jaraba_geo\Service\SchemaManager
+    arguments: ['@entity_type.manager', '@file_url_generator', '@request_stack']
+
+  jaraba_geo.eeat:
+    class: Drupal\jaraba_geo\Service\EeatService
+    arguments: ['@entity_type.manager', '@date.formatter']
+

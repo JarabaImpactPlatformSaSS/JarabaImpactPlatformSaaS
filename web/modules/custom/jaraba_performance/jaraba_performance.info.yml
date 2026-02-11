@@ -1,0 +1,9 @@
+name: Jaraba Performance
+type: module
+description: 'Optimizaciones de rendimiento: CSS crítico, lazy loading, Core Web Vitals.'
+package: Jaraba - Performance
+core_version_requirement: ^10.3 || ^11
+lifecycle: stable
+
+dependencies:
+  - drupal:system (>=10.3)

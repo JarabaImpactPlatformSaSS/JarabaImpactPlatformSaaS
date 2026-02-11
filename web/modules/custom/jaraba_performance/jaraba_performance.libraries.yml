@@ -1,0 +1,6 @@
+critical_css_loader:
+  version: 1.0.0
+  js:
+    js/critical-css-loader.js: { weight: -100, preprocess: false }
+  dependencies:
+    - core/drupal

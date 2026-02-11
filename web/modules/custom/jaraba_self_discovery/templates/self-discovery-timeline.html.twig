@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template para Timeline de Vida.
+ *
+ * PROPÓSITO:
+ * Muestra línea temporal interactiva con eventos álgidos y bajos.
+ * Incluye gráfico visual tipo "montaña rusa emocional".
+ */
+#}
+{{ attach_library('jaraba_self_discovery/timeline') }}
+
+<div class="timeline-page page-wrapper--clean">
+  
+  <header class="tl-header">
+    <a href="/my-profile/self-discovery" class="tl-header__back">← {% trans %}Volver{% endtrans %}</a>
+    <div class="tl-header__icon">
+      {{ jaraba_icon('analytics', 'timeline', { color: 'innovation', size: '48px' }) }}
+    </div>
+    <h1 class="tl-header__title">{{ labels.title }}</h1>
+    <p class="tl-header__subtitle">{{ labels.subtitle }}</p>
+  </header>
+  
+  <main class="tl-main">
+    <div class="tl-actions">
+      <button type="button" class="btn btn--primary" id="add-event">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ labels.add_event }}
+      </button>
+    </div>
+    
+    {# Gráfico de Línea de Vida #}
+    <div class="tl-chart-container">
+      <h2 class="tl-chart-title">{% trans %}Tu Línea de Vida{% endtrans %}</h2>
+      <p class="tl-chart-help">{% trans %}Visualiza tus momentos álgidos (arriba) y bajos (abajo) a lo largo del tiempo.{% endtrans %}</p>
+      <div class="tl-chart-wrapper">
+        <canvas id="timeline-chart" width="800" height="380"></canvas>
+      </div>
+    </div>
+    
+    {# Lista de eventos #}
+    <div class="tl-timeline" id="timeline-container">
+      <div class="tl-empty-state">
+        <p>{% trans %}Aún no has añadido eventos a tu línea de vida.{% endtrans %}</p>
+        <p>{% trans %}Comienza añadiendo momentos significativos de tu historia personal y profesional.{% endtrans %}</p>
+      </div>
+    </div>
+  </main>
+  
+</div>

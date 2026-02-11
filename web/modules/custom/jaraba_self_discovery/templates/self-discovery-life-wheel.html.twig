@@ -1,0 +1,79 @@
+{#
+/**
+ * @file
+ * Template para la herramienta Rueda de la Vida.
+ *
+ * PROPÓSITO:
+ * UI interactiva con 8 sliders (1-10) para evaluar áreas de la vida.
+ * Incluye radar chart visual y guardado via AJAX.
+ *
+ * Variables:
+ * - scores: Array con puntuaciones actuales por área.
+ * - last_assessment: Última evaluación guardada (o NULL).
+ * - labels: Textos traducibles.
+ */
+#}
+{{ attach_library('jaraba_self_discovery/life-wheel') }}
+
+<div class="life-wheel-page page-wrapper--clean">
+  
+  <header class="lw-header">
+    <a href="/my-profile/self-discovery" class="lw-header__back" title="{% trans %}Volver{% endtrans %}">
+      ← {% trans %}Volver{% endtrans %}
+    </a>
+    <h1 class="lw-header__title">{{ labels.title }}</h1>
+    <p class="lw-header__subtitle">{{ labels.subtitle }}</p>
+  </header>
+  
+  <main class="lw-main">
+    <div class="lw-container">
+      
+      {# Columna izquierda: Sliders #}
+      <div class="lw-sliders">
+        <p class="lw-help">{{ labels.help }}</p>
+        
+        {% for key, label in labels.areas %}
+          <div class="lw-slider-group" data-area="{{ key }}">
+            <label class="lw-slider-group__label" for="slider-{{ key }}">
+              {{ label }}
+              <span class="lw-slider-group__value" id="value-{{ key }}">{{ scores[key] ?? 5 }}</span>
+            </label>
+            <input 
+              type="range" 
+              id="slider-{{ key }}" 
+              class="lw-slider" 
+              min="1" 
+              max="10" 
+              value="{{ scores[key] ?? 5 }}"
+              data-area="{{ key }}"
+            >
+          </div>
+        {% endfor %}
+        
+        <div class="lw-actions">
+          <button type="button" class="btn btn--primary" id="save-assessment">
+            {{ labels.save }}
+          </button>
+          <button type="button" class="btn btn--secondary" id="reset-sliders">
+            {{ labels.reset }}
+          </button>
+        </div>
+      </div>
+      
+      {# Columna derecha: Radar Chart #}
+      <div class="lw-chart-container">
+        <canvas id="life-wheel-chart" width="400" height="400"></canvas>
+        
+        {% if last_assessment %}
+          <p class="lw-last-saved">
+            {% trans %}Última evaluación:{% endtrans %} 
+            {{ last_assessment.created.value|date('d/m/Y') }}
+            ({% trans %}Promedio:{% endtrans %} {{ last_assessment.averageScore }}/10)
+          </p>
+        {% endif %}
+      </div>
+      
+    </div>
+  </main>
+  
+</div>

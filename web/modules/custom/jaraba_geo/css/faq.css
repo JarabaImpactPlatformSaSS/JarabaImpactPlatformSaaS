@@ -1,0 +1,151 @@
+/**
+ * @file
+ * Styles for GEO FAQ page.
+ */
+
+.geo-faq-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.geo-faq-intro {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 1rem;
+}
+
+.geo-faq-nav {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+}
+
+.geo-faq-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.geo-faq-nav__link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 2rem;
+  text-decoration: none;
+  color: #1e293b;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.geo-faq-nav__link:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.geo-faq-section {
+  margin-bottom: 3rem;
+}
+
+.geo-faq-section__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.geo-faq-item {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.geo-faq-item__question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.75rem;
+}
+
+.geo-faq-item__answer p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.geo-faq-cta {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 1rem;
+  color: white;
+}
+
+.geo-faq-cta h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.geo-faq-cta p {
+  margin: 0 0 1.5rem;
+  opacity: 0.9;
+}
+
+.geo-faq-cta__buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.geo-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.geo-btn--primary {
+  background: white;
+  color: #3b82f6;
+}
+
+.geo-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.geo-btn--secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.geo-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 640px) {
+  .geo-faq-page {
+    padding: 1rem;
+  }
+
+  .geo-faq-nav__list {
+    flex-direction: column;
+  }
+}

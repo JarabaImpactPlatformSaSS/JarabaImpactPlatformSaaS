@@ -1,0 +1,8 @@
+# Links de tareas (tabs) - /admin/content
+# Patrón: base_route system.admin_content para pestañas
+
+entity.life_wheel_assessment.collection:
+  title: 'Rueda de la Vida'
+  route_name: entity.life_wheel_assessment.collection
+  base_route: system.admin_content
+  weight: 50

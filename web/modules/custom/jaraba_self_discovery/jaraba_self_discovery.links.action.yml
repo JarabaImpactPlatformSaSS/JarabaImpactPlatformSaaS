@@ -1,0 +1,7 @@
+# Links de acciones - Botones "Añadir" en collections
+
+entity.life_wheel_assessment.add_form:
+  title: 'Añadir Evaluación'
+  route_name: entity.life_wheel_assessment.add_form
+  appears_on:
+    - entity.life_wheel_assessment.collection

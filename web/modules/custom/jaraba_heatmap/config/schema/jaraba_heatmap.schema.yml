@@ -1,0 +1,36 @@
+# Esquema de configuración del módulo Jaraba Heatmap
+
+jaraba_heatmap.settings:
+  type: config_object
+  label: 'Configuración de Jaraba Heatmap'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Habilitar tracking de heatmaps'
+    buffer_size:
+      type: integer
+      label: 'Tamaño del buffer de eventos'
+    flush_interval:
+      type: integer
+      label: 'Intervalo de flush (ms)'
+    throttle_move:
+      type: integer
+      label: 'Throttle movimiento mouse (ms)'
+    throttle_scroll:
+      type: integer
+      label: 'Throttle scroll (ms)'
+    retention_raw_days:
+      type: integer
+      label: 'Días retención eventos raw'
+    retention_aggregated_days:
+      type: integer
+      label: 'Días retención datos agregados'
+    color_accent:
+      type: string
+      label: 'Color de acento'
+    color_bg:
+      type: string
+      label: 'Color de fondo'
+    border_radius:
+      type: integer
+      label: 'Radio de bordes (px)'
