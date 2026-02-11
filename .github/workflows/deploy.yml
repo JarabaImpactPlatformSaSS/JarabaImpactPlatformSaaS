@@ -298,6 +298,18 @@ jobs:
             echo ""
             echo "=== Pending DB Updates ==="
             /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb:status 2>&1 || echo "⚠️ updatedb:status failed"
+            echo ""
+            echo "=== Qdrant/RAG Config ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php eval "
+              \$c = \Drupal::config('jaraba_rag.settings');
+              echo 'host: ' . var_export(\$c->get('vector_db.host'), true) . PHP_EOL;
+              echo 'api_key: ' . (\$c->get('vector_db.api_key') ? substr(\$c->get('vector_db.api_key'), 0, 12) . '...' : '(empty)') . PHP_EOL;
+              echo 'disabled: ' . var_export(\$c->get('disabled'), true) . PHP_EOL;
+              echo 'environment: ' . var_export(\$c->get('environment'), true) . PHP_EOL;
+            " 2>&1 || echo "⚠️ qdrant config check failed"
+            echo ""
+            echo "=== settings.local.php last 10 lines ==="
+            tail -10 web/sites/default/settings.local.php 2>/dev/null || echo "(no file)"
           EOF
 
       - name: Run database updates
