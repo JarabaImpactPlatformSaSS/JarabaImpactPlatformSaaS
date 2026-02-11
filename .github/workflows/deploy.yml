@@ -44,7 +44,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, phar
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, pdo_sqlite, sqlite3, dom, filter, gd, json, phar
           coverage: none
 
       - name: Get Composer Cache Directory
@@ -61,10 +61,14 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: Run PHPUnit tests
-        run: |
-          cd web
-          ../vendor/bin/phpunit --testsuite unit || echo "Tests completed with warnings"
+      - name: Run PHPUnit Unit tests
+        run: vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite Unit
+
+      - name: Run PHPUnit Kernel tests
+        env:
+          SIMPLETEST_DB: sqlite://localhost//tmp/test.sqlite
+          SIMPLETEST_BASE_URL: http://localhost
+        run: vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite Kernel
 
   deploy:
     name: 🚀 Deploy to IONOS
@@ -88,18 +92,32 @@ jobs:
 
       - name: Create backup (unless skipped)
         if: ${{ github.event.inputs.skip_backup != 'true' }}
+        continue-on-error: true
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
             mkdir -p ~/backups
-            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
+            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz || {
+              echo "⚠️ Drush sql-dump falló. Intentando mysqldump directo..."
+              # Fallback: mysqldump directo sin bootstrap de Drupal
+              DBNAME=$(grep "'database'" web/sites/default/settings.php | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+              DBUSER=$(grep "'username'" web/sites/default/settings.php | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+              DBPASS=$(grep "'password'" web/sites/default/settings.php | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+              if [ -n "$DBNAME" ] && [ -n "$DBUSER" ]; then
+                mysqldump -u"$DBUSER" -p"$DBPASS" "$DBNAME" | gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
+                echo "✅ Backup realizado con mysqldump directo"
+              else
+                echo "⚠️ No se pudo extraer credenciales BD. Continuando sin backup."
+              fi
+            }
           EOF
 
       - name: Enable maintenance mode
+        continue-on-error: true
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
-            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 1
+            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 1 || echo "⚠️ No se pudo activar maintenance mode. Continuando deploy."
           EOF
 
       - name: Pull and deploy
