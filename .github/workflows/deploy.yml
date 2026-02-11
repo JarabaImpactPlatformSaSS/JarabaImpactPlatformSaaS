@@ -168,8 +168,11 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            # Habilitar RewriteBase (necesario en IONOS shared hosting)
-            sed -i 's/# RewriteBase \//RewriteBase \//' web/.htaccess
+            # Habilitar RewriteBase / (necesario en IONOS shared hosting)
+            # IMPORTANT: Only uncomment "# RewriteBase /" (exact), NOT "# RewriteBase /drupal"
+            # The previous sed pattern matched both lines, leaving RewriteBase /drupal active
+            # which caused Apache 500 on all non-homepage URLs.
+            sed -i 's|^  # RewriteBase /$|  RewriteBase /|' web/.htaccess
 
             # IONOS: Check if PHP handler needs to be configured
             # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
@@ -387,6 +390,24 @@ jobs:
           echo ""
           echo "=== PHP Web Error Log (last 50 lines) ==="
           ssh "${REMOTE_USER}@${REMOTE_HOST}" "tail -50 ~/JarabaImpactPlatformSaaS/php_web_errors.log 2>/dev/null || echo 'No web error log yet'"
+
+          # Verify .htaccess RewriteBase after sed
+          echo ""
+          echo "=== .htaccess RewriteBase verification ==="
+          ssh "${REMOTE_USER}@${REMOTE_HOST}" "grep -n 'RewriteBase' ~/JarabaImpactPlatformSaaS/web/.htaccess"
+
+          # Test mod_rewrite with a known Drupal path
+          echo ""
+          echo "=== mod_rewrite test: /user/login ==="
+          LOGIN_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://plataformadeecosistemas.com/user/login" 2>/dev/null || echo '000')
+          echo "HTTP status for /user/login: $LOGIN_CODE"
+          if [ "$LOGIN_CODE" = "500" ]; then
+            echo "⚠️ /user/login also returns 500 — mod_rewrite is likely broken"
+            echo "Checking response headers..."
+            curl -sI "https://plataformadeecosistemas.com/user/login" 2>&1
+          elif [ "$LOGIN_CODE" = "200" ] || [ "$LOGIN_CODE" = "403" ]; then
+            echo "✅ mod_rewrite is working for /user/login"
+          fi
 
           # Cleanup diagnostic files
           ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -f ~/JarabaImpactPlatformSaaS/web/${DIAG_FILE} ~/JarabaImpactPlatformSaaS/web/_boot_test.php"
