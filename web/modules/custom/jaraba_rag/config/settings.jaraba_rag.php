@@ -16,8 +16,13 @@
 $is_lando = getenv('LANDO') === 'ON';
 $drupal_env = getenv('DRUPAL_ENV') ?: ($is_lando ? 'development' : 'production');
 
+// Flag para indicar si Qdrant/RAG están disponibles.
+$_jaraba_rag_available = TRUE;
+
 // ═══════════════════════════════════════════════════════════════════
 // QDRANT CONFIGURATION - SECURE
+// Degradación graceful: si faltan variables de entorno en producción,
+// las features RAG/Qdrant se deshabilitan sin romper Drupal.
 // ═══════════════════════════════════════════════════════════════════
 if ($is_lando) {
     // DESARROLLO LOCAL (Lando)
@@ -25,32 +30,34 @@ if ($is_lando) {
     $config['jaraba_rag.settings']['vector_db.api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
     $config['jaraba_rag.settings']['environment'] = 'development';
 } else {
-    // PRODUCCION (IONOS) - Variables de entorno OBLIGATORIAS
+    // PRODUCCION (IONOS) - Variables de entorno recomendadas
     $qdrant_url = getenv('QDRANT_CLUSTER_URL');
     $qdrant_key = getenv('QDRANT_API_KEY');
 
-    // 🔒 VALIDACION: Fallar si no hay credenciales en producción
-    if (empty($qdrant_url)) {
-        throw new \RuntimeException(
-            'SEGURIDAD: QDRANT_CLUSTER_URL no configurada en variables de entorno'
-        );
+    if (empty($qdrant_url) || empty($qdrant_key)) {
+        // Degradación graceful: RAG deshabilitado, Drupal sigue funcionando.
+        $_jaraba_rag_available = FALSE;
+        $config['jaraba_rag.settings']['vector_db.host'] = '';
+        $config['jaraba_rag.settings']['vector_db.api_key'] = '';
+        $config['jaraba_rag.settings']['environment'] = 'production';
+        $config['jaraba_rag.settings']['disabled'] = TRUE;
+        // Log mediante error_log ya que el logger de Drupal no está disponible aquí.
+        error_log('JARABA RAG: QDRANT_CLUSTER_URL o QDRANT_API_KEY no configuradas. Features RAG/Qdrant deshabilitadas.');
     }
-    if (empty($qdrant_key)) {
-        throw new \RuntimeException(
-            'SEGURIDAD: QDRANT_API_KEY no configurada en variables de entorno'
-        );
+    elseif (!str_starts_with($qdrant_url, 'https://')) {
+        $_jaraba_rag_available = FALSE;
+        $config['jaraba_rag.settings']['vector_db.host'] = '';
+        $config['jaraba_rag.settings']['vector_db.api_key'] = '';
+        $config['jaraba_rag.settings']['environment'] = 'production';
+        $config['jaraba_rag.settings']['disabled'] = TRUE;
+        error_log('JARABA RAG: QDRANT_CLUSTER_URL debe usar HTTPS en producción. Features RAG/Qdrant deshabilitadas.');
     }
-
-    // 🔒 VALIDACION: URL debe ser HTTPS en producción
-    if (!str_starts_with($qdrant_url, 'https://')) {
-        throw new \RuntimeException(
-            'SEGURIDAD: QDRANT_CLUSTER_URL debe usar HTTPS en produccion'
-        );
+    else {
+        $config['jaraba_rag.settings']['vector_db.host'] = $qdrant_url;
+        $config['jaraba_rag.settings']['vector_db.api_key'] = $qdrant_key;
+        $config['jaraba_rag.settings']['environment'] = 'production';
+        $config['jaraba_rag.settings']['disabled'] = FALSE;
     }
-
-    $config['jaraba_rag.settings']['vector_db.host'] = $qdrant_url;
-    $config['jaraba_rag.settings']['vector_db.api_key'] = $qdrant_key;
-    $config['jaraba_rag.settings']['environment'] = 'production';
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -59,9 +66,9 @@ if ($is_lando) {
 $openai_key = getenv('OPENAI_API_KEY');
 
 if (empty($openai_key) && !$is_lando) {
-    throw new \RuntimeException(
-        'SEGURIDAD: OPENAI_API_KEY no configurada en variables de entorno'
-    );
+    $_jaraba_rag_available = FALSE;
+    $config['jaraba_rag.settings']['disabled'] = TRUE;
+    error_log('JARABA RAG: OPENAI_API_KEY no configurada. Features RAG/embeddings deshabilitadas.');
 }
 
 // Common configuration for both environments.
