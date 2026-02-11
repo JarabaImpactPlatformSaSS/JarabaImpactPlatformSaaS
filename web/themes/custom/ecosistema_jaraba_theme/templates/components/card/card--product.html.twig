@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Card variante: Product
+ *
+ * Para productos e-commerce: imagen, badge, precio, quick-add.
+ * Uso: Catálogos, marketplace.
+ */
+#}
+<article class="card card--product {{ card_class|default('') }}" data-product-id="{{ product_id }}">
+  <div class="card__media">
+    <a href="{{ url }}" class="card__image-link">
+      <img src="{{ image }}" alt="{{ title }}" class="card__image" loading="lazy" />
+    </a>
+
+    {# Badges #}
+    <div class="card__badges">
+      {% if is_new %}
+        <span class="badge badge--success">{{ 'Nuevo'|t }}</span>
+      {% endif %}
+      {% if discount_percent %}
+        <span class="badge badge--danger">-{{ discount_percent }}%</span>
+      {% endif %}
+      {% if is_organic %}
+        <span class="badge badge--eco">{{ 'Ecológico'|t }}</span>
+      {% endif %}
+    </div>
+
+    {# Quick actions #}
+    <div class="card__quick-actions">
+      <button class="card__action card__action--wishlist" aria-label="{{ 'Add to wishlist'|t }}">
+        {{ jaraba_icon('ui', 'heart', { size: '16px' }) }}
+      </button>
+      <button class="card__action card__action--quickview" aria-label="{{ 'Quick view'|t }}">
+        {{ jaraba_icon('ui', 'eye', { size: '16px' }) }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card__content">
+    {% if producer %}
+      <a href="{{ producer.url }}" class="card__producer">{{ producer.name }}</a>
+    {% endif %}
+
+    <h3 class="card__title">
+      <a href="{{ url }}">{{ title }}</a>
+    </h3>
+
+    {# Rating #}
+    {% if rating %}
+      <div class="card__rating">
+        {% for i in 1..5 %}
+          {{ jaraba_icon('ui', 'star', { variant: i <= rating ? 'filled' : 'outline', size: '14px' }) }}
+        {% endfor %}
+        <span class="card__rating-count">({{ rating_count }})</span>
+      </div>
+    {% endif %}
+
+    {# Precio #}
+    <div class="card__price">
+      {% if original_price and original_price != price %}
+        <span class="card__price-original">{{ original_price|number_format(2, ',', '.') }}€</span>
+      {% endif %}
+      <span class="card__price-current">{{ price|number_format(2, ',', '.') }}€</span>
+      {% if unit %}
+        <span class="card__price-unit">/ {{ unit }}</span>
+      {% endif %}
+    </div>
+
+    {# Add to cart #}
+    <button class="card__add-to-cart btn btn--primary btn--full" data-add-to-cart="{{ product_id }}">
+      {{ jaraba_icon('ui', 'cart', { size: '16px' }) }}
+      {{ 'Añadir'|t }}
+    </button>
+  </div>
+</article>

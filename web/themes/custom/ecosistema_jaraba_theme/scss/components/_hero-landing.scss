@@ -1,0 +1,577 @@
+/**
+ * @file
+ * Hero Landing Section - Homepage con efectos premium.
+ *
+ * REGLAS:
+ * - Variables CSS inyectables var(--ej-*)
+ * - Animaciones CSS puras
+ * - Compatible con Dark Mode
+ */
+
+// === GRADIENT FLOW ANIMATION ===
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// === TEXT REVEAL ANIMATION ===
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    clip-path: inset(100% 0 0 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+// === FADE IN UP ===
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// === ICON PULSE ===
+@keyframes icon-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+// === SHIMMER (Loading) ===
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// === GRADIENT PULSE ===
+@keyframes gradientPulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+// === PARTICLE FLOAT ===
+@keyframes particleFloat {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(30px, -40px) rotate(5deg);
+  }
+
+  50% {
+    transform: translate(-20px, 30px) rotate(-5deg);
+  }
+
+  75% {
+    transform: translate(40px, 20px) rotate(3deg);
+  }
+}
+
+// ==========================================================================
+// HERO LANDING - Main Component
+// ==========================================================================
+
+.hero-landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--ej-spacing-xl, 2rem);
+  overflow: hidden;
+
+  // Gradient Flow Background
+  background: linear-gradient(-45deg,
+      var(--ej-color-corporate, #233D63),
+      var(--ej-color-azul-verdoso, #2B7A78),
+      var(--ej-color-azul-profundo, #003366),
+      var(--ej-color-corporate, #233D63));
+  background-size: 400% 400%;
+  animation: gradient-flow 15s ease infinite;
+  // PERF-06: Promote animated hero to GPU compositor layer.
+  will-change: background-position;
+
+  // Particle Overlay
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+    background-size: 100px 100px, 150px 150px, 200px 200px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Background container for gradient and particles
+  &__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &__gradient {
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255, 140, 66, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(0, 169, 165, 0.12) 0%, transparent 50%);
+    animation: gradientPulse 8s ease-in-out infinite;
+    will-change: opacity; // PERF-06
+  }
+
+  &__particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+
+    // Floating orbs
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      animation: particleFloat 20s ease-in-out infinite;
+      will-change: transform; // PERF-06
+    }
+
+    &::before {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      right: -50px;
+      background: radial-gradient(circle, rgba(255, 140, 66, 0.12) 0%, transparent 70%);
+      animation-delay: 0s;
+    }
+
+    &::after {
+      width: 400px;
+      height: 400px;
+      bottom: -150px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(0, 169, 165, 0.1) 0%, transparent 70%);
+      animation-delay: -10s;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 900px;
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__eyebrow {
+    display: inline-block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ej-color-impulse, #FF8C42);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    opacity: 0;
+    animation: fade-in-up 0.6s ease forwards;
+    animation-delay: 0.1s;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.1;
+    margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+    opacity: 0;
+    animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.2s;
+  }
+
+  &__subtitle {
+    font-family: var(--ej-font-body, "Inter", sans-serif);
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin: 0 auto var(--ej-spacing-xl, 2rem);
+    line-height: 1.6;
+    opacity: 0;
+    animation: fade-in-up 0.6s ease forwards;
+    animation-delay: 0.4s;
+  }
+}
+
+// ==========================================================================
+// INTENTION CARDS GRID
+// ==========================================================================
+
+.intentions-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ej-spacing-lg, 1.5rem);
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.intention-card {
+  // Glassmorphism Base
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--ej-radius-xl, 16px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  // Stagger Animation
+  opacity: 0;
+  animation: fade-in-up 0.6s ease forwards;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.5 + ($i * 0.1)}s;
+    }
+  }
+
+  // Hover State
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--card-accent-color, rgba(255, 255, 255, 0.4));
+
+    .intention-card__icon {
+      animation: icon-pulse 0.6s ease;
+    }
+
+    .intention-card__title {
+      color: var(--card-accent-color, #FFFFFF);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--card-accent-color, #FFFFFF);
+    outline-offset: 2px;
+  }
+
+  // Vertical-Specific Glow
+  &--empleo {
+    --card-accent-color: var(--ej-color-innovation, #00A9A5);
+
+    &:hover {
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(0, 169, 165, 0.3);
+    }
+  }
+
+  &--talento {
+    --card-accent-color: var(--ej-color-innovation, #00A9A5);
+
+    &:hover {
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(0, 169, 165, 0.3);
+    }
+  }
+
+  &--emprender {
+    --card-accent-color: var(--ej-color-impulse, #FF8C42);
+
+    &:hover {
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(255, 140, 66, 0.3);
+    }
+  }
+
+  &--agro {
+    --card-accent-color: var(--ej-color-agro, #556B2F);
+
+    &:hover {
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(85, 107, 47, 0.4);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--ej-spacing-md, 1rem);
+    transition: transform 0.3s ease;
+
+    svg {
+      width: 40px;
+      height: 40px;
+      color: var(--card-accent-color, #FFFFFF);
+    }
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+    transition: color 0.3s ease;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// ==========================================================================
+// CTA BUTTONS
+// ==========================================================================
+
+.hero-landing__actions {
+  display: flex;
+  gap: var(--ej-spacing-md, 1rem);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--ej-spacing-xl, 2rem);
+  opacity: 0;
+  animation: fade-in-up 0.6s ease forwards;
+  animation-delay: 0.9s;
+}
+
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-color-corporate, #233D63);
+  background: #FFFFFF;
+  border: none;
+  border-radius: var(--ej-btn-radius, 8px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  // Ripple Effect
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 0.3s;
+  }
+
+  &:active::after {
+    transform: scale(2.5);
+    opacity: 1;
+    transition: 0s;
+  }
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--ej-btn-radius, 8px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// ==========================================================================
+// SCROLL INDICATOR
+// ==========================================================================
+
+.hero-landing__scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: fade-in-up 0.6s ease forwards;
+  animation-delay: 1.2s;
+
+  &::after {
+    content: "";
+    width: 24px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 2px;
+      animation: scroll-bounce 1.5s infinite;
+    }
+  }
+}
+
+@keyframes scroll-bounce {
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(8px);
+    opacity: 0.5;
+  }
+}
+
+// ==========================================================================
+// RESPONSIVE
+// ==========================================================================
+
+@media (max-width: 767px) {
+  .hero-landing {
+    padding: var(--ej-spacing-lg, 1.5rem);
+    min-height: auto;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+
+    &__title {
+      font-size: 2rem;
+    }
+  }
+
+  .intentions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ej-spacing-md, 1rem);
+  }
+
+  .intention-card {
+    padding: var(--ej-spacing-md, 1rem);
+
+    &__icon {
+      width: 48px;
+      height: 48px;
+
+      svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    &__title {
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// ==========================================================================
+// REDUCED MOTION (Accessibility)
+// ==========================================================================
+
+@media (prefers-reduced-motion: reduce) {
+
+  .hero-landing,
+  .hero-landing__title,
+  .hero-landing__subtitle,
+  .hero-landing__eyebrow,
+  .intention-card,
+  .hero-landing__actions,
+  .hero-landing__scroll {
+    animation: none;
+    opacity: 1;
+  }
+
+  .hero-landing {
+    background-size: 100% 100%;
+  }
+}

@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Hero variante: Slider
+ *
+ * Hero con múltiples slides y navegación.
+ * Uso: Home pages, promociones múltiples.
+ */
+#}
+<section class="hero hero--slider {{ hero_class|default('') }}" 
+         data-autoplay="{{ autoplay|default('true') }}"
+         data-interval="{{ interval|default(5000) }}">
+  
+  <div class="hero__slider swiper">
+    <div class="swiper-wrapper">
+      
+      {% for slide in slides %}
+        <div class="swiper-slide hero__slide {{ slide.dark ? 'hero__slide--dark' : '' }}"
+             {% if slide.background_image %}style="background-image: url('{{ slide.background_image }}')"{% endif %}>
+          
+          <div class="hero__overlay"></div>
+          
+          <div class="hero__container container">
+            <div class="hero__content hero__content--{{ slide.align|default('left') }}">
+              
+              {% if slide.eyebrow %}
+                <span class="hero__eyebrow">{{ slide.eyebrow }}</span>
+              {% endif %}
+
+              <h2 class="hero__title">{{ slide.title }}</h2>
+
+              {% if slide.subtitle %}
+                <p class="hero__subtitle">{{ slide.subtitle }}</p>
+              {% endif %}
+
+              {% if slide.cta_primary or slide.cta_secondary %}
+                <div class="hero__actions">
+                  {% if slide.cta_primary %}
+                    <a href="{{ slide.cta_primary.url }}" class="btn btn--primary btn--lg">
+                      {% if slide.cta_primary.icon %}
+                        {{ jaraba_icon('actions', slide.cta_primary.icon, { size: '24px' }) }}
+                      {% endif %}
+                      {{ slide.cta_primary.text }}
+                    </a>
+                  {% endif %}
+
+                  {% if slide.cta_secondary %}
+                    <a href="{{ slide.cta_secondary.url }}" class="btn btn--outline btn--lg">
+                      {{ slide.cta_secondary.text }}
+                    </a>
+                  {% endif %}
+                </div>
+              {% endif %}
+
+            </div>
+            
+            {% if slide.image %}
+              <div class="hero__media">
+                <img src="{{ slide.image }}" alt="{{ slide.title }}" class="hero__image" loading="lazy" />
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      
+    </div>
+
+    {# Navegación #}
+    <div class="hero__navigation">
+      <button class="hero__nav-btn hero__nav-btn--prev swiper-button-prev" aria-label="{% trans %}Anterior{% endtrans %}">
+        {{ jaraba_icon('ui', 'chevron-left', { size: '32px' }) }}
+      </button>
+      <button class="hero__nav-btn hero__nav-btn--next swiper-button-next" aria-label="{% trans %}Siguiente{% endtrans %}">
+        {{ jaraba_icon('ui', 'chevron-right', { size: '32px' }) }}
+      </button>
+    </div>
+
+    {# Paginación #}
+    <div class="hero__pagination swiper-pagination"></div>
+    
+    {# Barra de progreso #}
+    {% if show_progress|default(true) %}
+      <div class="hero__progress">
+        <div class="hero__progress-bar"></div>
+      </div>
+    {% endif %}
+  </div>
+</section>

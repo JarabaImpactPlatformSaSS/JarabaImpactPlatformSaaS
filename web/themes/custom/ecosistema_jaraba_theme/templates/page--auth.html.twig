@@ -1,0 +1,329 @@
+{#
+/**
+ * @file
+ * templates/page--auth.html.twig
+ *
+ * Template de página LIMPIA para autenticación (login, registro, contraseña).
+ * Layout premium SPLIT: Hero izquierda, Formulario derecha.
+ * SIN regiones ni bloques de Drupal - Solo el formulario inyectado via preprocess.
+ *
+ * Directrices aplicadas:
+ * - Nuclear #3: i18n completa ({% trans %})
+ * - Nuclear #11: Full-width layout
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Branding 3.6: Portal Isolation
+ * - Branding 3.12: Split Layout Pattern
+ *
+ * Variables inyectadas desde hook_preprocess_page__auth():
+ * - auth_form: El formulario de autenticación (sin bloques extra)
+ * - auth_form_type: 'login', 'register', 'password'
+ * - theme_settings: Configuración del tema desde UI
+ * - site_name: Nombre del sitio
+ * - logo_url_white: URL del logo en blanco
+ */
+#}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+<div class="auth-page auth-page--split">
+  {# ========================================================================
+     COLUMNA IZQUIERDA: Hero con branding premium
+     ======================================================================== #}
+  <aside class="auth-hero" aria-label="{% trans %}Información de bienvenida{% endtrans %}">
+    {# Canvas para partículas animadas #}
+    <canvas id="auth-particles" class="auth-hero__particles" aria-hidden="true"></canvas>
+    
+    <div class="auth-hero__content">
+      {# Logo del tema en versión blanca #}
+      {% if logo_url_white %}
+        <div class="auth-hero__logo">
+          <img src="{{ logo_url_white }}" 
+               alt="{{ site_name }}" 
+               onerror="this.src='{{ logo_url }}'; this.onerror=null;">
+        </div>
+      {% endif %}
+      
+      {# Nombre y eslogan del sitio desde configuración de Drupal #}
+      <h1 class="auth-hero__title">
+        {{ site_name }}
+      </h1>
+      
+      {% if site_slogan %}
+        <p class="auth-hero__subtitle">
+          {{ site_slogan }}
+        </p>
+      {% endif %}
+      
+      {# VERTICALES DEL ECOSISTEMA - Con iconos SVG duotone #}
+      <div class="auth-hero__verticals">
+        {# Empleabilidad #}
+        <div class="auth-hero__vertical">
+          <div class="auth-hero__vertical-icon auth-hero__vertical-icon--employment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" opacity="0.3" fill="currentColor"/>
+              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M8 12v4M16 12v4"/>
+            </svg>
+          </div>
+          <span>{% trans %}Empleabilidad{% endtrans %}</span>
+        </div>
+        
+        {# Emprendimiento #}
+        <div class="auth-hero__vertical">
+          <div class="auth-hero__vertical-icon auth-hero__vertical-icon--entrepreneurship">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" opacity="0.3" fill="currentColor"/>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <span>{% trans %}Emprendimiento{% endtrans %}</span>
+        </div>
+        
+        {# Comercio #}
+        <div class="auth-hero__vertical">
+          <div class="auth-hero__vertical-icon auth-hero__vertical-icon--commerce">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M3 3h18l-2 13H5L3 3z" opacity="0.3" fill="currentColor"/>
+              <circle cx="9" cy="20" r="1.5"/>
+              <circle cx="17" cy="20" r="1.5"/>
+              <path d="M1 1h4l.5 3"/>
+            </svg>
+          </div>
+          <span>{% trans %}Comercio{% endtrans %}</span>
+        </div>
+        
+        {# Instituciones #}
+        <div class="auth-hero__vertical">
+          <div class="auth-hero__vertical-icon auth-hero__vertical-icon--institutions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M3 21h18M5 21V7l7-4 7 4v14" opacity="0.3" fill="currentColor"/>
+              <rect x="9" y="13" width="6" height="8"/>
+              <path d="M9 9h.01M15 9h.01"/>
+            </svg>
+          </div>
+          <span>{% trans %}Instituciones{% endtrans %}</span>
+        </div>
+        
+        {# Servicios Profesionales #}
+        <div class="auth-hero__vertical">
+          <div class="auth-hero__vertical-icon auth-hero__vertical-icon--services">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="12" cy="8" r="5" opacity="0.3" fill="currentColor"/>
+              <path d="M3 21v-2a7 7 0 0114 0v2"/>
+              <path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.85"/>
+            </svg>
+          </div>
+          <span>{% trans %}Servicios{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+    
+    {# Copyright dinámico desde configuración del tema #}
+    <div class="auth-hero__footer">
+      <p>{{ theme_settings.footer_copyright|default('© ' ~ "now"|date("Y") ~ ' Jaraba Impact Platform') }}</p>
+    </div>
+  </aside>
+
+  {# ========================================================================
+     COLUMNA DERECHA: Formulario premium con icono contextual
+     ======================================================================== #}
+  <main id="main-content" class="auth-form-wrapper" role="main">
+    <div class="auth-form-container">
+      
+      {# Icono contextual según tipo de formulario - Duotone SVG #}
+      <div class="auth-form-icon auth-form-icon--{{ auth_form_type }}">
+        {% if auth_form_type == 'login' %}
+          {# Icono de Login - Usuario entrando #}
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="22" fill="var(--ej-color-corporate, #233D63)" opacity="0.1"/>
+            <circle cx="24" cy="18" r="7" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+            <path d="M10 42c0-8 6-14 14-14s14 6 14 14" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M30 24l6 6-6 6" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M36 30H24" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        {% elseif auth_form_type == 'register' %}
+          {# Icono de Registro - Usuario nuevo #}
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="22" fill="var(--ej-color-innovation, #00A9A5)" opacity="0.1"/>
+            <circle cx="20" cy="18" r="7" fill="var(--ej-color-innovation, #00A9A5)" opacity="0.3"/>
+            <path d="M6 42c0-8 6-14 14-14s10 3 12 7" stroke="var(--ej-color-innovation, #00A9A5)" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="36" cy="32" r="8" fill="var(--ej-color-primary, #FF8C42)" opacity="0.2"/>
+            <path d="M36 28v8M32 32h8" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        {% elseif auth_form_type == 'password' %}
+          {# Icono de Contraseña - Candado/llave #}
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="22" fill="var(--ej-color-warning, #F59E0B)" opacity="0.1"/>
+            <rect x="14" y="22" width="20" height="16" rx="3" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+            <path d="M18 22v-4a6 6 0 1112 0v4" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="24" cy="30" r="2" fill="var(--ej-color-primary, #FF8C42)"/>
+            <path d="M24 32v4" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        {% elseif auth_form_type == 'logout' %}
+          {# Icono de Logout - Puerta de salida #}
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="22" fill="var(--ej-color-danger, #EF4444)" opacity="0.1"/>
+            <rect x="8" y="8" width="20" height="32" rx="3" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+            <path d="M32 18l6 6-6 6" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M38 24H22" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        {% else %}
+          {# Icono genérico - Usuario #}
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="22" fill="var(--ej-color-corporate, #233D63)" opacity="0.1"/>
+            <circle cx="24" cy="18" r="7" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+            <path d="M10 42c0-8 6-14 14-14s14 6 14 14" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        {% endif %}
+      </div>
+      
+      {# Título del formulario según tipo - Traducible #}
+      <h2 class="auth-form-title">
+        {% if auth_form_type == 'login' %}
+          {% trans %}Iniciar sesión{% endtrans %}
+        {% elseif auth_form_type == 'register' %}
+          {% trans %}Crear cuenta{% endtrans %}
+        {% elseif auth_form_type == 'password' %}
+          {% trans %}Recuperar contraseña{% endtrans %}
+        {% elseif auth_form_type == 'logout' %}
+          {% trans %}Cerrar sesión{% endtrans %}
+        {% else %}
+          {% trans %}Autenticación{% endtrans %}
+        {% endif %}
+      </h2>
+      
+      {# Subtítulo contextual #}
+      <p class="auth-form-subtitle">
+        {% if auth_form_type == 'login' %}
+          {% trans %}Accede a tu cuenta para continuar{% endtrans %}
+        {% elseif auth_form_type == 'register' %}
+          {% trans %}Únete al ecosistema de impacto{% endtrans %}
+        {% elseif auth_form_type == 'password' %}
+          {% trans %}Te enviaremos instrucciones por email{% endtrans %}
+        {% elseif auth_form_type == 'logout' %}
+          {% trans %}¿Estás seguro de que deseas salir?{% endtrans %}
+        {% endif %}
+      </p>
+      
+      {# Formulario LIMPIO - Solo el form, sin bloques #}
+      {{ auth_form }}
+      
+      {# Enlaces secundarios - Traducibles #}
+      <div class="auth-links">
+        {% if auth_form_type == 'login' %}
+          <a href="/user/register" class="auth-links__primary">{% trans %}¿No tienes cuenta? Regístrate{% endtrans %}</a>
+          <a href="/user/password" class="auth-links__secondary">{% trans %}¿Olvidaste tu contraseña?{% endtrans %}</a>
+        {% elseif auth_form_type == 'register' %}
+          <a href="/user/login" class="auth-links__primary">{% trans %}¿Ya tienes cuenta? Inicia sesión{% endtrans %}</a>
+        {% elseif auth_form_type == 'password' %}
+          <a href="/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesión{% endtrans %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+{# Script para partículas de red conectadas - Premium network effect #}
+<script>
+(function() {
+  'use strict';
+  const canvas = document.getElementById('auth-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouse = { x: null, y: null, radius: 120 };
+  const connectionDistance = 100;
+  
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  
+  function init() {
+    particles = [];
+    const count = Math.floor((canvas.width * canvas.height) / 12000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        baseAlpha: Math.random() * 0.4 + 0.2
+      });
+    }
+  }
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Dibujar conexiones entre partículas cercanas
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < connectionDistance) {
+          const alpha = (1 - distance / connectionDistance) * 0.15;
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // Dibujar partículas
+    particles.forEach(p => {
+      // Interacción con mouse
+      let alpha = p.baseAlpha;
+      if (mouse.x !== null) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+          alpha = p.baseAlpha + (1 - dist / mouse.radius) * 0.5;
+          // Repeler partículas del mouse
+          const force = (mouse.radius - dist) / mouse.radius * 0.5;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
+        }
+      }
+      
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+      ctx.fill();
+      
+      // Movimiento
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      // Rebote en bordes
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+    
+    requestAnimationFrame(draw);
+  }
+  
+  // Event listeners
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  
+  canvas.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+  
+  resize();
+  init();
+  draw();
+  window.addEventListener('resize', () => { resize(); init(); });
+})();
+</script>

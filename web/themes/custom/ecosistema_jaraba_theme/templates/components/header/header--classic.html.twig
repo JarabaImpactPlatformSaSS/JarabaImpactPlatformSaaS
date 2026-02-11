@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Header variante: Classic
+ *
+ * Fondo sólido, logo izquierda, menú derecha.
+ * Uso: Corporativo, B2B.
+ */
+#}
+<header class="header header--classic" role="banner">
+  <div class="header__container container">
+    {# Logo #}
+    <div class="header__brand">
+      {% if logo_url %}
+        <a href="{{ path('<front>') }}" class="header__logo-link" rel="home">
+          <img src="{{ logo_url }}" alt="{{ site_name }}" class="header__logo" />
+        </a>
+      {% else %}
+        <a href="{{ path('<front>') }}" class="header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación principal #}
+    <nav class="header__nav" aria-label="{{ 'Main navigation'|t }}">
+      {{ main_menu }}
+    </nav>
+
+    {# Acciones (login, CTA) #}
+    <div class="header__actions">
+      {% if user_logged_in %}
+        <a href="{{ path('user.page') }}" class="header__user-link">
+          {{ jaraba_icon('ui', 'user', { size: '16px' }) }}
+          <span class="visually-hidden">{{ 'My account'|t }}</span>
+        </a>
+      {% else %}
+        <a href="{{ path('user.login') }}" class="btn btn--secondary btn--sm">
+          {{ 'Acceder'|t }}
+        </a>
+      {% endif %}
+      
+      {% if header_cta %}
+        <a href="{{ header_cta.url }}" class="btn btn--primary btn--sm">
+          {{ header_cta.text }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Mobile toggle #}
+    <button class="header__mobile-toggle" aria-label="{{ 'Toggle menu'|t }}" aria-expanded="false">
+      {{ jaraba_icon('ui', 'menu', { size: '24px' }) }}
+    </button>
+  </div>
+</header>

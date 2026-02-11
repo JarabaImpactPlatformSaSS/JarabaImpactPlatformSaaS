@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * templates/partials/_features.html.twig
+ *
+ * Sección de características/propuesta de valor.
+ * Soporta datos dinámicos desde Page Builder o fallbacks hardcodeados.
+ * i18n con {% trans %}
+ *
+ * Variables esperadas:
+ * - features: Array de feature cards desde Page Builder (opcional)
+ */
+#}
+
+{# Fallback: Si no hay features dinámicas, usar hardcodeadas con SVGs originales #}
+{% set default_features = [
+  {
+    title: 'Configuración en minutos'|t,
+    description: 'Tu ecosistema digital funcionando desde el día uno, sin código'|t,
+    badge: 'Rápido'|t,
+    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="176" class="icon-circle"/><path d="M32 18v14l10 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="4" fill="currentColor"/></svg>'
+  },
+  {
+    title: 'IA integrada'|t,
+    description: 'Copiloto de carrera, matching inteligente, asistente de emprendimiento y recomendaciones personalizadas'|t,
+    badge: 'Con IA'|t,
+    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated icon-animated--brain"><ellipse cx="32" cy="28" rx="18" ry="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 44c-2 4 0 8 4 10M40 44c2 4 0 8-4 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 24c4-4 8-4 12 0M30 24c4-4 8-4 12 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="icon-pulse"/><circle cx="26" cy="30" r="3" fill="currentColor" class="icon-blink"/><circle cx="38" cy="30" r="3" fill="currentColor" class="icon-blink"/><path d="M28 38c2 2 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+  },
+  {
+    title: 'Multi-vertical'|t,
+    description: 'Empleabilidad, emprendimiento, comercio y servicios profesionales y públicos'|t,
+    badge: '4 verticales'|t,
+    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated icon-animated--cube"><path d="M32 8L56 20v24L32 56 8 44V20z" fill="none" stroke="currentColor" stroke-width="2" class="icon-float"/><path d="M32 32L8 20M32 32v24M32 32l24-12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="8" r="3" fill="currentColor"/><circle cx="56" cy="20" r="3" fill="currentColor"/><circle cx="8" cy="20" r="3" fill="currentColor"/><circle cx="32" cy="56" r="3" fill="currentColor"/></svg>'
+  }
+] %}
+
+{% set feature_items = features|default([])|length > 0 ? features : default_features %}
+
+<section class="features-section" aria-labelledby="features-title">
+  <div class="features-section__container">
+    <h2 id="features-title" class="section-title">
+      {% trans %}¿Por qué Jaraba Impact Platform?{% endtrans %}
+    </h2>
+    
+    <div class="features-grid">
+      {% for feature in feature_items %}
+        <article class="feature-card feature-card--animated reveal-element reveal-fade-up" {% if loop.index0 > 0 %}style="--reveal-delay: {{ loop.index0 * 0.1 }}s;"{% endif %}>
+          <div class="feature-card__visual">
+            <div class="feature-card__bg-pattern{% if loop.index == 2 %} feature-card__bg-pattern--secondary{% elseif loop.index == 3 %} feature-card__bg-pattern--corporate{% endif %}"></div>
+            <div class="feature-card__icon feature-card__icon--{% if loop.index == 1 %}primary{% elseif loop.index == 2 %}secondary{% else %}corporate{% endif %}">
+              {# Si el feature viene de la BD (tiene campo icon), usar jaraba_icon() #}
+              {% if feature.icon and not feature.icon_svg %}
+                {{ jaraba_icon('ui', feature.icon, { size: '64px', color: loop.index == 1 ? 'primary' : (loop.index == 2 ? 'secondary' : 'corporate') }) }}
+              {% else %}
+                {# Fallback: SVG inline para datos por defecto #}
+                {{ feature.icon_svg|raw }}
+              {% endif %}
+            </div>
+          </div>
+          <h3 class="feature-card__title">{{ feature.title }}</h3>
+          <p class="feature-card__description">{{ feature.description }}</p>
+          {% if feature.badge %}
+            <span class="feature-card__badge{% if loop.index == 2 %} feature-card__badge--ai{% elseif loop.index == 3 %} feature-card__badge--multi{% endif %}">
+              {{ feature.badge }}
+            </span>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+

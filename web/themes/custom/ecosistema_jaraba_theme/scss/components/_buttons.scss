@@ -1,0 +1,91 @@
+/**
+ * @file
+ * Buttons - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ej-spacing-xs);
+    padding: var(--ej-spacing-sm) var(--ej-spacing-md);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--ej-btn-radius, 8px);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// Primary
+.btn--primary {
+    background: var(--ej-btn-primary-bg, #FF8C42);
+    color: var(--ej-btn-primary-text, #FFFFFF);
+
+    &:hover:not(:disabled) {
+        filter: brightness(1.1);
+    }
+}
+
+// Secondary
+.btn--secondary {
+    background: var(--ej-btn-secondary-bg, #00A9A5);
+    color: var(--ej-btn-secondary-text, #FFFFFF);
+
+    &:hover:not(:disabled) {
+        filter: brightness(1.1);
+    }
+}
+
+// Outline
+.btn--outline {
+    background: transparent;
+    border: 2px solid var(--ej-color-primary, #FF8C42);
+    color: var(--ej-color-primary, #FF8C42);
+
+    &:hover:not(:disabled) {
+        background: var(--ej-color-primary, #FF8C42);
+        color: #fff;
+    }
+}
+
+// Ghost
+.btn--ghost {
+    background: transparent;
+    color: var(--ej-color-primary, #FF8C42);
+
+    &:hover:not(:disabled) {
+        background: rgba(255, 140, 66, 0.1);
+    }
+}
+
+// Sizes
+.btn--sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn--lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn--xl {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+// Icon only
+.btn--icon {
+    padding: var(--ej-spacing-sm);
+    border-radius: 50%;
+}

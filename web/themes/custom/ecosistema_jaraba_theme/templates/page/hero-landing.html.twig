@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Hero Landing - Homepage principal con Progressive Profiling.
+ *
+ * DIRECTRICES:
+ * - Todos los textos usan {% trans %}
+ * - Iconos con jaraba_icon()
+ * - Colores con paleta Jaraba
+ * - HTML5 semántico
+ * 
+ * NOTA: Se usan URLs directas porque las rutas de vistas pueden no existir.
+ */
+#}
+
+{# Construir clases base #}
+{% set hero_classes = [
+  'hero-landing',
+  dark ? 'hero-landing--dark' : '',
+] | filter(v => v) | join(' ') %}
+
+<section class="{{ hero_classes }}" aria-labelledby="hero-main-title">
+
+  {# Content Block #}
+  <header class="hero-landing__content">
+
+    {# Eyebrow #}
+    {% if eyebrow %}
+      <span class="hero-landing__eyebrow">{{ eyebrow }}</span>
+    {% endif %}
+
+    {# Main Title - i18n ready #}
+    <h1 id="hero-main-title" class="hero-landing__title">
+      {% if title %}
+        {{ title }}
+      {% else %}
+        {% trans %}Impulsa tu ecosistema digital{% endtrans %}
+      {% endif %}
+    </h1>
+
+    {# Subtitle #}
+    <p class="hero-landing__subtitle">
+      {% if subtitle %}
+        {{ subtitle|striptags|raw }}
+      {% else %}
+        {% trans %}La plataforma que conecta talento, negocios y productores con inteligencia artificial{% endtrans %}
+      {% endif %}
+    </p>
+
+  </header>
+
+  {# Intentions Grid - Progressive Profiling #}
+  <nav class="intentions-grid" aria-label="{% trans %}Selecciona tu objetivo{% endtrans %}">
+
+    {# Card: Buscar Empleo #}
+    <a href="/empleo" class="intention-card intention-card--empleo" role="article">
+      <div class="intention-card__icon">
+        {{ jaraba_icon('verticals', 'empleo', { variant: 'duotone', color: 'innovation', size: '40px' }) }}
+      </div>
+      <h2 class="intention-card__title">{% trans %}Busco empleo{% endtrans %}</h2>
+      <p class="intention-card__description">{% trans %}Encuentra ofertas que encajan contigo{% endtrans %}</p>
+    </a>
+
+    {# Card: Buscar Talento #}
+    <a href="/talento" class="intention-card intention-card--talento" role="article">
+      <div class="intention-card__icon">
+        {{ jaraba_icon('business', 'team', { variant: 'duotone', color: 'innovation', size: '40px' }) }}
+      </div>
+      <h2 class="intention-card__title">{% trans %}Busco talento{% endtrans %}</h2>
+      <p class="intention-card__description">{% trans %}Conecta con candidatos cualificados{% endtrans %}</p>
+    </a>
+
+    {# Card: Emprender #}
+    <a href="/emprender" class="intention-card intention-card--emprender" role="article">
+      <div class="intention-card__icon">
+        {{ jaraba_icon('business', 'startup', { variant: 'duotone', color: 'impulse', size: '40px' }) }}
+      </div>
+      <h2 class="intention-card__title">{% trans %}Quiero emprender{% endtrans %}</h2>
+      <p class="intention-card__description">{% trans %}Valida tu idea con metodología{% endtrans %}</p>
+    </a>
+
+    {# Card: Vender Productos #}
+    <a href="/productos" class="intention-card intention-card--agro" role="article">
+      <div class="intention-card__icon">
+        {{ jaraba_icon('verticals', 'agro', { variant: 'duotone', color: 'agro', size: '40px' }) }}
+      </div>
+      <h2 class="intention-card__title">{% trans %}Vendo productos{% endtrans %}</h2>
+      <p class="intention-card__description">{% trans %}Lleva tu negocio al mundo digital{% endtrans %}</p>
+    </a>
+
+  </nav>
+
+  {# CTA Actions #}
+  <div class="hero-landing__actions">
+
+    <a href="/user/register" class="btn-primary">
+      {{ jaraba_icon('actions', 'rocket', { color: 'corporate', size: '20px' }) }}
+      <span>{% trans %}Empezar gratis{% endtrans %}</span>
+    </a>
+
+    <a href="/user/login" class="btn-secondary">
+      <span>{% trans %}Ya tengo cuenta{% endtrans %}</span>
+      {{ jaraba_icon('ui', 'arrow-right', { color: 'white', size: '20px' }) }}
+    </a>
+
+  </div>
+
+  {# Scroll Indicator #}
+  <div class="hero-landing__scroll" aria-hidden="true">
+    <span>{% trans %}Descubre más{% endtrans %}</span>
+    <div class="hero-landing__scroll-mouse"></div>
+  </div>
+
+</section>

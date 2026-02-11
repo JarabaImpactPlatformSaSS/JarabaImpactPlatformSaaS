@@ -1,0 +1,141 @@
+{#
+/**
+ * @file
+ * page--canvas-editor.html.twig - Canvas Editor visual limpio.
+ *
+ * ARQUITECTURA LIMPIA:
+ * - Template que REEMPLAZA completamente html.html.twig y page.html.twig
+ * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Layout full-viewport para edición visual
+ * - Estilos inline con máxima prioridad
+ *
+ * PROPÓSITO: Página frontend limpia para el Canvas Editor Visual.
+ * RUTA: /page/{id}/editor
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_page_builder/canvas-editor') }}
+{{ attach_library('jaraba_page_builder/grapesjs-onboarding') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+  <style>
+    /* 
+     * ESTILOS DE MÁXIMA PRIORIDAD
+     * Estos estilos inline tienen la mayor especificidad posible
+     * para garantizar el layout full-viewport del Canvas Editor
+     */
+    
+    /* Ocultar TODO lo que no sea el canvas editor */
+    html.canvas-editor-page .admin-toolbar,
+    html.canvas-editor-page .admin-toolbar-control-bar,
+    html.canvas-editor-page [class*="toolbar-"],
+    html.canvas-editor-page [class*="gin-"],
+    html.canvas-editor-page .landing-header,
+    html.canvas-editor-page [class*="landing-header"],
+    html.canvas-editor-page .landing-footer,
+    html.canvas-editor-page [class*="landing-footer"],
+    html.canvas-editor-page header:not(.canvas-editor__header),
+    html.canvas-editor-page footer,
+    html.canvas-editor-page nav:not(.canvas-editor nav),
+    html.canvas-editor-page .breadcrumb,
+    html.canvas-editor-page .messages,
+    html.canvas-editor-page .jaraba-modal,
+    html.canvas-editor-page #toolbar-administration,
+    html.canvas-editor-page [id*="toolbar"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      height: 0 !important;
+      width: 0 !important;
+      overflow: hidden !important;
+      position: absolute !important;
+      left: -9999px !important;
+    }
+    
+    /* Full viewport para html y body */
+    html.canvas-editor-page,
+    html.canvas-editor-page body,
+    body.canvas-editor-page {
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+    }
+    
+    /* Main content llena todo el viewport */
+    body.canvas-editor-page > main,
+    body.canvas-editor-page .canvas-editor-main,
+    body.canvas-editor-page #main-content {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 9999 !important;
+    }
+    
+    /* Canvas editor ocupa todo */
+    body.canvas-editor-page .canvas-editor {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      z-index: 10000 !important;
+      background: #F8FAFC !important;
+    }
+    
+    /* Desactivar contenedores intermedios */
+    body.canvas-editor-page .page-wrapper,
+    body.canvas-editor-page .layout-container,
+    body.canvas-editor-page .dialog-off-canvas-main-canvas {
+      display: contents !important;
+    }
+  </style>
+</head>
+
+{# 
+  Body classes:
+  - canvas-editor-page: Activa estilos de full-viewport
+  - full-viewport-layout: Layout sin scroll
+  - no-scroll: Previene scroll en body
+  - page-canvas-editor: Identificador de ruta
+  
+  Las clases también se inyectan via hook_preprocess_html()
+#}
+<body{{ attributes.addClass('canvas-editor-page', 'full-viewport-layout', 'no-scroll', 'page-canvas-editor') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# MAIN CONTENT - Full-viewport, solo el Canvas Editor #}
+  <main id="main-content" class="canvas-editor-main">
+    {{ page.content }}
+  </main>
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

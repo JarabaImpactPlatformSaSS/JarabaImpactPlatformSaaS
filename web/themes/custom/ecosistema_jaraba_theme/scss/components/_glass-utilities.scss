@@ -1,0 +1,241 @@
+/**
+ * @file
+ * _glass-utilities.scss - Utilidades de glassmorphism y efectos premium.
+ *
+ * DIRECTRICES:
+ * - Clases utilitarias reutilizables
+ * - Variables CSS var(--ej-*) para personalización
+ * - Compatibilidad cross-browser con fallbacks
+ *
+ * @see 2026-01-25_arquitectura_frontend_extensible.md
+ */
+
+@use '../variables' as *;
+
+// =============================================
+// GLASS CARD - Tarjeta con efecto glassmórfico
+// =============================================
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--ej-border-radius, 12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    // Variante oscura (sobre fondos claros)
+    &--light {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: var(--ej-border-color, #E5E7EB);
+    }
+
+    // Variante para fondos oscuros (como hero)
+    &--dark {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.1);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    // Con padding interno
+    &--padded {
+        padding: 1.5rem;
+    }
+}
+
+// =============================================
+// GLASS SIDEBAR - Sidebar con efecto glass
+// =============================================
+.glass-sidebar,
+.sidebar.sidebar--glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--ej-border-color, #E5E7EB);
+    border-radius: var(--ej-border-radius, 12px);
+    padding: 1.5rem;
+
+    h3,
+    h4 {
+        font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ej-color-corporate, #233D63);
+        margin: 0 0 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            margin: 0;
+
+            a {
+                display: block;
+                padding: 0.75rem 0;
+                color: var(--ej-text-primary, #1A1A2E);
+                text-decoration: none;
+                font-size: 0.9rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                transition: all 0.2s ease;
+
+                &:hover {
+                    color: var(--ej-color-primary, #FF8C42);
+                    padding-left: 0.5rem;
+                }
+            }
+
+            &:last-child a {
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+// =============================================
+// TEXT GRADIENT - Texto con gradiente
+// =============================================
+.text-gradient {
+    background: linear-gradient(135deg,
+            var(--ej-color-corporate, #233D63) 0%,
+            var(--ej-color-primary, #FF8C42) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-gradient--light {
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// =============================================
+// BUTTONS PREMIUM - Extensiones de botones
+// =============================================
+.btn--glow {
+    animation: btn-glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes btn-glow-pulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 140, 66, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 30px rgba(255, 140, 66, 0.6);
+    }
+}
+
+.btn--large {
+    padding: 1rem 2rem !important;
+    font-size: 1rem !important;
+}
+
+// =============================================
+// CARD PREMIUM - Tarjeta con efectos hover
+// =============================================
+.card--premium {
+    background: #fff;
+    border-radius: var(--ej-border-radius, 12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    &__header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    }
+
+    &__body {
+        padding: 1.5rem;
+    }
+
+    &__footer {
+        padding: 1rem 1.5rem;
+        background: var(--ej-bg-body, #F8FAFC);
+        border-top: 1px solid var(--ej-border-color, #E5E7EB);
+    }
+}
+
+// =============================================
+// ICON BADGE - Badges con iconos
+// =============================================
+.icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 140, 66, 0.1);
+
+    svg {
+        width: 24px;
+        height: 24px;
+        color: var(--ej-color-primary, #FF8C42);
+    }
+
+    &--corporate {
+        background: rgba(35, 61, 99, 0.1);
+
+        svg {
+            color: var(--ej-color-corporate, #233D63);
+        }
+    }
+
+    &--success {
+        background: rgba(16, 185, 129, 0.1);
+
+        svg {
+            color: var(--ej-color-success, #10B981);
+        }
+    }
+}
+
+// =============================================
+// DIVIDER PREMIUM - Separadores estilizados
+// =============================================
+.divider-premium {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            var(--ej-border-color, #E5E7EB) 20%,
+            var(--ej-border-color, #E5E7EB) 80%,
+            transparent 100%);
+    margin: 2rem 0;
+}
+
+// =============================================
+// CONTAINER UTILITIES
+// =============================================
+.container-narrow {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.container-wide {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}

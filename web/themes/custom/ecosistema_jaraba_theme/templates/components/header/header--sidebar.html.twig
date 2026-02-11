@@ -1,0 +1,87 @@
+{#
+/**
+ * @file
+ * Header variante: Sidebar
+ *
+ * Header para layouts con sidebar de dashboard.
+ * Uso: Admin, dashboards de usuario.
+ */
+#}
+<header class="header header--sidebar" role="banner">
+  <div class="header__container">
+    
+    {# Sidebar toggle #}
+    <button class="header__sidebar-toggle" aria-label="{% trans %}Alternar barra lateral{% endtrans %}" data-toggle="sidebar">
+      {{ jaraba_icon('ui', 'menu', { size: '24px' }) }}
+    </button>
+
+    {# Búsqueda global #}
+    <div class="header__search">
+      <form action="{{ path('search.view') }}" method="get" class="header__search-form">
+        <span class="header__search-icon">
+          {{ jaraba_icon('ui', 'search', { size: '20px' }) }}
+        </span>
+        <input type="search" 
+               name="keys" 
+               placeholder="{% trans %}Buscar...{% endtrans %}" 
+               class="header__search-input"
+               autocomplete="off" />
+        <kbd class="header__search-kbd">⌘K</kbd>
+      </form>
+    </div>
+
+    {# Acciones derecha #}
+    <div class="header__actions">
+      
+      {# Notificaciones #}
+      {% if show_notifications %}
+        <div class="header__notifications dropdown">
+          <button class="header__icon-btn" aria-label="{% trans %}Notificaciones{% endtrans %}" data-dropdown="notifications">
+            {{ jaraba_icon('ui', 'bell', { size: '24px' }) }}
+            {% if notifications_count > 0 %}
+              <span class="header__notification-badge">{{ notifications_count }}</span>
+            {% endif %}
+          </button>
+          <div class="dropdown__content" id="notifications-dropdown">
+            {# Renderizado por JS #}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Ayuda #}
+      <button class="header__icon-btn" aria-label="{% trans %}Ayuda{% endtrans %}" data-modal="help">
+        {{ jaraba_icon('ui', 'help-circle', { size: '24px' }) }}
+      </button>
+
+      {# Usuario #}
+      <div class="header__user dropdown">
+        <button class="header__user-btn" aria-label="{% trans %}Menú de usuario{% endtrans %}" data-dropdown="user">
+          {% if user_avatar %}
+            <img src="{{ user_avatar }}" alt="" class="header__user-avatar" />
+          {% else %}
+            <span class="header__user-avatar header__user-avatar--placeholder">
+              {{ user_name|first|upper }}
+            </span>
+          {% endif %}
+          <span class="header__user-name">{{ user_name }}</span>
+          {{ jaraba_icon('ui', 'chevron-down', { size: '16px' }) }}
+        </button>
+        <div class="dropdown__content dropdown__content--right" id="user-dropdown">
+          <a href="{{ path('user.page') }}" class="dropdown__item">
+            {{ jaraba_icon('ui', 'user', { size: '20px' }) }}
+            {% trans %}Mi perfil{% endtrans %}
+          </a>
+          <a href="{{ path('entity.user.edit_form', {'user': current_user_id}) }}" class="dropdown__item">
+            {{ jaraba_icon('ui', 'settings', { size: '20px' }) }}
+            {% trans %}Configuración{% endtrans %}
+          </a>
+          <hr class="dropdown__divider" />
+          <a href="{{ path('user.logout') }}" class="dropdown__item dropdown__item--danger">
+            {{ jaraba_icon('actions', 'log-out', { size: '20px' }) }}
+            {% trans %}Cerrar sesión{% endtrans %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

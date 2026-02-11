@@ -1,0 +1,76 @@
+/**
+ * @file
+ * Back to Top Button - Premium Styles.
+ */
+
+.back-to-top-btn {
+    position: fixed;
+    bottom: 100px;
+    /* Above the copilot FAB */
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--ej-color-corporate, #233D63);
+    color: white;
+    box-shadow:
+        0 4px 20px rgba(35, 61, 99, 0.3),
+        0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.8);
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease,
+        transform 0.3s ease,
+        background-color 0.2s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-to-top-btn.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.back-to-top-btn:hover {
+    background: var(--ej-color-impulse, #FF8C42);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 8px 30px rgba(255, 140, 66, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.back-to-top-btn:active {
+    transform: translateY(-2px) scale(1);
+}
+
+.back-to-top-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.back-to-top-btn:hover svg {
+    transform: translateY(-2px);
+}
+
+/* Focus state for accessibility */
+.back-to-top-btn:focus {
+    outline: 2px solid var(--ej-color-impulse, #FF8C42);
+    outline-offset: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .back-to-top-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 90px;
+        right: 16px;
+    }
+}

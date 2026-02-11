@@ -1,0 +1,311 @@
+/**
+ * @file
+ * Estilos para Banner de Consentimiento GDPR.
+ *
+ * Cumple con directivas:
+ * - Tokens $ej-* con fallbacks CSS variables
+ * - Dart Sass moderno (@use 'sass:color')
+ * - Mobile-first responsive
+ *
+ * @ingroup jaraba_analytics
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// ===========================================================================
+// CONSENT BANNER - Fixed Bottom
+// ===========================================================================
+
+.consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    padding: $ej-spacing-md;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-top: 1px solid var(--ej-border-color, $ej-border-color);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+
+    &--visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.consent-banner__content {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
+}
+
+.consent-banner__icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, $ej-color-corporate 0%, color.adjust($ej-color-corporate, $lightness: 10%) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.consent-banner__text {
+    flex: 1;
+    text-align: center;
+
+    @media (min-width: 768px) {
+        text-align: left;
+    }
+}
+
+.consent-banner__title {
+    font-family: $ej-font-headings;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin: 0 0 $ej-spacing-xs 0;
+}
+
+.consent-banner__description {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.consent-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-sm;
+    justify-content: center;
+
+    @media (min-width: 768px) {
+        flex-wrap: nowrap;
+    }
+}
+
+// ===========================================================================
+// BOTONES
+// ===========================================================================
+
+.consent-banner__btn {
+    padding: $ej-spacing-sm $ej-spacing-lg;
+    border-radius: $ej-btn-radius;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: none;
+
+    &--primary {
+        background: linear-gradient(135deg, $ej-color-impulse 0%, color.adjust($ej-color-impulse, $lightness: -10%) 100%);
+        color: #fff;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba($ej-color-impulse, 0.3);
+        }
+    }
+
+    &--secondary {
+        background: var(--ej-bg-body, $ej-bg-body);
+        color: var(--ej-color-body, $ej-color-body);
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+
+        &:hover {
+            background: var(--ej-bg-surface, $ej-bg-surface);
+            border-color: $ej-color-corporate;
+        }
+    }
+
+    &--link {
+        background: transparent;
+        color: $ej-color-corporate;
+        text-decoration: underline;
+        padding: $ej-spacing-sm;
+
+        &:hover {
+            color: $ej-color-impulse;
+        }
+    }
+}
+
+// ===========================================================================
+// MODAL DE CONFIGURACIÓN
+// ===========================================================================
+
+.consent-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    &--visible {
+        opacity: 1;
+        visibility: visible;
+
+        .consent-modal__content {
+            transform: translateY(0);
+        }
+    }
+}
+
+.consent-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.consent-modal__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: 16px 16px 0 0;
+    padding: $ej-spacing-xl;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+
+    @media (min-width: 768px) {
+        top: 50%;
+        bottom: auto;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%) scale(0.95);
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+
+        .consent-modal--visible & {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+}
+
+.consent-modal__title {
+    font-family: $ej-font-headings;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin: 0 0 $ej-spacing-lg 0;
+}
+
+.consent-modal__categories {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-xl;
+}
+
+.consent-category {
+    padding: $ej-spacing-md;
+    background: var(--ej-bg-body, $ej-bg-body);
+    border-radius: $ej-border-radius;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+
+    &--disabled {
+        opacity: 0.7;
+    }
+}
+
+.consent-category__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-xs;
+}
+
+.consent-category__name {
+    font-weight: 600;
+    color: var(--ej-color-body, $ej-color-body);
+}
+
+.consent-category__badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    background: $ej-color-success;
+    color: #fff;
+    border-radius: 100px;
+}
+
+.consent-category__description {
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+// ===========================================================================
+// TOGGLE SWITCH
+// ===========================================================================
+
+.consent-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+}
+
+.consent-toggle__slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: background 0.2s ease;
+
+    &::before {
+        content: '';
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s ease;
+    }
+
+    input:checked+& {
+        background: $ej-color-success;
+    }
+
+    input:checked+&::before {
+        transform: translateX(20px);
+    }
+}
+
+.consent-modal__actions {
+    display: flex;
+    gap: $ej-spacing-md;
+    justify-content: flex-end;
+}

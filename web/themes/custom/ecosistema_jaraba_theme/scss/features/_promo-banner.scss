@@ -1,0 +1,48 @@
+/**
+ * @file
+ * Promo Banner - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.promo-banner {
+    background: var(--ej-promo-bg, #FF8C42);
+    color: var(--ej-promo-text, #FFFFFF);
+    padding: var(--ej-spacing-sm) var(--ej-spacing-md);
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
+// Adjust body when banner is active
+.has-promo-banner {
+    .site-header {
+        margin-top: 0;
+    }
+}
+
+// Dismiss button
+.promo-banner__close {
+    position: absolute;
+    right: var(--ej-spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,2187 @@
+<?php
+
+/**
+ * @file
+ * ecosistema_jaraba_theme.theme
+ *
+ * Implementa hooks del tema Ecosistema Jaraba.
+ * Tema premium SaaS multi-vertical con 70+ opciones de configuración.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
+
+// Cargar helper de iconos SVG.
+require_once __DIR__ . '/includes/icons.inc';
+
+/**
+ * Implements hook_form_system_theme_settings_alter().
+ */
+function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormStateInterface $form_state, $form_id = NULL) {
+  if (isset($form_id)) {
+    return;
+  }
+
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $theme_path = \Drupal::service('extension.path.resolver')->getPath('theme', 'ecosistema_jaraba_theme');
+  $img_path = base_path() . $theme_path . '/images/pickers/';
+
+  // Cargar librería de estilos para el admin.
+  $form['#attached']['library'][] = 'ecosistema_jaraba_theme/admin-settings';
+
+  // --- Header Visual Premium ---
+  $form['jaraba_header'] = [
+    '#type' => 'inline_template',
+    '#template' => '
+      <div class="jaraba-settings-header">
+        <div class="jaraba-settings-header__preview">
+          <img src="{{ screenshot_url }}" alt="Ecosistema Jaraba Theme Preview" />
+        </div>
+        <div class="jaraba-settings-header__info">
+          <h2>Ecosistema Jaraba Theme</h2>
+          <p>Tema premium SaaS multi-vertical · 70+ opciones de personalización</p>
+        </div>
+      </div>',
+    '#context' => [
+      'screenshot_url' => base_path() . $theme_path . '/images/screenshot.png',
+    ],
+    '#weight' => -110,
+  ];
+
+  // --- Contenedor de Pestañas ---
+  $form['jaraba_settings'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('sparkles', t('Personalización Premium'), '#233D63'),
+    '#open' => TRUE,
+    '#weight' => -105,
+  ];
+
+  $form['jaraba_settings']['jaraba_tabs'] = [
+    '#type' => 'vertical_tabs',
+    '#title' => t('Secciones'),
+  ];
+
+  // =========================================================================
+  // HELPER: Color picker con valor por defecto visible
+  // =========================================================================
+  $fn_color = function ($key, $label, $default, $desc = '') use ($config) {
+    $info_defecto = t('<span class="jaraba-default-hint">(Defecto: <strong>@def</strong>)</span>', ['@def' => $default]);
+    $descripcion_final = !empty($desc) ? $desc . ' ' . $info_defecto : $info_defecto;
+
+    return [
+      '#type' => 'color',
+      '#title' => $label,
+      '#default_value' => $config->get($key) ?: $default,
+      '#description' => Markup::create($descripcion_final),
+      '#attributes' => ['class' => ['jaraba-color-picker']],
+    ];
+  };
+
+  // =========================================================================
+  // TAB 1: IDENTIDAD DE MARCA
+  // =========================================================================
+  $form['branding'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('building', t('Identidad de Marca'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -100,
+  ];
+
+  // Colores Corporativos
+  $form['branding']['colors_wrapper'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Colores Corporativos'),
+    '#description' => t('Paleta de colores principal de la marca Jaraba.'),
+  ];
+  $form['branding']['colors_wrapper']['color_primary'] = $fn_color('color_primary', t('Color Primario (Impulso)'), '#FF8C42', t('Naranja emprendimiento/empresas.'));
+  $form['branding']['colors_wrapper']['color_secondary'] = $fn_color('color_secondary', t('Color Secundario (Innovación)'), '#00A9A5', t('Verde/turquesa talento.'));
+  $form['branding']['colors_wrapper']['color_corporate'] = $fn_color('color_corporate', t('Color Corporativo'), '#233D63', t('Azul profundo (la "J").'));
+  $form['branding']['colors_wrapper']['color_agro'] = $fn_color('color_agro', t('Color Agro'), '#556B2F', t('Verde oliva AgroConecta.'));
+
+  $form['branding']['colors_wrapper']['color_success'] = $fn_color('color_success', t('Éxito'), '#10B981', t('Estados positivos.'));
+  $form['branding']['colors_wrapper']['color_warning'] = $fn_color('color_warning', t('Advertencia'), '#F59E0B');
+  $form['branding']['colors_wrapper']['color_danger'] = $fn_color('color_danger', t('Peligro'), '#EF4444');
+  $form['branding']['colors_wrapper']['color_neutral'] = $fn_color('color_neutral', t('Neutro'), '#64748B');
+
+  // Fondos
+  $form['branding']['backgrounds'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Fondos'),
+  ];
+  $form['branding']['backgrounds']['color_bg_body'] = $fn_color('color_bg_body', t('Fondo Body (Light)'), '#F8FAFC');
+  $form['branding']['backgrounds']['color_bg_surface'] = $fn_color('color_bg_surface', t('Superficie (Cards)'), '#FFFFFF');
+  $form['branding']['backgrounds']['color_bg_dark'] = $fn_color('color_bg_dark', t('Fondo Dark Mode'), '#1A1A2E');
+
+  // Logo
+  $form['branding']['logo_config'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Configuración del Logotipo'),
+  ];
+  $form['branding']['logo_config']['logo_height'] = [
+    '#type' => 'number',
+    '#title' => t('Altura del Logo (px)'),
+    '#default_value' => $config->get('logo_height') ?: 45,
+    '#min' => 20,
+    '#max' => 150,
+    '#field_suffix' => 'px',
+  ];
+  $form['branding']['logo_config']['toggle_name'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Mostrar Nombre del Sitio'),
+    '#default_value' => theme_get_setting('features.name'),
+  ];
+  $form['branding']['logo_config']['toggle_slogan'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Mostrar Eslogan'),
+    '#default_value' => theme_get_setting('features.slogan'),
+  ];
+
+  // =========================================================================
+  // TAB 2: TIPOGRAFÍA
+  // =========================================================================
+  $form['typography'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('typography', t('Tipografía'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -90,
+  ];
+
+  $fonts = [
+    'outfit' => 'Outfit (Jaraba Default)',
+    'montserrat' => 'Montserrat',
+    'poppins' => 'Poppins',
+    'inter' => 'Inter',
+    'lora' => 'Lora (Serif)',
+    'playfair' => 'Playfair Display (Serif)',
+    'roboto' => 'Roboto',
+  ];
+
+  $form['typography']['typography_headings'] = [
+    '#type' => 'select',
+    '#title' => t('Fuente Títulos'),
+    '#options' => $fonts,
+    '#default_value' => $config->get('typography_headings') ?: 'outfit',
+  ];
+  $form['typography']['typography_body'] = [
+    '#type' => 'select',
+    '#title' => t('Fuente Cuerpo'),
+    '#options' => $fonts,
+    '#default_value' => $config->get('typography_body') ?: 'inter',
+  ];
+  $form['typography']['font_size_base'] = [
+    '#type' => 'number',
+    '#title' => t('Tamaño Base'),
+    '#default_value' => $config->get('font_size_base') ?: 16,
+    '#min' => 12,
+    '#max' => 24,
+    '#field_suffix' => 'px',
+  ];
+
+  $form['typography']['color_headings'] = $fn_color('color_headings', t('Color Títulos'), '#1A1A2E');
+  $form['typography']['color_body_text'] = $fn_color('color_body_text', t('Color Texto'), '#334155');
+  $form['typography']['color_muted'] = $fn_color('color_muted', t('Texto Muted'), '#64748B');
+
+  // =========================================================================
+  // TAB 3: HEADER (Visual Picker)
+  // =========================================================================
+  $form['header_options'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('layout-navbar', t('Encabezado (Header)'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -80,
+  ];
+
+  $form['header_options']['header_layout'] = [
+    '#type' => 'radios',
+    '#title' => t('Diseño de Cabecera'),
+    '#options' => [
+      'classic' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Clásico</span>
+            <span class="jaraba-picker-desc">Logo izquierda, navegación derecha.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'header/classic.png" alt="Classic"/></div>
+        </div>'),
+      'centered' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Centrado</span>
+            <span class="jaraba-picker-desc">Logo y menú centrados.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'header/centered.png" alt="Centered"/></div>
+        </div>'),
+      'hero' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Hero (Transparente)</span>
+            <span class="jaraba-picker-desc">Superpuesto a imagen de fondo.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'header/hero.png" alt="Hero"/></div>
+        </div>'),
+      'split' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Dividido</span>
+            <span class="jaraba-picker-desc">Logo centro, menús ambos lados.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'header/split.png" alt="Split"/></div>
+        </div>'),
+      'minimal' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Minimal</span>
+            <span class="jaraba-picker-desc">Solo logo y hamburger.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'header/minimal.png" alt="Minimal"/></div>
+        </div>'),
+    ],
+    '#default_value' => $config->get('header_layout') ?: 'classic',
+    '#attributes' => ['class' => ['jaraba-visual-picker']],
+  ];
+
+  $form['header_options']['color_header_bg'] = $fn_color('color_header_bg', t('Fondo Header'), '#FFFFFF');
+  $form['header_options']['color_header_text'] = $fn_color('color_header_text', t('Texto Header'), '#1A1A2E');
+  $form['header_options']['header_sticky'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Header Sticky (fijo al hacer scroll)'),
+    '#default_value' => $config->get('header_sticky') ?? TRUE,
+  ];
+
+  // --- Navegación Principal ---
+  $form['header_options']['navigation'] = [
+    '#type' => 'fieldset',
+    '#title' => t('🧭 Navegación Principal'),
+    '#description' => t('Define los enlaces del menú de navegación del header. Un enlace por línea con formato: <code>Texto|URL</code>.'),
+  ];
+  $form['header_options']['navigation']['navigation_items'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces de Navegación'),
+    '#default_value' => $config->get('navigation_items') ?: "Empleo|/empleo\nTalento|/talento\nEmprender|/emprender\nComercio|/comercio\nInstituciones|/instituciones",
+    '#rows' => 6,
+    '#description' => t('Formato: <code>Texto|URL</code>, uno por línea. Máximo 7 enlaces.'),
+  ];
+
+  // CTA Button
+  $form['header_options']['header_cta'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Botón CTA'),
+  ];
+  $form['header_options']['header_cta']['enable_header_cta'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar Botón CTA'),
+    '#default_value' => $config->get('enable_header_cta'),
+  ];
+  $form['header_options']['header_cta']['header_cta_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto'),
+    '#default_value' => $config->get('header_cta_text') ?: 'Empezar',
+    '#states' => ['visible' => [':input[name="enable_header_cta"]' => ['checked' => TRUE]]],
+  ];
+  $form['header_options']['header_cta']['header_cta_url'] = [
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#default_value' => $config->get('header_cta_url') ?: '/registro',
+    '#states' => ['visible' => [':input[name="enable_header_cta"]' => ['checked' => TRUE]]],
+  ];
+
+  // =========================================================================
+  // TAB 4: HERO (Visual Picker)
+  // =========================================================================
+  $form['hero_options'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('image', t('Hero Section'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -75,
+  ];
+
+  $form['hero_options']['hero_layout'] = [
+    '#type' => 'radios',
+    '#title' => t('Diseño de Hero'),
+    '#options' => [
+      'fullscreen' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Pantalla Completa</span>
+            <span class="jaraba-picker-desc">100vh con overlay.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'hero/fullscreen.png" alt="Fullscreen"/></div>
+        </div>'),
+      'split' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Dividido</span>
+            <span class="jaraba-picker-desc">Texto izquierda, imagen derecha.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'hero/split.png" alt="Split"/></div>
+        </div>'),
+      'compact' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Compacto</span>
+            <span class="jaraba-picker-desc">Altura reducida.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'hero/compact.png" alt="Compact"/></div>
+        </div>'),
+      'animated' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Animado</span>
+            <span class="jaraba-picker-desc">Con partículas/gradiente.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'hero/animated.png" alt="Animated"/></div>
+        </div>'),
+      'centered' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Centrado</span>
+            <span class="jaraba-picker-desc">Texto centrado sobre imagen.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'hero/centered.png" alt="Centered"/></div>
+        </div>'),
+    ],
+    '#default_value' => $config->get('hero_layout') ?: 'split',
+    '#attributes' => ['class' => ['jaraba-visual-picker']],
+  ];
+
+  $form['hero_options']['hero_overlay_opacity'] = [
+    '#type' => 'number',
+    '#title' => t('Opacidad del Overlay'),
+    '#default_value' => $config->get('hero_overlay_opacity') ?: 60,
+    '#min' => 0,
+    '#max' => 100,
+    '#field_suffix' => '%',
+  ];
+
+  // =========================================================================
+  // TAB 5: CARDS (Visual Picker)
+  // =========================================================================
+  $form['cards_options'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('layout-cards', t('Tarjetas (Cards)'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -70,
+  ];
+
+  $form['cards_options']['card_style'] = [
+    '#type' => 'radios',
+    '#title' => t('Estilo de Cards'),
+    '#options' => [
+      'elevated' => t('Elevated (sombra)'),
+      'outlined' => t('Outlined (borde)'),
+      'flat' => t('Flat (sin borde)'),
+      'glassmorphism' => t('Glassmorphism'),
+    ],
+    '#default_value' => $config->get('card_style') ?: 'elevated',
+  ];
+
+  $form['cards_options']['card_border_radius'] = [
+    '#type' => 'number',
+    '#title' => t('Border Radius'),
+    '#default_value' => $config->get('card_border_radius') ?: 12,
+    '#min' => 0,
+    '#max' => 32,
+    '#field_suffix' => 'px',
+  ];
+
+  $form['cards_options']['color_card_bg'] = $fn_color('color_card_bg', t('Fondo Card'), '#FFFFFF');
+  $form['cards_options']['color_card_border'] = $fn_color('color_card_border', t('Borde'), '#E5E7EB');
+
+  // =========================================================================
+  // TAB 6: FOOTER
+  // =========================================================================
+  $form['footer_options'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('layout-footer', t('Pie de Página (Footer)')),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -65,
+  ];
+
+  $form['footer_options']['enable_footer'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar Footer'),
+    '#default_value' => $config->get('enable_footer') ?? TRUE,
+  ];
+  
+  $form['footer_options']['footer_layout'] = [
+    '#type' => 'radios',
+    '#title' => t('Diseño de Footer'),
+    '#options' => [
+      'minimal' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Minimal</span>
+            <span class="jaraba-picker-desc">1 línea con copyright.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'footer/minimal.png" alt="Minimal"/></div>
+        </div>'),
+      'standard' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Standard</span>
+            <span class="jaraba-picker-desc">2 filas (social + copyright).</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'footer/standard.png" alt="Standard"/></div>
+        </div>'),
+      'mega' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Mega Footer</span>
+            <span class="jaraba-picker-desc">4 columnas con widgets.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'footer/mega.png" alt="Mega Footer"/></div>
+        </div>'),
+      'split' => Markup::create('
+        <div class="jaraba-picker-card">
+          <div class="jaraba-picker-text">
+            <span class="jaraba-picker-title">Split</span>
+            <span class="jaraba-picker-desc">Logo izquierda, links derecha.</span>
+          </div>
+          <div class="jaraba-picker-thumb"><img src="' . $img_path . 'footer/split.png" alt="Split"/></div>
+        </div>'),
+    ],
+    '#default_value' => $config->get('footer_layout') ?: 'standard',
+    '#attributes' => ['class' => ['jaraba-visual-picker']],
+    '#states' => ['visible' => [':input[name="enable_footer"]' => ['checked' => TRUE]]],
+  ];
+
+  // --- Navegación del Footer (Standard/Split) ---
+  $form['footer_options']['footer_nav'] = [
+    '#type' => 'fieldset',
+    '#title' => t('🧭 Navegación del Footer (Standard / Split)'),
+    '#description' => t('Configura las columnas de navegación para los layouts Standard y Split. Formato: <code>Texto|URL</code>, uno por línea.'),
+    '#states' => ['visible' => [
+      ':input[name="footer_layout"]' => [
+        ['value' => 'standard'],
+        ['value' => 'split'],
+      ],
+    ]],
+  ];
+
+  $form['footer_options']['footer_nav']['footer_nav_col1_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 1'),
+    '#default_value' => $config->get('footer_nav_col1_title') ?: 'Plataforma',
+  ];
+  $form['footer_options']['footer_nav']['footer_nav_col1_links'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces Columna 1'),
+    '#default_value' => $config->get('footer_nav_col1_links') ?: "Empleabilidad|/empleo\nEmprendimiento|/emprender\nComercio|/productos\nInstituciones|/instituciones",
+    '#rows' => 4,
+    '#description' => t('Formato: Texto|URL, uno por línea.'),
+  ];
+
+  $form['footer_options']['footer_nav']['footer_nav_col2_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 2'),
+    '#default_value' => $config->get('footer_nav_col2_title') ?: 'Empresa',
+  ];
+  $form['footer_options']['footer_nav']['footer_nav_col2_links'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces Columna 2'),
+    '#default_value' => $config->get('footer_nav_col2_links') ?: "Sobre nosotros|/about\nContacto|/contact\nBlog|/blog",
+    '#rows' => 4,
+  ];
+
+  $form['footer_options']['footer_nav']['footer_nav_col3_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 3'),
+    '#default_value' => $config->get('footer_nav_col3_title') ?: 'Legal',
+  ];
+  $form['footer_options']['footer_nav']['footer_nav_col3_links'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces Columna 3'),
+    '#default_value' => $config->get('footer_nav_col3_links') ?: "Privacidad|/privacy\nTérminos|/terms\nCookies|/cookies",
+    '#rows' => 4,
+  ];
+
+  // --- Widget Column 1 ---
+  $form['footer_options']['footer_widgets'] = [
+    '#type' => 'fieldset',
+    '#title' => t('📦 Configuración de Widgets (Mega Footer)'),
+    '#states' => ['visible' => [':input[name="footer_layout"]' => ['value' => 'mega']]],
+  ];
+  
+  $form['footer_options']['footer_widgets']['footer_widget1_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 1'),
+    '#default_value' => $config->get('footer_widget1_title') ?: 'Sobre Nosotros',
+  ];
+  $form['footer_options']['footer_widgets']['footer_widget1_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido Columna 1'),
+    '#default_value' => $config->get('footer_widget1_content') ?: 'Breve descripción de la empresa o plataforma.',
+    '#rows' => 3,
+  ];
+
+  $form['footer_options']['footer_widgets']['footer_widget2_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 2'),
+    '#default_value' => $config->get('footer_widget2_title') ?: 'Enlaces Rápidos',
+  ];
+  $form['footer_options']['footer_widgets']['footer_widget2_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces Columna 2 (uno por línea: texto|URL)'),
+    '#default_value' => $config->get('footer_widget2_content') ?: "Inicio|/\nServicios|/servicios\nContacto|/contacto",
+    '#rows' => 4,
+    '#description' => t('Formato: Texto|URL, uno por línea.'),
+  ];
+
+  $form['footer_options']['footer_widgets']['footer_widget3_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 3'),
+    '#default_value' => $config->get('footer_widget3_title') ?: 'Recursos',
+  ];
+  $form['footer_options']['footer_widgets']['footer_widget3_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Enlaces Columna 3 (uno por línea: texto|URL)'),
+    '#default_value' => $config->get('footer_widget3_content') ?: "Blog|/blog\nFAQ|/faq\nPolítica de Privacidad|/privacidad",
+    '#rows' => 4,
+  ];
+
+  $form['footer_options']['footer_widgets']['footer_widget4_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título Columna 4'),
+    '#default_value' => $config->get('footer_widget4_title') ?: 'Contacto',
+  ];
+  $form['footer_options']['footer_widgets']['footer_widget4_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido Columna 4'),
+    '#default_value' => $config->get('footer_widget4_content') ?: "📧 info@jaraba.es\n📍 Madrid, España\n📞 +34 900 000 000",
+    '#rows' => 3,
+  ];
+
+  // --- Redes Sociales ---
+  $form['footer_options']['social'] = [
+    '#type' => 'fieldset',
+    '#title' => t('🌐 Redes Sociales'),
+    '#states' => ['visible' => [':input[name="enable_footer"]' => ['checked' => TRUE]]],
+  ];
+  
+  $form['footer_options']['social']['footer_social_facebook'] = [
+    '#type' => 'url',
+    '#title' => t('Facebook URL'),
+    '#default_value' => $config->get('footer_social_facebook'),
+    '#placeholder' => 'https://facebook.com/...',
+  ];
+  $form['footer_options']['social']['footer_social_twitter'] = [
+    '#type' => 'url',
+    '#title' => t('X (Twitter) URL'),
+    '#default_value' => $config->get('footer_social_twitter'),
+    '#placeholder' => 'https://x.com/...',
+  ];
+  $form['footer_options']['social']['footer_social_linkedin'] = [
+    '#type' => 'url',
+    '#title' => t('LinkedIn URL'),
+    '#default_value' => $config->get('footer_social_linkedin'),
+    '#placeholder' => 'https://linkedin.com/company/...',
+  ];
+  $form['footer_options']['social']['footer_social_instagram'] = [
+    '#type' => 'url',
+    '#title' => t('Instagram URL'),
+    '#default_value' => $config->get('footer_social_instagram'),
+    '#placeholder' => 'https://instagram.com/...',
+  ];
+  $form['footer_options']['social']['footer_social_youtube'] = [
+    '#type' => 'url',
+    '#title' => t('YouTube URL'),
+    '#default_value' => $config->get('footer_social_youtube'),
+    '#placeholder' => 'https://youtube.com/...',
+  ];
+
+  // --- Copyright y Colores ---
+  $form['footer_options']['footer_copyright'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto Copyright'),
+    '#default_value' => $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform. Todos los derechos reservados.',
+    '#description' => t('Usa [year] para insertar el año actual automáticamente.'),
+  ];
+  
+  $form['footer_options']['footer_show_powered_by'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Mostrar "Powered by Jaraba"'),
+    '#default_value' => $config->get('footer_show_powered_by') ?? TRUE,
+  ];
+
+  $form['footer_options']['colors'] = [
+    '#type' => 'fieldset',
+    '#title' => t('🎨 Colores del Footer'),
+  ];
+  $form['footer_options']['colors']['color_footer_bg'] = $fn_color('color_footer_bg', t('Fondo'), '#1A1A2E');
+  $form['footer_options']['colors']['color_footer_text'] = $fn_color('color_footer_text', t('Texto'), '#94A3B8');
+  $form['footer_options']['colors']['color_footer_link'] = $fn_color('color_footer_link', t('Enlaces'), '#FF8C42');
+  $form['footer_options']['colors']['color_footer_link_hover'] = $fn_color('color_footer_link_hover', t('Enlaces Hover'), '#FFFFFF');
+
+  // =========================================================================
+  // TAB 7: SIDEBAR
+  // =========================================================================
+  $form['sidebar_options'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('layout-sidebar', t('Barra Lateral'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -60,
+  ];
+
+  $form['sidebar_options']['color_sidebar_bg'] = $fn_color('color_sidebar_bg', t('Fondo'), '#F8FAFC');
+  $form['sidebar_options']['color_sidebar_title'] = $fn_color('color_sidebar_title', t('Títulos'), '#1A1A2E');
+  $form['sidebar_options']['color_sidebar_link'] = $fn_color('color_sidebar_link', t('Enlaces'), '#334155');
+  $form['sidebar_options']['color_sidebar_link_hover'] = $fn_color('color_sidebar_link_hover', t('Enlaces Hover'), '#FF8C42');
+  $form['sidebar_options']['color_sidebar_link_active'] = $fn_color('color_sidebar_link_active', t('Enlace Activo'), '#FF8C42');
+
+  // =========================================================================
+  // TAB 8: COMPONENTES
+  // =========================================================================
+  $form['components'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('puzzle', t('Componentes'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -55,
+  ];
+
+  // Buttons
+  $form['components']['buttons'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Botones'),
+  ];
+  $form['components']['buttons']['color_btn_primary_bg'] = $fn_color('color_btn_primary_bg', t('Primary Fondo'), '#FF8C42');
+  $form['components']['buttons']['color_btn_primary_text'] = $fn_color('color_btn_primary_text', t('Primary Texto'), '#FFFFFF');
+  $form['components']['buttons']['color_btn_secondary_bg'] = $fn_color('color_btn_secondary_bg', t('Secondary Fondo'), '#00A9A5');
+  $form['components']['buttons']['color_btn_secondary_text'] = $fn_color('color_btn_secondary_text', t('Secondary Texto'), '#FFFFFF');
+  $form['components']['buttons']['btn_border_radius'] = [
+    '#type' => 'number',
+    '#title' => t('Border Radius Botones'),
+    '#default_value' => $config->get('btn_border_radius') ?: 8,
+    '#min' => 0,
+    '#max' => 50,
+    '#field_suffix' => 'px',
+  ];
+
+  // Forms
+  $form['components']['forms'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Formularios'),
+  ];
+  $form['components']['forms']['color_input_bg'] = $fn_color('color_input_bg', t('Fondo Input'), '#FFFFFF');
+  $form['components']['forms']['color_input_border'] = $fn_color('color_input_border', t('Borde Input'), '#D1D5DB');
+  $form['components']['forms']['color_input_focus'] = $fn_color('color_input_focus', t('Borde al Foco'), '#FF8C42');
+
+  // =========================================================================
+  // TAB 9: PRODUCTOS (para verticals Commerce)
+  // =========================================================================
+  $form['products'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('shopping-cart', t('Productos'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -50,
+  ];
+
+  $form['products']['product_card_layout'] = [
+    '#type' => 'select',
+    '#title' => t('Diseño de Tarjeta Producto'),
+    '#options' => [
+      'classic' => t('Clásico'),
+      'hero' => t('Hero Inmersivo'),
+      'minimal' => t('Minimalista'),
+      'grid' => t('Grid Compacto'),
+    ],
+    '#default_value' => $config->get('product_card_layout') ?: 'classic',
+  ];
+  $form['products']['color_product_price'] = $fn_color('color_product_price', t('Color Precio'), '#FF8C42');
+  $form['products']['color_product_badge'] = $fn_color('color_product_badge', t('Badge Destacado'), '#10B981');
+
+  // =========================================================================
+  // TAB 10: AVANZADAS
+  // =========================================================================
+  $form['advanced'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('settings', t('Avanzadas'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -45,
+  ];
+
+  $form['advanced']['show_back_to_top'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Botón "Volver Arriba"'),
+    '#default_value' => $config->get('show_back_to_top') ?? TRUE,
+  ];
+
+  $form['advanced']['dark_mode'] = [
+    '#type' => 'select',
+    '#title' => t('Modo Oscuro'),
+    '#options' => [
+      'off' => t('Desactivado'),
+      'on' => t('Siempre activo'),
+      'auto' => t('Auto (según sistema)'),
+      'toggle' => t('Toggle manual (usuario elige)'),
+    ],
+    '#default_value' => $config->get('dark_mode') ?: 'toggle',
+  ];
+
+  $form['advanced']['enable_preloader'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Preloader Animado'),
+    '#default_value' => $config->get('enable_preloader'),
+  ];
+
+  $form['advanced']['custom_css'] = [
+    '#type' => 'textarea',
+    '#title' => t('CSS Personalizado'),
+    '#default_value' => $config->get('custom_css'),
+    '#rows' => 6,
+    '#description' => t('CSS adicional que se inyectará en todas las páginas.'),
+  ];
+
+  // =========================================================================
+  // TAB 11: BANNER PROMO
+  // =========================================================================
+  $form['banner'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('megaphone', t('Banner Promo'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -40,
+  ];
+
+  $form['banner']['enable_promo_banner'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar Banner'),
+    '#default_value' => $config->get('enable_promo_banner'),
+  ];
+  $form['banner']['promo_banner_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto'),
+    '#default_value' => $config->get('promo_banner_text'),
+    '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
+  ];
+  $form['banner']['promo_banner_url'] = [
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#default_value' => $config->get('promo_banner_url'),
+    '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
+  ];
+  $form['banner']['color_promo_bg'] = $fn_color('color_promo_bg', t('Fondo Banner'), '#FF8C42');
+  $form['banner']['color_promo_text'] = $fn_color('color_promo_text', t('Texto Banner'), '#FFFFFF');
+
+  // =========================================================================
+  // TAB 12: INDUSTRY PRESETS
+  // =========================================================================
+  $form['presets'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('palette', t('Industry Presets'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -35,
+  ];
+
+  $form['presets']['industry_preset'] = [
+    '#type' => 'select',
+    '#title' => t('Seleccionar Preset'),
+    '#options' => [
+      '' => t('- Ninguno (personalizado) -'),
+      'agro_gourmet' => t('🌾 Agro Gourmet'),
+      'agro_organic' => t('🌿 Agro Orgánico'),
+      'agro_premium' => t('🍷 Agro Premium'),
+      'comercio_local' => t('🏪 Comercio Local'),
+      'comercio_boutique' => t('👗 Comercio Boutique'),
+      'comercio_gourmet' => t('🍴 Comercio Gourmet'),
+      'servicios_legal' => t('⚖️ Servicios Legal'),
+      'servicios_health' => t('🏥 Servicios Salud'),
+      'servicios_tech' => t('💻 Servicios Tech'),
+      'emprendimiento_startup' => t('🚀 Emprendimiento Startup'),
+      'emprendimiento_creative' => t('🎨 Emprendimiento Creativo'),
+      'empleabilidad_corporate' => t('🏢 Empleabilidad Corporate'),
+      'empleabilidad_youth' => t('🎓 Empleabilidad Jóvenes'),
+      'certificacion_premium' => t('🏆 Certificación Premium'),
+      'certificacion_minimal' => t('📋 Certificación Minimal'),
+    ],
+    '#default_value' => $config->get('industry_preset') ?: '',
+    '#description' => t('Selecciona un preset para aplicar todos sus valores automáticamente.'),
+  ];
+
+  // =========================================================================
+  // TAB 13: BREADCRUMBS PREMIUM
+  // =========================================================================
+  $form['breadcrumbs'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('navigation', t('Breadcrumbs Premium'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -30,
+  ];
+
+  $form['breadcrumbs']['enable_breadcrumbs'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar Breadcrumbs'),
+    '#default_value' => $config->get('enable_breadcrumbs') ?? TRUE,
+  ];
+
+  $form['breadcrumbs']['breadcrumb_style'] = [
+    '#type' => 'select',
+    '#title' => t('Estilo'),
+    '#options' => [
+      'arrows' => t('Flechas (→)'),
+      'chevrons' => t('Chevrons (›)'),
+      'slashes' => t('Barras (/)'),
+      'dots' => t('Puntos (•)'),
+      'pills' => t('Pills (badges)'),
+    ],
+    '#default_value' => $config->get('breadcrumb_style') ?: 'chevrons',
+  ];
+
+  $form['breadcrumbs']['breadcrumb_icons'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Mostrar Iconos'),
+    '#default_value' => $config->get('breadcrumb_icons') ?? TRUE,
+    '#description' => t('Muestra iconos junto a cada nivel del breadcrumb.'),
+  ];
+
+  $form['breadcrumbs']['breadcrumb_home_icon'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Icono de Inicio (🏠)'),
+    '#default_value' => $config->get('breadcrumb_home_icon') ?? TRUE,
+  ];
+
+  $form['breadcrumbs']['breadcrumb_schema'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Structured Data (JSON-LD)'),
+    '#default_value' => $config->get('breadcrumb_schema') ?? TRUE,
+    '#description' => t('Genera datos estructurados para SEO.'),
+  ];
+
+  $form['breadcrumbs']['color_breadcrumb_text'] = $fn_color('color_breadcrumb_text', t('Color Texto'), '#64748B');
+  $form['breadcrumbs']['color_breadcrumb_link'] = $fn_color('color_breadcrumb_link', t('Color Enlaces'), '#FF8C42');
+  $form['breadcrumbs']['color_breadcrumb_active'] = $fn_color('color_breadcrumb_active', t('Color Activo'), '#1A1A2E');
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Inyecta CSS variables desde la configuración del tema.
+ */
+function ecosistema_jaraba_theme_preprocess_html(&$variables) {
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+
+  // FE-05 / A11Y-04: Asegurar atributo lang explícito en <html> (WCAG 2.1 Level A).
+  // Drupal core lo establece, pero lo reforzamos aquí para garantizar conformidad.
+  $language = \Drupal::languageManager()->getCurrentLanguage();
+  $variables['html_attributes']['lang'] = $language->getId();
+  $variables['html_attributes']['dir'] = $language->getDirection();
+
+  // Body classes - Header Layout
+  $header_layout = $config->get('header_layout') ?: 'classic';
+  $variables['attributes']['class'][] = 'header-layout-' . $header_layout;
+
+  // Body classes - Footer Layout
+  $footer_layout = $config->get('footer_layout') ?: 'standard';
+  $variables['attributes']['class'][] = 'footer-layout-' . $footer_layout;
+
+  // Body classes - Hero Layout
+  $hero_layout = $config->get('hero_layout') ?: 'fullscreen';
+  $variables['attributes']['class'][] = 'hero-layout-' . $hero_layout;
+
+  // Body classes - Card Style
+  $card_style = $config->get('card_style') ?: 'elevated';
+  $variables['attributes']['class'][] = 'card-style-' . $card_style;
+
+  // Clase page-front para homepage (landing page limpia sin regiones)
+  $is_front = \Drupal::service('path.matcher')->isFrontPage();
+  if ($is_front) {
+    $variables['attributes']['class'][] = 'page-front';
+    $variables['attributes']['class'][] = 'landing-page';
+  }
+
+  // Clase landing-page para rutas de verticales (full-width como homepage)
+  $route = \Drupal::routeMatch()->getRouteName();
+  $vertical_routes = [
+    'ecosistema_jaraba_core.vertical.empleo',
+    'ecosistema_jaraba_core.vertical.talento',
+    'ecosistema_jaraba_core.vertical.emprender',
+    'ecosistema_jaraba_core.vertical.comercio',
+    'ecosistema_jaraba_core.vertical.instituciones',
+  ];
+  if (in_array($route, $vertical_routes)) {
+    $variables['attributes']['class'][] = 'landing-page';
+    $variables['attributes']['class'][] = 'page-vertical-landing';
+  }
+
+  // Dashboard frontend routes - clase para anular grid hero--split
+  // Ver: docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md
+  $dashboard_frontend_routes = [
+    'jaraba_content_hub.dashboard.frontend',       // /content-hub
+    'jaraba_content_hub.articles.frontend',        // /content-hub/articles
+    'jaraba_content_hub.articles.add.frontend',    // /content-hub/articles/add
+    'jaraba_content_hub.articles.edit.frontend',   // /content-hub/articles/{id}/edit
+    'jaraba_content_hub.categories.frontend',      // /content-hub/categories
+    'jaraba_content_hub.categories.add.frontend',  // /content-hub/categories/add
+    'jaraba_content_hub.ai_logs.frontend',         // /content-hub/ai-logs
+  ];
+  if (in_array($route, $dashboard_frontend_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-content-hub';
+  }
+
+  // =========================================================================
+  // SITE BUILDER FRONTEND - Clases para anular grid hero--split
+  // Ver: .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+  $site_builder_frontend_routes = [
+    'jaraba_site_builder.frontend.dashboard',    // /site-builder
+    'jaraba_site_builder.frontend.tree',         // /site-builder/tree
+    'jaraba_site_builder.frontend.config',       // /site-builder/config
+    'jaraba_site_builder.frontend.redirects',    // /site-builder/redirects
+    'jaraba_site_builder.frontend.sitemap',      // /site-builder/sitemap
+    // Admin routes también usan frontend limpio (Directriz 2026).
+    'jaraba_site_builder.dashboard',             // /admin/structure/site-builder
+    'jaraba_site_builder.tree',                  // /admin/structure/site-builder/tree
+    'jaraba_site_builder.settings',              // /admin/structure/site-builder/config
+    'jaraba_site_builder.redirects',             // /admin/structure/site-builder/redirects
+    'jaraba_site_builder.sitemap',               // /admin/structure/site-builder/sitemap
+  ];
+  if (in_array($route, $site_builder_frontend_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-site-builder';
+  }
+
+  // =========================================================================
+  // PAGE BUILDER FRONTEND - Clases para layout full-width limpio
+  // Ver: .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+  $page_builder_frontend_routes = [
+    'jaraba_page_builder.dashboard',             // /page-builder (Hub Central)
+    'jaraba_page_builder.template_picker',       // /page-builder/templates
+    'jaraba_page_builder.template_preview',      // /page-builder/templates/{id}/preview
+    'jaraba_page_builder.create_from_template',  // /page-builder/create/{template}
+    'jaraba_page_builder.my_pages',              // /my-pages
+    'jaraba_page_builder.experiments_dashboard', // /page-builder/experiments (Gap 2)
+    'jaraba_page_builder.analytics_dashboard',   // /page-builder/analytics (Gap C)
+    // Admin settings también usa frontend limpio (Directriz 2026).
+    'jaraba_page_builder.settings',              // /admin/config/jaraba/page-builder/settings
+    'jaraba_pixels.settings',                     // /pixels (Pixel Manager)
+    // -------------------------------------------------------------------------
+    // PÁGINAS FRONTEND DE TENANTS - Entidades PageContent (2026-02-02)
+    // Usan layout full-width, limpio de regiones Drupal heredadas
+    // -------------------------------------------------------------------------
+    'entity.page_content.canonical',             // /page/{id} o alias como /pepejaraba
+  ];
+  if (in_array($route, $page_builder_frontend_routes)) {
+    $variables['attributes']['class'][] = 'page-page-builder';
+    $variables['attributes']['class'][] = 'page-builder-frontend';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    // Clase específica para experiments para CSS targeting.
+    if ($route === 'jaraba_page_builder.experiments_dashboard') {
+      $variables['attributes']['class'][] = 'page-experiments';
+      $variables['attributes']['class'][] = 'experiments-dashboard-page';
+    }
+    // Clase específica para páginas de contenido creadas con Page Builder.
+    if ($route === 'entity.page_content.canonical') {
+      $variables['attributes']['class'][] = 'page-content-frontend';
+      $variables['attributes']['class'][] = 'tenant-page';
+    }
+  }
+
+  // =========================================================================
+  // INTEGRATIONS MARKETPLACE - Layout full-width limpio
+  // Rutas /integraciones/* (marketplace de conectores)
+  // Ver: web/modules/custom/jaraba_integrations
+  // =========================================================================
+  $integrations_frontend_routes = [
+    'jaraba_integrations.frontend.dashboard',           // /integraciones
+    'jaraba_integrations.frontend.connector_detail',    // /integraciones/{connector}
+    'jaraba_integrations.frontend.connector_configure', // /integraciones/{connector}/configurar
+    'jaraba_integrations.frontend.webhooks',            // /integraciones/webhooks
+  ];
+  if (in_array($route, $integrations_frontend_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-integrations';
+  }
+
+  // =========================================================================
+  // CUSTOMER SUCCESS - Dashboard CSM con health scores y playbooks (f113)
+  // =========================================================================
+  $cs_frontend_routes = [
+    'jaraba_customer_success.frontend.dashboard',     // /customer-success
+    'jaraba_customer_success.frontend.tenant_detail',  // /customer-success/tenant/{group}
+    'jaraba_customer_success.frontend.playbooks',      // /customer-success/playbooks
+    'jaraba_customer_success.frontend.expansion',      // /customer-success/expansion
+  ];
+  if (in_array($route, $cs_frontend_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-customer-success';
+  }
+
+  // =========================================================================
+  // USAGE DASHBOARD - Uso y facturación self-service (G111 / f111)
+  // Ruta /mi-cuenta/uso usa layout limpio full-width
+  // =========================================================================
+  $usage_frontend_routes = [
+    'ecosistema_jaraba_core.usage.dashboard',   // /mi-cuenta/uso
+  ];
+  if (in_array($route, $usage_frontend_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-mi-cuenta';
+    $variables['attributes']['class'][] = 'page-usage-dashboard';
+  }
+
+  // =========================================================================
+  // HELP CENTER PÚBLICO - Centro de Ayuda en /ayuda (G114 / f114)
+  // Layout full-width limpio, sin autenticación
+  // =========================================================================
+  $help_center_routes = [
+    'jaraba_tenant_knowledge.help.index',    // /ayuda
+    'jaraba_tenant_knowledge.help.article',  // /ayuda/{faq_id}
+    'jaraba_tenant_knowledge.help.search',   // /ayuda/buscar
+  ];
+  if (in_array($route, $help_center_routes)) {
+    $variables['attributes']['class'][] = 'page-ayuda';
+    $variables['attributes']['class'][] = 'help-center-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+
+  // =========================================================================
+  // CANVAS EDITOR - Layout full-viewport para edición visual
+  // Sin scroll, sin header/footer, máximo espacio de edición
+  // =========================================================================
+  if ($route === 'jaraba_page_builder.canvas_editor') {
+    $variables['attributes']['class'][] = 'canvas-editor-page';
+    $variables['attributes']['class'][] = 'full-viewport-layout';
+    $variables['attributes']['class'][] = 'no-scroll';
+    $variables['attributes']['class'][] = 'page-canvas-editor';
+  }
+
+  // =========================================================================
+  // AUTH PAGES - Páginas de autenticación con layout limpio premium
+  // Login, registro, recuperación de contraseña
+  // =========================================================================
+  $auth_routes = [
+    'user.login',
+    'user.register',
+    'user.pass',
+    'user.reset.form',
+    'user.reset.login',
+  ];
+  if (in_array($route, $auth_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-auth';
+  }
+
+  // =========================================================================
+  // i18n DASHBOARD - Frontend limpio para gestión de traducciones
+  // Ver: docs/planificacion/20260202-Gap_E_i18n_UI_v1.md
+  // =========================================================================
+  $i18n_routes = [
+    'jaraba_i18n.dashboard',  // /i18n
+  ];
+  if (in_array($route, $i18n_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-i18n';
+    $variables['attributes']['class'][] = 'full-width-page';
+  }
+
+  // =========================================================================
+  // ANDALUCÍA +ei - Dashboard frontend del programa
+  // Ver: docs/tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md
+  // =========================================================================
+  $andalucia_ei_routes = [
+    'jaraba_andalucia_ei.dashboard',  // /andalucia-ei
+  ];
+  if (in_array($route, $andalucia_ei_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-andalucia-ei';
+    $variables['attributes']['class'][] = 'full-width-page';
+  }
+
+  // =========================================================================
+  // CRM DASHBOARD - Frontend limpio para gestión de relaciones comerciales
+  // Ver: web/modules/custom/jaraba_crm
+  // =========================================================================
+  $crm_routes = [
+    'jaraba_crm.dashboard',   // /crm
+    'jaraba_crm.pipeline',    // /crm/pipeline
+  ];
+  if (in_array($route, $crm_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-crm';
+    $variables['attributes']['class'][] = 'crm-page';
+    $variables['attributes']['class'][] = 'full-width-page';
+  }
+
+  // =========================================================================
+  // CREDENTIALS FRONTEND - Layout limpio para verificación y dashboard
+  // Ver: web/modules/custom/jaraba_credentials
+  // =========================================================================
+  $credentials_routes = [
+    'jaraba_credentials.verify',         // /verify/{uuid} - Página pública
+    'jaraba_credentials.my_credentials', // /my-certifications - Dashboard usuario
+  ];
+  if (in_array($route, $credentials_routes)) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'page-credentials';
+    $variables['attributes']['class'][] = 'full-width-page';
+    // Clase específica para verificación pública
+    if ($route === 'jaraba_credentials.verify') {
+      $variables['attributes']['class'][] = 'page-credential-verify';
+    }
+  }
+
+  // =========================================================================
+  // COMERCIO CONECTA - Marketplace de comercio de proximidad
+  // Rutas /marketplace y /mi-comercio usan layout full-width limpio
+  // Ver: docs/implementacion/20260209-Plan_Implementacion_ComercioConecta_v1.md
+  // =========================================================================
+  $comercio_routes = [
+    'jaraba_comercio_conecta.marketplace'                => 'marketplace-page',
+    'jaraba_comercio_conecta.marketplace.merchant'       => 'merchant-page',
+    'jaraba_comercio_conecta.marketplace.product'        => 'comercio-product-page',
+    'jaraba_comercio_conecta.merchant_portal'            => 'merchant-dashboard-page',
+    'jaraba_comercio_conecta.merchant_portal.products'   => 'merchant-products-page',
+    'jaraba_comercio_conecta.merchant_portal.analytics'  => 'merchant-analytics-page',
+  ];
+  if (isset($comercio_routes[$route])) {
+    $variables['attributes']['class'][] = 'comercio-page';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-page';
+    $variables['attributes']['class'][] = $comercio_routes[$route];
+  }
+
+  if ($config->get('enable_promo_banner')) {
+    $variables['attributes']['class'][] = 'has-promo-banner';
+  }
+
+  if ($config->get('show_back_to_top')) {
+    $variables['attributes']['class'][] = 'has-back-to-top';
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/back-to-top';
+  }
+
+  $dark_mode = $config->get('dark_mode') ?: 'toggle';
+  if ($dark_mode === 'on') {
+    $variables['attributes']['class'][] = 'dark-mode';
+  }
+  elseif ($dark_mode === 'toggle' || $dark_mode === 'auto') {
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/dark-mode';
+  }
+
+  // CSS Variables mapping
+  $mapping = [
+    // Brand
+    'color_primary' => '--ej-color-primary',
+    'color_secondary' => '--ej-color-secondary',
+    'color_corporate' => '--ej-color-corporate',
+    'color_agro' => '--ej-color-agro',
+    'color_success' => '--ej-color-success',
+    'color_warning' => '--ej-color-warning',
+    'color_danger' => '--ej-color-danger',
+    'color_neutral' => '--ej-color-neutral',
+    // Backgrounds
+    'color_bg_body' => '--ej-bg-body',
+    'color_bg_surface' => '--ej-bg-surface',
+    'color_bg_dark' => '--ej-bg-dark',
+    // Typography
+    'color_headings' => '--ej-color-headings',
+    'color_body_text' => '--ej-color-body',
+    'color_muted' => '--ej-color-muted',
+    // Header
+    'color_header_bg' => '--ej-header-bg',
+    'color_header_text' => '--ej-header-text',
+    // Cards
+    'color_card_bg' => '--ej-card-bg',
+    'color_card_border' => '--ej-card-border',
+    // Footer
+    'color_footer_bg' => '--ej-footer-bg',
+    'color_footer_text' => '--ej-footer-text',
+    // Sidebar
+    'color_sidebar_bg' => '--ej-sidebar-bg',
+    'color_sidebar_title' => '--ej-sidebar-title',
+    'color_sidebar_link' => '--ej-sidebar-link',
+    'color_sidebar_link_hover' => '--ej-sidebar-link-hover',
+    'color_sidebar_link_active' => '--ej-sidebar-link-active',
+    // Buttons
+    'color_btn_primary_bg' => '--ej-btn-primary-bg',
+    'color_btn_primary_text' => '--ej-btn-primary-text',
+    'color_btn_secondary_bg' => '--ej-btn-secondary-bg',
+    'color_btn_secondary_text' => '--ej-btn-secondary-text',
+    // Forms
+    'color_input_bg' => '--ej-input-bg',
+    'color_input_border' => '--ej-input-border',
+    'color_input_focus' => '--ej-input-focus',
+    // Products
+    'color_product_price' => '--ej-product-price',
+    'color_product_badge' => '--ej-product-badge',
+    // Banner
+    'color_promo_bg' => '--ej-promo-bg',
+    'color_promo_text' => '--ej-promo-text',
+    // Breadcrumbs
+    'color_breadcrumb_text' => '--ej-breadcrumb-text',
+    'color_breadcrumb_link' => '--ej-breadcrumb-link',
+    'color_breadcrumb_active' => '--ej-breadcrumb-active',
+  ];
+
+  $css_vars = '';
+  foreach ($mapping as $setting => $var) {
+    $val = $config->get($setting);
+    if ($val) {
+      $css_vars .= "$var: $val;\n";
+    }
+  }
+
+  // Numeric vars
+  $font_size = $config->get('font_size_base') ?: 16;
+  $css_vars .= "--ej-font-size-base: {$font_size}px;\n";
+
+  $logo_height = $config->get('logo_height') ?: 45;
+  $css_vars .= "--ej-logo-height: {$logo_height}px;\n";
+
+  $card_radius = $config->get('card_border_radius') ?: 12;
+  $css_vars .= "--ej-card-radius: {$card_radius}px;\n";
+
+  $btn_radius = $config->get('btn_border_radius') ?: 8;
+  $css_vars .= "--ej-btn-radius: {$btn_radius}px;\n";
+
+  $hero_overlay = $config->get('hero_overlay_opacity') ?: 60;
+  $css_vars .= "--ej-hero-overlay: {$hero_overlay}%;\n";
+
+  // Fonts
+  $font_map = [
+    'outfit' => ['"Outfit", sans-serif', 'Outfit:wght@300;400;500;600;700'],
+    'montserrat' => ['"Montserrat", sans-serif', 'Montserrat:wght@400;500;700'],
+    'poppins' => ['"Poppins", sans-serif', 'Poppins:wght@400;500;700'],
+    'inter' => ['"Inter", sans-serif', 'Inter:wght@400;500;700'],
+    'lora' => ['"Lora", serif', 'Lora:wght@400;500;700'],
+    'playfair' => ['"Playfair Display", serif', 'Playfair+Display:wght@400;500;700'],
+    'roboto' => ['"Roboto", sans-serif', 'Roboto:wght@400;500;700'],
+  ];
+
+  $h_font = $config->get('typography_headings') ?: 'outfit';
+  $b_font = $config->get('typography_body') ?: 'inter';
+
+  $families = [];
+  if (isset($font_map[$h_font])) {
+    $families[] = $font_map[$h_font][1];
+    $css_vars .= "--ej-font-headings: " . $font_map[$h_font][0] . ";\n";
+  }
+  if (isset($font_map[$b_font])) {
+    $families[] = $font_map[$b_font][1];
+    $css_vars .= "--ej-font-body: " . $font_map[$b_font][0] . ";\n";
+  }
+  $families = array_unique($families);
+
+  // Google Fonts
+  if (!empty($families)) {
+    $gf_url = 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $families) . '&display=swap';
+    $variables['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'link',
+        '#attributes' => ['rel' => 'stylesheet', 'href' => $gf_url],
+      ],
+      'jaraba_google_fonts',
+    ];
+  }
+
+  // Inject CSS vars
+  if (!empty($css_vars)) {
+    $variables['#attached']['html_head'][] = [
+      [
+        '#tag' => 'style',
+        '#value' => Markup::create(":root {\n{$css_vars}}\n"),
+      ],
+      'jaraba_css_vars',
+    ];
+  }
+
+  // Custom CSS
+  $custom_css = $config->get('custom_css');
+  if (!empty($custom_css)) {
+    $variables['#attached']['html_head'][] = [
+      [
+        '#tag' => 'style',
+        '#value' => Markup::create($custom_css),
+      ],
+      'jaraba_custom_css',
+    ];
+  }
+
+  // =========================================================================
+  // SEO META TAGS - Homepage optimizada para motores de búsqueda y GEO
+  // Soporta datos dinámicos desde HomepageContent o fallbacks hardcodeados
+  // =========================================================================
+  $is_front = \Drupal::service('path.matcher')->isFrontPage();
+  $request = \Drupal::request();
+  $site_config = \Drupal::config('system.site');
+  $site_name = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  
+  if ($is_front) {
+    // Intentar cargar datos SEO dinámicos desde HomepageContent
+    $seo_data = [];
+    try {
+      /** @var \Drupal\jaraba_page_builder\Service\HomepageDataService $homepage_service */
+      $homepage_service = \Drupal::service('jaraba_page_builder.homepage_data');
+      $homepage_data = $homepage_service->getHomepageData();
+      $seo_data = $homepage_data['seo'] ?? [];
+      
+      // DEBUG: Log para diagnosticar datos SEO
+      \Drupal::logger('ecosistema_jaraba_theme')->debug(
+        'SEO Debug - Data loaded: meta_title=[@title], meta_description=[@desc], has_data=@has',
+        [
+          '@title' => $seo_data['meta_title'] ?? 'NULL',
+          '@desc' => substr($seo_data['meta_description'] ?? 'NULL', 0, 50),
+          '@has' => !empty($seo_data['meta_title']) || !empty($seo_data['meta_description']) ? 'YES' : 'NO',
+        ]
+      );
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible, usar fallbacks
+      \Drupal::logger('ecosistema_jaraba_theme')->warning('SEO Debug - Exception: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    // Meta Title: preferir dato dinámico
+    $meta_title = !empty($seo_data['meta_title']) 
+      ? $seo_data['meta_title']
+      : t('Impulsa tu ecosistema digital | @site', ['@site' => $site_name]);
+
+    // Meta description: preferir dato dinámico
+    $description = !empty($seo_data['meta_description'])
+      ? $seo_data['meta_description']
+      : t('Plataforma SaaS que conecta talento, negocios y emprendedores con inteligencia artificial. Empleabilidad, emprendimiento, comercio y servicios profesionales en un solo ecosistema.');
+    
+    // OG Image: preferir dato dinámico
+    $og_image = !empty($seo_data['og_image_url'])
+      ? $seo_data['og_image_url']
+      : $request->getSchemeAndHttpHost() . '/themes/custom/ecosistema_jaraba_theme/images/og-image.jpg';
+
+    $variables['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'description',
+          'content' => $description,
+        ],
+      ],
+      'meta_description',
+    ];
+
+    // Open Graph tags
+    $og_url = $request->getSchemeAndHttpHost() . '/';
+
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:type', 'content' => 'website']],
+      'og_type',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:title', 'content' => $meta_title]],
+      'og_title',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:description', 'content' => $description]],
+      'og_description',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:url', 'content' => $og_url]],
+      'og_url',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:image', 'content' => $og_image]],
+      'og_image',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:site_name', 'content' => $site_name]],
+      'og_site_name',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:locale', 'content' => 'es_ES']],
+      'og_locale',
+    ];
+
+    // Twitter Card tags
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:card', 'content' => 'summary_large_image']],
+      'twitter_card',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:title', 'content' => $meta_title]],
+      'twitter_title',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:description', 'content' => $description]],
+      'twitter_description',
+    ];
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:image', 'content' => $og_image]],
+      'twitter_image',
+    ];
+    
+    // Twitter site handle - cuenta principal de Jaraba.
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:site', 'content' => '@JarabaEcosistema']],
+      'twitter_site',
+    ];
+    
+    // Twitter creator - dinámico por tenant si está disponible.
+    $twitter_creator = '@JarabaEcosistema';
+    try {
+      // Intentar obtener handle de Twitter del tenant actual.
+      $tenant_resolver = \Drupal::service('jaraba_page_builder.tenant_resolver');
+      $tenant = $tenant_resolver->getCurrentTenant();
+      if ($tenant && $tenant->hasField('field_twitter_handle') && !$tenant->get('field_twitter_handle')->isEmpty()) {
+        $twitter_creator = $tenant->get('field_twitter_handle')->value;
+      }
+    }
+    catch (\Exception $e) {
+      // Usar handle por defecto.
+    }
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'twitter:creator', 'content' => $twitter_creator]],
+      'twitter_creator',
+    ];
+
+    // Canonical URL
+    $variables['#attached']['html_head'][] = [
+      ['#tag' => 'link', '#attributes' => ['rel' => 'canonical', 'href' => $og_url]],
+      'canonical',
+    ];
+  }
+
+  // PERF-02: Inyectar critical CSS inline en <head> para evitar render-blocking.
+  $theme_path = \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme');
+  $critical_css_file = DRUPAL_ROOT . '/' . $theme_path . '/css/critical/homepage.css';
+  if (file_exists($critical_css_file)) {
+    $critical_css = file_get_contents($critical_css_file);
+    if (!empty($critical_css)) {
+      $variables['#attached']['html_head'][] = [
+        [
+          '#tag' => 'style',
+          '#value' => $critical_css,
+          '#attributes' => ['id' => 'critical-css'],
+        ],
+        'critical_css',
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function ecosistema_jaraba_theme_preprocess_page(&$variables) {
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $variables['theme_settings'] = $config->get();
+
+  // Default values
+  if (!isset($variables['theme_settings']['header_layout'])) {
+    $variables['theme_settings']['header_layout'] = 'classic';
+  }
+
+  // Logo para page--front.html.twig (Twig limpia sin regiones)
+  $logo_settings = theme_get_setting('logo', 'ecosistema_jaraba_theme');
+  if (!empty($logo_settings['path'])) {
+    $file_url_generator = \Drupal::service('file_url_generator');
+    $variables['logo'] = $file_url_generator->generateAbsoluteString($logo_settings['path']);
+  }
+
+  // Site name y slogan para landing page
+  $site_config = \Drupal::config('system.site');
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: 'Impulsando el talento y la innovación';
+  // =========================================================================
+  // HOMEPAGE CONTENT - Datos dinámicos desde Page Builder
+  // Inyecta datos de HomepageContent entity para partials de la homepage
+  // =========================================================================
+  $is_front = \Drupal::service('path.matcher')->isFrontPage();
+  if ($is_front) {
+    try {
+      /** @var \Drupal\jaraba_page_builder\Service\HomepageDataService $homepage_service */
+      $homepage_service = \Drupal::service('jaraba_page_builder.homepage_data');
+      $homepage_data = $homepage_service->getHomepageData();
+
+      // Inyectar datos estructurados para partials
+      $variables['homepage'] = [
+        'hero' => $homepage_data['hero'] ?? [],
+        'features' => $homepage_data['features'] ?? [],
+        'stats' => $homepage_data['stats'] ?? [],
+        'intentions' => $homepage_data['intentions'] ?? [],
+      ];
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible, usar datos vacíos (partials usan fallbacks)
+      \Drupal::logger('ecosistema_jaraba_theme')->notice(
+        'HomepageDataService no disponible, usando fallbacks en partials: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+      $variables['homepage'] = [];
+    }
+  }
+
+  // Copyright - procesar token [year] si viene de configuración del tema
+  if (empty($variables['theme_settings']['footer_copyright'])) {
+    $variables['footer_copyright'] = t('© @year Jaraba Impact Platform', [
+      '@year' => date('Y'),
+    ]);
+  }
+  else {
+    // Reemplazar token [year] con el año actual
+    $copyright = $variables['theme_settings']['footer_copyright'];
+    $copyright = str_replace('[year]', date('Y'), $copyright);
+    $variables['footer_copyright'] = $copyright;
+  }
+
+  // =========================================================================
+  // COPILOT CONTEXT - Inyección global para FAB contextual
+  // Servicio CopilotContextService detecta avatar, vertical, tenant, plan
+  // =========================================================================
+  $variables['copilot_context'] = NULL;
+  
+  // No mostrar copiloto en rutas admin
+  $admin_context = \Drupal::service('router.admin_context');
+  if (!$admin_context->isAdminRoute()) {
+    try {
+      $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
+      $variables['copilot_context'] = $copilot_service->getContext();
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible, no mostrar copiloto
+      \Drupal::logger('ecosistema_jaraba_theme')->warning('CopilotContextService no disponible: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page__auth().
+ *
+ * Preprocesa las páginas de autenticación para inyectar solo el formulario,
+ * sin bloques ni regiones de Drupal heredados.
+ *
+ * Directrices aplicadas:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Branding 3.6: Portal Isolation
+ */
+function ecosistema_jaraba_theme_preprocess_page__auth(&$variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+  $form_builder = \Drupal::formBuilder();
+  
+  // Determinar qué formulario cargar según la ruta.
+  $form = NULL;
+  $form_type = 'login'; // Default
+  
+  switch ($route) {
+    case 'user.login':
+      $form = $form_builder->getForm('\Drupal\user\Form\UserLoginForm');
+      $form_type = 'login';
+      break;
+      
+    case 'user.register':
+      $form = \Drupal::entityTypeManager()
+        ->getFormObject('user', 'register')
+        ->setEntity(\Drupal::entityTypeManager()->getStorage('user')->create());
+      $form = $form_builder->getForm($form);
+      $form_type = 'register';
+      break;
+      
+    case 'user.pass':
+      $form = $form_builder->getForm('\Drupal\user\Form\UserPasswordForm');
+      $form_type = 'password';
+      break;
+      
+    case 'user.logout.confirm':
+      // Logout: Extraer solo el formulario de confirmación de la página.
+      // Buscar el bloque system_main que contiene solo el formulario.
+      $form = NULL;
+      if (isset($variables['page']['content']['system_main'])) {
+        $form = $variables['page']['content']['system_main'];
+      }
+      elseif (isset($variables['page']['content'])) {
+        // Fallback: buscar el formulario dentro del contenido.
+        foreach ($variables['page']['content'] as $key => $block) {
+          if (is_array($block) && isset($block['#form_id']) && strpos($block['#form_id'], 'logout') !== FALSE) {
+            $form = $block;
+            break;
+          }
+        }
+        // Si no encontramos el formulario específico, usar system_main o el primero.
+        if (!$form) {
+          $form = $variables['page']['content']['system_main'] ?? $variables['page']['content'];
+        }
+      }
+      $form_type = 'logout';
+      break;
+      
+    case 'entity.user.canonical':
+      // Perfil: renderizar solo la vista de la entidad usuario.
+      $user = \Drupal::routeMatch()->getParameter('user');
+      if ($user && is_object($user) && method_exists($user, 'id')) {
+        $view_builder = \Drupal::entityTypeManager()->getViewBuilder('user');
+        $form = $view_builder->view($user, 'full');
+        $variables['user_entity'] = $user;
+        $variables['user_display_name'] = $user->getDisplayName();
+      }
+      $form_type = 'profile';
+      break;
+      
+    case 'entity.user.edit_form':
+      // Edición: renderizar solo el formulario de edición del usuario.
+      $user = \Drupal::routeMatch()->getParameter('user');
+      if ($user && is_object($user) && method_exists($user, 'id')) {
+        try {
+          $form_object = \Drupal::entityTypeManager()
+            ->getFormObject('user', 'default')
+            ->setEntity($user);
+          $form = $form_builder->getForm($form_object);
+          $variables['user_entity'] = $user;
+          $variables['user_display_name'] = $user->getDisplayName();
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('ecosistema_jaraba_theme')->error('Error loading user edit form: @error', ['@error' => $e->getMessage()]);
+          $form = NULL;
+        }
+      }
+      $form_type = 'edit';
+      break;
+      
+    default:
+      // Para otras rutas, no renderizar contenido extra.
+      $form = NULL;
+      break;
+  }
+  
+  // Inyectar variables limpias al template.
+  $variables['auth_form'] = $form;
+  $variables['auth_form_type'] = $form_type;
+  
+  // Configuración del tema para parciales.
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+  
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+  ];
+  
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+  
+  // URL del logo desde la configuración del tema de Drupal.
+  $theme_path = \Drupal::service('extension.path.resolver')->getPath('theme', 'ecosistema_jaraba_theme');
+  
+  // Intentar obtener el logo configurado en el tema.
+  $logo_from_theme = theme_get_setting('logo.url', 'ecosistema_jaraba_theme');
+  if ($logo_from_theme) {
+    $variables['logo_url'] = $logo_from_theme;
+  }
+  else {
+    $variables['logo_url'] = '/' . $theme_path . '/images/logo.svg';
+  }
+  
+  // Logo blanco para fondos oscuros.
+  $logo_white_path = $theme_path . '/images/logo-white.svg';
+  if (file_exists(DRUPAL_ROOT . '/' . $logo_white_path)) {
+    $variables['logo_url_white'] = '/' . $logo_white_path;
+  }
+  else {
+    // Fallback: usar el logo normal con filtro CSS.
+    $variables['logo_url_white'] = $variables['logo_url'];
+  }
+}
+
+/**
+ * Implements hook_preprocess_page__user().
+ *
+ * Preprocesa todas las páginas del sistema de usuario para inyectar
+ * contenido LIMPIO: solo la vista o formulario de la entidad usuario,
+ * sin bloques heredados de regiones de Drupal.
+ *
+ * Directrices aplicadas:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Branding 3.6: Portal Isolation
+ */
+function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+  $route_match = \Drupal::routeMatch();
+  
+  // Determinar el tipo de página de usuario.
+  $page_type = 'profile'; // Default
+  $user_content = NULL;
+  
+  // Obtener el usuario de la ruta si existe.
+  $user = $route_match->getParameter('user');
+  if ($user && is_object($user)) {
+    $variables['user'] = $user;
+    $variables['user_display_name'] = $user->getDisplayName();
+  }
+  else {
+    $variables['user_display_name'] = t('Usuario');
+    // Intentar obtener el usuario actual si no está en la ruta.
+    $user = \Drupal::currentUser();
+    if ($user->isAuthenticated()) {
+      $user = \Drupal::entityTypeManager()->getStorage('user')->load($user->id());
+      $variables['user'] = $user;
+      $variables['user_display_name'] = $user->getDisplayName();
+    }
+  }
+  
+  // =========================================================================
+  // RENDERIZAR CONTENIDO LIMPIO - Solo la entidad o formulario específico
+  // =========================================================================
+  switch ($route) {
+    case 'entity.user.canonical':
+      // Página de perfil: renderizar solo la vista de la entidad usuario.
+      $page_type = 'profile';
+      if ($user && is_object($user) && method_exists($user, 'id')) {
+        $view_builder = \Drupal::entityTypeManager()->getViewBuilder('user');
+        $user_content = $view_builder->view($user, 'full');
+      }
+      break;
+      
+    case 'entity.user.edit_form':
+      // Página de edición: renderizar solo el formulario de edición.
+      $page_type = 'edit';
+      if ($user && is_object($user) && method_exists($user, 'id')) {
+        try {
+          $form_object = \Drupal::entityTypeManager()
+            ->getFormObject('user', 'default')
+            ->setEntity($user);
+          $user_content = \Drupal::formBuilder()->getForm($form_object);
+        }
+        catch (\Exception $e) {
+          // Fallback: usar contenido de página si el formulario falla.
+          \Drupal::logger('ecosistema_jaraba_theme')->error('Error loading user edit form: @error', ['@error' => $e->getMessage()]);
+          $user_content = $variables['page']['content'] ?? NULL;
+        }
+      }
+      break;
+      
+    case 'user.logout.confirm':
+      // Página de logout: renderizar solo el formulario de confirmación.
+      $page_type = 'logout';
+      try {
+        $user_content = \Drupal::formBuilder()->getForm('Drupal\user\Form\UserLogoutConfirmForm');
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('ecosistema_jaraba_theme')->error('Error loading logout form: @error', ['@error' => $e->getMessage()]);
+        $user_content = $variables['page']['content'] ?? NULL;
+      }
+      break;
+      
+    case 'entity.user.contact_form':
+      // Página de contacto: renderizar el formulario de contacto.
+      $page_type = 'contact';
+      // El formulario de contacto es más complejo, usar contenido filtrado.
+      $user_content = $variables['page']['content'] ?? NULL;
+      break;
+      
+    case 'user.cancel_confirm':
+      // Página de cancelación de cuenta.
+      $page_type = 'cancel';
+      $user_content = $variables['page']['content'] ?? NULL;
+      break;
+      
+    default:
+      // Otras rutas: fallback a contenido de página (aunque debería estar vacío).
+      $page_type = 'generic';
+      $user_content = $variables['page']['content'] ?? NULL;
+      break;
+  }
+  
+  $variables['user_page_type'] = $page_type;
+  $variables['user_content'] = $user_content;
+  
+  // =========================================================================
+  // CONFIGURACIÓN DEL TEMA Y BRANDING
+  // =========================================================================
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+  
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+  ];
+  
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+  
+  // URL del logo.
+  $theme_path = \Drupal::service('extension.path.resolver')->getPath('theme', 'ecosistema_jaraba_theme');
+  
+  $logo_from_theme = theme_get_setting('logo.url', 'ecosistema_jaraba_theme');
+  if ($logo_from_theme) {
+    $variables['logo_url'] = $logo_from_theme;
+  }
+  else {
+    $variables['logo_url'] = '/' . $theme_path . '/images/logo.svg';
+  }
+  
+  // Logo blanco para fondos oscuros.
+  $logo_white_path = $theme_path . '/images/logo-white.svg';
+  if (file_exists(DRUPAL_ROOT . '/' . $logo_white_path)) {
+    $variables['logo_url_white'] = '/' . $logo_white_path;
+  }
+  else {
+    $variables['logo_url_white'] = $variables['logo_url'];
+  }
+}
+
+/**
+ * Implements hook_preprocess_breadcrumb().
+ */
+function ecosistema_jaraba_theme_preprocess_breadcrumb(&$variables) {
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+
+  $variables['breadcrumb_style'] = $config->get('breadcrumb_style') ?: 'chevrons';
+  $variables['breadcrumb_icons'] = $config->get('breadcrumb_icons') ?? TRUE;
+  $variables['breadcrumb_home_icon'] = $config->get('breadcrumb_home_icon') ?? TRUE;
+
+  // Add structured data
+  if ($config->get('breadcrumb_schema') ?? TRUE) {
+    $items = [];
+    $position = 1;
+    foreach ($variables['breadcrumb'] as $crumb) {
+      $items[] = [
+        '@type' => 'ListItem',
+        'position' => $position,
+        'name' => $crumb['text'],
+        'item' => $crumb['url'] ?? '',
+      ];
+      $position++;
+    }
+
+    if (!empty($items)) {
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => $items,
+      ];
+      $variables['#attached']['html_head'][] = [
+        [
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema),
+        ],
+        'jaraba_breadcrumb_schema',
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Aplica template de página limpia (sin sidebars) a rutas de dashboards.
+ * Template: page--dashboard.html.twig
+ *
+ * Rutas afectadas:
+ * - /employer (Reclutador)
+ * - /jobseeker (Candidato)
+ * - /entrepreneur/dashboard
+ * - /my-company (Productor)
+ */
+function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  
+  // Rutas que usan template limpio de dashboard
+  $dashboard_routes = [
+    'jaraba_job_board.employer_dashboard',
+    'jaraba_candidate.dashboard',  // /jobseeker - Fixed: was jaraba_job_board.jobseeker_dashboard
+    'jaraba_paths.entrepreneur_dashboard',
+    'jaraba_producer.my_company',
+    'jaraba_business_tools.canvas_list',
+    'jaraba_business_tools.canvas_create',
+    'jaraba_business_tools.canvas_edit',
+  ];
+  
+  if (in_array($route, $dashboard_routes)) {
+    $suggestions[] = 'page__dashboard';
+  }
+  
+  // =========================================================================
+  // CONTENT HUB FRONTEND - Template limpio sin regiones ni tema de admin
+  // El tenant NO debe tener acceso al tema de administración de Drupal.
+  // Todas las rutas /content-hub/* usan page--content-hub.html.twig
+  // =========================================================================
+  $content_hub_frontend_routes = [
+    'jaraba_content_hub.dashboard.frontend',       // /content-hub
+    'jaraba_content_hub.articles.frontend',        // /content-hub/articles
+    'jaraba_content_hub.articles.add.frontend',    // /content-hub/articles/add
+    'jaraba_content_hub.articles.edit.frontend',   // /content-hub/articles/{id}/edit
+    'jaraba_content_hub.categories.frontend',      // /content-hub/categories
+    'jaraba_content_hub.categories.add.frontend',  // /content-hub/categories/add
+    'jaraba_content_hub.ai_logs.frontend',         // /content-hub/ai-logs
+  ];
+  
+  if (in_array($route, $content_hub_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin
+    $suggestions[] = 'page__content_hub';
+  }
+
+  // =========================================================================
+  // CRM DASHBOARD - Template limpio para gestión comercial
+  // Rutas /crm y /crm/pipeline usan page--crm.html.twig
+  // =========================================================================
+  $crm_routes = [
+    'jaraba_crm.dashboard',   // /crm
+    'jaraba_crm.pipeline',    // /crm/pipeline
+  ];
+
+  if (in_array($route, $crm_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__crm';
+  }
+
+  // =========================================================================
+  // CREDENTIALS FRONTEND - Template limpio para verificación y dashboard
+  // Rutas /verify/{uuid} y /my-certifications usan page--credentials.html.twig
+  // =========================================================================
+  $credentials_routes = [
+    'jaraba_credentials.verify',         // /verify/{uuid} - Página pública
+    'jaraba_credentials.my_credentials', // /my-certifications - Dashboard usuario
+  ];
+
+  if (in_array($route, $credentials_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__credentials';
+  }
+
+  // =========================================================================
+  // SITE BUILDER FRONTEND - Template limpio sin regiones ni tema de admin
+  // El tenant NO debe tener acceso al tema de administración de Drupal.
+  // Todas las rutas /site-builder/* usan page--site-builder.html.twig
+  // =========================================================================
+  $site_builder_frontend_routes = [
+    'jaraba_site_builder.frontend.dashboard',    // /site-builder
+    'jaraba_site_builder.frontend.tree',         // /site-builder/tree
+    'jaraba_site_builder.frontend.config',       // /site-builder/config
+    'jaraba_site_builder.frontend.redirects',    // /site-builder/redirects
+    'jaraba_site_builder.frontend.sitemap',      // /site-builder/sitemap
+    // Admin routes también usan frontend limpio (Directriz 2026).
+    'jaraba_site_builder.dashboard',             // /admin/structure/site-builder
+    'jaraba_site_builder.tree',                  // /admin/structure/site-builder/tree
+    'jaraba_site_builder.settings',              // /admin/structure/site-builder/config
+    'jaraba_site_builder.redirects',             // /admin/structure/site-builder/redirects
+    'jaraba_site_builder.sitemap',               // /admin/structure/site-builder/sitemap
+  ];
+
+  if (in_array($route, $site_builder_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__site_builder';
+  }
+
+  // =========================================================================
+  // PAGE BUILDER FRONTEND - Template limpio sin regiones ni tema de admin
+  // Rutas /page-builder/* (template picker, preview, create)
+  // Y rutas entity.page_content.* (páginas creadas con Page Builder)
+  // =========================================================================
+  $page_builder_frontend_routes = [
+    'jaraba_page_builder.dashboard',             // /page-builder (Hub Central)
+    'jaraba_page_builder.template_picker',       // /page-builder/templates
+    'jaraba_page_builder.template_preview',      // /page-builder/templates/{id}/preview
+    'jaraba_page_builder.create_from_template',  // /page-builder/create/{template}
+    'jaraba_page_builder.my_pages',              // /my-pages
+    'jaraba_page_builder.experiments_dashboard', // /page-builder/experiments (Gap 2)
+    'jaraba_page_builder.analytics_dashboard',   // /page-builder/analytics (Gap C)
+    'jaraba_page_builder.settings',              // /admin/config/jaraba/page-builder/settings
+    'jaraba_pixels.settings',                     // /pixels (Pixel Manager)
+    // -------------------------------------------------------------------------
+    // PÁGINAS FRONTEND DE TENANTS - Entidades PageContent creadas con Page Builder
+    // Usan layout full-width, limpio de regiones Drupal heredadas
+    // -------------------------------------------------------------------------
+    'entity.page_content.canonical',             // /page/{id} o alias como /pepejaraba
+    'entity.page_content.edit_form',             // /admin/content/pages/{id}/edit
+    'entity.page_content.delete_form',           // /admin/content/pages/{id}/delete
+  ];
+
+  if (in_array($route, $page_builder_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__page_builder';
+  }
+
+  // =========================================================================
+  // INTEGRATIONS MARKETPLACE - Template limpio sin regiones ni tema de admin
+  // Rutas /integraciones/* usan page--integrations.html.twig
+  // =========================================================================
+  $integrations_frontend_routes = [
+    'jaraba_integrations.frontend.dashboard',           // /integraciones
+    'jaraba_integrations.frontend.connector_detail',    // /integraciones/{connector}
+    'jaraba_integrations.frontend.connector_configure', // /integraciones/{connector}/configurar
+    'jaraba_integrations.frontend.webhooks',            // /integraciones/webhooks
+  ];
+
+  if (in_array($route, $integrations_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__integrations';
+  }
+
+  // =========================================================================
+  // CUSTOMER SUCCESS - Template limpio para CSM dashboard (f113)
+  // =========================================================================
+  $cs_frontend_routes = [
+    'jaraba_customer_success.frontend.dashboard',     // /customer-success
+    'jaraba_customer_success.frontend.tenant_detail',  // /customer-success/tenant/{group}
+    'jaraba_customer_success.frontend.playbooks',      // /customer-success/playbooks
+    'jaraba_customer_success.frontend.expansion',      // /customer-success/expansion
+  ];
+
+  if (in_array($route, $cs_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__customer_success';
+  }
+
+  // =========================================================================
+  // USAGE DASHBOARD - Template limpio self-service (G111 / f111)
+  // Ruta /mi-cuenta/uso usa page--mi-cuenta.html.twig
+  // =========================================================================
+  $usage_frontend_routes = [
+    'ecosistema_jaraba_core.usage.dashboard',   // /mi-cuenta/uso
+  ];
+
+  if (in_array($route, $usage_frontend_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__mi_cuenta';
+  }
+
+  // =========================================================================
+  // HELP CENTER PÚBLICO - Template full-width para /ayuda (G114 / f114)
+  // page--ayuda.html.twig: Layout limpio con header/footer, sin regiones
+  // =========================================================================
+  $help_center_routes = [
+    'jaraba_tenant_knowledge.help.index',    // /ayuda
+    'jaraba_tenant_knowledge.help.article',  // /ayuda/{faq_id}
+    'jaraba_tenant_knowledge.help.search',   // /ayuda/buscar
+  ];
+
+  if (in_array($route, $help_center_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__ayuda';
+  }
+
+  // =========================================================================
+  // CANVAS EDITOR - Template full-viewport para edición visual lado a lado
+  // Sin header/footer para máximo espacio de edición
+  // =========================================================================
+  $canvas_editor_routes = [
+    'jaraba_page_builder.canvas_editor',          // /page/{id}/editor
+  ];
+
+  if (in_array($route, $canvas_editor_routes)) {
+    // Template canvas-editor: full-viewport, sin header/footer
+    $suggestions[] = 'page__canvas_editor';
+  }
+
+  // =========================================================================
+  // ANDALUCÍA +ei - Dashboard frontend del programa
+  // Ver: docs/tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md
+  // =========================================================================
+  $andalucia_ei_routes = [
+    'jaraba_andalucia_ei.dashboard',  // /andalucia-ei
+  ];
+
+  if (in_array($route, $andalucia_ei_routes)) {
+    $suggestions[] = 'page__andalucia_ei';
+  }
+
+  // =========================================================================
+  // INTERACTIVE CONTENT - Template limpio para dashboards y player
+  // Rutas /interactive y /interactive/play/* usan page--interactive.html.twig
+  // =========================================================================
+  if (str_starts_with((string) $route, 'jaraba_interactive.')) {
+    $suggestions[] = 'page__interactive';
+  }
+
+  // =========================================================================
+  // COMERCIO CONECTA - Marketplace de comercio de proximidad
+  // Rutas /marketplace y /mi-comercio usan page--comercio-marketplace.html.twig
+  // Ver: docs/implementacion/20260209-Plan_Implementacion_ComercioConecta_v1.md
+  // =========================================================================
+  $comercio_routes = [
+    'jaraba_comercio_conecta.marketplace',                // /marketplace
+    'jaraba_comercio_conecta.marketplace.merchant',       // /marketplace/{slug}
+    'jaraba_comercio_conecta.marketplace.product',        // /marketplace/producto/{id}
+    'jaraba_comercio_conecta.merchant_portal',            // /mi-comercio
+    'jaraba_comercio_conecta.merchant_portal.products',   // /mi-comercio/productos
+    'jaraba_comercio_conecta.merchant_portal.analytics',  // /mi-comercio/analiticas
+  ];
+
+  if (in_array($route, $comercio_routes)) {
+    // Template limpio full-width sin sidebars ni regiones de admin.
+    $suggestions[] = 'page__comercio_marketplace';
+  }
+
+  // Rutas de landing pages de verticales (full-width como homepage)
+  $vertical_routes = [
+    'ecosistema_jaraba_core.vertical.empleo',
+    'ecosistema_jaraba_core.vertical.talento',
+    'ecosistema_jaraba_core.vertical.emprender',
+    'ecosistema_jaraba_core.vertical.comercio',
+    'ecosistema_jaraba_core.vertical.instituciones',
+  ];
+  
+  if (in_array($route, $vertical_routes)) {
+    $suggestions[] = 'page__vertical_landing';
+  }
+
+  // =========================================================================
+  // AUTH PAGES - Template limpio para login/register/password/logout
+  // =========================================================================
+  $auth_routes = [
+    'user.login',
+    'user.register',
+    'user.pass',
+    'user.reset.form',
+    'user.reset.login',
+  ];
+
+  if (in_array($route, $auth_routes)) {
+    $suggestions[] = 'page__auth';
+  }
+
+  // =========================================================================
+  // USER PAGES - También usan page--auth para diseño consistente
+  // Todas las páginas del sistema de usuario comparten el mismo layout
+  // =========================================================================
+  $user_routes = [
+    'entity.user.canonical',       // /user/{uid}
+    'entity.user.edit_form',       // /user/{uid}/edit
+    'user.logout.confirm',         // /user/logout/confirm
+    'entity.user.contact_form',    // /user/{uid}/contact
+    'user.cancel_confirm',         // /user/{uid}/cancel/confirm
+  ];
+
+  if (in_array($route, $user_routes)) {
+    $suggestions[] = 'page__auth';
+  }
+
+  // =========================================================================
+  // CREDENTIAL VERIFICATION - Template premium con partículas animadas
+  // Página pública para verificar autenticidad de credenciales digitales
+  // =========================================================================
+  if ($route === 'jaraba_credentials.verify') {
+    $suggestions[] = 'page__verify';
+  }
+
+  // =========================================================================
+  // MY CERTIFICATIONS - Dashboard de credenciales del usuario
+  // Frontend premium con partículas y grid de credenciales
+  // =========================================================================
+  if ($route === 'jaraba_credentials.my_credentials') {
+    $suggestions[] = 'page__my_certifications';
+  }
+}
+
+
+/**
+ * Implements hook_theme_suggestions_html_alter().
+ *
+ * Sugiere templates html-- alternativos para rutas específicas.
+ * El Canvas Editor necesita control total del HTML para layout full-viewport.
+ *
+ * @see https://www.drupal.org/node/2354993
+ */
+function ecosistema_jaraba_theme_theme_suggestions_html_alter(array &$suggestions, array $variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  // Canvas Editor: usa html--canvas-editor.html.twig
+  // Template que tiene control total del HTML sin interferencia de Gin/Admin toolbar
+  $canvas_editor_routes = [
+    'jaraba_page_builder.canvas_editor',          // /page/{id}/editor
+  ];
+
+  if (in_array($route, $canvas_editor_routes)) {
+    $suggestions[] = 'html__canvas_editor';
+  }
+}

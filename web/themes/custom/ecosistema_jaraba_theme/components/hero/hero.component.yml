@@ -1,0 +1,85 @@
+$schema: 'https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json'
+name: Hero
+status: stable
+description: 'Componente Hero con múltiples variantes para secciones destacadas.'
+group: Jaraba Components
+
+props:
+  type: object
+  required:
+    - title
+  properties:
+    variant:
+      type: string
+      title: Variante
+      default: split
+      enum:
+        - split
+        - fullscreen
+        - compact
+        - animated
+        - slider
+    align:
+      type: string
+      default: left
+      enum: [left, center, right]
+    dark:
+      type: boolean
+      title: Modo oscuro
+      default: false
+    title:
+      type: string
+      title: Título
+    subtitle:
+      type: string
+      title: Subtítulo
+    eyebrow:
+      type: string
+      title: Eyebrow (texto superior)
+    image:
+      type: string
+      title: Imagen URL
+    video:
+      type: string
+      title: Video URL (mp4)
+    background_image:
+      type: string
+      title: Imagen de fondo
+    cta_primary:
+      type: object
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+        icon:
+          type: string
+    cta_secondary:
+      type: object
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    features:
+      type: array
+      title: Lista de features
+      items:
+        type: string
+
+slots:
+  content:
+    title: Content
+    description: Contenido adicional personalizado
+  media:
+    title: Media
+    description: Área de imagen/video personalizada
+  actions:
+    title: Actions
+    description: CTAs personalizados
+
+libraryOverrides:
+  css:
+    component:
+      hero.scss: {}
+

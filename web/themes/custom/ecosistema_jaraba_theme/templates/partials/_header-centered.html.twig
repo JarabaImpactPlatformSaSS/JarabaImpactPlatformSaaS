@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Header sub-partial: Centered
+ *
+ * Layout centrado: Logo y menú centrados.
+ * Mobile: Hamburguesa que se transforma en X.
+ */
+#}
+<header class="landing-header landing-header--centered" role="banner">
+  <div class="landing-header__container landing-header__container--centered">
+    
+    {# Logo + Branding centrado #}
+    <a href="{{ path('<front>') }}" class="landing-header__brand landing-header__brand--centered" rel="home">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+      {% endif %}
+      <div class="landing-header__text">
+        <span class="landing-header__name">{{ site_name }}</span>
+      </div>
+    </a>
+
+    {# Navegación Principal centrada — dinámica desde theme_settings #}
+    <nav class="landing-header__nav landing-header__nav--centered" aria-label="{% trans %}Main navigation{% endtrans %}">
+      <ul class="landing-nav">
+        {% for item in nav_items|default([]) %}
+          <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# Acciones Usuario #}
+    <div class="landing-header__actions">
+      {% if logged_in %}
+        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+      {% else %}
+        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+        <a href="/user/register" class="btn-primary btn-primary--glow">
+          {% trans %}Empezar gratis{% endtrans %}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Mobile Menu Toggle #}
+    <button class="landing-header__toggle" aria-label="{% trans %}Toggle menu{% endtrans %}" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+  </div>
+</header>

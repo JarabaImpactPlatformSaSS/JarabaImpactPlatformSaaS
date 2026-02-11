@@ -1,0 +1,50 @@
+/**
+ * @file
+ * Sidebar - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.sidebar {
+    background: var(--ej-sidebar-bg, #F8FAFC);
+    border-radius: var(--ej-card-radius, 12px);
+    padding: var(--ej-spacing-md);
+}
+
+.sidebar__title {
+    color: var(--ej-sidebar-title, #1A1A2E);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--ej-spacing-md);
+    padding-bottom: var(--ej-spacing-sm);
+    border-bottom: 2px solid var(--ej-color-primary, #FF8C42);
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav__item {
+    margin-bottom: var(--ej-spacing-xs);
+}
+
+.sidebar-nav__link {
+    display: block;
+    padding: var(--ej-spacing-sm);
+    color: var(--ej-sidebar-link, #334155);
+    border-radius: var(--ej-btn-radius, 8px);
+    transition: all 0.2s;
+
+    &:hover {
+        color: var(--ej-sidebar-link-hover, #FF8C42);
+        background: rgba(255, 140, 66, 0.1);
+    }
+
+    &.is-active {
+        color: var(--ej-sidebar-link-active, #FF8C42);
+        background: rgba(255, 140, 66, 0.15);
+        font-weight: 500;
+    }
+}

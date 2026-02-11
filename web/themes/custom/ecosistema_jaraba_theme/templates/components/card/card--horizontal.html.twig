@@ -1,0 +1,79 @@
+{#
+/**
+ * @file
+ * Card variante: Horizontal
+ *
+ * Layout horizontal con imagen a la izquierda.
+ * Uso: Listados de artículos, resultados de búsqueda.
+ */
+#}
+<article class="card card--horizontal {{ card_class|default('') }} card--size-{{ size|default('md') }}">
+  {% if image %}
+    <div class="card__media">
+      <img src="{{ image }}" alt="{{ title }}" class="card__image" loading="lazy" />
+      {% if badge %}
+        <span class="card__badge badge badge--{{ badge.type|default('primary') }}">
+          {{ badge.text }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="card__body">
+    <div class="card__content">
+      {% if category %}
+        <span class="card__category">{{ category }}</span>
+      {% endif %}
+
+      <h3 class="card__title">
+        {% if url %}
+          <a href="{{ url }}" class="card__link">{{ title }}</a>
+        {% else %}
+          {{ title }}
+        {% endif %}
+      </h3>
+
+      {% if subtitle %}
+        <p class="card__subtitle">{{ subtitle }}</p>
+      {% endif %}
+
+      {% if description %}
+        <p class="card__description">{{ description|striptags|slice(0, 200) }}...</p>
+      {% endif %}
+
+      {% if meta %}
+        <div class="card__meta">
+          {% for item in meta %}
+            <span class="card__meta-item">
+              {% if item.icon %}
+                {{ jaraba_icon('ui', item.icon, { size: '16px' }) }}
+              {% endif %}
+              {{ item.text }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if cta or actions %}
+      <div class="card__footer">
+        {% if cta %}
+          <a href="{{ cta.url }}" class="card__cta btn btn--text">
+            {{ cta.text }}
+            {{ jaraba_icon('actions', 'arrow-right', { size: '16px' }) }}
+          </a>
+        {% endif %}
+
+        {% if actions %}
+          <div class="card__actions">
+            {% for action in actions %}
+              <button class="btn btn--icon btn--ghost" title="{{ action.label }}">
+                {{ jaraba_icon('actions', action.icon, { size: '20px' }) }}
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</article>

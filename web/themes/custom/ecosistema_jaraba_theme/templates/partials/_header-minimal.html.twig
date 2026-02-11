@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Header sub-partial: Minimal
+ *
+ * Layout minimalista: Logo + Hamburguesa.
+ * NO muestra navegación horizontal ni acciones en desktop.
+ * Todo el menú accesible vía hamburguesa.
+ */
+#}
+<header class="landing-header landing-header--minimal" role="banner">
+  <div class="landing-header__container">
+    
+    {# Logo + Branding #}
+    <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+      {% endif %}
+      <div class="landing-header__text">
+        <span class="landing-header__name">{{ site_name }}</span>
+        <span class="landing-header__slogan">{{ site_slogan }}</span>
+      </div>
+    </a>
+
+    {# Acciones Usuario (siempre visibles en minimal) #}
+    <div class="landing-header__actions landing-header__actions--minimal">
+      {% if logged_in %}
+        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+      {% endif %}
+    </div>
+
+    {# Mobile Menu Toggle (siempre visible en minimal) #}
+    <button class="landing-header__toggle" aria-label="{% trans %}Toggle menu{% endtrans %}" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+  </div>
+</header>

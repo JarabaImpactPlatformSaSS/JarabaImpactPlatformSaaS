@@ -1,0 +1,69 @@
+{#
+/**
+ * @file
+ * Page template limpio para rutas de ComercioConecta (marketplace, merchant, producto).
+ *
+ * Aplicado a:
+ * - /comercio-local (Listado marketplace público)
+ * - /comercio-local/{slug} (Página de comercio)
+ * - /comercio-local/producto/{id} (Detalle de producto)
+ * - /mi-comercio (Dashboard del comerciante)
+ * - /mi-comercio/productos (Listado productos comerciante)
+ * - /mi-comercio/analiticas (Analytics comerciante)
+ *
+ * DIRECTRICES:
+ * - SIN regiones sidebar (sidebar_first, sidebar_second)
+ * - Layout full-width para marketplace y dashboards
+ * - Mantiene header/footer via parciales
+ * - Mantiene breadcrumb y mensajes del sistema
+ * - Color primario: Naranja impulso (#FF8C42)
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--comercio">
+
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Full Width
+     ============================================= #}
+  <main class="main-content main-content--full main-content--comercio" role="main">
+    {# Mensajes del sistema #}
+    {% if page.highlighted %}
+      <div class="highlighted container">
+        {{ page.highlighted }}
+      </div>
+    {% endif %}
+
+    {# Contenido - Sin sidebars, full-width #}
+    <div class="main-content__inner main-content__inner--full">
+      {% if page.content %}
+        {{ page.content }}
+      {% endif %}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {# Copiloto IA (FAB) #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+
+</div>

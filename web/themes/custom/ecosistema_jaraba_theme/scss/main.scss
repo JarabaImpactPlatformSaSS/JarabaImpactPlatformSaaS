@@ -1,0 +1,88 @@
+/**
+ * @file
+ * Main SCSS entry point for Ecosistema Jaraba Theme.
+ *
+ * IMPORTANTE: Este archivo se compila a css/ecosistema-jaraba-theme.css
+ * Uso: npm run build (desde WSL con NVM)
+ */
+
+// Variables SCSS (fallbacks)
+@use 'variables' as *;
+
+// Admin Settings (Visual Pickers)
+@use 'admin-settings';
+
+// Core Styles
+@use 'base';
+@use 'layout';
+@use 'typography';
+
+// Components
+@use 'components/header';
+@use 'components/hero';
+@use 'components/hero-landing';
+@use 'components/landing-page';
+@use 'components/cards';
+@use 'components/buttons';
+@use 'components/features';
+@use 'components/forms';
+@use 'components/footer';
+@use 'components/sidebar';
+@use 'components/breadcrumbs';
+@use 'components/mobile-menu';
+
+// Premium Components (extensión a todas las páginas)
+@use 'components/page-premium';
+@use 'components/glass-utilities';
+@use 'components/page-builder';
+@use 'components/template-picker';
+@use 'components/template-preview-premium';
+@use 'components/section-editor';
+
+// Features
+@use 'features/dark-mode';
+@use 'features/back-to-top';
+@use 'features/promo-banner';
+
+// AI Dashboard
+@use 'ai-dashboard';
+
+// Content Hub - Blog & Articles
+@use 'content-hub';
+
+// Site Builder - Estructura del sitio frontend
+@use 'site-builder';
+
+// Global Components
+@use 'slide-panel';
+
+// Page Builder Dashboard
+@use 'page-builder-dashboard';
+
+// Analytics Dashboard - Gap C
+@use 'components/analytics-dashboard';
+
+// Consent Banner - GDPR/RGPD
+@use 'components/consent-banner';
+
+// Heatmap Dashboard - Native Tracking
+@use 'components/heatmap-dashboard';
+
+// Accessibility - WCAG 2.1 AA
+@use 'accessibility';
+
+// Auth Pages - Login, Register, Password
+@use 'auth';
+
+// i18n Module - Translation Dashboard & Selector
+@use '../../../../modules/custom/jaraba_i18n/scss/i18n-selector' as i18nSelector;
+@use '../../../../modules/custom/jaraba_i18n/scss/i18n-dashboard' as i18nDashboard;
+
+// Revision Diff - Gap G Visual History
+@use 'components/revision-diff';
+
+// GrapesJS Canvas Editor v3 - Constructor Visual
+@use 'components/grapesjs-canvas';
+
+// Media Browser - Asset Manager integration
+@use 'components/media-browser';

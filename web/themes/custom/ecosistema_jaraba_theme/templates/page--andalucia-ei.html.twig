@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Template para la página del dashboard Andalucía +ei.
+ *
+ * Página full-width sin regiones Drupal, siguiendo frontend-page-pattern.
+ * El contenido del dashboard viene ya renderizado desde el controlador
+ * a través de page.content que usa el theme 'andalucia_ei_dashboard'.
+ *
+ * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
+ */
+#}
+
+{# LOW-09: Use 'only' keyword to prevent variable scope leakage #}
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  site_name: site_name,
+  site_slogan: site_slogan,
+  logo: logo,
+  logged_in: logged_in,
+  theme_settings: theme_settings
+} only %}
+
+<main id="main-content" class="andalucia-ei-main">
+  <div class="andalucia-ei-wrapper">
+
+    {# El contenido viene del controlador via theme 'andalucia_ei_dashboard' #}
+    {{ page.content }}
+
+  </div>
+</main>
+
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  site_name: site_name,
+  logged_in: logged_in
+} only %}

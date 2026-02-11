@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * Partial: Related articles widget (semantic recommendations).
+ *
+ * Variables:
+ * - article_id: ID del artículo actual (para fetch de relacionados)
+ * - related_articles: Array de artículos relacionados (opcional, si ya vienen del backend)
+ * - title: Título del widget (default: 'Related Articles')
+ * - count: Número de artículos a mostrar (default: 4)
+ * - variant: 'grid' | 'list' (default: 'grid')
+ * - show_reading_time: Boolean (default: true)
+ */
+#}
+{% set title = title|default('Related Articles'|trans) %}
+{% set count = count|default(4) %}
+{% set variant = variant|default('grid') %}
+{% set show_reading_time = show_reading_time|default(true) %}
+
+<section class="related-articles related-articles--{{ variant }}" 
+         data-article-id="{{ article_id }}"
+         data-count="{{ count }}"
+         aria-labelledby="related-title">
+  
+  <header class="related-articles__header">
+    <h2 id="related-title" class="related-articles__title">
+      {{ title }}
+    </h2>
+  </header>
+
+  <div class="related-articles__grid" id="related-articles-container">
+    {% if related_articles is not empty %}
+      {# Pre-rendered from backend #}
+      {% for article in related_articles|slice(0, count) %}
+        {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+          article: article,
+          show_reading_time: show_reading_time,
+          variant: variant == 'list' ? 'horizontal' : 'standard'
+        } only %}
+      {% endfor %}
+    {% else %}
+      {# Placeholder for JS loading #}
+      <div class="related-articles__loading">
+        <span class="spinner"></span>
+        {% trans %}Loading recommendations...{% endtrans %}
+      </div>
+    {% endif %}
+  </div>
+</section>

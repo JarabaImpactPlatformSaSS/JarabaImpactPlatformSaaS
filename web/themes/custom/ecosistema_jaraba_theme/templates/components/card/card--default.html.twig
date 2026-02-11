@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Card variante: Default
+ *
+ * Imagen top, título, descripción, CTA.
+ * Uso: Listados generales.
+ */
+#}
+<article class="card card--default {{ card_class|default('') }}">
+  {% if image %}
+    <div class="card__media">
+      <img src="{{ image }}" alt="{{ title }}" class="card__image" loading="lazy" />
+      {% if badge %}
+        <span class="card__badge badge badge--{{ badge.type|default('primary') }}">
+          {{ badge.text }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="card__content">
+    {% if category %}
+      <span class="card__category">{{ category }}</span>
+    {% endif %}
+
+    <h3 class="card__title">
+      {% if url %}
+        <a href="{{ url }}" class="card__link">{{ title }}</a>
+      {% else %}
+        {{ title }}
+      {% endif %}
+    </h3>
+
+    {% if description %}
+      <p class="card__description">{{ description|striptags|slice(0, 150) }}...</p>
+    {% endif %}
+
+    {% if meta %}
+      <div class="card__meta">
+        {% for item in meta %}
+          <span class="card__meta-item">
+            {{ jaraba_icon('ui', item.icon, { size: '14px' }) }}
+            {{ item.text }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if cta %}
+      <a href="{{ cta.url }}" class="card__cta btn btn--text">
+        {{ cta.text }}
+        {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+      </a>
+    {% endif %}
+  </div>
+</article>

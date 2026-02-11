@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Partial: Blog article card para listados.
+ *
+ * Variables:
+ * - article: Array con datos del artículo
+ *   - id: ID del artículo
+ *   - title: Título
+ *   - slug: URL slug
+ *   - excerpt: Extracto
+ *   - url: URL completa
+ *   - reading_time: Tiempo de lectura en minutos
+ *   - publish_date: Fecha de publicación
+ *   - category_name: Nombre de categoría
+ *   - category_color: Color hex de categoría
+ *   - category_url: URL de categoría
+ *   - featured_image: URL de imagen destacada (opcional)
+ * - show_reading_time: Boolean para mostrar tiempo de lectura
+ * - variant: 'standard' | 'featured' | 'horizontal' | 'minimal'
+ */
+#}
+{% set variant = variant|default('standard') %}
+
+<article class="article-card article-card--{{ variant }}" data-article-id="{{ article.id }}">
+  {% if article.featured_image %}
+    <a href="{{ article.url }}" class="article-card__image-link" aria-label="{{ article.title }}">
+      <img 
+        src="{{ article.featured_image }}" 
+        alt="{{ article.title }}" 
+        loading="lazy" 
+        class="article-card__image"
+      >
+    </a>
+  {% endif %}
+
+  <div class="article-card__content">
+    {% if article.category_name %}
+      <a 
+        href="{{ article.category_url }}" 
+        class="article-card__category"
+        style="--category-color: {{ article.category_color|default('#233D63') }}"
+      >
+        {{ article.category_name }}
+      </a>
+    {% endif %}
+
+    <h3 class="article-card__title">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h3>
+
+    {% if article.excerpt and variant != 'minimal' %}
+      <p class="article-card__excerpt">{{ article.excerpt }}</p>
+    {% endif %}
+
+    <div class="article-card__meta">
+      <time datetime="{{ article.publish_date }}" class="article-card__date">
+        {{ article.publish_date|date('d M Y') }}
+      </time>
+      {% if show_reading_time and article.reading_time %}
+        <span class="article-card__reading-time">
+          <svg class="article-card__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          {{ article.reading_time }} {% trans %}min{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</article>

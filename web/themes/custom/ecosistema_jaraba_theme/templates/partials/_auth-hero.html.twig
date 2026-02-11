@@ -1,0 +1,100 @@
+{#
+/**
+ * @file
+ * templates/partials/_auth-hero.html.twig
+ *
+ * Partial de hero para páginas de autenticación.
+ * Incluye canvas para partículas y textos de bienvenida.
+ *
+ * Siguiendo directrices:
+ * - Nuclear #3: i18n completa ({% trans %})
+ * - Branding 3.7: Premium UI Patterns
+ * - Branding 3.12: Vertical Centered Hub Layout
+ */
+#}
+
+<section class="auth-hero">
+  {# Canvas para partículas animadas #}
+  <canvas id="auth-particles" class="auth-hero__particles" aria-hidden="true"></canvas>
+  
+  <div class="auth-hero__content">
+    {# Icono decorativo - SVG inline para garantía visual #}
+    <div class="auth-hero__icon">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="28" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <circle cx="32" cy="24" r="10" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="2"/>
+        <path d="M16 52C16 43.16 23.16 36 32 36C40.84 36 48 43.16 48 52" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    
+    <h1 class="auth-hero__title">
+      {% trans %}Bienvenido a Jaraba{% endtrans %}
+    </h1>
+    
+    <p class="auth-hero__subtitle">
+      {% trans %}Tu plataforma de impacto social y emprendimiento{% endtrans %}
+    </p>
+  </div>
+</section>
+
+{# Script para partículas - adjuntado inline para este componente específico #}
+<script>
+(function() {
+  'use strict';
+  
+  const canvas = document.getElementById('auth-particles');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animationId;
+  
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  
+  function createParticles() {
+    particles = [];
+    const count = Math.floor((canvas.width * canvas.height) / 15000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.5 + 0.2
+      });
+    }
+  }
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
+      ctx.fill();
+      
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+    
+    animationId = requestAnimationFrame(draw);
+  }
+  
+  resize();
+  createParticles();
+  draw();
+  
+  window.addEventListener('resize', function() {
+    resize();
+    createParticles();
+  });
+})();
+</script>

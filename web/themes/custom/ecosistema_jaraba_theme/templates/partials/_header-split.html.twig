@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * Header sub-partial: Split
+ *
+ * Layout dividido: Logo centro, menús a ambos lados.
+ * Los nav_items se distribuyen automáticamente: mitad izquierda, mitad derecha.
+ * Mobile: Hamburguesa que se transforma en X.
+ *
+ * Variables esperadas:
+ * - site_name, logo, logged_in
+ * - nav_items: array de { text, url } desde theme_settings.navigation_items
+ */
+#}
+{% set all_items = nav_items|default([]) %}
+{% set half = (all_items|length / 2)|round(0, 'ceil') %}
+{% set left_items = all_items|slice(0, half) %}
+{% set right_items = all_items|slice(half) %}
+
+<header class="landing-header landing-header--split" role="banner">
+  <div class="landing-header__container landing-header__container--split">
+    
+    {# Navegación izquierda — dinámica #}
+    <nav class="landing-header__nav landing-header__nav--left" aria-label="{% trans %}Main navigation left{% endtrans %}">
+      <ul class="landing-nav">
+        {% for item in left_items %}
+          <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# Logo + Branding centro #}
+    <a href="{{ path('<front>') }}" class="landing-header__brand landing-header__brand--center" rel="home">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+      {% endif %}
+      <div class="landing-header__text">
+        <span class="landing-header__name">{{ site_name }}</span>
+      </div>
+    </a>
+
+    {# Navegación derecha — dinámica #}
+    <nav class="landing-header__nav landing-header__nav--right" aria-label="{% trans %}Main navigation right{% endtrans %}">
+      <ul class="landing-nav">
+        {% for item in right_items %}
+          <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# Acciones Usuario #}
+    <div class="landing-header__actions">
+      {% if logged_in %}
+        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+      {% else %}
+        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+      {% endif %}
+    </div>
+
+    {# Mobile Menu Toggle #}
+    <button class="landing-header__toggle" aria-label="{% trans %}Toggle menu{% endtrans %}" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+  </div>
+</header>

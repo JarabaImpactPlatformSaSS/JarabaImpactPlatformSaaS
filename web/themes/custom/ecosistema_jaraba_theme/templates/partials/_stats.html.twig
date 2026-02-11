@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * templates/partials/_stats.html.twig
+ *
+ * Sección de estadísticas/social proof.
+ * Contador animado con data-count.
+ * Soporta datos dinámicos desde Page Builder o fallbacks hardcodeados.
+ * i18n con {% trans %}
+ *
+ * Variables esperadas:
+ * - stats: Array de estadísticas desde Page Builder (opcional)
+ */
+#}
+
+{# Fallback: Si no hay stats dinámicas, usar hardcodeadas #}
+{% set default_stats = [
+  { value: 1500, suffix: '+', label: 'Candidatos activos'|t },
+  { value: 120, suffix: '+', label: 'Empresas'|t },
+  { value: 85, suffix: '+', label: 'Emprendimientos'|t },
+  { value: 98, suffix: '%', label: 'Satisfacción'|t }
+] %}
+
+{% set stat_items = stats|default([])|length > 0 ? stats : default_stats %}
+
+<section class="stats-section" aria-labelledby="stats-title">
+  <div class="stats-section__container">
+    <h2 id="stats-title" class="visually-hidden">{% trans %}Estadísticas{% endtrans %}</h2>
+    
+    <div class="stats-grid">
+      {% for stat in stat_items %}
+        <div class="stat-item">
+          <span class="stat-item__number" data-count="{{ stat.value }}">0</span>
+          {% if stat.suffix %}<span class="stat-item__suffix">{{ stat.suffix }}</span>{% endif %}
+          <span class="stat-item__label">{{ stat.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+

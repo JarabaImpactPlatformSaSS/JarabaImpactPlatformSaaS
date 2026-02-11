@@ -1,0 +1,297 @@
+{#
+/**
+ * @file
+ * page--my-certifications.html.twig - Dashboard de certificaciones del usuario.
+ *
+ * DISEÑO PREMIUM con header de partículas animadas.
+ * Layout: Header hero top con partículas + Grid de credenciales.
+ *
+ * Directrices aplicadas:
+ * - Nuclear #3: i18n completa ({% trans %})
+ * - Nuclear #11: Full-width layout
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Branding 3.4: Premium Visual Hierarchy
+ *
+ * @see .agent/workflows/frontend-page-pattern.md
+ */
+#}
+
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_credentials/dashboard') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ======================================
+       ESTILOS PREMIUM - MY CERTIFICATIONS
+       ====================================== */
+    
+    .certifications-page {
+      min-height: 100vh;
+      background: var(--ej-bg-body, #F8FAFC);
+    }
+    
+    /* Override hero--split grid si existe en el tema */
+    .certifications-page.hero--split {
+      display: block !important;
+      grid-template-columns: unset !important;
+    }
+    
+    /* Header Premium con Partículas */
+    .certifications-hero {
+      position: relative;
+      padding: 100px 0 80px; /* Aumentado padding-top para no cortar el icono */
+      background: linear-gradient(135deg, #1a1a2e 0%, #233D63 50%, #16213e 100%);
+      overflow: hidden;
+    }
+    
+    .certifications-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 169, 165, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 140, 66, 0.1) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    
+    .certifications-hero__particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .certifications-hero__content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      text-align: center;
+    }
+    
+    .certifications-hero__icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .certifications-hero__icon svg {
+      width: 32px;
+      height: 32px;
+      color: #00A9A5;
+    }
+    
+    .certifications-hero__title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
+    
+    .certifications-hero__subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    /* Contenido Principal */
+    .certifications-content {
+      max-width: 1200px;
+      margin: -40px auto 0;
+      padding: 0 24px 60px;
+      position: relative;
+      z-index: 3;
+    }
+    
+    .certifications-main {
+      width: 100%;
+      min-height: calc(100vh - 160px);
+    }
+    
+    /* Ocultar header/título duplicado del theme hook credentials_dashboard */
+    .credentials-dashboard__header {
+      display: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .certifications-hero {
+        padding: 80px 0 60px; /* Mantener espacio suficiente en móvil */
+      }
+      
+      .certifications-hero__title {
+        font-size: 1.75rem;
+      }
+      
+      .certifications-content {
+        margin-top: -30px;
+        padding: 0 16px 40px;
+      }
+    }
+  </style>
+</head>
+
+<body{{ attributes.addClass('certifications-page', 'page-my-certifications') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Saltar al contenido principal{% endtrans %}
+  </a>
+
+  {# Header del sitio - usando partial del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+  
+  <main id="main-content" class="certifications-main">
+    {# Hero Premium con Partículas #}
+    <section class="certifications-hero">
+      <canvas id="certifications-particles" class="certifications-hero__particles" aria-hidden="true"></canvas>
+      
+      <div class="certifications-hero__content">
+        <div class="certifications-hero__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="6"/>
+            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+          </svg>
+        </div>
+        
+        <h1 class="certifications-hero__title">{% trans %}Mis Certificaciones{% endtrans %}</h1>
+        <p class="certifications-hero__subtitle">{% trans %}Administra y comparte tus credenciales digitales verificables{% endtrans %}</p>
+      </div>
+    </section>
+    
+    {# Contenido de credenciales - renderizado desde controller #}
+    <div class="certifications-content">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# Footer del sitio - usando partial del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+  
+  {# Scripts de partículas #}
+  <script>
+  (function() {
+    const canvas = document.getElementById('certifications-particles');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+    
+    function resize() {
+      const hero = canvas.parentElement;
+      canvas.width = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+    
+    function createParticles() {
+      particles = [];
+      const count = Math.floor((canvas.width * canvas.height) / 15000);
+      
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          alpha: Math.random() * 0.5 + 0.3
+        });
+      }
+    }
+    
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Dibujar partículas
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 169, 165, ${p.alpha})`;
+        ctx.fill();
+      });
+      
+      // Dibujar conexiones
+      particles.forEach((p1, i) => {
+        particles.slice(i + 1).forEach(p2 => {
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0, 169, 165, ${0.15 * (1 - distance / 120)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        });
+      });
+    }
+    
+    function updateParticles() {
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      });
+    }
+    
+    function animate() {
+      updateParticles();
+      drawParticles();
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    resize();
+    createParticles();
+    animate();
+    
+    window.addEventListener('resize', () => {
+      resize();
+      createParticles();
+    });
+  })();
+  </script>
+  
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

@@ -1,0 +1,278 @@
+/**
+ * @file
+ * Accessibility styles - WCAG 2.1 AA Compliance.
+ *
+ * Estilos para mejorar la accesibilidad:
+ * - Skip links para navegación por teclado
+ * - Estados de focus visibles
+ * - Reducción de movimiento para usuarios sensibles
+ * - Alto contraste para mejor legibilidad
+ *
+ * @see https://www.w3.org/WAI/WCAG21/quickref/
+ */
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ===========================================
+// SKIP LINK - Accesibilidad por teclado
+// ===========================================
+// A11Y-03: Skip link using clip-rect for reliable cross-browser positioning.
+.skip-link {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    z-index: 10000;
+    padding: $ej-spacing-md $ej-spacing-xl;
+    background: var(--ej-color-corporate, $ej-color-corporate);
+    color: #fff;
+    border-radius: $ej-btn-radius;
+    font-weight: 600;
+    font-family: var(--ej-font-body, $ej-font-body);
+    text-decoration: none;
+    box-shadow: $ej-shadow-lg;
+    transition: transform 0.2s ease;
+
+    &:focus,
+    &:focus-visible {
+        transform: translateX(-50%) translateY($ej-spacing-md);
+        outline: 3px solid var(--ej-color-primary, $ej-color-primary);
+        outline-offset: 3px;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6), $ej-shadow-lg;
+    }
+}
+
+// ===========================================
+// FOCUS VISIBLE MEJORADO (A11Y-02: double-ring para contraste)
+// ===========================================
+:focus-visible {
+    outline: 3px solid var(--ej-color-primary, $ej-color-primary);
+    outline-offset: 3px;
+    // A11Y-02: Dark outer ring ensures visibility on colored backgrounds.
+    box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6);
+}
+
+// Botones con focus visible
+.btn,
+button,
+[type="button"],
+[type="submit"] {
+    &:focus-visible {
+        outline: 3px solid var(--ej-color-primary, $ej-color-primary);
+        outline-offset: 3px;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6), 0 0 0 8px rgba($ej-color-primary, 0.25);
+    }
+}
+
+// Cards interactivas con focus
+.intention-card,
+.feature-card,
+.stat-item {
+    &:focus-visible {
+        outline: 3px solid var(--ej-color-primary, $ej-color-primary);
+        outline-offset: 4px;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(0, 0, 0, 0.5);
+        transform: translateY(-4px);
+    }
+}
+
+// Inputs con focus visible
+input,
+textarea,
+select {
+    &:focus-visible {
+        outline: 3px solid var(--ej-color-primary, $ej-color-primary);
+        outline-offset: 0;
+        border-color: var(--ej-color-primary, $ej-color-primary);
+        box-shadow: 0 0 0 1px #fff, 0 0 0 4px rgba(0, 0, 0, 0.4);
+    }
+}
+
+// ===========================================
+// REDUCED MOTION - Usuarios sensibles
+// ===========================================
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .scroll-fade-in,
+    .scroll-slide-up,
+    .scroll-slide-left,
+    .scroll-slide-right,
+    .scroll-zoom-in {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .hero-landing__scroll {
+        display: none;
+    }
+}
+
+// ===========================================
+// HIGH CONTRAST MODE
+// ===========================================
+@media (prefers-contrast: more) {
+    :root {
+        --ej-color-primary: #ff6600;
+        --ej-color-corporate: #000033;
+        --ej-border-color: #000;
+    }
+
+    .btn,
+    .intention-card,
+    .feature-card {
+        border: 2px solid currentColor;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+}
+
+// ===========================================
+// VISUALLY HIDDEN (SR ONLY)
+// ===========================================
+.visually-hidden,
+.sr-only {
+    &:not(:focus):not(:active) {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    }
+}
+
+// Hacer visible cuando tiene focus
+.visually-hidden.focusable,
+.sr-only.focusable {
+
+    &:focus,
+    &:active {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        clip: auto !important;
+        white-space: normal !important;
+    }
+}
+
+// ===========================================
+// ARIA LIVE REGIONS & STATUS MESSAGES
+// ===========================================
+[role="alert"] {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius;
+    background: rgba($ej-color-danger, 0.1);
+    border-left: 4px solid $ej-color-danger;
+    // LOW-02: color.scale() is preferred over color.adjust() for relative changes.
+    color: color.scale($ej-color-danger, $lightness: -30%);
+}
+
+[role="status"] {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius;
+    background: rgba($ej-color-success, 0.1);
+    border-left: 4px solid $ej-color-success;
+    color: color.scale($ej-color-success, $lightness: -30%);
+}
+
+// ===========================================
+// A11Y-05: PRINT STYLESHEET
+// ===========================================
+@media print {
+    // Reset backgrounds and shadows for print.
+    *,
+    *::before,
+    *::after {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    // Links: show URL after anchor text.
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.85em;
+        color: #555 !important;
+    }
+
+    // Don't show URL for anchor/JS links.
+    a[href^="#"]::after,
+    a[href^="javascript:"]::after {
+        content: "";
+    }
+
+    // Hide non-essential elements.
+    nav,
+    .skip-link,
+    .hero-landing,
+    .contextual-copilot-fab,
+    .back-to-top,
+    .slide-panel,
+    .toolbar,
+    .gin-secondary-toolbar,
+    footer,
+    .mobile-menu,
+    canvas,
+    video,
+    iframe {
+        display: none !important;
+    }
+
+    // Typography for readability.
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        orphans: 3;
+        widows: 3;
+    }
+
+    p, li {
+        orphans: 3;
+        widows: 3;
+    }
+
+    // Avoid page breaks inside images, tables, pre blocks.
+    img, table, pre {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    // Layout: full-width single column.
+    .layout-container,
+    .region-content,
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}

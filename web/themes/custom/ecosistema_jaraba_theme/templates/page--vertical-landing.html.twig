@@ -1,0 +1,72 @@
+{#
+/**
+ * @file
+ * page--vertical-landing.html.twig - Template para landing pages de verticales.
+ *
+ * ARQUITECTURA:
+ * - Layout full-width sin regiones de Drupal
+ * - Reutiliza partials de header y footer
+ * - Usa variables CSS var(--ej-*)
+ * - i18n con {% trans %}
+ *
+ * RUTAS:
+ * - /empleo, /talento, /emprender, /comercio, /instituciones
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_core/global') }}
+{{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-vertical-landing', 'landing-page', 'vertical-' ~ vertical_key|default('default')) }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con menú móvil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# MAIN CONTENT - Full width #}
+  <main id="main-content" class="landing-main">
+    
+    {# CONTENIDO DE LA PÁGINA (render del controlador) #}
+    {{ page.content }}
+
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: vertical_key|default('public') ~ '_copilot',
+    avatar_type: 'general',
+    fab_color: 'var(--ej-color-impulse, #FF8C42)',
+    is_expanded: false
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

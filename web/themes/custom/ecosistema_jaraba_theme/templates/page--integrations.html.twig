@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * page--integrations.html.twig - Marketplace de integraciones sin regiones.
+ *
+ * ARQUITECTURA (IGUAL QUE page--content-hub.html.twig):
+ * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Full-width igual que landing page
+ *
+ * PROPÓSITO: Página frontend limpia para marketplace de integraciones.
+ * Ver: docs/00_DIRECTRICES_PROYECTO.md sección 2.2.2
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-integrations', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con menú móvil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN CONTENT - Full-width igual que landing page #}
+  <main id="main-content" class="dashboard-main">
+    {# Contenedor del dashboard con márgenes propios #}
+    <div class="dashboard-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

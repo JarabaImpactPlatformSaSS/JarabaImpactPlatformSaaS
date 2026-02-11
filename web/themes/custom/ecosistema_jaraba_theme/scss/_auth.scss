@@ -1,0 +1,814 @@
+// =============================================================================
+// Página de Autenticación Premium - Layout Split
+// =============================================================================
+// 
+// Referencia a directrices:
+// - Nuclear #2: Tokens de diseño con fallback dual
+// - Nuclear #11: Full-width layout
+// - Nuclear #14: Frontend Limpio (Zero Region Policy)
+// - Nuclear #18: Dart Sass moderno
+// - Branding 3.7: Premium UI Patterns
+// - Branding 3.12: Split Layout Pattern
+//
+// @author Jaraba Dev Team
+// @since 2026-02-01
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// =============================================================================
+// BODY RESETS - Neutralizar grid y toolbar de admin
+// =============================================================================
+.page-auth {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  &.hero-layout-split {
+    display: block !important;
+    grid-template-columns: unset !important;
+  }
+
+  #toolbar-administration,
+  .toolbar-bar,
+  .gin-secondary-toolbar,
+  .toolbar--gin,
+  .toolbar-anti-flicker,
+  .navigation-menu {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+  }
+
+  &.toolbar-fixed,
+  &.toolbar-horizontal,
+  &.toolbar-vertical,
+  &.gin--vertical-toolbar,
+  &.gin--horizontal-toolbar {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .layout-container,
+  .region-content,
+  #main-content,
+  main {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+// =============================================================================
+// SPLIT LAYOUT - Dos columnas sin scroll
+// =============================================================================
+.auth-page--split {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  min-height: 100vh;
+  background: var(--ej-bg-body, $ej-bg-body);
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+// =============================================================================
+// COLUMNA IZQUIERDA: Hero Premium con branding
+// =============================================================================
+.auth-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: $ej-spacing-2xl;
+  background: linear-gradient(145deg,
+      var(--ej-color-corporate, $ej-color-corporate) 0%,
+      color.adjust($ej-color-corporate, $lightness: 5%) 40%,
+      color.adjust($ej-color-corporate, $lightness: -5%) 100%);
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    padding: $ej-spacing-xl $ej-spacing-lg;
+    min-height: 350px;
+  }
+
+  &__particles {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto; // Habilitar interacción con mouse
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    max-width: 380px;
+    pointer-events: none; // Permitir que el mouse pase a las partículas
+
+    &>* {
+      pointer-events: auto; // Pero los elementos hijos sí reciben eventos
+    }
+  }
+
+  // Logo del SaaS con filtro para versión blanca
+  &__logo {
+    margin-bottom: $ej-spacing-xl;
+
+    img {
+      height: 48px;
+      width: auto;
+      filter: brightness(0) invert(1); // Convertir a blanco
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 $ej-spacing-sm;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 900px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin: 0 0 $ej-spacing-xl;
+    line-height: 1.6;
+
+    @media (max-width: 900px) {
+      font-size: 0.9375rem;
+      margin-bottom: $ej-spacing-lg;
+    }
+  }
+
+  // ==========================================================================
+  // VERTICALES DEL ECOSISTEMA - Cards premium con animaciones
+  // ==========================================================================
+  &__verticals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $ej-spacing-sm;
+    margin-top: $ej-spacing-lg;
+
+    @media (max-width: 900px) {
+      display: none;
+    }
+  }
+
+  &__vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-border-radius;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-width: 70px;
+    cursor: pointer;
+    transition:
+      background 0.3s ease,
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-4px) scale(1.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 20px rgba(255, 255, 255, 0.1);
+
+      .auth-hero__vertical-icon {
+        transform: scale(1.15);
+
+        &::after {
+          opacity: 1;
+          transform: scale(1.3);
+        }
+      }
+    }
+
+    span {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+  }
+
+  &__vertical-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    position: relative;
+    transition: transform 0.3s ease;
+
+    // Glow ring animado
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      opacity: 0;
+      transform: scale(1);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    // Colores por vertical con gradientes sutiles
+    &--employment {
+      color: var(--ej-color-primary, $ej-color-primary);
+      background: rgba($ej-color-primary, 0.2);
+    }
+
+    &--entrepreneurship {
+      color: var(--ej-color-secondary, $ej-color-secondary);
+      background: rgba($ej-color-secondary, 0.2);
+    }
+
+    &--commerce {
+      color: #F59E0B;
+      background: rgba(#F59E0B, 0.2);
+    }
+
+    &--institutions {
+      color: #A78BFA;
+      background: rgba(#A78BFA, 0.2);
+    }
+
+    &--services {
+      color: #34D399;
+      background: rgba(#34D399, 0.2);
+    }
+  }
+
+  // Footer con copyright
+  &__footer {
+    position: absolute;
+    bottom: $ej-spacing-lg;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 2;
+
+    p {
+      margin: 0;
+      font-size: 0.75rem;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 900px) {
+      display: none;
+    }
+  }
+}
+
+// =============================================================================
+// COLUMNA DERECHA: Formulario Premium
+// =============================================================================
+.auth-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $ej-spacing-2xl;
+  background: var(--ej-bg-body, $ej-bg-body);
+
+  @media (max-width: 900px) {
+    padding: $ej-spacing-xl $ej-spacing-lg;
+  }
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 380px;
+
+  // ==========================================================================
+  // Icono contextual del formulario
+  // ==========================================================================
+  .auth-form-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: $ej-spacing-lg;
+
+    svg {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  // ==========================================================================
+  // Títulos del formulario
+  // ==========================================================================
+  .auth-form-title {
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin: 0 0 $ej-spacing-xs;
+    text-align: center;
+  }
+
+  .auth-form-subtitle {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    text-align: center;
+    margin: 0 0 $ej-spacing-xl;
+  }
+
+  // ==========================================================================
+  // Form Items - Estructura de Drupal
+  // ==========================================================================
+  .form-item {
+    margin-bottom: $ej-spacing-lg;
+  }
+
+  label {
+    display: block;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-weight: 500;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin-bottom: $ej-spacing-xs;
+    font-size: 0.875rem;
+  }
+
+  .form-required {
+    color: var(--ej-color-danger, $ej-color-danger);
+  }
+
+  .description {
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin-top: $ej-spacing-xs;
+  }
+
+  // ==========================================================================
+  // Input Fields - Premium con transiciones
+  // ==========================================================================
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  textarea {
+    width: 100%;
+    padding: $ej-spacing-md;
+    border: 2px solid var(--ej-input-border, $ej-border-color);
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 1rem;
+    color: var(--ej-color-body, $ej-color-body);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+
+    &::placeholder {
+      color: var(--ej-color-muted, $ej-color-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, $ej-color-primary);
+      box-shadow: 0 0 0 4px rgba($ej-color-primary, 0.12);
+      transform: translateY(-1px);
+    }
+
+    &:hover:not(:focus) {
+      border-color: color.adjust($ej-border-color, $lightness: -15%);
+    }
+  }
+
+  // ==========================================================================
+  // Submit Button - Premium con glow animado
+  // ==========================================================================
+  input[type="submit"],
+  button[type="submit"],
+  .button--primary {
+    width: 100%;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, $ej-color-primary) 0%,
+        color.adjust($ej-color-primary, $lightness: -8%) 100%);
+    color: var(--ej-btn-primary-text, #fff);
+    border: none;
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: $ej-spacing-md;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg,
+          var(--ej-color-primary, $ej-color-primary),
+          color.adjust($ej-color-primary, $lightness: 15%),
+          var(--ej-color-primary, $ej-color-primary));
+      border-radius: inherit;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 6px 20px rgba($ej-color-primary, 0.35),
+        0 0 30px rgba($ej-color-primary, 0.15);
+
+      &::before {
+        opacity: 1;
+        animation: glow-pulse 1.5s ease-in-out infinite;
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow:
+        0 0 0 4px rgba($ej-color-primary, 0.25),
+        0 6px 20px rgba($ej-color-primary, 0.35);
+    }
+  }
+
+  @keyframes glow-pulse {
+
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  // ==========================================================================
+  // Ocultar elementos técnicos de Drupal
+  // ==========================================================================
+  .form-actions {
+    margin-top: $ej-spacing-lg;
+    margin-bottom: 0;
+  }
+
+  .tabs,
+  .breadcrumb,
+  nav.tabs {
+    display: none !important;
+  }
+}
+
+// =============================================================================
+// SECONDARY LINKS - Premium styling
+// =============================================================================
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ej-spacing-sm;
+  margin-top: $ej-spacing-xl;
+  padding-top: $ej-spacing-lg;
+  border-top: 1px solid var(--ej-input-border, $ej-border-color);
+
+  &__primary {
+    color: var(--ej-color-secondary, $ej-color-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ej-color-primary, $ej-color-primary);
+    }
+  }
+
+  &__secondary {
+    color: var(--ej-color-muted, $ej-color-muted);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ej-color-secondary, $ej-color-secondary);
+    }
+  }
+
+  // Fallback para links sin clase
+  a:not([class]) {
+    color: var(--ej-color-secondary, $ej-color-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ej-color-primary, $ej-color-primary);
+    }
+  }
+}
+
+// =============================================================================
+// USER PAGES - Reutiliza estilos de auth con clases específicas
+// =============================================================================
+
+// Body resets para páginas de usuario
+.user-page {
+  @extend .page-auth;
+}
+
+// Layout split
+.user-layout {
+  @extend .auth-page--split;
+}
+
+// Hero column
+.user-hero {
+  @extend .auth-hero;
+
+  &__particles {
+    @extend .auth-hero__particles;
+  }
+
+  &__content {
+    @extend .auth-hero__content;
+  }
+
+  &__logo {
+    @extend .auth-hero__logo;
+
+    &--invert img {
+      filter: brightness(0) invert(1);
+    }
+  }
+
+  &__title {
+    @extend .auth-hero__title;
+  }
+
+  &__subtitle {
+    @extend .auth-hero__subtitle;
+  }
+
+  &__verticals {
+    @extend .auth-hero__verticals;
+  }
+
+  &__footer {
+    @extend .auth-hero__footer;
+  }
+}
+
+// Vertical cards
+.vertical-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ej-spacing-xs;
+  padding: $ej-spacing-sm $ej-spacing-md;
+  border-radius: $ej-border-radius;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 70px;
+  cursor: default;
+  transition:
+    background 0.3s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-4px) scale(1.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.2),
+      0 0 20px rgba(255, 255, 255, 0.1);
+
+    svg {
+      transform: scale(1.15);
+    }
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.3s ease;
+  }
+
+  span {
+    font-size: 0.625rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  // Colores por vertical
+  &--empleo {
+    color: var(--ej-color-primary, $ej-color-primary);
+
+    &:hover {
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba($ej-color-primary, 0.3);
+    }
+  }
+
+  &--emprender {
+    color: var(--ej-color-secondary, $ej-color-secondary);
+
+    &:hover {
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba($ej-color-secondary, 0.3);
+    }
+  }
+
+  &--comercio {
+    color: #F59E0B;
+
+    &:hover {
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(#F59E0B, 0.3);
+    }
+  }
+
+  &--instituciones {
+    color: #A78BFA;
+
+    &:hover {
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(#A78BFA, 0.3);
+    }
+  }
+
+  &--servicios {
+    color: #34D399;
+
+    &:hover {
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(#34D399, 0.3);
+    }
+  }
+}
+
+// Content column
+.user-content {
+  @extend .auth-form-wrapper;
+}
+
+.user-content__wrapper {
+  @extend .auth-form-container;
+  max-width: 500px; // Más ancho para contenido de perfil
+}
+
+.user-icon {
+  @extend .auth-form-icon;
+}
+
+.user-form-title {
+  @extend .auth-form-title;
+}
+
+.user-form-subtitle {
+  @extend .auth-form-subtitle;
+}
+
+.user-page-content {
+  margin-top: $ej-spacing-lg;
+
+  // Estilos para contenido de perfil
+  .field {
+    margin-bottom: $ej-spacing-md;
+
+    .field__label {
+      font-weight: 600;
+      color: var(--ej-color-headings, $ej-color-headings);
+      font-size: 0.875rem;
+      margin-bottom: $ej-spacing-xs;
+    }
+
+    .field__item {
+      color: var(--ej-color-body, $ej-color-body);
+    }
+  }
+
+  // Estilos para formularios de edición
+  .form-item {
+    margin-bottom: $ej-spacing-lg;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    width: 100%;
+    padding: $ej-spacing-md;
+    border: 2px solid var(--ej-input-border, $ej-border-color);
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, $ej-color-primary);
+      box-shadow: 0 0 0 4px rgba($ej-color-primary, 0.12);
+    }
+  }
+
+  input[type="submit"],
+  button[type="submit"] {
+    width: 100%;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, $ej-color-primary) 0%,
+        color.adjust($ej-color-primary, $lightness: -8%) 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($ej-color-primary, 0.35);
+    }
+  }
+}
+
+.user-links {
+  @extend .auth-links;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  &__separator {
+    color: var(--ej-color-muted, $ej-color-muted);
+    opacity: 0.5;
+  }
+}
+
+.user-link {
+  color: var(--ej-color-secondary, $ej-color-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--ej-color-primary, $ej-color-primary);
+  }
+}

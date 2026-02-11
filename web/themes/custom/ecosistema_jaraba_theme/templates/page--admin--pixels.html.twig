@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * page--admin--pixels.html.twig - Gestión de Pixels Marketing (Meta CAPI, Google MP)
+ *
+ * ARQUITECTURA LIMPIA (patrón page--site-builder.html.twig):
+ * - Full-HTML document con placeholders de Drupal
+ * - Sin {{ page.* }} excepto page.content = Sin bloques heredados
+ * - Usa {% include %} de partials reutilizables (_header, _footer)
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Full-width layout premium
+ *
+ * PROPÓSITO: Dashboard de configuración de pixels server-side para marketing.
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_pixels/pixel-settings') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-pixels', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con menú móvil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN CONTENT - Full-width dashboard layout #}
+  <main id="main-content" class="dashboard-main">
+    <div class="dashboard-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

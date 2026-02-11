@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * templates/partials/_hero.html.twig
+ *
+ * Hero Section reutilizable para landing pages.
+ * Soporta múltiples layouts: fullscreen, split, compact, animated, centered
+ * i18n con {% trans %}, variables CSS var(--ej-*)
+ *
+ * Variables esperadas:
+ * - theme_settings.hero_layout: fullscreen|split|compact|animated|centered
+ * - logged_in: TRUE si el usuario está autenticado
+ * - hero: Array con datos dinámicos del Page Builder (opcional)
+ * - intentions: Array de intenciones dinámicas (opcional)
+ */
+#}
+{% set ts = theme_settings|default({}) %}
+{% set hero_layout = ts.hero_layout|default('fullscreen') %}
+
+{# Datos dinámicos con fallbacks i18n #}
+{% set h = hero|default({}) %}
+
+<section class="hero-landing hero-landing--{{ hero_layout }}" aria-labelledby="hero-title">
+  
+  {# Animated Background #}
+  <div class="hero-landing__bg">
+    <div class="hero-landing__gradient"></div>
+    {% if hero_layout == 'animated' %}
+      <div class="hero-landing__particles"></div>
+    {% endif %}
+  </div>
+
+  {# Content #}
+  <div class="hero-landing__content">
+    <span class="hero-landing__eyebrow">
+      {% if h.eyebrow %}{{ h.eyebrow }}{% else %}{% trans %}Plataforma SaaS para Ecosistemas de Impacto{% endtrans %}{% endif %}
+    </span>
+    
+    <h1 id="hero-title" class="hero-landing__title">
+      {% if h.title %}{{ h.title }}{% else %}{% trans %}Impulsa tu ecosistema digital{% endtrans %}{% endif %}
+    </h1>
+    
+    <p class="hero-landing__subtitle">
+      {% if h.subtitle %}{{ h.subtitle|striptags|raw }}{% else %}{% trans %}La plataforma que conecta talento, negocios y productores con inteligencia artificial{% endtrans %}{% endif %}
+    </p>
+  </div>
+
+  {# Intentions Grid - Incluir partial con datos dinámicos #}
+  {% include '@ecosistema_jaraba_theme/partials/_intentions-grid.html.twig' with {
+    intentions: intentions|default([])
+  } %}
+
+  {# CTAs Principales #}
+  <div class="hero-landing__actions">
+    <a href="{{ h.cta_primary.url|default('/user/register') }}" class="btn-primary btn-primary--large btn-primary--glow">
+      <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20">
+        <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor"/>
+      </svg>
+      <span>{% if h.cta_primary.text %}{{ h.cta_primary.text }}{% else %}{% trans %}Empezar gratis{% endtrans %}{% endif %}</span>
+    </a>
+    
+    <a href="{{ h.cta_secondary.url|default('/user/login') }}" class="btn-secondary btn-secondary--large">
+      <span>{% if h.cta_secondary.text %}{{ h.cta_secondary.text }}{% else %}{% trans %}Ya tengo cuenta{% endtrans %}{% endif %}</span>
+      <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20">
+        <path d="M8 4L14 10L8 16" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </a>
+  </div>
+
+  {# Scroll Indicator #}
+  <div class="hero-landing__scroll" aria-hidden="true">
+    <span>{% if h.scroll_text %}{{ h.scroll_text }}{% else %}{% trans %}Descubre más{% endtrans %}{% endif %}</span>
+    <div class="hero-landing__scroll-mouse"></div>
+  </div>
+
+</section>
+
+

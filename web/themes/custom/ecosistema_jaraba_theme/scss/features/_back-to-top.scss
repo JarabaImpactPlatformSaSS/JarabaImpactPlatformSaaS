@@ -1,0 +1,44 @@
+/**
+ * @file
+ * Back to Top - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.back-to-top {
+    position: fixed;
+    bottom: var(--ej-spacing-md);
+    right: var(--ej-spacing-md);
+    z-index: 998;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ej-color-primary, #FF8C42);
+    color: #fff;
+    border: none;
+    box-shadow: var(--ej-shadow-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+
+    &.is-visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ej-shadow-lg);
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+}

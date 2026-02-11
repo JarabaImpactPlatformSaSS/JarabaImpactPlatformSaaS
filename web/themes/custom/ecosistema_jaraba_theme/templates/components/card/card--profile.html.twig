@@ -1,0 +1,104 @@
+{#
+/**
+ * @file
+ * Card variante: Profile
+ *
+ * Avatar circular, nombre, rol, social links.
+ * Uso: Mentores, equipo, candidatos.
+ */
+#}
+<article class="card card--profile {{ card_class|default('') }}">
+  <div class="card__header">
+    {% if cover_image %}
+      <div class="card__cover" style="background-image: url('{{ cover_image }}');"></div>
+    {% else %}
+      <div class="card__cover card__cover--gradient"></div>
+    {% endif %}
+
+    <div class="card__avatar-wrapper">
+      {% if avatar %}
+        <img src="{{ avatar }}" alt="{{ name }}" class="card__avatar" />
+      {% else %}
+        <div class="card__avatar card__avatar--initials">
+          {{ name|slice(0,2)|upper }}
+        </div>
+      {% endif %}
+
+      {% if is_verified %}
+        <span class="card__verified" title="{{ 'Verificado'|t }}">
+          {{ jaraba_icon('ui', 'badge-check', { variant: 'filled', size: '16px', color: 'primary' }) }}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card__content">
+    <h3 class="card__name">
+      {% if url %}
+        <a href="{{ url }}">{{ name }}</a>
+      {% else %}
+        {{ name }}
+      {% endif %}
+    </h3>
+
+    {% if role %}
+      <p class="card__role">{{ role }}</p>
+    {% endif %}
+
+    {% if company %}
+      <p class="card__company">
+        {{ jaraba_icon('ui', 'building', { size: '14px' }) }}
+        {{ company }}
+      </p>
+    {% endif %}
+
+    {% if location %}
+      <p class="card__location">
+        {{ jaraba_icon('ui', 'location', { size: '14px' }) }}
+        {{ location }}
+      </p>
+    {% endif %}
+
+    {% if bio %}
+      <p class="card__bio">{{ bio|striptags|slice(0, 100) }}...</p>
+    {% endif %}
+
+    {% if tags %}
+      <div class="card__tags">
+        {% for tag in tags|slice(0, 3) %}
+          <span class="tag tag--sm">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Stats #}
+    {% if stats %}
+      <div class="card__stats">
+        {% for stat in stats %}
+          <div class="card__stat">
+            <span class="card__stat-value">{{ stat.value }}</span>
+            <span class="card__stat-label">{{ stat.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Social links #}
+    {% if social %}
+      <div class="card__social">
+        {% for link in social %}
+          <a href="{{ link.url }}" class="card__social-link" target="_blank" rel="noopener">
+            {{ jaraba_icon('social', link.icon, { size: '16px' }) }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# CTA #}
+    {% if cta %}
+      <a href="{{ cta.url }}" class="card__cta btn btn--primary btn--full">
+        {{ cta.text }}
+      </a>
+    {% endif %}
+  </div>
+</article>

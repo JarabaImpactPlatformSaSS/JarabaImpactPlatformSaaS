@@ -1,0 +1,6399 @@
+/**
+ * @file
+ * _page-builder.scss - Estilos para bloques del Page Builder.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - Variable CSS var(--ej-*) para inyección desde Drupal UI
+ * - Mobile-first responsive
+ * - Fallbacks SCSS con paleta $ej-*
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// =============================================
+// UTILIDADES COMPARTIDAS BLOQUES
+// =============================================
+
+.jaraba-block {
+    padding: var(--ej-spacing-section, 5rem) 0;
+}
+
+.jaraba-block__container {
+    max-width: var(--ej-container-width, 1280px);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+}
+
+.jaraba-block__eyebrow {
+    display: inline-block;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-color-primary, $ej-color-primary);
+    margin-bottom: 0.75rem;
+}
+
+.jaraba-block__title {
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin-block: 0 1rem;
+}
+
+.jaraba-block__subtitle {
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 1.125rem;
+    color: var(--ej-text-muted, $ej-color-muted);
+    margin: 0;
+    max-width: 600px;
+}
+
+// =============================================
+// STATS COUNTER
+// =============================================
+
+.jaraba-stats-counter {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+
+        .jaraba-block__title,
+        .jaraba-block__subtitle {
+            color: #fff;
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: center;
+    }
+}
+
+.jaraba-stat-card {
+    padding: 2rem 1rem;
+
+    &__icon {
+        margin-bottom: 1rem;
+
+        svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.9;
+        }
+    }
+
+    &__value {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    &__prefix,
+    &__suffix {
+        font-size: 0.6em;
+        opacity: 0.8;
+    }
+
+    &__label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+}
+
+// =============================================
+// CTA SECTION
+// =============================================
+
+.jaraba-cta-section {
+    padding: var(--ej-spacing-section, 5rem) 0;
+    position: relative;
+    overflow: hidden;
+
+    &--gradient-primary {
+        background: linear-gradient(135deg, var(--ej-color-primary, $ej-color-primary), var(--ej-color-corporate, $ej-color-corporate));
+        color: #fff;
+    }
+
+    &--gradient-dark {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: #fff;
+    }
+
+    &--solid-primary {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+    }
+
+    &--solid-dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &--image {
+        background: var(--cta-bg-image) center / cover no-repeat;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+
+    &--centered &__content {
+        max-width: 700px;
+        margin-inline: auto;
+    }
+
+    &--centered .jaraba-block__subtitle {
+        margin-inline: auto;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin-block: 0 1rem;
+        color: inherit;
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-block: 0 2rem;
+        color: inherit;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    &__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+}
+
+.jaraba-trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0.85;
+
+    &__icon svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+// =============================================
+// TESTIMONIALS SLIDER
+// =============================================
+
+.jaraba-testimonials {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__slider {
+        position: relative;
+        max-width: 800px;
+        margin-inline: auto;
+    }
+
+    &__track {
+        display: flex;
+        overflow: hidden;
+    }
+
+    &__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    &__btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: var(--ej-bg-body, $ej-bg-body);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__dots {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    &__dot {
+        width: 10px;
+        height: 10px;
+        border: none;
+        border-radius: 50%;
+        background: var(--ej-border-color, $ej-border-color);
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+
+        &.is-active {
+            background: var(--ej-color-primary, $ej-color-primary);
+            transform: scale(1.2);
+        }
+    }
+}
+
+.jaraba-testimonial-card {
+    flex: 0 0 100%;
+    padding: 2rem;
+    text-align: center;
+
+    .jaraba-testimonials--cards & {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__quote-mark {
+        font-size: 6rem;
+        line-height: 0.5;
+        opacity: 0.1;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__rating {
+        display: flex;
+        justify-content: center;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    &__quote {
+        font-family: var(--ej-font-body, $ej-font-body);
+        font-size: 1.25rem;
+        font-style: italic;
+        line-height: 1.7;
+        margin-block: 0 2rem;
+        color: var(--ej-color-body, $ej-color-body);
+
+        .jaraba-testimonials--dark & {
+            color: #fff;
+        }
+    }
+
+    &__author {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+
+        &--placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+    }
+
+    &__author-info {
+        text-align: left;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-style: normal;
+        font-weight: 600;
+        display: block;
+        color: var(--ej-color-headings, $ej-color-headings);
+    }
+
+    &__role {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}
+
+// =============================================
+// PRICING TABLE
+// =============================================
+
+.jaraba-pricing {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    &__toggle-label {
+        font-size: 0.9375rem;
+        font-weight: 500;
+    }
+
+    &__discount-badge {
+        background: var(--ej-color-success, $ej-color-success);
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: 100px;
+        margin-left: 0.5rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+        align-items: start;
+
+        &--2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        @media (min-width: 1024px) {
+            &--3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    }
+}
+
+.jaraba-plan-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 2rem;
+    box-shadow: $ej-shadow-md;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--popular {
+        border: 2px solid var(--ej-color-primary, $ej-color-primary);
+        transform: scale(1.02);
+
+        &:hover {
+            transform: scale(1.02) translateY(-4px);
+        }
+    }
+
+    &__popular-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 100px;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-block: 0 0.5rem;
+    }
+
+    &__description {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+    }
+
+    &__pricing {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    &__price {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.25rem;
+
+        &--hidden {
+            display: none;
+        }
+    }
+
+    &__currency {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    &__amount {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__period {
+        font-size: 1rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__billed {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-top: 0.25rem;
+    }
+
+    &__features {
+        list-style: none;
+        padding: 0;
+        margin-block: 1.5rem 0;
+    }
+
+    &__feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding-block: 0.5rem;
+        font-size: 0.9375rem;
+        border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &--excluded {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        &--highlight {
+            font-weight: 600;
+        }
+
+        &-icon {
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+}
+
+// =============================================
+// BOTONES COMPARTIDOS
+// =============================================
+
+.jaraba-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &--primary {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+
+        &:hover {
+            background: color.scale($ej-color-primary, $lightness: -10%);
+        }
+    }
+
+    &--secondary {
+        background: var(--ej-color-secondary, $ej-color-secondary);
+        color: #fff;
+    }
+
+    &--outline {
+        background: transparent;
+        border: 2px solid currentcolor;
+        color: var(--ej-color-primary, $ej-color-primary);
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &--ghost {
+        background: transparent;
+        color: inherit;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-primary, $ej-color-primary), var(--ej-color-corporate, $ej-color-corporate));
+        color: #fff;
+    }
+
+    &--lg {
+        padding: 1rem 2rem;
+        font-size: 1.125rem;
+    }
+
+    &--block {
+        width: 100%;
+    }
+}
+
+// =============================================
+// SWITCH (TOGGLE)
+// =============================================
+
+.jaraba-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+
+    &__input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    &__slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: var(--ej-border-color, $ej-border-color);
+        border-radius: 24px;
+        transition: background 0.3s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+    }
+
+    &__input:checked+&__slider {
+        background: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__input:checked+&__slider::before {
+        transform: translateX(24px);
+    }
+}
+
+// =============================================
+// RATING STARS
+// =============================================
+
+.jaraba-star {
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+// =============================================
+// TEMPLATE INFO BOX (Admin Form)
+// =============================================
+
+.template-info-box {
+    background: var(--ej-bg-body, $ej-bg-body);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.template-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.premium-badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #fff;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+// =============================================
+// FAQ ACCORDION
+// =============================================
+
+.jaraba-faq {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+
+        .jaraba-faq__question {
+            color: #fff;
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-bg-surface, $ej-bg-surface), var(--ej-bg-body, $ej-bg-body));
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__categories {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 800px;
+        margin-inline: auto;
+    }
+
+    &__category-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-block: 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    &__item {
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+        transition: border-color 0.2s ease;
+
+        &[open] {
+            border-color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+
+    &__question {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        font-family: var(--ej-font-body, $ej-font-body);
+        font-weight: 500;
+        cursor: pointer;
+        list-style: none;
+        transition: background 0.2s ease;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &:hover {
+            background: var(--ej-bg-surface, $ej-bg-surface);
+        }
+    }
+
+    &__toggle {
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+
+        [open]>.jaraba-faq__question & {
+            transform: rotate(180deg);
+        }
+    }
+
+    &__answer {
+        padding: 0 1.25rem 1.25rem;
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__cta {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 2rem;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+    }
+
+    &__cta-text {
+        margin-block: 0 1rem;
+        font-size: 1.125rem;
+    }
+}
+
+// =============================================
+// TEAM GRID
+// =============================================
+
+.jaraba-team {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+            @media (min-width: 1024px) {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        &--grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+            @media (min-width: 1200px) {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        &--carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1.5rem;
+            padding-bottom: 1rem;
+
+            .jaraba-team-card {
+                flex: 0 0 280px;
+                scroll-snap-align: start;
+            }
+        }
+    }
+}
+
+.jaraba-team-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-md;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__photo-wrapper {
+        position: relative;
+        aspect-ratio: 1;
+        overflow: hidden;
+    }
+
+    &__photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+
+        .jaraba-team-card:hover & {
+            transform: scale(1.05);
+        }
+
+        &--placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--ej-bg-body, $ej-bg-body);
+        }
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+
+        .jaraba-team-card:hover & {
+            opacity: 1;
+        }
+    }
+
+    &__info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-block: 0 0.25rem;
+    }
+
+    &__role {
+        font-size: 0.875rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        margin-block: 0 0.75rem;
+    }
+
+    &__bio {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-block: 0 1rem;
+        line-height: 1.5;
+    }
+
+    &__social {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+
+        a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--ej-bg-body, $ej-bg-body);
+            color: var(--ej-color-body, $ej-color-body);
+            transition: background 0.2s ease, color 0.2s ease;
+
+            &:hover {
+                background: var(--ej-color-primary, $ej-color-primary);
+                color: #fff;
+            }
+        }
+
+        .jaraba-team-card__overlay & a {
+            background: #fff;
+            color: var(--ej-color-corporate, $ej-color-corporate);
+
+            &:hover {
+                background: var(--ej-color-primary, $ej-color-primary);
+                color: #fff;
+            }
+        }
+    }
+}
+
+// =============================================
+// TIMELINE
+// =============================================
+
+.jaraba-timeline {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+
+        .jaraba-timeline__line {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-bg-surface, $ej-bg-surface), var(--ej-bg-body, $ej-bg-body));
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__track {
+        position: relative;
+        max-width: 900px;
+        margin-inline: auto;
+    }
+
+    &__line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--ej-border-color, $ej-border-color);
+    }
+
+    // Vertical layout
+    &--vertical &__line {
+        left: 20px;
+    }
+
+    &--vertical &__event {
+        padding-left: 50px;
+        margin-bottom: 2rem;
+    }
+
+    &--vertical &__marker {
+        position: absolute;
+        left: 9px;
+    }
+
+    // Alternating layout
+    &--alternating &__line {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &--alternating &__event {
+        width: 50%;
+        padding: 0 2rem;
+        margin-bottom: 2rem;
+
+        &:nth-child(odd) {
+            margin-left: auto;
+            text-align: left;
+        }
+
+        &:nth-child(even) {
+            margin-right: auto;
+            text-align: right;
+        }
+    }
+
+    &--alternating &__marker {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    // Horizontal layout
+    &--horizontal &__track {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    &--horizontal &__line {
+        top: 20px;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: 2px;
+    }
+
+    &--horizontal &__event {
+        flex: 0 0 250px;
+        padding-top: 50px;
+        text-align: center;
+    }
+
+    &--horizontal &__marker {
+        position: absolute;
+        top: 9px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &__event {
+        position: relative;
+    }
+
+    &__marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, $ej-color-primary);
+        z-index: 1;
+    }
+
+    &__dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #fff;
+    }
+
+    &__content {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        padding: 1.5rem;
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__date {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ej-color-primary, $ej-color-primary);
+        background: color.scale($ej-color-primary, $lightness: 90%);
+        padding: 0.25rem 0.75rem;
+        border-radius: 100px;
+        margin-bottom: 0.75rem;
+    }
+
+    &__event-title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-block: 0 0.5rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    &__image {
+        width: 100%;
+        border-radius: calc(var(--ej-border-radius, $ej-border-radius) / 2);
+        margin-top: 1rem;
+    }
+
+    &__event--highlight &__marker {
+        width: 32px;
+        height: 32px;
+        box-shadow: 0 0 0 4px color.scale($ej-color-primary, $lightness: 80%);
+    }
+
+    &__event--highlight &__content {
+        border: 2px solid var(--ej-color-primary, $ej-color-primary);
+    }
+}
+
+// =============================================
+// LOGO GRID
+// =============================================
+
+.jaraba-logo-grid {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__logos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem 3rem;
+
+        &--grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            justify-items: center;
+        }
+
+        &--grayscale img {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+
+            &:hover {
+                filter: grayscale(0%);
+                opacity: 1;
+            }
+        }
+    }
+
+    &__item {
+        max-width: 150px;
+
+        img {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+    }
+}
+
+// =============================================
+// VIDEO HERO
+// =============================================
+
+.jaraba-video-hero {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+
+    &--large {
+        min-height: 80vh;
+    }
+
+    &--medium {
+        min-height: 60vh;
+    }
+
+    &__video-wrapper {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+
+    &__video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, var(--overlay-opacity, 0.6));
+    }
+
+    .jaraba-block__container {
+        position: relative;
+        z-index: 1;
+    }
+
+    &__content {
+        max-width: 800px;
+        color: #fff;
+        text-align: center;
+
+        &--left {
+            text-align: left;
+            margin-right: auto;
+        }
+
+        &--right {
+            text-align: right;
+            margin-left: auto;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        color: #fff;
+        margin-block: 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+
+        .jaraba-video-hero__content--left & {
+            justify-content: flex-start;
+        }
+    }
+}
+
+// =============================================
+// NEWSLETTER SIGNUP
+// =============================================
+
+.jaraba-newsletter {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    &--card &__content {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        padding: 3rem;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-lg;
+        color: var(--ej-color-body, $ej-color-body);
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    &__benefits {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    &__benefit {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    &__form-wrapper {
+        width: 100%;
+    }
+
+    &__input-group {
+        display: flex;
+        gap: 0.5rem;
+
+        &--stacked {
+            flex-direction: column;
+        }
+    }
+
+    &__input {
+        flex: 1;
+        padding: 0.875rem 1rem;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: var(--ej-btn-radius, $ej-btn-radius);
+        font-size: 1rem;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+
+    &__success {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        color: var(--ej-color-success, $ej-color-success);
+        font-weight: 500;
+    }
+
+    &__privacy {
+        font-size: 0.75rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-top: 1rem;
+    }
+}
+
+// =============================================
+// BLOG CARDS
+// =============================================
+
+.jaraba-blog-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    &__cta {
+        text-align: center;
+        margin-top: 3rem;
+    }
+}
+
+.jaraba-blog-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-sm;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__image-wrapper {
+        position: relative;
+        display: block;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover &__image {
+        transform: scale(1.05);
+    }
+
+    &__category {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    &__content {
+        padding: 1.5rem;
+    }
+
+    &__meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__date,
+    &__read-time {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        line-height: 1.4;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-color-primary, $ej-color-primary);
+            }
+        }
+    }
+
+    &__excerpt {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0 0 1rem;
+        line-height: 1.6;
+    }
+
+    &__author {
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}
+
+// =============================================
+// COMPARISON TABLE
+// =============================================
+
+.jaraba-comparison {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__table-wrapper {
+        overflow-x: auto;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+    }
+
+    &__feature-header,
+    &__column-header {
+        padding: 1.5rem 1rem;
+        text-align: center;
+        font-weight: 600;
+        border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    }
+
+    &__column-header--highlight {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+    }
+
+    &__badge {
+        display: inline-block;
+        background: var(--ej-color-impulse, $ej-color-impulse);
+        color: #fff;
+        padding: 0.125rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    &__column-name {
+        display: block;
+        font-size: 1.125rem;
+    }
+
+    &__price {
+        display: block;
+        font-size: 0.875rem;
+        opacity: 0.8;
+        margin-top: 0.25rem;
+    }
+
+    &__feature {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__tooltip-trigger {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: help;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__value {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    }
+
+    &__ctas {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+}
+
+// =============================================
+// HOW IT WORKS
+// =============================================
+
+.jaraba-how-it-works {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-bg-body, $ej-bg-body), #f0f4ff);
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    &__steps {
+        display: grid;
+        gap: 3rem;
+
+        &--connected {
+            position: relative;
+        }
+    }
+
+    &--horizontal &__steps {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+    }
+
+    &__cta {
+        text-align: center;
+        margin-top: 3rem;
+    }
+}
+
+.jaraba-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+
+    &__number {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-bottom: 1.5rem;
+        z-index: 1;
+    }
+
+    &__connector {
+        position: absolute;
+        top: 24px;
+        left: calc(50% + 30px);
+        width: calc(100% - 60px);
+        height: 2px;
+        background: var(--ej-border-color, $ej-border-color);
+    }
+
+    &__icon {
+        margin-bottom: 1rem;
+    }
+
+    &__image img {
+        max-width: 100%;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        margin-bottom: 1rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+        line-height: 1.6;
+    }
+}
+
+// =============================================
+// RICH TEXT
+// =============================================
+
+.jaraba-rich-text {
+    padding: var(--ej-spacing-section, 4rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        margin: 0 auto;
+
+        &--narrow {
+            max-width: 600px;
+        }
+
+        &--medium {
+            max-width: 800px;
+        }
+
+        &--wide {
+            max-width: 1000px;
+        }
+
+        &--center {
+            text-align: center;
+        }
+
+        &--justify {
+            text-align: justify;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    &__content.prose {
+        font-size: 1.0625rem;
+        line-height: 1.8;
+
+        h2,
+        h3,
+        h4 {
+            font-family: var(--ej-font-headings, $ej-font-headings);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        a {
+            color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+}
+
+// =============================================
+// ICON CARDS
+// =============================================
+
+.jaraba-icon-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+}
+
+.jaraba-icon-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+
+    &--simple {
+        padding: 1.5rem 0;
+    }
+
+    &--bordered {
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+    }
+
+    &--elevated {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-md;
+
+        &:hover {
+            box-shadow: $ej-shadow-lg;
+            transform: translateY(-4px);
+        }
+    }
+
+    &--filled {
+        background: var(--ej-bg-body, $ej-bg-body);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+    }
+
+    &--icon-left {
+        flex-direction: row;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    &--icon-inline {
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    &__icon {
+        margin-bottom: 1rem;
+
+        .jaraba-icon-card--icon-left &,
+        .jaraba-icon-card--icon-inline & {
+            margin-bottom: 0;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 1rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+}
+
+// =============================================
+// JOB SEARCH HERO
+// =============================================
+
+.jaraba-job-search-hero {
+    position: relative;
+    padding: 5rem 0;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &--dark {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &--image {
+        background-image: var(--hero-bg);
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .jaraba-block__container {
+        position: relative;
+        z-index: 1;
+    }
+
+    &__content {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        margin-block: 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+    }
+
+    &__search {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        padding: 1.5rem;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-lg;
+        color: var(--ej-color-body, $ej-color-body);
+    }
+
+    &__search-fields {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
+    }
+
+    &__search-field {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--ej-bg-body, $ej-bg-body);
+        border-radius: var(--ej-btn-radius, $ej-btn-radius);
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+
+        input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            outline: none;
+        }
+    }
+
+    &__categories {
+        margin-top: 2rem;
+    }
+
+    &__categories-title {
+        display: block;
+        font-size: 0.875rem;
+        opacity: 0.8;
+        margin-bottom: 0.75rem;
+    }
+
+    &__category-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    &__category {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.875rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        font-size: 0.8125rem;
+        color: inherit;
+        text-decoration: none;
+        transition: background 0.3s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+    }
+
+    &__category-count {
+        opacity: 0.7;
+        font-size: 0.75rem;
+    }
+
+    &__stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+    }
+
+    &__stat {
+        text-align: center;
+    }
+
+    &__stat-value {
+        display: block;
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    &__stat-label {
+        font-size: 0.875rem;
+        opacity: 0.8;
+    }
+}
+
+// =============================================
+// PRODUCT SHOWCASE
+// =============================================
+
+.jaraba-product-showcase {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 1.5rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+
+    &__cta {
+        text-align: center;
+        margin-top: 3rem;
+    }
+}
+
+.jaraba-product-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-sm;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__image-wrapper {
+        position: relative;
+        display: block;
+        aspect-ratio: 1;
+        overflow: hidden;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover &__image {
+        transform: scale(1.05);
+    }
+
+    &__badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+
+        &--nuevo {
+            background: var(--ej-color-success, $ej-color-success);
+            color: #fff;
+        }
+
+        &--oferta {
+            background: var(--ej-color-impulse, $ej-color-impulse);
+            color: #fff;
+        }
+
+        &--destacado {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__info {
+        padding: 1rem 1.25rem 1.25rem;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+        line-height: 1.4;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-color-primary, $ej-color-primary);
+            }
+        }
+    }
+
+    &__rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__reviews {
+        font-size: 0.75rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__price-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+
+    &__price {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__original-price {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        text-decoration: line-through;
+    }
+}
+
+// =============================================
+// MAP LOCATIONS
+// =============================================
+
+.jaraba-map-locations {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        &--with-list {
+            @media (min-width: 1024px) {
+                flex-direction: row;
+            }
+        }
+    }
+
+    &__map {
+        flex: 2;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+
+        &--small {
+            min-height: 300px;
+        }
+
+        &--medium {
+            min-height: 400px;
+        }
+
+        &--large {
+            min-height: 500px;
+        }
+    }
+
+    &__noscript {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 2rem;
+        text-align: center;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__list {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__filter {
+        padding: 0.375rem 0.875rem;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: 20px;
+        background: transparent;
+        font-size: 0.8125rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.is-active,
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            border-color: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    &__item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+
+        &:hover {
+            box-shadow: $ej-shadow-md;
+        }
+    }
+
+    &__item-icon {
+        flex-shrink: 0;
+    }
+
+    &__item-name {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-color-primary, $ej-color-primary);
+            }
+        }
+    }
+
+    &__item-address {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+    }
+}
+
+// =============================================
+// EVENT CALENDAR
+// =============================================
+
+.jaraba-event-calendar {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    &__header-main {
+        flex: 1;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--cards {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        &--list {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+
+        p {
+            margin-top: 1rem;
+        }
+    }
+}
+
+.jaraba-event-card {
+    position: relative;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-sm;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &--featured {
+        border: 2px solid var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__image-wrapper {
+        display: block;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover &__image {
+        transform: scale(1.05);
+    }
+
+    &__date-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        width: 50px;
+        height: 56px;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: 8px;
+        text-align: center;
+        padding: 0.5rem;
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__date-day {
+        display: block;
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__date-month {
+        display: block;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__info {
+        padding: 1.25rem;
+    }
+
+    &__category {
+        display: inline-block;
+        background: var(--ej-bg-body, $ej-bg-body);
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        line-height: 1.4;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-color-primary, $ej-color-primary);
+            }
+        }
+    }
+
+    &__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__time,
+    &__location {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0 0 1rem;
+        line-height: 1.6;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+    }
+}
+
+// =============================================
+// SPLIT HERO
+// =============================================
+
+.jaraba-split-hero {
+    padding: 4rem 0;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+
+        @media (max-width: 991px) {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+
+    &--media-left &__wrapper {
+        direction: rtl;
+
+        >* {
+            direction: ltr;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    &__features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    &__feature {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.9375rem;
+    }
+
+    &__ctas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    &__media {
+        position: relative;
+    }
+
+    &__image,
+    &__video {
+        width: 100%;
+        height: auto;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-lg;
+    }
+}
+
+// =============================================
+// SERVICES GRID
+// =============================================
+
+.jaraba-services-grid {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+}
+
+.jaraba-service-card {
+    padding: 2rem;
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+
+    &--minimal {
+        background: transparent;
+    }
+
+    &--bordered {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+    }
+
+    &--elevated {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        margin-bottom: 1.25rem;
+
+        &--azul-corporativo {
+            background: rgba(26, 54, 93, 0.1);
+        }
+
+        &--naranja-impulso {
+            background: rgba(240, 101, 67, 0.1);
+        }
+
+        &--verde-innovacion {
+            background: rgba(107, 194, 93, 0.1);
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0 0 1rem;
+    }
+
+    &__features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+    }
+}
+
+// =============================================
+// PORTFOLIO GALLERY
+// =============================================
+
+.jaraba-portfolio {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    &__filter {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: 20px;
+        background: transparent;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.is-active,
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            border-color: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        gap: 1.5rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+
+    &__item {
+        position: relative;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+    }
+
+    &__link {
+        display: block;
+    }
+
+    &__image {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    &__item:hover &__image {
+        transform: scale(1.05);
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &__item:hover &__overlay {
+        opacity: 1;
+    }
+
+    &__category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+    }
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem;
+    }
+
+    &__client {
+        font-size: 0.875rem;
+        opacity: 0.8;
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-top: 0.75rem;
+    }
+
+    &__tag {
+        padding: 0.25rem 0.625rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        font-size: 0.6875rem;
+    }
+}
+
+// =============================================
+// TABS CONTENT
+// =============================================
+
+.jaraba-tabs {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    &--vertical &__wrapper {
+        @media (min-width: 768px) {
+            flex-direction: row;
+        }
+    }
+
+    &__list {
+        display: flex;
+        gap: 0.5rem;
+
+        &--underline {
+            border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+            padding-bottom: 0;
+        }
+
+        &--pills {
+            background: var(--ej-bg-surface, $ej-bg-surface);
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+    }
+
+    &--vertical &__list {
+        @media (min-width: 768px) {
+            flex-direction: column;
+            min-width: 200px;
+        }
+    }
+
+    &__tab {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: transparent;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+
+        &.is-active {
+            color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+
+    &__list--underline &__tab {
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+
+        &.is-active {
+            border-bottom-color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+
+    &__list--pills &__tab.is-active {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        border-radius: 6px;
+    }
+
+    &__panels {
+        flex: 1;
+    }
+
+    &__panel {
+        display: none;
+        animation: fadeIn 0.3s ease;
+
+        &.is-active {
+            display: block;
+        }
+    }
+
+    &__panel-content {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+
+        @media (max-width: 767px) {
+            flex-direction: column;
+        }
+    }
+
+    &__panel-image {
+        max-width: 400px;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+    }
+}
+
+// =============================================
+// ACCORDION CONTENT
+// =============================================
+
+.jaraba-accordion {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    &__items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    &__item {
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+    }
+
+    &--bordered &__item {
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+    }
+
+    &--cards &__item {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        box-shadow: $ej-shadow-sm;
+    }
+
+    &__trigger {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        padding: 1rem 1.25rem;
+        text-align: left;
+        cursor: pointer;
+        list-style: none;
+        font-weight: 600;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
+
+    &__icon {
+        flex-shrink: 0;
+    }
+
+    &__title {
+        flex: 1;
+    }
+
+    &__chevron {
+        transition: transform 0.3s ease;
+    }
+
+    &__item[open] &__chevron {
+        transform: rotate(180deg);
+    }
+
+    &__content {
+        padding: 0 1.25rem 1.25rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        line-height: 1.7;
+    }
+}
+
+// =============================================
+// BANNER STRIP
+// =============================================
+
+.jaraba-banner {
+    padding: 0.75rem 1rem;
+
+    &--promo {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+    }
+
+    &--info {
+        background: var(--ej-color-info, #3b82f6);
+        color: #fff;
+    }
+
+    &--success {
+        background: var(--ej-color-success, $ej-color-success);
+        color: #fff;
+    }
+
+    &--warning {
+        background: var(--ej-color-warning, #f59e0b);
+        color: #000;
+    }
+
+    &__inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    &__text {
+        font-size: 0.9375rem;
+        font-weight: 500;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+
+    &__close {
+        margin-left: auto;
+        background: transparent;
+        border: none;
+        color: inherit;
+        opacity: 0.8;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// =============================================
+// SOCIAL PROOF
+// =============================================
+
+.jaraba-social-proof {
+    padding: 3rem 0;
+
+    &--light {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, rgba(26, 54, 93, 0.05), rgba(240, 101, 67, 0.05));
+    }
+
+    &__title {
+        text-align: center;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+    }
+
+    &__avatars {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__avatar-stack {
+        display: flex;
+    }
+
+    &__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid var(--ej-bg-surface, $ej-bg-surface);
+        margin-left: -12px;
+        object-fit: cover;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    &__avatars-text {
+        font-size: 0.9375rem;
+        font-weight: 500;
+    }
+
+    &__items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2.5rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__stars {
+        display: flex;
+        gap: 0.125rem;
+    }
+
+    &__item-value {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    &__item-label {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}
+
+// =============================================
+// DOWNLOAD BOX
+// =============================================
+
+.jaraba-download-box {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, rgba(26, 54, 93, 0.05), rgba(107, 194, 93, 0.05));
+    }
+
+    &__wrapper {
+        display: flex;
+        gap: 3rem;
+        align-items: center;
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        padding: 2.5rem;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-md;
+
+        @media (max-width: 767px) {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    &__cover {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    &__image {
+        width: 180px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        padding: 0.25rem 0.5rem;
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        font-size: 0.625rem;
+        font-weight: 700;
+        border-radius: 4px;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.75rem;
+    }
+
+    &__description {
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0 0 1rem;
+    }
+
+    &__benefits {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9375rem;
+        }
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    &__form {
+        display: flex;
+        gap: 0.75rem;
+
+        @media (max-width: 767px) {
+            flex-direction: column;
+        }
+    }
+
+    &__input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: var(--ej-btn-radius, $ej-btn-radius);
+        font-size: 1rem;
+    }
+}
+
+// =============================================
+// VIDEO EMBED
+// =============================================
+
+.jaraba-video-embed {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    &--centered &__wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    &__wrapper {
+        position: relative;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+        box-shadow: $ej-shadow-lg;
+
+        &--16-9 {
+            aspect-ratio: 16 / 9;
+        }
+
+        &--4-3 {
+            aspect-ratio: 4 / 3;
+        }
+
+        &--1-1 {
+            aspect-ratio: 1;
+        }
+    }
+
+    &__poster {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        z-index: 1;
+    }
+
+    &__poster-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__play {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        background: var(--ej-color-primary, $ej-color-primary);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.3s ease, background 0.3s ease;
+
+        &:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+    }
+
+    &__frame {
+        width: 100%;
+        height: 100%;
+
+        &.is-hidden {
+            display: none;
+        }
+
+        iframe,
+        video {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    }
+}
+
+// =============================================
+// FEATURE HIGHLIGHT
+// =============================================
+
+.jaraba-feature-highlight {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+
+        @media (max-width: 991px) {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+
+    &--image-left &__wrapper {
+        direction: rtl;
+
+        >* {
+            direction: ltr;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__description {
+        color: var(--ej-text-muted, $ej-color-muted);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    &__features {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    &__feature {
+        display: flex;
+        gap: 1rem;
+    }
+
+    &__feature-icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        background: rgba(26, 54, 93, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__feature-text {
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+
+        p {
+            font-size: 0.875rem;
+            color: var(--ej-text-muted, $ej-color-muted);
+            margin: 0;
+        }
+    }
+
+    &__image {
+        width: 100%;
+        height: auto;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        box-shadow: $ej-shadow-lg;
+    }
+}
+
+// =============================================
+// BLOCKQUOTE
+// =============================================
+
+.jaraba-blockquote {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--accent {
+        background: linear-gradient(135deg, rgba(26, 54, 93, 0.05), rgba(240, 101, 67, 0.05));
+    }
+
+    &__quote {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    &__mark {
+        display: block;
+        margin-bottom: 1.5rem;
+        opacity: 0.5;
+    }
+
+    &__text {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(1.25rem, 3vw, 1.75rem);
+        font-weight: 500;
+        line-height: 1.6;
+        margin: 0 0 2rem;
+        font-style: italic;
+    }
+
+    &--large &__text {
+        font-size: clamp(1.5rem, 4vw, 2.25rem);
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__author-info {
+        text-align: left;
+    }
+
+    &__author {
+        display: block;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    &__author-title {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &__source {
+        margin-top: 1rem;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+
+        a {
+            color: inherit;
+        }
+    }
+}
+
+// =============================================
+// COLUMNS LAYOUT
+// =============================================
+
+.jaraba-columns {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: grid;
+        align-items: start;
+
+        @media (max-width: 767px) {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    &--50-50 &__wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    &--33-66 &__wrapper {
+        grid-template-columns: 1fr 2fr;
+    }
+
+    &--66-33 &__wrapper {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    &--33-33-33 &__wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &--25-50-25 &__wrapper {
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    &--gap-small &__wrapper {
+        gap: 1rem;
+    }
+
+    &--gap-medium &__wrapper {
+        gap: 2rem;
+    }
+
+    &--gap-large &__wrapper {
+        gap: 4rem;
+    }
+
+    &[data-reverse-mobile] &__wrapper {
+        @media (max-width: 767px) {
+            flex-direction: column-reverse;
+        }
+    }
+
+    &__column {
+        &--align-left {
+            text-align: left;
+        }
+
+        &--align-center {
+            text-align: center;
+        }
+
+        &--align-right {
+            text-align: right;
+        }
+
+        &--valign-top {
+            align-self: start;
+        }
+
+        &--valign-center {
+            align-self: center;
+        }
+
+        &--valign-bottom {
+            align-self: end;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =============================================
+// DIVIDER SECTION
+// =============================================
+
+.jaraba-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &--spacing-small {
+        padding: 1.5rem 0;
+    }
+
+    &--spacing-medium {
+        padding: 3rem 0;
+    }
+
+    &--spacing-large {
+        padding: 5rem 0;
+    }
+
+    &__line {
+        border: none;
+        height: 1px;
+        background: var(--ej-border-color, $ej-border-color);
+    }
+
+    &--small &__line {
+        width: 120px;
+    }
+
+    &--medium &__line {
+        width: 50%;
+    }
+
+    &--full &__line {
+        width: 100%;
+    }
+
+    &--dotted &__line {
+        border-top: 2px dotted var(--ej-border-color, $ej-border-color);
+        background: transparent;
+    }
+
+    &--gradient &__line {
+        background: linear-gradient(90deg, transparent, var(--ej-color-primary, $ej-color-primary), transparent);
+    }
+
+    &--dark &__line {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    &--accent &__line {
+        background: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__wave {
+        width: 100%;
+        height: 60px;
+        fill: var(--ej-bg-surface, $ej-bg-surface);
+    }
+}
+
+// =============================================
+// COUNTDOWN TIMER
+// =============================================
+
+.jaraba-countdown {
+    padding: var(--ej-spacing-section, 5rem) 0;
+    text-align: center;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &__header {
+        margin-bottom: 2.5rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(1.5rem, 3vw, 2.25rem);
+        font-weight: 700;
+        margin: 0 0 0.75rem;
+    }
+
+    &__description {
+        opacity: 0.9;
+    }
+
+    &__timer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+
+        @media (max-width: 575px) {
+            gap: 0.5rem;
+        }
+    }
+
+    &__unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &--cards &__unit {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 1.25rem 1.5rem;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        min-width: 80px;
+
+        @media (max-width: 575px) {
+            padding: 0.75rem 1rem;
+            min-width: 60px;
+        }
+    }
+
+    &__value {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__label {
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
+        opacity: 0.8;
+    }
+
+    &__separator {
+        font-size: 2rem;
+        font-weight: 700;
+        opacity: 0.5;
+    }
+}
+
+// =============================================
+// PARTNERS CAROUSEL
+// =============================================
+
+.jaraba-partners-carousel {
+    padding: 3rem 0;
+    overflow: hidden;
+
+    &--light {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__title {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-bottom: 2rem;
+    }
+
+    &__track {
+        display: flex;
+        animation: scroll 30s linear infinite;
+
+        &:hover {
+            animation-play-state: paused;
+        }
+    }
+
+    &__slide {
+        display: flex;
+        gap: 4rem;
+        flex-shrink: 0;
+        padding: 0 2rem;
+
+        &.is-grayscale img {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+
+            &:hover {
+                filter: grayscale(0);
+                opacity: 1;
+            }
+        }
+    }
+
+    &__logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
+
+        img {
+            max-height: 100%;
+            max-width: 120px;
+            object-fit: contain;
+        }
+    }
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+// =============================================
+// IMAGE + TEXT BLOCK
+// =============================================
+
+.jaraba-image-text {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+
+        @media (max-width: 991px) {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+
+    &--image-right &__wrapper {
+        direction: rtl;
+
+        >* {
+            direction: ltr;
+        }
+    }
+
+    &__wrapper--valign-top {
+        align-items: start;
+    }
+
+    &__wrapper--valign-center {
+        align-items: center;
+    }
+
+    &__wrapper--valign-bottom {
+        align-items: end;
+    }
+
+    &--size-small &__image-wrapper {
+        max-width: 300px;
+    }
+
+    &--size-medium &__image-wrapper {
+        max-width: 450px;
+    }
+
+    &--size-large &__image-wrapper {
+        max-width: 100%;
+    }
+
+    &__image {
+        width: 100%;
+        height: auto;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__text {
+        color: var(--ej-text-muted, $ej-color-muted);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+}
+
+// =============================================
+// CARDS GRID (Generic)
+// =============================================
+
+.jaraba-cards-grid {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        &--equal {
+            .jaraba-card {
+                height: 100%;
+            }
+        }
+    }
+}
+
+.jaraba-card {
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+
+    &--minimal {
+        background: transparent;
+    }
+
+    &--bordered {
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &--elevated {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__image-wrapper {
+        position: relative;
+    }
+
+    &__image {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    &__badge {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        padding: 0.25rem 0.625rem;
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+
+    &__body {
+        padding: 1.5rem;
+    }
+
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+    }
+}
+
+// =============================================
+// COURSE CATALOG
+// =============================================
+
+.jaraba-course-catalog {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    &__filter {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: 20px;
+        background: transparent;
+        font-size: 0.875rem;
+        cursor: pointer;
+
+        &.is-active,
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            border-color: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+}
+
+.jaraba-course-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-sm;
+
+    &__image-wrapper {
+        position: relative;
+
+        img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+    }
+
+    &__level {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        border-radius: 4px;
+        text-transform: uppercase;
+
+        &--beginner {
+            background: #10b981;
+            color: #fff;
+        }
+
+        &--intermediate {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        &--advanced {
+            background: #ef4444;
+            color: #fff;
+        }
+    }
+
+    &__body {
+        padding: 1.25rem;
+    }
+
+    &__category {
+        font-size: 0.75rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0.375rem 0 0.75rem;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+
+    &__meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-bottom: 0.5rem;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+    }
+
+    &__instructor {
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    &__price {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+}
+
+// =============================================
+// PROFILE CARDS
+// =============================================
+
+.jaraba-profiles {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+}
+
+.jaraba-profile-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    text-align: center;
+    box-shadow: $ej-shadow-sm;
+
+    &__photo-wrapper {
+        padding: 2rem 2rem 0;
+    }
+
+    &__photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--ej-bg-surface, $ej-bg-surface);
+        box-shadow: $ej-shadow-md;
+    }
+
+    &__body {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem;
+    }
+
+    &__role {
+        display: block;
+        font-size: 0.875rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 500;
+    }
+
+    &__specialization {
+        display: block;
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-top: 0.25rem;
+    }
+
+    &__bio {
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 1rem 0;
+        line-height: 1.6;
+    }
+
+    &__stats {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__social {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--ej-bg-body, $ej-bg-body);
+        color: var(--ej-text-muted, $ej-color-muted);
+
+        &:hover {
+            color: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+}
+
+// =============================================
+// FOOTER SECTION
+// =============================================
+
+.jaraba-footer {
+    padding: 4rem 0 0;
+
+    &--light {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        color: var(--ej-text-body, $ej-color-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, #1a365d, #0a1628);
+        color: #fff;
+    }
+
+    &__main {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr) 1.5fr;
+        gap: 3rem;
+        padding-bottom: 3rem;
+
+        @media (max-width: 991px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 575px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__logo {
+        max-height: 40px;
+        width: auto;
+        margin-bottom: 1rem;
+    }
+
+    &__tagline {
+        font-size: 0.9375rem;
+        opacity: 0.8;
+        margin: 0 0 1.5rem;
+    }
+
+    &__social {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    &__social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+        }
+    }
+
+    &__column-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+    }
+
+    &__links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 0.625rem;
+        }
+
+        a {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    &__newsletter-form {
+        display: flex;
+        gap: 0.5rem;
+
+        input {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--ej-btn-radius, $ej-btn-radius);
+            background: rgba(255, 255, 255, 0.1);
+            color: inherit;
+            font-size: 0.875rem;
+        }
+
+        button {
+            padding: 0.625rem 1rem;
+            background: var(--ej-color-primary, $ej-color-primary);
+            border: none;
+            border-radius: var(--ej-btn-radius, $ej-btn-radius);
+            color: #fff;
+            cursor: pointer;
+        }
+    }
+
+    &__bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.8125rem;
+        opacity: 0.7;
+
+        @media (max-width: 767px) {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+
+    &__copyright {
+        margin: 0;
+    }
+
+    &__legal {
+        display: flex;
+        gap: 1.5rem;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+}
+
+// =============================================
+// ALERT BANNER
+// =============================================
+
+.jaraba-alert {
+    padding: 0.875rem 0;
+
+    &--info {
+        background: var(--ej-color-info, #3b82f6);
+        color: #fff;
+    }
+
+    &--success {
+        background: var(--ej-color-success, $ej-color-success);
+        color: #fff;
+    }
+
+    &--warning {
+        background: var(--ej-color-warning, #f59e0b);
+        color: #000;
+    }
+
+    &--error {
+        background: #ef4444;
+        color: #fff;
+    }
+
+    &--neutral {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        color: var(--ej-text-body, $ej-color-body);
+        border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    }
+
+    &__inner {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__icon {
+        flex-shrink: 0;
+    }
+
+    &__message {
+        flex: 1;
+        font-size: 0.9375rem;
+        font-weight: 500;
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+        white-space: nowrap;
+    }
+
+    &__close {
+        background: transparent;
+        border: none;
+        color: inherit;
+        opacity: 0.7;
+        cursor: pointer;
+        padding: 0.5rem;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// =============================================
+// PREMIUM: GRADIENT CARDS
+// =============================================
+
+.jaraba-gradient-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+}
+
+.jaraba-gradient-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 4px;
+    overflow: hidden;
+
+    &__border {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 4px;
+        background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background-size: 300% 300%;
+        animation: gradient-rotate 4s ease infinite;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+    }
+
+    &--blue-purple &__border {
+        background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+        background-size: 300% 300%;
+        animation: gradient-rotate 4s ease infinite;
+    }
+
+    &--orange-pink &__border {
+        background: linear-gradient(135deg, #f093fb, #f5576c, #f093fb);
+        background-size: 300% 300%;
+        animation: gradient-rotate 4s ease infinite;
+    }
+
+    &--green-cyan &__border {
+        background: linear-gradient(135deg, #11998e, #38ef7d, #11998e);
+        background-size: 300% 300%;
+        animation: gradient-rotate 4s ease infinite;
+    }
+
+    &__content {
+        position: relative;
+        padding: 2rem;
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        border-radius: calc(var(--ej-border-radius, 12px) - 4px);
+        height: 100%;
+    }
+
+    &__icon {
+        margin-bottom: 1rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+}
+
+@keyframes gradient-rotate {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+// =============================================
+// PREMIUM: TEXT GRADIENT
+// =============================================
+
+.jaraba-text-gradient {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &__wrapper {
+        &--left {
+            text-align: left;
+        }
+
+        &--center {
+            text-align: center;
+        }
+
+        &--right {
+            text-align: right;
+        }
+    }
+
+    &__text {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        margin: 0;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        &--large {
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+
+        &--xl {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+        }
+
+        &--hero {
+            font-size: clamp(3rem, 8vw, 5.5rem);
+        }
+
+        &--display {
+            font-size: clamp(4rem, 10vw, 7rem);
+        }
+
+        &--medium {
+            font-weight: 500;
+        }
+
+        &--semibold {
+            font-weight: 600;
+        }
+
+        &--bold {
+            font-weight: 700;
+        }
+
+        &--black {
+            font-weight: 900;
+        }
+
+        &--sunset {
+            background-image: linear-gradient(90deg, #FF512F, #F09819);
+        }
+
+        &--ocean {
+            background-image: linear-gradient(90deg, #2193b0, #6dd5ed);
+        }
+
+        &--forest {
+            background-image: linear-gradient(90deg, #11998e, #38ef7d);
+        }
+
+        &--aurora {
+            background-image: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        &--fire {
+            background-image: linear-gradient(90deg, #f12711, #f5af19);
+        }
+
+        &.is-animated {
+            background-size: 400% auto;
+            animation: text-gradient-flow 2s linear infinite;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        opacity: 0.8;
+        margin: 1.5rem 0 0;
+    }
+}
+
+@keyframes text-gradient-flow {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+// =============================================
+// PREMIUM: PARTICLE HERO
+// =============================================
+
+.jaraba-particle-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #fff;
+    }
+
+    &--corporate {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+        color: #fff;
+    }
+
+    &--tall {
+        min-height: 70vh;
+    }
+
+    &--fullscreen {
+        min-height: 100vh;
+    }
+
+    &__particles {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding: 3rem 1.5rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: clamp(1.125rem, 2vw, 1.5rem);
+        opacity: 0.9;
+        max-width: 650px;
+        margin: 0 auto 2rem;
+    }
+
+    &__ctas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+}
+
+// =============================================
+// PREMIUM: HOVER GLOW CARDS
+// =============================================
+
+.jaraba-glow-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+}
+
+.jaraba-glow-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+    }
+
+    &--primary:hover {
+        box-shadow: 0 0 30px rgba(255, 140, 66, 0.4);
+    }
+
+    &--secondary:hover {
+        box-shadow: 0 0 30px rgba(0, 169, 165, 0.4);
+    }
+
+    &--success:hover {
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+    }
+
+    &--warning:hover {
+        box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+    }
+
+    .jaraba-glow-cards--intensity-subtle &:hover {
+        box-shadow: 0 0 15px currentColor;
+    }
+
+    .jaraba-glow-cards--intensity-strong &:hover {
+        box-shadow: 0 0 50px currentColor;
+    }
+
+    &__icon {
+        margin-bottom: 1.5rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+}
+
+// =============================================
+// PREMIUM: COMPARISON SLIDER
+// =============================================
+
+.jaraba-comparison-slider {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+    }
+
+    &--grid &__grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+}
+
+.jaraba-comparison-item {
+    position: relative;
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    cursor: ew-resize;
+
+    &__before,
+    &__after {
+        img {
+            width: 100%;
+            display: block;
+        }
+    }
+
+    &__after {
+        position: absolute;
+        inset: 0;
+        clip-path: inset(0 50% 0 0);
+    }
+
+    &__label {
+        position: absolute;
+        bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+
+    &__before &__label {
+        left: 1rem;
+    }
+
+    &__after &__label {
+        right: 1rem;
+    }
+
+    &__slider {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 4px;
+        background: #fff;
+        transform: translateX(-50%);
+    }
+
+    &__handle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 48px;
+        height: 48px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__caption {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 0.9375rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}
+
+// =============================================
+// PREMIUM: TESTIMONIALS 3D
+// =============================================
+
+.jaraba-testimonials-3d {
+    padding: var(--ej-spacing-section, 5rem) 0;
+    overflow: hidden;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    .jaraba-block__title {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__carousel {
+        display: flex;
+        gap: 2rem;
+        perspective: 1000px;
+    }
+
+    &__nav {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    &__prev,
+    &__next {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+}
+
+.jaraba-testimonial-3d {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 2rem;
+    min-width: 350px;
+    box-shadow: $ej-shadow-md;
+    flex-shrink: 0;
+
+    &__rating {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    &__quote {
+        font-size: 1.125rem;
+        font-style: italic;
+        line-height: 1.7;
+        margin: 0 0 1.5rem;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__author {
+        display: block;
+        font-weight: 600;
+    }
+
+    &__role {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}
+
+// =============================================
+// PREMIUM: FLOATING CARDS (3D Tilt)
+// =============================================
+
+.jaraba-floating-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+}
+
+.jaraba-floating-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    box-shadow: $ej-shadow-md;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    animation: floating 6s ease-in-out infinite;
+
+    &:nth-child(2) {
+        animation-delay: -2s;
+    }
+
+    &:nth-child(3) {
+        animation-delay: -4s;
+    }
+
+    &:hover {
+        box-shadow: $ej-shadow-lg;
+        animation-play-state: paused;
+    }
+
+    &__image-wrapper {
+        position: relative;
+
+        img {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.375rem 0.75rem;
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+
+    &__body {
+        padding: 1.5rem;
+    }
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+    }
+
+    &__description {
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin-bottom: 1rem;
+    }
+
+    &__link {
+        color: var(--ej-color-primary, $ej-color-primary);
+        font-weight: 500;
+    }
+}
+
+@keyframes floating {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+// =============================================
+// PREMIUM: PARALLAX HERO
+// =============================================
+
+.jaraba-parallax-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+
+    &--medium {
+        min-height: 50vh;
+    }
+
+    &--tall {
+        min-height: 70vh;
+    }
+
+    &--fullscreen {
+        min-height: 100vh;
+    }
+
+    &__background {
+        position: absolute;
+        inset: -20%;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, var(--overlay-opacity, 0.5));
+        z-index: 2;
+    }
+
+    &__particles {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 4;
+        text-align: center;
+        padding: 3rem 1.5rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    &__ctas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+}
+
+// =============================================
+// PREMIUM: GLASSMORPHISM CARDS
+// =============================================
+
+.jaraba-glassmorphism {
+    position: relative;
+    padding: var(--ej-spacing-section, 5rem) 0;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 30, 60, 0.4);
+    }
+
+    &__inner {
+        position: relative;
+        z-index: 2;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+}
+
+.jaraba-glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    padding: 2rem;
+    text-align: center;
+
+    .jaraba-glassmorphism--blur-light & {
+        backdrop-filter: blur(6px);
+    }
+
+    .jaraba-glassmorphism--blur-strong & {
+        backdrop-filter: blur(20px);
+    }
+
+    &__icon {
+        margin-bottom: 1rem;
+    }
+
+    &__value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        font-family: var(--ej-font-headings, $ej-font-headings);
+    }
+
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0.5rem 0;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        opacity: 0.85;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 1rem;
+        color: #fff;
+        font-weight: 500;
+    }
+}
+
+// =============================================
+// PREMIUM: ANIMATED COUNTER
+// =============================================
+
+.jaraba-animated-counter {
+    padding: var(--ej-spacing-section, 5rem) 0;
+    text-align: center;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-color-corporate, $ej-color-corporate), var(--ej-color-primary, $ej-color-primary));
+        color: #fff;
+    }
+
+    &__header {
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3rem;
+    }
+
+    &__separator {
+        width: 1px;
+        background: rgba(255, 255, 255, 0.2);
+        align-self: stretch;
+    }
+}
+
+.jaraba-counter-stat {
+    min-width: 150px;
+
+    &__icon {
+        margin-bottom: 0.75rem;
+    }
+
+    &__value {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__prefix,
+    &__suffix {
+        font-size: 0.6em;
+    }
+
+    &__label {
+        margin-top: 0.5rem;
+        font-size: 0.9375rem;
+        opacity: 0.8;
+    }
+
+    &--primary &__value {
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &--secondary &__value {
+        color: var(--ej-color-secondary, $ej-color-secondary);
+    }
+
+    &--success &__value {
+        color: #10b981;
+    }
+}
+
+// =============================================
+// PREMIUM: 3D FLIP CARDS
+// =============================================
+
+.jaraba-flip-cards {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        &--2 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        &--3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        &--4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+}
+
+.jaraba-flip-card {
+    perspective: 1000px;
+    height: 300px;
+
+    &__inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    &:hover &__inner {
+        transform: rotateY(180deg);
+    }
+
+    &--vertical:hover &__inner {
+        transform: rotateX(180deg);
+    }
+
+    &__front,
+    &__back {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+    }
+
+    &__front {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__title {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    &__back {
+        transform: rotateY(180deg);
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    &--vertical &__back {
+        transform: rotateX(180deg);
+    }
+
+    &__back-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+    }
+
+    &__back-desc {
+        font-size: 0.9375rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+}
+
+// =============================================
+// PREMIUM: TYPEWRITER TEXT
+// =============================================
+
+.jaraba-typewriter {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--left {
+        text-align: left;
+    }
+
+    &--center {
+        text-align: center;
+    }
+
+    &--right {
+        text-align: right;
+    }
+
+    &__content {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-weight: 700;
+
+        &--medium {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+        }
+
+        &--large {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        &--xl {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        &--hero {
+            font-size: clamp(3rem, 7vw, 5rem);
+        }
+    }
+
+    &__text {
+        color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__cursor {
+        display: inline-block;
+        margin-left: 2px;
+        animation: blink 1s step-end infinite;
+
+        &--bar {
+            width: 3px;
+            height: 1em;
+            background: currentColor;
+            vertical-align: text-bottom;
+        }
+
+        &--underscore::after {
+            content: '_';
+        }
+
+        &--none {
+            display: none;
+        }
+    }
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+// =============================================
+// PREMIUM: SCROLL REVEAL
+// =============================================
+
+.jaraba-reveal {
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    &--fade-up {
+        transform: translateY(30px);
+    }
+
+    &--fade-down {
+        transform: translateY(-30px);
+    }
+
+    &--fade-left {
+        transform: translateX(30px);
+    }
+
+    &--fade-right {
+        transform: translateX(-30px);
+    }
+
+    &--zoom-in {
+        transform: scale(0.9);
+    }
+
+    &--flip {
+        transform: perspective(600px) rotateX(-15deg);
+    }
+
+    &.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+// =============================================
+// PREMIUM: ORBIT ANIMATION
+// =============================================
+
+.jaraba-orbit {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #fff;
+    }
+
+    &__scene {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        max-width: 100%;
+        margin: 0 auto 3rem;
+    }
+
+    &__center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        background: var(--ej-color-primary, $ej-color-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+
+        img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+        }
+    }
+
+    &__ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+
+        &--1 {
+            width: 200px;
+            height: 200px;
+            animation: orbit 20s linear infinite;
+        }
+
+        &--2 {
+            width: 300px;
+            height: 300px;
+            animation: orbit 30s linear infinite reverse;
+        }
+
+        &--3 {
+            width: 400px;
+            height: 400px;
+            animation: orbit 40s linear infinite;
+        }
+
+        &--slow {
+            animation-duration: 40s;
+        }
+
+        &--fast {
+            animation-duration: 15s;
+        }
+
+        &--counter-clockwise {
+            animation-direction: reverse;
+        }
+    }
+
+    &__item {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 50%;
+        left: 50%;
+        transform: rotate(calc(var(--index) * (360deg / var(--total)))) translateY(calc(-50% - 100px)) rotate(calc(-1 * var(--index) * (360deg / var(--total))));
+
+        img {
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+        }
+    }
+
+    &__content {
+        text-align: center;
+    }
+}
+
+@keyframes orbit {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+// =============================================
+// PREMIUM: SPOTLIGHT TEXT
+// =============================================
+
+.jaraba-spotlight {
+    position: relative;
+    background: var(--ej-bg-dark, $ej-bg-dark);
+    color: #fff;
+    padding: var(--ej-spacing-section, 5rem) 0;
+    overflow: hidden;
+
+    &__effect {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        transition: background 0.1s ease;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-weight: 700;
+        margin: 0 0 1rem;
+
+        &--large {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        &--xl {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        &--hero {
+            font-size: clamp(3rem, 7vw, 5rem);
+        }
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        opacity: 0.8;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    &__ctas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+}
+
+// =============================================
+// PREMIUM: ANIMATED BACKGROUND
+// =============================================
+
+.jaraba-animated-bg {
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+
+    &--corporate {
+        background: var(--ej-color-corporate, $ej-color-corporate);
+    }
+
+    &--particles,
+    &--network,
+    &--dots {
+        background: #0a0a0a;
+    }
+
+    &--waves {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg, var(--ej-bg-dark, $ej-bg-dark), var(--ej-color-corporate, $ej-color-corporate));
+    }
+
+    &--medium {
+        min-height: 50vh;
+    }
+
+    &--tall {
+        min-height: 70vh;
+    }
+
+    &--fullscreen {
+        min-height: 100vh;
+    }
+
+    &__canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 5rem 0;
+        min-height: inherit;
+    }
+
+    &__text {
+        font-size: 1.125rem;
+        max-width: 700px;
+        margin-bottom: 2rem;
+    }
+
+    &__ctas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
+
+// =============================================
+// PREMIUM: SPLIT SCREEN
+// =============================================
+
+.jaraba-split-screen {
+    display: flex;
+    flex-wrap: wrap;
+
+    &--medium {
+        min-height: 50vh;
+    }
+
+    &--tall {
+        min-height: 70vh;
+    }
+
+    &--fullscreen {
+        min-height: 100vh;
+    }
+
+    &--50-50 {
+        .jaraba-split-screen__panel {
+            flex: 1 1 50%;
+        }
+    }
+
+    &--40-60 {
+        .jaraba-split-screen__left {
+            flex: 1 1 40%;
+        }
+
+        .jaraba-split-screen__right {
+            flex: 1 1 60%;
+        }
+    }
+
+    &--60-40 {
+        .jaraba-split-screen__left {
+            flex: 1 1 60%;
+        }
+
+        .jaraba-split-screen__right {
+            flex: 1 1 40%;
+        }
+    }
+
+    @media (max-width: 991px) {
+        flex-direction: column;
+
+        .jaraba-split-screen__panel {
+            flex: 1 1 auto !important;
+            min-height: 50vh;
+        }
+    }
+
+    &__panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-size: cover;
+        background-position: center;
+
+        &--light {
+            background-color: var(--ej-bg-body, $ej-bg-body);
+        }
+
+        &--dark {
+            background-color: var(--ej-bg-dark, $ej-bg-dark);
+            color: #fff;
+        }
+
+        &--primary {
+            background-color: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__panel-content {
+        padding: 3rem;
+        max-width: 600px;
+    }
+
+    &__title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin: 0 0 1.5rem;
+    }
+
+    &__text {
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// =============================================
+// PREMIUM: STICKY SCROLL
+// =============================================
+
+.jaraba-sticky-scroll {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &--light {
+        background: var(--ej-bg-body, $ej-bg-body);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, $ej-bg-dark);
+        color: #fff;
+    }
+
+    &__wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+
+        @media (max-width: 991px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &--media-right &__wrapper {
+        direction: rtl;
+
+        >* {
+            direction: ltr;
+        }
+    }
+
+    &__media {
+        position: sticky;
+        top: 100px;
+        align-self: start;
+    }
+
+    &__media-inner {
+
+        img,
+        video {
+            width: 100%;
+            border-radius: var(--ej-border-radius, $ej-border-radius);
+            box-shadow: $ej-shadow-lg;
+        }
+    }
+
+    &__device {
+        position: relative;
+        padding: 20px;
+        background: #1a1a1a;
+        border-radius: 30px;
+
+        &--iphone {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        &--macbook {
+            border-radius: 12px;
+        }
+
+        img {
+            border-radius: 20px;
+        }
+    }
+
+    &__content {
+        padding: 2rem 0;
+    }
+
+    &__section {
+        padding: 4rem 0;
+        opacity: 0.4;
+        transition: opacity 0.4s ease;
+
+        &.is-active {
+            opacity: 1;
+        }
+    }
+
+    &__section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 1rem;
+    }
+
+    &__section-desc {
+        font-size: 1.0625rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+}

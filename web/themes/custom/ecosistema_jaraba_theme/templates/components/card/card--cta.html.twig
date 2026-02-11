@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * Card variante: CTA (Call-to-Action)
+ *
+ * Card destacada con fondo de color y botón prominente.
+ * Uso: Conversión, promociones, newsletter signup.
+ */
+#}
+<article class="card card--cta {{ card_class|default('') }} {{ dark ? 'card--dark' : '' }}">
+  {% if background_image %}
+    <div class="card__background" style="background-image: url('{{ background_image }}')"></div>
+  {% endif %}
+
+  <div class="card__content">
+    {% if eyebrow %}
+      <span class="card__eyebrow">{{ eyebrow }}</span>
+    {% endif %}
+
+    <h3 class="card__title">{{ title }}</h3>
+
+    {% if subtitle %}
+      <p class="card__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {% if description %}
+      <p class="card__description">{{ description }}</p>
+    {% endif %}
+
+    {% if features %}
+      <ul class="card__features">
+        {% for feature in features %}
+          <li class="card__feature">
+            {{ jaraba_icon('actions', 'check-circle', { variant: 'filled', size: '16px', color: 'success' }) }}
+            {{ feature }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="card__actions">
+      {% if cta_primary %}
+        <a href="{{ cta_primary.url }}" class="btn btn--primary btn--lg">
+          {% if cta_primary.icon %}
+            {{ jaraba_icon('actions', cta_primary.icon, { size: '20px' }) }}
+          {% endif %}
+          {{ cta_primary.text }}
+        </a>
+      {% endif %}
+
+      {% if cta_secondary %}
+        <a href="{{ cta_secondary.url }}" class="btn btn--outline btn--lg">
+          {{ cta_secondary.text }}
+        </a>
+      {% endif %}
+    </div>
+
+    {% if disclaimer %}
+      <p class="card__disclaimer">{{ disclaimer }}</p>
+    {% endif %}
+  </div>
+</article>

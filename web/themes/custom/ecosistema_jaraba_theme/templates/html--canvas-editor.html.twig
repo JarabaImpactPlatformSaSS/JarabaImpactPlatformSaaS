@@ -1,0 +1,110 @@
+{#
+/**
+ * @file
+ * html--canvas-editor.html.twig - HTML minimalista para Canvas Editor.
+ *
+ * PROPÓSITO:
+ * Template HTML completo que reemplaza html.html.twig para la ruta del
+ * Canvas Editor. Proporciona control total del documento HTML, evitando
+ * cualquier interferencia del tema base Gin o la admin toolbar.
+ *
+ * ARQUITECTURA LIMPIA:
+ * - Sin renderizado de admin toolbar
+ * - Sin page wrappers adicionales
+ * - Full-viewport layout nativo
+ *
+ * RUTA: /page/{id}/editor
+ *
+ * @see ecosistema_jaraba_theme_theme_suggestions_html_alter()
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+<!DOCTYPE html>
+<html{{ html_attributes.addClass('canvas-editor-page', 'full-viewport-layout') }}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head-placeholder token="{{ placeholder_token }}">
+  {# Favicon del SaaS - Ecosistema Jaraba #}
+  <link rel="icon" type="image/png" sizes="32x32" href="/sites/default/files/EcosistemaJaraba_icono_v6_0.png">
+  <link rel="shortcut icon" href="/sites/default/files/EcosistemaJaraba_icono_v6_0.png">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+  {{ attach_library('ecosistema_jaraba_theme/global') }}
+  {{ attach_library('jaraba_page_builder/canvas-editor') }}
+  <style>
+    /* 
+     * ESTILOS CRÍTICOS - Full-viewport Canvas Editor
+     * Máxima prioridad, sin posibilidad de override
+     */
+    html, body {
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    /* Ocultar CUALQUIER elemento de admin o navegación del tema */
+    .admin-toolbar,
+    .admin-toolbar-control-bar,
+    [class*="toolbar-"],
+    [class*="gin-"],
+    .landing-header,
+    [class*="landing-header"],
+    .landing-footer,
+    [class*="landing-footer"],
+    header,
+    footer,
+    nav,
+    .breadcrumb,
+    .messages,
+    .dialog-off-canvas-main-canvas > .layout-wrapper,
+    #toolbar-administration {
+      display: none !important;
+    }
+    
+    /* Main content y Canvas Editor ocupan todo el viewport */
+    main,
+    .canvas-editor-main,
+    #main-content {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 9999 !important;
+    }
+    
+    .canvas-editor {
+      height: 100vh !important;
+      width: 100vw !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      border-radius: 0 !important;
+      z-index: 10000 !important;
+      background: #F8FAFC !important;
+    }
+  </style>
+</head>
+<body{{ attributes.addClass('canvas-editor-page', 'full-viewport-layout', 'no-scroll', 'page-canvas-editor') }}>
+  {# Skip link para accesibilidad #}
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# CONTENIDO PRINCIPAL - Solo page.content, sin regiones del tema #}
+  <main id="main-content" class="canvas-editor-main">
+    {{ page.content }}
+  </main>
+
+  {# Placeholder requerido por Drupal para JS en el footer #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

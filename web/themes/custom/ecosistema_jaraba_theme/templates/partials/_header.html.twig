@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * templates/partials/_header.html.twig
+ *
+ * DISPATCHER: Incluye el sub-partial de header según theme_settings.header_layout
+ *
+ * Variables esperadas:
+ * - site_name: Nombre del sitio
+ * - site_slogan: Eslogan del sitio
+ * - logo: URL del logo
+ * - logged_in: TRUE si el usuario está autenticado
+ * - theme_settings.header_layout: 'classic', 'minimal', 'transparent', etc.
+ * - theme_settings.navigation_items: Navegación configurable (Texto|URL)
+ *
+ * Layouts disponibles:
+ * - classic: Logo, nav horizontal, acciones, hamburguesa en móvil
+ * - minimal: Solo logo + hamburguesa (sin nav horizontal)
+ * - transparent: Como classic pero fondo transparente
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+{% set ts = theme_settings|default({}) %}
+{% set layout_raw = ts.header_layout|default('classic') %}
+
+{# FE-06: Validar layout contra whitelist antes del include dinámico #}
+{% set allowed_layouts = ['classic', 'minimal', 'transparent'] %}
+{% set layout = layout_raw in allowed_layouts ? layout_raw : 'classic' %}
+
+{# ── Parsear navigation_items: "Texto|URL" por línea → array de {text, url} ── #}
+{% set nav_items_raw = ts.navigation_items|default("Empleo|/empleo\nTalento|/talento\nEmprender|/emprender\nComercio|/comercio\nInstituciones|/instituciones") %}
+{% set nav_items = [] %}
+{% for line in nav_items_raw|split("\n") %}
+  {% set parts = line|split('|') %}
+  {% if parts|length >= 2 %}
+    {% set nav_items = nav_items|merge([{ text: parts[0]|trim, url: parts[1]|trim }]) %}
+  {% endif %}
+{% endfor %}
+
+{{ attach_library('ecosistema_jaraba_theme/mobile-menu') }}
+
+{# Incluir sub-partial según layout validado — pasamos nav_items parseados #}
+{% include '@ecosistema_jaraba_theme/partials/_header-' ~ layout ~ '.html.twig' with {
+  site_name: site_name,
+  site_slogan: site_slogan,
+  logo: logo,
+  logged_in: logged_in,
+  nav_items: nav_items,
+  theme_settings: ts
+} %}
+
+{# Mobile Menu Overlay (compartido por todos los layouts) #}
+<div class="mobile-menu-overlay" aria-hidden="true">
+  <nav class="mobile-menu-nav" aria-label="{% trans %}Mobile navigation{% endtrans %}">
+    <ul class="mobile-menu-list">
+      {% for item in nav_items %}
+        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <div class="mobile-menu-actions">
+    {% if logged_in %}
+      <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+      <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+    {% else %}
+      <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+      <a href="/user/register" class="btn-primary btn-primary--glow">{% trans %}Empezar gratis{% endtrans %}</a>
+    {% endif %}
+  </div>
+</div>

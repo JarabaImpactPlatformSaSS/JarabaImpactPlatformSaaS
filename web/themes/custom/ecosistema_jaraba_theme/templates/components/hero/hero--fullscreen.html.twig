@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Hero variante: Fullscreen
+ *
+ * 100vh con imagen/video de fondo y overlay gradient.
+ * Uso: Home principal, landings de impacto.
+ */
+#}
+<section class="hero hero--fullscreen {{ hero_class|default('') }}" 
+         style="{% if background_image %}background-image: url('{{ background_image }}');{% endif %}">
+  
+  {# Video de fondo (opcional) #}
+  {% if background_video %}
+    <video class="hero__background-video" autoplay muted loop playsinline>
+      <source src="{{ background_video }}" type="video/mp4" />
+    </video>
+  {% endif %}
+
+  {# Overlay gradient #}
+  <div class="hero__overlay"></div>
+
+  <div class="hero__container container">
+    <div class="hero__content hero__content--centered">
+      {% if eyebrow %}
+        <span class="hero__eyebrow hero__eyebrow--light">{{ eyebrow }}</span>
+      {% endif %}
+
+      <h1 class="hero__title hero__title--xl">{{ title }}</h1>
+
+      {% if subtitle %}
+        <p class="hero__subtitle hero__subtitle--light">{{ subtitle }}</p>
+      {% endif %}
+
+      <div class="hero__actions hero__actions--centered">
+        {% if cta_primary %}
+          <a href="{{ cta_primary.url }}" class="btn btn--primary btn--xl">
+            {{ cta_primary.text }}
+          </a>
+        {% endif %}
+
+        {% if cta_video %}
+          <button class="hero__play-btn" data-video-modal="{{ cta_video.url }}">
+            {{ jaraba_icon('ui', 'play-circle', { variant: 'filled', size: '32px' }) }}
+            <span>{{ cta_video.text|default('Ver vídeo'|t) }}</span>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Scroll indicator #}
+  <div class="hero__scroll-indicator">
+    <span>{{ 'Descubre más'|t }}</span>
+    {{ jaraba_icon('ui', 'chevron-down', { size: '24px' }) }}
+  </div>
+</section>

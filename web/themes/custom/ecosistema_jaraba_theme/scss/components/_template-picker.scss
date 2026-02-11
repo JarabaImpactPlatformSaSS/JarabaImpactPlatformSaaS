@@ -1,0 +1,375 @@
+/**
+ * @file
+ * _template-picker.scss - Estilos para el selector de plantillas.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - Variable CSS var(--ej-*) para inyección desde Drupal UI
+ * - Mobile-first responsive
+ * - Fallbacks SCSS con paleta $ej-*
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// =============================================
+// TEMPLATE PICKER - CONTENEDOR
+// =============================================
+
+.template-picker {
+    max-width: var(--ej-container-width, 1280px);
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.template-picker__header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+// Navegación de regreso
+.template-picker__nav {
+    margin-bottom: 1rem;
+}
+
+.template-picker__back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-color-primary, $ej-color-primary);
+    text-decoration: none;
+    border-radius: var(--ej-btn-radius, $ej-btn-radius);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-bg-body, $ej-bg-body);
+        color: var(--ej-color-corporate, $ej-color-corporate);
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.template-picker__title {
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin-block: 0 0.5rem;
+}
+
+.template-picker__subtitle {
+    font-size: 1.125rem;
+    color: var(--ej-text-muted, $ej-color-muted);
+    margin: 0;
+}
+
+// =============================================
+// BARRA DE HERRAMIENTAS (Búsqueda + Filtros)
+// =============================================
+
+.template-picker__toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+// Campo de búsqueda premium
+.template-picker__search {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.template-picker__search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ej-text-muted, $ej-color-muted);
+    pointer-events: none;
+}
+
+.template-picker__search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.9375rem;
+    color: var(--ej-color-body, $ej-color-body);
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: 100px;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+        color: var(--ej-text-muted, $ej-color-muted);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, $ej-color-primary);
+        box-shadow: 0 0 0 3px rgba(var(--ej-color-primary-rgb, 245, 130, 32), 0.15);
+    }
+}
+
+// =============================================
+// FILTROS
+// =============================================
+
+.template-picker__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.template-picker__filter {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: 100px;
+    background: transparent;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-color-body, $ej-color-body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &.is-active {
+        background: var(--ej-color-primary, $ej-color-primary);
+        border-color: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+    }
+}
+
+// =============================================
+// GRID DE PLANTILLAS
+// =============================================
+
+.template-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.template-picker__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--ej-text-muted, $ej-color-muted);
+}
+
+// =============================================
+// CARD DE PLANTILLA
+// =============================================
+
+.template-card {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: var(--ej-border-radius, $ej-border-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    &__preview {
+        aspect-ratio: 16 / 10;
+        background: var(--ej-bg-body, $ej-bg-body);
+        position: relative;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+    }
+
+    &:hover &__preview img {
+        transform: scale(1.05);
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover &__overlay {
+        opacity: 1;
+    }
+
+    &__action {
+        padding: 0.625rem 1rem;
+        border-radius: var(--ej-btn-radius, $ej-btn-radius);
+        font-family: var(--ej-font-body, $ej-font-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &--primary {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+            border: none;
+
+            &:hover {
+                background: var(--ej-color-corporate, $ej-color-corporate);
+            }
+        }
+
+        &--secondary {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+
+            &:hover {
+                background: #fff;
+                color: var(--ej-color-corporate, $ej-color-corporate);
+            }
+        }
+    }
+
+    &__info {
+        padding: 1rem 1.25rem;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ej-color-headings, $ej-color-headings);
+        margin-block: 0 0.25rem;
+    }
+
+    &__description {
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, $ej-color-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    &__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    &__badge {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        padding: 0.125rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+
+        &--category {
+            background: var(--ej-bg-body, $ej-bg-body);
+            color: var(--ej-text-muted, $ej-color-muted);
+        }
+
+        &--premium {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #fff;
+        }
+    }
+}
+
+// =============================================
+// PREVIEW MODAL
+// =============================================
+
+.template-preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+
+    &.is-open {
+        display: block;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    &__content {
+        position: absolute;
+        inset: 2rem;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        color: var(--ej-color-body, $ej-color-body);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+    }
+
+    &__iframe {
+        flex: 1;
+        width: 100%;
+        border: none;
+    }
+}
+
+// =============================================
+// RESPONSIVE
+// =============================================
+
+@media (max-width: 640px) {
+    .template-picker__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .template-picker__filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 0.5rem;
+    }
+
+    .template-preview-modal__content {
+        inset: 0.5rem;
+    }
+}

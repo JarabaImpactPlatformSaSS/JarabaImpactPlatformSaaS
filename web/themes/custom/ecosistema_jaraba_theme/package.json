@@ -1,0 +1,21 @@
+{
+    "name": "ecosistema-jaraba-theme",
+    "version": "1.2.0",
+    "description": "SCSS compilation, JS minification, image optimization and Critical CSS generation for Ecosistema Jaraba Theme",
+    "scripts": {
+        "build:css": "sass scss/main.scss css/ecosistema-jaraba-theme.css --style=compressed",
+        "build:admin": "sass scss/admin-settings.scss css/admin-settings.css --style=compressed",
+        "build:critical": "node scripts/generate-critical.js",
+        "build:js": "node scripts/minify-js.js",
+        "build:images": "node scripts/optimize-images.js",
+        "build": "npm run build:css && npm run build:admin && npm run build:js",
+        "build:all": "npm run build && npm run build:images && npm run build:critical",
+        "watch": "sass --watch scss/main.scss css/ecosistema-jaraba-theme.css"
+    },
+    "devDependencies": {
+        "critical": "^6.0.0",
+        "sass": "^1.71.0",
+        "terser": "^5.31.0",
+        "sharp": "^0.33.0"
+    }
+}

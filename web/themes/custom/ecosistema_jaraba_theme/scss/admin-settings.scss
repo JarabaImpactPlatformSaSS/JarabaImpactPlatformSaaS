@@ -1,0 +1,487 @@
+/**
+ * @file
+ * Admin Settings Premium Styles - Ecosistema Jaraba Theme
+ *
+ * Estilos modernos con animaciones para el panel de configuración del tema.
+ */
+
+@use 'variables' as *;
+
+// === ANIMATIONS ===
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes checkmark {
+    0% {
+        stroke-dashoffset: 50;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+// === HEADER PREMIUM ===
+.jaraba-settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #233D63 0%, #1a2d4a 60%, #FF8C42 100%);
+    border-radius: 16px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+
+    // Glassmorphism effect
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    // Animated gradient border
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(90deg, #FF8C42, #00A9A5, #233D63, #FF8C42);
+        background-size: 300% 100%;
+        animation: shimmer 3s linear infinite;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+    }
+}
+
+.jaraba-settings-header__preview img {
+    max-width: 200px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.jaraba-settings-header__info h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.jaraba-settings-header__info p {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 0.9rem;
+}
+
+// === VERTICAL TABS PREMIUM ===
+.jaraba-settings details[open]>summary {
+    background: linear-gradient(90deg, #FF8C42, #e57a35);
+    color: #fff;
+    border-radius: 8px 8px 0 0;
+}
+
+.vertical-tabs {
+    border: none !important;
+    background: #f8fafc;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.vertical-tabs__menu {
+    background: linear-gradient(180deg, #fff 0%, #f1f5f9 100%);
+    border-right: 2px solid #e5e7eb;
+
+    &-item {
+        border: none !important;
+        border-radius: 0;
+        margin: 0;
+        padding: 1rem 1.25rem;
+        transition: all 0.3s ease;
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--ej-color-primary, #FF8C42);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        &:hover {
+            background: rgba(255, 140, 66, 0.08);
+
+            &::before {
+                transform: scaleY(0.5);
+            }
+        }
+
+        &.is-selected {
+            background: #fff;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+
+            &::before {
+                transform: scaleY(1);
+            }
+        }
+    }
+}
+
+.vertical-tabs__pane {
+    animation: fadeInUp 0.4s ease-out;
+    padding: 1.5rem;
+}
+
+// === COLOR PICKER PREMIUM ===
+.jaraba-color-picker {
+    width: 64px;
+    height: 40px;
+    padding: 3px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    &:hover {
+        border-color: var(--ej-color-primary, #FF8C42);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 140, 66, 0.2);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, #FF8C42);
+        box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.15);
+    }
+}
+
+.jaraba-default-hint {
+    color: #64748b;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+
+    strong {
+        color: #334155;
+        font-family: monospace;
+        background: #f1f5f9;
+        padding: 0.1em 0.4em;
+        border-radius: 4px;
+    }
+}
+
+// === VISUAL PICKER PREMIUM - GRID COMPACTO ===
+.jaraba-visual-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    max-width: 100%;
+
+    .form-radios {
+        display: contents;
+    }
+
+    .form-item {
+        margin: 0;
+    }
+
+    input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    label {
+        display: block;
+        cursor: pointer;
+        height: 100%;
+    }
+}
+
+.jaraba-picker-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 120px;
+    padding: 0.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-size: 0.8rem;
+
+    // Shimmer on hover
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.4s ease;
+    }
+
+    &:hover {
+        border-color: #94a3b8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+        &::before {
+            left: 100%;
+        }
+    }
+}
+
+// Selected state
+.jaraba-visual-picker input[type="radio"]:checked+label .jaraba-picker-card,
+.jaraba-visual-picker input[type="radio"]:checked~.jaraba-picker-card {
+    border-color: var(--ej-color-primary, #FF8C42);
+    box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.15), 0 8px 20px rgba(255, 140, 66, 0.2);
+    animation: pulse 0.5s ease;
+
+    // Checkmark
+    &::after {
+        content: '✓';
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 24px;
+        height: 24px;
+        background: var(--ej-color-primary, #FF8C42);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        animation: fadeInUp 0.3s ease;
+    }
+}
+
+.jaraba-picker-text {
+    margin-bottom: 0.75rem;
+}
+
+.jaraba-picker-title {
+    display: block;
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.jaraba-picker-desc {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.jaraba-picker-thumb {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    position: relative;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    &:hover img {
+        transform: scale(1.05);
+    }
+}
+
+// === FIELDSETS PREMIUM ===
+fieldset {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    legend {
+        font-weight: 600;
+        color: #1a1a2e;
+        padding: 0 0.75rem;
+        font-size: 0.95rem;
+    }
+}
+
+// === INPUTS PREMIUM ===
+.form-text,
+.form-number,
+input[type="text"],
+input[type="number"],
+select {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: #94a3b8;
+    }
+
+    &:focus {
+        border-color: var(--ej-color-primary, #FF8C42);
+        box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.1);
+        outline: none;
+    }
+}
+
+// === CHECKBOXES PREMIUM ===
+input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:checked {
+        background: var(--ej-color-primary, #FF8C42);
+        border-color: var(--ej-color-primary, #FF8C42);
+
+        &::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    }
+
+    &:hover:not(:checked) {
+        border-color: var(--ej-color-primary, #FF8C42);
+    }
+}
+
+// === RESPONSIVE ===
+@media (max-width: 768px) {
+    .jaraba-settings-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .jaraba-picker-card {
+        width: 100%;
+    }
+
+    .vertical-tabs__menu {
+        display: flex;
+        flex-wrap: wrap;
+        border-right: none;
+        border-bottom: 2px solid #e5e7eb;
+
+        &-item {
+            flex: 1 1 auto;
+            text-align: center;
+        }
+    }
+}
+
+// === DARK MODE SUPPORT ===
+.dark-mode {
+    .jaraba-settings-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #252538 60%, #FF8C42 100%);
+    }
+
+    .vertical-tabs {
+        background: #252538;
+    }
+
+    .vertical-tabs__menu {
+        background: #1a1a2e;
+        border-color: #374151;
+    }
+
+    .jaraba-picker-card {
+        background: #252538;
+        border-color: #374151;
+
+        &:hover {
+            border-color: #4b5563;
+        }
+    }
+
+    .jaraba-picker-title {
+        color: #f8fafc;
+    }
+
+    fieldset {
+        background: #252538;
+        border-color: #374151;
+    }
+}

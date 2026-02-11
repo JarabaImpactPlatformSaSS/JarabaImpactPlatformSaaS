@@ -1,0 +1,293 @@
+{#
+/**
+ * @file
+ * page--verify.html.twig - Página de verificación pública de credenciales.
+ *
+ * DISEÑO PREMIUM con header de partículas animadas.
+ * Layout: Header hero top con partículas + Contenido de verificación.
+ *
+ * Directrices aplicadas:
+ * - Nuclear #3: i18n completa ({% trans %})
+ * - Nuclear #11: Full-width layout
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Branding 3.6: Portal Isolation
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-verify', 'credential-verify-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# ========================================================================
+     HEADER PRINCIPAL del sitio - Partial reutilizable
+     ======================================================================== #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# ========================================================================
+     HERO PREMIUM con partículas animadas - Verificación de credenciales
+     ======================================================================== #}
+  <section class="verify-hero" aria-label="{% trans %}Verificación de Credencial{% endtrans %}">
+    <canvas id="verify-particles" class="verify-hero__particles" aria-hidden="true"></canvas>
+    
+    <div class="verify-hero__content">
+      {# Icono de verificación - Escudo con check #}
+      <div class="verify-hero__icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M32 4L8 14v14c0 14 10 26 24 30 14-4 24-16 24-30V14L32 4z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+          <path d="M22 32l7 7 13-13" stroke="rgba(255,255,255,0.9)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <h1 class="verify-hero__title">{% trans %}Verificación de Credencial{% endtrans %}</h1>
+      <p class="verify-hero__subtitle">{% trans %}Comprueba la autenticidad de esta credencial digital{% endtrans %}</p>
+    </div>
+  </section>
+
+  {# ========================================================================
+     CONTENIDO PRINCIPAL - Tarjeta de verificación
+     ======================================================================== #}
+  <main id="main-content" class="verify-main">
+    <div class="verify-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>
+
+{# ============================================================================
+   ESTILOS CRÍTICOS INLINE para el hero con partículas
+   ============================================================================ #}
+<style>
+/* Hero con partículas */
+.verify-hero {
+  position: relative;
+  background: linear-gradient(135deg, 
+    var(--ej-color-corporate, #233D63) 0%, 
+    var(--ej-color-corporate-dark, #1a2d47) 50%,
+    var(--ej-color-corporate, #233D63) 100%);
+  padding: 100px 1.5rem 4rem; /* Aumentado padding-top para no cortar el icono */
+  text-align: center;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify-hero__particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.verify-hero__content {
+  position: relative;
+  z-index: 2;
+}
+
+.verify-hero__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  animation: verify-pulse 2s ease-in-out infinite;
+}
+
+.verify-hero__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes verify-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.verify-hero__title {
+  color: #fff;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.verify-hero__subtitle {
+  color: rgba(255,255,255,0.85);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Main content */
+.verify-main {
+  background: var(--ej-bg-body, #f8fafc);
+  min-height: calc(100vh - 400px);
+  padding-bottom: 3rem;
+}
+
+.verify-wrapper {
+  max-width: 900px;
+  margin: -2rem auto 0;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 3;
+}
+
+@media (max-width: 767px) {
+  .verify-hero {
+    padding: 80px 1rem 3rem; /* Mantener espacio suficiente en móvil */
+    min-height: 180px;
+  }
+  
+  .verify-hero__icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+  }
+  
+  .verify-wrapper {
+    margin-top: -1.5rem;
+    padding: 0 1rem;
+  }
+}
+</style>
+
+{# ============================================================================
+   SCRIPT: Partículas animadas de red conectadas
+   ============================================================================ #}
+<script>
+(function() {
+  'use strict';
+  const canvas = document.getElementById('verify-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouse = { x: null, y: null, radius: 100 };
+  const connectionDistance = 80;
+  
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  
+  function init() {
+    particles = [];
+    const count = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 60);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        baseAlpha: Math.random() * 0.4 + 0.2
+      });
+    }
+  }
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Dibujar conexiones entre partículas cercanas
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < connectionDistance) {
+          const alpha = (1 - distance / connectionDistance) * 0.12;
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // Dibujar partículas
+    particles.forEach(p => {
+      let alpha = p.baseAlpha;
+      
+      // Interacción con mouse
+      if (mouse.x !== null) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+          alpha = p.baseAlpha + (1 - dist / mouse.radius) * 0.4;
+          // Repeler ligeramente
+          const force = (mouse.radius - dist) / mouse.radius * 0.3;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
+        }
+      }
+      
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+      ctx.fill();
+      
+      // Movimiento
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      // Rebote en bordes
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+    
+    requestAnimationFrame(draw);
+  }
+  
+  // Event listeners
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  
+  canvas.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+  
+  resize();
+  init();
+  draw();
+  window.addEventListener('resize', () => { resize(); init(); });
+})();
+</script>

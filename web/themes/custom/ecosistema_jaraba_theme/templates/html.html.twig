@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * PERF-02: Theme override for html.html.twig with CSS lazy-loading.
+ *
+ * When critical CSS is injected inline (via preprocess_html), the main
+ * stylesheet is converted to async loading using the print/onload pattern.
+ * This eliminates render-blocking CSS and improves LCP/FCP.
+ *
+ * @see ecosistema_jaraba_theme_preprocess_html()
+ * @see stable9/templates/layout/html.html.twig
+ */
+#}
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+  <head>
+    <head-placeholder token="{{ placeholder_token }}">
+    <title>{{ head_title|safe_join(' | ') }}</title>
+    <css-placeholder token="{{ placeholder_token }}">
+    <js-placeholder token="{{ placeholder_token }}">
+    {# PERF-02: Async CSS loading when critical CSS is inline. #}
+    <script>
+    (function(){
+      if(!document.getElementById('critical-css'))return;
+      var links=document.querySelectorAll('link[rel="stylesheet"][href*="ecosistema-jaraba-theme"]');
+      for(var i=0;i<links.length;i++){
+        links[i].media='print';
+        links[i].onload=function(){this.media='all';this.onload=null;};
+      }
+    })();
+    </script>
+    <noscript>
+      <link rel="stylesheet" href="/{{ directory }}/css/ecosistema-jaraba-theme.css">
+    </noscript>
+  </head>
+  <body{{ attributes }}>
+    <a href="#main-content" class="visually-hidden focusable">
+      {{ 'Skip to main content'|t }}
+    </a>
+    {{ page_top }}
+    {{ page }}
+    {{ page_bottom }}
+    <js-bottom-placeholder token="{{ placeholder_token }}">
+  </body>
+</html>

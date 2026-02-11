@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * Header variante: Centered
+ *
+ * Logo centrado con navegación dividida.
+ * Uso: E-commerce, marcas premium.
+ */
+#}
+<header class="header header--centered" role="banner">
+  <div class="header__container container">
+    
+    {# Navegación izquierda #}
+    <nav class="header__nav header__nav--left" aria-label="{% trans %}Navegación principal{% endtrans %}">
+      {{ main_menu_left }}
+    </nav>
+
+    {# Logo centrado #}
+    <div class="header__brand">
+      {% if logo_url %}
+        <a href="{{ path('<front>') }}" class="header__logo-link" rel="home">
+          <img src="{{ logo_url }}" alt="{{ site_name }}" class="header__logo" />
+        </a>
+      {% else %}
+        <a href="{{ path('<front>') }}" class="header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación derecha #}
+    <nav class="header__nav header__nav--right" aria-label="{% trans %}Navegación secundaria{% endtrans %}">
+      {{ main_menu_right }}
+    </nav>
+
+    {# Iconos de acción #}
+    <div class="header__icons">
+      {# Búsqueda #}
+      <button class="header__icon-btn" aria-label="{% trans %}Buscar{% endtrans %}" data-modal="search">
+        {{ jaraba_icon('ui', 'search', { size: '24px' }) }}
+      </button>
+
+      {# Carrito (para commerce) #}
+      {% if show_cart %}
+        <a href="{{ path('commerce_cart.page') }}" class="header__icon-btn header__cart">
+          {{ jaraba_icon('ui', 'shopping-cart', { size: '24px' }) }}
+          {% if cart_count > 0 %}
+            <span class="header__cart-count">{{ cart_count }}</span>
+          {% endif %}
+        </a>
+      {% endif %}
+
+      {# Usuario #}
+      {% if user_logged_in %}
+        <a href="{{ path('user.page') }}" class="header__icon-btn">
+          {{ jaraba_icon('ui', 'user', { size: '24px' }) }}
+        </a>
+      {% else %}
+        <a href="{{ path('user.login') }}" class="header__icon-btn">
+          {{ jaraba_icon('ui', 'user', { size: '24px' }) }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Mobile toggle #}
+    <button class="header__mobile-toggle" aria-label="{% trans %}Abrir menú{% endtrans %}" aria-expanded="false">
+      {{ jaraba_icon('ui', 'menu', { size: '24px' }) }}
+    </button>
+  </div>
+</header>

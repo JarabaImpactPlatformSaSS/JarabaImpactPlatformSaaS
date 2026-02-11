@@ -1,0 +1,403 @@
+/**
+ * @file
+ * _revision-diff.scss - Estilos para Gap G: Diff Visual de Revisiones.
+ *
+ * PROPÓSITO:
+ * Estilos para la página de historial de revisiones con layout full-width,
+ * siguiendo el patrón Operational Tower.
+ *
+ * DIRECTRICES:
+ * ✅ Variables inyectables var(--ej-*)
+ * ✅ Paleta Jaraba
+ * ✅ Full-width sin márgenes laterales
+ * ✅ Mobile-first responsive
+ * ✅ Dart Sass moderno (@use)
+ *
+ * BODY CLASSES (añadidas via hook_preprocess_html):
+ * - layout-purified: Sin regiones de admin
+ * - layout-revisions: Específico para páginas de revisiones
+ * - full-width-content: Contenido expandido
+ */
+
+// Dart Sass: Variables compartidas
+@use '../variables' as *;
+
+// =============================================================================
+// FULL WIDTH PAGE - Container principal
+// =============================================================================
+
+.full-width-page {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+// =============================================================================
+// BODY MODIFIERS - Full Width Layout
+// =============================================================================
+
+body.layout-revisions,
+body.page-revisions {
+
+    // Eliminar márgenes del layout de admin
+    .layout-container {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    // Main content sin restricciones
+    main,
+    .main-content,
+    #main-content,
+    .dashboard-main {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    // Dashboard wrapper sin márgenes (específico para revisiones)
+    .dashboard-wrapper,
+    .revisions-wrapper {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    // Contenedor de revisiones
+    .revision-list,
+    .full-width-page {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    // Hero header full-width
+    .analytics-dashboard__hero,
+    .revision-list__hero {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+}
+
+
+// =============================================================================
+// CONTENEDOR PRINCIPAL - Revision List
+// =============================================================================
+
+.revision-list {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--ej-color-background, #f9fafb);
+}
+
+// =============================================================================
+// HEADER - Operational Tower Hero Compact
+// =============================================================================
+
+.revision-list__header {
+    background: linear-gradient(135deg,
+            var(--ej-color-corporate, #00b4b6) 0%,
+            var(--ej-color-corporate-dark, #008f91) 100%);
+    color: #fff;
+    padding: var(--ej-spacing-8, 2rem) var(--ej-spacing-6, 1.5rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-4, 1rem);
+
+    // En el contexto de Operational Tower
+    &.operational-tower__hero--compact {
+        padding: var(--ej-spacing-6, 1.5rem) var(--ej-spacing-8, 2rem);
+    }
+}
+
+.revision-list__header .operational-tower__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-3, 0.75rem);
+    font-size: var(--ej-font-size-2xl, 1.5rem);
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+
+    // Icono
+    img.jaraba-icon,
+    .jaraba-icon {
+        filter: brightness(0) invert(1);
+    }
+}
+
+.revision-list__header .operational-tower__subtitle {
+    font-size: var(--ej-font-size-lg, 1.125rem);
+    color: rgba(255, 255, 255, 0.9);
+    margin: var(--ej-spacing-2, 0.5rem) 0 0;
+}
+
+.revision-list__header .operational-tower__hero-actions {
+    display: flex;
+    gap: var(--ej-spacing-3, 0.75rem);
+}
+
+// =============================================================================
+// INSTRUCCIONES
+// =============================================================================
+
+.revision-list__instructions {
+    background: linear-gradient(135deg,
+            rgba(0, 180, 182, 0.08) 0%,
+            rgba(0, 180, 182, 0.03) 100%);
+    border-left: 4px solid var(--ej-color-corporate, #00b4b6);
+    padding: var(--ej-spacing-4, 1rem) var(--ej-spacing-6, 1.5rem);
+    margin: var(--ej-spacing-4, 1rem) var(--ej-spacing-6, 1.5rem);
+    border-radius: 0 var(--ej-radius-md, 0.5rem) var(--ej-radius-md, 0.5rem) 0;
+
+    p {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-2, 0.5rem);
+        color: var(--ej-color-text-secondary, #4b5563);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+    }
+}
+
+// =============================================================================
+// CONTENIDO PRINCIPAL
+// =============================================================================
+
+.revision-list__content {
+    padding: var(--ej-spacing-6, 1.5rem);
+}
+
+// =============================================================================
+// TABLA DE REVISIONES
+// =============================================================================
+
+.revision-list__form {
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-lg, 0.75rem);
+    box-shadow: var(--ej-shadow-md);
+    overflow: hidden;
+}
+
+.revision-list__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: var(--ej-spacing-4, 1rem);
+        text-align: left;
+        border-bottom: 1px solid var(--ej-color-border, #e5e7eb);
+    }
+
+    th {
+        background: var(--ej-color-surface-elevated, #f9fafb);
+        font-weight: 600;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-secondary, #4b5563);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    tbody tr:hover {
+        background: rgba(0, 180, 182, 0.04);
+    }
+}
+
+.revision-list__row--current {
+    background: linear-gradient(90deg,
+            rgba(16, 185, 129, 0.08) 0%,
+            rgba(16, 185, 129, 0.02) 100%);
+}
+
+.revision-list__cell--radio {
+    text-align: center;
+    width: 70px;
+
+    input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--ej-color-corporate, #00b4b6);
+        cursor: pointer;
+    }
+}
+
+.revision-list__cell--date {
+    font-family: var(--ej-font-mono, 'Fira Code', monospace);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    white-space: nowrap;
+}
+
+.revision-list__cell--user {
+    font-weight: 500;
+    color: var(--ej-color-text-primary, #111827);
+}
+
+.revision-list__cell--log {
+    color: var(--ej-color-text-secondary, #4b5563);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    .text-muted {
+        color: var(--ej-color-text-muted, #9ca3af);
+        font-style: italic;
+    }
+}
+
+.revision-list__cell--status {
+    width: 120px;
+}
+
+// =============================================================================
+// BADGES
+// =============================================================================
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-1, 0.25rem);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+
+    &--success {
+        background: var(--ej-color-success-alpha, rgba(16, 185, 129, 0.15));
+        color: var(--ej-color-success, #10b981);
+    }
+}
+
+// =============================================================================
+// ACCIONES
+// =============================================================================
+
+.revision-list__actions {
+    padding: var(--ej-spacing-4, 1rem) var(--ej-spacing-6, 1.5rem);
+    background: var(--ej-color-surface-elevated, #f9fafb);
+    border-top: 1px solid var(--ej-color-border, #e5e7eb);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ej-spacing-3, 0.75rem);
+}
+
+// =============================================================================
+// ESTADO VACÍO
+// =============================================================================
+
+.revision-list__empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: var(--ej-spacing-8, 2rem);
+}
+
+.empty-state {
+    text-align: center;
+    max-width: 400px;
+
+    img.jaraba-icon,
+    .jaraba-icon {
+        margin-bottom: var(--ej-spacing-4, 1rem);
+        opacity: 0.5;
+    }
+
+    h3 {
+        font-size: var(--ej-font-size-xl, 1.25rem);
+        font-weight: 600;
+        color: var(--ej-color-text-primary, #111827);
+        margin: 0 0 var(--ej-spacing-2, 0.5rem);
+    }
+
+    p {
+        color: var(--ej-color-text-secondary, #4b5563);
+        font-size: var(--ej-font-size-base, 1rem);
+        margin: 0;
+    }
+}
+
+// =============================================================================
+// BOTONES
+// =============================================================================
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-2, 0.5rem);
+    padding: var(--ej-spacing-3, 0.75rem) var(--ej-spacing-5, 1.25rem);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    font-weight: 600;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &--primary {
+        background: var(--ej-color-corporate, #00b4b6);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 180, 182, 0.3);
+
+        &:hover {
+            background: var(--ej-color-corporate-dark, #008f91);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 180, 182, 0.4);
+        }
+    }
+
+    &--secondary {
+        background: var(--ej-color-surface, #fff);
+        color: var(--ej-color-text-primary, #111827);
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+
+        &:hover {
+            background: var(--ej-color-surface-elevated, #f9fafb);
+        }
+    }
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: 768px) {
+    .revision-list__header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+
+        .operational-tower__hero-actions {
+            width: 100%;
+            justify-content: stretch;
+
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    }
+
+    .revision-list__table {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+
+        th,
+        td {
+            padding: var(--ej-spacing-2, 0.5rem);
+        }
+
+        // Ocultar columnas menos importantes en móvil
+        .revision-list__th--check:last-of-type,
+        .revision-list__cell--radio:last-of-type {
+            display: none;
+        }
+    }
+}

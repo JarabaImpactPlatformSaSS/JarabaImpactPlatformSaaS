@@ -1,0 +1,389 @@
+/**
+ * @file
+ * AI Dashboard Styles - Estilos del dashboard de observabilidad IA.
+ *
+ * Usa variables inyectables del tema Jaraba.
+ * NO editar CSS directamente, compilar desde SCSS.
+ */
+
+@use 'sass:color';
+
+// === VARIABLES LOCALES (con fallbacks a tema) ===
+$dashboard-bg: var(--ej-bg-surface, #FFFFFF);
+$dashboard-text: var(--ej-color-body, #334155);
+$dashboard-muted: var(--ej-color-muted, #64748B);
+$dashboard-border: var(--ej-border-color, #E5E7EB);
+$dashboard-radius: var(--ej-border-radius, 12px);
+$dashboard-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.07));
+
+// Colores de tiers
+$tier-fast: var(--ej-color-success, #10B981);
+$tier-balanced: var(--ej-color-warning, #F59E0B);
+$tier-premium: var(--ej-color-primary, #FF8C42);
+
+// === DASHBOARD CONTAINER ===
+.ai-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    font-family: var(--ej-font-body, "Inter", sans-serif);
+}
+
+// === HEADER ===
+.ai-dashboard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ai-dashboard__title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: 0;
+}
+
+.ai-dashboard__period-selector {
+    display: flex;
+    gap: var(--ej-spacing-xs, 0.25rem);
+    background: var(--ej-bg-body, #F8FAFC);
+    padding: var(--ej-spacing-xs, 0.25rem);
+    border-radius: var(--ej-btn-radius, 8px);
+}
+
+.ai-dashboard__period-btn {
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    border-radius: var(--ej-btn-radius, 8px);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $dashboard-muted;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-corporate, #233D63);
+        background: $dashboard-bg;
+    }
+
+    &.is-active {
+        background: $dashboard-bg;
+        color: var(--ej-color-corporate, #233D63);
+        box-shadow: $dashboard-shadow;
+    }
+}
+
+// === STATS GRID ===
+.ai-dashboard__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ai-dashboard__stat-card {
+    background: $dashboard-bg;
+    border-radius: $dashboard-radius;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    box-shadow: $dashboard-shadow;
+    border-left: 4px solid transparent;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &--primary {
+        border-left-color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--success {
+        border-left-color: var(--ej-color-success, #10B981);
+    }
+
+    &--info {
+        border-left-color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--warning {
+        border-left-color: var(--ej-color-warning, #F59E0B);
+    }
+}
+
+.ai-dashboard__stat-value {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    line-height: 1.2;
+}
+
+.ai-dashboard__stat-label {
+    font-size: 0.875rem;
+    color: $dashboard-muted;
+    margin-top: var(--ej-spacing-xs, 0.25rem);
+}
+
+// === SAVINGS CARD ===
+.ai-dashboard__savings-card {
+    background: linear-gradient(135deg, var(--ej-color-success, #10B981) 0%, var(--ej-color-innovation, #00A9A5) 100%);
+    border-radius: $dashboard-radius;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+    color: #FFFFFF;
+}
+
+.ai-dashboard__savings-header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ai-dashboard__savings-icon {
+    font-size: 1.5rem;
+}
+
+.ai-dashboard__savings-title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.ai-dashboard__savings-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.ai-dashboard__savings-stat {
+    text-align: center;
+}
+
+.ai-dashboard__savings-value {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    &--highlight {
+        font-size: 2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.ai-dashboard__savings-label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: var(--ej-spacing-xs, 0.25rem);
+}
+
+// === CHARTS GRID ===
+.ai-dashboard__charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--ej-spacing-lg, 1.5rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ai-dashboard__chart-card {
+    background: $dashboard-bg;
+    border-radius: $dashboard-radius;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    box-shadow: $dashboard-shadow;
+}
+
+.ai-dashboard__chart-title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+}
+
+// === TIER BARS ===
+.ai-dashboard__tier-bars {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.ai-dashboard__tier-bar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-xs, 0.25rem);
+}
+
+.ai-dashboard__tier-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.ai-dashboard__tier-name {
+    color: $dashboard-text;
+    font-weight: 500;
+}
+
+.ai-dashboard__tier-cost {
+    color: $dashboard-muted;
+}
+
+.ai-dashboard__tier-progress {
+    height: 8px;
+    background: var(--ej-bg-body, #F8FAFC);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ai-dashboard__tier-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+
+    &--fast {
+        background: $tier-fast;
+    }
+
+    &--balanced {
+        background: $tier-balanced;
+    }
+
+    &--premium {
+        background: $tier-premium;
+    }
+}
+
+// === AGENT TABLE ===
+.ai-dashboard__agent-table {
+    overflow-x: auto;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+        text-align: left;
+        border-bottom: 1px solid $dashboard-border;
+    }
+
+    th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $dashboard-muted;
+        font-weight: 600;
+    }
+
+    td {
+        font-size: 0.875rem;
+        color: $dashboard-text;
+    }
+}
+
+.ai-dashboard__success-badge {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.is-good {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--ej-color-success, #10B981);
+    }
+
+    &.is-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--ej-color-warning, #F59E0B);
+    }
+
+    &.is-bad {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--ej-color-danger, #EF4444);
+    }
+}
+
+// === QUALITY CARD ===
+.ai-dashboard__quality-card {
+    background: $dashboard-bg;
+    border-radius: $dashboard-radius;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    box-shadow: $dashboard-shadow;
+    text-align: center;
+}
+
+.ai-dashboard__quality-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.ai-dashboard__quality-gauge {
+    width: 120px;
+    height: 120px;
+}
+
+.ai-dashboard__gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+
+    circle:first-child {
+        stroke: var(--ej-bg-body, #F8FAFC);
+    }
+
+    circle:last-of-type {
+        --gauge-color: var(--ej-color-success, #10B981);
+        stroke: var(--gauge-color);
+        stroke-linecap: round;
+    }
+}
+
+.ai-dashboard__gauge-text {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    fill: var(--ej-color-headings, #1A1A2E);
+    transform: rotate(90deg);
+    transform-origin: 60px 60px;
+}
+
+.ai-dashboard__quality-label {
+    font-size: 0.875rem;
+    color: $dashboard-muted;
+}
+
+// === EMPTY STATE ===
+.ai-dashboard__empty {
+    text-align: center;
+    padding: var(--ej-spacing-xl, 2rem);
+    color: $dashboard-muted;
+    font-style: italic;
+}
+
+// === RESPONSIVE ===
+@media (max-width: 480px) {
+    .ai-dashboard {
+        padding: var(--ej-spacing-md, 1rem);
+    }
+
+    .ai-dashboard__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ai-dashboard__stat-value {
+        font-size: 1.5rem;
+    }
+}

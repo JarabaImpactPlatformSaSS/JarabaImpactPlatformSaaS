@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * page--revisions.html.twig - Páginas de revisiones frontend limpio.
+ *
+ * ARQUITECTURA LIMPIA (mismo patrón que page--pixels.html.twig):
+ * - Sin {{ page.* }} = Sin bloques de Drupal (excepto content)
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Full-width layout
+ *
+ * PROPÓSITO: Páginas frontend para historial y comparación de revisiones.
+ * RUTAS:
+ *   - /page/{id}/revisions (lista)
+ *   - /page/{id}/revisions/compare/{older}/{newer} (comparación)
+ *
+ * Gap G: Diff Visual de Revisiones
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global-styling') }}
+{{ attach_library('jaraba_page_builder/revision-diff') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-revisions', 'dashboard-page', 'layout-revisions') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con variables de tema #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN CONTENT - Full-width layout (mismo patrón que /pixels) #}
+  <main id="main-content" class="dashboard-main revisions-main">
+    <div class="dashboard-wrapper revisions-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

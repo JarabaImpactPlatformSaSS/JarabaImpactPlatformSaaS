@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Hero variante: Compact
+ *
+ * Hero reducido para páginas internas.
+ * Uso: Páginas de categoría, listados, secciones.
+ */
+#}
+<section class="hero hero--compact {{ hero_class|default('') }} {{ dark ? 'hero--dark' : '' }}" 
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  
+  <div class="hero__overlay"></div>
+  
+  <div class="hero__container container">
+    <div class="hero__content hero__content--{{ align|default('center') }}">
+      
+      {% if breadcrumbs %}
+        <nav class="hero__breadcrumbs" aria-label="{% trans %}Navegación{% endtrans %}">
+          <ol class="breadcrumbs">
+            {% for crumb in breadcrumbs %}
+              <li class="breadcrumbs__item">
+                {% if crumb.url %}
+                  <a href="{{ crumb.url }}">{{ crumb.text }}</a>
+                {% else %}
+                  <span>{{ crumb.text }}</span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ol>
+        </nav>
+      {% endif %}
+
+      {% if eyebrow %}
+        <span class="hero__eyebrow">{{ eyebrow }}</span>
+      {% endif %}
+
+      <h1 class="hero__title">{{ title }}</h1>
+
+      {% if subtitle %}
+        <p class="hero__subtitle">{{ subtitle }}</p>
+      {% endif %}
+
+      {% if meta %}
+        <div class="hero__meta">
+          {% for item in meta %}
+            <span class="hero__meta-item">
+              {% if item.icon %}
+                {{ jaraba_icon('ui', item.icon, { size: '20px' }) }}
+              {% endif %}
+              {{ item.text }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>

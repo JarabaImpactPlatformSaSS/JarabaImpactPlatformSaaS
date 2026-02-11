@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Partial: Category filter pills para blog.
+ *
+ * Variables:
+ * - categories: Array de categorías
+ *   - id: ID
+ *   - name: Nombre
+ *   - slug: Slug
+ *   - color: Color hex
+ *   - url: URL
+ *   - count: Número de artículos
+ * - active_category: ID de categoría activa (opcional)
+ * - show_all_link: Boolean para mostrar "Todos" (default: true)
+ * - all_url: URL para "Todos" (default: '/blog')
+ */
+#}
+{% set show_all_link = show_all_link|default(true) %}
+{% set all_url = all_url|default('/blog') %}
+
+<nav class="category-filter" aria-label="{% trans %}Filter by category{% endtrans %}">
+  <ul class="category-filter__list">
+    {% if show_all_link %}
+      <li class="category-filter__item">
+        <a 
+          href="{{ all_url }}" 
+          class="category-filter__link {{ not active_category ? 'category-filter__link--active' : '' }}"
+        >
+          {% trans %}All{% endtrans %}
+        </a>
+      </li>
+    {% endif %}
+
+    {% for category in categories %}
+      <li class="category-filter__item">
+        <a 
+          href="{{ category.url }}" 
+          class="category-filter__link {{ active_category == category.id ? 'category-filter__link--active' : '' }}"
+          style="--category-color: {{ category.color|default('#233D63') }}"
+        >
+          {{ category.name }}
+          {% if category.count is defined %}
+            <span class="category-filter__count">{{ category.count }}</span>
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

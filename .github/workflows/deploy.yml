@@ -185,15 +185,25 @@ jobs:
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
           EOF
 
+      - name: Setup PHP CLI path for drush subprocesses
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            # vendor/bin/drush usa #!/usr/bin/env php -> en IONOS 'php' puede ser CGI
+            # Creamos symlink php -> php8.4-cli para que subprocesos drush usen CLI
+            mkdir -p ~/bin_cli
+            ln -sf /usr/bin/php8.4-cli ~/bin_cli/php
+            echo "✅ PHP CLI symlink: $(~/bin_cli/php -r 'echo php_sapi_name();')"
+          EOF
+
       - name: Pre-deploy diagnostics
         continue-on-error: true
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
-            # Forzar PHP CLI para subprocesos de drush (evita CGI en shared hosting)
+            export PATH="$HOME/bin_cli:$PATH"
             export DRUSH_PHP=/usr/bin/php8.4-cli
-            echo "=== PHP SAPI ==="
-            /usr/bin/php8.4-cli -r "echo php_sapi_name() . PHP_EOL;"
+            echo "=== PHP in PATH: $(which php) ==="
+            php -r "echo 'SAPI: ' . php_sapi_name() . PHP_EOL;"
             echo ""
             echo "=== Drush Status ==="
             /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1 || echo "⚠️ drush status failed"
@@ -207,6 +217,7 @@ jobs:
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
+            export PATH="$HOME/bin_cli:$PATH"
             export DRUSH_PHP=/usr/bin/php8.4-cli
             echo "=== Running updatedb with verbose PHP error output ==="
             /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb -y -v 2>&1
@@ -223,6 +234,7 @@ jobs:
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
+            export PATH="$HOME/bin_cli:$PATH"
             export DRUSH_PHP=/usr/bin/php8.4-cli
             /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
             /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1

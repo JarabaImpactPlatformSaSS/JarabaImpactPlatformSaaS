@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * _vertical-landing-content.html.twig
+ * 
+ * Contenido de landing pages de verticales.
+ * Se incluye desde page--vertical-landing.html.twig.
+ *
+ * VARIABLES:
+ * - vertical_data: Array con configuración del vertical
+ *   - key: Identificador (empleo, talento, emprender, comercio, instituciones)
+ *   - title: Título principal
+ *   - subtitle: Subtítulo descriptivo
+ *   - icon_category: Categoría del icono (verticals, business, etc.)
+ *   - icon_name: Nombre del icono
+ *   - color: Variable CSS del color del vertical
+ *   - benefits: Array de beneficios
+ *   - cta_primary: CTA principal {text, url}
+ *   - cta_secondary: CTA secundario {text, url}
+ */
+#}
+
+{% set data = vertical_data|default({}) %}
+{% set key = data.key|default('default') %}
+
+<div class="vertical-landing vertical-landing--{{ key }}">
+  
+  {# ===== HERO SECTION ===== #}
+  <section class="vertical-landing__hero hero-landing hero-landing--{{ key }}">
+    {# Animated Background con partículas #}
+    <div class="hero-landing__bg">
+      <div class="hero-landing__gradient"></div>
+      <div class="hero-landing__particles"></div>
+    </div>
+
+    <div class="vertical-landing__hero-content hero-landing__content">
+      <span class="vertical-landing__icon">
+        {{ jaraba_icon(data.icon_category|default('verticals'), data.icon_name|default('rocket'), {
+          variant: 'duotone',
+          color: data.color|default('impulse'),
+          size: '64px'
+        }) }}
+      </span>
+      <h1 class="vertical-landing__title hero-landing__title">{{ data.title }}</h1>
+      <p class="vertical-landing__subtitle hero-landing__subtitle">{{ data.subtitle }}</p>
+      <div class="vertical-landing__actions hero-landing__actions">
+        <a href="{{ data.cta_primary.url }}" class="btn-primary btn-primary--large">
+          {{ data.cta_primary.text }}
+        </a>
+        <a href="{{ data.cta_secondary.url }}" class="btn-secondary btn-secondary--large">
+          {{ data.cta_secondary.text }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  {# ===== BENEFITS SECTION ===== #}
+  <section class="vertical-landing__benefits">
+    <div class="vertical-landing__benefits-header">
+      <h2>{% trans %}¿Por qué elegirnos?{% endtrans %}</h2>
+    </div>
+    <div class="vertical-landing__benefits-grid">
+      {% for benefit in data.benefits %}
+        <div class="vertical-benefit">
+          <span class="vertical-benefit__icon">
+            {{ jaraba_icon(benefit.icon_category|default('business'), benefit.icon_name|default('target'), {
+              variant: 'duotone',
+              color: data.color|default('impulse'),
+              size: '32px'
+            }) }}
+          </span>
+          <h3 class="vertical-benefit__title">{{ benefit.title }}</h3>
+          <p class="vertical-benefit__description">{{ benefit.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ===== BOTTOM CTA SECTION ===== #}
+  <section class="vertical-landing__bottom-cta">
+    <h2>{% trans %}¿Listo para empezar?{% endtrans %}</h2>
+    <a href="{{ data.cta_primary.url }}" class="vertical-landing__cta-primary">
+      {{ data.cta_primary.text }}
+    </a>
+  </section>
+
+</div>

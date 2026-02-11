@@ -1,0 +1,63 @@
+/**
+ * @file
+ * Cards - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.card {
+    background: var(--ej-card-bg, #FFFFFF);
+    border-radius: var(--ej-card-radius, 12px);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+// Styles
+.card--elevated {
+    box-shadow: var(--ej-shadow-md);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ej-shadow-lg);
+    }
+}
+
+.card--outlined {
+    border: 1px solid var(--ej-card-border, #E5E7EB);
+}
+
+.card--flat {
+    background: transparent;
+}
+
+.card--glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+// Parts
+.card__header {
+    padding: var(--ej-spacing-md);
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+}
+
+.card__body {
+    padding: var(--ej-spacing-md);
+}
+
+.card__footer {
+    padding: var(--ej-spacing-md);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+}
+
+.card__title {
+    margin: 0 0 var(--ej-spacing-sm);
+    font-size: 1.125rem;
+}
+
+.card__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}

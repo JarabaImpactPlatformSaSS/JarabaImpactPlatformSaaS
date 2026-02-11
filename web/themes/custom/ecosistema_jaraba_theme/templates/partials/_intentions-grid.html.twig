@@ -1,0 +1,75 @@
+{#
+/**
+ * @file
+ * templates/partials/_intentions-grid.html.twig
+ *
+ * Grid de intenciones/avatares para Progressive Profiling.
+ * Soporta datos dinámicos desde Page Builder o fallbacks hardcodeados.
+ * i18n con {% trans %}
+ *
+ * Variables esperadas:
+ * - intentions: Array de intention cards desde Page Builder (opcional)
+ */
+#}
+
+{# Fallback: Si no hay intentions dinámicas, usar hardcodeadas con SVGs originales #}
+{% set default_intentions = [
+  {
+    title: 'Busco empleo'|t,
+    description: 'Encuentra ofertas que encajan contigo'|t,
+    url: '/empleo',
+    color_class: 'empleo',
+    icon_svg: '<svg viewBox="0 0 40 40" class="icon-empleo"><circle cx="20" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 36c0-8 5.4-14 12-14s12 6 12 14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 18l8-4v12l-8-4" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+  },
+  {
+    title: 'Busco talento'|t,
+    description: 'Conecta con candidatos cualificados'|t,
+    url: '/talento',
+    color_class: 'talento',
+    icon_svg: '<svg viewBox="0 0 40 40" class="icon-talento"><circle cx="14" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 32c0-6 4-10 10-10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M36 32c0-6-4-10-10-10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 22c4 0 8 4 8 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+  },
+  {
+    title: 'Quiero emprender'|t,
+    description: 'Valida tu idea con metodología'|t,
+    url: '/emprender',
+    color_class: 'emprender',
+    icon_svg: '<svg viewBox="0 0 40 40" class="icon-emprender"><path d="M20 4l4 12h12l-10 8 4 12-10-8-10 8 4-12-10-8h12z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+  },
+  {
+    title: 'Tengo un negocio'|t,
+    description: 'Vende tus productos o servicios online'|t,
+    url: '/comercio',
+    color_class: 'comercio',
+    icon_svg: '<svg viewBox="0 0 40 40" class="icon-comercio"><rect x="4" y="12" width="32" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 18h32" stroke="currentColor" stroke-width="2"/><path d="M12 4v8M28 4v8" stroke="currentColor" stroke-width="2"/><rect x="8" y="24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+  },
+  {
+    title: 'Soy institución'|t,
+    description: 'Impulsa programas de desarrollo territorial'|t,
+    url: '/instituciones',
+    color_class: 'b2g',
+    icon_svg: '<svg viewBox="0 0 40 40" class="icon-b2g"><path d="M20 4L4 12v4h32v-4L20 4z" fill="none" stroke="currentColor" stroke-width="2"/><rect x="8" y="16" width="6" height="16" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="16" width="6" height="16" fill="none" stroke="currentColor" stroke-width="2"/><rect x="26" y="16" width="6" height="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 32h32" stroke="currentColor" stroke-width="2"/></svg>'
+  }
+] %}
+
+{% set intention_items = intentions|default([])|length > 0 ? intentions : default_intentions %}
+
+<nav class="intentions-grid" aria-label="{% trans %}Selecciona tu objetivo{% endtrans %}">
+  {% for intention in intention_items %}
+    <a href="{{ intention.url }}" class="intention-card intention-card--{{ intention.color_class|default('default') }}">
+      <div class="intention-card__icon">
+        {# Si la intention viene de la BD (tiene campo icon), usar jaraba_icon() #}
+        {% if intention.icon and not intention.icon_svg %}
+          {{ jaraba_icon('verticals', intention.icon, { size: '40px', color: intention.color_class|default('primary') }) }}
+        {% else %}
+          {# Fallback: SVG inline para datos por defecto #}
+          {{ intention.icon_svg|raw }}
+        {% endif %}
+      </div>
+      <h2 class="intention-card__title">{{ intention.title }}</h2>
+      <p class="intention-card__description">{{ intention.description }}</p>
+      <span class="intention-card__arrow">→</span>
+    </a>
+  {% endfor %}
+</nav>
+
+

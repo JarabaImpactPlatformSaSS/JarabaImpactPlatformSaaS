@@ -1,0 +1,1780 @@
+/**
+ * @file
+ * Estilos del Canvas Editor GrapesJS v3.
+ *
+ * Implementa la personalización visual del editor GrapesJS para
+ * alinearlo con el Design System Jaraba.
+ *
+ * IMPORTANTE: Cumple con directrices del proyecto:
+ * - Dart Sass moderno (@use, sass:color)
+ * - Variables inyectables con fallbacks CSS vars
+ * - Textos traducibles via Drupal.t()
+ *
+ * @see docs/tecnicos/20260204b-Canvas_Editor_v3_Arquitectura_Maestra.md
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// ===========================================================================
+// THEMING GRAPESJS - VARIABLES CSS OFICIALES
+// Documentación: https://grapesjs.com/docs/getting-started.html#theming
+// ===========================================================================
+
+// Variables CSS custom de GrapesJS - Alineadas con Jaraba Design System
+// NOTA: Usa variables SCSS como fallback. Los valores finales se pueden
+// inyectar via CSS vars desde la UI de Drupal.
+:root {
+    // Paleta de colores GrapesJS usando paleta oficial Jaraba
+    --gjs-primary-color: var(--ej-color-corporate, #{$ej-color-corporate}); // #233D63 - Azul corporativo
+    --gjs-secondary-color: rgba(255, 255, 255, 0.8); // Texto claro
+    --gjs-tertiary-color: var(--ej-color-impulse, #{$ej-color-impulse}); // #FF8C42 - Naranja Impulso
+    --gjs-quaternary-color: var(--ej-color-innovation, #{$ej-color-innovation}); // #00A9A5 - Turquesa Innovación
+}
+
+// Clases de color GrapesJS para theming
+.gjs-one-bg {
+    background-color: var(--gjs-primary-color, $ej-color-corporate) !important;
+}
+
+.gjs-two-color {
+    color: var(--gjs-secondary-color, rgba(255, 255, 255, 0.8)) !important;
+}
+
+.gjs-three-bg {
+    background-color: var(--gjs-tertiary-color, $ej-color-impulse) !important;
+    color: white !important;
+}
+
+.gjs-four-color,
+.gjs-four-color-h:hover {
+    color: var(--gjs-quaternary-color, $ej-color-innovation) !important;
+}
+
+// ===========================================================================
+// LAYOUT PRINCIPAL DEL EDITOR
+// ===========================================================================
+
+.gjs-editor-cont {
+    font-family: $ej-font-body;
+    // Fondo azul corporativo premium en lugar de gris
+    background: var(--gjs-primary-color, $ej-color-corporate);
+    height: 100vh;
+}
+
+// ===========================================================================
+// LAYOUT GRAPESJS JARABA (3 columnas)
+// ===========================================================================
+
+// Override para el contenedor padre cuando tiene GrapesJS
+.canvas-editor__canvas:has(.jaraba-grapesjs-layout) {
+    width: 100%;
+    max-width: none;
+    flex: 1;
+    overflow: hidden;
+}
+
+// Layout principal de 3 columnas ocupando todo el espacio disponible
+.jaraba-grapesjs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 350px;
+    // Ajustado para dejar espacio al header completo (~110px de altura)
+    height: calc(100vh - 110px);
+    width: 100%;
+    gap: 0;
+    // Layout con fondo azul corporativo premium
+    background: var(--ej-color-corporate, $ej-color-corporate);
+
+    // Asegurar que ocupe todo el viewport sin cubrir el header
+    position: absolute;
+    top: 110px; // Ajustado basado en análisis DOM: header termina en ~110px
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+// ===========================================================================
+// PANELES LATERALES
+// ===========================================================================
+
+.jaraba-grapesjs-panel {
+    // Fondo azul corporativo para paneles premium
+    background: var(--ej-color-corporate, $ej-color-corporate);
+    border-color: color.change($ej-color-innovation, $alpha: 0.3);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.jaraba-grapesjs-panel--left {
+    border-right: 1px solid color.change($ej-color-innovation, $alpha: 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+// Fondo de partículas animadas para panel izquierdo
+.jaraba-grapesjs-panel__particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+
+    // Partículas generadas con CSS puro (más performante)
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background:
+            radial-gradient(circle at 20% 30%, rgba($ej-color-impulse, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba($ej-color-innovation, 0.12) 0%, transparent 35%),
+            radial-gradient(circle at 40% 80%, rgba($ej-color-impulse, 0.10) 0%, transparent 30%),
+            radial-gradient(circle at 60% 20%, rgba($ej-color-innovation, 0.14) 0%, transparent 40%),
+            radial-gradient(circle at 10% 60%, rgba(255, 255, 255, 0.05) 0%, transparent 25%),
+            radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.04) 0%, transparent 20%);
+        animation: jaraba-particles-float 12s ease-in-out infinite;
+    }
+
+    &::after {
+        animation-delay: -6s;
+        animation-direction: reverse;
+        opacity: 0.8;
+    }
+}
+
+// Animación de flotación suave de partículas
+@keyframes jaraba-particles-float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(-8%, 5%) rotate(3deg);
+    }
+
+    50% {
+        transform: translate(5%, -4%) rotate(-2deg);
+    }
+
+    75% {
+        transform: translate(-5%, 6%) rotate(2deg);
+    }
+}
+
+.jaraba-grapesjs-panel--right {
+    border-left: 1px solid color.change($ej-color-innovation, $alpha: 0.2);
+}
+
+.jaraba-grapesjs-panel__header {
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    background: color.change($ej-color-corporate, $alpha: 0.1);
+    position: relative;
+    z-index: 1;
+
+    h3 {
+        margin: 0;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ej-color-headings, #F8FAFC);
+        font-family: $ej-font-headings;
+    }
+}
+
+// Botón de acceso a galería de templates
+.jaraba-grapesjs-panel__gallery-link {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    margin: $ej-spacing-sm $ej-spacing-md;
+    background: linear-gradient(135deg,
+            rgba($ej-color-impulse, 0.15) 0%,
+            rgba($ej-color-innovation, 0.1) 100%);
+    border: 1px solid rgba($ej-color-impulse, 0.3);
+    border-radius: $ej-btn-radius;
+    color: #F8FAFC;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+
+    // Shine effect al hover
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.15),
+                transparent);
+        transition: left 0.5s ease;
+    }
+
+    span {
+        flex: 1;
+    }
+
+    svg {
+        opacity: 0.8;
+        transition: transform 0.3s ease;
+    }
+
+    svg:last-child {
+        width: 14px;
+        height: 14px;
+    }
+
+    &:hover {
+        background: linear-gradient(135deg,
+                rgba($ej-color-impulse, 0.25) 0%,
+                rgba($ej-color-innovation, 0.2) 100%);
+        border-color: $ej-color-impulse;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba($ej-color-impulse, 0.3);
+
+        &::before {
+            left: 100%;
+        }
+
+        svg:last-child {
+            transform: translate(2px, -2px);
+        }
+    }
+}
+
+.jaraba-grapesjs-panel__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $ej-spacing-md;
+    position: relative;
+    z-index: 1;
+}
+
+.jaraba-grapesjs-panel__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+}
+
+.jaraba-grapesjs-tab {
+    flex: 1;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: transparent;
+    border: none;
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-xs;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-headings, #F8FAFC);
+        background: color.change($ej-color-corporate, $alpha: 0.1);
+    }
+
+    &.is-active {
+        color: var(--ej-color-primary, $ej-color-impulse);
+        border-bottom: 2px solid var(--ej-color-primary, $ej-color-impulse);
+    }
+}
+
+// ===========================================================================
+// CANVAS WRAPPER (Centro)
+// ===========================================================================
+
+.jaraba-grapesjs-canvas-wrapper {
+    // Canvas wrapper con fondo azul corporativo (degradado sutil)
+    // NOTA: color.adjust() solo funciona con variables SCSS, no con CSS vars
+    background: linear-gradient(135deg,
+            color.adjust($ej-color-corporate, $lightness: -5%),
+            $ej-color-corporate);
+    overflow: hidden;
+    position: relative;
+}
+
+// ===========================================================================
+// PANEL LATERAL IZQUIERDO (BLOQUES)
+// ===========================================================================
+
+.gjs-pn-views-container {
+    // Panel de vistas con fondo azul corporativo
+    background: var(--ej-color-corporate, $ej-color-corporate);
+    border-right: 1px solid color.change($ej-color-innovation, $alpha: 0.3);
+}
+
+.gjs-blocks-cs {
+    padding: $ej-spacing-md;
+}
+
+// ---------------------------------------------------------------------------
+// Categorías de Bloques
+// ---------------------------------------------------------------------------
+
+.gjs-block-category {
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    margin-bottom: $ej-spacing-sm;
+
+    .gjs-caret-icon {
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+
+    .gjs-title {
+        color: var(--ej-color-headings, #F8FAFC);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: $ej-spacing-md $ej-spacing-sm;
+        background: color.change($ej-color-corporate, $alpha: 0.2);
+        font-family: $ej-font-headings;
+    }
+}
+
+// Categoría Premium especial
+.gjs-block-category[data-category="premium"] .gjs-title {
+    background: linear-gradient(135deg,
+            var(--ej-color-primary, $ej-color-impulse),
+            var(--ej-color-secondary, $ej-color-innovation));
+    color: #fff;
+}
+
+// ---------------------------------------------------------------------------
+// Bloques Individuales (Patrón Premium Card)
+// ---------------------------------------------------------------------------
+
+.gjs-block {
+    // Base Premium Card con glassmorphism
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(248, 250, 252, 0.08) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    padding: $ej-spacing-md;
+    margin: $ej-spacing-xs;
+    cursor: grab;
+
+    // Transición organic hover lift
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.3s ease,
+        border-color 0.2s ease;
+
+    // Shine element (hover sweep)
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent);
+        transition: left 0.6s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        // Organic hover lift siguiendo el patrón premium
+        transform: translateY(-6px) scale(1.02);
+        border-color: var(--ej-color-impulse, $ej-color-impulse);
+        box-shadow: 0 20px 40px rgba(35, 61, 99, 0.25),
+            0 0 20px rgba(255, 140, 66, 0.2);
+
+        // Shine sweep animation
+        &::before {
+            left: 150%;
+        }
+    }
+
+    &:active {
+        cursor: grabbing;
+        transform: translateY(-3px) scale(1.01);
+    }
+
+    // Icono del bloque con pulse
+    svg,
+    .gjs-block-media {
+        fill: var(--ej-color-impulse, $ej-color-impulse);
+        width: 48px;
+        height: 48px;
+        transition: transform 0.3s ease;
+        margin-bottom: $ej-spacing-xs;
+    }
+
+    &:hover svg,
+    &:hover .gjs-block-media {
+        animation: jaraba-pulse-icon 0.5s ease;
+    }
+}
+
+// Animación de pulse para iconos
+@keyframes jaraba-pulse-icon {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.gjs-block-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: $ej-spacing-xs;
+    text-align: center;
+    line-height: 1.3;
+    // Limitar texto largo
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Sprint A3: Drag & Drop Polish
+// ---------------------------------------------------------------------------
+
+// Ghost element premium al arrastrar un bloque desde el panel
+.gjs-block.gjs-block--dragging,
+.gjs-block[style*="opacity: 0.5"] {
+    opacity: 0.6 !important;
+    transform: scale(0.93);
+    box-shadow: 0 20px 60px rgba($ej-color-corporate, 0.35),
+        0 0 30px rgba($ej-color-innovation, 0.25);
+    border: 2px dashed var(--ej-color-innovation, $ej-color-innovation) !important;
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    transition: all 150ms ease;
+}
+
+// Drop zone visual: indicador de inserción activo en el canvas
+.jaraba-drop-zone--active {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border: 2px dashed var(--ej-color-innovation, $ej-color-innovation);
+        border-radius: var(--ej-card-radius, $ej-border-radius);
+        background: rgba($ej-color-innovation, 0.06);
+        animation: jaraba-drop-pulse 1.2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 10;
+    }
+}
+
+// Animación de pulsado para las drop zones
+@keyframes jaraba-drop-pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        border-color: rgba($ej-color-innovation, 0.4);
+    }
+
+    50% {
+        opacity: 1;
+        border-color: $ej-color-innovation;
+    }
+}
+
+// Spring animation al insertar un componente nuevo en el canvas
+.jaraba-component--just-added {
+    animation: jaraba-spring-drop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes jaraba-spring-drop {
+    0% {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.95);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateY(3px) scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// Toast de confirmación al soltar un bloque
+.jaraba-drop-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-lg;
+    background: linear-gradient(135deg,
+            rgba($ej-color-corporate, 0.95) 0%,
+            rgba(color.adjust($ej-color-corporate, $lightness: 8%), 0.92) 100%);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-family: var(--ej-font-body, $ej-font-body);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba($ej-color-innovation, 0.3);
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    animation: jaraba-toast-appear 1.5s ease forwards;
+
+    // Icono check animado
+    svg {
+        width: 18px;
+        height: 18px;
+        color: var(--ej-color-innovation, $ej-color-innovation);
+    }
+}
+
+@keyframes jaraba-toast-appear {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+// Highlight de GrapesJS al arrastrar sobre el canvas (drop zones nativas)
+.gjs-highlighter-sel,
+.gjs-placeholder,
+.gjs-noclicks .gjs-placeholder {
+    outline: 2px dashed var(--ej-color-innovation, $ej-color-innovation) !important;
+    outline-offset: 2px;
+    background: rgba($ej-color-innovation, 0.05) !important;
+}
+
+// ---------------------------------------------------------------------------
+// Zoom en Miniaturas (Popup ampliado al hover)
+// ---------------------------------------------------------------------------
+
+// Contenedor de imagen con zoom
+.gjs-block-media {
+    position: relative;
+
+    // Imagen base dentro del bloque
+    img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    // Popup de zoom al hover
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        width: 200px;
+        height: 150px;
+        background: inherit;
+        background-size: cover;
+        border-radius: $ej-border-radius;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
+            0 0 0 3px var(--ej-color-impulse, $ej-color-impulse);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 1000;
+        pointer-events: none;
+    }
+}
+
+// Hover en bloque: activar zoom de miniatura
+.gjs-block:hover .gjs-block-media img {
+    transform: scale(1.05);
+}
+
+// Zoom popup para bloques con imagen
+.gjs-block:hover .gjs-block__zoom-preview {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px) scale(1);
+}
+
+// Icono de lupa para indicar zoom disponible
+.gjs-block-media::before {
+    content: '';
+    position: absolute;
+    bottom: $ej-spacing-xs;
+    right: $ej-spacing-xs;
+    width: 20px;
+    height: 20px;
+    // Icono de lupa via SVG inline
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>') no-repeat center;
+    background-size: contain;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+}
+
+.gjs-block:hover .gjs-block-media::before {
+    opacity: 0.7;
+}
+
+// CANVAS
+// ===========================================================================
+
+.gjs-cv-canvas {
+    background: color.change($ej-color-neutral, $alpha: 0.2);
+    border-radius: $ej-border-radius;
+    overflow: hidden;
+}
+
+.gjs-frame {
+    background: #fff;
+    border-radius: $ej-border-radius;
+    box-shadow: $ej-shadow-lg;
+}
+
+// ---------------------------------------------------------------------------
+// Selección y Hover
+// ---------------------------------------------------------------------------
+
+.gjs-selected {
+    outline: 2px solid var(--ej-color-primary, $ej-color-impulse) !important;
+    outline-offset: 2px;
+}
+
+.gjs-hovered {
+    outline: 1px dashed var(--ej-color-secondary, $ej-color-innovation) !important;
+    outline-offset: 1px;
+}
+
+// Indicador de drop zone
+.gjs-dropping-active .gjs-placeholder {
+    background: color.change($ej-color-impulse, $alpha: 0.3);
+    border: 2px dashed var(--ej-color-primary, $ej-color-impulse);
+}
+
+// ===========================================================================
+// TOOLBAR DE COMPONENTE
+// ===========================================================================
+
+.gjs-toolbar {
+    background: var(--ej-bg-dark, $ej-bg-dark);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    padding: $ej-spacing-xs;
+    box-shadow: $ej-shadow-lg;
+}
+
+.gjs-toolbar-item {
+    color: var(--ej-color-headings, #F8FAFC);
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: var(--ej-color-primary, $ej-color-impulse);
+        color: #fff;
+    }
+}
+
+// Botón IA especial
+.jaraba-toolbar-ai {
+    background: linear-gradient(135deg,
+            var(--ej-color-primary, $ej-color-impulse),
+            var(--ej-color-secondary, $ej-color-innovation));
+    color: #fff !important;
+    font-size: 0.875rem;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+// ===========================================================================
+// PANEL DE TRAITS (PROPIEDADES)
+// ===========================================================================
+
+.gjs-trt-traits {
+    padding: $ej-spacing-md;
+}
+
+.gjs-trt-trait {
+    margin-bottom: $ej-spacing-md;
+}
+
+// Labels de propiedades - Alto contraste
+.gjs-trt-trait .gjs-label {
+    color: #FFFFFF !important; // Blanco puro para máximo contraste
+    font-size: 0.8125rem; // Ligeramente más grande (13px)
+    font-weight: 600; // Mayor peso para mejor legibilidad
+    margin-bottom: $ej-spacing-sm;
+    display: block;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); // Sombra sutil para profundidad
+}
+
+// Contenedor de campo - Fondo más claro para mejor contraste
+.gjs-field {
+    background: rgba(255, 255, 255, 0.12) !important; // Fondo semi-transparente más visible
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: $ej-btn-radius;
+    color: #FFFFFF !important;
+
+    &:focus-within {
+        border-color: var(--ej-color-primary, $ej-color-impulse) !important;
+        box-shadow: 0 0 0 3px color.change($ej-color-impulse, $alpha: 0.3);
+        background: rgba(255, 255, 255, 0.18) !important;
+    }
+}
+
+// Inputs, selects y textareas - Texto blanco puro
+.gjs-field input,
+.gjs-field select,
+.gjs-field textarea {
+    background: transparent !important;
+    color: #FFFFFF !important;
+    border: none;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    width: 100%;
+    font-size: 0.875rem; // 14px para mejor legibilidad
+}
+
+// Options dentro de select - Fondo oscuro para visibilidad
+.gjs-field select option {
+    background: $ej-color-corporate;
+    color: #FFFFFF;
+}
+
+// Placeholder con contraste adecuado
+.gjs-field input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+// ===========================================================================
+// BOTONES DE PANEL
+// ===========================================================================
+
+.gjs-pn-buttons {
+    display: flex;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-sm;
+}
+
+.gjs-pn-btn {
+    background: color.change($ej-color-corporate, $alpha: 0.3);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    color: var(--ej-color-headings, #F8FAFC);
+    padding: $ej-spacing-sm $ej-spacing-md;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        color: #fff;
+    }
+
+    &.gjs-pn-active {
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        color: #fff;
+    }
+}
+
+// ===========================================================================
+// MODAL
+// ===========================================================================
+
+.gjs-mdl-dialog {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-border-radius;
+    box-shadow: $ej-shadow-lg;
+}
+
+.gjs-mdl-header {
+    background: color.change($ej-color-corporate, $alpha: 0.1);
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    padding: $ej-spacing-lg;
+}
+
+.gjs-mdl-title {
+    color: var(--ej-color-headings, $ej-color-headings);
+    font-weight: 600;
+    font-family: $ej-font-headings;
+}
+
+.gjs-mdl-content {
+    padding: $ej-spacing-xl;
+    color: var(--ej-color-body, $ej-color-body);
+}
+
+// ===========================================================================
+// MODAL IA PERSONALIZADO
+// ===========================================================================
+
+.jaraba-ai-modal {
+    padding: $ej-spacing-xl;
+}
+
+.jaraba-ai-modal__field {
+    margin-bottom: $ej-spacing-lg;
+
+    label {
+        display: block;
+        color: var(--ej-color-headings, $ej-color-headings);
+        font-weight: 500;
+        margin-bottom: $ej-spacing-xs;
+    }
+
+    textarea,
+    select {
+        width: 100%;
+        background: var(--ej-bg-body, $ej-bg-body);
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        border-radius: $ej-btn-radius;
+        color: var(--ej-color-body, $ej-color-body);
+        padding: $ej-spacing-sm $ej-spacing-md;
+        font-family: inherit;
+
+        &:focus {
+            border-color: var(--ej-color-primary, $ej-color-impulse);
+            outline: none;
+            box-shadow: 0 0 0 3px color.change($ej-color-impulse, $alpha: 0.2);
+        }
+    }
+}
+
+.jaraba-ai-modal__actions {
+    display: flex;
+    gap: $ej-spacing-md;
+    margin-top: $ej-spacing-xl;
+}
+
+.jaraba-ai-modal__preview {
+    margin-top: $ej-spacing-xl;
+    padding-top: $ej-spacing-lg;
+    border-top: 1px solid var(--ej-border-color, $ej-border-color);
+
+    h4 {
+        color: var(--ej-color-headings, $ej-color-headings);
+        margin-bottom: $ej-spacing-md;
+        font-family: $ej-font-headings;
+    }
+}
+
+.jaraba-ai-modal__preview-actions {
+    display: flex;
+    gap: $ej-spacing-md;
+    margin-top: $ej-spacing-lg;
+}
+
+// ===========================================================================
+// BOTONES JARABA
+// ===========================================================================
+
+.jaraba-btn {
+    padding: $ej-spacing-sm $ej-spacing-xl;
+    border-radius: $ej-btn-radius;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: $ej-font-body;
+
+    &--primary {
+        background: linear-gradient(135deg,
+                var(--ej-color-primary, $ej-color-impulse),
+                var(--ej-color-secondary, $ej-color-innovation));
+        color: #fff;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px color.change($ej-color-impulse, $alpha: 0.4);
+        }
+    }
+
+    &--secondary {
+        background: var(--ej-bg-surface, $ej-bg-surface);
+        color: var(--ej-color-body, $ej-color-body);
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+
+        &:hover {
+            background: var(--ej-bg-body, $ej-bg-body);
+        }
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+// ===========================================================================
+// CONTENT ZONE VACÍA
+// ===========================================================================
+
+.jaraba-content-zone__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    border: 2px dashed var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-border-radius;
+    color: var(--ej-color-muted, $ej-color-muted);
+    text-align: center;
+    padding: $ej-spacing-2xl;
+    margin: $ej-spacing-xl;
+
+    p {
+        font-size: 0.875rem;
+        margin: 0;
+    }
+}
+
+// ===========================================================================
+// ANIMACIONES
+// ===========================================================================
+
+@keyframes jaraba-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.gjs-grabbing {
+    animation: jaraba-pulse 1s ease infinite;
+}
+
+// ===========================================================================
+// CONTENEDOR GRAPESJS
+// ===========================================================================
+
+.jaraba-grapesjs-container {
+    width: 100%;
+    height: 100%;
+    min-height: calc(100vh - 60px);
+    background: var(--ej-bg-dark, $ej-bg-dark);
+}
+
+.jaraba-grapesjs-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 400px;
+    color: var(--ej-color-muted, $ej-color-muted);
+    gap: $ej-spacing-lg;
+
+    p {
+        font-size: 0.875rem;
+        margin: 0;
+    }
+}
+
+.jaraba-grapesjs-loading__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--ej-border-color, $ej-border-color);
+    border-top-color: var(--ej-color-primary, $ej-color-impulse);
+    border-radius: 50%;
+    animation: jaraba-spin 1s linear infinite;
+}
+
+@keyframes jaraba-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// ===========================================================================
+// RESPONSIVE
+// ===========================================================================
+
+@media (max-width: 768px) {
+    .gjs-blocks-cs {
+        padding: $ej-spacing-sm;
+    }
+
+    .gjs-block {
+        padding: $ej-spacing-sm;
+        margin: 2px;
+    }
+
+    .gjs-block svg {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+// ===========================================================================
+// OVERRIDE PANELES GRAPESJS NATIVOS - Fondo azul corporativo
+// ===========================================================================
+
+// Forzar fondo azul corporativo en todos los paneles laterales de GrapesJS
+.gjs-pn-panels,
+.gjs-pn-views-container,
+.gjs-pn-views,
+.gjs-sm-sectors,
+.gjs-clm-tags,
+.gjs-layers,
+.gjs-trt-traits {
+    background: var(--ej-color-corporate, $ej-color-corporate) !important;
+    color: #F8FAFC !important;
+}
+
+// Panel contenedor general
+.gjs-pn-panel {
+    background: var(--ej-color-corporate, $ej-color-corporate) !important;
+}
+
+// Selectores de estilos (Style Manager)
+.gjs-sm-sector {
+    background: var(--ej-color-corporate, $ej-color-corporate) !important;
+
+    .gjs-sm-sector-title {
+        background: color.change($ej-color-innovation, $alpha: 0.15) !important;
+        color: #F8FAFC !important;
+        border-color: color.change($ej-color-innovation, $alpha: 0.3) !important;
+    }
+
+    .gjs-sm-properties {
+        background: transparent !important;
+    }
+
+    .gjs-sm-label,
+    .gjs-sm-property label {
+        color: #CBD5E1 !important;
+    }
+}
+
+// Inputs y campos del Style Manager
+.gjs-field,
+.gjs-field-wrp,
+.gjs-sm-input-holder input,
+.gjs-sm-select select {
+    background: color.change($ej-bg-dark, $alpha: 0.5) !important;
+    border-color: color.change($ej-color-innovation, $alpha: 0.3) !important;
+    color: #F8FAFC !important;
+}
+
+// ===========================================================================
+// ZOOM EN HOVER PARA MINIATURAS DE BLOQUES
+// ===========================================================================
+
+.gjs-block {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, z-index 0s;
+
+    // Contenedor de imagen en el bloque
+    img {
+        transition: transform 0.3s ease;
+    }
+
+    // Efecto zoom en hover
+    &:hover {
+        z-index: 100;
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+
+        img {
+            transform: scale(1.1);
+        }
+
+        // Mostrar preview ampliado
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 120px;
+            background-image: inherit;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--ej-color-impulse, $ej-color-impulse);
+            z-index: 101;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInPreview 0.2s ease forwards 0.3s;
+        }
+    }
+}
+
+@keyframes fadeInPreview {
+    to {
+        opacity: 1;
+    }
+}
+
+// Zoom más pronunciado para bloques con imágenes de preview
+.gjs-block:has(img):hover img {
+    transform: scale(1.15);
+}
+
+// ===========================================================================
+// PADDING SUPERIOR EN CANVAS CENTRAL
+// ===========================================================================
+
+.gjs-cv-canvas {
+    padding-top: $ej-spacing-md !important;
+    background: #F8FAFC !important;
+}
+
+.gjs-cv-canvas__frames {
+    padding: $ej-spacing-md !important;
+}
+
+// Iframe del canvas con margen para respirar
+.gjs-frame-wrapper,
+.gjs-frame {
+    margin-top: $ej-spacing-sm;
+}
+
+// ===========================================================================
+// ELIMINAR COLUMNA GRIS EXTRA (Asegurar que canvas ocupe espacio)
+// ===========================================================================
+
+.jaraba-grapesjs-canvas-wrapper {
+    flex: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.gjs-editor {
+    width: 100% !important;
+}
+
+.gjs-cv-canvas {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+// ===========================================================================
+// CORRECCIÓN FORZADA: Panel derecho con azul corporativo
+// ===========================================================================
+
+.jaraba-grapesjs-layout .jaraba-grapesjs-panel--right,
+.jaraba-grapesjs-panel--right,
+#gjs-styles-panel,
+.gjs-pn-views,
+.gjs-pn-views-container {
+    background: var(--ej-color-corporate, #233D63) !important;
+}
+
+// Forzar iframe del canvas a ocupar todo el espacio disponible
+.gjs-cv-canvas,
+.gjs-cv-canvas__frames,
+.gjs-frame-wrapper-outer {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+// Eliminar cualquier padding/margin que cree la columna gris
+.gjs-editor-cont>.gjs-cv-canvas {
+    position: relative !important;
+    // Eliminamos position:absolute que podría causar el problema
+}
+
+// ===========================================================================
+// FORZAR PADDING SUPERIOR EN CANVAS
+// ===========================================================================
+
+// Canvas wrapper con padding
+.jaraba-grapesjs-layout .jaraba-grapesjs-canvas-wrapper {
+    padding-top: 16px !important;
+}
+
+// Frames container con espacio
+.gjs-cv-canvas .gjs-cv-canvas__frames {
+    padding: 16px !important;
+    background: #F8FAFC !important;
+}
+
+// ===========================================================================
+// ZOOM FORZADO EN BLOQUES
+// ===========================================================================
+
+.jaraba-grapesjs-layout .gjs-block,
+.gjs-blocks-cs .gjs-block {
+    position: relative !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+
+    &:hover {
+        transform: scale(1.08) !important;
+        z-index: 100 !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    img {
+        transition: transform 0.3s ease !important;
+    }
+
+    &:hover img {
+        transform: scale(1.1) !important;
+    }
+}
+
+// ===========================================================================
+// ETIQUETAS DE CATEGORÍAS DE BLOQUES - Texto legible sobre fondo azul
+// ===========================================================================
+
+// Títulos de categorías (ej: "COMPONENTES", "PREMIUM", etc.)
+.gjs-block-category {
+    // Fondo semi-transparente para separación visual
+    background: color.change($ej-color-corporate, $alpha: 0.3) !important;
+    border-bottom: 1px solid color.change($ej-color-innovation, $alpha: 0.2) !important;
+
+    // Título de la categoría
+    .gjs-title {
+        color: #F8FAFC !important; // Blanco para legibilidad
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        font-size: 0.75rem !important;
+        padding: $ej-spacing-sm $ej-spacing-md !important;
+
+        // Icono de desplegar
+        i {
+            color: var(--ej-color-innovation, $ej-color-innovation) !important;
+        }
+    }
+}
+
+// Contenedor de bloques dentro de categoría
+.gjs-blocks-c {
+    background: transparent !important;
+    padding: $ej-spacing-sm !important;
+}
+
+// Labels de bloques individuales
+.gjs-block-label {
+    color: #CBD5E1 !important; // Gris claro legible
+    font-size: 0.7rem !important;
+    margin-top: $ej-spacing-xs !important;
+    text-align: center !important;
+}
+
+// ===========================================================================
+// PANEL DERECHO (STYLE MANAGER) - Campos legibles sobre fondo azul
+// ===========================================================================
+
+// Sectores del Style Manager (Diseño, Tipografía, etc.)
+.gjs-sm-sector {
+    background: transparent !important;
+    border-bottom: 1px solid color.change($ej-color-innovation, $alpha: 0.2) !important;
+
+    // Título del sector
+    .gjs-sm-sector-title {
+        color: #F8FAFC !important;
+        font-weight: 600 !important;
+        font-size: 0.8rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        padding: $ej-spacing-sm $ej-spacing-md !important;
+        background: color.change($ej-color-corporate, $lightness: 20%) !important;
+    }
+}
+
+// Labels de propiedades
+.gjs-sm-label,
+.gjs-sm-property .gjs-sm-label {
+    color: #CBD5E1 !important; // Gris claro
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+// Campos de texto/input
+.gjs-sm-input,
+.gjs-field input,
+.gjs-field select,
+.gjs-sm-select,
+.gjs-clm-input {
+    background: #1A1A2E !important; // Fondo oscuro para contraste
+    color: #F8FAFC !important; // Texto blanco
+    border: 1px solid color.change($ej-color-innovation, $alpha: 0.3) !important;
+    border-radius: 4px !important;
+    padding: $ej-spacing-xs $ej-spacing-sm !important;
+    font-size: 0.8rem !important;
+
+    &:focus {
+        border-color: var(--ej-color-innovation, $ej-color-innovation) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px color.change($ej-color-innovation, $alpha: 0.2) !important;
+    }
+
+    &::placeholder {
+        color: #64748B !important;
+    }
+}
+
+// Selects con dropdown
+.gjs-field select,
+.gjs-sm-select select {
+    appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300A9A5' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 8px center !important;
+    padding-right: 28px !important;
+}
+
+// Botones dentro del Style Manager
+.gjs-sm-btn,
+.gjs-btn-prim {
+    background: var(--ej-color-impulse, $ej-color-impulse) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: $ej-spacing-xs $ej-spacing-sm !important;
+    font-size: 0.75rem !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s ease !important;
+
+    &:hover {
+        opacity: 0.9 !important;
+    }
+}
+
+// Color picker
+.gjs-field-color {
+    background: #1A1A2E !important;
+    border: 1px solid color.change($ej-color-innovation, $alpha: 0.3) !important;
+    border-radius: 4px !important;
+}
+
+// Valores numéricos con unidades
+.gjs-field-units {
+    color: #94A3B8 !important;
+    font-size: 0.7rem !important;
+}
+
+// Radio buttons y checkboxes personalizados
+.gjs-radio-item,
+.gjs-checkbox {
+    color: #CBD5E1 !important;
+}
+
+// Layers panel
+.gjs-layer {
+    color: #F8FAFC !important;
+    background: transparent !important;
+    border-bottom: 1px solid color.change($ej-color-innovation, $alpha: 0.15) !important;
+
+    &:hover {
+        background: color.change($ej-color-corporate, $lightness: 25%) !important;
+    }
+
+    .gjs-layer-title {
+        color: #F8FAFC !important;
+    }
+}
+
+// Traits panel (propiedades de componente)
+.gjs-trt-trait {
+    color: #CBD5E1 !important;
+
+    .gjs-trt-trait-label {
+        color: #CBD5E1 !important;
+    }
+}
+
+// ===========================================================================
+// BOTÓN SEO TOGGLE (Toolbar del Canvas Editor)
+// ===========================================================================
+
+.canvas-editor__seo-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    margin-left: $ej-spacing-md;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: $ej-btn-radius;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    // Separador visual a la izquierda
+    &::before {
+        content: '';
+        position: absolute;
+        left: -#{$ej-spacing-md};
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #FFFFFF;
+    }
+
+    &.is-active,
+    &[aria-pressed="true"] {
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        color: #FFFFFF;
+
+        &:hover {
+            background: color.change($ej-color-impulse, $lightness: 45%);
+            border-color: color.change($ej-color-impulse, $lightness: 45%);
+        }
+    }
+}
+
+// ===========================================================================
+// TABS PANEL DERECHO - WORLD-CLASS UI
+// Mejora la visibilidad de tabs Estilos/Propiedades/Capas
+// ===========================================================================
+
+// Contenedor de tabs del panel derecho GrapesJS
+.gjs-pn-panel.gjs-pn-views,
+.gjs-sm-sectors,
+#gjs-styles-panel {
+    background: color.adjust($ej-color-corporate, $lightness: -3%);
+}
+
+// Override para botones de tabs del panel derecho
+.gjs-pn-views .gjs-pn-btn,
+.gjs-pn-options .gjs-pn-btn,
+.jaraba-grapesjs-panel--right .gjs-pn-btn {
+    // Estado inactivo - Mayor contraste
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7); // Más visible que el actual
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: $ej-btn-radius;
+    transition: all 0.25s ease;
+    position: relative;
+
+    // Iconos visibles en estado inactivo
+    svg {
+        color: rgba(255, 255, 255, 0.6);
+        width: 18px;
+        height: 18px;
+        transition: color 0.25s ease;
+    }
+
+    // Hover state - Feedback visual claro
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #FFFFFF;
+
+        svg {
+            color: rgba(255, 255, 255, 0.9);
+        }
+    }
+
+    // Estado activo - Premium con acento de color
+    &.gjs-pn-active {
+        background: linear-gradient(135deg,
+                var(--ej-color-primary, $ej-color-impulse) 0%,
+                color.adjust($ej-color-impulse, $lightness: -8%) 100%);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        color: #FFFFFF;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba($ej-color-impulse, 0.35);
+
+        // Borde inferior brillante
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.6),
+                    transparent);
+            border-radius: 2px;
+        }
+
+        svg {
+            color: #FFFFFF;
+        }
+
+        &:hover {
+            background: linear-gradient(135deg,
+                    color.adjust($ej-color-impulse, $lightness: 5%) 0%,
+                    var(--ej-color-primary, $ej-color-impulse) 100%);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+// Contenedor de tabs - Espaciado premium
+.gjs-pn-views>.gjs-pn-buttons,
+.jaraba-grapesjs-panel__tabs {
+    display: flex;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-md;
+    background: color.adjust($ej-color-corporate, $lightness: -5%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Tabs customizados del panel derecho (Estilos/Propiedades)
+.jaraba-grapesjs-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $ej-btn-radius;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        color: inherit;
+    }
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &.is-active {
+        color: #FFFFFF;
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba($ej-color-impulse, 0.4);
+
+        &:hover {
+            background: color.adjust($ej-color-impulse, $lightness: 5%);
+        }
+    }
+}
+
+// ===========================================================================
+// VIEWPORT TOGGLE — Sprint C3: 8 dispositivos + slider + rotación
+// ===========================================================================
+
+.canvas-editor__viewport-toggle {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+
+    svg {
+        color: rgba(255, 255, 255, 0.7);
+        transition: color 0.2s ease;
+    }
+}
+
+// Grupos de dispositivos (desktop, tablet, mobile)
+.canvas-editor__viewport-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+// Separador vertical entre grupos
+.canvas-editor__viewport-separator {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 $ej-spacing-xs;
+}
+
+// Botones de preset de dispositivo
+.canvas-editor__viewport-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $ej-btn-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.6);
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
+
+        svg {
+            color: #FFFFFF;
+        }
+    }
+
+    &.is-active {
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px color.change($ej-color-impulse, $alpha: 0.4);
+
+        svg {
+            color: #FFFFFF;
+        }
+    }
+}
+
+// Botón de rotación
+.canvas-editor__viewport-btn--rotate {
+    &.is-active {
+        background: var(--ej-color-secondary, $ej-color-innovation);
+        border-color: var(--ej-color-secondary, $ej-color-innovation);
+    }
+}
+
+// Contenedor de slider personalizado
+.canvas-editor__viewport-custom {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+}
+
+// Slider de ancho personalizado
+.canvas-editor__viewport-slider {
+    width: 80px;
+    height: 4px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    // Thumb (Webkit)
+    &::-webkit-slider-thumb {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        cursor: grab;
+        transition: transform 0.15s ease;
+
+        &:active {
+            cursor: grabbing;
+            transform: scale(1.2);
+        }
+    }
+
+    // Thumb (Firefox)
+    &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, $ej-color-impulse);
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        cursor: grab;
+    }
+
+    // Track (Firefox)
+    &::-moz-range-track {
+        background: rgba(255, 255, 255, 0.15);
+        height: 4px;
+        border-radius: 2px;
+    }
+}
+
+// Output de valor del slider
+.canvas-editor__viewport-value {
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: var(--ej-color-innovation, $ej-color-innovation);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 2px $ej-spacing-xs;
+    border-radius: 3px;
+    letter-spacing: -0.02em;
+}

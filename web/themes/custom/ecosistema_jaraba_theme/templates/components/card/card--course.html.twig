@@ -1,0 +1,75 @@
+{#
+/**
+ * @file
+ * Card variante: Course
+ *
+ * Muestra curso con progreso, duración y estado.
+ * Uso: LMS, Learning Paths.
+ */
+#}
+<article class="card card--course {{ card_class|default('') }}">
+  {% if image %}
+    <div class="card__media">
+      <img src="{{ image }}" alt="{{ title }}" class="card__image" loading="lazy" />
+      {% if badge %}
+        <span class="card__badge badge badge--{{ badge.type|default('primary') }}">
+          {{ badge.text }}
+        </span>
+      {% endif %}
+      {% if duration %}
+        <span class="card__duration">
+          {{ jaraba_icon('ui', 'clock', { size: '16px' }) }}
+          {{ duration }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="card__content">
+    {% if category %}
+      <span class="card__category">{{ category }}</span>
+    {% endif %}
+
+    <h3 class="card__title">
+      {% if url %}
+        <a href="{{ url }}" class="card__link">{{ title }}</a>
+      {% else %}
+        {{ title }}
+      {% endif %}
+    </h3>
+
+    {% if description %}
+      <p class="card__description">{{ description|striptags|slice(0, 120) }}...</p>
+    {% endif %}
+
+    {% if progress is defined and progress is not null %}
+      <div class="card__progress">
+        <div class="progress-bar">
+          <div class="progress-bar__fill" style="width: {{ progress }}%"></div>
+        </div>
+        <span class="progress-bar__label">{{ progress }}% {% trans %}completado{% endtrans %}</span>
+      </div>
+    {% endif %}
+
+    <div class="card__footer">
+      {% if lessons_count %}
+        <span class="card__meta-item">
+          {{ jaraba_icon('ui', 'book-open', { size: '16px' }) }}
+          {{ lessons_count }} {% trans %}lecciones{% endtrans %}
+        </span>
+      {% endif %}
+      {% if students_count %}
+        <span class="card__meta-item">
+          {{ jaraba_icon('ui', 'users', { size: '16px' }) }}
+          {{ students_count }} {% trans %}estudiantes{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if cta %}
+      <a href="{{ cta.url }}" class="card__cta btn btn--primary btn--sm">
+        {{ cta.text|default('Continuar'|trans) }}
+      </a>
+    {% endif %}
+  </div>
+</article>

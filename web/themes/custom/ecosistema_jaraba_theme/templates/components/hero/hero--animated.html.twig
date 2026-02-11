@@ -1,0 +1,102 @@
+{#
+/**
+ * @file
+ * Hero variante: Animated
+ *
+ * Hero con animaciones de entrada y elementos flotantes.
+ * Uso: Landing pages, páginas de producto.
+ */
+#}
+<section class="hero hero--animated {{ hero_class|default('') }} {{ dark ? 'hero--dark' : '' }}"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  
+  <div class="hero__overlay"></div>
+  
+  {# Elementos decorativos animados #}
+  <div class="hero__particles" aria-hidden="true">
+    <div class="particle particle--1"></div>
+    <div class="particle particle--2"></div>
+    <div class="particle particle--3"></div>
+    <div class="particle particle--4"></div>
+  </div>
+
+  <div class="hero__container container">
+    <div class="hero__grid">
+      
+      <div class="hero__content animate-fade-up" data-delay="0">
+        {% if eyebrow %}
+          <span class="hero__eyebrow animate-fade-up" data-delay="100">{{ eyebrow }}</span>
+        {% endif %}
+
+        <h1 class="hero__title animate-fade-up" data-delay="200">{{ title }}</h1>
+
+        {% if subtitle %}
+          <p class="hero__subtitle animate-fade-up" data-delay="300">{{ subtitle }}</p>
+        {% endif %}
+
+        {% if features %}
+          <ul class="hero__features animate-fade-up" data-delay="400">
+            {% for feature in features %}
+              <li class="hero__feature">
+                {{ jaraba_icon('actions', 'check-circle', { variant: 'filled', size: '20px', color: 'success' }) }}
+                {{ feature }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="hero__actions animate-fade-up" data-delay="500">
+          {% if cta_primary %}
+            <a href="{{ cta_primary.url }}" class="btn btn--primary btn--lg btn--glow">
+              {% if cta_primary.icon %}
+                {{ jaraba_icon('actions', cta_primary.icon, { size: '24px' }) }}
+              {% endif %}
+              {{ cta_primary.text }}
+            </a>
+          {% endif %}
+
+          {% if cta_secondary %}
+            <a href="{{ cta_secondary.url }}" class="btn btn--outline btn--lg">
+              {{ cta_secondary.text }}
+            </a>
+          {% endif %}
+        </div>
+
+        {% if trust_badges %}
+          <div class="hero__trust animate-fade-up" data-delay="600">
+            {% for badge in trust_badges %}
+              <img src="{{ badge.image }}" alt="{{ badge.alt }}" class="trust-badge" />
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if image %}
+        <div class="hero__media animate-fade-left" data-delay="300">
+          <div class="hero__image-wrapper">
+            <img src="{{ image }}" alt="{{ title }}" class="hero__image" loading="eager" />
+            
+            {# Elementos flotantes decorativos #}
+            {% if floating_elements %}
+              {% for element in floating_elements %}
+                <div class="hero__floating-element floating-element--{{ element.type }}" 
+                     style="--delay: {{ loop.index * 0.2 }}s">
+                  {% if element.icon %}
+                    {{ jaraba_icon('business', element.icon, { variant: 'filled', size: '32px' }) }}
+                  {% endif %}
+                  {% if element.text %}
+                    <span>{{ element.text }}</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+  
+  {# Gradiente inferior #}
+  <div class="hero__gradient-bottom"></div>
+</section>

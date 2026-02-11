@@ -1,0 +1,119 @@
+{#
+/**
+ * @file
+ * Header variante: Mega Menu
+ *
+ * Header con mega menú desplegable multi-columna.
+ * Uso: Sitios con navegación compleja, portales.
+ */
+#}
+<header class="header header--mega" role="banner">
+  <div class="header__container container">
+    
+    {# Logo #}
+    <div class="header__brand">
+      {% if logo_url %}
+        <a href="{{ path('<front>') }}" class="header__logo-link" rel="home">
+          <img src="{{ logo_url }}" alt="{{ site_name }}" class="header__logo" />
+        </a>
+      {% else %}
+        <a href="{{ path('<front>') }}" class="header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación con mega menús #}
+    <nav class="header__nav header__nav--mega" aria-label="{% trans %}Navegación principal{% endtrans %}">
+      <ul class="header__menu">
+        {% for item in mega_menu_items %}
+          <li class="header__menu-item {{ item.has_children ? 'has-mega-menu' : '' }}">
+            {% if item.has_children %}
+              <button class="header__menu-link" 
+                      aria-expanded="false" 
+                      aria-controls="mega-{{ loop.index }}">
+                {{ item.title }}
+                {{ jaraba_icon('ui', 'chevron-down', { size: '16px' }) }}
+              </button>
+              
+              {# Mega menu panel #}
+              <div class="header__mega-panel" id="mega-{{ loop.index }}" aria-hidden="true">
+                <div class="mega-panel__container container">
+                  <div class="mega-panel__columns">
+                    {% for column in item.columns %}
+                      <div class="mega-panel__column">
+                        {% if column.title %}
+                          <h3 class="mega-panel__title">{{ column.title }}</h3>
+                        {% endif %}
+                        <ul class="mega-panel__list">
+                          {% for link in column.links %}
+                            <li>
+                              <a href="{{ link.url }}" class="mega-panel__link">
+                                {% if link.icon %}
+                                  {{ jaraba_icon('ui', link.icon, { size: '20px' }) }}
+                                {% endif %}
+                                <span>
+                                  {{ link.title }}
+                                  {% if link.description %}
+                                    <small>{{ link.description }}</small>
+                                  {% endif %}
+                                </span>
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endfor %}
+                    
+                    {# Panel promocional #}
+                    {% if item.promo %}
+                      <div class="mega-panel__promo">
+                        {% if item.promo.image %}
+                          <img src="{{ item.promo.image }}" alt="" class="mega-panel__promo-image" />
+                        {% endif %}
+                        <h4>{{ item.promo.title }}</h4>
+                        <p>{{ item.promo.description }}</p>
+                        <a href="{{ item.promo.url }}" class="btn btn--primary btn--sm">
+                          {{ item.promo.cta }}
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <a href="{{ item.url }}" class="header__menu-link">{{ item.title }}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# Acciones #}
+    <div class="header__actions">
+      <button class="header__icon-btn" aria-label="{% trans %}Buscar{% endtrans %}" data-modal="search">
+        {{ jaraba_icon('ui', 'search', { size: '24px' }) }}
+      </button>
+
+      {% if user_logged_in %}
+        <a href="{{ path('user.page') }}" class="header__icon-btn">
+          {{ jaraba_icon('ui', 'user', { size: '24px' }) }}
+        </a>
+      {% else %}
+        <a href="{{ path('user.login') }}" class="btn btn--secondary btn--sm">
+          {% trans %}Acceder{% endtrans %}
+        </a>
+        {% if header_cta %}
+          <a href="{{ header_cta.url }}" class="btn btn--primary btn--sm">
+            {{ header_cta.text }}
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {# Mobile toggle #}
+    <button class="header__mobile-toggle" aria-label="{% trans %}Abrir menú{% endtrans %}" aria-expanded="false">
+      {{ jaraba_icon('ui', 'menu', { size: '24px' }) }}
+    </button>
+  </div>
+</header>

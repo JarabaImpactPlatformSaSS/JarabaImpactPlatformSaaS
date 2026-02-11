@@ -1,0 +1,121 @@
+$schema: 'https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json'
+name: Card
+status: stable
+description: 'Componente Card con múltiples variantes y slots.'
+group: Jaraba Components
+
+props:
+  type: object
+  required:
+    - title
+  properties:
+    variant:
+      type: string
+      title: Variante
+      description: Tipo de card
+      default: default
+      enum:
+        - default
+        - product
+        - profile
+        - metric
+        - course
+        - testimonial
+        - cta
+        - horizontal
+    size:
+      type: string
+      title: Tamaño
+      default: md
+      enum: [sm, md, lg]
+    elevated:
+      type: boolean
+      title: Elevado
+      description: Añade sombra elevada
+      default: false
+    clickable:
+      type: boolean
+      title: Clickable
+      description: Toda la card es un enlace
+      default: false
+    url:
+      type: string
+      title: URL
+      description: Enlace de la card
+    title:
+      type: string
+      title: Título
+    subtitle:
+      type: string
+      title: Subtítulo
+    description:
+      type: string
+      title: Descripción
+    image:
+      type: string
+      title: Imagen URL
+    badge:
+      type: object
+      title: Badge
+      properties:
+        text:
+          type: string
+        type:
+          type: string
+          enum: [primary, secondary, success, warning, danger, info]
+    # Específico de product
+    price:
+      type: number
+      title: Precio
+    original_price:
+      type: number
+      title: Precio original
+    # Específico de profile
+    avatar:
+      type: string
+      title: Avatar URL
+    role:
+      type: string
+      title: Rol/Cargo
+    # Específico de metric
+    value:
+      type: ['string', 'number']
+      title: Valor métrica
+    trend:
+      type: object
+      properties:
+        direction:
+          type: string
+          enum: [up, down]
+        value:
+          type: number
+    # Específico de course
+    progress:
+      type: number
+      title: Progreso (0-100)
+    duration:
+      type: string
+      title: Duración
+
+slots:
+  header:
+    title: Header
+    description: Contenido personalizado del header
+  media:
+    title: Media
+    description: Área de imagen/video
+  content:
+    title: Content
+    description: Contenido principal
+  footer:
+    title: Footer
+    description: Footer con acciones
+  actions:
+    title: Actions
+    description: Botones de acción
+
+libraryOverrides:
+  css:
+    component:
+      card.scss: {}
+

@@ -1,0 +1,91 @@
+/**
+ * @file
+ * Breadcrumbs Premium - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-md, 1rem) 0;
+    font-size: 0.875rem;
+    color: var(--ej-breadcrumb-text, #64748B);
+}
+
+// Items
+.breadcrumb__item {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.25rem);
+}
+
+.breadcrumb__link {
+    color: var(--ej-breadcrumb-link, #FF8C42);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-corporate, #233D63);
+    }
+}
+
+.breadcrumb__current {
+    color: var(--ej-breadcrumb-active, #1A1A2E);
+    font-weight: 500;
+}
+
+// Separators
+.breadcrumb__separator {
+    color: var(--ej-color-neutral, #64748B);
+    opacity: 0.5;
+}
+
+// Style: Chevrons
+.breadcrumb--chevrons .breadcrumb__separator::before {
+    content: '›';
+}
+
+// Style: Arrows
+.breadcrumb--arrows .breadcrumb__separator::before {
+    content: '→';
+}
+
+// Style: Slashes
+.breadcrumb--slashes .breadcrumb__separator::before {
+    content: '/';
+}
+
+// Style: Dots
+.breadcrumb--dots .breadcrumb__separator::before {
+    content: '•';
+}
+
+// Style: Pills
+.breadcrumb--pills {
+    .breadcrumb__item {
+        background: var(--ej-bg-surface, #fff);
+        padding: var(--ej-spacing-xs) var(--ej-spacing-sm);
+        border-radius: 999px;
+        border: 1px solid var(--ej-border-color, #E5E7EB);
+    }
+
+    .breadcrumb__current {
+        background: var(--ej-color-primary, #FF8C42);
+        color: #fff;
+        border-color: transparent;
+    }
+}
+
+// Home icon
+.breadcrumb__home-icon {
+    display: flex;
+    align-items: center;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}

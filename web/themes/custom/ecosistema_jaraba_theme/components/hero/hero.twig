@@ -1,0 +1,137 @@
+{#
+/**
+ * @file
+ * Hero SDC Component
+ *
+ * Componente Hero con múltiples variantes para secciones destacadas.
+ * Variantes: split, fullscreen, compact, animated, slider.
+ *
+ * Usage:
+ * {% include 'ecosistema_jaraba_theme:hero' with {
+ *   variant: 'split',
+ *   title: 'Título Hero',
+ *   subtitle: 'Subtítulo descriptivo',
+ *   cta_primary: { text: 'Comenzar', url: '/registro' }
+ * } %}
+ */
+#}
+
+{# Compound Variants: construir clases #}
+{% set classes = [
+  'hero',
+  'hero--' ~ (variant|default('split')),
+  'hero--' ~ (align|default('left')),
+  dark ? 'hero--dark',
+] | filter(v => v) | join(' ') %}
+
+<section class="{{ classes }}" 
+         {% if background_image and variant == 'fullscreen' %}style="background-image: url('{{ background_image }}');"{% endif %}>
+  
+  {# Video de fondo (solo fullscreen) #}
+  {% if background_video and variant == 'fullscreen' %}
+    <video class="hero__background-video" autoplay muted loop playsinline>
+      <source src="{{ background_video }}" type="video/mp4" />
+    </video>
+  {% endif %}
+
+  {# Overlay gradient (fullscreen) #}
+  {% if variant == 'fullscreen' %}
+    <div class="hero__overlay"></div>
+  {% endif %}
+
+  <div class="hero__container container">
+    <div class="hero__content">
+      {% if eyebrow %}
+        <span class="hero__eyebrow">{{ eyebrow }}</span>
+      {% endif %}
+
+      <h1 class="hero__title">{{ title }}</h1>
+
+      {% if subtitle %}
+        <p class="hero__subtitle">{{ subtitle }}</p>
+      {% endif %}
+
+      {% if features %}
+        <ul class="hero__features">
+          {% for feature in features %}
+            <li class="hero__feature">
+              {{ jaraba_icon('ui', 'check-circle', { variant: 'solid', size: '16px', color: 'success' }) }}
+              {{ feature }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# Slot para contenido adicional #}
+      {% if slots.content is defined and slots.content %}
+        {{ slots.content }}
+      {% endif %}
+
+      {# CTAs #}
+      {% if slots.actions is defined and slots.actions %}
+        <div class="hero__actions">{{ slots.actions }}</div>
+      {% elseif cta_primary or cta_secondary %}
+        <div class="hero__actions">
+          {% if cta_primary %}
+            <a href="{{ cta_primary.url }}" class="btn btn--primary btn--lg">
+              {{ cta_primary.text }}
+              {% if cta_primary.icon %}
+                {{ jaraba_icon('ui', cta_primary.icon, { variant: 'outline', size: '16px' }) }}
+              {% endif %}
+            </a>
+          {% endif %}
+
+          {% if cta_secondary %}
+            <a href="{{ cta_secondary.url }}" class="btn btn--secondary btn--lg">
+              {{ cta_secondary.text }}
+            </a>
+          {% endif %}
+
+          {% if cta_video %}
+            <button class="hero__play-btn" data-video-modal="{{ cta_video.url }}">
+              {{ jaraba_icon('ui', 'play-circle', { variant: 'solid', size: '32px' }) }}
+              <span>{{ cta_video.text|default('Ver vídeo'|trans) }}</span>
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if trust_badges %}
+        <div class="hero__trust">
+          {% for badge in trust_badges %}
+            <img src="{{ badge.image }}" alt="{{ badge.alt }}" class="hero__trust-badge" />
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Media area (solo para split) #}
+    {% if variant == 'split' %}
+      <div class="hero__media">
+        {% if slots.media is defined and slots.media %}
+          {{ slots.media }}
+        {% elseif video %}
+          <video class="hero__video" autoplay muted loop playsinline>
+            <source src="{{ video }}" type="video/mp4" />
+          </video>
+        {% elseif image %}
+          <img src="{{ image }}" alt="{{ image_alt|default(title) }}" class="hero__image" />
+        {% endif %}
+
+        {% if floating_card %}
+          <div class="hero__floating-card">
+            {{ floating_card }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  {# Scroll indicator (fullscreen) #}
+  {% if variant == 'fullscreen' %}
+    <div class="hero__scroll-indicator">
+      <span>{% trans %}Descubre más{% endtrans %}</span>
+      {{ jaraba_icon('ui', 'chevron-down', { variant: 'outline', size: '20px' }) }}
+    </div>
+  {% endif %}
+</section>

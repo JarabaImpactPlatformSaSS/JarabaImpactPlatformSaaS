@@ -1,0 +1,77 @@
+/**
+ * @file
+ * Typography styles - Ecosistema Jaraba Theme.
+ */
+
+@use 'variables' as *;
+
+// Scale tipográfica
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-base {
+    font-size: 1rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.text-3xl {
+    font-size: 1.875rem;
+}
+
+.text-4xl {
+    font-size: 2.25rem;
+}
+
+// Colores semánticos
+.text-muted {
+    color: var(--ej-color-muted, #64748B);
+}
+
+.text-success {
+    color: var(--ej-color-success, #10B981);
+}
+
+.text-warning {
+    color: var(--ej-color-warning, #F59E0B);
+}
+
+.text-danger {
+    color: var(--ej-color-danger, #EF4444);
+}
+
+.text-primary {
+    color: var(--ej-color-primary, #FF8C42);
+}
+
+// Pesos
+.font-normal {
+    font-weight: 400;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}

@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Card variante: Testimonial
+ *
+ * Quote con avatar, nombre y cargo.
+ * Uso: Secciones de testimonios, landing pages.
+ */
+#}
+<article class="card card--testimonial {{ card_class|default('') }}">
+  <div class="card__content">
+    <div class="card__quote-icon">
+      {{ jaraba_icon('ui', 'quote', { variant: 'filled', size: '32px' }) }}
+    </div>
+
+    <blockquote class="card__quote">
+      {{ description }}
+    </blockquote>
+
+    {% if rating %}
+      <div class="card__rating">
+        {% for i in 1..5 %}
+          {% if i <= rating %}
+            {{ jaraba_icon('ui', 'star', { variant: 'filled', size: '16px', color: 'warning' }) }}
+          {% else %}
+            {{ jaraba_icon('ui', 'star', { variant: 'outline', size: '16px' }) }}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <footer class="card__footer">
+    <div class="card__author">
+      {% if avatar %}
+        <img src="{{ avatar }}" alt="{{ title }}" class="card__avatar" loading="lazy" />
+      {% else %}
+        <div class="card__avatar card__avatar--placeholder">
+          {{ title|first|upper }}
+        </div>
+      {% endif %}
+
+      <div class="card__author-info">
+        <strong class="card__author-name">{{ title }}</strong>
+        {% if role %}
+          <span class="card__author-role">{{ role }}</span>
+        {% endif %}
+        {% if company %}
+          <span class="card__author-company">{{ company }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </footer>
+</article>

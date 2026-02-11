@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Card variante: Metric
+ *
+ * Icono, número grande, trend arrow, label.
+ * Uso: Dashboards, KPIs.
+ */
+#}
+<div class="card card--metric {{ card_class|default('') }}">
+  <div class="card__header">
+    <div class="card__icon card__icon--{{ icon_color|default('primary') }}">
+      {{ jaraba_icon('analytics', icon|default('chart-line'), { variant: 'duotone', size: '32px' }) }}
+    </div>
+
+    {% if trend %}
+      <div class="card__trend card__trend--{{ trend.direction }}">
+        {{ jaraba_icon('analytics', trend.direction == 'up' ? 'trending-up' : 'trending-down', { variant: 'outline', size: '16px' }) }}
+        <span>{{ trend.value }}%</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card__content">
+    <div class="card__value">
+      {% if prefix %}
+        <span class="card__value-prefix">{{ prefix }}</span>
+      {% endif %}
+      <span class="card__value-number" data-count="{{ value }}">{{ value|number_format(0, ',', '.') }}</span>
+      {% if suffix %}
+        <span class="card__value-suffix">{{ suffix }}</span>
+      {% endif %}
+    </div>
+
+    <p class="card__label">{{ label }}</p>
+
+    {% if comparison %}
+      <p class="card__comparison">
+        {{ comparison.text }}
+        <span class="card__comparison-value card__comparison-value--{{ comparison.type }}">
+          {{ comparison.value }}
+        </span>
+      </p>
+    {% endif %}
+
+    {% if sparkline %}
+      <div class="card__sparkline" data-values="{{ sparkline|json_encode }}"></div>
+    {% endif %}
+  </div>
+
+  {% if link %}
+    <a href="{{ link.url }}" class="card__link-overlay">
+      <span class="visually-hidden">{{ link.text }}</span>
+    </a>
+  {% endif %}
+</div>

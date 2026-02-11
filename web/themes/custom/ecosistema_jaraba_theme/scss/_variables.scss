@@ -1,0 +1,89 @@
+/**
+ * @file
+ * Variables SCSS con fallbacks para Ecosistema Jaraba Theme.
+ *
+ * Los valores reales se inyectan via CSS vars desde Drupal UI.
+ */
+
+// === PALETA JARABA OFICIAL ===
+$ej-color-corporate: #233D63; // Azul corporativo (la "J")
+$ej-color-impulse: #FF8C42; // Naranja empresas
+$ej-color-innovation: #00A9A5; // Verde/turquesa talento
+$ej-color-agro: #556B2F; // Verde oliva AgroConecta
+
+// Aliases (para consistencia)
+$ej-color-primary: $ej-color-impulse;
+$ej-color-secondary: $ej-color-innovation;
+
+// === UI EXTENDIDA ===
+$ej-color-success: #10B981;
+$ej-color-warning: #F59E0B;
+$ej-color-danger: #EF4444;
+$ej-color-neutral: #64748B;
+
+// === FONDOS ===
+$ej-bg-body: #F8FAFC;
+$ej-bg-surface: #FFFFFF;
+$ej-bg-card: $ej-bg-surface; // Alias para cards
+$ej-bg-dark: #1A1A2E;
+
+// === TIPOGRAFÍA ===
+$ej-font-headings: "Outfit", sans-serif;
+$ej-font-body: "Inter", sans-serif;
+$ej-font-size-base: 16px;
+$ej-color-headings: #1A1A2E;
+$ej-color-body: #334155;
+$ej-color-muted: #64748B;
+$ej-text-primary: $ej-color-body; // Alias para compatibilidad
+$ej-text-muted: $ej-color-muted; // Alias para compatibilidad
+
+// === SPACING ===
+$ej-spacing-xs: 0.25rem; // 4px
+$ej-spacing-sm: 0.5rem; // 8px
+$ej-spacing-md: 1rem; // 16px
+$ej-spacing-lg: 1.5rem; // 24px
+$ej-spacing-xl: 2rem; // 32px
+$ej-spacing-2xl: 3rem; // 48px
+
+// === BORDERS ===
+$ej-border-radius: 12px;
+$ej-btn-radius: 8px;
+$ej-border-color: #E5E7EB;
+
+// === SHADOWS ===
+$ej-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$ej-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$ej-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// === HOVER / FOCUS TOKENS (LOW-07) ===
+// Standardized interaction states. Use these instead of ad-hoc values.
+$ej-hover-opacity: 0.85;
+$ej-hover-darken: -8%;
+$ej-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+$ej-hover-scale: 1.02;
+$ej-focus-ring-color: rgba($ej-color-impulse, 0.4);
+$ej-focus-ring-width: 3px;
+$ej-focus-ring-offset: 2px;
+$ej-focus-ring: $ej-focus-ring-width solid $ej-focus-ring-color;
+$ej-transition-fast: 150ms ease;
+$ej-transition-normal: 250ms ease;
+
+// === BREAKPOINTS (PERF-05) ===
+$ej-breakpoint-xs: 480px;
+$ej-breakpoint-sm: 640px;
+$ej-breakpoint-md: 768px;
+$ej-breakpoint-lg: 992px;
+$ej-breakpoint-xl: 1200px;
+$ej-breakpoint-2xl: 1440px;
+
+// === HELPER MIXINS ===
+
+// PERF-05: Responsive breakpoint mixins
+@mixin respond-to($breakpoint) {
+    @if $breakpoint == xs { @media (max-width: #{$ej-breakpoint-xs - 1}) { @content; } }
+    @else if $breakpoint == sm { @media (min-width: $ej-breakpoint-sm) { @content; } }
+    @else if $breakpoint == md { @media (min-width: $ej-breakpoint-md) { @content; } }
+    @else if $breakpoint == lg { @media (min-width: $ej-breakpoint-lg) { @content; } }
+    @else if $breakpoint == xl { @media (min-width: $ej-breakpoint-xl) { @content; } }
+    @else if $breakpoint == 2xl { @media (min-width: $ej-breakpoint-2xl) { @content; } }
+}

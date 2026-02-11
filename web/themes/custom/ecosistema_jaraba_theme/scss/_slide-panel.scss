@@ -1,0 +1,684 @@
+// === SLIDE PANEL - Componente global ===
+// Panel deslizante desde la derecha para acciones CRUD
+// @see .agent/workflows/slide-panel-modales.md
+
+.slide-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+  visibility: hidden;
+
+  &--open {
+    pointer-events: auto;
+    visibility: visible;
+
+    .slide-panel__overlay {
+      opacity: 1;
+    }
+
+    .slide-panel__content {
+      transform: translateX(0);
+    }
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+
+  &__content {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    background: var(--ej-bg-surface, #FFFFFF);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  // Size variants
+  &--small .slide-panel__content {
+    max-width: 360px;
+  }
+
+  &--medium .slide-panel__content {
+    max-width: 480px;
+  }
+
+  &--large .slide-panel__content {
+    max-width: 600px;
+  }
+
+  &--full .slide-panel__content {
+    max-width: 100%;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-bottom: none;
+    // Premium gradient header (naranja a azul corporativo)
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, #FF7C00) 0%,
+        var(--ej-color-impulse, #FF8C42) 60%,
+        var(--ej-color-corporate, #233D63) 100%);
+    color: white;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  &__close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__footer {
+    display: flex;
+    gap: var(--ej-spacing-md, 1rem);
+    justify-content: flex-end;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+    background: var(--ej-bg-surface, #FFFFFF);
+  }
+
+  &__loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--ej-text-muted, #64748B);
+
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--ej-border-color, #E5E7EB);
+      border-top-color: var(--ej-color-impulse, #FF8C42);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--ej-color-danger, #EF4444);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body.slide-panel-open {
+  overflow: hidden;
+}
+
+// Fix: Autocomplete de jQuery UI debe aparecer sobre el slide-panel
+// El slide-panel tiene z-index: 1000, el autocomplete por defecto tiene 100
+.ui-autocomplete {
+  z-index: 1100 !important;
+}
+
+// Mobile full-width
+@media (max-width: 767px) {
+  .slide-panel__content {
+    max-width: 100% !important;
+  }
+}
+
+// ===============================================
+// === DRUPAL FORM STYLES INSIDE SLIDE-PANEL ===
+// ===============================================
+// Estilos para formularios de entidades Drupal cargados vía AJAX
+
+.slide-panel__body {
+
+  // Drupal form wrapper - Selectores correctos para formularios Drupal
+  .content-article-add-form,
+  .content-category-add-form,
+  .content-article-edit-form,
+  .content-category-edit-form,
+  .entity-content-article-add-form,
+  .entity-content-category-add-form,
+  // Formularios de Page Builder (Experimentos A/B)
+  .page-experiment-add-form,
+  .page-experiment-edit-form,
+  .experiment-variant-add-form,
+  .experiment-variant-edit-form,
+  .experiment-create-form,
+  // Formularios genéricos premium (ej: configuración)
+  .jaraba-premium-form,
+  .slide-panel__form,
+  form[class*="content-article"],
+  form[class*="content-category"],
+  form[class*="page-experiment"],
+  form[class*="experiment-variant"] {
+
+    // Premium Form items
+    .form-item,
+    .js-form-item {
+      margin-bottom: 1.5rem;
+      padding-left: 0;
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: var(--ej-color-headings, #1A1A2E);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .description {
+        font-size: 0.8rem;
+        color: var(--ej-text-muted, #64748B);
+        margin-top: 0.5rem;
+        font-style: italic;
+      }
+    }
+
+    // Premium Text inputs
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--ej-border-color, #E5E7EB);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--ej-bg-surface, #FFFFFF);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+      &:hover:not(:focus) {
+        border-color: var(--ej-color-neutral, #94A3B8);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, #FF7C00);
+        box-shadow:
+          0 0 0 4px rgba(255, 124, 0, 0.12),
+          0 4px 12px rgba(255, 124, 0, 0.08);
+      }
+
+      &::placeholder {
+        color: var(--ej-text-muted, #64748B);
+        font-style: italic;
+      }
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    // Checkboxes & radios
+    .form-type-checkbox,
+    .form-type-radio {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--ej-color-innovation, #00A9A5);
+      }
+
+      label {
+        margin: 0;
+        font-weight: normal;
+      }
+    }
+
+    // Details/Summary (collapsible sections)
+    details {
+      border: 1px solid var(--ej-border-color, #E5E7EB);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+
+      summary {
+        padding: 0.75rem 1rem;
+        background: var(--ej-bg-body, #F8FAFC);
+        cursor: pointer;
+        font-weight: 500;
+
+        &:hover {
+          background: #f1f5f9;
+        }
+      }
+
+      &[open] summary {
+        border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+      }
+
+      >.details-wrapper {
+        padding: 1rem;
+      }
+    }
+
+    // Premium Action buttons
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 2px solid var(--ej-border-color, #E5E7EB);
+
+      input[type="submit"],
+      button[type="submit"] {
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &.button--primary,
+        &[value="Save"],
+        &[value="Guardar"] {
+          background: linear-gradient(135deg,
+              var(--ej-color-primary, #FF7C00) 0%,
+              var(--ej-color-impulse, #FF8C42) 100%);
+          color: white;
+          box-shadow: 0 4px 14px rgba(255, 124, 0, 0.35);
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 124, 0, 0.45);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+
+        &.button--secondary,
+        &[value="Cancel"],
+        &[value="Cancelar"],
+        &[value="Delete"],
+        &[value="Eliminar"] {
+          background: var(--ej-bg-surface, #FFFFFF);
+          color: var(--ej-color-body, #334155);
+          border: 2px solid var(--ej-border-color, #E5E7EB);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+          &:hover {
+            border-color: var(--ej-color-neutral, #94A3B8);
+            background: var(--ej-bg-body, #F8FAFC);
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+
+    // Field widget styling
+    .field--widget-string-textfield,
+    .field--widget-text-textarea,
+    .field--widget-entity-reference-autocomplete {
+      .form-item {
+        margin-bottom: 0;
+      }
+    }
+
+    // CKEditor
+    .ck-editor {
+      border-radius: 8px;
+      overflow: hidden;
+
+      .ck-toolbar {
+        border-radius: 8px 8px 0 0;
+      }
+
+      .ck-content {
+        min-height: 200px;
+      }
+    }
+
+    // Color picker
+    input[type="color"] {
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    // Required asterisk
+    .form-required::after {
+      content: "*";
+      color: var(--ej-color-danger, #EF4444);
+      margin-left: 0.25rem;
+    }
+
+    // Error states
+    .error {
+      border-color: var(--ej-color-danger, #EF4444) !important;
+    }
+
+    .form-item--error-message {
+      color: var(--ej-color-danger, #EF4444);
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    // Ocultar ayuda de formato de texto HTML (confunde a usuarios)
+    .filter-wrapper,
+    .filter-guidelines,
+    .filter-help,
+    .form-type-select[class*="format"],
+    .js-form-type-select[class*="format"],
+    .text-format-wrapper>.form-item:last-child,
+    .tips,
+    [class*="filter-guidelines"],
+    .form-item-body-0-format,
+    // Ocultar enlace "Acerca de formatos de texto"
+    a[href*="/filter/tips"],
+    .filter-wrapper a,
+    [id*="format-help"] {
+      display: none !important;
+    }
+  }
+}
+
+// ===============================================
+// === TOAST NOTIFICATIONS ===
+// ===============================================
+
+.slide-panel-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--ej-bg-dark, #1A1A2E);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1100;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  &--success {
+    background: linear-gradient(135deg, #10B981, #059669);
+  }
+
+  &--error {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+  }
+}
+
+// ===============================================
+// === LOADING STATES ===
+// ===============================================
+
+.is-loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+// ===============================================
+// === PREMIUM FORM ENHANCEMENTS ===
+// ===============================================
+
+.slide-panel__body {
+
+  // Form sections with premium styling
+  .form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    &__title {
+      font-family: var(--ej-font-headings, "Outfit", sans-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ej-color-headings, #1A1A2E);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      svg {
+        width: 18px;
+        height: 18px;
+        color: var(--ej-color-innovation, #00A9A5);
+      }
+    }
+  }
+
+  // Enhanced details/summary with icons
+  details {
+    background: var(--ej-bg-body, #F8FAFC);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: var(--ej-border-color, #E5E7EB);
+    }
+
+    &[open] {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: white;
+      border-color: var(--ej-border-color, #E5E7EB);
+    }
+
+    summary {
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      color: var(--ej-color-headings, #1A1A2E);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(-45deg);
+        transition: transform 0.2s;
+      }
+    }
+
+    &[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    >.details-wrapper {
+      padding: 0 1.25rem 1.25rem;
+    }
+  }
+
+  // Premium text inputs with focus effects
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    transition: all 0.2s ease;
+
+    &:hover:not(:focus) {
+      border-color: var(--ej-color-neutral, #94A3B8);
+    }
+
+    &:focus {
+      border-color: var(--ej-color-innovation, #00A9A5);
+      box-shadow: 0 0 0 4px rgba(0, 169, 165, 0.1);
+    }
+  }
+
+  // File upload styling
+  .form-type-managed-file {
+    .file-upload {
+      padding: 2rem;
+      border: 2px dashed var(--ej-border-color, #E5E7EB);
+      border-radius: 12px;
+      text-align: center;
+      background: var(--ej-bg-body, #F8FAFC);
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: var(--ej-color-innovation, #00A9A5);
+        background: rgba(0, 169, 165, 0.05);
+      }
+    }
+  }
+
+  // Action buttons premium styling
+  .form-actions {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    margin: 0 -1.5rem -1.5rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+
+    input[type="submit"],
+    button[type="submit"] {
+      min-width: 120px;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.2) 50%, transparent 60%);
+        transform: translateX(-100%);
+        transition: transform 0.5s;
+      }
+
+      &:hover::before {
+        transform: translateX(100%);
+      }
+    }
+  }
+
+  // Inline help text
+  .tips {
+    font-size: 0.8rem;
+    color: var(--ej-text-muted, #64748B);
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--ej-bg-body, #F8FAFC);
+    border-radius: 8px;
+    border-left: 3px solid var(--ej-color-innovation, #00A9A5);
+  }
+
+  // Character counter
+  .counter {
+    font-size: 0.75rem;
+    color: var(--ej-text-muted, #64748B);
+    text-align: right;
+    margin-top: 0.25rem;
+  }
+}

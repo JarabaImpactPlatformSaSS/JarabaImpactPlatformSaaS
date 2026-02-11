@@ -1,0 +1,107 @@
+{#
+/**
+ * @file
+ * Page template customizado para Ecosistema Jaraba.
+ *
+ * ARQUITECTURA:
+ * - Usa parciales _header.html.twig y _footer.html.twig para consistencia
+ * - Variables inyectadas desde preprocess_page():
+ *   - logo, site_name, site_slogan
+ *   - footer_copyright, theme_settings
+ *   - logged_in
+ * - i18n con {% trans %}
+ *
+ * Variables disponibles:
+ * - page: Array con regiones renderizables (content, sidebar, etc.)
+ * - logged_in: TRUE si el usuario está autenticado.
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="page-wrapper page-wrapper--premium page-wrapper--with-sidebar">
+  
+  {# =============================================
+     SKIP LINK - Accesibilidad WCAG 2.1 AA
+     ============================================= #}
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL
+     ============================================= #}
+  <main id="main-content" class="main-content" role="main">
+    {# Breadcrumbs #}
+    {% if page.breadcrumb %}
+      <div class="breadcrumb-wrapper container">
+        {{ page.breadcrumb }}
+      </div>
+    {% endif %}
+
+    {# Mensajes del sistema #}
+    {% if page.highlighted %}
+      <div class="highlighted container">
+        {{ page.highlighted }}
+      </div>
+    {% endif %}
+
+    {# Contenido #}
+    <div class="content-wrapper scroll-fade-in">
+      {# Sidebar izquierda #}
+      {% if page.sidebar_first %}
+        <aside class="sidebar sidebar--first glass-sidebar" role="complementary">
+          {{ page.sidebar_first }}
+        </aside>
+      {% endif %}
+
+      {# Área principal #}
+      <div class="main-content__inner container">
+        {% if page.content %}
+          {{ page.content }}
+        {% endif %}
+      </div>
+
+      {# Sidebar derecha #}
+      {% if page.sidebar_second %}
+        <aside class="sidebar sidebar--second glass-sidebar" role="complementary">
+          {{ page.sidebar_second }}
+        </aside>
+      {% endif %}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     COPILOT FAB - Include global con detección automática
+     Solo se muestra si hay copilot_context (no en admin)
+     ============================================= #}
+  {% if copilot_context %}
+    {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+      'context': copilot_context
+    } only %}
+  {% endif %}
+  
+</div>

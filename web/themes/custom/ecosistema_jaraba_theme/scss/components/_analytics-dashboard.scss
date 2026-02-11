@@ -1,0 +1,807 @@
+/**
+ * @file
+ * Estilos del Dashboard de Analytics.
+ *
+ * Implementa patrón Premium Dashboard con tokens del Design System Jaraba.
+ * Cumple con: Dart Sass moderno, variables inyectables, traducibilidad.
+ *
+ * IMPORTANTE: Las clases deben coincidir con el template Twig activo en:
+ * jaraba_page_builder/templates/analytics-dashboard.html.twig
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// ===========================================================================
+// ANALYTICS DASHBOARD - Contenedor Principal
+// ===========================================================================
+
+.analytics-dashboard {
+    min-height: 100vh;
+    background: var(--ej-bg-body, $ej-bg-body);
+    font-family: $ej-font-body;
+    padding: 0; // Full-width, padding en secciones internas
+
+    &.is-loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+// ===========================================================================
+// HERO HEADER - Cabecera con gradiente y partículas
+// ===========================================================================
+
+.analytics-dashboard__hero {
+    position: relative;
+    padding: $ej-spacing-2xl $ej-spacing-xl;
+    background: linear-gradient(135deg, $ej-color-corporate 0%, color.adjust($ej-color-corporate, $lightness: -10%) 100%);
+    overflow: hidden;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+}
+
+.analytics-dashboard__particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.analytics-dashboard__hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard__nav {
+    margin-bottom: $ej-spacing-md;
+}
+
+.analytics-dashboard__back {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #fff;
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.analytics-dashboard__hero-info {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+        gap: $ej-spacing-lg;
+    }
+}
+
+// Contenedor para título + subtítulo, siempre vertical
+.analytics-dashboard__titles {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-xs;
+}
+
+.analytics-dashboard__hero-icon {
+    width: 72px;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: $ej-border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.analytics-dashboard__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    font-family: $ej-font-headings;
+
+    @media (min-width: 768px) {
+        font-size: 2rem;
+    }
+}
+
+.analytics-dashboard__subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    font-size: 1rem;
+}
+
+// ===========================================================================
+// STATS GRID - KPIs en Grid Responsivo
+// ===========================================================================
+
+.analytics-dashboard__stats {
+    padding: $ej-spacing-xl;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard__stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $ej-spacing-md;
+
+    @media (min-width: 576px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Stat Card Individual
+// ---------------------------------------------------------------------------
+.analytics-stat {
+    display: flex;
+    align-items: flex-start;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    box-shadow: $ej-shadow-md;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+
+    // Variantes de color
+    &--corporate .analytics-stat__icon {
+        background: color.change($ej-color-corporate, $alpha: 0.1);
+        color: var(--ej-color-corporate, $ej-color-corporate);
+    }
+
+    &--impulse .analytics-stat__icon {
+        background: color.change($ej-color-impulse, $alpha: 0.1);
+        color: var(--ej-color-primary, $ej-color-impulse);
+    }
+
+    &--innovation .analytics-stat__icon {
+        background: color.change($ej-color-innovation, $alpha: 0.1);
+        color: var(--ej-color-secondary, $ej-color-innovation);
+    }
+
+    &--success .analytics-stat__icon {
+        background: color.change($ej-color-success, $alpha: 0.1);
+        color: var(--ej-color-success, $ej-color-success);
+    }
+
+    &--warning .analytics-stat__icon {
+        background: color.change($ej-color-warning, $alpha: 0.1);
+        color: var(--ej-color-warning, $ej-color-warning);
+    }
+}
+
+.analytics-stat__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $ej-btn-radius;
+    flex-shrink: 0;
+}
+
+.analytics-stat__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.analytics-stat__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    line-height: 1.2;
+    font-family: $ej-font-headings;
+
+    @media (min-width: 1024px) {
+        font-size: 1.75rem;
+    }
+}
+
+.analytics-stat__label {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin-top: $ej-spacing-xs;
+}
+
+.analytics-stat__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: $ej-spacing-xs;
+
+    &--positive {
+        background: color.change($ej-color-success, $alpha: 0.1);
+        color: $ej-color-success;
+    }
+
+    &--negative {
+        background: color.change($ej-color-danger, $alpha: 0.1);
+        color: $ej-color-danger;
+    }
+}
+
+// ===========================================================================
+// TRENDS SECTION - Gráfico de Tendencias
+// ===========================================================================
+
+.analytics-dashboard__trends {
+    padding: 0 $ej-spacing-xl $ej-spacing-xl;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-md;
+    flex-wrap: wrap;
+    gap: $ej-spacing-sm;
+}
+
+.analytics-dashboard__section-title {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin: 0;
+    font-family: $ej-font-headings;
+
+    span {
+        font-weight: 400;
+        color: var(--ej-color-muted, $ej-color-muted);
+        font-size: 0.875rem;
+    }
+}
+
+.analytics-dashboard__filters {
+    display: flex;
+    gap: $ej-spacing-sm;
+}
+
+.analytics-dashboard__filter {
+    padding: $ej-spacing-xs $ej-spacing-md;
+    border: 1px solid var(--ej-card-border, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+    }
+}
+
+.analytics-dashboard__chart-container {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    padding: $ej-spacing-lg;
+    box-shadow: $ej-shadow-md;
+    height: 300px;
+    position: relative;
+
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+// ===========================================================================
+// PAGES TABLE - Tabla de Rendimiento
+// ===========================================================================
+
+.analytics-dashboard__pages {
+    padding: 0 $ej-spacing-xl $ej-spacing-xl;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    color: var(--ej-color-primary, $ej-color-impulse);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: color.adjust($ej-color-impulse, $lightness: -10%);
+    }
+}
+
+.analytics-dashboard__table-wrapper {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    box-shadow: $ej-shadow-md;
+    overflow-x: auto;
+}
+
+.analytics-dashboard__table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.analytics-dashboard__th {
+    padding: $ej-spacing-md;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ej-color-muted, $ej-color-muted);
+    letter-spacing: 0.5px;
+    text-align: left;
+    border-bottom: 1px solid var(--ej-card-border, $ej-border-color);
+    white-space: nowrap;
+
+    &--center {
+        text-align: center;
+    }
+
+    &--right {
+        text-align: right;
+    }
+}
+
+.analytics-dashboard__row {
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+}
+
+.analytics-dashboard__td {
+    padding: $ej-spacing-md;
+    border-bottom: 1px solid var(--ej-card-border, $ej-border-color);
+    vertical-align: middle;
+
+    &--center {
+        text-align: center;
+    }
+
+    &--right {
+        text-align: right;
+    }
+}
+
+.analytics-dashboard__page-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.analytics-dashboard__page-title {
+    color: var(--ej-color-headings, $ej-color-headings);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-primary, $ej-color-impulse);
+    }
+}
+
+.analytics-dashboard__page-template {
+    font-size: 0.75rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+}
+
+.analytics-dashboard__metric {
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+
+    &--success {
+        color: $ej-color-success;
+    }
+
+    &--warning {
+        color: $ej-color-warning;
+    }
+}
+
+.analytics-dashboard__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $ej-spacing-xs;
+}
+
+.analytics-dashboard__action {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $ej-btn-radius;
+    background: transparent;
+    border: none;
+    color: var(--ej-color-muted, $ej-color-muted);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--ej-color-primary, $ej-color-impulse);
+    }
+}
+
+// ===========================================================================
+// QUICK ACTIONS - Acciones Rápidas
+// ===========================================================================
+
+.analytics-dashboard__quick-actions {
+    padding: 0 $ej-spacing-xl $ej-spacing-2xl;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard__actions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $ej-spacing-md;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.analytics-action {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    box-shadow: $ej-shadow-md;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+
+        .analytics-action__arrow {
+            transform: translateX(4px);
+        }
+    }
+
+    // Variantes de color
+    &--corporate .analytics-action__icon {
+        background: color.change($ej-color-corporate, $alpha: 0.1);
+        color: $ej-color-corporate;
+    }
+
+    &--impulse .analytics-action__icon {
+        background: color.change($ej-color-impulse, $alpha: 0.1);
+        color: $ej-color-impulse;
+    }
+
+    &--innovation .analytics-action__icon {
+        background: color.change($ej-color-innovation, $alpha: 0.1);
+        color: $ej-color-innovation;
+    }
+}
+
+.analytics-action__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $ej-btn-radius;
+    flex-shrink: 0;
+}
+
+.analytics-action__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.analytics-action__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+    margin: 0 0 $ej-spacing-xs 0;
+    font-family: $ej-font-headings;
+}
+
+.analytics-action__description {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin: 0;
+}
+
+.analytics-action__arrow {
+    color: var(--ej-color-muted, $ej-color-muted);
+    transition: transform 0.2s ease;
+}
+
+// ===========================================================================
+// MODAL - Heatmaps Info
+// ===========================================================================
+
+.analytics-dashboard__modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.analytics-dashboard__modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.analytics-dashboard__modal-content {
+    position: relative;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.analytics-dashboard__modal-close {
+    position: absolute;
+    top: $ej-spacing-md;
+    right: $ej-spacing-md;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ej-color-muted, $ej-color-muted);
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+.analytics-dashboard__modal-header {
+    padding: $ej-spacing-xl;
+    text-align: center;
+    border-bottom: 1px solid var(--ej-card-border, $ej-border-color);
+
+    h3 {
+        margin: $ej-spacing-md 0 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--ej-color-headings, $ej-color-headings);
+    }
+}
+
+.analytics-dashboard__modal-body {
+    padding: $ej-spacing-xl;
+}
+
+.analytics-dashboard__steps {
+    margin: $ej-spacing-lg 0;
+    padding-left: $ej-spacing-lg;
+
+    li {
+        margin-bottom: $ej-spacing-md;
+        line-height: 1.6;
+
+        a {
+            color: var(--ej-color-primary, $ej-color-impulse);
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.analytics-dashboard__modal-actions {
+    display: flex;
+    gap: $ej-spacing-sm;
+    flex-wrap: wrap;
+}
+
+// ===========================================================================
+// EMPTY STATE
+// ===========================================================================
+
+.analytics-dashboard__empty {
+    text-align: center;
+    padding: $ej-spacing-2xl;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-card-radius, $ej-border-radius);
+    box-shadow: $ej-shadow-md;
+
+    p {
+        margin: $ej-spacing-md 0;
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+}
+
+// ===========================================================================
+// TABLE SEARCH - Buscador de Tabla
+// ===========================================================================
+
+.analytics-dashboard__search {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-md;
+    position: relative;
+
+    svg {
+        position: absolute;
+        right: $ej-spacing-md;
+        color: var(--ej-color-muted, $ej-color-muted);
+        pointer-events: none;
+    }
+}
+
+.analytics-dashboard__search-input {
+    width: 100%;
+    max-width: 320px;
+    padding: $ej-spacing-sm $ej-spacing-xl $ej-spacing-sm $ej-spacing-md;
+    border: 1px solid var(--ej-card-border, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        box-shadow: 0 0 0 3px color.change($ej-color-impulse, $alpha: 0.1);
+    }
+
+    &::placeholder {
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+}
+
+// ===========================================================================
+// SORTABLE HEADERS - Cabeceras Ordenables
+// ===========================================================================
+
+.analytics-dashboard__th--sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-primary, $ej-color-impulse);
+    }
+
+    svg {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        opacity: 0.4;
+        margin-left: $ej-spacing-xs;
+    }
+
+    &--sorted-asc svg {
+        opacity: 1;
+        transform: rotate(180deg);
+    }
+
+    &--sorted-desc svg {
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+}
+
+// ===========================================================================
+// SEARCHABLE SELECT - Selector con Búsqueda (tipo Chosen)
+// ===========================================================================
+
+.searchable-select {
+    position: relative;
+    width: 100%;
+}
+
+.searchable-select__input {
+    width: 100%;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border: 1px solid var(--ej-card-border, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, $ej-color-impulse);
+        box-shadow: 0 0 0 3px color.change($ej-color-impulse, $alpha: 0.1);
+    }
+
+    &::placeholder {
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+}
+
+.searchable-select__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border: 1px solid var(--ej-card-border, $ej-border-color);
+    border-top: none;
+    border-radius: 0 0 $ej-btn-radius $ej-btn-radius;
+    box-shadow: $ej-shadow-md;
+    z-index: 100;
+}
+
+.searchable-select__option {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: color.change($ej-color-impulse, $alpha: 0.08);
+    }
+}
+
+.searchable-select__no-results {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+}

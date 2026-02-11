@@ -1,0 +1,262 @@
+/**
+ * @file
+ * _page-premium.scss - Estilos premium para todas las páginas.
+ *
+ * DIRECTRICES:
+ * - Extiende los estilos de landing a páginas interiores
+ * - Todo usa var(--ej-*) para variables inyectables
+ * - Mobile-first responsive
+ * - Efectos premium: gradients, glassmorphism, animations
+ *
+ * @see 2026-01-25_arquitectura_frontend_extensible.md
+ */
+
+@use '../variables' as *;
+
+// =============================================
+// PAGE WRAPPER - Variantes Premium
+// =============================================
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--ej-bg-body, #F8FAFC);
+
+    // Variante clean (sin sidebars) - para dashboards y landings
+    &--clean {
+        background: linear-gradient(180deg,
+                var(--ej-bg-body, #F8FAFC) 0%,
+                #fff 100%);
+    }
+
+    // Variante premium (con efectos visuales mejorados)
+    &--premium {
+        background: var(--ej-bg-body, #F8FAFC);
+
+        // Gradiente sutil en la parte superior
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background: linear-gradient(180deg,
+                    rgba(35, 61, 99, 0.03) 0%,
+                    transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+
+    // Variante with-sidebar (layout estándar)
+    &--with-sidebar {
+        .content-wrapper {
+            display: grid;
+            gap: 2rem;
+
+            @media (min-width: 992px) {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+    }
+}
+
+// =============================================
+// MAIN CONTENT - Estilos Premium
+// =============================================
+.main-content {
+    flex: 1;
+    padding-top: 80px; // Espacio para header fijo
+
+    // Full width para dashboards
+    &--full {
+        .main-content__inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+    }
+
+    &__inner {
+        padding: var(--ej-spacing-lg, 1.5rem);
+
+        &--full {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+    }
+}
+
+// =============================================
+// CONTENT WRAPPER - Layout Premium
+// =============================================
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+
+    // Animación de entrada
+    animation: content-fade-in 0.5s ease-out;
+}
+
+@keyframes content-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =============================================
+// BREADCRUMB WRAPPER - Premium
+// =============================================
+.breadcrumb-wrapper {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    margin-bottom: 1.5rem;
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, #64748B);
+
+        a {
+            color: var(--ej-text-muted, #64748B);
+            text-decoration: none;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: var(--ej-color-primary, #FF8C42);
+            }
+        }
+
+        .breadcrumb-separator {
+            color: var(--ej-border-color, #E5E7EB);
+        }
+    }
+}
+
+// =============================================
+// HIGHLIGHTED - Mensajes del sistema premium
+// =============================================
+.highlighted {
+    margin-bottom: 1.5rem;
+
+    .messages {
+        border-radius: var(--ej-border-radius, 12px);
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+
+        &--status {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #065F46;
+        }
+
+        &--warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #92400E;
+        }
+
+        &--error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #991B1B;
+        }
+    }
+}
+
+// =============================================
+// SECTION PREMIUM - Para secciones de contenido
+// =============================================
+.section-premium {
+    padding: var(--ej-spacing-section, 5rem) 0;
+
+    &__container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    &__title {
+        font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: var(--ej-color-corporate, #233D63);
+        margin: 0 0 1rem;
+    }
+
+    &__subtitle {
+        font-size: 1.125rem;
+        color: var(--ej-text-muted, #64748B);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    // Variante con fondo alternativo
+    &--alt {
+        background: #fff;
+    }
+
+    // Variante con gradiente oscuro (como hero)
+    &--dark {
+        background: linear-gradient(135deg,
+                var(--ej-color-corporate, #233D63) 0%,
+                #1a2d4a 50%,
+                #0f1d30 100%);
+
+        .section-premium__title {
+            color: #fff;
+        }
+
+        .section-premium__subtitle {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    }
+}
+
+// =============================================
+// SCROLL ANIMATIONS - Globales
+// =============================================
+.scroll-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    &.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scroll-fade-in-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+
+    &.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Delay para elementos en secuencia
+@for $i from 1 through 6 {
+    .scroll-delay-#{$i} {
+        transition-delay: #{$i * 0.1}s;
+    }
+}

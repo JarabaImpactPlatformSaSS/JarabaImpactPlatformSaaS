@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Forms - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+// Inputs
+.form-item {
+    margin-bottom: var(--ej-spacing-md);
+}
+
+.form-item__label {
+    display: block;
+    margin-bottom: var(--ej-spacing-xs);
+    font-weight: 500;
+    color: var(--ej-color-headings, #1A1A2E);
+}
+
+.form-text,
+.form-email,
+.form-tel,
+.form-textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+textarea,
+select {
+    width: 100%;
+    padding: var(--ej-spacing-sm) var(--ej-spacing-md);
+    font-family: inherit;
+    font-size: 1rem;
+    background: var(--ej-input-bg, #FFFFFF);
+    border: 1px solid var(--ej-input-border, #D1D5DB);
+    border-radius: var(--ej-btn-radius, 8px);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-input-focus, #FF8C42);
+        box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+    }
+
+    &::placeholder {
+        color: var(--ej-color-muted, #64748B);
+    }
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+// Checkbox/Radio
+.form-checkbox,
+.form-radio {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm);
+    cursor: pointer;
+
+    input {
+        accent-color: var(--ej-color-primary, #FF8C42);
+    }
+}
+
+// Descriptions and errors
+.form-item__description {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, #64748B);
+    margin-top: var(--ej-spacing-xs);
+}
+
+.form-item--error input {
+    border-color: var(--ej-color-danger, #EF4444);
+}
+
+.form-item__error {
+    color: var(--ej-color-danger, #EF4444);
+    font-size: 0.875rem;
+    margin-top: var(--ej-spacing-xs);
+}

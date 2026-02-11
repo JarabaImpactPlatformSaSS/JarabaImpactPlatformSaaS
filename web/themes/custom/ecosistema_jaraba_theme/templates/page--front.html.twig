@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * page--front.html.twig - Homepage profesional sin regiones.
+ *
+ * ARQUITECTURA REFACTORIZADA:
+ * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ *
+ * PARTIALS:
+ * - _header.html.twig: Header con menú móvil
+ * - _hero.html.twig: Hero + intentions grid
+ * - _features.html.twig: Propuesta de valor
+ * - _stats.html.twig: Social proof
+ * - _footer.html.twig: Footer configurable
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+{{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-front', 'landing-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con menú móvil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# MAIN CONTENT #}
+  <main id="main-content" class="landing-main">
+    
+    {# HERO - Partial con layout configurable + datos dinámicos #}
+    {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
+      theme_settings: theme_settings,
+      logged_in: logged_in,
+      hero: homepage.hero|default({}),
+      intentions: homepage.intentions|default([])
+    } %}
+
+    {# FEATURES - Propuesta de valor con datos dinámicos #}
+    {% include '@ecosistema_jaraba_theme/partials/_features.html.twig' with {
+      features: homepage.features|default([])
+    } %}
+
+    {# STATS - Social proof con datos dinámicos #}
+    {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
+      stats: homepage.stats|default([])
+    } %}
+
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO - Asesor Comercial Premium (orientado a ventas y demos) #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'landing_copilot',
+    avatar_type: 'general',
+    fab_color: 'var(--ej-color-impulse, #FF8C42)',
+    greeting: '¡Hola! Soy tu asesor de Jaraba. Puedo mostrarte demos personalizadas, ayudarte a explorar la plataforma o resolver cualquier duda. ¿Qué te trae por aquí?'|t
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

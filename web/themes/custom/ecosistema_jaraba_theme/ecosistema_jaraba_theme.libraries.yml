@@ -1,0 +1,129 @@
+global-styling:
+  version: 1.0.0
+  css:
+    theme:
+      css/ecosistema-jaraba-theme.css: {}
+  dependencies:
+    - core/drupal
+
+icons:
+  version: 1.0.0
+  css:
+    theme:
+      css/icons.css: {}
+
+admin-settings:
+  version: 1.0.0
+  css:
+    theme:
+      css/admin-settings.css: {}
+  js:
+    js/admin-settings.js: {}
+
+breadcrumbs:
+  version: 1.0.0
+  css:
+    theme:
+      css/breadcrumbs.css: {}
+
+back-to-top:
+  version: 1.0.0
+  js:
+    js/back-to-top.js: {}
+  css:
+    theme:
+      css/back-to-top.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+dark-mode:
+  version: 1.0.0
+  js:
+    js/dark-mode.js: {}
+
+scroll-animations:
+  version: 1.0.0
+  js:
+    js/scroll-animations.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+hero-landing:
+  version: 1.0.0
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+    - ecosistema_jaraba_theme/progressive-profiling
+    - ecosistema_jaraba_core/icons
+
+# Progressive Profiling - Captura de perfil de usuario
+progressive-profiling:
+  version: 1.0.0
+  js:
+    js/progressive-profiling.js: {}
+  dependencies:
+    - core/drupal
+
+mobile-menu:
+  version: 1.0.0
+  js:
+    js/mobile-menu.js: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_theme/global-styling
+
+# Content Hub - Blog, Articles, Categories, Dashboard
+content-hub:
+  version: 1.0.1
+  js:
+    js/content-hub-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/slide-panel
+
+# Slide Panel - Modal deslizante global para CRUD
+slide-panel:
+  version: 1.0.0
+  js:
+    js/slide-panel.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Related Articles Widget - Dynamic recommendations
+related-articles:
+  version: 1.0.0
+  js:
+    js/related-articles.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/content-hub
+
+# Site Builder - Dashboard con partículas y árbol
+site-builder:
+  version: 1.0.1
+  js:
+    js/site-builder-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/slide-panel
+    - jaraba_page_builder/template-picker
+
+# Alpine.js - Framework reactivo ligero para interactividad
+# FE-08: Versión fija con SRI hash y crossorigin
+alpinejs:
+  version: 3.14.8
+  js:
+    https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js:
+      type: external
+      attributes:
+        defer: true
+        integrity: sha384-X9kJyAubVxnP0hcA+AMMs21U445qsnqhnUF8EBlEpP3a42Kh/JwWjlv2ZcvGfphb
+        crossorigin: anonymous

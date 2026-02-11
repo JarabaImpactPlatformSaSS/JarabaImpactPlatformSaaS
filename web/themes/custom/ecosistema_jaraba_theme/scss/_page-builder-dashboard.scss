@@ -1,0 +1,282 @@
+/**
+ * @file
+ * Page Builder Dashboard - Estilos Premium.
+ *
+ * DIRECTRICES:
+ * - Variables SCSS con fallback dual: var(--ej-X, $ej-X)
+ * - Mobile-first responsive
+ * - Glassmorphism y micro-animaciones
+ * - BEM naming convention
+ */
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ============================================
+// DASHBOARD CONTAINER
+// ============================================
+.pb-dashboard {
+    min-height: calc(100vh - 160px);
+    background: var(--ej-bg-body, $ej-bg-body);
+}
+
+// ============================================
+// HERO HEADER CON PARTÍCULAS
+// ============================================
+.pb-dashboard__hero {
+    position: relative;
+    overflow: hidden;
+    padding: $ej-spacing-xl $ej-spacing-lg $ej-spacing-2xl * 1.5;
+    background: linear-gradient(135deg,
+            var(--ej-color-corporate, $ej-color-corporate) 0%,
+            color.adjust($ej-color-corporate, $lightness: 10%) 50%,
+            var(--ej-color-corporate, $ej-color-corporate) 100%);
+    border-radius: 0 0 $ej-border-radius * 2 $ej-border-radius * 2;
+    z-index: 1;
+
+    @media (min-width: 768px) {
+        padding: $ej-spacing-xl $ej-spacing-2xl $ej-spacing-2xl * 1.5;
+    }
+}
+
+.pb-dashboard__particles {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.pb-dashboard__hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.pb-dashboard__hero-icon {
+    margin-bottom: $ej-spacing-md;
+
+    .jaraba-icon {
+        filter: brightness(0) invert(1) !important;
+    }
+}
+
+.pb-dashboard__title {
+    margin: 0 0 $ej-spacing-sm;
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+}
+
+.pb-dashboard__subtitle {
+    margin: 0;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin-inline: auto;
+}
+
+// ============================================
+// ESTADÍSTICAS KPI
+// ============================================
+.pb-dashboard__stats {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: -$ej-spacing-xl auto $ej-spacing-xl;
+    padding-inline: $ej-spacing-lg;
+
+    @media (min-width: 768px) {
+        margin-top: -$ej-spacing-2xl;
+    }
+}
+
+.pb-dashboard__stats-grid {
+    display: grid;
+    gap: $ej-spacing-md;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 600px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.pb-stat {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: $ej-border-radius;
+    box-shadow: $ej-shadow-md;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $ej-shadow-lg;
+    }
+}
+
+.pb-stat__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: $ej-border-radius;
+}
+
+.pb-stat__content {
+    display: flex;
+    flex-direction: column;
+}
+
+.pb-stat__value {
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, $ej-color-headings);
+    line-height: 1;
+}
+
+.pb-stat__label {
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin-top: $ej-spacing-xs;
+}
+
+// ============================================
+// ACTION CARDS PREMIUM
+// ============================================
+.pb-dashboard__actions {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: 0 $ej-spacing-lg $ej-spacing-2xl;
+}
+
+.pb-dashboard__section-title {
+    margin: 0 0 $ej-spacing-lg;
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+}
+
+.pb-dashboard__actions-grid {
+    display: grid;
+    gap: $ej-spacing-md;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 600px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.pb-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: $ej-border-radius;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    text-decoration: none;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $ej-shadow-lg;
+        border-color: transparent;
+
+        .pb-card__glow {
+            opacity: 1;
+        }
+
+        .pb-card__arrow {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+    }
+}
+
+.pb-card__glow {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+// Colores por variante
+.pb-card--impulse .pb-card__glow {
+    background: linear-gradient(135deg,
+            rgba($ej-color-impulse, 0.1) 0%,
+            rgba($ej-color-impulse, 0.02) 100%);
+}
+
+.pb-card--innovation .pb-card__glow {
+    background: linear-gradient(135deg,
+            rgba($ej-color-innovation, 0.1) 0%,
+            rgba($ej-color-innovation, 0.02) 100%);
+}
+
+.pb-card--corporate .pb-card__glow {
+    background: linear-gradient(135deg,
+            rgba($ej-color-corporate, 0.1) 0%,
+            rgba($ej-color-corporate, 0.02) 100%);
+}
+
+.pb-card--agro .pb-card__glow {
+    background: linear-gradient(135deg,
+            rgba($ej-color-agro, 0.1) 0%,
+            rgba($ej-color-agro, 0.02) 100%);
+}
+
+.pb-card__icon {
+    margin-bottom: $ej-spacing-md;
+}
+
+.pb-card__content {
+    flex: 1;
+}
+
+.pb-card__title {
+    margin: 0 0 $ej-spacing-xs;
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+}
+
+.pb-card__description {
+    margin: 0;
+    font-family: var(--ej-font-body, $ej-font-body);
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    line-height: 1.5;
+}
+
+.pb-card__arrow {
+    margin-top: $ej-spacing-md;
+    color: var(--ej-color-muted, $ej-color-muted);
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}

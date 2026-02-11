@@ -1,0 +1,78 @@
+/**
+ * @file
+ * Footer - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.site-footer {
+    background: var(--ej-footer-bg, #1A1A2E);
+    color: var(--ej-footer-text, #94A3B8);
+    padding: var(--ej-spacing-xl) 0;
+    margin-top: auto;
+}
+
+.footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--ej-spacing-md);
+}
+
+// Layouts
+.footer--minimal {
+    .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--ej-spacing-md);
+    }
+}
+
+.footer--standard {
+    .footer-top {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: var(--ej-spacing-xl);
+        margin-bottom: var(--ej-spacing-lg);
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.footer--mega {
+    .footer-top {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--ej-spacing-lg);
+        margin-bottom: var(--ej-spacing-xl);
+
+        @media (max-width: 768px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}
+
+// Links
+.footer-nav a {
+    color: var(--ej-footer-text, #94A3B8);
+    display: block;
+    padding: var(--ej-spacing-xs) 0;
+
+    &:hover {
+        color: var(--ej-color-primary, #FF8C42);
+    }
+}
+
+// Bottom bar
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--ej-spacing-md);
+    font-size: 0.875rem;
+}
+
+.footer-copyright {
+    opacity: 0.7;
+}

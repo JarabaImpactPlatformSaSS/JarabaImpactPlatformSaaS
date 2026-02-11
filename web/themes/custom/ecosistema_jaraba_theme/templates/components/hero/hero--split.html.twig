@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Hero variante: Split
+ *
+ * 50% texto izquierda, 50% imagen derecha.
+ * Uso: Landings de producto, páginas de vertical.
+ */
+#}
+<section class="hero hero--split {{ hero_class|default('') }}">
+  <div class="hero__container container">
+    <div class="hero__content">
+      {% if eyebrow %}
+        <span class="hero__eyebrow">{{ eyebrow }}</span>
+      {% endif %}
+
+      <h1 class="hero__title">{{ title }}</h1>
+
+      {% if subtitle %}
+        <p class="hero__subtitle">{{ subtitle }}</p>
+      {% endif %}
+
+      {% if features %}
+        <ul class="hero__features">
+          {% for feature in features %}
+            <li class="hero__feature">
+              {{ jaraba_icon('ui', 'check-circle', { variant: 'filled', size: '16px', color: 'success' }) }}
+              {{ feature }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="hero__actions">
+        {% if cta_primary %}
+          <a href="{{ cta_primary.url }}" class="btn btn--primary btn--lg">
+            {{ cta_primary.text }}
+            {% if cta_primary.icon %}
+              {{ jaraba_icon('ui', cta_primary.icon, { size: '16px' }) }}
+            {% endif %}
+          </a>
+        {% endif %}
+
+        {% if cta_secondary %}
+          <a href="{{ cta_secondary.url }}" class="btn btn--secondary btn--lg">
+            {{ cta_secondary.text }}
+          </a>
+        {% endif %}
+      </div>
+
+      {% if trust_badges %}
+        <div class="hero__trust">
+          {% for badge in trust_badges %}
+            <img src="{{ badge.image }}" alt="{{ badge.alt }}" class="hero__trust-badge" />
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="hero__media">
+      {% if video %}
+        <video class="hero__video" autoplay muted loop playsinline>
+          <source src="{{ video }}" type="video/mp4" />
+        </video>
+      {% elseif image %}
+        <img src="{{ image }}" alt="{{ image_alt|default(title) }}" class="hero__image" />
+      {% endif %}
+
+      {% if floating_card %}
+        <div class="hero__floating-card">
+          {{ floating_card }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,194 @@
+{#
+/**
+ * @file
+ * Card SDC Component
+ *
+ * Componente unificado con múltiples variantes mediante Compound Variants pattern.
+ * Soporta 8 variantes: default, product, profile, metric, course, testimonial, cta, horizontal.
+ *
+ * Usage:
+ * {% include 'ecosistema_jaraba_theme:card' with {
+ *   variant: 'product',
+ *   title: 'Producto',
+ *   price: 29.99,
+ *   image: '/path/to/image.jpg'
+ * } %}
+ */
+#}
+
+{# Compound Variants: construir clases basadas en props #}
+{% set classes = [
+  'card',
+  'card--' ~ (variant|default('default')),
+  'card--' ~ (size|default('md')),
+  elevated ? 'card--elevated',
+  clickable ? 'card--clickable',
+  image ? 'card--has-image',
+] | filter(v => v) | join(' ') %}
+
+<article class="{{ classes }}" {% if clickable and url %}data-href="{{ url }}"{% endif %}>
+
+  {# === SLOT: HEADER (opcional) === #}
+  {% if slots.header is defined and slots.header %}
+    <div class="card__header">{{ slots.header }}</div>
+  {% endif %}
+
+  {# === SLOT: MEDIA === #}
+  {% if slots.media is defined and slots.media %}
+    <div class="card__media">{{ slots.media }}</div>
+  {% elseif image %}
+    <div class="card__media">
+      {% if url and not clickable %}
+        <a href="{{ url }}" class="card__image-link">
+      {% endif %}
+      
+      <img src="{{ image }}" alt="{{ title }}" class="card__image" loading="lazy" />
+      
+      {% if url and not clickable %}
+        </a>
+      {% endif %}
+
+      {# Badges #}
+      {% if badge or badges %}
+        <div class="card__badges">
+          {% if badge %}
+            <span class="badge badge--{{ badge.type|default('primary') }}">{{ badge.text }}</span>
+          {% endif %}
+          {% for b in badges|default([]) %}
+            <span class="badge badge--{{ b.type|default('primary') }}">{{ b.text }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Quick actions para product variant #}
+      {% if variant == 'product' %}
+        <div class="card__quick-actions">
+          <button class="card__action" aria-label="{% trans %}Favorito{% endtrans %}">
+            {{ jaraba_icon('actions', 'heart', { variant: 'outline', size: '16px' }) }}
+          </button>
+        </div>
+      {% endif %}
+
+      {# Avatar overlay para profile variant #}
+      {% if variant == 'profile' and avatar %}
+        <div class="card__avatar-wrapper">
+          <img src="{{ avatar }}" alt="{{ title }}" class="card__avatar" />
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# === SLOT: CONTENT === #}
+  {% if slots.content is defined and slots.content %}
+    <div class="card__content">{{ slots.content }}</div>
+  {% else %}
+    <div class="card__content">
+
+      {# === VARIANTE: METRIC === #}
+      {% if variant == 'metric' %}
+        <div class="card__metric-header">
+          {% if icon %}
+            <div class="card__icon">{{ jaraba_icon('analytics', icon, { variant: 'duotone', size: '24px' }) }}</div>
+          {% endif %}
+          {% if trend %}
+            <div class="card__trend card__trend--{{ trend.direction }}">
+              {{ jaraba_icon('analytics', trend.direction == 'up' ? 'trending-up' : 'trending-down', { variant: 'outline', size: '16px' }) }}
+              {{ trend.value }}%
+            </div>
+          {% endif %}
+        </div>
+        <div class="card__value">{{ value }}</div>
+        <p class="card__label">{{ title }}</p>
+
+      {# === VARIANTE: PROFILE === #}
+      {% elseif variant == 'profile' %}
+        <h3 class="card__name">
+          {% if url %}<a href="{{ url }}">{{ title }}</a>{% else %}{{ title }}{% endif %}
+        </h3>
+        {% if role %}<p class="card__role">{{ role }}</p>{% endif %}
+        {% if company %}<p class="card__company">{{ company }}</p>{% endif %}
+        {% if description %}<p class="card__bio">{{ description|striptags|slice(0, 100) }}...</p>{% endif %}
+
+      {# === VARIANTE: PRODUCT === #}
+      {% elseif variant == 'product' %}
+        {% if producer %}<span class="card__producer">{{ producer }}</span>{% endif %}
+        <h3 class="card__title"><a href="{{ url }}">{{ title }}</a></h3>
+        {% if rating %}
+          <div class="card__rating">
+            {% for i in 1..5 %}
+              {{ jaraba_icon('ui', 'star', { variant: i <= rating ? 'solid' : 'outline', size: '12px', color: 'warning' }) }}
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="card__price">
+          {% if original_price and original_price != price %}
+            <span class="card__price-original">{{ original_price|number_format(2, ',', '.') }}€</span>
+          {% endif %}
+          <span class="card__price-current">{{ price|number_format(2, ',', '.') }}€</span>
+        </div>
+
+      {# === VARIANTE: COURSE === #}
+      {% elseif variant == 'course' %}
+        <h3 class="card__title"><a href="{{ url }}">{{ title }}</a></h3>
+        {% if subtitle %}<p class="card__subtitle">{{ subtitle }}</p>{% endif %}
+        {% if progress is defined %}
+          <div class="card__progress">
+            <div class="card__progress-bar" style="width: {{ progress }}%"></div>
+            <span class="card__progress-text">{{ progress }}%</span>
+          </div>
+        {% endif %}
+        {% if duration or level %}
+          <div class="card__meta">
+            {% if duration %}<span>{{ jaraba_icon('ui', 'clock', { variant: 'outline', size: '12px' }) }} {{ duration }}</span>{% endif %}
+            {% if level %}<span>{{ jaraba_icon('ui', 'signal', { variant: 'outline', size: '12px' }) }} {{ level }}</span>{% endif %}
+          </div>
+        {% endif %}
+
+      {# === VARIANTE: DEFAULT / HORIZONTAL / TESTIMONIAL / CTA === #}
+      {% else %}
+        {% if category %}<span class="card__category">{{ category }}</span>{% endif %}
+        <h3 class="card__title">
+          {% if url %}<a href="{{ url }}">{{ title }}</a>{% else %}{{ title }}{% endif %}
+        </h3>
+        {% if subtitle %}<p class="card__subtitle">{{ subtitle }}</p>{% endif %}
+        {% if description %}<p class="card__description">{{ description|striptags|slice(0, 150) }}...</p>{% endif %}
+        
+        {# Testimonial: quote y autor #}
+        {% if variant == 'testimonial' and quote %}
+          <blockquote class="card__quote">"{{ quote }}"</blockquote>
+          {% if author %}<cite class="card__author">— {{ author }}</cite>{% endif %}
+        {% endif %}
+      {% endif %}
+
+    </div>
+  {% endif %}
+
+  {# === SLOT: FOOTER === #}
+  {% if slots.footer is defined and slots.footer %}
+    <div class="card__footer">{{ slots.footer }}</div>
+  {% elseif cta or (variant == 'product') %}
+    <div class="card__footer">
+      {% if variant == 'product' %}
+        <button class="btn btn--primary btn--full" data-add-to-cart>
+          {{ jaraba_icon('actions', 'cart', { variant: 'outline', size: '16px' }) }} {% trans %}Añadir{% endtrans %}
+        </button>
+      {% elseif cta %}
+        <a href="{{ cta.url|default(url) }}" class="card__cta btn btn--text">
+          {{ cta.text }} {{ jaraba_icon('ui', 'arrow-right', { variant: 'outline', size: '12px' }) }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# === SLOT: ACTIONS (floating) === #}
+  {% if slots.actions is defined and slots.actions %}
+    <div class="card__actions">{{ slots.actions }}</div>
+  {% endif %}
+
+  {# Link overlay para clickable cards #}
+  {% if clickable and url %}
+    <a href="{{ url }}" class="card__link-overlay">
+      <span class="visually-hidden">{{ title }}</span>
+    </a>
+  {% endif %}
+</article>

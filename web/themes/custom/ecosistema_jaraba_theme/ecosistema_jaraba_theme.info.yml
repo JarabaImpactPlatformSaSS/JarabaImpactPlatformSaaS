@@ -1,0 +1,32 @@
+name: Ecosistema Jaraba Theme
+type: theme
+description: 'Tema premium SaaS multi-vertical para Jaraba Impact Platform. Soporta personalización por tenant, 15 industry presets, y sistema de design tokens.'
+core_version_requirement: ^10 || ^11
+base theme: false
+package: Jaraba
+version: 1.0.0
+screenshot: images/screenshot.png
+
+libraries:
+  - ecosistema_jaraba_theme/global-styling
+  - ecosistema_jaraba_theme/icons
+
+regions:
+  header: Header
+  primary_menu: 'Primary menu'
+  secondary_menu: 'Secondary menu'
+  breadcrumb: Breadcrumb
+  highlighted: Highlighted
+  help: Help
+  content: Content
+  sidebar_first: 'First sidebar'
+  sidebar_second: 'Second sidebar'
+  footer: Footer
+  footer_bottom: 'Footer bottom'
+
+components:
+  namespaces:
+    ecosistema_jaraba_theme: components
+
+ckeditor5-stylesheets:
+  - css/ckeditor.css

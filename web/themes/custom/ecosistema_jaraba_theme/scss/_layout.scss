@@ -1,0 +1,231 @@
+/**
+ * @file
+ * Layout styles - Ecosistema Jaraba Theme.
+ */
+
+@use 'variables' as *;
+
+// Contenedor principal
+.layout-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--ej-spacing-md, 1rem);
+}
+
+// Regiones
+.region {
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+// Layout con sidebar
+.layout-with-sidebar {
+    display: grid;
+    gap: var(--ej-spacing-lg, 1.5rem);
+
+    @media (min-width: 992px) {
+        grid-template-columns: 1fr 300px;
+    }
+}
+
+// Main content
+.layout-main-wrapper {
+    min-height: 60vh;
+}
+
+// =============================================
+// HEADER - Critical fix for logo sizing
+// =============================================
+header {
+    position: relative;
+    z-index: 100;
+    background: var(--ej-header-bg, #fff);
+    border-bottom: 1px solid var(--ej-border-color, #E2E8F0);
+}
+
+// Site branding block - Logo con nombre/eslogan vertical
+#block-ecosistema-jaraba-theme-site-branding,
+.block-system-branding-block {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    // Logo image - CRITICAL: restrict size
+    img {
+        max-height: 60px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    // Container para nombre y eslogan (estructura vertical)
+    .site-branding__text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 1.2;
+    }
+
+    // Site name - 50% de altura del logo (~30px)
+    .site-name {
+        font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ej-color-corporate, #233D63);
+        margin: 0;
+        line-height: 1.2;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-color-primary, #FF8C42);
+            }
+        }
+    }
+
+    // Slogan - debajo del nombre
+    .site-slogan {
+        font-family: var(--ej-font-body, 'Inter', sans-serif);
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: var(--ej-text-muted, #64748B);
+        margin: 0;
+        line-height: 1.3;
+    }
+}
+
+// Header container layout
+.header-container,
+header>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1.5rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+// Navigation in header
+.region-header nav,
+.header__nav,
+.main-navigation {
+
+    ul,
+    .menu {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li,
+        .menu-item {
+            margin: 0;
+            list-style: none;
+
+            a,
+            .menu-link {
+                font-family: var(--ej-font-body, 'Inter', sans-serif);
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--ej-text-primary, #1A1A2E);
+                text-decoration: none;
+                padding: 0.5rem 0;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s ease;
+
+                &:hover,
+                &.is-active {
+                    color: var(--ej-color-primary, #FF8C42);
+                    border-bottom-color: var(--ej-color-primary, #FF8C42);
+                }
+            }
+        }
+    }
+}
+
+// =============================================
+// GLOBAL MENU RESET - Critical for all menus
+// =============================================
+.menu,
+.nav-menu,
+ul.menu {
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+
+    li,
+    .menu-item {
+        list-style: none !important;
+        margin: 0;
+
+        &::before {
+            display: none !important;
+        }
+
+        &::marker {
+            display: none !important;
+        }
+    }
+}
+
+// Header container - with new selectors
+.header__container,
+.header-container,
+header>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1.5rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+// Header brand
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header__logo {
+    max-height: 60px;
+    width: auto;
+}
+
+.header__logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+// Content wrapper
+.content-wrapper {
+    display: flex;
+    gap: 2rem;
+
+    .main-content__inner {
+        flex: 1;
+    }
+
+    .sidebar {
+        flex: 0 0 280px;
+    }
+}
+
+// Container utility
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}

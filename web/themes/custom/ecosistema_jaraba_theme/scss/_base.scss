@@ -1,0 +1,96 @@
+/**
+ * @file
+ * Base styles - Ecosistema Jaraba Theme.
+ */
+
+@use 'variables' as *;
+
+// Reset básico
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+// Root con variables inyectables
+:root {
+    // Colores se inyectan desde PHP hook_preprocess_html
+    --ej-color-primary: #{$ej-color-primary};
+    --ej-color-secondary: #{$ej-color-secondary};
+    --ej-color-corporate: #{$ej-color-corporate};
+    --ej-color-agro: #{$ej-color-agro};
+    --ej-color-success: #{$ej-color-success};
+    --ej-color-warning: #{$ej-color-warning};
+    --ej-color-danger: #{$ej-color-danger};
+    --ej-color-neutral: #{$ej-color-neutral};
+
+    // Fondos
+    --ej-bg-body: #{$ej-bg-body};
+    --ej-bg-surface: #{$ej-bg-surface};
+
+    // Tipografía
+    --ej-font-headings: #{$ej-font-headings};
+    --ej-font-body: #{$ej-font-body};
+    --ej-font-size-base: #{$ej-font-size-base};
+
+    // Spacing
+    --ej-spacing-xs: #{$ej-spacing-xs};
+    --ej-spacing-sm: #{$ej-spacing-sm};
+    --ej-spacing-md: #{$ej-spacing-md};
+    --ej-spacing-lg: #{$ej-spacing-lg};
+    --ej-spacing-xl: #{$ej-spacing-xl};
+
+    // Borders
+    --ej-border-radius: #{$ej-border-radius};
+    --ej-btn-radius: #{$ej-btn-radius};
+    --ej-border-color: #{$ej-border-color};
+
+    // Shadows
+    --ej-shadow-sm: #{$ej-shadow-sm};
+    --ej-shadow-md: #{$ej-shadow-md};
+    --ej-shadow-lg: #{$ej-shadow-lg};
+}
+
+html {
+    font-size: var(--ej-font-size-base, 16px);
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--ej-font-body, "Inter", sans-serif);
+    background-color: var(--ej-bg-body, #F8FAFC);
+    color: var(--ej-color-body, #334155);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+// Headings
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    color: var(--ej-color-headings, #1A1A2E);
+    margin-top: 0;
+    font-weight: 600;
+}
+
+// Links
+a {
+    color: var(--ej-color-primary, #FF8C42);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-corporate, #233D63);
+    }
+}
+
+// Focus visible
+:focus-visible {
+    outline: 2px solid var(--ej-color-primary, #FF8C42);
+    outline-offset: 2px;
+}

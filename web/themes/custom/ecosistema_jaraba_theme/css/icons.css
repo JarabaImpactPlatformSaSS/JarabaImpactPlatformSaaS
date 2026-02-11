@@ -1,0 +1,43 @@
+/**
+ * @file
+ * Icons CSS - Placeholder for icon fonts/styles.
+ * 
+ * This file was created because it was referenced in 
+ * ecosistema_jaraba_theme.libraries.yml but did not exist,
+ * causing MIME type errors in the browser console.
+ * 
+ * The actual icon system uses:
+ * - jaraba_icon() Twig function for inline SVG icons
+ * - ecosistema_jaraba_core/icons library for icon sprite
+ * 
+ * @see web/modules/custom/ecosistema_jaraba_core/css/icons.css
+ */
+
+/* Icon utility classes - if needed in the future */
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.icon svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon--sm svg {
+    width: 0.875em;
+    height: 0.875em;
+}
+
+.icon--lg svg {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+.icon--xl svg {
+    width: 1.5em;
+    height: 1.5em;
+}

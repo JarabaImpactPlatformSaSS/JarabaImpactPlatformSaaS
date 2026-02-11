@@ -1,0 +1,92 @@
+{#
+/**
+ * @file
+ * page--page-builder.html.twig - Template limpia para páginas del Page Builder.
+ *
+ * ARQUITECTURA LIMPIA SaaS (2026-02-02):
+ * - SIN regiones heredadas de Drupal (sidebar, nav, breadcrumb)
+ * - SIN menús del ecosistema principal (Empleo/Talento/etc)
+ * - Full-width, mobile-first
+ * - Solo renderiza el contenido del PageContent entity via viewBuilder
+ * - Header propio ultra-limpio (solo logo, sin navegación del ecosistema)
+ * - El tenant NO tiene acceso al tema admin de Drupal
+ *
+ * RUTAS AFECTADAS:
+ * - /page-builder/* (dashboard, templates, preview, create)
+ * - /page/{id} o alias como /pepejaraba (entity.page_content.canonical)
+ * - /my-pages
+ *
+ * DIRECTRICES:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Directriz: "SaaS debe tener control absoluto sobre el frontend limpio"
+ *
+ * @see ecosistema_jaraba_theme_theme_suggestions_page_alter()
+ * @see PageContentViewBuilder::view()
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{# Librerías del Page Builder #}
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_page_builder/page-builder') }}
+
+{# =========================================================================
+   HEADER ULTRA-LIMPIO PARA PÁGINAS DE TENANT
+   - Solo logo y acciones de usuario
+   - SIN navegación del ecosistema principal
+   - SIN mobile menu con enlaces hardcoded
+   ========================================================================= #}
+<header class="landing-header landing-header--tenant" role="banner">
+  <div class="landing-header__container">
+    {# Logo + Branding del Tenant #}
+    <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+      {% endif %}
+      <div class="landing-header__text">
+        <span class="landing-header__name">{{ site_name }}</span>
+      </div>
+    </a>
+
+    {# Acciones Usuario - Solo login/cuenta, sin menú del ecosistema #}
+    <div class="landing-header__actions">
+      {% if logged_in %}
+        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+      {% else %}
+        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{# =========================================================================
+   MAIN CONTENT - Full-width, Sin Regiones Drupal Heredadas
+   El contenido viene directamente del PageContentViewBuilder, no de bloques
+   ========================================================================= #}
+<main id="main-content" class="page-builder-main page-builder-frontend">
+  {# 
+    CONTENIDO PRINCIPAL - Full Width
+    Renderizado por PageContentViewBuilder::view()
+    NO usa regiones de bloques de Drupal, solo el entity view
+    
+    NOTA: No incluimos {{ page.breadcrumb }} ni menús para frontend limpio.
+  #}
+  <div class="page-builder-content full-width">
+    {{ page.content }}
+  </div>
+</main>
+
+{# FOOTER - Partial configurable desde UI #}
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  site_name: site_name,
+  logo: logo|default(''),
+  theme_settings: theme_settings|default({})
+} %}
+
+{# Copiloto FAB contextual si está habilitado #}
+{% if copilot_context %}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    copilot: copilot_context
+  } %}
+{% endif %}

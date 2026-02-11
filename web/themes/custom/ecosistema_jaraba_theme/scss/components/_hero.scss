@@ -1,0 +1,183 @@
+/**
+ * @file
+ * Hero Section - Ecosistema Jaraba Theme.
+ */
+
+@use '../variables' as *;
+
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+// Fullscreen
+.hero--fullscreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+// Split
+.hero--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ej-spacing-xl);
+    min-height: 70vh;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+
+    // Override: desactiva grid en páginas de dashboard (page--dashboard.html.twig)
+    &:has(.page-wrapper--clean) {
+        display: block;
+        grid-template-columns: none;
+        min-height: auto;
+    }
+}
+
+// Override para navegadores que no soportan :has()
+body.hero--split .page-wrapper--clean {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+// Compact
+.hero--compact {
+    min-height: 40vh;
+    padding: var(--ej-spacing-xl) 0;
+}
+
+// Overlay
+.hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--ej-color-corporate, #233D63);
+    opacity: calc(var(--ej-hero-overlay, 60) / 100);
+}
+
+// Content
+.hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+}
+
+.hero__title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: var(--ej-spacing-md);
+}
+
+.hero__subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: var(--ej-spacing-lg);
+}
+
+.hero__cta {
+    display: flex;
+    gap: var(--ej-spacing-md);
+    flex-wrap: wrap;
+}
+
+// ============================================================
+// JARABA HERO - Page Builder Templates
+// Estilos para bloques hero del Page Builder con imágenes de fondo.
+// ============================================================
+
+.jaraba-hero {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--ej-color-corporate, #233D63);
+    background-image: var(--hero-bg-image, none);
+    background-size: cover;
+    background-position: center;
+
+    // Overlay oscuro
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, var(--hero-overlay-opacity, 0.5));
+        z-index: 1;
+    }
+
+    // Contenido
+    &__content {
+        position: relative;
+        z-index: 2;
+        padding: var(--ej-spacing-xl) var(--ej-spacing-lg);
+        color: #fff;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Eyebrow (texto pequeño arriba del título)
+    &__eyebrow {
+        display: inline-block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.85;
+        margin-bottom: var(--ej-spacing-sm);
+    }
+
+    // Título responsive con clamp
+    &__title {
+        font-size: clamp(1.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0 0 var(--ej-spacing-md);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+
+    // Subtítulo
+    &__subtitle {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.9;
+        margin-bottom: var(--ej-spacing-lg);
+        max-width: 600px;
+    }
+
+    // CTAs
+    &__actions {
+        display: flex;
+        gap: var(--ej-spacing-md);
+        flex-wrap: wrap;
+        justify-content: center;
+
+        @media (max-width: 480px) {
+            flex-direction: column;
+            width: 100%;
+
+            a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+
+    // =====================
+    // VARIANTE FULLSCREEN
+    // =====================
+    &--fullscreen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .jaraba-hero__content {
+            min-height: 100vh;
+        }
+    }
+}
