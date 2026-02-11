@@ -155,7 +155,7 @@ jobs:
             exit 1
           fi
 
-      - name: Pull and deploy
+      - name: Pull code and install dependencies
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
@@ -181,40 +181,84 @@ jobs:
               exit 1
             fi
 
-            # Instalar y actualizar
+            # Instalar dependencias
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
-            /usr/bin/php8.4-cli vendor/bin/drush.php updatedb -y
-            /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y || true
-            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild
           EOF
 
-      - name: Disable maintenance mode
+      - name: Pre-deploy diagnostics
+        continue-on-error: true
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
-            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 0
+            # Forzar PHP CLI para subprocesos de drush (evita CGI en shared hosting)
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+            echo "=== PHP SAPI ==="
+            /usr/bin/php8.4-cli -r "echo php_sapi_name() . PHP_EOL;"
+            echo ""
+            echo "=== Drush Status ==="
+            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1 || echo "⚠️ drush status failed"
+            echo ""
+            echo "=== Pending DB Updates ==="
+            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb:status 2>&1 || echo "⚠️ updatedb:status failed"
+          EOF
+
+      - name: Run database updates
+        continue-on-error: true
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+            echo "=== Running updatedb with verbose PHP error output ==="
+            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb -y -v 2>&1
+            UPDB_EXIT=$?
+            echo "=== updatedb exit code: $UPDB_EXIT ==="
+            if [ $UPDB_EXIT -ne 0 ]; then
+              echo "⚠️ updatedb failed. Checking PHP error log..."
+              tail -30 ~/logs/error.log 2>/dev/null || tail -30 ~/logs/php_error.log 2>/dev/null || echo "No error log found at ~/logs/"
+              ls -la ~/logs/ 2>/dev/null || echo "~/logs/ directory not found"
+            fi
+          EOF
+
+      - name: Import config and rebuild cache
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+            /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
+            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
+          EOF
+
+      - name: Disable maintenance mode and verify site
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 0 2>&1
+            echo ""
+            echo "=== Quick site verification ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1
           EOF
 
       - name: Smoke test - Health endpoint
         run: |
           echo "⏳ Esperando 10s para estabilización post-deploy..."
           sleep 10
-          
+
           echo "🔍 Verificando /health endpoint..."
           for i in 1 2 3; do
             RESPONSE=$(curl -sf https://plataformadeecosistemas.com/health 2>/dev/null || echo '{}')
             STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
-            
+
             if [ "$STATUS" = "ok" ]; then
               echo "✅ Health check passed! Platform is healthy."
               echo "$RESPONSE" | jq .
               exit 0
             fi
-            
+
             echo "⚠️ Intento $i/3: status=$STATUS. Reintentando en 5s..."
             sleep 5
           done
-          
+
           echo "❌ Health check failed after 3 attempts!"
           echo "Response: $RESPONSE"
           exit 1
@@ -228,6 +272,42 @@ jobs:
           else
             echo "✅ Homepage OK (HTTP 200)"
           fi
+
+      - name: Diagnose production error
+        if: failure()
+        continue-on-error: true
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            echo "=== Drush Status ==="
+            /usr/bin/php8.4-cli -d display_errors=1 vendor/bin/drush.php status 2>&1
+            echo ""
+            echo "=== Recent Watchdog Errors ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php watchdog:show --count=20 --severity=3 2>&1 || echo "No watchdog available"
+            echo ""
+            echo "=== PHP Error Log (last 50 lines) ==="
+            for LOG_PATH in ~/logs/error.log ~/logs/php_error.log /tmp/php_errors.log; do
+              if [ -f "$LOG_PATH" ]; then
+                echo "--- $LOG_PATH ---"
+                tail -50 "$LOG_PATH"
+              fi
+            done
+            echo ""
+            echo "=== Apache Error Log (last 30 lines) ==="
+            tail -30 ~/logs/error_log 2>/dev/null || echo "No Apache error log at ~/logs/error_log"
+            echo ""
+            echo "=== Test Drupal bootstrap with PHP errors visible ==="
+            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL -r "
+              chdir('web');
+              require_once 'sites/default/settings.php';
+              echo 'Settings loaded OK\n';
+              require_once 'core/includes/bootstrap.inc';
+              echo 'Bootstrap include OK\n';
+            " 2>&1
+            echo ""
+            echo "=== Enabled Custom Modules ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php pm-list --status=enabled --type=module 2>&1 | grep -i "custom\|jaraba\|ecosistema" || echo "pm-list failed"
+          EOF
 
       - name: Notify success
         if: success()
