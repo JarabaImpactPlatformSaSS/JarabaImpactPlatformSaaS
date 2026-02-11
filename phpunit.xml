@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  PHPUnit configuration for JarabaImpactPlatformSaaS.
-  
-  Usado por:
-  - GitHub Actions ci.yml (./vendor/bin/phpunit --testsuite Unit)
-  - Desarrollo local (lando drush phpunit)
-  
-  Referencia: https://www.drupal.org/docs/testing/phpunit-in-drupal
--->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="web/core/tests/bootstrap.php"
@@ -21,11 +12,11 @@
     <ini name="error_reporting" value="32767"/>
     <ini name="memory_limit" value="-1"/>
 
-    <!-- Base URL para tests funcionales -->
-    <env name="SIMPLETEST_BASE_URL" value="http://localhost"/>
+    <!-- Base URL para tests funcionales (Lando internal) -->
+    <env name="SIMPLETEST_BASE_URL" value="http://jarabasaas.lndo.site"/>
 
-    <!-- Conexión a la base de datos de test -->
-    <env name="SIMPLETEST_DB" value="mysql://root:root@127.0.0.1:3306/drupal_test"/>
+    <!-- Conexión a la base de datos de test (SQLite para Kernel tests) -->
+    <env name="SIMPLETEST_DB" value="sqlite://localhost//tmp/test.sqlite"/>
 
     <!-- Directorio para browser output -->
     <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>
