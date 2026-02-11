@@ -1,0 +1,50 @@
+services:
+  jaraba_tenant_knowledge.manager:
+    class: Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_rag.qdrant_client'
+      - '@ai.provider'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  jaraba_tenant_knowledge.indexer:
+    class: Drupal\jaraba_tenant_knowledge\Service\KnowledgeIndexerService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_rag.qdrant_client'
+      - '@ai.provider'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  jaraba_tenant_knowledge.document_processor:
+    class: Drupal\jaraba_tenant_knowledge\Service\DocumentProcessorService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_rag.qdrant_client'
+      - '@ai.provider'
+      - '@file_system'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  # Servicio de comparación de revisiones (G114-2).
+  jaraba_tenant_knowledge.revision_service:
+    class: Drupal\jaraba_tenant_knowledge\Service\KnowledgeRevisionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  # FAQ Bot contextual para clientes del tenant (G114-4).
+  jaraba_tenant_knowledge.faq_bot:
+    class: Drupal\jaraba_tenant_knowledge\Service\FaqBotService
+    arguments:
+      - '@jaraba_tenant_knowledge.indexer'
+      - '@jaraba_tenant_knowledge.manager'
+      - '@jaraba_rag.qdrant_client'
+      - '@ai.provider'
+      - '@entity_type.manager'
+      - '@tempstore.shared'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  logger.channel.jaraba_tenant_knowledge:
+    class: Drupal\Core\Logger\LoggerChannel
+    factory: logger.factory:get
+    arguments: ['jaraba_tenant_knowledge']
+

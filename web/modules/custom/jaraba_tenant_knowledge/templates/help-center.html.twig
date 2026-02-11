@@ -1,0 +1,143 @@
+{#
+/**
+ * @file
+ * help-center.html.twig — Landing del Centro de Ayuda público.
+ *
+ * PROPÓSITO: Página pública /ayuda con barra de búsqueda, categorías
+ * de FAQs y artículos populares.
+ *
+ * Variables:
+ * - categories: Array de categorías con keys: key, label, icon, count, faqs[].
+ * - top_faqs: Array de las 6 FAQs más populares.
+ * - total_articles: Total de artículos publicados.
+ */
+#}
+
+<div class="help-center">
+  {# Hero con barra de búsqueda #}
+  <section class="help-center__hero">
+    <div class="help-center__hero-content">
+      <h1 class="help-center__title">{% trans %}Centro de Ayuda{% endtrans %}</h1>
+      <p class="help-center__subtitle">
+        {% trans %}¿En qué podemos ayudarte? Busca entre nuestros artículos o explora las categorías.{% endtrans %}
+      </p>
+
+      <form class="help-center__search-form" action="{{ path('jaraba_tenant_knowledge.help.search') }}" method="get">
+        <div class="help-center__search-wrapper">
+          <svg class="help-center__search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            class="help-center__search-input"
+            placeholder="{{ 'Buscar artículos de ayuda...'|trans }}"
+            autocomplete="off"
+            data-help-search
+          >
+          <button type="submit" class="help-center__search-btn">
+            {% trans %}Buscar{% endtrans %}
+          </button>
+        </div>
+        {# Resultados de autocompletado #}
+        <div class="help-center__autocomplete" data-help-autocomplete hidden></div>
+      </form>
+
+      <p class="help-center__article-count">
+        {{ total_articles }} {% trans %}artículos disponibles{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  {# Grid de categorías #}
+  {% if categories is not empty %}
+    <section class="help-center__categories">
+      <h2 class="help-center__section-title">{% trans %}Explorar por Categoría{% endtrans %}</h2>
+      <div class="help-center__categories-grid">
+        {% for category in categories %}
+          <a href="#category-{{ category.key }}" class="help-category-card" data-category="{{ category.key }}">
+            <div class="help-category-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                {% if category.icon == 'shopping-bag' %}
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                {% elseif category.icon == 'truck' %}
+                  <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                {% elseif category.icon == 'rotate-ccw' %}
+                  <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                {% elseif category.icon == 'credit-card' %}
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                {% elseif category.icon == 'headphones' %}
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                {% elseif category.icon == 'tag' %}
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                {% else %}
+                  <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                {% endif %}
+              </svg>
+            </div>
+            <h3 class="help-category-card__title">{{ category.label }}</h3>
+            <span class="help-category-card__count">
+              {{ category.count }} {{ category.count == 1 ? 'artículo'|trans : 'artículos'|trans }}
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Artículos populares #}
+  {% if top_faqs is not empty %}
+    <section class="help-center__popular">
+      <h2 class="help-center__section-title">{% trans %}Artículos Populares{% endtrans %}</h2>
+      <div class="help-center__popular-grid">
+        {% for faq in top_faqs %}
+          <a href="{{ path('jaraba_tenant_knowledge.help.article', { faq_id: faq.id }) }}" class="help-article-card">
+            <span class="help-article-card__category">{{ faq.category_label }}</span>
+            <h3 class="help-article-card__title">{{ faq.question }}</h3>
+            <p class="help-article-card__preview">{{ faq.answer_preview }}</p>
+            <span class="help-article-card__link">
+              {% trans %}Leer más{% endtrans %} →
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Listado de FAQs por categoría (expandible) #}
+  {% if categories is not empty %}
+    <section class="help-center__faq-list">
+      {% for category in categories %}
+        <div class="help-faq-section" id="category-{{ category.key }}">
+          <h2 class="help-faq-section__title">{{ category.label }}</h2>
+          <div class="help-faq-section__items">
+            {% for faq in category.faqs %}
+              <a href="{{ path('jaraba_tenant_knowledge.help.article', { faq_id: faq.id }) }}" class="help-faq-item">
+                <span class="help-faq-item__question">{{ faq.question }}</span>
+                <svg class="help-faq-item__arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  {# CTA de contacto #}
+  <section class="help-center__contact">
+    <h2 class="help-center__contact-title">{% trans %}¿No encuentras lo que buscas?{% endtrans %}</h2>
+    <p class="help-center__contact-text">
+      {% trans %}Nuestro equipo de soporte está disponible para ayudarte.{% endtrans %}
+    </p>
+  </section>
+</div>
+
+{# FAQ Bot Widget (G114-4) #}
+{% include '@jaraba_tenant_knowledge/faq-bot-widget.html.twig' with {
+  tenant_id: faq_bot_tenant_id,
+  tenant_name: faq_bot_tenant_name,
+  suggestions: faq_bot_suggestions,
+} only %}

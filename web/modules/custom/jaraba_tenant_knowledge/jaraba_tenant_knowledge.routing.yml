@@ -1,0 +1,402 @@
+# Rutas del módulo jaraba_tenant_knowledge.
+
+# =============================================================================
+# CENTRO DE AYUDA PÚBLICO - /ayuda (G114 / f114)
+# =============================================================================
+# Rutas públicas sin autenticación para el portal de ayuda.
+
+jaraba_tenant_knowledge.help.index:
+  path: '/ayuda'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\HelpCenterController::index'
+    _title: 'Centro de Ayuda'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_tenant_knowledge.help.article:
+  path: '/ayuda/{faq_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\HelpCenterController::viewArticle'
+    _title: 'Artículo de Ayuda'
+  requirements:
+    _access: 'TRUE'
+    faq_id: '\d+'
+
+jaraba_tenant_knowledge.help.search:
+  path: '/ayuda/buscar'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\HelpCenterController::search'
+    _title: 'Buscar en Centro de Ayuda'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_tenant_knowledge.help.search_api:
+  path: '/api/v1/help/search'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\HelpCenterController::searchApi'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# FAQ Bot contextual (G114-4)
+jaraba_tenant_knowledge.help.chat:
+  path: '/api/v1/help/chat'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\FaqBotApiController::chat'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+jaraba_tenant_knowledge.help.chat_feedback:
+  path: '/api/v1/help/chat/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\FaqBotApiController::feedback'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# === FRONTEND DASHBOARD ===
+jaraba_tenant_knowledge.dashboard:
+  path: '/knowledge'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::dashboard'
+    _title: 'Entrenar mi Copiloto'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.config.edit:
+  path: '/knowledge/config'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::editConfig'
+    _title: 'Información del Negocio'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+# === FAQs ===
+jaraba_tenant_knowledge.faqs:
+  path: '/knowledge/faqs'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::faqs'
+    _title: 'Preguntas Frecuentes'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.faq.add:
+  path: '/knowledge/faqs/add'
+  defaults:
+    _entity_form: 'tenant_faq.add'
+    _title: 'Nueva FAQ'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.faq.edit:
+  path: '/knowledge/faqs/{tenant_faq}/edit'
+  defaults:
+    _entity_form: 'tenant_faq.edit'
+    _title: 'Editar FAQ'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.faq.delete:
+  path: '/knowledge/faqs/{tenant_faq}/delete'
+  defaults:
+    _entity_form: 'tenant_faq.delete'
+    _title: 'Eliminar FAQ'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+# --- FAQ REVISIONS (G114-2) ---
+jaraba_tenant_knowledge.faq.revisions:
+  path: '/knowledge/faqs/{tenant_faq}/revisions'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::faqRevisions'
+    _title_callback: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::faqRevisionsTitle'
+  requirements:
+    _permission: 'access tenant knowledge'
+    tenant_faq: '\d+'
+
+jaraba_tenant_knowledge.faq.revisions.compare:
+  path: '/knowledge/faqs/{tenant_faq}/revisions/compare/{older}/{newer}'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::faqCompare'
+    _title_callback: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::faqCompareTitle'
+  requirements:
+    _permission: 'access tenant knowledge'
+    tenant_faq: '\d+'
+    older: '\d+'
+    newer: '\d+'
+
+jaraba_tenant_knowledge.faq.revisions.revert:
+  path: '/knowledge/faqs/{tenant_faq}/revisions/{revision}/revert'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::faqRevert'
+    _title: 'Revertir FAQ'
+  requirements:
+    _permission: 'edit tenant knowledge'
+    tenant_faq: '\d+'
+    revision: '\d+'
+
+# === POLICIES ===
+jaraba_tenant_knowledge.policies:
+  path: '/knowledge/policies'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::policies'
+    _title: 'Políticas y Procedimientos'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.policy.add:
+  path: '/knowledge/policies/add'
+  defaults:
+    _entity_form: 'tenant_policy.add'
+    _title: 'Nueva Política'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.policy.edit:
+  path: '/knowledge/policies/{tenant_policy}/edit'
+  defaults:
+    _entity_form: 'tenant_policy.edit'
+    _title: 'Editar Política'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.policy.delete:
+  path: '/knowledge/policies/{tenant_policy}/delete'
+  defaults:
+    _entity_form: 'tenant_policy.delete'
+    _title: 'Eliminar Política'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+# --- POLICY REVISIONS (G114-2) ---
+jaraba_tenant_knowledge.policy.revisions:
+  path: '/knowledge/policies/{tenant_policy}/revisions'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::policyRevisions'
+    _title_callback: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::policyRevisionsTitle'
+  requirements:
+    _permission: 'access tenant knowledge'
+    tenant_policy: '\d+'
+
+jaraba_tenant_knowledge.policy.revisions.compare:
+  path: '/knowledge/policies/{tenant_policy}/revisions/compare/{older}/{newer}'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::policyCompare'
+    _title_callback: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::policyCompareTitle'
+  requirements:
+    _permission: 'access tenant knowledge'
+    tenant_policy: '\d+'
+    older: '\d+'
+    newer: '\d+'
+
+jaraba_tenant_knowledge.policy.revisions.revert:
+  path: '/knowledge/policies/{tenant_policy}/revisions/{revision}/revert'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeRevisionController::policyRevert'
+    _title: 'Revertir Política'
+  requirements:
+    _permission: 'edit tenant knowledge'
+    tenant_policy: '\d+'
+    revision: '\d+'
+
+# === DOCUMENTS ===
+jaraba_tenant_knowledge.documents:
+  path: '/knowledge/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::documents'
+    _title: 'Documentos'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.document.add:
+  path: '/knowledge/documents/add'
+  defaults:
+    _entity_form: 'tenant_document.add'
+    _title: 'Subir Documento'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.document.edit:
+  path: '/knowledge/documents/{tenant_document}/edit'
+  defaults:
+    _entity_form: 'tenant_document.edit'
+    _title: 'Editar Documento'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.document.delete:
+  path: '/knowledge/documents/{tenant_document}/delete'
+  defaults:
+    _entity_form: 'tenant_document.delete'
+    _title: 'Eliminar Documento'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+# === TEST CONSOLE ===
+jaraba_tenant_knowledge.test:
+  path: '/knowledge/test'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::testConsole'
+    _title: 'Probar mi Copiloto'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+# === API REST ===
+jaraba_tenant_knowledge.api.context:
+  path: '/api/v1/knowledge/context'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeApiController::getContext'
+  requirements:
+    _permission: 'access tenant knowledge'
+  methods: [GET]
+
+jaraba_tenant_knowledge.api.search:
+  path: '/api/v1/knowledge/search'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeApiController::search'
+  requirements:
+    _permission: 'access tenant knowledge'
+  methods: [GET]
+
+jaraba_tenant_knowledge.api.test:
+  path: '/api/v1/knowledge/test'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeApiController::test'
+  requirements:
+    _permission: 'access tenant knowledge'
+  methods: [POST]
+
+# =============================================================================
+# ADMIN ROUTES (para /admin/content y /admin/structure)
+# =============================================================================
+
+
+jaraba_tenant_knowledge.admin.settings:
+  path: '/admin/structure/tenant-knowledge'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Tenant Knowledge Settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.faqs:
+  path: '/admin/content/tenant-faqs'
+  defaults:
+    _entity_list: 'tenant_faq'
+    _title: 'FAQs de Tenants'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.policies:
+  path: '/admin/content/tenant-policies'
+  defaults:
+    _entity_list: 'tenant_policy'
+    _title: 'Políticas de Tenants'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.documents:
+  path: '/admin/content/tenant-documents'
+  defaults:
+    _entity_list: 'tenant_document'
+    _title: 'Documentos de Tenants'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.products:
+  path: '/admin/content/tenant-products'
+  defaults:
+    _entity_list: 'tenant_product_enrichment'
+    _title: 'Productos de Tenants'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.corrections:
+  path: '/admin/content/tenant-corrections'
+  defaults:
+    _entity_list: 'tenant_ai_correction'
+    _title: 'Correcciones IA de Tenants'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.configs:
+  path: '/admin/content/tenant-knowledge-configs'
+  defaults:
+    _entity_list: 'tenant_knowledge_config'
+    _title: 'Configuraciones de Conocimiento'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+# =============================================================================
+# PRODUCTOS (Frontend + CRUD)
+# =============================================================================
+
+jaraba_tenant_knowledge.products:
+  path: '/knowledge/products'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::products'
+    _title: 'Productos'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.product.add:
+  path: '/knowledge/products/add'
+  defaults:
+    _entity_form: 'tenant_product_enrichment.add'
+    _title: 'Nuevo Producto'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.product.edit:
+  path: '/knowledge/products/{tenant_product_enrichment}/edit'
+  defaults:
+    _entity_form: 'tenant_product_enrichment.edit'
+    _title: 'Editar Producto'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.product.delete:
+  path: '/knowledge/products/{tenant_product_enrichment}/delete'
+  defaults:
+    _entity_form: 'tenant_product_enrichment.delete'
+    _title: 'Eliminar Producto'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+# =============================================================================
+# CORRECCIONES IA (Frontend + CRUD)
+# =============================================================================
+
+jaraba_tenant_knowledge.corrections:
+  path: '/knowledge/corrections'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KnowledgeDashboardController::corrections'
+    _title: 'Correcciones de IA'
+  requirements:
+    _permission: 'access tenant knowledge'
+
+jaraba_tenant_knowledge.correction.add:
+  path: '/knowledge/corrections/add'
+  defaults:
+    _entity_form: 'tenant_ai_correction.add'
+    _title: 'Nueva Corrección'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.correction.edit:
+  path: '/knowledge/corrections/{tenant_ai_correction}/edit'
+  defaults:
+    _entity_form: 'tenant_ai_correction.edit'
+    _title: 'Editar Corrección'
+  requirements:
+    _permission: 'edit tenant knowledge'
+
+jaraba_tenant_knowledge.correction.delete:
+  path: '/knowledge/corrections/{tenant_ai_correction}/delete'
+  defaults:
+    _entity_form: 'tenant_ai_correction.delete'
+    _title: 'Eliminar Corrección'
+  requirements:
+    _permission: 'edit tenant knowledge'
+

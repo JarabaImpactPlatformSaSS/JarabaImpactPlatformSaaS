@@ -1,0 +1,81 @@
+# Bibliotecas del módulo jaraba_tenant_knowledge.
+# 
+# IMPORTANTE: El CSS se compila desde SCSS usando Dart Sass.
+# COMPILAR: npx sass scss/main.scss:css/knowledge-dashboard.css --style=compressed
+# 
+# Seguir patrón Federated Design Tokens del proyecto.
+
+dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/knowledge-dashboard.css: {}
+  js:
+    js/knowledge-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+
+test-console:
+  version: 1.0
+  css:
+    theme:
+      css/knowledge-test-console.css: {}
+  js:
+    js/knowledge-test-console.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+
+# =============================================================================
+# CENTRO DE AYUDA PÚBLICO (G114 / f114)
+# Página pública en /ayuda — sin autenticación requerida
+# CSS compilado desde ecosistema_jaraba_core/scss/_help-center.scss
+# =============================================================================
+help-center:
+  version: 1.0
+  css:
+    theme:
+      css/help-center.css: {}
+  js:
+    js/help-center.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+
+# =============================================================================
+# FAQ BOT CONTEXTUAL (G114-4)
+# Widget chat público en /ayuda que responde preguntas usando la KB del tenant
+# CSS compilado desde scss/_faq-bot.scss
+# =============================================================================
+faq-bot:
+  version: 1.0
+  css:
+    theme:
+      css/faq-bot.css: {}
+  js:
+    js/faq-bot.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+
+# =============================================================================
+# REVISIONES / DIFF VISUAL (G114-2)
+# Historial de versiones y comparación visual para FAQs y Políticas
+# CSS reutiliza _revision-diff.scss del core (ya compilado en ecosistema-jaraba-core.css)
+# =============================================================================
+revision-diff:
+  version: 1.0
+  js:
+    js/knowledge-revision.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global

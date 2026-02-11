@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * faq-bot-widget.html.twig — Widget chat FAB del FAQ Bot (G114-4).
+ *
+ * PROPÓSITO: Chat contextual público en /ayuda que responde preguntas
+ * de clientes usando exclusivamente la KB del tenant.
+ *
+ * Variables:
+ * - tenant_id: ID del tenant para filtrar resultados.
+ * - tenant_name: Nombre del negocio para el header.
+ * - suggestions: Array de FAQs sugeridas iniciales [{id, question}].
+ */
+#}
+
+<div class="faq-bot" data-faq-bot data-tenant-id="{{ tenant_id }}">
+  {# FAB Button #}
+  <button class="faq-bot__fab" aria-label="{% trans %}Abrir asistente de ayuda{% endtrans %}" aria-expanded="false">
+    <svg class="faq-bot__fab-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span class="faq-bot__fab-pulse"></span>
+  </button>
+
+  {# Panel #}
+  <div class="faq-bot__panel" aria-hidden="true">
+    {# Header #}
+    <div class="faq-bot__header">
+      <div class="faq-bot__header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="faq-bot__header-info">
+        <h3 class="faq-bot__header-title">{% trans %}Asistente de Ayuda{% endtrans %}</h3>
+        <div class="faq-bot__header-status">
+          <span class="faq-bot__status-dot"></span>
+          <span>{% trans %}En línea{% endtrans %}</span>
+        </div>
+      </div>
+      <button class="faq-bot__close" aria-label="{% trans %}Cerrar asistente{% endtrans %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    {# Body #}
+    <div class="faq-bot__body">
+      {# Messages #}
+      <div class="faq-bot__messages" data-faq-messages>
+        <div class="faq-bot__message faq-bot__message--assistant">
+          <div class="faq-bot__bubble">
+            {% trans %}¡Hola! Soy el asistente de ayuda. Puedo responder tus preguntas sobre nuestros productos, servicios y políticas. ¿En qué puedo ayudarte?{% endtrans %}
+          </div>
+        </div>
+      </div>
+
+      {# Initial Suggestions #}
+      {% if suggestions is not empty %}
+        <div class="faq-bot__suggestions" data-faq-suggestions>
+          {% for suggestion in suggestions %}
+            <button class="faq-bot__suggestion-chip" data-faq-suggestion="{{ suggestion.question }}">
+              {{ suggestion.question }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Footer #}
+    <div class="faq-bot__footer">
+      <div class="faq-bot__input-container">
+        <input
+          type="text"
+          class="faq-bot__input"
+          data-faq-input
+          placeholder="{{ 'Escribe tu pregunta...'|trans }}"
+          maxlength="500"
+          autocomplete="off"
+        >
+        <button class="faq-bot__send" data-faq-send aria-label="{% trans %}Enviar{% endtrans %}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

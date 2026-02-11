@@ -1,0 +1,397 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Módulo principal para Entrenamiento de Conocimiento del Tenant.
+ *
+ * Este módulo permite a los tenants entrenar sus agentes IA con
+ * conocimiento específico del negocio:
+ * - Información del negocio (nombre, descripción, industria)
+ * - FAQs personalizadas
+ * - Políticas y procedimientos
+ * - Documentos procesados (PDFs, DOCs)
+ * - Sistemas de corrección de respuestas
+ *
+ * ARQUITECTURA:
+ * Todos los datos son multi-tenant y se indexan en Qdrant
+ * para permitir retrieval semántico durante las conversaciones.
+ *
+ * @see jaraba_tenant_knowledge_training KI
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_tenant_knowledge_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_tenant_knowledge') {
+    return '<p>' . t('Sistema de entrenamiento de conocimiento del negocio para personalización de agentes IA por tenant.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_tenant_knowledge_theme(): array {
+  return [
+    'knowledge_dashboard' => [
+      'variables' => [
+        'config' => NULL,
+        'statistics' => [],
+        'sections' => [],
+      ],
+      'template' => 'knowledge-dashboard',
+    ],
+    'knowledge_test_console' => [
+      'variables' => [
+        'statistics' => [],
+        'coverage' => 0,
+        'suggestions' => [],
+      ],
+      'template' => 'knowledge-test-console',
+    ],
+
+    // =========================================================================
+    // CENTRO DE AYUDA PÚBLICO (G114 / f114)
+    // =========================================================================
+
+    // Landing del Centro de Ayuda: /ayuda
+    'help_center' => [
+      'variables' => [
+        'categories' => [],
+        'top_faqs' => [],
+        'total_articles' => 0,
+        'faq_bot_tenant_id' => 0,
+        'faq_bot_tenant_name' => '',
+        'faq_bot_suggestions' => [],
+      ],
+      'template' => 'help-center',
+    ],
+
+    // Vista individual de artículo: /ayuda/{faq_id}
+    'help_center_article' => [
+      'variables' => [
+        'faq' => [],
+        'related' => [],
+      ],
+      'template' => 'help-center-article',
+    ],
+
+    // Resultados de búsqueda: /ayuda/buscar?q=...
+    'help_center_search' => [
+      'variables' => [
+        'query' => '',
+        'results' => [],
+        'result_count' => 0,
+      ],
+      'template' => 'help-center-search',
+    ],
+
+    // Artículo no encontrado (404 amigable)
+    'help_center_not_found' => [
+      'variables' => [
+        'message' => '',
+      ],
+      'template' => 'help-center-not-found',
+    ],
+
+    // =========================================================================
+    // FAQ BOT CONTEXTUAL (G114-4)
+    // =========================================================================
+
+    // Widget chat público en /ayuda
+    'faq_bot_widget' => [
+      'variables' => [
+        'tenant_id' => 0,
+        'tenant_name' => '',
+        'suggestions' => [],
+      ],
+      'template' => 'faq-bot-widget',
+    ],
+
+    // =========================================================================
+    // REVISIONES / DIFF VISUAL (G114-2)
+    // =========================================================================
+
+    // Lista de revisiones de una FAQ o política.
+    'knowledge_revision_list' => [
+      'variables' => [
+        'entity' => NULL,
+        'entity_type' => '',
+        'revisions' => [],
+        'back_route' => '',
+        'compare_route' => '',
+        'entity_label' => '',
+      ],
+      'template' => 'knowledge-revision-list',
+    ],
+
+    // Comparación visual entre dos revisiones.
+    'knowledge_revision_diff' => [
+      'variables' => [
+        'entity' => NULL,
+        'entity_type' => '',
+        'older' => NULL,
+        'newer' => NULL,
+        'older_id' => 0,
+        'newer_id' => 0,
+        'diff' => [],
+        'has_changes' => FALSE,
+        'list_route' => '',
+        'list_route_params' => [],
+        'revert_route' => '',
+        'revert_route_params' => [],
+        'entity_label' => '',
+      ],
+      'template' => 'knowledge-revision-diff',
+    ],
+  ];
+}
+
+/**
+
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body para el dashboard de Knowledge Training.
+ * Patrón Frontend Page según directrices del proyecto.
+ */
+function jaraba_tenant_knowledge_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if (str_starts_with($route ?? '', 'jaraba_tenant_knowledge.')) {
+    $variables['attributes']['class'][] = 'knowledge-page';
+    $variables['attributes']['class'][] = 'page-knowledge-training';
+    $variables['attributes']['class'][] = 'frontend-dashboard';
+  }
+
+  // Centro de Ayuda público (G114 / f114).
+  $help_routes = [
+    'jaraba_tenant_knowledge.help.index',
+    'jaraba_tenant_knowledge.help.article',
+    'jaraba_tenant_knowledge.help.search',
+  ];
+  if (in_array($route, $help_routes)) {
+    $variables['attributes']['class'][] = 'page-ayuda';
+    $variables['attributes']['class'][] = 'help-center-page';
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for tenant_faq.
+ *
+ * Indexa automáticamente en Qdrant cuando el contenido cambia.
+ */
+function jaraba_tenant_knowledge_tenant_faq_presave(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantFaq $entity */
+
+  // Actualizar hash de contenido.
+  $entity->updateContentHash();
+
+  // G114-2: Crear nueva revisión automática en cada guardado.
+  if (!$entity->isNew()) {
+    $entity->setNewRevision(TRUE);
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+    $entity->setRevisionUserId((int) \Drupal::currentUser()->id());
+  }
+
+  // Si está publicada y necesita regeneración, indexar en shutdown.
+  if ($entity->isPublished() && !$entity->isNew() && $entity->needsRegeneration()) {
+    drupal_register_shutdown_function(function () use ($entity) {
+      _jaraba_tenant_knowledge_index_faq($entity->id());
+    });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for tenant_faq.
+ *
+ * Indexa nuevas FAQs en Qdrant.
+ */
+function jaraba_tenant_knowledge_tenant_faq_insert(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantFaq $entity */
+
+  if ($entity->isPublished()) {
+    drupal_register_shutdown_function(function () use ($entity) {
+      _jaraba_tenant_knowledge_index_faq($entity->id());
+    });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for tenant_faq.
+ *
+ * Elimina la FAQ del índice Qdrant.
+ */
+function jaraba_tenant_knowledge_tenant_faq_delete(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantFaq $entity */
+
+  if (\Drupal::hasService('jaraba_tenant_knowledge.indexer')) {
+    $indexer = \Drupal::service('jaraba_tenant_knowledge.indexer');
+    $indexer->deleteFaq($entity);
+  }
+}
+
+/**
+ * Helper para indexar FAQ por ID.
+ *
+ * @param int|string $faqId
+ *   ID de la FAQ a indexar.
+ */
+function _jaraba_tenant_knowledge_index_faq(int|string $faqId): void {
+  if (!\Drupal::hasService('jaraba_tenant_knowledge.indexer')) {
+    return;
+  }
+
+  try {
+    $faq = \Drupal::entityTypeManager()
+      ->getStorage('tenant_faq')
+      ->load($faqId);
+
+    if ($faq && $faq->isPublished()) {
+      $indexer = \Drupal::service('jaraba_tenant_knowledge.indexer');
+      $indexer->indexFaq($faq);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_tenant_knowledge')
+      ->error('Error indexando FAQ @id: @error', [
+        '@id' => $faqId,
+        '@error' => $e->getMessage(),
+      ]);
+  }
+}
+
+// =============================================================================
+// HOOKS PARA TENANT POLICY
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for tenant_policy.
+ *
+ * Actualiza hash y versión, prepara indexación.
+ */
+function jaraba_tenant_knowledge_tenant_policy_presave(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantPolicy $entity */
+
+  // Incrementar versión si el contenido cambió.
+  if (!$entity->isNew() && $entity->needsRegeneration()) {
+    $entity->incrementVersion();
+  }
+
+  // Actualizar hash de contenido.
+  $entity->updateContentHash();
+
+  // G114-2: Crear nueva revisión automática en cada guardado.
+  if (!$entity->isNew()) {
+    $entity->setNewRevision(TRUE);
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+    $entity->setRevisionUserId((int) \Drupal::currentUser()->id());
+    // Copiar version_notes al revision log si existe.
+    $notes = $entity->get('version_notes')->value;
+    if (!empty($notes)) {
+      $entity->setRevisionLogMessage($notes);
+    }
+  }
+
+  // Si está publicada, indexar en shutdown.
+  if ($entity->isPublished() && !$entity->isNew() && $entity->needsRegeneration()) {
+    drupal_register_shutdown_function(function () use ($entity) {
+      _jaraba_tenant_knowledge_index_policy($entity->id());
+    });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for tenant_policy.
+ *
+ * Indexa nuevas políticas en Qdrant.
+ */
+function jaraba_tenant_knowledge_tenant_policy_insert(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantPolicy $entity */
+
+  if ($entity->isPublished()) {
+    drupal_register_shutdown_function(function () use ($entity) {
+      _jaraba_tenant_knowledge_index_policy($entity->id());
+    });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for tenant_policy.
+ *
+ * Elimina la política del índice Qdrant.
+ */
+function jaraba_tenant_knowledge_tenant_policy_delete(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantPolicy $entity */
+
+  if (\Drupal::hasService('jaraba_tenant_knowledge.indexer')) {
+    $indexer = \Drupal::service('jaraba_tenant_knowledge.indexer');
+    $indexer->deletePolicy($entity);
+  }
+}
+
+/**
+ * Helper para indexar política por ID.
+ *
+ * @param int|string $policyId
+ *   ID de la política a indexar.
+ */
+function _jaraba_tenant_knowledge_index_policy(int|string $policyId): void {
+  if (!\Drupal::hasService('jaraba_tenant_knowledge.indexer')) {
+    return;
+  }
+
+  try {
+    $policy = \Drupal::entityTypeManager()
+      ->getStorage('tenant_policy')
+      ->load($policyId);
+
+    if ($policy && $policy->isPublished()) {
+      $indexer = \Drupal::service('jaraba_tenant_knowledge.indexer');
+      $indexer->indexPolicy($policy);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_tenant_knowledge')
+      ->error('Error indexando política @id: @error', [
+        '@id' => $policyId,
+        '@error' => $e->getMessage(),
+      ]);
+  }
+}
+
+// =============================================================================
+// HOOKS PARA TENANT DOCUMENT
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for tenant_document.
+ *
+ * Elimina todos los chunks del documento de Qdrant.
+ */
+function jaraba_tenant_knowledge_tenant_document_delete(EntityInterface $entity): void {
+  /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantDocument $entity */
+
+  if (\Drupal::hasService('jaraba_tenant_knowledge.document_processor')) {
+    try {
+      // Nota: necesitaríamos un método para eliminar chunks por documento.
+      // Por ahora, logueamos la eliminación.
+      \Drupal::logger('jaraba_tenant_knowledge')
+        ->info('Documento @id eliminado. Los chunks se limpiarán en próxima sincronización.', [
+          '@id' => $entity->id(),
+        ]);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_tenant_knowledge')
+        ->warning('Error limpiando chunks del documento @id: @error', [
+          '@id' => $entity->id(),
+          '@error' => $e->getMessage(),
+        ]);
+    }
+  }
+}
