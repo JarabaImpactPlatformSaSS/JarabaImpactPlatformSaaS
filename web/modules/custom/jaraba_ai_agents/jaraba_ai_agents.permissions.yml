@@ -1,0 +1,12 @@
+administer ai agents:
+  title: 'Administer AI Agents'
+  description: 'Configure and manage AI agents for the platform.'
+  restrict access: true
+
+use ai agents:
+  title: 'Use AI Agents'
+  description: 'Execute AI agent actions.'
+
+manage tenant brand voice:
+  title: 'Manage Tenant Brand Voice'
+  description: 'Configure brand voice settings for tenant AI responses.'

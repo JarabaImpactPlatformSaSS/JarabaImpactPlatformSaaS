@@ -1,0 +1,35 @@
+# Workflow: Customer Complaint Response
+# Handles customer complaints with analysis and response generation
+id: customer_complaint_response
+label: 'Customer Complaint Response'
+description: 'Analyzes customer complaints and generates appropriate responses with follow-up.'
+status: true
+trigger:
+  type: manual
+  event: null
+conditions: []
+steps:
+  analyze_complaint:
+    agent_id: customer_experience
+    action: complaint_response
+    input_mapping:
+      complaint_text: complaint
+      customer_name: customer_name
+      order_reference: order_id
+    conditions: []
+    on_success: generate_followup
+    on_failure: abort
+    timeout_seconds: 30
+    retry_count: 1
+  generate_followup:
+    agent_id: customer_experience
+    action: followup_email
+    input_mapping:
+      customer_name: customer_name
+      interaction_summary: steps.analyze_complaint.response
+      next_action: follow_up_action
+    conditions: []
+    on_success: null
+    on_failure: abort
+    timeout_seconds: 30
+    retry_count: 1

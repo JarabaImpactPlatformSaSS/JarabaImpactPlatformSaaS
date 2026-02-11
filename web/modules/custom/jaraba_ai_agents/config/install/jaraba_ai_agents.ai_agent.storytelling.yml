@@ -1,0 +1,22 @@
+langcode: es
+status: true
+dependencies: {}
+id: storytelling
+label: 'Storytelling Agent'
+description: 'Crea narrativas de marca, historias de producto y contenido sobre la empresa.'
+service_id: jaraba_ai_agents.storytelling_agent
+vertical: _all
+autonomy_level: 2
+actions:
+  brand_story:
+    label: 'Historia de Marca'
+    description: 'Genera la narrativa fundacional de la marca.'
+    tier: premium
+  product_story:
+    label: 'Historia de Producto'
+    description: 'Crea la narrativa detrás de un producto.'
+    tier: balanced
+  about_page:
+    label: 'Página Sobre Nosotros'
+    description: 'Genera contenido para página About.'
+    tier: balanced

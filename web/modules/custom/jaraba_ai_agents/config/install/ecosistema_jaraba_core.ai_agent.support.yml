@@ -1,0 +1,16 @@
+# Config for Support Agent
+id: support
+label: 'Support Agent'
+description: 'Gestiona soporte al cliente: respuestas a FAQs, tickets de soporte y artículos de ayuda.'
+service_id: jaraba_ai_agents.support_agent
+icon: question-circle
+color: '#4caf50'
+weight: -4
+status: true
+autonomy_level: 2
+requires_approval: false
+max_daily_auto_actions: 50
+allowed_actions:
+  - faq_answer
+  - ticket_response
+  - help_article

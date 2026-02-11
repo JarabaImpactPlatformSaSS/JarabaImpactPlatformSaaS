@@ -1,0 +1,26 @@
+langcode: es
+status: true
+dependencies: {}
+id: smart_marketing
+label: 'Smart Marketing Agent'
+description: 'Marketing Agent con Model Routing inteligente que selecciona automáticamente el modelo óptimo según complejidad.'
+service_id: jaraba_ai_agents.smart_marketing_agent
+vertical: _all
+autonomy_level: 2
+actions:
+  social_post:
+    label: 'Crear Post para Redes Sociales'
+    description: 'Genera contenido optimizado para redes sociales.'
+    tier: auto
+  email_promo:
+    label: 'Email de Marketing'
+    description: 'Crea emails promocionales efectivos.'
+    tier: auto
+  ad_copy:
+    label: 'Copy para Anuncios'
+    description: 'Genera textos para campañas publicitarias.'
+    tier: auto
+  campaign_strategy:
+    label: 'Estrategia de Campaña'
+    description: 'Diseña estrategia completa de campaña marketing.'
+    tier: premium

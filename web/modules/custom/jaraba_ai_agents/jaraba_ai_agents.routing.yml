@@ -1,0 +1,147 @@
+jaraba_ai_agents.settings:
+  path: '/admin/config/ai/agents'
+  defaults:
+    _form: '\Drupal\jaraba_ai_agents\Form\AgentSettingsForm'
+    _title: 'AI Agents Settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.brand_voice:
+  path: '/admin/config/ai/brand-voice'
+  defaults:
+    _form: '\Drupal\jaraba_ai_agents\Form\BrandVoiceSettingsForm'
+    _title: 'Brand Voice Configuration'
+  requirements:
+    _permission: 'manage tenant brand voice'
+
+jaraba_ai_agents.dashboard:
+  path: '/admin/ai/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\DashboardController::dashboard'
+    _title: 'AI Observability Dashboard'
+  requirements:
+    _permission: 'administer ai agents'
+
+# REST API Routes
+jaraba_ai_agents.api.list:
+  path: '/api/v1/agents'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AgentApiController::listAgents'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.agent:
+  path: '/api/v1/agents/{agent_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AgentApiController::getAgent'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.actions:
+  path: '/api/v1/agents/{agent_id}/actions'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AgentApiController::getActions'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.execute:
+  path: '/api/v1/agents/{agent_id}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AgentApiController::execute'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+
+# Observability API Routes
+jaraba_ai_agents.api.observability.stats:
+  path: '/api/v1/ai/observability/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.cost_by_tier:
+  path: '/api/v1/ai/observability/cost-by-tier'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getCostByTier'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.usage_by_agent:
+  path: '/api/v1/ai/observability/usage-by-agent'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getUsageByAgent'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.savings:
+  path: '/api/v1/ai/observability/savings'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getSavings'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.dashboard:
+  path: '/api/v1/ai/observability/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getDashboard'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+# Workflow API Routes
+jaraba_ai_agents.api.workflows.list:
+  path: '/api/v1/ai/workflows'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\WorkflowApiController::listWorkflows'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.workflows.get:
+  path: '/api/v1/ai/workflows/{workflow_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\WorkflowApiController::getWorkflow'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.workflows.execute:
+  path: '/api/v1/ai/workflows/{workflow_id}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\WorkflowApiController::executeWorkflow'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+
+# Quality Evaluation API Routes
+jaraba_ai_agents.api.quality.evaluate:
+  path: '/api/v1/ai/quality/evaluate'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\QualityApiController::evaluate'
+  methods: [POST]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.quality.stats:
+  path: '/api/v1/ai/quality/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\QualityApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.quality.criteria:
+  path: '/api/v1/ai/quality/criteria'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\QualityApiController::getCriteria'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'

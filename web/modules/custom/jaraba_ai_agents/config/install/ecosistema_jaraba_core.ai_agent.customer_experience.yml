@@ -1,0 +1,16 @@
+# Config for Customer Experience Agent
+id: customer_experience
+label: 'Customer Experience Agent'
+description: 'Gestiona experiencia del cliente: respuestas a reseñas, emails de seguimiento y respuestas a quejas.'
+service_id: jaraba_ai_agents.customer_experience_agent
+icon: users
+color: '#00bcd4'
+weight: -6
+status: true
+autonomy_level: 1
+requires_approval: true
+max_daily_auto_actions: 20
+allowed_actions:
+  - review_response
+  - followup_email
+  - complaint_response

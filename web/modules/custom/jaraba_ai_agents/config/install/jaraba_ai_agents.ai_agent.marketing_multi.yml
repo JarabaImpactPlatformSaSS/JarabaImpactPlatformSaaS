@@ -1,0 +1,26 @@
+langcode: es
+status: true
+dependencies: {}
+id: marketing_multi
+label: 'Marketing Agent'
+description: 'Genera contenido de marketing: posts para redes sociales, emails promocionales y copy para anuncios.'
+service_id: jaraba_ai_agents.marketing_agent
+vertical: _all
+autonomy_level: 2
+actions:
+  social_post:
+    label: 'Crear Post para Redes Sociales'
+    description: 'Genera contenido optimizado para redes sociales.'
+    tier: fast
+  email_promo:
+    label: 'Email de Marketing'
+    description: 'Crea emails promocionales efectivos.'
+    tier: balanced
+  ad_copy:
+    label: 'Copy para Anuncios'
+    description: 'Genera textos para campañas publicitarias.'
+    tier: balanced
+  product_description:
+    label: 'Descripción de Producto'
+    description: 'Crea descripciones SEO-friendly para productos.'
+    tier: fast

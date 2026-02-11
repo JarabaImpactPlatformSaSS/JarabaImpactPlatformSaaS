@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * AI Observability Dashboard Template.
+ *
+ * Variables:
+ * - period: Current time period (day/week/month)
+ * - stats: General statistics
+ * - cost_by_tier: Cost breakdown by model tier
+ * - usage_by_agent: Usage breakdown by agent
+ * - savings: Model routing savings
+ * - quality_stats: Quality evaluation statistics
+ */
+#}
+
+<div class="ai-dashboard">
+  {# Period Selector #}
+  <div class="ai-dashboard__header">
+    <h1 class="ai-dashboard__title">{{ 'AI Observability Dashboard'|t }}</h1>
+    <div class="ai-dashboard__period-selector">
+      <a href="?period=day" class="ai-dashboard__period-btn {{ period == 'day' ? 'is-active' : '' }}">{{ 'Day'|t }}</a>
+      <a href="?period=week" class="ai-dashboard__period-btn {{ period == 'week' ? 'is-active' : '' }}">{{ 'Week'|t }}</a>
+      <a href="?period=month" class="ai-dashboard__period-btn {{ period == 'month' ? 'is-active' : '' }}">{{ 'Month'|t }}</a>
+    </div>
+  </div>
+
+  {# Stats Cards #}
+  <div class="ai-dashboard__stats-grid">
+    <div class="ai-dashboard__stat-card ai-dashboard__stat-card--primary">
+      <div class="ai-dashboard__stat-value">{{ stats.total_executions }}</div>
+      <div class="ai-dashboard__stat-label">{{ 'Total Executions'|t }}</div>
+    </div>
+    <div class="ai-dashboard__stat-card ai-dashboard__stat-card--success">
+      <div class="ai-dashboard__stat-value">{{ stats.success_rate }}%</div>
+      <div class="ai-dashboard__stat-label">{{ 'Success Rate'|t }}</div>
+    </div>
+    <div class="ai-dashboard__stat-card ai-dashboard__stat-card--info">
+      <div class="ai-dashboard__stat-value">${{ stats.total_cost|number_format(4) }}</div>
+      <div class="ai-dashboard__stat-label">{{ 'Total Cost'|t }}</div>
+    </div>
+    <div class="ai-dashboard__stat-card ai-dashboard__stat-card--warning">
+      <div class="ai-dashboard__stat-value">{{ stats.avg_duration_ms }}ms</div>
+      <div class="ai-dashboard__stat-label">{{ 'Avg Duration'|t }}</div>
+    </div>
+  </div>
+
+  {# Savings Card #}
+  {% if savings %}
+  <div class="ai-dashboard__savings-card">
+    <div class="ai-dashboard__savings-header">
+      <span class="ai-dashboard__savings-icon">💰</span>
+      <span class="ai-dashboard__savings-title">{{ 'Model Routing Savings'|t }}</span>
+    </div>
+    <div class="ai-dashboard__savings-content">
+      <div class="ai-dashboard__savings-stat">
+        <div class="ai-dashboard__savings-value ai-dashboard__savings-value--highlight">
+          {{ savings.savings_percent|number_format(1) }}%
+        </div>
+        <div class="ai-dashboard__savings-label">{{ 'Savings'|t }}</div>
+      </div>
+      <div class="ai-dashboard__savings-stat">
+        <div class="ai-dashboard__savings-value">${{ savings.savings|number_format(4) }}</div>
+        <div class="ai-dashboard__savings-label">{{ 'Saved'|t }}</div>
+      </div>
+      <div class="ai-dashboard__savings-stat">
+        <div class="ai-dashboard__savings-value">${{ savings.actual_cost|number_format(4) }}</div>
+        <div class="ai-dashboard__savings-label">{{ 'Actual'|t }}</div>
+      </div>
+      <div class="ai-dashboard__savings-stat">
+        <div class="ai-dashboard__savings-value">${{ savings.premium_equivalent|number_format(4) }}</div>
+        <div class="ai-dashboard__savings-label">{{ 'Premium Equiv.'|t }}</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="ai-dashboard__charts-grid">
+    {# Cost by Tier #}
+    <div class="ai-dashboard__chart-card">
+      <h3 class="ai-dashboard__chart-title">{{ 'Cost by Model Tier'|t }}</h3>
+      <div class="ai-dashboard__tier-bars">
+        {% set total_cost = cost_by_tier.fast + cost_by_tier.balanced + cost_by_tier.premium %}
+        {% if total_cost > 0 %}
+          <div class="ai-dashboard__tier-bar">
+            <div class="ai-dashboard__tier-label">
+              <span class="ai-dashboard__tier-name">⚡ Fast</span>
+              <span class="ai-dashboard__tier-cost">${{ cost_by_tier.fast|number_format(4) }}</span>
+            </div>
+            <div class="ai-dashboard__tier-progress">
+              <div class="ai-dashboard__tier-fill ai-dashboard__tier-fill--fast" style="width: {{ (cost_by_tier.fast / total_cost * 100)|number_format(0) }}%"></div>
+            </div>
+          </div>
+          <div class="ai-dashboard__tier-bar">
+            <div class="ai-dashboard__tier-label">
+              <span class="ai-dashboard__tier-name">⚖️ Balanced</span>
+              <span class="ai-dashboard__tier-cost">${{ cost_by_tier.balanced|number_format(4) }}</span>
+            </div>
+            <div class="ai-dashboard__tier-progress">
+              <div class="ai-dashboard__tier-fill ai-dashboard__tier-fill--balanced" style="width: {{ (cost_by_tier.balanced / total_cost * 100)|number_format(0) }}%"></div>
+            </div>
+          </div>
+          <div class="ai-dashboard__tier-bar">
+            <div class="ai-dashboard__tier-label">
+              <span class="ai-dashboard__tier-name">🚀 Premium</span>
+              <span class="ai-dashboard__tier-cost">${{ cost_by_tier.premium|number_format(4) }}</span>
+            </div>
+            <div class="ai-dashboard__tier-progress">
+              <div class="ai-dashboard__tier-fill ai-dashboard__tier-fill--premium" style="width: {{ (cost_by_tier.premium / total_cost * 100)|number_format(0) }}%"></div>
+            </div>
+          </div>
+        {% else %}
+          <p class="ai-dashboard__empty">{{ 'No data for this period'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Usage by Agent #}
+    <div class="ai-dashboard__chart-card">
+      <h3 class="ai-dashboard__chart-title">{{ 'Usage by Agent'|t }}</h3>
+      <div class="ai-dashboard__agent-table">
+        {% if usage_by_agent|length > 0 %}
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'Agent'|t }}</th>
+              <th>{{ 'Count'|t }}</th>
+              <th>{{ 'Cost'|t }}</th>
+              <th>{{ 'Success'|t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agent_id, data in usage_by_agent %}
+            <tr>
+              <td>{{ agent_id }}</td>
+              <td>{{ data.count }}</td>
+              <td>${{ data.cost|number_format(4) }}</td>
+              <td>
+                <span class="ai-dashboard__success-badge {{ data.success_rate >= 90 ? 'is-good' : (data.success_rate >= 70 ? 'is-warning' : 'is-bad') }}">
+                  {{ data.success_rate }}%
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p class="ai-dashboard__empty">{{ 'No agent usage data'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Quality Score #}
+  {% if quality_stats.avg_quality_score %}
+  <div class="ai-dashboard__quality-card">
+    <h3 class="ai-dashboard__chart-title">{{ 'Response Quality'|t }}</h3>
+    <div class="ai-dashboard__quality-score">
+      <div class="ai-dashboard__quality-gauge">
+        <svg viewBox="0 0 120 120" class="ai-dashboard__gauge-svg">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#e0e0e0" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--gauge-color, #4caf50)" stroke-width="10"
+                  stroke-dasharray="{{ quality_stats.avg_quality_score * 314 }} 314"
+                  stroke-linecap="round"
+                  transform="rotate(-90 60 60)"/>
+          <text x="60" y="60" text-anchor="middle" dominant-baseline="middle" class="ai-dashboard__gauge-text">
+            {{ (quality_stats.avg_quality_score * 100)|number_format(0) }}%
+          </text>
+        </svg>
+      </div>
+      <div class="ai-dashboard__quality-label">{{ 'Average Quality Score'|t }}</div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>

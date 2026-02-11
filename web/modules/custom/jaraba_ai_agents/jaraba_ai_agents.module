@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba AI Agents.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_ai_agents_help(string $route_name): string {
+  if ($route_name === 'help.page.jaraba_ai_agents') {
+    return '<p>' . t('Sistema de agentes IA orientados a acciones para verticales SaaS multi-tenant.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_ai_agents_theme(): array {
+  return [
+    'jaraba_ai_dashboard' => [
+      'variables' => [
+        'period' => 'month',
+        'stats' => [],
+        'cost_by_tier' => [],
+        'usage_by_agent' => [],
+        'savings' => [],
+        'quality_stats' => [],
+      ],
+      'template' => 'jaraba-ai-dashboard',
+    ],
+  ];
+}

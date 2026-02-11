@@ -1,0 +1,16 @@
+# Config for Storytelling Agent
+id: storytelling
+label: 'Storytelling Agent'
+description: 'Crea narrativas de marca: historias de marca, historias de producto y páginas sobre nosotros.'
+service_id: jaraba_ai_agents.storytelling_agent
+icon: book
+color: '#9c27b0'
+weight: -8
+status: true
+autonomy_level: 1
+requires_approval: true
+max_daily_auto_actions: 5
+allowed_actions:
+  - brand_story
+  - product_story
+  - about_page

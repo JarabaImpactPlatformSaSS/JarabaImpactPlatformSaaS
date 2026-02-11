@@ -1,0 +1,6 @@
+dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      # Carga los estilos del tema principal para el dashboard
+      /themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css: {}

@@ -1,0 +1,54 @@
+jaraba_ai_agents.brand_voice.*:
+  type: config_object
+  label: 'Brand Voice Configuration'
+  mapping:
+    archetype:
+      type: string
+      label: 'Brand Archetype'
+    personality:
+      type: mapping
+      label: 'Personality Traits'
+      mapping:
+        formality:
+          type: integer
+          label: 'Formality (1-10)'
+        warmth:
+          type: integer
+          label: 'Warmth (1-10)'
+        confidence:
+          type: integer
+          label: 'Confidence (1-10)'
+        humor:
+          type: integer
+          label: 'Humor (1-10)'
+        technical:
+          type: integer
+          label: 'Technical Level (1-10)'
+    examples:
+      type: sequence
+      label: 'Style Examples'
+      sequence:
+        type: mapping
+        mapping:
+          good:
+            type: string
+            label: 'Good Example'
+          bad:
+            type: string
+            label: 'Bad Example'
+          context:
+            type: string
+            label: 'Context/Situation'
+    forbidden_terms:
+      type: sequence
+      label: 'Forbidden Terms'
+      sequence:
+        type: string
+    preferred_terms:
+      type: sequence
+      label: 'Preferred Terms'
+      sequence:
+        type: string
+    custom_instructions:
+      type: string
+      label: 'Custom Instructions'

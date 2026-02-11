@@ -1,0 +1,12 @@
+name: 'Jaraba AI Agents'
+type: module
+description: 'Sistema de agentes IA orientados a acciones para verticales SaaS multi-tenant.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - drupal:ai
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+
+configure: jaraba_ai_agents.settings

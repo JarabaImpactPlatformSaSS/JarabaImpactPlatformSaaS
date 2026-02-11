@@ -1,0 +1,20 @@
+jaraba_ai_agents.admin:
+  title: 'AI Agents'
+  description: 'Configure AI agents and brand voice.'
+  route_name: jaraba_ai_agents.settings
+  parent: system.admin_config_services
+  weight: 10
+
+jaraba_ai_agents.brand_voice:
+  title: 'Brand Voice'
+  description: 'Configure your brand personality for AI responses.'
+  route_name: jaraba_ai_agents.brand_voice
+  parent: jaraba_ai_agents.admin
+  weight: 0
+
+jaraba_ai_agents.dashboard:
+  title: 'AI Dashboard'
+  description: 'Monitor AI usage, costs, and quality metrics.'
+  route_name: jaraba_ai_agents.dashboard
+  parent: system.admin_reports
+  weight: 20
