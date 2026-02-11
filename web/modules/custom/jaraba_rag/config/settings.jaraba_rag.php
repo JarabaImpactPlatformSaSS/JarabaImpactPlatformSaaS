@@ -26,8 +26,10 @@ $_jaraba_rag_available = TRUE;
 // ═══════════════════════════════════════════════════════════════════
 if ($is_lando) {
     // DESARROLLO LOCAL (Lando)
-    $config['jaraba_rag.settings']['vector_db.host'] = 'http://qdrant:6333';
-    $config['jaraba_rag.settings']['vector_db.api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
+    // IMPORTANTE: Usar keys anidadas ['vector_db']['host'], NO planas ['vector_db.host'].
+    // Drupal config overrides con dot-notation plana no se aplican a config YAML anidada.
+    $config['jaraba_rag.settings']['vector_db']['host'] = 'http://qdrant:6333';
+    $config['jaraba_rag.settings']['vector_db']['api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
     $config['jaraba_rag.settings']['environment'] = 'development';
 } else {
     // PRODUCCION (IONOS) - Variables de entorno recomendadas.
@@ -42,24 +44,23 @@ if ($is_lando) {
     if (empty($qdrant_url) || empty($qdrant_key)) {
         // Degradación graceful: RAG deshabilitado, Drupal sigue funcionando.
         $_jaraba_rag_available = FALSE;
-        $config['jaraba_rag.settings']['vector_db.host'] = '';
-        $config['jaraba_rag.settings']['vector_db.api_key'] = '';
+        $config['jaraba_rag.settings']['vector_db']['host'] = '';
+        $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
         $config['jaraba_rag.settings']['environment'] = 'production';
         $config['jaraba_rag.settings']['disabled'] = TRUE;
-        // Log mediante error_log ya que el logger de Drupal no está disponible aquí.
         error_log('JARABA RAG: QDRANT_CLUSTER_URL o QDRANT_API_KEY no configuradas. Features RAG/Qdrant deshabilitadas.');
     }
     elseif (!str_starts_with($qdrant_url, 'https://')) {
         $_jaraba_rag_available = FALSE;
-        $config['jaraba_rag.settings']['vector_db.host'] = '';
-        $config['jaraba_rag.settings']['vector_db.api_key'] = '';
+        $config['jaraba_rag.settings']['vector_db']['host'] = '';
+        $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
         $config['jaraba_rag.settings']['environment'] = 'production';
         $config['jaraba_rag.settings']['disabled'] = TRUE;
         error_log('JARABA RAG: QDRANT_CLUSTER_URL debe usar HTTPS en producción. Features RAG/Qdrant deshabilitadas.');
     }
     else {
-        $config['jaraba_rag.settings']['vector_db.host'] = $qdrant_url;
-        $config['jaraba_rag.settings']['vector_db.api_key'] = $qdrant_key;
+        $config['jaraba_rag.settings']['vector_db']['host'] = $qdrant_url;
+        $config['jaraba_rag.settings']['vector_db']['api_key'] = $qdrant_key;
         $config['jaraba_rag.settings']['environment'] = 'production';
         $config['jaraba_rag.settings']['disabled'] = FALSE;
     }
@@ -77,11 +78,11 @@ if (empty($openai_key) && !$is_lando) {
 }
 
 // Common configuration for both environments.
-$config['jaraba_rag.settings']['vector_db.collection'] = 'jaraba_kb';
-$config['jaraba_rag.settings']['vector_db.vector_dimensions'] = 1536;
-$config['jaraba_rag.settings']['embeddings.model'] = 'text-embedding-3-small';
-$config['jaraba_rag.settings']['embeddings.chunk_size'] = 500;
-$config['jaraba_rag.settings']['embeddings.chunk_overlap'] = 100;
+$config['jaraba_rag.settings']['vector_db']['collection'] = 'jaraba_kb';
+$config['jaraba_rag.settings']['vector_db']['dimensions'] = 1536;
+$config['jaraba_rag.settings']['embeddings']['model'] = 'text-embedding-3-small';
+$config['jaraba_rag.settings']['embeddings']['chunk_size'] = 500;
+$config['jaraba_rag.settings']['embeddings']['chunk_overlap'] = 100;
 
 // ═══════════════════════════════════════════════════════════════════
 // SECURITY CONFIGURATION
