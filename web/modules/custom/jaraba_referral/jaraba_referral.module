@@ -35,33 +35,33 @@ function jaraba_referral_help(string $route_name, RouteMatchInterface $route_mat
 /**
  * Implements hook_theme().
  */
-function jaraba_referral_theme(): array {
+function jaraba_referral_theme($existing, $type, $theme, $path): array {
   return [
-    'referral_dashboard' => [
+    'jaraba_referral_dashboard' => [
       'variables' => [
         'kpis' => [],
         'referrals' => [],
       ],
       'template' => 'referral-dashboard',
-      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_referral') . '/templates',
+      'path' => $path . '/templates',
     ],
-    'referral_my_code' => [
+    'jaraba_referral_my_code' => [
       'variables' => [
         'code' => NULL,
         'share_url' => NULL,
         'user_name' => NULL,
       ],
       'template' => 'referral-my-code',
-      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_referral') . '/templates',
+      'path' => $path . '/templates',
     ],
-    'referral_landing' => [
+    'jaraba_referral_landing' => [
       'variables' => [
         'code' => NULL,
         'valid' => FALSE,
         'referrer_name' => NULL,
       ],
       'template' => 'referral-landing',
-      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_referral') . '/templates',
+      'path' => $path . '/templates',
     ],
   ];
 }
@@ -72,10 +72,14 @@ function jaraba_referral_theme(): array {
 function jaraba_referral_preprocess_html(array &$variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName();
 
+  if (!$route_name) {
+    return;
+  }
+
   $route_classes = [
     'jaraba_referral.dashboard' => ['page--referidos', 'page--referido-dashboard'],
     'jaraba_referral.my_code' => ['page--referidos', 'page--referido-mi-codigo'],
-    'jaraba_referral.landing' => ['page--referido-landing'],
+    'jaraba_referral.landing' => ['page--referidos', 'page--referido-landing'],
   ];
 
   if (isset($route_classes[$route_name])) {

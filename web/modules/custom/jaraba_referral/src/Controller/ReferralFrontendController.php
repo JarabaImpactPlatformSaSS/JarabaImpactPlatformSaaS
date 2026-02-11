@@ -76,7 +76,7 @@ class ReferralFrontendController extends ControllerBase {
     ));
 
     return [
-      '#theme' => 'referral_dashboard',
+      '#theme' => 'jaraba_referral_dashboard',
       '#kpis' => [
         'total_referrals' => $total,
         'confirmed' => $confirmed,
@@ -109,7 +109,7 @@ class ReferralFrontendController extends ControllerBase {
     $share_url = $code ? $base_url . '/ref/' . $code : NULL;
 
     return [
-      '#theme' => 'referral_my_code',
+      '#theme' => 'jaraba_referral_my_code',
       '#code' => $code,
       '#share_url' => $share_url,
       '#user_name' => $this->currentUser->getDisplayName(),
@@ -138,7 +138,7 @@ class ReferralFrontendController extends ControllerBase {
     }
 
     return [
-      '#theme' => 'referral_landing',
+      '#theme' => 'jaraba_referral_landing',
       '#code' => $code,
       '#valid' => $valid,
       '#referrer_name' => $referrer_name,

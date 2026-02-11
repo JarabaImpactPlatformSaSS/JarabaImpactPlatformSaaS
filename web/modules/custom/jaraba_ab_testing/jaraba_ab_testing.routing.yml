@@ -42,6 +42,9 @@ jaraba_ab_testing.experiment_detail:
 
 # --- API REST ---
 
+# NOTE: assign/convert use 'access content' intentionally — these endpoints
+# must be accessible to anonymous visitors for client-side A/B tracking.
+# Variant assignment and conversion recording happen via browser JS (variant-tracker.js).
 jaraba_ab_testing.api.assign:
   path: '/api/v1/ab-testing/assign'
   defaults:

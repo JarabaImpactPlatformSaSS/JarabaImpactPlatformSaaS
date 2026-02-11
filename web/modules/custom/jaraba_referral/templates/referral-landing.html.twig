@@ -12,13 +12,13 @@
   {% if valid %}
     <div class="ej-referral-landing__hero">
       <h1 class="ej-referral-landing__title">
-        {% trans %}¡Has sido invitado!{% endtrans %}
+        {% trans %}You've been invited!{% endtrans %}
       </h1>
       <p class="ej-referral-landing__subtitle">
         {% if referrer_name %}
-          {% trans %}{{ referrer_name }} te invita a unirte a la plataforma.{% endtrans %}
+          {% trans %}{{ referrer_name }} invites you to join the platform.{% endtrans %}
         {% else %}
-          {% trans %}Un usuario te invita a unirte a la plataforma.{% endtrans %}
+          {% trans %}A user invites you to join the platform.{% endtrans %}
         {% endif %}
       </p>
     </div>
@@ -26,42 +26,42 @@
     <div class="ej-referral-landing__card">
       <div class="ej-referral-landing__badge">
         <span class="ej-referral-landing__badge-icon">🎁</span>
-        <span class="ej-referral-landing__badge-text">{% trans %}Código de Referido{% endtrans %}</span>
+        <span class="ej-referral-landing__badge-text">{% trans %}Referral Code{% endtrans %}</span>
       </div>
       <code class="ej-referral-landing__code">{{ code }}</code>
       <p class="ej-referral-landing__benefit">
-        {% trans %}Regístrate con este código y obtén beneficios exclusivos desde el primer día.{% endtrans %}
+        {% trans %}Register with this code and get exclusive benefits from day one.{% endtrans %}
       </p>
       <a href="/user/register?ref={{ code }}" class="ej-referral-landing__cta">
-        {% trans %}Registrarse Ahora{% endtrans %}
+        {% trans %}Register Now{% endtrans %}
       </a>
     </div>
 
     <div class="ej-referral-landing__steps">
-      <h2 class="ej-referral-landing__steps-title">{% trans %}¿Cómo funciona?{% endtrans %}</h2>
+      <h2 class="ej-referral-landing__steps-title">{% trans %}How does it work?{% endtrans %}</h2>
       <div class="ej-referral-landing__steps-grid">
         <div class="ej-referral-landing__step">
           <span class="ej-referral-landing__step-number">1</span>
-          <h3>{% trans %}Regístrate{% endtrans %}</h3>
-          <p>{% trans %}Crea tu cuenta usando el enlace de invitación.{% endtrans %}</p>
+          <h3>{% trans %}Sign Up{% endtrans %}</h3>
+          <p>{% trans %}Create your account using the invitation link.{% endtrans %}</p>
         </div>
         <div class="ej-referral-landing__step">
           <span class="ej-referral-landing__step-number">2</span>
-          <h3>{% trans %}Confirma{% endtrans %}</h3>
-          <p>{% trans %}Verifica tu cuenta para activar la recompensa.{% endtrans %}</p>
+          <h3>{% trans %}Confirm{% endtrans %}</h3>
+          <p>{% trans %}Verify your account to activate the reward.{% endtrans %}</p>
         </div>
         <div class="ej-referral-landing__step">
           <span class="ej-referral-landing__step-number">3</span>
-          <h3>{% trans %}Disfruta{% endtrans %}</h3>
-          <p>{% trans %}Ambos recibís beneficios exclusivos.{% endtrans %}</p>
+          <h3>{% trans %}Enjoy{% endtrans %}</h3>
+          <p>{% trans %}Both of you get exclusive benefits.{% endtrans %}</p>
         </div>
       </div>
     </div>
   {% else %}
     <div class="ej-referral-landing__invalid">
-      <h1>{% trans %}Código no válido{% endtrans %}</h1>
-      <p>{% trans %}El código de referido que has introducido no es válido o ya ha sido utilizado.{% endtrans %}</p>
-      <a href="/" class="ej-referral-landing__cta">{% trans %}Ir al Inicio{% endtrans %}</a>
+      <h1>{% trans %}Invalid Code{% endtrans %}</h1>
+      <p>{% trans %}The referral code you entered is not valid or has already been used.{% endtrans %}</p>
+      <a href="/" class="ej-referral-landing__cta">{% trans %}Go to Home{% endtrans %}</a>
     </div>
   {% endif %}
 

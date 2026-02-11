@@ -131,10 +131,10 @@ class VariantAssignmentService {
 
           return [
             'variant_id' => (int) $variant->id(),
-            'variant_name' => $variant->get('name')->value ?? '',
+            'variant_name' => $variant->get('label')->value ?? '',
             'is_control' => (bool) ($variant->get('is_control')->value ?? FALSE),
             'experiment_id' => (int) $experiment_id,
-            'experiment_name' => $experiment ? ($experiment->get('name')->value ?? '') : '',
+            'experiment_name' => $experiment ? ($experiment->get('label')->value ?? '') : '',
           ];
         }
       }
@@ -197,17 +197,17 @@ class VariantAssignmentService {
       $selected->save();
 
       $this->logger->info('Visitante asignado a variante @variant (ID: @vid) del experimento @experiment.', [
-        '@variant' => $selected->get('name')->value ?? '',
+        '@variant' => $selected->get('label')->value ?? '',
         '@vid' => $selected->id(),
         '@experiment' => $experiment_machine_name,
       ]);
 
       return [
         'variant_id' => (int) $selected->id(),
-        'variant_name' => $selected->get('name')->value ?? '',
+        'variant_name' => $selected->get('label')->value ?? '',
         'is_control' => (bool) ($selected->get('is_control')->value ?? FALSE),
         'experiment_id' => $experiment_id,
-        'experiment_name' => $experiment->get('name')->value ?? '',
+        'experiment_name' => $experiment->get('label')->value ?? '',
       ];
 
     }
@@ -275,7 +275,7 @@ class VariantAssignmentService {
       $variant->save();
 
       $this->logger->info('Conversión registrada: variante @variant (ID: @vid), experimento @name, revenue: @revenue EUR.', [
-        '@variant' => $variant->get('name')->value ?? '',
+        '@variant' => $variant->get('label')->value ?? '',
         '@vid' => $variant_id,
         '@name' => $experiment_machine_name,
         '@revenue' => number_format($revenue, 2),
@@ -322,7 +322,7 @@ class VariantAssignmentService {
     $total_weight = 0.0;
 
     foreach ($variants as $variant) {
-      $weight = (float) ($variant->get('traffic_percentage')->value ?? 0);
+      $weight = (float) ($variant->get('traffic_weight')->value ?? 0);
       // Asignar peso mínimo de 1 si es 0 para evitar variantes sin tráfico.
       if ($weight <= 0.0) {
         $weight = 1.0;
@@ -340,7 +340,7 @@ class VariantAssignmentService {
     }
 
     // Generar número aleatorio entre 0 y total_weight.
-    $random = (mt_rand() / mt_getrandmax()) * $total_weight;
+    $random = (random_int(0, PHP_INT_MAX) / PHP_INT_MAX) * $total_weight;
 
     // Seleccionar variante por acumulación de pesos.
     $cumulative = 0.0;

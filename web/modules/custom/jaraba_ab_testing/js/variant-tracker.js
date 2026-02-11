@@ -23,9 +23,9 @@
         var experimentName = el.getAttribute('data-ab-experiment');
         if (!experimentName) { return; }
 
-        fetch('/api/v1/ab-testing/assign', {
+        fetch(Drupal.url('api/v1/ab-testing/assign'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
           body: JSON.stringify({ experiment: experimentName })
         })
         .then(function (res) { return res.json(); })
@@ -46,9 +46,9 @@
           var experimentName = el.getAttribute('data-ab-convert');
           var revenue = parseFloat(el.getAttribute('data-ab-revenue') || '0');
 
-          fetch('/api/v1/ab-testing/convert', {
+          fetch(Drupal.url('api/v1/ab-testing/convert'), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             body: JSON.stringify({ experiment: experimentName, revenue: revenue })
           }).catch(function () {
             // Silently fail.

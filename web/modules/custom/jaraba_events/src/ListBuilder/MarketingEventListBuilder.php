@@ -37,24 +37,22 @@ class MarketingEventListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity): array {
     $type_labels = [
       'webinar' => $this->t('Webinar'),
-      'workshop' => $this->t('Taller'),
-      'conference' => $this->t('Conferencia'),
-      'networking' => $this->t('Networking'),
+      'taller' => $this->t('Taller'),
       'demo' => $this->t('Demo'),
-      'open_day' => $this->t('Jornada abierta'),
-      'other' => $this->t('Otro'),
+      'mentoria' => $this->t('Mentoría'),
+      'feria_virtual' => $this->t('Feria virtual'),
+      'networking' => $this->t('Networking'),
+      'conferencia' => $this->t('Conferencia'),
     ];
     $format_labels = [
       'online' => $this->t('Online'),
-      'presential' => $this->t('Presencial'),
-      'hybrid' => $this->t('Híbrido'),
+      'presencial' => $this->t('Presencial'),
+      'hibrido' => $this->t('Híbrido'),
     ];
     $status_labels = [
       'draft' => $this->t('Borrador'),
       'published' => $this->t('Publicado'),
-      'registration_open' => $this->t('Inscripción abierta'),
-      'registration_closed' => $this->t('Inscripción cerrada'),
-      'in_progress' => $this->t('En curso'),
+      'ongoing' => $this->t('En curso'),
       'completed' => $this->t('Completado'),
       'cancelled' => $this->t('Cancelado'),
     ];

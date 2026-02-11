@@ -45,7 +45,7 @@
       </span>
       <h1 class="ej-addons-detail__title">{{ addon.label }}</h1>
       <div class="ej-addons-detail__description">
-        {{ addon.description|raw }}
+        {{ addon.description|check_markup('basic_html') }}
       </div>
     </div>
   </section>

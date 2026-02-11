@@ -139,7 +139,7 @@
         <div class="ej-event-landing__description">
           <h2>{% trans %}About this event{% endtrans %}</h2>
           <div class="ej-event-landing__description-text">
-            {{ event.description|raw }}
+            {{ event.description|check_markup('basic_html') }}
           </div>
         </div>
       {% endif %}
@@ -149,7 +149,7 @@
         <div class="ej-event-landing__speakers">
           <h2>{% trans %}Speakers{% endtrans %}</h2>
           <div class="ej-event-landing__speakers-text">
-            {{ event.speakers|raw }}
+            {{ event.speakers|check_markup('basic_html') }}
           </div>
         </div>
       {% endif %}

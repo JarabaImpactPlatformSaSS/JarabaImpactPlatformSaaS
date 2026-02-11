@@ -32,10 +32,10 @@
 
 {# --- Mapa de etiquetas de estado --- #}
 {% set status_labels = {
-  'draft': 'Borrador'|t,
-  'active': 'Activa'|t,
-  'paused': 'Pausada'|t,
-  'completed': 'Completada'|t,
+  'draft': 'Draft'|t,
+  'active': 'Active'|t,
+  'paused': 'Paused'|t,
+  'completed': 'Completed'|t,
 } %}
 
 <div class="ej-ads-dashboard">
@@ -44,17 +44,17 @@
   {# HEADER                                                          #}
   {# =============================================================== #}
   <header class="ej-ads-dashboard__header">
-    <h1 class="ej-ads-dashboard__title">{% trans %}Dashboard de Publicidad{% endtrans %}</h1>
+    <h1 class="ej-ads-dashboard__title">{% trans %}Advertising Dashboard{% endtrans %}</h1>
     <p class="ej-ads-dashboard__subtitle">
-      {% trans %}Rendimiento consolidado de campañas publicitarias en todas las plataformas.{% endtrans %}
+      {% trans %}Consolidated advertising campaign performance across all platforms.{% endtrans %}
     </p>
   </header>
 
   {# =============================================================== #}
   {# KPI CARDS                                                       #}
   {# =============================================================== #}
-  <section class="ej-ads-kpi" aria-label="{% trans %}Indicadores clave de rendimiento{% endtrans %}">
-    <h2 class="visually-hidden">{% trans %}Métricas principales{% endtrans %}</h2>
+  <section class="ej-ads-kpi" aria-label="{% trans %}Key performance indicators{% endtrans %}">
+    <h2 class="visually-hidden">{% trans %}Key metrics{% endtrans %}</h2>
 
     <div class="ej-ads-kpi__grid">
 
@@ -65,7 +65,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">&euro;{{ metrics.total_spend|default(0)|number_format(2, ',', '.') }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}Gasto Total{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Total Spend{% endtrans %}</span>
         </div>
       </div>
 
@@ -76,7 +76,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ active_campaigns|default(0) }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}Campañas Activas{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Active Campaigns{% endtrans %}</span>
         </div>
       </div>
 
@@ -87,7 +87,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ metrics.total_impressions|default(0)|number_format(0, ',', '.') }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}Impresiones{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Impressions{% endtrans %}</span>
         </div>
       </div>
 
@@ -98,7 +98,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ metrics.total_clicks|default(0)|number_format(0, ',', '.') }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}Clics{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Clicks{% endtrans %}</span>
         </div>
       </div>
 
@@ -109,7 +109,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ metrics.total_conversions|default(0)|number_format(0, ',', '.') }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}Conversiones{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Conversions{% endtrans %}</span>
         </div>
       </div>
 
@@ -120,7 +120,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ metrics.avg_ctr|default(0)|number_format(2, ',', '.') }}%</span>
-          <span class="ej-ads-kpi__label">{% trans %}CTR Medio{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Average CTR{% endtrans %}</span>
         </div>
       </div>
 
@@ -131,7 +131,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">&euro;{{ metrics.avg_cpc|default(0)|number_format(4, ',', '.') }}</span>
-          <span class="ej-ads-kpi__label">{% trans %}CPC Medio{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Average CPC{% endtrans %}</span>
         </div>
       </div>
 
@@ -142,7 +142,7 @@
         </div>
         <div class="ej-ads-kpi__content">
           <span class="ej-ads-kpi__value">{{ metrics.avg_roas|default(0)|number_format(2, ',', '.') }}x</span>
-          <span class="ej-ads-kpi__label">{% trans %}ROAS Medio{% endtrans %}</span>
+          <span class="ej-ads-kpi__label">{% trans %}Average ROAS{% endtrans %}</span>
         </div>
       </div>
 
@@ -152,8 +152,8 @@
   {# =============================================================== #}
   {# PLATAFORMAS - DISTRIBUCIÓN DE GASTO                             #}
   {# =============================================================== #}
-  <section class="ej-ads-platforms" aria-label="{% trans %}Distribución por plataforma{% endtrans %}">
-    <h2 class="ej-ads-platforms__title">{% trans %}Gasto por Plataforma{% endtrans %}</h2>
+  <section class="ej-ads-platforms" aria-label="{% trans %}Distribution by platform{% endtrans %}">
+    <h2 class="ej-ads-platforms__title">{% trans %}Spend by Platform{% endtrans %}</h2>
 
     <div class="ej-ads-platforms__grid">
 
@@ -167,24 +167,24 @@
           <div class="ej-ads-platforms__card-body">
             <div class="ej-ads-platforms__metric ej-ads-platforms__metric--spend">
               <span class="ej-ads-platforms__metric-value">&euro;{{ platform_data.spend|default(0)|number_format(2, ',', '.') }}</span>
-              <span class="ej-ads-platforms__metric-label">{% trans %}Gasto{% endtrans %}</span>
+              <span class="ej-ads-platforms__metric-label">{% trans %}Spend{% endtrans %}</span>
             </div>
             <div class="ej-ads-platforms__metrics-row">
               <div class="ej-ads-platforms__metric">
                 <span class="ej-ads-platforms__metric-value">{{ platform_data.campaigns|default(0) }}</span>
-                <span class="ej-ads-platforms__metric-label">{% trans %}Campañas{% endtrans %}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Campaigns{% endtrans %}</span>
               </div>
               <div class="ej-ads-platforms__metric">
                 <span class="ej-ads-platforms__metric-value">{{ platform_data.impressions|default(0)|number_format(0, ',', '.') }}</span>
-                <span class="ej-ads-platforms__metric-label">{% trans %}Impresiones{% endtrans %}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Impressions{% endtrans %}</span>
               </div>
               <div class="ej-ads-platforms__metric">
                 <span class="ej-ads-platforms__metric-value">{{ platform_data.clicks|default(0)|number_format(0, ',', '.') }}</span>
-                <span class="ej-ads-platforms__metric-label">{% trans %}Clics{% endtrans %}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Clicks{% endtrans %}</span>
               </div>
               <div class="ej-ads-platforms__metric">
                 <span class="ej-ads-platforms__metric-value">{{ platform_data.conversions|default(0)|number_format(0, ',', '.') }}</span>
-                <span class="ej-ads-platforms__metric-label">{% trans %}Conversiones{% endtrans %}</span>
+                <span class="ej-ads-platforms__metric-label">{% trans %}Conversions{% endtrans %}</span>
               </div>
             </div>
           </div>
@@ -197,24 +197,24 @@
   {# =============================================================== #}
   {# TABLA DE CAMPAÑAS                                               #}
   {# =============================================================== #}
-  <section class="ej-ads-campaigns" aria-label="{% trans %}Listado de campañas{% endtrans %}">
-    <h2 class="ej-ads-campaigns__title">{% trans %}Campañas{% endtrans %}</h2>
+  <section class="ej-ads-campaigns" aria-label="{% trans %}Campaign list{% endtrans %}">
+    <h2 class="ej-ads-campaigns__title">{% trans %}Campaigns{% endtrans %}</h2>
 
     {% if campaigns|length > 0 %}
       <div class="ej-ads-campaigns__table-wrapper">
         <table class="ej-ads-campaigns__table">
           <thead>
             <tr>
-              <th>{% trans %}Nombre{% endtrans %}</th>
-              <th>{% trans %}Plataforma{% endtrans %}</th>
-              <th>{% trans %}Estado{% endtrans %}</th>
-              <th class="ej-ads-campaigns__th-number">{% trans %}Presupuesto{% endtrans %}</th>
-              <th class="ej-ads-campaigns__th-number">{% trans %}Gasto{% endtrans %}</th>
-              <th class="ej-ads-campaigns__th-number">{% trans %}Uso{% endtrans %}</th>
+              <th>{% trans %}Name{% endtrans %}</th>
+              <th>{% trans %}Platform{% endtrans %}</th>
+              <th>{% trans %}Status{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Budget{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Spend{% endtrans %}</th>
+              <th class="ej-ads-campaigns__th-number">{% trans %}Usage{% endtrans %}</th>
               <th class="ej-ads-campaigns__th-number">{% trans %}CTR{% endtrans %}</th>
               <th class="ej-ads-campaigns__th-number">{% trans %}CPC{% endtrans %}</th>
               <th class="ej-ads-campaigns__th-number">{% trans %}ROAS{% endtrans %}</th>
-              <th>{% trans %}Acciones{% endtrans %}</th>
+              <th>{% trans %}Actions{% endtrans %}</th>
             </tr>
           </thead>
           <tbody>
@@ -258,8 +258,8 @@
                   {{ campaign.roas|default(0)|number_format(2, ',', '.') }}x
                 </td>
                 <td>
-                  <a href="{{ campaign.edit_url }}" class="ej-ads-campaigns__edit-link" title="{% trans %}Editar campaña{% endtrans %}">
-                    {% trans %}Editar{% endtrans %}
+                  <a href="{{ campaign.edit_url }}" class="ej-ads-campaigns__edit-link" title="{% trans %}Edit campaign{% endtrans %}">
+                    {% trans %}Edit{% endtrans %}
                   </a>
                 </td>
               </tr>
@@ -269,9 +269,9 @@
       </div>
     {% else %}
       <div class="ej-ads-campaigns__empty">
-        <p>{% trans %}No hay campañas publicitarias configuradas.{% endtrans %}</p>
+        <p>{% trans %}No advertising campaigns configured.{% endtrans %}</p>
         <a href="/admin/content/ad-campaign/add" class="ej-ads-btn ej-ads-btn--primary">
-          {% trans %}Crear primera campaña{% endtrans %}
+          {% trans %}Create first campaign{% endtrans %}
         </a>
       </div>
     {% endif %}

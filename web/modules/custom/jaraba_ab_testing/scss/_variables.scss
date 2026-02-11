@@ -3,8 +3,6 @@
 // Patrón: var(--ej-*, $fallback) para inyección desde Drupal UI
 // =============================================================================
 
-@use 'sass:color';
-
 // --- Colores ---
 $ab-primary: #1976D2;
 $ab-success: #2E7D32;

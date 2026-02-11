@@ -257,7 +257,9 @@ class AddonApiController extends ControllerBase {
     }
 
     try {
-      $subscription = $this->subscriptionService->cancel($subscription_id);
+      // Verificar que la suscripción existe y pertenece al tenant ANTES de cancelar.
+      $sub_storage = $this->entityTypeManager()->getStorage('addon_subscription');
+      $subscription = $sub_storage->load($subscription_id);
 
       if (!$subscription) {
         return $this->errorResponse(
@@ -266,7 +268,6 @@ class AddonApiController extends ControllerBase {
         );
       }
 
-      // Verificar que la suscripción pertenece al tenant actual.
       $sub_tenant_id = $subscription->get('tenant_id')->target_id;
       if ((int) $sub_tenant_id !== $tenant_id) {
         return $this->errorResponse(
@@ -274,6 +275,9 @@ class AddonApiController extends ControllerBase {
           403
         );
       }
+
+      // Ahora sí cancelar — la ownership ya fue verificada.
+      $subscription = $this->subscriptionService->cancel($subscription_id);
 
       return new JsonResponse([
         'data' => $this->serializeSubscription($subscription),

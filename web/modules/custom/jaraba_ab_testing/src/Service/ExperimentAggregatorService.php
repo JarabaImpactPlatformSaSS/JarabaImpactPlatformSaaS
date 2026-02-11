@@ -3,6 +3,7 @@
 namespace Drupal\jaraba_ab_testing\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,6 +39,8 @@ use Psr\Log\LoggerInterface;
  * @package Drupal\jaraba_ab_testing\Service
  */
 class ExperimentAggregatorService {
+
+  use StringTranslationTrait;
 
   /**
    * Gestor de tipos de entidad de Drupal.
@@ -169,7 +172,7 @@ class ExperimentAggregatorService {
 
           $variants_data[] = [
             'id' => (int) $v->id(),
-            'name' => $v->get('name')->value ?? '',
+            'name' => $v->get('label')->value ?? '',
             'is_control' => (bool) ($v->get('is_control')->value ?? FALSE),
             'visitors' => $v_visitors,
             'conversions' => $v_conversions,
@@ -190,7 +193,9 @@ class ExperimentAggregatorService {
 
         // Calcular días en ejecución.
         $created_timestamp = $experiment->get('created')->value ?? 0;
-        $started_timestamp = $experiment->get('started_at')->value ?? $created_timestamp;
+        $started_timestamp = $experiment->get('start_date')->value
+          ? strtotime($experiment->get('start_date')->value)
+          : $created_timestamp;
         $days_running = 0;
         if ($started_timestamp > 0) {
           $days_running = (int) floor((time() - $started_timestamp) / 86400);
@@ -198,7 +203,7 @@ class ExperimentAggregatorService {
 
         $results[] = [
           'id' => $exp_id,
-          'name' => $experiment->get('name')->value ?? '',
+          'name' => $experiment->get('label')->value ?? '',
           'machine_name' => $experiment->get('machine_name')->value ?? '',
           'type' => $experiment->get('experiment_type')->value ?? '',
           'status' => $experiment->get('status')->value ?? 'draft',
@@ -285,13 +290,13 @@ class ExperimentAggregatorService {
 
         $variants_data[] = [
           'id' => (int) $v->id(),
-          'name' => $v->get('name')->value ?? '',
+          'name' => $v->get('label')->value ?? '',
           'is_control' => (bool) ($v->get('is_control')->value ?? FALSE),
           'visitors' => $v_visitors,
           'conversions' => $v_conversions,
           'conversion_rate' => round($v_rate, 2),
           'revenue' => round($v_revenue, 2),
-          'traffic_percentage' => (float) ($v->get('traffic_percentage')->value ?? 0),
+          'traffic_percentage' => (float) ($v->get('traffic_weight')->value ?? 0),
         ];
       }
 
@@ -316,7 +321,8 @@ class ExperimentAggregatorService {
         $baseline_rate = $total_conversions / $total_visitors;
       }
 
-      $mde = (float) ($experiment->get('minimum_detectable_effect')->value ?? 0.10);
+      // MDE not stored in entity; use 10% as reasonable default for sample size estimation.
+      $mde = 0.10;
       $required_sample = 0;
       $days_remaining = -1;
 
@@ -328,7 +334,8 @@ class ExperimentAggregatorService {
         );
 
         // Estimar tasa diaria.
-        $started_timestamp = $experiment->get('started_at')->value ?? $experiment->get('created')->value ?? 0;
+        $start_date_val = $experiment->get('start_date')->value;
+        $started_timestamp = $start_date_val ? strtotime($start_date_val) : ($experiment->get('created')->value ?? 0);
         $days_elapsed = 0;
         if ($started_timestamp > 0) {
           $days_elapsed = max(1, (int) floor((time() - $started_timestamp) / 86400));
@@ -345,13 +352,14 @@ class ExperimentAggregatorService {
 
       // Datos del experimento.
       $created_timestamp = $experiment->get('created')->value ?? 0;
-      $started_timestamp = $experiment->get('started_at')->value ?? $created_timestamp;
+      $start_date_val2 = $experiment->get('start_date')->value;
+      $started_timestamp = $start_date_val2 ? strtotime($start_date_val2) : $created_timestamp;
 
       $experiment_data = [
         'id' => $experiment_id,
-        'name' => $experiment->get('name')->value ?? '',
+        'name' => $experiment->get('label')->value ?? '',
         'machine_name' => $experiment->get('machine_name')->value ?? '',
-        'description' => $experiment->get('description')->value ?? '',
+        'description' => $experiment->get('hypothesis')->value ?? '',
         'type' => $experiment->get('experiment_type')->value ?? '',
         'status' => $experiment->get('status')->value ?? 'draft',
         'confidence_threshold' => $confidence_threshold,
@@ -369,12 +377,12 @@ class ExperimentAggregatorService {
       // Construir funnel simplificado.
       $funnel = [
         [
-          'label' => (string) t('Visitantes'),
+          'label' => (string) $this->t('Visitors'),
           'count' => $total_visitors,
           'rate' => 100.0,
         ],
         [
-          'label' => (string) t('Conversiones'),
+          'label' => (string) $this->t('Conversions'),
           'count' => $total_conversions,
           'rate' => $total_visitors > 0 ? round(($total_conversions / $total_visitors) * 100.0, 1) : 0.0,
         ],
@@ -502,7 +510,7 @@ class ExperimentAggregatorService {
 
           $variants_data[] = [
             'id' => (int) $v->id(),
-            'name' => $v->get('name')->value ?? '',
+            'name' => $v->get('label')->value ?? '',
             'is_control' => (bool) ($v->get('is_control')->value ?? FALSE),
             'visitors' => $v_visitors,
             'conversions' => $v_conversions,
@@ -526,8 +534,10 @@ class ExperimentAggregatorService {
 
         // Calcular días en ejecución para los completados.
         if ($status === 'completed') {
-          $started = $experiment->get('started_at')->value ?? $experiment->get('created')->value ?? 0;
-          $completed = $experiment->get('completed_at')->value ?? time();
+          $sd = $experiment->get('start_date')->value;
+          $started = $sd ? strtotime($sd) : ($experiment->get('created')->value ?? 0);
+          $ed = $experiment->get('end_date')->value;
+          $completed = $ed ? strtotime($ed) : time();
           if ($started > 0) {
             $days = (int) floor(($completed - $started) / 86400);
             $days_to_significance[] = max(0, $days);
@@ -619,13 +629,13 @@ class ExperimentAggregatorService {
       // 3. Establecer ganador y completar.
       $experiment->set('winner_variant', $variant_id);
       $experiment->set('status', 'completed');
-      $experiment->set('completed_at', time());
+      $experiment->set('end_date', date('Y-m-d\TH:i:s'));
       $experiment->save();
 
       $this->logger->info('Ganador declarado: variante "@vname" (ID: @vid) para experimento "@ename" (ID: @eid). Experimento completado.', [
-        '@vname' => $variant->get('name')->value ?? '',
+        '@vname' => $variant->get('label')->value ?? '',
         '@vid' => $variant_id,
-        '@ename' => $experiment->get('name')->value ?? '',
+        '@ename' => $experiment->get('label')->value ?? '',
         '@eid' => $experiment_id,
       ]);
 

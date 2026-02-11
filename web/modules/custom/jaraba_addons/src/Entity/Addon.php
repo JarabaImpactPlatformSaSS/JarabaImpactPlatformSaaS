@@ -169,6 +169,7 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
     // --- Tenant ---
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
+      ->setRequired(TRUE)
       ->setSetting('target_type', 'tenant')
       ->setDisplayOptions('form', ['weight' => 25])
       ->setDisplayConfigurable('form', TRUE)

@@ -35,6 +35,8 @@
           }, { threshold: 0.1 });
 
           observer.observe(card);
+        } else {
+          card.classList.add('ej-events-card--visible');
         }
       });
     }
