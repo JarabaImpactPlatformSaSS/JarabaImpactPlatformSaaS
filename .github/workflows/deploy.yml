@@ -168,12 +168,6 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            # Habilitar RewriteBase / (necesario en IONOS shared hosting)
-            # IMPORTANT: Only uncomment "# RewriteBase /" (exact), NOT "# RewriteBase /drupal"
-            # The previous sed pattern matched both lines, leaving RewriteBase /drupal active
-            # which caused Apache 500 on all non-homepage URLs.
-            sed -i 's|^  # RewriteBase /$|  RewriteBase /|' web/.htaccess
-
             # IONOS: Check if PHP handler needs to be configured
             # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
             # If needed, AddHandler will be added in a follow-up commit
@@ -191,6 +185,23 @@ jobs:
 
             # Instalar dependencias
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
+          EOF
+
+      - name: Fix .htaccess for IONOS (after composer scaffold)
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+
+            # composer install runs drupal-scaffold which OVERWRITES web/.htaccess
+            # with the default from drupal/core. We must apply our fix AFTER composer.
+            #
+            # Only uncomment "# RewriteBase /" (exact line), NOT "# RewriteBase /drupal"
+            # IONOS shared hosting requires RewriteBase / for clean URLs to work.
+            sed -i 's|^  # RewriteBase /$|  RewriteBase /|' web/.htaccess
+
+            # Verify the fix was applied
+            echo "RewriteBase lines after fix:"
+            grep -n 'RewriteBase' web/.htaccess
           EOF
 
       - name: Setup PHP CLI path for drush subprocesses
