@@ -30,7 +30,12 @@ if ($is_lando) {
     $config['jaraba_rag.settings']['vector_db.api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
     $config['jaraba_rag.settings']['environment'] = 'development';
 } else {
-    // PRODUCCION (IONOS) - Variables de entorno recomendadas
+    // PRODUCCION (IONOS) - Variables de entorno recomendadas.
+    // NOTA: En IONOS shared hosting, las env vars no están disponibles.
+    // El CI/CD (deploy.yml) escribe $config overrides directamente en
+    // settings.local.php (que se incluye DESPUÉS de este archivo).
+    // Esos overrides prevalecen sobre los valores de aquí ("last write wins").
+    // Para actualizar credenciales: ejecutar deploy con force_regenerate_settings=true.
     $qdrant_url = getenv('QDRANT_CLUSTER_URL');
     $qdrant_key = getenv('QDRANT_API_KEY');
 

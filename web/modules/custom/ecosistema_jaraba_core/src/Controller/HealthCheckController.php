@@ -139,25 +139,72 @@ class HealthCheckController extends ControllerBase
 
     /**
      * Verifica conectividad con Qdrant (no crítico).
+     *
+     * Soporta Qdrant Cloud (HTTPS + Api-Key) leyendo config de Drupal.
+     * Si el servicio jaraba_rag.qdrant_client existe, usa su método ping().
+     * Fallback: file_get_contents con stream context HTTPS.
      */
     protected function checkQdrant(): array
     {
         try {
-            $qdrantHost = getenv('QDRANT_HOST') ?: 'localhost';
-            $qdrantPort = getenv('QDRANT_PORT') ?: '6333';
-            $url = "http://{$qdrantHost}:{$qdrantPort}/healthz";
+            $config = \Drupal::config('jaraba_rag.settings');
+            $disabled = $config->get('disabled');
+
+            if ($disabled) {
+                return [
+                    'status' => 'skipped',
+                    'message' => 'RAG/Qdrant disabled by configuration',
+                ];
+            }
+
+            $host = $config->get('vector_db.host');
+            if (empty($host)) {
+                return [
+                    'status' => 'skipped',
+                    'message' => 'Qdrant host not configured',
+                ];
+            }
+
+            $start = microtime(TRUE);
+
+            // Try using the QdrantDirectClient service if available.
+            if (\Drupal::hasService('jaraba_rag.qdrant_client')) {
+                /** @var \Drupal\jaraba_rag\Client\QdrantDirectClient $client */
+                $client = \Drupal::service('jaraba_rag.qdrant_client');
+                $ok = $client->ping();
+                $latency = round((microtime(TRUE) - $start) * 1000, 2);
+
+                return [
+                    'status' => $ok ? 'ok' : 'warning',
+                    'latency_ms' => $latency,
+                ];
+            }
+
+            // Fallback: direct HTTPS request with Api-Key header.
+            $url = rtrim($host, '/') . '/';
+            $apiKey = $config->get('vector_db.api_key') ?: '';
+            $headers = "Content-Type: application/json\r\n";
+            if (!empty($apiKey)) {
+                $headers .= "Api-Key: {$apiKey}\r\n";
+            }
 
             $context = stream_context_create([
                 'http' => [
-                    'timeout' => 2,
+                    'timeout' => 3,
                     'method' => 'GET',
+                    'header' => $headers,
+                ],
+                'ssl' => [
+                    'verify_peer' => TRUE,
                 ],
             ]);
 
             $result = @file_get_contents($url, FALSE, $context);
+            $latency = round((microtime(TRUE) - $start) * 1000, 2);
 
             return [
                 'status' => ($result !== FALSE) ? 'ok' : 'warning',
+                'latency_ms' => $latency,
             ];
         } catch (\Exception $e) {
             return [

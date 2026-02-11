@@ -1,0 +1,8 @@
+services:
+  jaraba_rag.commands:
+    class: Drupal\jaraba_rag\Commands\RagCommands
+    arguments:
+      - '@jaraba_rag.qdrant_client'
+      - '@config.factory'
+    tags:
+      - { name: drush.command }
