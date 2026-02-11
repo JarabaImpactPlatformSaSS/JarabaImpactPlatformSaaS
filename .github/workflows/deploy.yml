@@ -171,6 +171,11 @@ jobs:
             # Habilitar RewriteBase (necesario en IONOS shared hosting)
             sed -i 's/# RewriteBase \//RewriteBase \//' web/.htaccess
 
+            # IONOS: Check if PHP handler needs to be configured
+            # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
+            # If needed, AddHandler will be added in a follow-up commit
+            echo "ℹ️ Web PHP version will be checked by diagnostic step after deploy"
+
             # Restaurar permisos seguros
             chmod 555 web/sites/default
             chmod 444 web/sites/default/settings.php
@@ -194,6 +199,24 @@ jobs:
             ln -sf /usr/bin/php8.4-cli ~/bin_cli/php
             echo "✅ PHP CLI symlink: $(~/bin_cli/php -r 'echo php_sapi_name();')"
           EOF
+
+      - name: Configure web PHP (error logging + memory)
+        run: |
+          REMOTE_USER="${{ env.IONOS_USER }}"
+          REMOTE_HOST="${{ env.IONOS_HOST }}"
+          ssh "${REMOTE_USER}@${REMOTE_HOST}" << 'EOFPHP'
+            cd ~/JarabaImpactPlatformSaaS
+            SITE_ROOT=$(pwd)
+
+            # Create .user.ini for web PHP (FastCGI/CGI respects this)
+            printf 'memory_limit = 512M\nmax_execution_time = 300\nlog_errors = On\nerror_log = %s/php_web_errors.log\ndisplay_errors = Off\nerror_reporting = E_ALL\n' "$SITE_ROOT" > web/.user.ini
+            echo "✅ web/.user.ini created with memory_limit=512M and error logging"
+            cat web/.user.ini
+
+            # Ensure error log file exists and is writable
+            touch "${SITE_ROOT}/php_web_errors.log"
+            chmod 666 "${SITE_ROOT}/php_web_errors.log"
+          EOFPHP
 
       - name: Pre-deploy diagnostics
         continue-on-error: true
@@ -251,6 +274,124 @@ jobs:
             /usr/bin/php8.4-cli vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1
           EOF
 
+      - name: Diagnose web PHP configuration
+        continue-on-error: true
+        run: |
+          REMOTE_USER="${{ env.IONOS_USER }}"
+          REMOTE_HOST="${{ env.IONOS_HOST }}"
+          DIAG_FILE="_diag_$(openssl rand -hex 8).php"
+
+          # Create diagnostic PHP page on IONOS via scp (avoids heredoc nesting issues)
+          cat > /tmp/diag_page.php << 'LOCALEOF'
+          <?php
+          header('Content-Type: application/json');
+          echo json_encode([
+            'php_version' => phpversion(),
+            'sapi' => php_sapi_name(),
+            'memory_limit' => ini_get('memory_limit'),
+            'max_execution_time' => ini_get('max_execution_time'),
+            'error_log' => ini_get('error_log'),
+            'display_errors' => ini_get('display_errors'),
+            'loaded_extensions' => get_loaded_extensions(),
+            'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? 'unknown',
+            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'user_ini_filename' => ini_get('user_ini.filename'),
+          ], JSON_PRETTY_PRINT);
+          LOCALEOF
+
+          cat > /tmp/boot_test.php << 'LOCALEOF2'
+          <?php
+          header('Content-Type: text/plain');
+          error_reporting(E_ALL);
+          ini_set('display_errors', '1');
+          echo "=== Drupal Web Bootstrap Test ===\n";
+          echo "PHP: " . phpversion() . " (" . php_sapi_name() . ")\n";
+          echo "Memory: " . ini_get('memory_limit') . "\n\n";
+          try {
+            $autoloader = require_once __DIR__ . '/../vendor/autoload.php';
+            echo "1. Autoloader: OK\n";
+          } catch (\Throwable $e) {
+            echo "1. Autoloader FAILED: " . $e->getMessage() . "\n";
+            exit(1);
+          }
+          try {
+            $kernel = new \Drupal\Core\DrupalKernel('prod', $autoloader);
+            echo "2. DrupalKernel created: OK\n";
+          } catch (\Throwable $e) {
+            echo "2. DrupalKernel FAILED: " . $e->getMessage() . "\n";
+            exit(1);
+          }
+          try {
+            $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+            $kernel->boot();
+            echo "3. Kernel boot: OK\n";
+            echo "4. Drupal version: " . \Drupal::VERSION . "\n";
+            echo "5. Database: " . (\Drupal::database()->getConnectionOptions()['database'] ?? 'unknown') . "\n";
+            echo "\nAll checks passed!\n";
+          } catch (\Throwable $e) {
+            echo "3. Boot FAILED: " . get_class($e) . ": " . $e->getMessage() . "\n";
+            echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+            echo "Trace:\n" . $e->getTraceAsString() . "\n";
+          }
+          LOCALEOF2
+
+          # Upload both diagnostic files
+          scp /tmp/diag_page.php "${REMOTE_USER}@${REMOTE_HOST}:~/JarabaImpactPlatformSaaS/web/${DIAG_FILE}"
+          scp /tmp/boot_test.php "${REMOTE_USER}@${REMOTE_HOST}:~/JarabaImpactPlatformSaaS/web/_boot_test.php"
+
+          echo "=== Web PHP Diagnostic (via HTTPS) ==="
+          sleep 3
+          DIAG_RESULT=$(curl -sf "https://plataformadeecosistemas.com/${DIAG_FILE}" 2>&1 || echo "CURL_FAILED")
+          echo "$DIAG_RESULT"
+
+          # Extract key info
+          WEB_PHP=$(echo "$DIAG_RESULT" | jq -r '.php_version' 2>/dev/null || echo "unknown")
+          WEB_SAPI=$(echo "$DIAG_RESULT" | jq -r '.sapi' 2>/dev/null || echo "unknown")
+          WEB_MEM=$(echo "$DIAG_RESULT" | jq -r '.memory_limit' 2>/dev/null || echo "unknown")
+          echo ""
+          echo "=== SUMMARY ==="
+          echo "Web PHP version: $WEB_PHP"
+          echo "Web PHP SAPI: $WEB_SAPI"
+          echo "Web memory_limit: $WEB_MEM"
+
+          # Compare with CLI
+          CLI_PHP=$(ssh "${REMOTE_USER}@${REMOTE_HOST}" "/usr/bin/php8.4-cli -r 'echo phpversion();'" 2>/dev/null)
+          echo "CLI PHP version: $CLI_PHP"
+          echo ""
+
+          if [ "$WEB_PHP" != "$CLI_PHP" ] && [ "$WEB_PHP" != "unknown" ]; then
+            echo "⚠️ VERSION MISMATCH: Web PHP ($WEB_PHP) ≠ CLI PHP ($CLI_PHP)"
+            echo "This is likely the root cause of the 500 errors!"
+            echo "Fix: Add 'AddHandler application/x-httpd-php84 .php' to .htaccess"
+          elif [ "$WEB_PHP" = "unknown" ]; then
+            echo "⚠️ Could not reach diagnostic page — web PHP may be completely broken"
+            echo "Checking response headers..."
+            curl -sI "https://plataformadeecosistemas.com/${DIAG_FILE}" 2>&1
+          else
+            echo "✅ Web and CLI PHP versions match: $WEB_PHP"
+          fi
+
+          echo ""
+          echo "=== Drupal Bootstrap Test (via HTTPS) ==="
+          sleep 2
+          BOOT_RESULT=$(curl -sf "https://plataformadeecosistemas.com/_boot_test.php" 2>&1 || echo "BOOT_TEST_FAILED")
+          echo "$BOOT_RESULT"
+
+          if echo "$BOOT_RESULT" | grep -q "BOOT_TEST_FAILED"; then
+            echo ""
+            echo "⚠️ Boot test page also failed. Checking headers..."
+            curl -sI "https://plataformadeecosistemas.com/_boot_test.php" 2>&1
+          fi
+
+          # Check PHP error log
+          echo ""
+          echo "=== PHP Web Error Log (last 50 lines) ==="
+          ssh "${REMOTE_USER}@${REMOTE_HOST}" "tail -50 ~/JarabaImpactPlatformSaaS/php_web_errors.log 2>/dev/null || echo 'No web error log yet'"
+
+          # Cleanup diagnostic files
+          ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -f ~/JarabaImpactPlatformSaaS/web/${DIAG_FILE} ~/JarabaImpactPlatformSaaS/web/_boot_test.php"
+          echo "✅ Diagnostic files cleaned up"
+
       - name: Smoke test - Health endpoint
         run: |
           echo "⏳ Esperando 10s para estabilización post-deploy..."
@@ -258,7 +399,8 @@ jobs:
 
           echo "🔍 Verificando /health endpoint..."
           for i in 1 2 3; do
-            RESPONSE=$(curl -sf https://plataformadeecosistemas.com/health 2>/dev/null || echo '{}')
+            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" https://plataformadeecosistemas.com/health 2>/dev/null || echo '000')
+            RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
             STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
 
             if [ "$STATUS" = "ok" ]; then
@@ -267,12 +409,22 @@ jobs:
               exit 0
             fi
 
-            echo "⚠️ Intento $i/3: status=$STATUS. Reintentando en 5s..."
+            echo "⚠️ Intento $i/3: HTTP=$HTTP_CODE status=$STATUS. Reintentando en 5s..."
             sleep 5
           done
 
           echo "❌ Health check failed after 3 attempts!"
-          echo "Response: $RESPONSE"
+          echo "Last HTTP code: $HTTP_CODE"
+          echo "Last response: $RESPONSE"
+
+          # Show full response headers for debugging
+          echo ""
+          echo "=== Full response headers for /health ==="
+          curl -sI https://plataformadeecosistemas.com/health 2>&1
+          echo ""
+          echo "=== Full response headers for / ==="
+          curl -sI https://plataformadeecosistemas.com/ 2>&1
+
           exit 1
 
       - name: Smoke test - Homepage
@@ -297,25 +449,47 @@ jobs:
             echo "=== Recent Watchdog Errors ==="
             /usr/bin/php8.4-cli vendor/bin/drush.php watchdog:show --count=20 --severity=3 2>&1 || echo "No watchdog available"
             echo ""
-            echo "=== PHP Error Log (last 50 lines) ==="
+            echo "=== PHP Web Error Log (our .user.ini log) ==="
+            if [ -f php_web_errors.log ]; then
+              echo "--- php_web_errors.log (last 80 lines) ---"
+              tail -80 php_web_errors.log
+            else
+              echo "No php_web_errors.log found"
+            fi
+            echo ""
+            echo "=== Other PHP Error Logs ==="
             for LOG_PATH in ~/logs/error.log ~/logs/php_error.log /tmp/php_errors.log; do
               if [ -f "$LOG_PATH" ]; then
-                echo "--- $LOG_PATH ---"
-                tail -50 "$LOG_PATH"
+                echo "--- $LOG_PATH (last 30 lines) ---"
+                tail -30 "$LOG_PATH"
               fi
             done
             echo ""
-            echo "=== Apache Error Log (last 30 lines) ==="
+            echo "=== Find any PHP error log files ==="
+            find ~ -name "*.log" -newer web/.user.ini -size +0 2>/dev/null | head -20 || echo "No recent log files"
+            echo ""
+            echo "=== Apache Error Log ==="
             tail -30 ~/logs/error_log 2>/dev/null || echo "No Apache error log at ~/logs/error_log"
             echo ""
-            echo "=== Test Drupal bootstrap with PHP errors visible ==="
-            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL -r "
-              chdir('web');
-              require_once 'sites/default/settings.php';
-              echo 'Settings loaded OK\n';
-              require_once 'core/includes/bootstrap.inc';
-              echo 'Bootstrap include OK\n';
-            " 2>&1
+            echo "=== Web PHP version check ==="
+            # Check all PHP binaries available
+            echo "All PHP binaries:"
+            ls -la /usr/bin/php* 2>/dev/null
+            echo ""
+            echo "Default 'php' resolves to:"
+            which php 2>/dev/null && php -v 2>/dev/null | head -1
+            echo ""
+            echo "CLI PHP 8.4:"
+            /usr/bin/php8.4-cli -v 2>/dev/null | head -1
+            echo ""
+            echo "=== Check .user.ini is in place ==="
+            cat web/.user.ini 2>/dev/null || echo ".user.ini not found!"
+            echo ""
+            echo "=== Compiled service container ==="
+            ls -la web/sites/default/files/php/ 2>/dev/null || echo "No compiled container found"
+            echo ""
+            echo "=== Check Drupal core index.php ==="
+            head -20 web/index.php 2>/dev/null
             echo ""
             echo "=== Enabled Custom Modules ==="
             /usr/bin/php8.4-cli vendor/bin/drush.php pm-list --status=enabled --type=module 2>&1 | grep -i "custom\|jaraba\|ecosistema" || echo "pm-list failed"

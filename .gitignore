@@ -19,7 +19,8 @@ web/sites/simpletest
 
 # Ignore PHP dependency manager
 vendor
-composer.lock
+# BE-17: composer.lock MUST be tracked for reproducible builds.
+# composer.lock
 
 # ----- DRUPAL INSTALATION -----
 # Uncomment if you want to track core
@@ -56,6 +57,8 @@ Desktop.ini
 .cache
 .sass-cache
 *.css.map
+# PERF-03: Minified JS build output (regenerated with npm run build:js)
+web/themes/custom/ecosistema_jaraba_theme/js/dist/
 
 # ----- TESTING -----
 web/sites/simpletest
@@ -70,6 +73,9 @@ backups/
 # ----- LOGS -----
 *.log
 logs/
+
+# ----- PHP CONFIG (generated per-environment) -----
+web/.user.ini
 
 # ----- SASS NODE MODULES (installed by npx sass) -----
 web/modules/custom/ecosistema_jaraba_core/node_modules
