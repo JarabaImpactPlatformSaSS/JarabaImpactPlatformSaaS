@@ -106,8 +106,23 @@ jobs:
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
+
+            # Desbloquear permisos para git (runbook §Deployment)
+            chmod 755 web/sites/default
+            chmod 644 web/sites/default/settings.php
+
+            # Pull código
             git fetch origin
             git reset --hard origin/main
+
+            # Habilitar RewriteBase (necesario en IONOS shared hosting)
+            sed -i 's/# RewriteBase \//RewriteBase \//' web/.htaccess
+
+            # Restaurar permisos seguros
+            chmod 555 web/sites/default
+            chmod 444 web/sites/default/settings.php
+
+            # Instalar y actualizar
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
             /usr/bin/php8.4-cli vendor/bin/drush.php updatedb -y
             /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y || true
