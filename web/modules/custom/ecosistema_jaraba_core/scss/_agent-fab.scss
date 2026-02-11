@@ -1,0 +1,846 @@
+/**
+ * @file
+ * Styles for Employability AI Agent FAB.
+ * Uses injectable CSS variables per workflow.
+ */
+
+@use 'variables' as *;
+
+// =============================================================================
+// FAB Container
+// =============================================================================
+
+.agent-fab-container {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 9999 !important;
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+}
+
+// =============================================================================
+// FAB Trigger Button
+// =============================================================================
+
+.agent-fab-trigger {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--ej-shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    .fab-icon {
+        font-size: 28px;
+        line-height: 1;
+    }
+
+    // Pulse animation
+    .fab-pulse {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: inherit;
+        opacity: 0.4;
+        animation: fabPulse 2s infinite;
+        pointer-events: none;
+    }
+}
+
+@keyframes fabPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+// =============================================================================
+// Agent Panel
+// =============================================================================
+
+.agent-panel {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    width: 360px;
+    max-height: 520px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: var(--ej-shadow-lg, 0 10px 50px rgba(0, 0, 0, 0.25));
+    overflow: visible; // Allow scroll in children
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+
+    &.is-open {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+// =============================================================================
+// Agent Header
+// =============================================================================
+
+.agent-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    color: #fff;
+    gap: 12px;
+    border-radius: 16px 16px 0 0; // Match panel border-radius
+}
+
+.agent-avatar {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.agent-info {
+    flex: 1;
+}
+
+.agent-name {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.agent-status {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.agent-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+// =============================================================================
+// Agent Body
+// =============================================================================
+
+.agent-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.agent-greeting {
+    background: var(--ej-color-bg-muted, #f3f4f6);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+
+    p {
+        margin: 0;
+        color: var(--ej-text-primary, #1f2937);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+
+.actions-label {
+    font-size: 13px;
+    color: var(--ej-text-muted, #6b7280);
+    margin: 0 0 12px;
+    font-weight: 500;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.action-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 6px;
+    text-decoration: none !important;
+
+    &:hover {
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        background: rgba(14, 165, 233, 0.05);
+        transform: translateY(-2px);
+        text-decoration: none !important;
+    }
+
+    .action-icon {
+        font-size: 20px;
+        text-decoration: none !important;
+    }
+
+    .action-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ej-text-primary, #1f2937);
+        text-align: center;
+        line-height: 1.3;
+        text-decoration: none !important;
+    }
+}
+
+// =============================================================================
+// Chat Area
+// =============================================================================
+
+.agent-chat {
+    margin-top: 16px;
+    max-height: 280px; // Increased for better visibility of responses
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-message {
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 85%;
+    animation: messageIn 0.3s ease;
+
+    &.from-agent {
+        background: var(--ej-color-bg-muted, #f3f4f6);
+        color: var(--ej-text-primary, #1f2937);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+    }
+
+    &.from-user {
+        background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        color: #fff;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+}
+
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =============================================================================
+// Agent Footer (Input)
+// =============================================================================
+
+.agent-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--ej-border-color, #e5e7eb);
+}
+
+.agent-input-container {
+    display: flex;
+    gap: 8px;
+}
+
+.agent-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+
+    &::placeholder {
+        color: var(--ej-text-muted, #9ca3af);
+    }
+}
+
+.agent-send {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+
+    &:hover {
+        background: var(--ej-color-primary-dark, #0284c7);
+        transform: scale(1.05);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// =============================================================================
+// Role-specific Colors
+// =============================================================================
+
+.agent-fab-container.role-candidate {
+    .action-button:hover {
+        border-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.05);
+    }
+}
+
+.agent-fab-container.role-employer {
+    .action-button:hover {
+        border-color: var(--ej-color-success, #059669);
+        background: rgba(5, 150, 105, 0.05);
+    }
+}
+
+.agent-fab-container.role-student {
+    .action-button:hover {
+        border-color: var(--ej-color-warning, #f59e0b);
+        background: rgba(245, 158, 11, 0.05);
+    }
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
+
+@media (max-width: 480px) {
+    .agent-fab-container {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .agent-panel {
+        width: calc(100vw - 32px);
+        right: -8px;
+        max-height: 70vh;
+    }
+
+    .agent-fab-trigger {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+// =============================================================================
+// Response Actions (CTAs)
+// =============================================================================
+
+.response-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.response-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none !important;
+    background: linear-gradient(135deg, var(--ej-color-primary, #{$ej-color-primary-fallback}) 0%, var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 100%);
+    color: #fff !important;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        text-decoration: none !important;
+    }
+
+    .cta-icon {
+        font-size: 14px;
+    }
+}
+
+// =============================================================================
+// Agent Response Wrapper (enhanced responses)
+// =============================================================================
+
+.agent-response-wrapper {
+    margin-bottom: 8px;
+}
+
+.tip-message {
+    background: var(--ej-color-bg-muted, #f3f4f6);
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-top: 4px;
+    border-left: 3px solid var(--ej-color-primary, #0ea5e9);
+}
+
+.follow-up {
+    font-style: italic;
+    color: var(--ej-text-muted, #6b7280);
+    margin-top: 6px;
+}
+
+.response-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.response-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--ej-color-primary, #0ea5e9);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &:hover {
+        background: var(--ej-color-primary-dark, #0284c7);
+        transform: translateY(-1px);
+    }
+
+    .cta-icon {
+        font-size: 14px;
+    }
+}
+
+// =============================================================================
+// Rating Buttons
+// =============================================================================
+
+.response-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--ej-border-color, #e5e7eb);
+}
+
+.rating-label {
+    font-size: 12px;
+    color: var(--ej-text-muted, #6b7280);
+}
+
+.rating-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+        transform: scale(1.15);
+    }
+
+    &.rating-up:hover {
+        border-color: var(--ej-color-success, #059669);
+        background: rgba(5, 150, 105, 0.1);
+    }
+
+    &.rating-down:hover {
+        border-color: var(--ej-color-error, #dc2626);
+        background: rgba(220, 38, 38, 0.1);
+    }
+}
+
+.rating-thanks {
+    font-size: 12px;
+    color: var(--ej-color-success, #059669);
+    font-weight: 500;
+}
+
+// =============================================================================
+// Typing Indicator
+// =============================================================================
+
+.loading-message {
+    background: var(--ej-color-bg-muted, #f3f4f6);
+    max-width: 80px;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    padding: 4px 0;
+
+    span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        animation: typingBounce 1.4s infinite;
+
+        &:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    }
+}
+
+@keyframes typingBounce {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+// =============================================================================
+// Follow-up Messages
+// =============================================================================
+
+.follow-up {
+    font-style: italic;
+    opacity: 0.85;
+    margin-top: 8px;
+}
+
+.tip-message {
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-top: 4px;
+}
+
+// =============================================================================
+// Agent Response Wrapper
+// =============================================================================
+
+.agent-response-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    animation: messageIn 0.3s ease;
+}
+
+// =============================================================================
+// Scrollbar Personalizado
+// =============================================================================
+
+.agent-chat {
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--ej-border-color, #e5e7eb);
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #ced4da;
+    }
+}
+
+// =============================================================================
+// Onboarding Message (Career Diagnosis - Lucía Framework)
+// =============================================================================
+
+.onboarding-message {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+// Phase Indicator
+.phase-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.phase-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+
+    .phase-emoji {
+        font-size: 14px;
+    }
+}
+
+.phase-badge.phase-1 {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.phase-badge.phase-2 {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.phase-badge.phase-3 {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.phase-badge.phase-4 {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.phase-badge.phase-5 {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.completeness-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.completeness-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9 0%, #10b981 100%);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+.completeness-label {
+    font-size: 11px;
+    color: var(--ej-text-muted, #6b7280);
+    white-space: nowrap;
+}
+
+// Onboarding main message
+.onboarding-main {
+    max-width: 100%;
+
+    strong {
+        font-size: 15px;
+        color: var(--ej-color-primary, #0ea5e9);
+    }
+}
+
+// Itinerary Card
+.itinerary-card {
+    background: #fff;
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.itinerary-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+
+    .itinerary-icon {
+        font-size: 18px;
+    }
+
+    .itinerary-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ej-text-primary, #1f2937);
+    }
+}
+
+.itinerary-steps {
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.itinerary-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    .step-number {
+        width: 22px;
+        height: 22px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .step-text {
+        font-size: 13px;
+        color: var(--ej-text-secondary, #4b5563);
+        line-height: 1.4;
+        padding-top: 2px;
+    }
+}
+
+// Onboarding CTA
+.onboarding-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.primary-cta {
+    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+    }
+
+    .cta-icon {
+        font-size: 16px;
+    }
+}
+
+// Motivation message
+.motivation-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #92400e;
+    border-left: 3px solid #f59e0b;
+    font-style: italic;
+
+    .motivation-icon {
+        font-size: 16px;
+    }
+}

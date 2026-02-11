@@ -1,0 +1,452 @@
+// ==========================================================================
+// CONTEXTUAL COPILOT FAB
+// ==========================================================================
+// FAB flotante de asistente IA contextual para todos los avatares.
+// 
+// @see ContextualCopilotBlock.php
+// @see contextual-copilot-fab.html.twig
+// ==========================================================================
+
+@use 'variables' as *;
+
+// ==========================================================================
+// FAB BUTTON
+// ==========================================================================
+
+.contextual-copilot {
+    --fab-size: 56px;
+    --panel-width: 380px;
+    --panel-height: 500px;
+
+    position: fixed;
+    bottom: var(--ej-spacing-lg, 24px);
+    right: var(--ej-spacing-lg, 24px);
+    z-index: 9999;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+}
+
+.copilot-fab {
+    width: var(--fab-size);
+    height: var(--fab-size);
+    border-radius: 50%;
+    background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--ej-shadow-lg, 0 4px 20px rgba(0, 0, 0, 0.2));
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: var(--ej-shadow-xl, 0 6px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    .fab-icon {
+        font-size: 24px;
+        filter: grayscale(0);
+    }
+
+    .fab-pulse {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+        animation: pulse 2s infinite;
+        z-index: -1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    70%,
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+// ==========================================================================
+// PANEL
+// ==========================================================================
+
+.copilot-panel {
+    position: absolute;
+    bottom: calc(var(--fab-size) + var(--ej-spacing-md, 16px));
+    right: 0;
+    width: var(--panel-width);
+    max-height: var(--panel-height);
+    background: var(--ej-bg-surface, #fff);
+    border-radius: var(--ej-radius-lg, 16px);
+    box-shadow: var(--ej-shadow-xl, 0 10px 40px rgba(0, 0, 0, 0.15));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+
+    &[aria-hidden="false"] {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+// Header con color del avatar - MEJORADO para legibilidad
+.copilot-header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, 16px);
+    padding: var(--ej-spacing-md, 16px) var(--ej-spacing-lg, 20px);
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate-fallback}),
+        var(--ej-color-azul-profundo, #{$ej-color-azul-profundo-fallback}));
+    color: #fff;
+    min-height: 72px;
+}
+
+.copilot-avatar {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+.copilot-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.copilot-name {
+    margin: 0 0 4px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.copilot-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    opacity: 0.9;
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        animation: status-pulse 2s infinite;
+    }
+}
+
+@keyframes status-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.copilot-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+// ==========================================================================
+// BODY
+// ==========================================================================
+
+.copilot-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ej-spacing-md, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-md, 16px);
+}
+
+.copilot-greeting {
+    background: var(--ej-bg-subtle, #f0f4f8);
+    padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
+    border-radius: var(--ej-radius-md, 12px);
+    font-size: 0.875rem;
+    color: var(--ej-text-primary, #334155);
+
+    p {
+        margin: 0;
+    }
+}
+
+// ==========================================================================
+// QUICK ACTIONS
+// ==========================================================================
+
+.copilot-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-xs, 8px);
+}
+
+.actions-label {
+    font-size: 0.75rem;
+    color: var(--ej-text-muted, #64748b);
+    margin: 0 0 var(--ej-spacing-xs, 4px);
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ej-spacing-xs, 8px);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 8px);
+    padding: var(--ej-spacing-sm, 10px) var(--ej-spacing-sm, 12px);
+    background: var(--ej-bg-surface, #fff);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: var(--ej-radius-sm, 8px);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+
+    &:hover {
+        border-color: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+        background: rgba(0, 169, 165, 0.05); // innovation with opacity
+    }
+
+    .action-icon {
+        font-size: 1rem;
+    }
+}
+
+// ==========================================================================
+// CHAT
+// ==========================================================================
+
+.copilot-chat {
+    flex: 1;
+    min-height: 100px;
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 12px);
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+
+    &--user {
+        align-self: flex-end;
+    }
+
+    &--assistant {
+        align-self: flex-start;
+    }
+}
+
+.message-bubble {
+    padding: var(--ej-spacing-sm, 10px) var(--ej-spacing-sm, 14px);
+    border-radius: var(--ej-radius-md, 12px);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+
+    .chat-message--user & {
+        background: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-message--assistant & {
+        background: var(--ej-bg-subtle, #f1f5f9);
+        color: var(--ej-text-primary, #334155);
+        border-bottom-left-radius: 4px;
+    }
+}
+
+// Typing Indicator
+.typing-indicator {
+    .message-bubble {
+        display: flex;
+        gap: 4px;
+        padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background: var(--ej-text-muted, #94a3b8);
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+
+        &:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    }
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-4px);
+    }
+}
+
+// ==========================================================================
+// RATING
+// ==========================================================================
+
+.response-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 6px);
+    margin-top: var(--ej-spacing-xs, 6px);
+    font-size: 0.6875rem;
+    color: var(--ej-text-muted, #64748b);
+}
+
+.rating-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    opacity: 0.6;
+    transition: all 0.2s;
+    padding: 2px;
+
+    &:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.rating-thanks {
+    color: var(--ej-color-success, #10b981);
+    font-weight: 500;
+}
+
+// ==========================================================================
+// FOOTER
+// ==========================================================================
+
+.copilot-footer {
+    padding: var(--ej-spacing-sm, 12px);
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+    background: var(--ej-bg-subtle, #f8fafc);
+}
+
+.copilot-input-container {
+    display: flex;
+    gap: var(--ej-spacing-xs, 8px);
+}
+
+.copilot-input {
+    flex: 1;
+    padding: var(--ej-spacing-sm, 10px) var(--ej-spacing-sm, 14px);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 24px;
+    font-size: 0.8125rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+    }
+}
+
+.copilot-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+// ==========================================================================
+// RESPONSIVE
+// ==========================================================================
+
+@media (max-width: 480px) {
+    .contextual-copilot {
+        --panel-width: calc(100vw - 32px);
+        --panel-height: 70vh;
+        bottom: var(--ej-spacing-md, 16px);
+        right: var(--ej-spacing-md, 16px);
+    }
+
+    .copilot-panel {
+        right: -8px;
+    }
+}

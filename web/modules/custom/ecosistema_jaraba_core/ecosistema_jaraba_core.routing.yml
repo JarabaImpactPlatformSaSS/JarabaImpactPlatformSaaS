@@ -1126,3 +1126,82 @@ ecosistema_jaraba_core.health.check:
   methods: [GET]
   options:
     no_cache: TRUE
+
+# ---------------------------------------------------------------------------
+# USAGE DASHBOARD - SELF-SERVICE (G111 / f111)
+# ---------------------------------------------------------------------------
+
+# Dashboard de uso y facturación para tenants (frontend)
+ecosistema_jaraba_core.usage.dashboard:
+  path: '/mi-cuenta/uso'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageDashboardController::dashboard'
+    _title: 'Uso y Facturación'
+  requirements:
+    _permission: 'view own usage'
+  options:
+    _admin_route: FALSE
+
+# API: Uso del período actual
+ecosistema_jaraba_core.api.usage.current:
+  path: '/api/v1/usage/current'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::currentUsage'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]
+
+# API: Uso histórico por meses
+ecosistema_jaraba_core.api.usage.history:
+  path: '/api/v1/usage/history'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::historicalUsage'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]
+
+# API: Factura estimada actual
+ecosistema_jaraba_core.api.usage.bill:
+  path: '/api/v1/usage/bill'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::currentBill'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]
+
+# API: Proyección de costes fin de mes
+ecosistema_jaraba_core.api.usage.forecast:
+  path: '/api/v1/usage/forecast'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::forecast'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]
+
+# API: Alertas de presupuesto activas
+ecosistema_jaraba_core.api.usage.alerts:
+  path: '/api/v1/usage/alerts'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::budgetAlerts'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]
+
+# API: Detalle de una métrica específica
+ecosistema_jaraba_core.api.usage.metric_detail:
+  path: '/api/v1/usage/metrics/{metric}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::metricDetail'
+  requirements:
+    _permission: 'access usage api'
+    metric: '[a-z_]+'
+  methods: [GET]
+
+# API: Reglas de precios del plan del tenant actual
+ecosistema_jaraba_core.api.usage.pricing_rules:
+  path: '/api/v1/usage/pricing-rules'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\UsageApiController::pricingRules'
+  requirements:
+    _permission: 'access usage api'
+  methods: [GET]

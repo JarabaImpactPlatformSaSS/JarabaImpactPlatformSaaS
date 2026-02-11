@@ -105,3 +105,91 @@ view platform analytics:
   title: 'Ver analíticas de plataforma'
   description: 'Acceso a métricas globales de la plataforma SaaS'
   restrict access: TRUE
+
+# ===========================================
+# IMPERSONATION (Login As)
+# ===========================================
+
+impersonate tenants:
+  title: 'Impersonar usuarios de Tenants'
+  description: 'Iniciar sesión como cualquier usuario de tenant para diagnóstico'
+  restrict access: TRUE
+
+view impersonation logs:
+  title: 'Ver logs de impersonación'
+  description: 'Acceso al historial de sesiones de impersonación'
+  restrict access: TRUE
+
+administer impersonation:
+  title: 'Administrar impersonación'
+  description: 'Configurar ajustes de impersonación y gestionar logs'
+  restrict access: TRUE
+
+# ===========================================
+# SCHEDULED REPORTS
+# ===========================================
+
+administer scheduled reports:
+  title: 'Administrar Reportes Programados'
+  description: 'Crear, editar y eliminar reportes automáticos'
+  restrict access: TRUE
+
+view scheduled reports:
+  title: 'Ver Reportes Programados'
+  description: 'Ver lista de reportes programados'
+
+# ===========================================
+# ALERT RULES
+# ===========================================
+
+administer alert rules:
+  title: 'Administrar Reglas de Alerta'
+  description: 'Crear, editar y eliminar reglas de alertas automáticas'
+  restrict access: TRUE
+
+view alert rules:
+  title: 'Ver Reglas de Alerta'
+  description: 'Ver lista de reglas de alerta'
+
+# ===========================================
+# ADMINISTRACIÓN DE DESIGN TOKENS
+# ===========================================
+
+administer design tokens:
+  title: 'Administrar Design Tokens'
+  description: 'Crear, editar y eliminar configuraciones de Design Tokens para personalización visual multi-tenant'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACIÓN DE STYLE PRESETS
+# ===========================================
+
+administer style presets:
+  title: 'Administrar Style Presets'
+  description: 'Crear, editar y eliminar presets de estilo (Industry Style Presets) para sectores de negocio'
+  restrict access: TRUE
+
+# ===========================================
+# PRICING RULES (G111 / f111)
+# ===========================================
+
+administer pricing rules:
+  title: 'Administrar Reglas de Precios'
+  description: 'Crear, editar y eliminar reglas de precios por plan y métrica'
+  restrict access: TRUE
+
+view pricing rules:
+  title: 'Ver Reglas de Precios'
+  description: 'Ver la lista de reglas de precios configuradas'
+
+# ===========================================
+# USAGE DASHBOARD (G111 / f111)
+# ===========================================
+
+view own usage:
+  title: 'Ver propio Uso y Facturación'
+  description: 'Acceder al dashboard de uso y consumo de recursos del propio tenant'
+
+access usage api:
+  title: 'Acceder a API de Uso'
+  description: 'Consultar datos de uso, facturación y proyecciones vía API REST'

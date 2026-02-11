@@ -1,0 +1,17 @@
+id: agro_traditional
+label: 'Tradición Rural'
+description: 'Para fincas generacionales, productos con historia, denominaciones de origen. Autenticidad, historia, arraigo familiar.'
+vertical: agroconecta
+sector: traditional
+mood: '["authentic", "historic", "familiar", "rooted"]'
+target_audience: 'Fincas generacionales, productos con historia, denominaciones de origen'
+weight: 2
+status: true
+color_tokens: '{"primary":"#5D4E37","secondary":"#A67B5B","accent":"#D4A574","surface":"#F8F4EE","surface-dark":"#2A2217","text-primary":"#3D3226","text-secondary":"#7A6B5A","text-muted":"#A09384","text-inverse":"#F8F4EE"}'
+typography_tokens: '{"family-heading":"Libre Baskerville, serif","family-body":"Merriweather, serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"4px","shadow-md":"0 4px 16px rgba(93,78,55,0.08)","shadow-lg":"0 8px 32px rgba(93,78,55,0.12)"}'
+effect_tokens: '{"glass-bg":"rgba(248,244,238,0.90)","glass-blur":"blur(10px)","glass-border":"1px solid rgba(166,123,91,0.15)","gradient-primary":"linear-gradient(135deg, #5D4E37, #A67B5B)"}'
+component_variants: '{"header":"classic","hero":"split","cards":"product-detailed","footer":"traditional"}'
+animation_config: '{"type":"elegant","speed":"700ms","reveal":"fade-up"}'
+content_guidelines: '{"photography":"Tonos cálidos, texturas de madera/piedra, paisajes rurales al atardecer","copywriting":"Tono narrativo, vocabulario de tradición (generaciones, artesano, cosecha)","iconography":"Clásico, bordes definidos, detalles"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Merriweather:wght@400;700&display=swap"]'

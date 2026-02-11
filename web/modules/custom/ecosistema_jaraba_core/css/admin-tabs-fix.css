@@ -1,0 +1,48 @@
+/**
+ * @file
+ * Corrección de UX para pestañas administrativas
+ * Evita la rotura de palabras en tabs de /admin/content
+ */
+
+/* Corregir tabs que se rompen en admin/content */
+.tabs--primary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.tabs--primary .tabs__tab {
+    white-space: nowrap;
+    word-break: keep-all;
+    hyphens: none;
+    padding: 8px 12px;
+    min-width: auto;
+}
+
+/* Tema Claro - corregir ancho de tabs */
+.claro-details__wrapper .tabs--primary .tabs__link,
+.block-local-tasks-block .tabs--primary .tabs__link {
+    white-space: nowrap;
+    word-break: keep-all;
+    hyphens: none;
+    overflow: visible;
+}
+
+/* Asegurar que el contenedor permite scroll horizontal si hay muchas pestañas */
+.block-local-tasks-block {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Mejorar visualización en pantallas pequeñas */
+@media (max-width: 1200px) {
+    .tabs--primary {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs--primary .tabs__tab {
+        flex-shrink: 0;
+    }
+}

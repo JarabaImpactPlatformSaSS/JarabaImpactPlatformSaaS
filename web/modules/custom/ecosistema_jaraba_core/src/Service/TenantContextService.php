@@ -162,48 +162,55 @@ class TenantContextService
      */
     public function getUsageMetrics(TenantInterface $tenant): array
     {
-        $metrics = [
-            'productores' => $this->calculateMemberMetrics($tenant),
-            'almacenamiento' => $this->calculateStorageMetrics($tenant),
-            'contenido' => $this->calculateContentMetrics($tenant),
-        ];
+        // BE-04: Cargar plan y grupo UNA sola vez para evitar N+1 queries.
+        $plan = $tenant->getSubscriptionPlan();
+        $group = $tenant->getGroup();
 
-        return $metrics;
+        // Decodificar límites del plan una sola vez.
+        $planLimits = [];
+        if ($plan) {
+            $limitsRaw = $plan->get('limits')->value ?? '';
+            if ($limitsRaw) {
+                $planLimits = json_decode($limitsRaw, TRUE) ?? [];
+            }
+        }
+
+        return [
+            'productores' => $this->calculateMemberMetrics($group, $planLimits),
+            'almacenamiento' => $this->calculateStorageMetrics($planLimits),
+            'contenido' => $this->calculateContentMetrics($group),
+        ];
     }
 
     /**
      * Calcula las métricas de miembros/productores del tenant.
      *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
+     * @param \Drupal\group\Entity\GroupInterface|null $group
+     *   El grupo asociado al tenant.
+     * @param array $planLimits
+     *   Límites del plan ya decodificados.
      *
      * @return array
      *   Métricas de miembros.
      */
-    protected function calculateMemberMetrics(TenantInterface $tenant): array
+    protected function calculateMemberMetrics(?\Drupal\group\Entity\GroupInterface $group, array $planLimits): array
     {
         $count = 0;
-        $limit = 0;
+        $limit = $planLimits['max_productores'] ?? 0;
 
-        // Obtener el límite del plan
-        $plan = $tenant->getSubscriptionPlan();
-        if ($plan) {
-            $limits = $plan->get('limits')->value ?? '';
-            if ($limits) {
-                $limitsArray = json_decode($limits, TRUE) ?? [];
-                $limit = $limitsArray['max_productores'] ?? 0;
-            }
-        }
-
-        // Contar miembros del grupo asociado
-        $group = $tenant->getGroup();
+        // BE-04: Usar countQuery en vez de cargar todas las membresías.
         if ($group) {
             try {
-                // El módulo Group tiene un método para contar miembros
-                $memberships = $group->getMembers();
-                $count = count($memberships);
+                $count = (int) $this->entityTypeManager
+                    ->getStorage('group_relationship')
+                    ->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('gid', $group->id())
+                    ->condition('plugin_id', 'group_membership')
+                    ->count()
+                    ->execute();
             } catch (\Exception $e) {
-                // Si hay error, el count queda en 0
+                // Si hay error, el count queda en 0.
             }
         }
 
@@ -219,31 +226,19 @@ class TenantContextService
     /**
      * Calcula las métricas de almacenamiento del tenant.
      *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
+     * @param array $planLimits
+     *   Límites del plan ya decodificados.
      *
      * @return array
      *   Métricas de almacenamiento.
      */
-    protected function calculateStorageMetrics(TenantInterface $tenant): array
+    protected function calculateStorageMetrics(array $planLimits): array
     {
-        // Por ahora, devolver valores placeholder
-        // En producción, se calcularía el espacio usado en el directorio del tenant
-        $limit = 0;
-        $used = 0;
+        // Límite en MB
+        $limit = $planLimits['max_storage_mb'] ?? 1024;
 
-        $plan = $tenant->getSubscriptionPlan();
-        if ($plan) {
-            $limits = $plan->get('limits')->value ?? '';
-            if ($limits) {
-                $limitsArray = json_decode($limits, TRUE) ?? [];
-                // Límite en MB
-                $limit = $limitsArray['max_storage_mb'] ?? 1024;
-            }
-        }
-
-        // TODO: Calcular uso real mediante file_managed o directorio físico
-        // Por ahora, simular un 30% de uso
+        // TODO: Calcular uso real mediante file_managed o directorio físico.
+        // Por ahora, simular un 30% de uso.
         $used = round($limit * 0.3);
 
         $percentage = ($limit > 0) ? min(100, round(($used / $limit) * 100)) : 0;
@@ -260,32 +255,28 @@ class TenantContextService
     /**
      * Calcula las métricas de contenido del tenant.
      *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
+     * @param \Drupal\group\Entity\GroupInterface|null $group
+     *   El grupo asociado al tenant.
      *
      * @return array
      *   Métricas de contenido.
      */
-    protected function calculateContentMetrics(TenantInterface $tenant): array
+    protected function calculateContentMetrics(?\Drupal\group\Entity\GroupInterface $group): array
     {
         $count = 0;
 
-        // Contar nodos asociados al grupo del tenant (vía gnode)
-        $group = $tenant->getGroup();
         if ($group) {
             try {
-                // Buscar contenido del grupo usando gnode
                 $nodeStorage = $this->entityTypeManager->getStorage('node');
                 $query = $nodeStorage->getQuery()
                     ->accessCheck(FALSE)
                     ->condition('type', ['article', 'producto', 'productor'], 'IN');
 
-                // TODO: Filtrar por grupo cuando gnode esté completamente configurado
-                // Por ahora, contar un subconjunto representativo
+                // TODO: Filtrar por grupo cuando gnode esté completamente configurado.
                 $count = $query->count()->execute();
 
             } catch (\Exception $e) {
-                // Si hay error, el count queda en 0
+                // Si hay error, el count queda en 0.
             }
         }
 

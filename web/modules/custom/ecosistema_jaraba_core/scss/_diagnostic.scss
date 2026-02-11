@@ -1,0 +1,457 @@
+/**
+ * @file _diagnostic.scss
+ * @description Estilos para el Widget de Diagnóstico Express TTV
+ * 
+ * PROPÓSITO:
+ * Implementa el diseño visual del Diagnóstico Express con TTV < 60s.
+ * Estilos premium con animaciones sutiles para valor percibido.
+ * 
+ * @version 1.0.0
+ */
+
+@use 'sass:color';
+
+// ===== VARIABLES DEL DIAGNÓSTICO =====
+$diagnostic-primary: #FF8C42;
+$diagnostic-secondary: #00A9A5;
+$diagnostic-dark: #233D63;
+$diagnostic-success: #28A745;
+$diagnostic-warning: #FFC107;
+$diagnostic-danger: #DC3545;
+
+// ===== CONTENEDOR PRINCIPAL =====
+.diagnostic-widget {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    &__header {
+        text-align: center;
+        margin-bottom: 2rem;
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, $diagnostic-primary, $diagnostic-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                width: 32px;
+                height: 32px;
+                fill: white;
+            }
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: $diagnostic-dark;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 1rem;
+        }
+    }
+}
+
+// ===== FORMULARIO DE PREGUNTAS =====
+.diagnostic-express-form {
+    .question-group {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+
+        &:hover {
+            border-color: rgba($diagnostic-primary, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        &.answered {
+            border-color: $diagnostic-success;
+            background: rgba($diagnostic-success, 0.02);
+        }
+    }
+
+    .question-label {
+        display: block;
+        font-weight: 600;
+        color: $diagnostic-dark;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    // Opciones de respuesta visuales (no radio buttons tradicionales)
+    .answer-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .answer-option {
+        position: relative;
+
+        input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+
+            &:checked+label {
+                background: linear-gradient(135deg, $diagnostic-primary, color.adjust($diagnostic-primary, $lightness: -10%));
+                color: white;
+                border-color: $diagnostic-primary;
+                transform: scale(1.02);
+
+                .option-icon {
+                    background: white;
+                    color: $diagnostic-primary;
+                }
+            }
+
+            &:focus+label {
+                box-shadow: 0 0 0 3px rgba($diagnostic-primary, 0.3);
+            }
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+                border-color: $diagnostic-primary;
+                background: rgba($diagnostic-primary, 0.05);
+            }
+
+            .option-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #f0f0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 1rem;
+                transition: all 0.2s ease;
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            .option-text {
+                flex: 1;
+
+                .option-title {
+                    font-weight: 600;
+                    color: $diagnostic-dark;
+                    margin-bottom: 0.25rem;
+                }
+
+                .option-subtitle {
+                    font-size: 0.85rem;
+                    color: #666;
+                }
+            }
+        }
+    }
+}
+
+// ===== PANTALLA DE CARGA =====
+.diagnostic-loading {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+
+    .loading-spinner {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg,
+                $diagnostic-primary,
+                $diagnostic-secondary,
+                $diagnostic-primary );
+        animation: diagnostic-spin 1.5s linear infinite;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+    }
+
+    .loading-message {
+        font-size: 1.1rem;
+        color: $diagnostic-dark;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        min-height: 1.5em;
+    }
+
+    .progress-container {
+        max-width: 300px;
+        margin: 0 auto;
+
+        .progress-bar-bg {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, $diagnostic-primary, $diagnostic-secondary);
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+    }
+}
+
+@keyframes diagnostic-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// ===== PANTALLA DE RESULTADOS =====
+.diagnostic-result {
+    display: none;
+    text-align: center;
+
+    .result-score-circle {
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg,
+                var(--score-color, $diagnostic-primary) var(--score-percent, 0%),
+                #e0e0e0 var(--score-percent, 0%));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        animation: score-reveal 1s ease forwards;
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-inner {
+            position: relative;
+            z-index: 1;
+
+            .result-score-value {
+                font-size: 3rem;
+                font-weight: 800;
+                color: $diagnostic-dark;
+                line-height: 1;
+            }
+
+            .result-score-max {
+                font-size: 1rem;
+                color: #666;
+            }
+        }
+    }
+
+    .result-profile-label {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: left;
+
+        .card-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: $diagnostic-dark;
+        }
+    }
+
+    // Tarjeta de impacto económico (emprendimiento)
+    .result-economic-impact {
+        background: linear-gradient(135deg, $diagnostic-danger, color.adjust($diagnostic-danger, $lightness: -15%));
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        color: white;
+
+        .impact-label {
+            display: block;
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-value {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .impact-period {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+    }
+
+    // CTA principal
+    .result-cta {
+        margin-top: 2rem;
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, $diagnostic-primary, color.adjust($diagnostic-primary, $lightness: -10%));
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba($diagnostic-primary, 0.4);
+            }
+        }
+
+        .cta-subtitle {
+            display: block;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    }
+}
+
+@keyframes score-reveal {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+// ===== DATO DE IMPACTO (EMPLEABILIDAD) =====
+.result-impact-data {
+    background: rgba($diagnostic-secondary, 0.1);
+    border-left: 4px solid $diagnostic-secondary;
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    font-size: 0.95rem;
+    color: $diagnostic-dark;
+
+    &::before {
+        content: '💡';
+        margin-right: 0.5rem;
+    }
+}
+
+// ===== RESPONSIVE =====
+@media (max-width: 600px) {
+    .diagnostic-widget {
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 0 1rem;
+
+        &__header h2 {
+            font-size: 1.5rem;
+        }
+    }
+
+    .diagnostic-express-form {
+        .question-group {
+            padding: 1rem;
+        }
+
+        .answer-option label {
+            padding: 0.75rem 1rem;
+
+            .option-icon {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    }
+
+    .diagnostic-result {
+        .result-score-circle {
+            width: 120px;
+            height: 120px;
+
+            &::before {
+                width: 100px;
+                height: 100px;
+            }
+
+            .result-score-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        .result-economic-impact {
+            .impact-value {
+                font-size: 2rem;
+            }
+        }
+    }
+}

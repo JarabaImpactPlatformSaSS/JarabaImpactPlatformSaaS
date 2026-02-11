@@ -1,0 +1,440 @@
+// ==========================================================================
+// Recruiter Dashboard - Premium Styles
+// ==========================================================================
+// Premium dashboard for employers on their profile page with glassmorphism,
+// KPI cards, and optimization path cards.
+
+// Modern Sass modules
+@use 'sass:map';
+
+// --------------------------------------------------------------------------
+// Phase Color System (Emerald tones for recruiter)
+// --------------------------------------------------------------------------
+$recruiter-phase-colors: (
+    1: #fbbf24,
+    // Starting - Amber
+    2: #f97316,
+    // Building - Orange
+    3: #22c55e,
+    // Growing - Green
+    4: #059669,
+    // Competitive - Emerald
+    5: #0d9488,
+    // Talent Leader - Teal
+);
+
+@function recruiter-phase-color($phase) {
+    @return map.get($recruiter-phase-colors, $phase);
+}
+
+// --------------------------------------------------------------------------
+// Main Container
+// --------------------------------------------------------------------------
+.recruiter-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: var(--ej-font-primary, 'Inter', sans-serif);
+
+    // Phase-based accents
+    @for $i from 1 through 5 {
+        &--phase-#{$i} {
+            --phase-color: #{recruiter-phase-color($i)};
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// Header with KPI Grid
+// --------------------------------------------------------------------------
+.dashboard-header--recruiter {
+    // Glassmorphism inline
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--phase-color, #059669) 0%, rgba(255, 255, 255, 0.95) 40%);
+    animation: fadeInDown 0.5s ease-out;
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .phase-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: white;
+            border-radius: var(--cd-radius, 1rem);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            .phase-emoji {
+                font-size: 2rem;
+            }
+
+            .phase-name {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--phase-color, #059669);
+            }
+        }
+
+        .user-greeting {
+            h2 {
+                margin: 0;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #1f2937;
+            }
+
+            p {
+                margin: 0.25rem 0 0;
+                font-size: 0.875rem;
+                color: #6b7280;
+            }
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// KPI Cards Grid
+// --------------------------------------------------------------------------
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.kpi-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .kpi-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .kpi-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .kpi-label {
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+    }
+
+    &--highlight {
+        background: linear-gradient(135deg, var(--phase-color, #059669) 0%, color-mix(in srgb, var(--phase-color, #059669) 70%, white) 100%);
+        color: white;
+
+        .kpi-value {
+            color: white;
+        }
+
+        .kpi-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// Assistant Message Card
+// --------------------------------------------------------------------------
+.assistant-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    animation: fadeInUp 0.5s ease-out 0.1s both;
+
+    .assistant-avatar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+
+        .avatar-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .avatar-badge {
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #059669;
+            background: rgba(5, 150, 105, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+        }
+    }
+
+    .assistant-content {
+        flex: 1;
+    }
+
+    .assistant-message {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: #374151;
+    }
+}
+
+// --------------------------------------------------------------------------
+// Optimization Paths Grid
+// --------------------------------------------------------------------------
+.paths-section {
+    animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+.paths-grid {
+    display: grid;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+.path-card {
+    --path-color: #059669;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .path-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--path-color) 0%, color-mix(in srgb, var(--path-color) 80%, white) 100%);
+        color: white;
+
+        .path-icon {
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            margin: 0;
+            font-size: 0.9375rem;
+            font-weight: 600;
+        }
+
+        .duration-badge {
+            margin-left: auto;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            font-size: 0.6875rem;
+            font-weight: 500;
+        }
+    }
+
+    .path-steps {
+        list-style: none;
+        margin: 0;
+        padding: 1rem;
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .step-number {
+                flex-shrink: 0;
+                width: 1.5rem;
+                height: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: white;
+                background: var(--path-color);
+                border-radius: 50%;
+            }
+
+            .step-text {
+                font-size: 0.8125rem;
+                color: #4b5563;
+                line-height: 1.5;
+            }
+        }
+    }
+
+    .path-cta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1rem;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        color: var(--path-color);
+        text-decoration: none;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: var(--path-color);
+            color: white;
+        }
+
+        .cta-text {
+            flex: 1;
+        }
+
+        .cta-arrow {
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        &:hover .cta-arrow {
+            transform: translateX(4px);
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// Tools Section
+// --------------------------------------------------------------------------
+.tools-section {
+    animation: fadeInUp 0.5s ease-out 0.4s both;
+}
+
+.tools-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.tool-card {
+    // Glassmorphism inline
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    &--highlight {
+        border: 2px solid var(--phase-color, #059669);
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, white 100%);
+    }
+
+    .tool-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .tool-content {
+        flex: 1;
+
+        h4 {
+            margin: 0 0 0.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        p {
+            margin: 0 0 0.5rem;
+            font-size: 0.8125rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .tool-price {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--phase-color, #059669);
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// Responsive
+// --------------------------------------------------------------------------
+@media (max-width: 640px) {
+    .recruiter-dashboard {
+        padding: 1rem;
+        gap: 1.25rem;
+    }
+
+    .dashboard-header--recruiter {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    .assistant-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .paths-grid,
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+}

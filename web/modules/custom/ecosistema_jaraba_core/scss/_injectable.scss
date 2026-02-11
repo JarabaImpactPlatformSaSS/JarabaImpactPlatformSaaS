@@ -22,31 +22,29 @@
 // ---------------------------------------------------------------------------
 
 :root {
-    // Colores principales (inyectables por vertical/tenant)
-    // Estos valores son los fallbacks; los reales se inyectan desde Drupal
-    --ej-color-primary: #{$ej-color-primary-fallback};
-    --ej-color-secondary: #{$ej-color-secondary-fallback};
-    --ej-color-accent: #{$ej-color-accent-fallback};
+    // =========================================================================
+    // COLORES PRIMARIOS: Ahora inyectados por StylePresetService
+    // via <style id="ej-design-tokens"> en PageAttachmentsHooks.
+    // NO definir aquí --ej-color-primary, --ej-color-secondary, --ej-color-accent
+    // ni --ej-color-success, --ej-color-warning, --ej-color-error.
+    // =========================================================================
 
-    // Colores derivados calculados (CSS Calculations)
-    // Hover: ligeramente más oscuro
-    --ej-color-primary-hover: color-mix(in srgb, var(--ej-color-primary) 85%, black);
-    --ej-color-secondary-hover: color-mix(in srgb, var(--ej-color-secondary) 85%, black);
+    // Colores derivados calculados (dependen de los tokens inyectados)
+    --ej-color-primary-hover: color-mix(in srgb, var(--ej-color-primary, #{$ej-color-primary-fallback}) 85%, black);
+    --ej-color-secondary-hover: color-mix(in srgb, var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 85%, black);
 
     // Light: versión clara para fondos
-    --ej-color-primary-light: color-mix(in srgb, var(--ej-color-primary) 15%, white);
-    --ej-color-secondary-light: color-mix(in srgb, var(--ej-color-secondary) 15%, white);
+    --ej-color-primary-light: color-mix(in srgb, var(--ej-color-primary, #{$ej-color-primary-fallback}) 15%, white);
+    --ej-color-secondary-light: color-mix(in srgb, var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 15%, white);
 
-    // Colores semánticos (fijos, no inyectables)
-    --ej-color-success: #{$ej-color-success};
-    --ej-color-warning: #{$ej-color-warning};
-    --ej-color-error: #{$ej-color-error};
+    // Info (no gestionado por token system todavía)
     --ej-color-info: #{$ej-color-info};
 
-    // Tipografía inyectable
-    --ej-font-family: #{$ej-font-family-fallback};
+    // Tipografía: --ej-font-family-heading y --ej-font-family-body son inyectados.
+    // Alias genérico con fallback:
+    --ej-font-family: var(--ej-font-family-body, #{$ej-font-family-fallback});
 
-    // Grises
+    // Grises (escala fija, no inyectable por token)
     --ej-gray-50: #{$ej-gray-50};
     --ej-gray-100: #{$ej-gray-100};
     --ej-gray-200: #{$ej-gray-200};
@@ -86,6 +84,30 @@
     // Transiciones
     --ej-transition: all #{$ej-transition-duration-normal} #{$ej-transition-easing};
     --ej-transition-fast: all #{$ej-transition-duration-fast} #{$ej-transition-easing};
+
+    // =========================================================================
+    // PREMIUM TOKENS (f-102 Industry Style Presets)
+    // =========================================================================
+    // Inyectables por StylePresetService via DesignTokenConfig.effect_tokens.
+    // Cada Industry Preset puede sobrescribir estos valores.
+
+    // Glassmorphism
+    --ej-glass-bg: #{$ej-glass-bg-fallback};
+    --ej-glass-bg-dark: #{$ej-glass-bg-dark-fallback};
+    --ej-glass-blur: blur(#{$ej-glass-blur-fallback});
+    --ej-glass-border: #{$ej-glass-border-fallback};
+
+    // Surfaces (contextuales — varían por preset)
+    --ej-color-surface: #{$ej-color-surface-fallback};
+    --ej-color-surface-elevated: #{$ej-color-surface-elevated-fallback};
+    --ej-color-surface-dark: #{$ej-color-surface-dark-fallback};
+
+    // Gradients
+    --ej-gradient-primary: #{$ej-gradient-primary-fallback};
+
+    // Transitions premium
+    --ej-transition-spring: all #{$ej-transition-duration-spring} #{$ej-transition-easing-spring};
+    --ej-transition-slow: all #{$ej-transition-duration-slow} #{$ej-transition-easing};
 }
 
 // ---------------------------------------------------------------------------

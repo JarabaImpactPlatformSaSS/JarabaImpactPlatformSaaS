@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Círculo ODS/mundo con relleno -->
+  <circle cx="12" cy="12" r="9" fill="var(--icon-fill, rgba(35,61,99,0.1))" stroke="currentColor"/>
+  <!-- Anillo de progreso destacado -->
+  <path d="M12 3 A9 9 0 0 1 21 12" stroke="currentColor" stroke-width="2.5"/>
+  <!-- Hojas sostenibilidad -->
+  <path d="M12 8 C10 10 10 12 12 14 C14 12 14 10 12 8" fill="var(--icon-fill, rgba(85,107,47,0.4))" stroke="currentColor"/>
+  <path d="M9 11 C11 9 13 9 15 11" stroke="currentColor"/>
+</svg>

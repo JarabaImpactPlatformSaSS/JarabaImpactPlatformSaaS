@@ -515,9 +515,8 @@ class TenantOnboardingService
             // =====================================================================
             $slug = $this->generateDomainSlug($tenant->getName());
 
-            // Determinar el dominio base según el entorno
-            // En producción sería: jaraba.io
-            $baseDomain = 'jaraba-saas.lndo.site';
+            // BE-08: Dominio base configurable desde settings.php.
+            $baseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
             $hostname = $slug . '.' . $baseDomain;
 
             // El machine_name es el ID en Drupal (solo alfanumérico y guiones bajos)

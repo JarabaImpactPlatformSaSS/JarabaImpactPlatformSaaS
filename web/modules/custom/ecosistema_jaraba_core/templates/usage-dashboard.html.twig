@@ -1,0 +1,226 @@
+{#
+/**
+ * @file
+ * usage-dashboard.html.twig — Dashboard de uso y facturación del tenant.
+ *
+ * PROPÓSITO: Muestra consumo de recursos, costes estimados, proyecciones
+ * y alertas de presupuesto para el tenant actual.
+ *
+ * Variables:
+ * - tenant: Entidad Tenant actual.
+ * - period: Período actual (YYYY-MM).
+ * - metrics: Array de métricas con keys: key, label, total, cost, included,
+ *   billable, model, unit_price, color, percentage.
+ * - bill: Array con keys: line_items, subtotal, tax, total, currency.
+ * - forecast: Array con keys: current_spend, daily_rate, projected_total,
+ *   days_remaining, confidence.
+ * - alerts: Array de alertas de presupuesto.
+ * - budget: Presupuesto mensual configurado.
+ */
+#}
+
+<div class="usage-dashboard">
+  {# Cabecera con título y período #}
+  <header class="usage-dashboard__header">
+    <div class="usage-dashboard__header-content">
+      <h1 class="usage-dashboard__title">{% trans %}Uso y Facturación{% endtrans %}</h1>
+      <p class="usage-dashboard__subtitle">
+        {% trans %}Período:{% endtrans %} <strong>{{ period }}</strong>
+        {% if tenant %}
+          · {{ tenant.label }}
+        {% endif %}
+      </p>
+    </div>
+  </header>
+
+  {# Alertas de presupuesto #}
+  {% if alerts is not empty %}
+    <div class="usage-dashboard__alerts">
+      {% for alert in alerts %}
+        <div class="usage-alert usage-alert--{{ alert.type }}">
+          <span class="usage-alert__icon">
+            {% if alert.type == 'critical' %}⚠{% else %}ℹ{% endif %}
+          </span>
+          <span class="usage-alert__message">{{ alert.message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# Cards de resumen: gasto actual, proyección, presupuesto, días restantes #}
+  <div class="usage-dashboard__summary">
+    <div class="usage-summary-card">
+      <span class="usage-summary-card__label">{% trans %}Gasto Actual{% endtrans %}</span>
+      <span class="usage-summary-card__value" data-counter="{{ bill.subtotal }}">
+        €{{ bill.subtotal|number_format(2, ',', '.') }}
+      </span>
+      <span class="usage-summary-card__detail">
+        + {% trans %}IVA{% endtrans %} €{{ bill.tax|number_format(2, ',', '.') }}
+      </span>
+    </div>
+
+    <div class="usage-summary-card usage-summary-card--forecast">
+      <span class="usage-summary-card__label">{% trans %}Proyección Fin de Mes{% endtrans %}</span>
+      <span class="usage-summary-card__value" data-counter="{{ forecast.projected_total }}">
+        €{{ forecast.projected_total|number_format(2, ',', '.') }}
+      </span>
+      <span class="usage-summary-card__detail">
+        {% trans %}Confianza:{% endtrans %}
+        <span class="usage-confidence usage-confidence--{{ forecast.confidence }}">
+          {{ forecast.confidence }}
+        </span>
+      </span>
+    </div>
+
+    <div class="usage-summary-card usage-summary-card--budget">
+      <span class="usage-summary-card__label">{% trans %}Presupuesto Mensual{% endtrans %}</span>
+      <span class="usage-summary-card__value">
+        €{{ budget|number_format(2, ',', '.') }}
+      </span>
+      {% set usage_pct = budget > 0 ? ((bill.subtotal / budget) * 100) : 0 %}
+      <div class="usage-summary-card__progress">
+        <div class="usage-progress-bar">
+          <div class="usage-progress-bar__fill
+            {% if usage_pct >= 90 %} usage-progress-bar__fill--critical
+            {% elseif usage_pct >= 70 %} usage-progress-bar__fill--warning
+            {% endif %}"
+            style="width: {{ usage_pct|round }}%">
+          </div>
+        </div>
+        <span class="usage-summary-card__pct">{{ usage_pct|round(1) }}%</span>
+      </div>
+    </div>
+
+    <div class="usage-summary-card">
+      <span class="usage-summary-card__label">{% trans %}Días Restantes{% endtrans %}</span>
+      <span class="usage-summary-card__value">{{ forecast.days_remaining }}</span>
+      <span class="usage-summary-card__detail">
+        €{{ forecast.daily_rate|number_format(2, ',', '.') }}/{% trans %}día{% endtrans %}
+      </span>
+    </div>
+  </div>
+
+  {# Gráfico de tendencias históricas #}
+  <section class="usage-dashboard__chart-section">
+    <h2 class="usage-dashboard__section-title">{% trans %}Tendencias de Uso{% endtrans %}</h2>
+    <div class="usage-dashboard__chart-container">
+      <canvas id="usage-history-chart" height="300"></canvas>
+    </div>
+  </section>
+
+  {# Desglose de métricas #}
+  <section class="usage-dashboard__metrics-section">
+    <h2 class="usage-dashboard__section-title">{% trans %}Desglose por Métrica{% endtrans %}</h2>
+    <div class="usage-metrics-grid">
+      {% for metric in metrics %}
+        <div class="usage-metric-card" data-metric="{{ metric.key }}">
+          <div class="usage-metric-card__header">
+            <span class="usage-metric-card__dot" style="background-color: {{ metric.color }}"></span>
+            <span class="usage-metric-card__label">{{ metric.label }}</span>
+            <span class="usage-metric-card__model usage-metric-card__model--{{ metric.model }}">
+              {{ metric.model }}
+            </span>
+          </div>
+
+          <div class="usage-metric-card__body">
+            <div class="usage-metric-card__stat">
+              <span class="usage-metric-card__stat-value">
+                {{ metric.total|number_format(0, ',', '.') }}
+              </span>
+              <span class="usage-metric-card__stat-label">{% trans %}total{% endtrans %}</span>
+            </div>
+
+            {% if metric.included > 0 %}
+              <div class="usage-metric-card__stat">
+                <span class="usage-metric-card__stat-value">
+                  {{ metric.included|number_format(0, ',', '.') }}
+                </span>
+                <span class="usage-metric-card__stat-label">{% trans %}incluido{% endtrans %}</span>
+              </div>
+            {% endif %}
+
+            <div class="usage-metric-card__stat">
+              <span class="usage-metric-card__stat-value">
+                {{ metric.billable|number_format(0, ',', '.') }}
+              </span>
+              <span class="usage-metric-card__stat-label">{% trans %}facturable{% endtrans %}</span>
+            </div>
+          </div>
+
+          <div class="usage-metric-card__footer">
+            <span class="usage-metric-card__cost">
+              €{{ metric.cost|number_format(2, ',', '.') }}
+            </span>
+            {% if metric.percentage > 0 %}
+              <span class="usage-metric-card__pct">{{ metric.percentage }}%</span>
+            {% endif %}
+          </div>
+
+          {# Barra de proporción #}
+          <div class="usage-metric-card__bar">
+            <div class="usage-metric-card__bar-fill"
+              style="width: {{ metric.percentage }}%; background-color: {{ metric.color }}">
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="usage-dashboard__empty">
+          <p>{% trans %}No hay datos de uso para este período.{% endtrans %}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Tabla de factura estimada #}
+  {% if bill.line_items is not empty %}
+    <section class="usage-dashboard__bill-section">
+      <h2 class="usage-dashboard__section-title">{% trans %}Factura Estimada{% endtrans %}</h2>
+      <div class="usage-bill-table-wrapper">
+        <table class="usage-bill-table">
+          <thead>
+            <tr>
+              <th>{% trans %}Concepto{% endtrans %}</th>
+              <th class="text-right">{% trans %}Cantidad{% endtrans %}</th>
+              <th class="text-right">{% trans %}Incluido{% endtrans %}</th>
+              <th class="text-right">{% trans %}Facturable{% endtrans %}</th>
+              <th class="text-right">{% trans %}Precio Unit.{% endtrans %}</th>
+              <th>{% trans %}Modelo{% endtrans %}</th>
+              <th class="text-right">{% trans %}Importe{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in bill.line_items %}
+              <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.quantity|number_format(0, ',', '.') }}</td>
+                <td class="text-right">{{ item.included_quantity|number_format(0, ',', '.') }}</td>
+                <td class="text-right">{{ item.billable_quantity|number_format(0, ',', '.') }}</td>
+                <td class="text-right">€{{ item.unit_price|number_format(5, ',', '.') }}</td>
+                <td>
+                  <span class="usage-model-badge usage-model-badge--{{ item.pricing_model }}">
+                    {{ item.pricing_model }}
+                  </span>
+                </td>
+                <td class="text-right"><strong>€{{ item.amount|number_format(2, ',', '.') }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="usage-bill-table__subtotal">
+              <td colspan="6">{% trans %}Subtotal{% endtrans %}</td>
+              <td class="text-right">€{{ bill.subtotal|number_format(2, ',', '.') }}</td>
+            </tr>
+            <tr>
+              <td colspan="6">{% trans %}IVA (21%){% endtrans %}</td>
+              <td class="text-right">€{{ bill.tax|number_format(2, ',', '.') }}</td>
+            </tr>
+            <tr class="usage-bill-table__total">
+              <td colspan="6"><strong>{% trans %}Total{% endtrans %}</strong></td>
+              <td class="text-right"><strong>€{{ bill.total|number_format(2, ',', '.') }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+</div>

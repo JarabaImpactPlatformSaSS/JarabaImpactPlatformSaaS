@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Nodo central (territorio) con relleno -->
+  <circle cx="12" cy="12" r="3" fill="var(--icon-fill, rgba(35,61,99,0.3))" stroke="currentColor"/>
+  <!-- Nodos conectados con relleno -->
+  <circle cx="5" cy="6" r="2" fill="var(--icon-fill, rgba(0,169,165,0.3))" stroke="currentColor"/>
+  <circle cx="19" cy="6" r="2" fill="var(--icon-fill, rgba(255,140,66,0.3))" stroke="currentColor"/>
+  <circle cx="5" cy="18" r="2" fill="var(--icon-fill, rgba(85,107,47,0.3))" stroke="currentColor"/>
+  <circle cx="19" cy="18" r="2" fill="var(--icon-fill, rgba(0,169,165,0.3))" stroke="currentColor"/>
+  <!-- Líneas de conexión -->
+  <line x1="7" y1="7" x2="10" y2="10" stroke="currentColor"/>
+  <line x1="17" y1="7" x2="14" y2="10" stroke="currentColor"/>
+  <line x1="7" y1="17" x2="10" y2="14" stroke="currentColor"/>
+  <line x1="17" y1="17" x2="14" y2="14" stroke="currentColor"/>
+</svg>

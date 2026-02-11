@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Camino/ruta con relleno -->
+  <path d="M3 17 L7 13 L11 15 L15 11 L19 13 L21 7" stroke="currentColor" stroke-width="2"/>
+  <!-- Punto de inicio destacado -->
+  <circle cx="3" cy="17" r="2" fill="var(--icon-fill, rgba(255,140,66,0.4))" stroke="currentColor"/>
+  <!-- Hitos intermedios con color -->
+  <circle cx="7" cy="13" r="1.5" fill="var(--icon-fill, rgba(0,169,165,0.3))" stroke="currentColor"/>
+  <circle cx="11" cy="15" r="1.5" fill="var(--icon-fill, rgba(0,169,165,0.4))" stroke="currentColor"/>
+  <circle cx="15" cy="11" r="1.5" fill="var(--icon-fill, rgba(0,169,165,0.5))" stroke="currentColor"/>
+  <circle cx="19" cy="13" r="1.5" fill="var(--icon-fill, rgba(0,169,165,0.6))" stroke="currentColor"/>
+  <!-- Bandera de meta con color -->
+  <path d="M21 7 L21 3" stroke="currentColor"/>
+  <path d="M21 3 L17 4 L21 5" fill="var(--icon-fill, rgba(255,140,66,0.5))" stroke="currentColor"/>
+</svg>

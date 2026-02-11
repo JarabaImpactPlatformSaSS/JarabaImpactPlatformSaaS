@@ -211,7 +211,7 @@ class Feature extends ConfigEntityBase implements FeatureInterface
      */
     public function getBaseCostMonthly(): float
     {
-        return (float) ($this->base_cost_monthly ?? 0.0);
+        return (float) ($this->get('base_cost_monthly') ?? 0.0);
     }
 
     /**
@@ -228,7 +228,7 @@ class Feature extends ConfigEntityBase implements FeatureInterface
      */
     public function getUnitCost(): float
     {
-        return (float) ($this->unit_cost ?? 0.0);
+        return (float) ($this->get('unit_cost') ?? 0.0);
     }
 
     /**
@@ -245,7 +245,7 @@ class Feature extends ConfigEntityBase implements FeatureInterface
      */
     public function getCostCategory(): string
     {
-        return $this->cost_category ?? 'compute';
+        return $this->get('cost_category') ?? 'compute';
     }
 
     /**
@@ -262,7 +262,7 @@ class Feature extends ConfigEntityBase implements FeatureInterface
      */
     public function getUsageMetric(): string
     {
-        return $this->usage_metric ?? '';
+        return $this->get('usage_metric') ?? '';
     }
 
     /**

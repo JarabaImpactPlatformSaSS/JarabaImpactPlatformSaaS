@@ -509,3 +509,681 @@ function ecosistema_jaraba_core_update_9007() {
   return t('Tabla finops_usage_log ya existe.');
 }
 
+/**
+ * Crea la tabla ai_telemetry para monitoreo de agentes IA.
+ */
+function ecosistema_jaraba_core_update_9008() {
+  $database = \Drupal::database();
+
+  $schema = [
+    'description' => 'Telemetría de invocaciones a agentes de IA.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'request_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'agent_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'provider' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+      'latency_ms' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'success' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+      'tokens_used' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'tokens_prompt' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'tokens_completion' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'cost_estimated' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'model' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+      ],
+      'error_message' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'agent_id' => ['agent_id'],
+      'provider' => ['provider'],
+      'created' => ['created'],
+      'success' => ['success'],
+      'agent_created' => ['agent_id', 'created'],
+    ],
+  ];
+
+  if (!$database->schema()->tableExists('ai_telemetry')) {
+    $database->schema()->createTable('ai_telemetry', $schema);
+    \Drupal::logger('ecosistema_jaraba_core')->notice('Tabla ai_telemetry creada para monitoreo de agentes IA.');
+    return t('Tabla ai_telemetry creada para telemetría de agentes IA.');
+  }
+
+  return t('Tabla ai_telemetry ya existe.');
+}
+
+/**
+ * Crea tablas para colaboración tenant-to-tenant (Phase 13).
+ */
+function ecosistema_jaraba_core_update_9009() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $tables_created = [];
+
+  // Tabla de solicitudes de colaboración.
+  if (!$schema->tableExists('tenant_collaboration_requests')) {
+    $schema->createTable('tenant_collaboration_requests', [
+      'description' => 'Solicitudes de colaboración entre tenants.',
+      'fields' => [
+        'id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'from_tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'to_tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'type' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'status' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'default' => 'pending',
+        ],
+        'details' => [
+          'type' => 'text',
+          'size' => 'medium',
+        ],
+        'terms' => [
+          'type' => 'text',
+          'size' => 'medium',
+        ],
+        'decline_reason' => [
+          'type' => 'varchar',
+          'length' => 512,
+        ],
+        'accepted_at' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'updated' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'from_tenant' => ['from_tenant_id'],
+        'to_tenant' => ['to_tenant_id'],
+        'status' => ['status'],
+      ],
+    ]);
+    $tables_created[] = 'tenant_collaboration_requests';
+  }
+
+  // Tabla de partnerships activas.
+  if (!$schema->tableExists('tenant_partnerships')) {
+    $schema->createTable('tenant_partnerships', [
+      'description' => 'Partnerships activas entre tenants.',
+      'fields' => [
+        'id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'request_id' => [
+          'type' => 'varchar',
+          'length' => 32,
+        ],
+        'tenant_a_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'tenant_b_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'type' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'status' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'default' => 'active',
+        ],
+        'terms' => [
+          'type' => 'text',
+          'size' => 'medium',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'tenant_a' => ['tenant_a_id'],
+        'tenant_b' => ['tenant_b_id'],
+        'status' => ['status'],
+      ],
+    ]);
+    $tables_created[] = 'tenant_partnerships';
+  }
+
+  // Tabla de mensajes entre tenants.
+  if (!$schema->tableExists('tenant_messages')) {
+    $schema->createTable('tenant_messages', [
+      'description' => 'Mensajes entre tenants.',
+      'fields' => [
+        'id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'from_tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'to_tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'subject' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'message' => [
+          'type' => 'text',
+          'size' => 'medium',
+          'not null' => TRUE,
+        ],
+        'is_read' => [
+          'type' => 'int',
+          'size' => 'tiny',
+          'default' => 0,
+        ],
+        'read_at' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'to_tenant' => ['to_tenant_id'],
+        'is_read' => ['is_read'],
+      ],
+    ]);
+    $tables_created[] = 'tenant_messages';
+  }
+
+  // Tabla de bundles colaborativos.
+  if (!$schema->tableExists('collaborative_bundles')) {
+    $schema->createTable('collaborative_bundles', [
+      'description' => 'Bundles colaborativos entre tenants.',
+      'fields' => [
+        'id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'products' => [
+          'type' => 'text',
+          'size' => 'medium',
+          'not null' => TRUE,
+        ],
+        'discount_percent' => [
+          'type' => 'float',
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'status' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'default' => 'active',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+    ]);
+    $tables_created[] = 'collaborative_bundles';
+  }
+
+  if (!empty($tables_created)) {
+    \Drupal::logger('ecosistema_jaraba_core')->notice('Phase 13 tables created: @tables', [
+      '@tables' => implode(', ', $tables_created),
+    ]);
+    return t('Phase 13 collaboration tables created: @tables', [
+      '@tables' => implode(', ', $tables_created),
+    ]);
+  }
+
+  return t('Phase 13 tables already exist.');
+}
+
+/**
+ * Crea tablas para Q2 Predictive Onboarding (Sprint 5-6).
+ */
+function ecosistema_jaraba_core_update_9010() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $tables_created = [];
+
+  // Tabla de señales de intención de usuario.
+  if (!$schema->tableExists('user_intent_signals')) {
+    $schema->createTable('user_intent_signals', [
+      'description' => 'Señales de comportamiento para clasificación de intención.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'user_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'session_id' => [
+          'type' => 'varchar',
+          'length' => 128,
+          'not null' => TRUE,
+        ],
+        'signal' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'value' => [
+          'type' => 'varchar',
+          'length' => 512,
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'user_session' => ['user_id', 'session_id'],
+        'signal' => ['signal'],
+        'created' => ['created'],
+      ],
+    ]);
+    $tables_created[] = 'user_intent_signals';
+  }
+
+  // Tabla de eventos TTFV.
+  if (!$schema->tableExists('ttfv_events')) {
+    $schema->createTable('ttfv_events', [
+      'description' => 'Eventos de Time-to-First-Value por tenant.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'event' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'metadata' => [
+          'type' => 'text',
+          'size' => 'medium',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'tenant_event' => ['tenant_id', 'event'],
+        'created' => ['created'],
+      ],
+    ]);
+    $tables_created[] = 'ttfv_events';
+  }
+
+  // Tabla de tours completados.
+  if (!$schema->tableExists('user_completed_tours')) {
+    $schema->createTable('user_completed_tours', [
+      'description' => 'Tours guiados completados por usuario.',
+      'fields' => [
+        'user_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'tour_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'completed_at' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['user_id', 'tour_id'],
+    ]);
+    $tables_created[] = 'user_completed_tours';
+  }
+
+  // Tabla de mensajes in-app.
+  if (!$schema->tableExists('in_app_messages')) {
+    $schema->createTable('in_app_messages', [
+      'description' => 'Mensajes in-app configurables.',
+      'fields' => [
+        'id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'type' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'title' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'content' => [
+          'type' => 'text',
+          'size' => 'medium',
+          'not null' => TRUE,
+        ],
+        'cta_text' => [
+          'type' => 'varchar',
+          'length' => 64,
+        ],
+        'cta_url' => [
+          'type' => 'varchar',
+          'length' => 512,
+        ],
+        'context' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'default' => 'global',
+        ],
+        'priority' => [
+          'type' => 'int',
+          'size' => 'small',
+          'default' => 5,
+        ],
+        'target_segment' => [
+          'type' => 'varchar',
+          'length' => 64,
+        ],
+        'start_date' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+        ],
+        'end_date' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+        ],
+        'style' => [
+          'type' => 'text',
+          'size' => 'small',
+        ],
+        'status' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'default' => 'active',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'status' => ['status'],
+        'context' => ['context'],
+      ],
+    ]);
+    $tables_created[] = 'in_app_messages';
+  }
+
+  // Tabla de interacciones con mensajes.
+  if (!$schema->tableExists('in_app_message_interactions')) {
+    $schema->createTable('in_app_message_interactions', [
+      'description' => 'Interacciones de usuarios con mensajes in-app.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'message_id' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'user_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'action' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'message_user' => ['message_id', 'user_id'],
+      ],
+    ]);
+    $tables_created[] = 'in_app_message_interactions';
+  }
+
+  if (!empty($tables_created)) {
+    \Drupal::logger('ecosistema_jaraba_core')->notice('Q2 Onboarding tables created: @tables', [
+      '@tables' => implode(', ', $tables_created),
+    ]);
+    return t('Q2 Predictive Onboarding tables created: @tables', [
+      '@tables' => implode(', ', $tables_created),
+    ]);
+  }
+
+  return t('Q2 Onboarding tables already exist.');
+}
+
+/**
+ * BIZ-002: Instala grace_period_ends y cancel_at en Tenant; migra datos desde State.
+ *
+ * Estos campos estaban almacenados en la State API (volátil, no auditable).
+ * Se migran a campos de entidad para persistencia robusta.
+ *
+ * @see docs/tecnicos/aprendizajes/2026-02-11_auditoria_coherencia_9_roles.md
+ */
+function ecosistema_jaraba_core_update_9011() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+  $fields_installed = [];
+
+  // 1. Instalar grace_period_ends si no existe.
+  $grace_def = $entity_definition_manager->getFieldStorageDefinition('grace_period_ends', 'tenant');
+  if (!$grace_def) {
+    $grace_def = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fin Periodo de Gracia'))
+      ->setDescription(t('Fecha de expiración del periodo de gracia tras fallo de pago.'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayOptions('view', ['region' => 'hidden'])
+      ->setDisplayOptions('form', ['region' => 'hidden']);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'grace_period_ends',
+      'tenant',
+      'ecosistema_jaraba_core',
+      $grace_def
+    );
+    $fields_installed[] = 'grace_period_ends';
+  }
+
+  // 2. Instalar cancel_at si no existe.
+  $cancel_def = $entity_definition_manager->getFieldStorageDefinition('cancel_at', 'tenant');
+  if (!$cancel_def) {
+    $cancel_def = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Cancelación Programada'))
+      ->setDescription(t('Fecha de cancelación diferida al final del periodo de facturación.'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayOptions('view', ['region' => 'hidden'])
+      ->setDisplayOptions('form', ['region' => 'hidden']);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'cancel_at',
+      'tenant',
+      'ecosistema_jaraba_core',
+      $cancel_def
+    );
+    $fields_installed[] = 'cancel_at';
+  }
+
+  // 3. Migrar datos de State → Entity fields.
+  $state = \Drupal::state();
+  $tenant_storage = \Drupal::entityTypeManager()->getStorage('tenant');
+  $tenant_ids = $tenant_storage->getQuery()
+    ->accessCheck(FALSE)
+    ->execute();
+
+  $migrated = 0;
+  foreach ($tenant_ids as $tid) {
+    $grace_key = "subscription_grace_ends_{$tid}";
+    $cancel_key = "subscription_cancel_at_{$tid}";
+    $grace_value = $state->get($grace_key);
+    $cancel_value = $state->get($cancel_key);
+
+    if ($grace_value || $cancel_value) {
+      $tenant = $tenant_storage->load($tid);
+      if ($tenant) {
+        if ($grace_value) {
+          $tenant->set('grace_period_ends', $grace_value);
+          $state->delete($grace_key);
+        }
+        if ($cancel_value) {
+          $tenant->set('cancel_at', $cancel_value);
+          $state->delete($cancel_key);
+        }
+        $tenant->save();
+        $migrated++;
+      }
+    }
+  }
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'BIZ-002: @fields instalados, @migrated tenants migrados desde State.',
+    ['@fields' => implode(', ', $fields_installed), '@migrated' => $migrated]
+  );
+
+  return t('BIZ-002: Campos @fields instalados en Tenant. @migrated tenants migrados desde State API.', [
+    '@fields' => implode(', ', $fields_installed) ?: 'ya existentes',
+    '@migrated' => $migrated,
+  ]);
+}

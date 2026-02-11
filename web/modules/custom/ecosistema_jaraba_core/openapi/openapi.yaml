@@ -1,0 +1,926 @@
+openapi: 3.0.3
+info:
+  title: Jaraba Impact Platform API
+  description: |
+    API REST para integración con Jaraba Impact Platform.
+    
+    ## Autenticación
+    
+    Todas las peticiones autenticadas requieren el header `X-API-Key` con la API key del tenant.
+    
+    ```
+    X-API-Key: your-tenant-api-key
+    ```
+    
+    ## Rate Limiting
+    
+    - Plan Starter: 100 requests/hora
+    - Plan Pro: 1000 requests/hora
+    - Plan Enterprise: Sin límite
+    
+    ## Errores
+    
+    La API usa códigos HTTP estándar:
+    - `200` OK
+    - `201` Created
+    - `400` Bad Request
+    - `401` Unauthorized
+    - `403` Forbidden
+    - `404` Not Found
+    - `429` Too Many Requests
+    - `500` Internal Server Error
+    
+  version: 1.0.0
+  contact:
+    name: Jaraba Impact Platform
+    url: https://plataformadeecosistemas.es
+    email: api@plataformadeecosistemas.es
+  license:
+    name: Proprietary
+    url: https://plataformadeecosistemas.es/terms
+
+servers:
+  - url: https://jaraba-saas.lndo.site/api/v1
+    description: Development server
+  - url: https://plataformadeecosistemas.es/api/v1
+    description: Production server
+
+tags:
+  - name: Tenants
+    description: Gestión de organizaciones/tenants
+  - name: Plans
+    description: Planes de suscripción disponibles
+  - name: Marketplace
+    description: Productos del marketplace
+  - name: Webhooks
+    description: Configuración de webhooks
+  - name: Payments
+    description: Stripe subscriptions, Connect, billing
+  - name: Analytics
+    description: Event tracking, dashboards, funnels
+  - name: RAG
+    description: Retrieval-Augmented Generation (AI knowledge base)
+  - name: Copilot
+    description: AI copilot for entrepreneurs
+  - name: Content Hub
+    description: Blog articles, AI writing assistant, recommendations
+  - name: Jobs
+    description: Job board, applications, matching
+  - name: Mentoring
+    description: Mentor marketplace, sessions, packages
+  - name: LMS
+    description: Courses, enrollments, progress, certifications
+  - name: Business Tools
+    description: Business Model Canvas, MVP hypotheses, projections
+  - name: Diagnostic
+    description: Business diagnostic assessments
+  - name: Groups
+    description: Collaboration groups for entrepreneurs
+  - name: Page Builder
+    description: Visual page builder, sections, templates
+  - name: Site Builder
+    description: Site structure, configuration, branding
+  - name: Candidates
+    description: Candidate profiles, CV builder, skills
+  - name: AI Agents
+    description: Autonomous AI agents and workflows
+  - name: Credentials
+    description: Open Badges and verifiable credentials
+  - name: GDPR
+    description: Consent management and data privacy
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /tenants:
+    get:
+      tags:
+        - Tenants
+      summary: Listar tenants del usuario
+      description: Retorna todos los tenants a los que el usuario tiene acceso
+      operationId: listTenants
+      responses:
+        '200':
+          description: Lista de tenants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tenant'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tenants/{tenantId}:
+    get:
+      tags:
+        - Tenants
+      summary: Obtener tenant específico
+      operationId: getTenant
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Datos del tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tenants/{tenantId}/usage:
+    get:
+      tags:
+        - Tenants
+      summary: Métricas de uso del tenant
+      operationId: getTenantUsage
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Métricas de uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantUsage'
+
+  /plans:
+    get:
+      tags:
+        - Plans
+      summary: Listar planes disponibles
+      description: Retorna todos los planes de suscripción disponibles
+      operationId: listPlans
+      parameters:
+        - name: vertical
+          in: query
+          description: Filtrar por vertical
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de planes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plan'
+
+  /marketplace/products:
+    get:
+      tags:
+        - Marketplace
+      summary: Listar productos del marketplace
+      operationId: listMarketplaceProducts
+      parameters:
+        - name: category
+          in: query
+          description: Filtrar por categoría
+          schema:
+            type: string
+        - name: tenant
+          in: query
+          description: Filtrar por tenant
+          schema:
+            type: integer
+        - name: q
+          in: query
+          description: Buscar por texto
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /marketplace/categories:
+    get:
+      tags:
+        - Marketplace
+      summary: Listar categorías del marketplace
+      operationId: listMarketplaceCategories
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: Listar webhooks configurados
+      operationId: listWebhooks
+      responses:
+        '200':
+          description: Lista de webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+    post:
+      tags:
+        - Webhooks
+      summary: Registrar nuevo webhook
+      operationId: createWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - events
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL a la que enviar eventos
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - order.created
+                      - order.updated
+                      - product.created
+                      - product.updated
+                      - subscription.changed
+                secret:
+                  type: string
+                  description: Secret para verificar signatures
+      responses:
+        '201':
+          description: Webhook creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /webhooks/{webhookId}:
+    delete:
+      tags:
+        - Webhooks
+      summary: Eliminar webhook
+      operationId: deleteWebhook
+      parameters:
+        - name: webhookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Webhook eliminado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # =========================================================================
+  # LOW-05: Stub paths for remaining API verticals.
+  # Each vertical module owns its detailed spec; these stubs document the
+  # surface for discovery and integration planning.
+  # =========================================================================
+
+  # --- Analytics ---
+  /analytics/event:
+    post:
+      tags: [Analytics]
+      summary: Track single analytics event
+      operationId: trackEvent
+      responses:
+        '202':
+          description: Event accepted
+
+  /analytics/dashboard:
+    get:
+      tags: [Analytics]
+      summary: Get dashboard KPIs
+      operationId: getAnalyticsDashboard
+      responses:
+        '200':
+          description: Dashboard metrics
+
+  # --- RAG ---
+  /jaraba-rag/query:
+    post:
+      tags: [RAG]
+      summary: Query knowledge base with natural language
+      operationId: ragQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                top_k:
+                  type: integer
+                  default: 5
+      responses:
+        '200':
+          description: RAG response with sources and confidence
+
+  # --- Copilot ---
+  /copilot/chat:
+    post:
+      tags: [Copilot]
+      summary: Chat with AI copilot
+      operationId: copilotChat
+      responses:
+        '200':
+          description: Copilot response
+
+  # --- Content Hub ---
+  /content/articles:
+    get:
+      tags: [Content Hub]
+      summary: List articles
+      operationId: listArticles
+      responses:
+        '200':
+          description: Paginated article list
+    post:
+      tags: [Content Hub]
+      summary: Create article
+      operationId: createArticle
+      responses:
+        '201':
+          description: Article created
+
+  /content/ai/full-article:
+    post:
+      tags: [Content Hub]
+      summary: Generate full article with AI
+      operationId: generateFullArticle
+      responses:
+        '200':
+          description: Generated article content
+
+  # --- Jobs ---
+  /jobs:
+    get:
+      tags: [Jobs]
+      summary: List job postings
+      operationId: listJobs
+      responses:
+        '200':
+          description: Paginated job list
+
+  /jobs/{job_id}/apply:
+    post:
+      tags: [Jobs]
+      summary: Apply for a job
+      operationId: applyForJob
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Application submitted
+
+  # --- Mentoring ---
+  /mentors:
+    get:
+      tags: [Mentoring]
+      summary: List available mentors
+      operationId: listMentors
+      responses:
+        '200':
+          description: Mentor list
+
+  /sessions:
+    post:
+      tags: [Mentoring]
+      summary: Book mentoring session
+      operationId: bookSession
+      responses:
+        '201':
+          description: Session booked
+
+  # --- LMS ---
+  /courses:
+    get:
+      tags: [LMS]
+      summary: List courses
+      operationId: listCourses
+      responses:
+        '200':
+          description: Course catalog
+
+  /courses/{course_id}/enroll:
+    post:
+      tags: [LMS]
+      summary: Enroll in course
+      operationId: enrollInCourse
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Enrollment created
+
+  # --- Business Tools ---
+  /canvas:
+    get:
+      tags: [Business Tools]
+      summary: List Business Model Canvases
+      operationId: listCanvases
+      responses:
+        '200':
+          description: Canvas list
+    post:
+      tags: [Business Tools]
+      summary: Create Business Model Canvas
+      operationId: createCanvas
+      responses:
+        '201':
+          description: Canvas created
+
+  /canvas/{id}/analyze:
+    post:
+      tags: [Business Tools]
+      summary: AI analysis of canvas
+      operationId: analyzeCanvas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: AI analysis results
+
+  # --- Diagnostic ---
+  /diagnostics:
+    get:
+      tags: [Diagnostic]
+      summary: List business diagnostics
+      operationId: listDiagnostics
+      responses:
+        '200':
+          description: Diagnostic list
+    post:
+      tags: [Diagnostic]
+      summary: Create diagnostic assessment
+      operationId: createDiagnostic
+      responses:
+        '201':
+          description: Diagnostic created
+
+  /diagnostics/{uuid}/results:
+    get:
+      tags: [Diagnostic]
+      summary: Get diagnostic results
+      operationId: getDiagnosticResults
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Diagnostic results with scores
+
+  # --- Groups ---
+  /groups:
+    get:
+      tags: [Groups]
+      summary: List collaboration groups
+      operationId: listGroups
+      responses:
+        '200':
+          description: Group catalog
+
+  /groups/{id}/join:
+    post:
+      tags: [Groups]
+      summary: Join a group
+      operationId: joinGroup
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Membership created
+
+  # --- Page Builder ---
+  /page-builder/templates:
+    get:
+      tags: [Page Builder]
+      summary: List page templates
+      operationId: listPageTemplates
+      responses:
+        '200':
+          description: Template catalog
+
+  /pages/{page_content}/canvas:
+    get:
+      tags: [Page Builder]
+      summary: Get page canvas data
+      operationId: getPageCanvas
+      parameters:
+        - name: page_content
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Canvas JSON
+
+  # --- Site Builder ---
+  /site/tree:
+    get:
+      tags: [Site Builder]
+      summary: Get site page tree
+      operationId: getSiteTree
+      responses:
+        '200':
+          description: Hierarchical page tree
+
+  /site/config:
+    get:
+      tags: [Site Builder]
+      summary: Get site configuration
+      operationId: getSiteConfig
+      responses:
+        '200':
+          description: Site branding and settings
+
+  # --- Candidates ---
+  /profile:
+    get:
+      tags: [Candidates]
+      summary: Get candidate profile
+      operationId: getCandidateProfile
+      responses:
+        '200':
+          description: Candidate profile data
+    patch:
+      tags: [Candidates]
+      summary: Update candidate profile
+      operationId: updateCandidateProfile
+      responses:
+        '200':
+          description: Profile updated
+
+  /cv/generate:
+    post:
+      tags: [Candidates]
+      summary: Generate CV with AI
+      operationId: generateCv
+      responses:
+        '200':
+          description: Generated CV
+
+  # --- AI Agents ---
+  /agents:
+    get:
+      tags: [AI Agents]
+      summary: List available AI agents
+      operationId: listAgents
+      responses:
+        '200':
+          description: Agent catalog
+
+  /agents/{agent_id}/execute:
+    post:
+      tags: [AI Agents]
+      summary: Execute agent action
+      operationId: executeAgentAction
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Execution result
+
+  # --- Credentials ---
+  /credentials:
+    get:
+      tags: [Credentials]
+      summary: List user credentials and badges
+      operationId: listCredentials
+      responses:
+        '200':
+          description: Credential list
+
+  # --- GDPR ---
+  /consent/status:
+    get:
+      tags: [GDPR]
+      summary: Get consent status
+      operationId: getConsentStatus
+      security: []
+      responses:
+        '200':
+          description: Current consent state
+
+  /consent/grant:
+    post:
+      tags: [GDPR]
+      summary: Grant consent
+      operationId: grantConsent
+      security: []
+      responses:
+        '200':
+          description: Consent granted
+
+  # --- Payments ---
+  /stripe/create-subscription:
+    post:
+      tags: [Payments]
+      summary: Create Stripe subscription
+      operationId: createSubscription
+      responses:
+        '200':
+          description: Subscription client secret
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API Key del tenant
+
+  schemas:
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Cooperativa Aceites del Sur"
+        domain:
+          type: string
+          example: "aceites-del-sur.jaraba.io"
+        vertical:
+          type: string
+          example: "agroconecta"
+        subscription_status:
+          type: string
+          enum: [pending, trial, active, past_due, suspended, cancelled]
+        plan:
+          $ref: '#/components/schemas/PlanSummary'
+        created_at:
+          type: string
+          format: date-time
+        trial_ends_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    TenantUsage:
+      type: object
+      properties:
+        tenant_id:
+          type: integer
+        period:
+          type: string
+          example: "2026-01"
+        producers_count:
+          type: integer
+          example: 15
+        products_count:
+          type: integer
+          example: 45
+        storage_mb:
+          type: number
+          example: 256.5
+        ai_queries:
+          type: integer
+          example: 150
+        api_requests:
+          type: integer
+          example: 1234
+        limits:
+          type: object
+          properties:
+            producers:
+              type: integer
+            storage_mb:
+              type: integer
+            ai_queries:
+              type: integer
+
+    Plan:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Profesional"
+        price_monthly:
+          type: number
+          example: 149.00
+        price_yearly:
+          type: number
+          example: 1490.00
+        features:
+          type: array
+          items:
+            type: string
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+
+    PlanSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          example: "Aceite de Oliva Virgen Extra"
+        price:
+          type: string
+          example: "€15.90"
+        image:
+          type: string
+          format: uri
+        tenant:
+          type: string
+          example: "Finca Olivares"
+        category:
+          type: string
+          example: "Alimentación"
+        url:
+          type: string
+          format: uri
+
+    Category:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: "alimentacion"
+        name:
+          type: string
+          example: "Alimentación"
+        count:
+          type: integer
+          example: 45
+        icon:
+          type: string
+          example: "🥖"
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+  responses:
+    Unauthorized:
+      description: API Key inválida o no proporcionada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "API Key inválida o no proporcionada"
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "NOT_FOUND"
+              message: "Recurso no encontrado"
+
+    BadRequest:
+      description: Petición inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "BAD_REQUEST"
+              message: "Datos de petición inválidos"

@@ -1,0 +1,477 @@
+/**
+ * @file
+ * Styles for Collaboration Groups module.
+ * 
+ * Uses injectable CSS variables following project standards.
+ */
+
+/* ==========================================================================
+   GROUP CARDS
+   ========================================================================== */
+
+.ej-group-card {
+    background: var(--ej-color-surface, #fff);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-lg, 12px);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--ej-color-primary), var(--ej-color-secondary));
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    &--featured {
+        border-color: var(--ej-color-primary, #6366f1);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+}
+
+.ej-group-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ej-group-card__image {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--ej-radius-md, 8px);
+    object-fit: cover;
+    background: var(--ej-color-muted, #f1f5f9);
+}
+
+.ej-group-card__title {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+    margin: 0 0 0.25rem;
+}
+
+.ej-group-card__type {
+    display: inline-block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--ej-radius-sm, 4px);
+    background: var(--ej-color-muted, #f1f5f9);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+.ej-group-card__description {
+    color: var(--ej-color-muted-foreground, #64748b);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    line-height: 1.6;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ej-group-card__stats {
+    display: flex;
+    gap: var(--ej-spacing-lg, 1.5rem);
+    padding-top: var(--ej-spacing-md, 1rem);
+    border-top: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+}
+
+.ej-group-card__stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+
+    .ej-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* ==========================================================================
+   GROUP DETAIL PAGE
+   ========================================================================== */
+
+.ej-group-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ej-group-header {
+    display: flex;
+    gap: var(--ej-spacing-xl, 2rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+    padding: var(--ej-spacing-xl, 2rem);
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-lg, 12px);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+}
+
+.ej-group-header__image {
+    width: 200px;
+    height: 200px;
+    border-radius: var(--ej-radius-md, 8px);
+    object-fit: cover;
+}
+
+.ej-group-header__content {
+    flex: 1;
+}
+
+.ej-group-header__title {
+    font-size: var(--ej-font-size-2xl, 1.875rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.ej-group-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ej-group-header__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--ej-color-primary-soft, #eef2ff);
+    color: var(--ej-color-primary, #6366f1);
+    border-radius: var(--ej-radius-full, 9999px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   DISCUSSIONS
+   ========================================================================== */
+
+.ej-discussion-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.ej-discussion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-md, 1rem);
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-md, 8px);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    transition: border-color 0.2s;
+
+    &:hover {
+        border-color: var(--ej-color-primary, #6366f1);
+    }
+
+    &--pinned {
+        border-left: 3px solid var(--ej-color-warning, #f59e0b);
+        background: #fffbeb;
+    }
+
+    &--locked {
+        opacity: 0.7;
+    }
+}
+
+.ej-discussion-item__category {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+
+    &--question {
+        background: var(--ej-color-info, #3b82f6);
+    }
+
+    &--discussion {
+        background: var(--ej-color-success, #22c55e);
+    }
+
+    &--announcement {
+        background: var(--ej-color-warning, #f59e0b);
+    }
+
+    &--resource {
+        background: var(--ej-color-secondary, #8b5cf6);
+    }
+
+    &--feedback {
+        background: var(--ej-color-primary, #6366f1);
+    }
+}
+
+.ej-discussion-item__content {
+    flex: 1;
+}
+
+.ej-discussion-item__title {
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+    margin: 0 0 0.25rem;
+}
+
+.ej-discussion-item__meta {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+.ej-discussion-item__stats {
+    display: flex;
+    gap: var(--ej-spacing-md, 1rem);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+/* ==========================================================================
+   EVENTS
+   ========================================================================== */
+
+.ej-event-card {
+    background: var(--ej-color-surface, #fff);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-lg, 12px);
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.ej-event-card__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    padding: var(--ej-spacing-md, 1rem);
+    background: linear-gradient(135deg, var(--ej-color-primary), var(--ej-color-secondary));
+    color: white;
+    text-align: center;
+}
+
+.ej-event-card__day {
+    font-size: var(--ej-font-size-2xl, 1.875rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.ej-event-card__month {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.ej-event-card__content {
+    flex: 1;
+    padding: var(--ej-spacing-md, 1rem);
+}
+
+.ej-event-card__type {
+    display: inline-block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--ej-radius-sm, 4px);
+    margin-bottom: 0.5rem;
+
+    &--webinar {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    &--meetup {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    &--workshop {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    &--networking {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+}
+
+.ej-event-card__title {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+    margin: 0 0 0.5rem;
+}
+
+.ej-event-card__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+.ej-event-card__detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .ej-icon {
+        width: 14px;
+        height: 14px;
+        opacity: 0.7;
+    }
+}
+
+.ej-event-card__capacity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.ej-event-card__capacity-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--ej-color-muted, #e2e8f0);
+    border-radius: var(--ej-radius-full, 9999px);
+    overflow: hidden;
+}
+
+.ej-event-card__capacity-fill {
+    height: 100%;
+    background: var(--ej-color-success, #22c55e);
+    border-radius: var(--ej-radius-full, 9999px);
+    transition: width 0.3s ease;
+
+    &--warning {
+        background: var(--ej-color-warning, #f59e0b);
+    }
+
+    &--full {
+        background: var(--ej-color-danger, #ef4444);
+    }
+}
+
+/* ==========================================================================
+   MEMBERS
+   ========================================================================== */
+
+.ej-member-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.ej-member-card {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-md, 1rem);
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-md, 8px);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+}
+
+.ej-member-card__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--ej-color-muted, #f1f5f9);
+}
+
+.ej-member-card__info {
+    flex: 1;
+}
+
+.ej-member-card__name {
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+}
+
+.ej-member-card__role {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+
+    &--admin {
+        color: var(--ej-color-danger, #ef4444);
+        font-weight: 600;
+    }
+
+    &--moderator {
+        color: var(--ej-color-warning, #f59e0b);
+        font-weight: 500;
+    }
+
+    &--mentor {
+        color: var(--ej-color-primary, #6366f1);
+        font-weight: 500;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .ej-group-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .ej-group-header__image {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+    }
+
+    .ej-group-header__meta {
+        justify-content: center;
+    }
+
+    .ej-event-card {
+        flex-direction: column;
+    }
+
+    .ej-event-card__date {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .ej-event-card__day,
+    .ej-event-card__month {
+        font-size: var(--ej-font-size-base, 1rem);
+    }
+}

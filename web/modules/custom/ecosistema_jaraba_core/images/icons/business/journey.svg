@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Camino/ruta con hitos -->
+  <path d="M3 17 L7 13 L11 15 L15 11 L19 13 L21 7"/>
+  <!-- Punto de inicio -->
+  <circle cx="3" cy="17" r="2"/>
+  <!-- Hitos intermedios -->
+  <circle cx="7" cy="13" r="1.5"/>
+  <circle cx="11" cy="15" r="1.5"/>
+  <circle cx="15" cy="11" r="1.5"/>
+  <circle cx="19" cy="13" r="1.5"/>
+  <!-- Bandera de meta -->
+  <path d="M21 7 L21 3"/>
+  <path d="M21 3 L17 4 L21 5"/>
+</svg>

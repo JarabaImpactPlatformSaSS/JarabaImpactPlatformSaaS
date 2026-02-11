@@ -373,6 +373,35 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'rbac-matrix',
       'path' => $path . '/templates',
     ],
+
+    // =========================================================================
+    // USAGE DASHBOARD - G111 / f111
+    // =========================================================================
+
+    // Dashboard de uso y facturación para tenants
+    // Ruta: /mi-cuenta/uso
+    'usage_dashboard' => [
+      'variables' => [
+        'tenant' => NULL,
+        'period' => '',
+        'metrics' => [],
+        'bill' => [],
+        'forecast' => [],
+        'alerts' => [],
+        'budget' => 0,
+      ],
+      'template' => 'usage-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Estado vacío del dashboard de uso
+    'usage_dashboard_empty' => [
+      'variables' => [
+        'message' => '',
+      ],
+      'template' => 'usage-dashboard-empty',
+      'path' => $path . '/templates',
+    ],
   ];
 
 

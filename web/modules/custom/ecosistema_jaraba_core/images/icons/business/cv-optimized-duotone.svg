@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Documento CV con relleno -->
+  <rect x="4" y="2" width="12" height="18" rx="2" fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Foto perfil -->
+  <circle cx="10" cy="7" r="2" fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Líneas de texto -->
+  <line x1="6" y1="12" x2="14" y2="12" stroke="currentColor"/>
+  <line x1="6" y1="15" x2="12" y2="15" stroke="currentColor"/>
+  <line x1="6" y1="18" x2="14" y2="18" stroke="currentColor"/>
+  <!-- Estrella de optimización -->
+  <path d="M18 4 L19 6 L21 6 L19.5 7.5 L20 10 L18 8.5 L16 10 L16.5 7.5 L15 6 L17 6 Z" 
+        fill="var(--icon-fill, rgba(255,140,66,0.3))" stroke="currentColor"/>
+</svg>

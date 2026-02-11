@@ -12,71 +12,41 @@ use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Servicio para gestión de Tenants.
+ * BE-03: Fachada para gestión de Tenants.
  *
- * Maneja CRUD de tenants, negociación de tema por dominio
- * y operaciones relacionadas con el ciclo de vida del tenant.
+ * Delega a servicios especializados manteniendo BC:
+ * - TenantSubscriptionService: trial, activate, suspend, cancel, changePlan
+ * - TenantDomainService: domainExists, getTenantByDomain
+ * - TenantThemeService: getCurrentThemeSettings
  */
 class TenantManager
 {
 
-    /**
-     * El entity type manager.
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-     */
     protected EntityTypeManagerInterface $entityTypeManager;
-
-    /**
-     * El usuario actual.
-     *
-     * @var \Drupal\Core\Session\AccountProxyInterface
-     */
     protected AccountProxyInterface $currentUser;
-
-    /**
-     * Validador de planes.
-     *
-     * @var \Drupal\ecosistema_jaraba_core\Service\PlanValidator
-     */
     protected PlanValidator $planValidator;
-
-    /**
-     * Logger.
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
     protected LoggerInterface $logger;
-
-    /**
-     * Cache del tenant actual.
-     *
-     * @var \Drupal\ecosistema_jaraba_core\Entity\TenantInterface|null
-     */
     protected ?TenantInterface $currentTenant = NULL;
+    protected ?TenantSubscriptionService $subscriptionService = NULL;
+    protected ?TenantDomainService $domainService = NULL;
 
     /**
      * Constructor.
-     *
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-     *   El entity type manager.
-     * @param \Drupal\Core\Session\AccountProxyInterface $current_user
-     *   El usuario actual.
-     * @param \Drupal\ecosistema_jaraba_core\Service\PlanValidator $plan_validator
-     *   El validador de planes.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El logger.
      */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         AccountProxyInterface $current_user,
         PlanValidator $plan_validator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ?TenantSubscriptionService $subscription_service = NULL,
+        ?TenantDomainService $domain_service = NULL
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
         $this->planValidator = $plan_validator;
         $this->logger = $logger;
+        $this->subscriptionService = $subscription_service;
+        $this->domainService = $domain_service;
     }
 
     /**
@@ -145,33 +115,32 @@ class TenantManager
      */
     public function domainExists(string $domain): bool
     {
+        if ($this->domainService) {
+            return $this->domainService->domainExists($domain);
+        }
         $tenants = $this->entityTypeManager
             ->getStorage('tenant')
             ->loadByProperties(['domain' => $domain]);
-
         return !empty($tenants);
     }
 
     /**
      * Obtiene el Tenant por dominio.
      *
-     * @param string $domain
-     *   El dominio a buscar.
-     *
-     * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface|null
-     *   El tenant o NULL si no existe.
+     * @deprecated Use TenantDomainService::getTenantByDomain() directly.
      */
     public function getTenantByDomain(string $domain): ?TenantInterface
     {
+        if ($this->domainService) {
+            return $this->domainService->getTenantByDomain($domain);
+        }
         $tenants = $this->entityTypeManager
             ->getStorage('tenant')
             ->loadByProperties(['domain' => $domain]);
-
         if (!empty($tenants)) {
             $tenant = reset($tenants);
             return $tenant instanceof TenantInterface ? $tenant : NULL;
         }
-
         return NULL;
     }
 
@@ -254,133 +223,99 @@ class TenantManager
      * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface
      *   El tenant actualizado.
      */
+    /**
+     * @deprecated Use TenantSubscriptionService::startTrial() directly.
+     */
     public function startTrial(TenantInterface $tenant, int $days = 14): TenantInterface
     {
+        if ($this->subscriptionService) {
+            return $this->subscriptionService->startTrial($tenant, $days);
+        }
         $trial_ends = new \DateTime("+{$days} days");
-
         $tenant->setSubscriptionStatus(TenantInterface::STATUS_TRIAL);
         $tenant->set('trial_ends', $trial_ends->format('Y-m-d\TH:i:s'));
         $tenant->save();
-
         $this->logger->info('Trial iniciado para tenant @id: @days días', [
-            '@id' => $tenant->id(),
-            '@days' => $days,
+            '@id' => $tenant->id(), '@days' => $days,
         ]);
-
         return $tenant;
     }
 
     /**
-     * Activa la suscripción de un tenant.
-     *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
-     *
-     * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface
-     *   El tenant actualizado.
+     * @deprecated Use TenantSubscriptionService::activateSubscription() directly.
      */
     public function activateSubscription(TenantInterface $tenant): TenantInterface
     {
+        if ($this->subscriptionService) {
+            return $this->subscriptionService->activateSubscription($tenant);
+        }
         $tenant->setSubscriptionStatus(TenantInterface::STATUS_ACTIVE);
         $tenant->set('trial_ends', NULL);
         $tenant->save();
-
-        $this->logger->info('Suscripción activada para tenant @id', [
-            '@id' => $tenant->id(),
-        ]);
-
+        $this->logger->info('Suscripción activada para tenant @id', ['@id' => $tenant->id()]);
         return $tenant;
     }
 
     /**
-     * Suspende un tenant.
-     *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
-     * @param string $reason
-     *   Razón de la suspensión.
-     *
-     * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface
-     *   El tenant actualizado.
+     * @deprecated Use TenantSubscriptionService::suspendTenant() directly.
      */
     public function suspendTenant(TenantInterface $tenant, string $reason = ''): TenantInterface
     {
+        if ($this->subscriptionService) {
+            return $this->subscriptionService->suspendTenant($tenant, $reason);
+        }
         $tenant->setSubscriptionStatus(TenantInterface::STATUS_SUSPENDED);
         $tenant->save();
-
         $this->logger->warning('Tenant @id suspendido: @reason', [
-            '@id' => $tenant->id(),
-            '@reason' => $reason ?: 'Sin especificar',
+            '@id' => $tenant->id(), '@reason' => $reason ?: 'Sin especificar',
         ]);
-
         return $tenant;
     }
 
     /**
-     * Cancela la suscripción de un tenant.
-     *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
-     * @param bool $immediate
-     *   Si la cancelación es inmediata o al final del período.
-     *
-     * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface
-     *   El tenant actualizado.
+     * @deprecated Use TenantSubscriptionService::cancelSubscription() directly.
      */
     public function cancelSubscription(TenantInterface $tenant, bool $immediate = FALSE): TenantInterface
     {
+        if ($this->subscriptionService) {
+            return $this->subscriptionService->cancelSubscription($tenant, $immediate);
+        }
         if ($immediate) {
             $tenant->setSubscriptionStatus(TenantInterface::STATUS_CANCELLED);
         }
-        // Si no es inmediata, Stripe manejará la cancelación al final del período.
-
         $tenant->save();
-
         $this->logger->info('Suscripción cancelada para tenant @id (inmediata: @immediate)', [
-            '@id' => $tenant->id(),
-            '@immediate' => $immediate ? 'sí' : 'no',
+            '@id' => $tenant->id(), '@immediate' => $immediate ? 'sí' : 'no',
         ]);
-
         return $tenant;
     }
 
     /**
-     * Cambia el plan de un tenant.
+     * @deprecated Use TenantSubscriptionService::changePlan() directly.
      *
-     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
-     *   El tenant.
-     * @param \Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface $new_plan
-     *   El nuevo plan.
-     *
-     * @return array
-     *   Array con 'success' y 'tenant' o 'errors'.
+     * @throws \InvalidArgumentException
      */
-    public function changePlan(TenantInterface $tenant, SaasPlanInterface $new_plan): array
+    public function changePlan(TenantInterface $tenant, SaasPlanInterface $new_plan): TenantInterface
     {
-        // Validar que el cambio es posible.
-        $validation = $this->planValidator->validatePlanChange($tenant, $new_plan);
-
-        if (!$validation['valid']) {
-            return [
-                'success' => FALSE,
-                'errors' => $validation['errors'],
-            ];
+        if ($this->subscriptionService) {
+            return $this->subscriptionService->changePlan($tenant, $new_plan);
         }
-
+        $validation = $this->planValidator->validatePlanChange($tenant, $new_plan);
+        if (!$validation['valid']) {
+            throw new \InvalidArgumentException(
+                sprintf('Plan change validation failed for tenant %s: %s',
+                    $tenant->id(), implode(', ', $validation['errors']))
+            );
+        }
         $old_plan = $tenant->getSubscriptionPlan();
         $tenant->setSubscriptionPlan($new_plan);
         $tenant->save();
-
         $this->logger->info('Plan cambiado para tenant @id: @old -> @new', [
             '@id' => $tenant->id(),
             '@old' => $old_plan ? $old_plan->getName() : 'ninguno',
             '@new' => $new_plan->getName(),
         ]);
-
-        return [
-            'success' => TRUE,
-            'tenant' => $tenant,
-        ];
+        return $tenant;
     }
 
     /**

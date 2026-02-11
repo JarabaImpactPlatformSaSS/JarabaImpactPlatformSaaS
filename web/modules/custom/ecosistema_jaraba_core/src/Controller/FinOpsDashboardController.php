@@ -3,6 +3,7 @@
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService;
 use Drupal\ecosistema_jaraba_core\Service\FinOpsTrackingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * PROPÓSITO:
  * Proporciona visualización de métricas de coste por tenant:
  * - Uso de recursos por tenant (storage real, API requests trackeados)
+ * - Costes de IA (tokens, llamadas, ahorro por optimización)
  * - Proyecciones mensuales de coste
  * - Alertas de sobregasto
  * - Recomendaciones de optimización
@@ -21,6 +23,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * - Storage: Calculado desde archivos y nodos reales
  * - API Requests: Trackeados via RequestTrackingSubscriber
  * - CPU: Estimado desde actividad
+ * - AI: Trackeado via AICostOptimizationService
  */
 class FinOpsDashboardController extends ControllerBase
 {
@@ -29,6 +32,11 @@ class FinOpsDashboardController extends ControllerBase
      * Servicio de tracking FinOps.
      */
     protected ?FinOpsTrackingService $finopsTracking = NULL;
+
+    /**
+     * Servicio de optimización de costes IA.
+     */
+    protected ?AICostOptimizationService $aiCostService = NULL;
 
     /**
      * {@inheritdoc}
@@ -41,6 +49,12 @@ class FinOpsDashboardController extends ControllerBase
             $instance->finopsTracking = $container->get('ecosistema_jaraba_core.finops_tracking');
         } catch (\Exception $e) {
             // Service may not be available yet
+        }
+
+        try {
+            $instance->aiCostService = $container->get('ecosistema_jaraba_core.ai_cost_optimization');
+        } catch (\Exception $e) {
+            // AI Cost service may not be available yet
         }
 
         return $instance;
@@ -56,12 +70,25 @@ class FinOpsDashboardController extends ControllerBase
     {
         $finops_data = $this->getFinOpsData();
 
+        // Preparar datos históricos de costes IA para Chart.js
+        $aiCostHistory = $this->getAiCostHistory();
+
+        // Marcar que hay historial disponible para el template
+        if (!empty($aiCostHistory['daily'])) {
+            $finops_data['ai_costs']['history'] = TRUE;
+        }
+
         return [
             '#theme' => 'finops_dashboard',
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/finops-dashboard',
                     'core/drupal.dialog.ajax',
+                ],
+                'drupalSettings' => [
+                    'finops' => [
+                        'ai_cost_history' => $aiCostHistory,
+                    ],
                 ],
             ],
             '#tenants' => $finops_data['tenants'],
@@ -74,6 +101,9 @@ class FinOpsDashboardController extends ControllerBase
             '#revenue' => $finops_data['revenue'],
             '#net_results' => $finops_data['net_results'],
             '#feature_costs' => $finops_data['feature_costs'],
+            '#unit_economics' => $finops_data['unit_economics'],
+            '#vertical_profitability' => $finops_data['vertical_profitability'],
+            '#ai_costs' => $finops_data['ai_costs'],
             '#last_updated' => date('Y-m-d H:i:s'),
             '#cache' => [
                 'max-age' => 300, // Cache for 5 minutes
@@ -115,6 +145,13 @@ class FinOpsDashboardController extends ControllerBase
         // Datos de costes por Feature
         $feature_costs = $this->getFeatureCostsData();
 
+        // BI Avanzadas: Unit Economics y Rentabilidad por Vertical
+        $unit_economics = $this->getUnitEconomics($tenants);
+        $vertical_profitability = $this->getVerticalProfitability($tenants);
+
+        // ═══ COSTES DE IA ═══
+        $ai_costs = $this->getAiCostMetrics();
+
         return [
             'tenants' => $tenants,
             'totals' => $totals,
@@ -125,6 +162,9 @@ class FinOpsDashboardController extends ControllerBase
             'revenue' => $revenue,
             'net_results' => $net_results,
             'feature_costs' => $feature_costs,
+            'unit_economics' => $unit_economics,
+            'vertical_profitability' => $vertical_profitability,
+            'ai_costs' => $ai_costs,
             'timestamp' => time(),
         ];
     }
@@ -158,11 +198,18 @@ class FinOpsDashboardController extends ControllerBase
 
                 // Get plan tier for pricing (robusto - no falla si campo no existe)
                 $tier = 'basic';
+                $plan_entity = null;
+                $plan_mrr = 0;
                 try {
-                    if ($tenant->hasField('plan') && !$tenant->get('plan')->isEmpty()) {
-                        $plan = $tenant->get('plan')->entity;
-                        if ($plan) {
-                            $tier = $plan->id() ?: 'basic';
+                    // Usar getSubscriptionPlan() que es el método correcto del Tenant
+                    if (method_exists($tenant, 'getSubscriptionPlan')) {
+                        $plan_entity = $tenant->getSubscriptionPlan();
+                        if ($plan_entity) {
+                            $tier = $plan_entity->id() ?: 'basic';
+                            // Obtener el precio mensual del plan SaaS
+                            if (method_exists($plan_entity, 'getPriceMonthly')) {
+                                $plan_mrr = $plan_entity->getPriceMonthly();
+                            }
                         }
                     }
                 } catch (\Exception $e) {
@@ -173,9 +220,13 @@ class FinOpsDashboardController extends ControllerBase
                 $feature_cost = 0;
                 $feature_count = 0;
                 $feature_details = [];
+                $vertical_id = 'default';
+                $vertical_name = 'Sin Vertical';
                 try {
                     $vertical = $tenant->getVertical();
                     if ($vertical) {
+                        $vertical_id = $vertical->id();
+                        $vertical_name = $vertical->label();
                         $enabled_features = $vertical->getEnabledFeatures();
                         $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
 
@@ -223,6 +274,13 @@ class FinOpsDashboardController extends ControllerBase
                     ],
                     'feature_details' => $feature_details,
                     'status' => $this->getTenantCostStatus($total_cost, $tier),
+                    // ═══ NUEVOS CAMPOS PARA UNIT ECONOMICS ═══
+                    'plan_cost' => [
+                        'monthly' => round($plan_mrr, 2),
+                        'yearly' => ($plan_entity && method_exists($plan_entity, 'getPriceYearly')) ? round($plan_entity->getPriceYearly(), 2) : 0,
+                    ],
+                    'vertical_id' => $vertical_id,
+                    'vertical_name' => $vertical_name,
                 ];
             }
         } catch (\Exception $e) {
@@ -358,6 +416,9 @@ class FinOpsDashboardController extends ControllerBase
             'cost_storage' => 0,
             'cost_api' => 0,
             'cost_cpu' => 0,
+            'cost_ai' => 0,
+            'ai_tokens' => 0,
+            'ai_calls' => 0,
             'cost_total' => 0,
             'tenant_count' => count($tenants),
         ];
@@ -370,6 +431,15 @@ class FinOpsDashboardController extends ControllerBase
             $totals['cost_api'] += $tenant['costs']['api'];
             $totals['cost_cpu'] += $tenant['costs']['cpu'];
             $totals['cost_total'] += $tenant['costs']['total'];
+        }
+
+        // Añadir costes de IA desde State API
+        $aiCosts = $this->getAiCostMetrics();
+        if (!empty($aiCosts['enabled']) && isset($aiCosts['summary'])) {
+            $totals['cost_ai'] = $aiCosts['summary']['total_cost'] ?? 0;
+            $totals['ai_tokens'] = $aiCosts['summary']['total_tokens'] ?? 0;
+            $totals['ai_calls'] = $aiCosts['summary']['total_calls'] ?? 0;
+            $totals['cost_total'] += $totals['cost_ai'];
         }
 
         // Round all values
@@ -466,6 +536,42 @@ class FinOpsDashboardController extends ControllerBase
                     ]),
                 ];
             }
+
+            // ═══════════════════════════════════════════════════════════════
+            // ALERTAS DE MARGEN (P&L)
+            // Notifica cuando el coste operativo de un tenant se acerca o
+            // supera su MRR (ingreso recurrente mensual).
+            // ═══════════════════════════════════════════════════════════════
+            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+            $total_cost = $tenant['costs']['total'] ?? 0;
+
+            if ($mrr > 0) {
+                $cost_percentage = ($total_cost / $mrr) * 100;
+
+                // Margen crítico: coste >= 100% del MRR (pérdida)
+                if ($cost_percentage >= 100) {
+                    $alerts[] = [
+                        'type' => 'critical',
+                        'title' => $this->t('⚠️ Margin Alert: @tenant', ['@tenant' => $tenant['name']]),
+                        'message' => $this->t('Operating cost (€@cost) EXCEEDS MRR (€@mrr). This tenant is generating LOSSES.', [
+                            '@cost' => number_format($total_cost, 2),
+                            '@mrr' => number_format($mrr, 2),
+                        ]),
+                    ];
+                }
+                // Margen warning: coste >= 80% del MRR (riesgo)
+                elseif ($cost_percentage >= 80) {
+                    $alerts[] = [
+                        'type' => 'warning',
+                        'title' => $this->t('Margin Warning: @tenant', ['@tenant' => $tenant['name']]),
+                        'message' => $this->t('Operating cost (€@cost) is at @percent% of MRR (€@mrr).', [
+                            '@cost' => number_format($total_cost, 2),
+                            '@mrr' => number_format($mrr, 2),
+                            '@percent' => round($cost_percentage),
+                        ]),
+                    ];
+                }
+            }
         }
 
         // Trend alert
@@ -558,11 +664,11 @@ class FinOpsDashboardController extends ControllerBase
             $tenant_entities = $tenant_storage->loadMultiple();
 
             foreach ($tenant_entities as $tenant) {
-                // Obtener plan del tenant
+                // Obtener plan del tenant usando getSubscriptionPlan()
                 $plan = NULL;
                 try {
-                    if ($tenant->hasField('plan') && !$tenant->get('plan')->isEmpty()) {
-                        $plan = $tenant->get('plan')->entity;
+                    if (method_exists($tenant, 'getSubscriptionPlan')) {
+                        $plan = $tenant->getSubscriptionPlan();
                     }
                 } catch (\Exception $e) {
                     // Plan no disponible
@@ -570,7 +676,16 @@ class FinOpsDashboardController extends ControllerBase
 
                 if ($plan) {
                     $monthly_price = $plan->getPriceMonthly();
-                    $tier = $plan->id() ?: 'basic';
+                    // Mapear el nombre del plan a un tier normalizado
+                    $plan_name = method_exists($plan, 'getName') ? strtolower($plan->getName()) : '';
+                    $tier = 'basic'; // default
+                    if (strpos($plan_name, 'professional') !== false || strpos($plan_name, 'profesional') !== false) {
+                        $tier = 'professional';
+                    } elseif (strpos($plan_name, 'enterprise') !== false || strpos($plan_name, 'empresarial') !== false) {
+                        $tier = 'enterprise';
+                    } elseif (strpos($plan_name, 'basic') !== false || strpos($plan_name, 'starter') !== false || strpos($plan_name, 'básico') !== false) {
+                        $tier = 'basic';
+                    }
 
                     $mrr += $monthly_price;
 
@@ -881,6 +996,379 @@ class FinOpsDashboardController extends ControllerBase
             ],
             'has_costs' => count($features) > 0,
         ];
+    }
+
+    /**
+     * Calcula Unit Economics (LTV, CAC, Ratio) por tenant.
+     *
+     * MÉTRICAS IMPLEMENTADAS:
+     * - LTV (Lifetime Value): ARPU × Gross Margin % × (1 / Churn Rate estimado)
+     * - CAC (Customer Acquisition Cost): Configurado por vertical o €200 por defecto
+     * - LTV:CAC Ratio: Target >= 3:1 para salud financiera
+     * - Payback: Meses para recuperar CAC
+     *
+     * @param array $tenants
+     *   Array de datos de tenants.
+     *
+     * @return array
+     *   Array con unit economics por tenant.
+     */
+    protected function getUnitEconomics(array $tenants): array
+    {
+        $economics = [];
+        $config = $this->getFinOpsConfig();
+
+        // CAC por defecto (configurable desde UI)
+        $default_cac = $config['default_cac'] ?? 200;
+        // Churn rate estimado (5% mensual = 12 meses retention promedio)
+        $churn_rate = $config['churn_rate'] ?? 0.05;
+        // Margen bruto SaaS estándar
+        $gross_margin = $config['gross_margin'] ?? 0.75;
+
+        foreach ($tenants as $tenant) {
+            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+            $total_cost = $tenant['costs']['total'] ?? 0;
+
+            // DEBUG: Log para diagnosticar
+            \Drupal::logger('ecosistema_jaraba_core')->debug(
+                'UnitEconomics: Tenant @name - received MRR: @mrr, plan_cost: @pc',
+                [
+                    '@name' => $tenant['name'] ?? 'Unknown',
+                    '@mrr' => $mrr,
+                    '@pc' => json_encode($tenant['plan_cost'] ?? 'NO plan_cost key'),
+                ]
+            );
+
+            if ($mrr <= 0) {
+                continue;
+            }
+
+            // ARPU = MRR (en este contexto, un tenant = un usuario)
+            $arpu = $mrr;
+
+            // Margen operativo real
+            $real_margin = ($mrr - $total_cost) / $mrr;
+
+            // LTV = (ARPU × Gross Margin) / Churn Rate
+            $ltv = $churn_rate > 0 ? ($arpu * $gross_margin) / $churn_rate : 0;
+
+            // CAC (puede venir de la vertical o ser el default)
+            $cac = $default_cac;
+
+            // LTV:CAC Ratio
+            $ltv_cac_ratio = $cac > 0 ? round($ltv / $cac, 1) : 0;
+
+            // Payback = CAC / (ARPU × Gross Margin)
+            $monthly_contribution = $arpu * $gross_margin;
+            $payback_months = $monthly_contribution > 0 ? round($cac / $monthly_contribution, 1) : 999;
+
+            // Status del tenant basado en LTV:CAC
+            $status = 'healthy';
+            if ($ltv_cac_ratio < 3) {
+                $status = 'at_risk';
+            }
+            if ($ltv_cac_ratio >= 5) {
+                $status = 'vip';
+            }
+            if ($real_margin < 0) {
+                $status = 'loss';
+            }
+
+            $economics[] = [
+                'tenant_id' => $tenant['id'],
+                'tenant_name' => $tenant['name'],
+                'mrr' => round($mrr, 2),
+                'operating_cost' => round($total_cost, 2),
+                'margin_percent' => round($real_margin * 100, 1),
+                'ltv' => round($ltv, 2),
+                'cac' => round($cac, 2),
+                'ltv_cac_ratio' => $ltv_cac_ratio,
+                'payback_months' => $payback_months,
+                'status' => $status,
+            ];
+        }
+
+        // Ordenar por LTV:CAC ratio descendente
+        usort($economics, fn($a, $b) => $b['ltv_cac_ratio'] <=> $a['ltv_cac_ratio']);
+
+        // DEBUG: Log resultado final
+        \Drupal::logger('ecosistema_jaraba_core')->debug(
+            'UnitEconomics: Returning @count tenants. First: @first',
+            [
+                '@count' => count($economics),
+                '@first' => !empty($economics) ? ($economics[0]['tenant_name'] ?? 'N/A') : 'EMPTY',
+            ]
+        );
+
+        return [
+            'tenants' => $economics,
+            'summary' => $this->calculateEconomicsSummary($economics),
+        ];
+    }
+
+    /**
+     * Calcula resumen de Unit Economics.
+     */
+    protected function calculateEconomicsSummary(array $economics): array
+    {
+        if (empty($economics)) {
+            return [
+                'avg_ltv_cac_ratio' => 0,
+                'avg_payback_months' => 0,
+                'vip_count' => 0,
+                'healthy_count' => 0,
+                'at_risk_count' => 0,
+                'loss_count' => 0,
+            ];
+        }
+
+        $total_ratio = array_sum(array_column($economics, 'ltv_cac_ratio'));
+        $total_payback = array_sum(array_column($economics, 'payback_months'));
+        $count = count($economics);
+
+        return [
+            'avg_ltv_cac_ratio' => round($total_ratio / $count, 1),
+            'avg_payback_months' => round($total_payback / $count, 1),
+            'vip_count' => count(array_filter($economics, fn($e) => $e['status'] === 'vip')),
+            'healthy_count' => count(array_filter($economics, fn($e) => $e['status'] === 'healthy')),
+            'at_risk_count' => count(array_filter($economics, fn($e) => $e['status'] === 'at_risk')),
+            'loss_count' => count(array_filter($economics, fn($e) => $e['status'] === 'loss')),
+        ];
+    }
+
+    /**
+     * Calcula rentabilidad por Vertical.
+     *
+     * @param array $tenants
+     *   Array de datos de tenants.
+     *
+     * @return array
+     *   Array con P&L por vertical.
+     */
+    protected function getVerticalProfitability(array $tenants): array
+    {
+        $verticals = [];
+
+        foreach ($tenants as $tenant) {
+            $vertical_id = $tenant['vertical_id'] ?? 'default';
+            $vertical_name = $tenant['vertical_name'] ?? 'Sin Vertical';
+
+            if (!isset($verticals[$vertical_id])) {
+                $verticals[$vertical_id] = [
+                    'id' => $vertical_id,
+                    'name' => $vertical_name,
+                    'tenant_count' => 0,
+                    'total_revenue' => 0,
+                    'total_cost' => 0,
+                    'total_profit' => 0,
+                    'margin_percent' => 0,
+                ];
+            }
+
+            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+            $cost = $tenant['costs']['total'] ?? 0;
+
+            $verticals[$vertical_id]['tenant_count']++;
+            $verticals[$vertical_id]['total_revenue'] += $mrr;
+            $verticals[$vertical_id]['total_cost'] += $cost;
+            $verticals[$vertical_id]['total_profit'] += ($mrr - $cost);
+        }
+
+        // Calcular margen % para cada vertical
+        foreach ($verticals as &$v) {
+            if ($v['total_revenue'] > 0) {
+                $v['margin_percent'] = round(($v['total_profit'] / $v['total_revenue']) * 100, 1);
+            }
+
+            // Status de la vertical
+            $v['status'] = 'healthy';
+            if ($v['margin_percent'] < 20) {
+                $v['status'] = 'warning';
+            }
+            if ($v['margin_percent'] < 0) {
+                $v['status'] = 'critical';
+            }
+            if ($v['margin_percent'] >= 50) {
+                $v['status'] = 'star';
+            }
+
+            // Formatear valores
+            $v['total_revenue'] = round($v['total_revenue'], 2);
+            $v['total_cost'] = round($v['total_cost'], 2);
+            $v['total_profit'] = round($v['total_profit'], 2);
+        }
+
+        // Ordenar por profit descendente
+        uasort($verticals, fn($a, $b) => $b['total_profit'] <=> $a['total_profit']);
+
+        return array_values($verticals);
+    }
+
+    /**
+     * Obtiene métricas de costes de IA desde AICostOptimizationService.
+     *
+     * @return array
+     *   Métricas de uso y costes de IA.
+     */
+    protected function getAiCostMetrics(): array
+    {
+        $default = [
+            'enabled' => FALSE,
+            'message' => $this->t('AI Cost tracking not available.'),
+        ];
+
+        if (!$this->aiCostService) {
+            return $default;
+        }
+
+        try {
+            $state = \Drupal::state();
+
+            // Obtener datos agregados desde el servicio
+            $totalTokens = $state->get('ai_cost_total_tokens', 0);
+            $totalCost = $state->get('ai_cost_total_cost', 0);
+            $totalCalls = $state->get('ai_cost_total_calls', 0);
+            $cacheHits = $state->get('ai_cost_cache_hits', 0);
+            $savings = $state->get('ai_cost_savings', 0);
+
+            // Obtener uso por tenant (sample del primero disponible)
+            $usageByProvider = [];
+            foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+                $key = "ai_cost_{$provider}_tokens";
+                $tokens = $state->get($key, 0);
+                if ($tokens > 0) {
+                    $usageByProvider[$provider] = [
+                        'tokens' => $tokens,
+                        'calls' => $state->get("ai_cost_{$provider}_calls", 0),
+                        'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
+                    ];
+                }
+            }
+
+            // Estimar ahorro por routing inteligente
+            $savingsPercent = $totalCost > 0 ? round(($savings / ($totalCost + $savings)) * 100, 1) : 0;
+
+            // Cache hit rate
+            $cacheHitRate = $totalCalls > 0 ? round(($cacheHits / $totalCalls) * 100, 1) : 0;
+
+            return [
+                'enabled' => TRUE,
+                'summary' => [
+                    'total_tokens' => $totalTokens,
+                    'total_cost' => round($totalCost, 2),
+                    'total_calls' => $totalCalls,
+                    'avg_cost_per_call' => $totalCalls > 0 ? round($totalCost / $totalCalls, 4) : 0,
+                ],
+                'optimization' => [
+                    'cache_hits' => $cacheHits,
+                    'cache_hit_rate' => $cacheHitRate,
+                    'savings' => round($savings, 2),
+                    'savings_percent' => $savingsPercent,
+                ],
+                'by_provider' => $usageByProvider,
+                'thresholds' => [
+                    'daily_warning' => 3.0,
+                    'daily_critical' => 5.0,
+                    'monthly_warning' => 50.0,
+                    'monthly_critical' => 100.0,
+                ],
+                'status' => $this->getAiCostStatus($totalCost),
+            ];
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->warning(
+                'FinOps: Error getting AI cost metrics: @error',
+                ['@error' => $e->getMessage()]
+            );
+            return $default;
+        }
+    }
+
+    /**
+     * Determina el estado de costes de IA.
+     */
+    protected function getAiCostStatus(float $dailyCost): string
+    {
+        if ($dailyCost >= 5.0) {
+            return 'critical';
+        }
+        if ($dailyCost >= 3.0) {
+            return 'warning';
+        }
+        return 'normal';
+    }
+
+    /**
+     * Obtiene historial de costes de IA para gráficos Chart.js.
+     *
+     * @return array
+     *   Array con 'daily' (últimos 30 días) y 'by_provider'.
+     */
+    protected function getAiCostHistory(): array
+    {
+        $state = \Drupal::state();
+        $result = [
+            'daily' => [],
+            'by_provider' => [],
+        ];
+
+        try {
+            // Obtener datos históricos diarios de los últimos 30 días
+            $today = new \DateTime();
+            for ($i = 29; $i >= 0; $i--) {
+                $date = (clone $today)->sub(new \DateInterval("P{$i}D"));
+                $dateKey = $date->format('Y-m-d');
+                $stateKey = 'ai_usage_daily_' . $dateKey;
+
+                $dailyData = $state->get($stateKey, [
+                    'cost' => 0,
+                    'tokens' => 0,
+                    'calls' => 0,
+                ]);
+
+                $result['daily'][] = [
+                    'date' => $date->format('d M'),
+                    'cost' => round($dailyData['cost'] ?? 0, 4),
+                    'tokens' => $dailyData['tokens'] ?? 0,
+                    'calls' => $dailyData['calls'] ?? 0,
+                ];
+            }
+
+            // Obtener datos por proveedor del mes actual
+            $monthKey = 'ai_usage_' . date('Y-m');
+            $monthlyData = $state->get($monthKey, []);
+
+            foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+                if (isset($monthlyData[$provider])) {
+                    $result['by_provider'][$provider] = [
+                        'cost' => round($monthlyData[$provider]['cost'] ?? 0, 4),
+                        'tokens' => ($monthlyData[$provider]['tokens_in'] ?? 0) + ($monthlyData[$provider]['tokens_out'] ?? 0),
+                        'calls' => $monthlyData[$provider]['calls'] ?? 0,
+                    ];
+                }
+            }
+
+            // Si no hay datos del mes, usar datos legacy
+            if (empty($result['by_provider'])) {
+                foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+                    $tokens = $state->get("ai_cost_{$provider}_tokens", 0);
+                    if ($tokens > 0) {
+                        $result['by_provider'][$provider] = [
+                            'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
+                            'tokens' => $tokens,
+                            'calls' => $state->get("ai_cost_{$provider}_calls", 0),
+                        ];
+                    }
+                }
+            }
+
+        } catch (\Exception $e) {
+            \Drupal::logger('ecosistema_jaraba_core')->warning(
+                'FinOps: Error getting AI cost history: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+
+        return $result;
     }
 
 }

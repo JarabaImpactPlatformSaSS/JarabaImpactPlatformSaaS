@@ -166,6 +166,129 @@ class FinOpsSettingsForm extends ConfigFormBase
             '#min' => 0,
         ];
 
+        // =========================================================================
+        // AI USAGE LIMITS BY PLAN
+        // =========================================================================
+        $form['ai_limits'] = [
+            '#type' => 'details',
+            '#title' => $this->t('AI Usage Limits'),
+            '#description' => $this->t('Configure AI usage limits by subscription plan. Set monthly token quotas and warning/blocking thresholds.'),
+            '#open' => FALSE,
+        ];
+
+        $form['ai_limits']['ai_pricing'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('AI Token Pricing'),
+        ];
+
+        $form['ai_limits']['ai_pricing']['price_token_input'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Input Token Price (€ per 1K tokens)'),
+            '#description' => $this->t('Average cost for input tokens across AI providers.'),
+            '#default_value' => $config->get('ai.price_token_input') ?: 0.003,
+            '#min' => 0,
+            '#step' => 0.0001,
+        ];
+
+        $form['ai_limits']['ai_pricing']['price_token_output'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Output Token Price (€ per 1K tokens)'),
+            '#description' => $this->t('Average cost for output tokens across AI providers.'),
+            '#default_value' => $config->get('ai.price_token_output') ?: 0.015,
+            '#min' => 0,
+            '#step' => 0.0001,
+        ];
+
+        // Basic Plan AI Limits
+        $form['ai_limits']['basic_ai'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Basic Plan - AI Limits'),
+        ];
+
+        $form['ai_limits']['basic_ai']['ai_basic_tokens_monthly'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Monthly Token Limit'),
+            '#description' => $this->t('Maximum tokens per month. 0 = unlimited.'),
+            '#default_value' => $config->get('ai.basic.tokens_monthly') ?: 50000,
+            '#min' => 0,
+            '#step' => 1000,
+        ];
+
+        $form['ai_limits']['basic_ai']['ai_basic_warning_percent'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Warning Threshold (%)'),
+            '#description' => $this->t('Show warning when usage reaches this percentage.'),
+            '#default_value' => $config->get('ai.basic.warning_percent') ?: 80,
+            '#min' => 0,
+            '#max' => 100,
+        ];
+
+        // Professional Plan AI Limits
+        $form['ai_limits']['professional_ai'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Professional Plan - AI Limits'),
+        ];
+
+        $form['ai_limits']['professional_ai']['ai_pro_tokens_monthly'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Monthly Token Limit'),
+            '#default_value' => $config->get('ai.professional.tokens_monthly') ?: 200000,
+            '#min' => 0,
+            '#step' => 1000,
+        ];
+
+        $form['ai_limits']['professional_ai']['ai_pro_warning_percent'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Warning Threshold (%)'),
+            '#default_value' => $config->get('ai.professional.warning_percent') ?: 80,
+            '#min' => 0,
+            '#max' => 100,
+        ];
+
+        // Enterprise Plan AI Limits
+        $form['ai_limits']['enterprise_ai'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Enterprise Plan - AI Limits'),
+        ];
+
+        $form['ai_limits']['enterprise_ai']['ai_enterprise_tokens_monthly'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Monthly Token Limit'),
+            '#description' => $this->t('Set to 0 for unlimited tokens.'),
+            '#default_value' => $config->get('ai.enterprise.tokens_monthly') ?: 0,
+            '#min' => 0,
+            '#step' => 1000,
+        ];
+
+        $form['ai_limits']['enterprise_ai']['ai_enterprise_warning_percent'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Warning Threshold (%)'),
+            '#default_value' => $config->get('ai.enterprise.warning_percent') ?: 80,
+            '#min' => 0,
+            '#max' => 100,
+        ];
+
+        // Block behavior
+        $form['ai_limits']['blocking'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Limit Exceeded Behavior'),
+        ];
+
+        $form['ai_limits']['blocking']['ai_block_on_limit'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Block AI usage when limit is reached'),
+            '#description' => $this->t('If unchecked, users will only see a warning but can continue using AI.'),
+            '#default_value' => $config->get('ai.block_on_limit') ?? TRUE,
+        ];
+
+        $form['ai_limits']['blocking']['ai_upgrade_message'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Upgrade Message'),
+            '#description' => $this->t('Message shown when limit is reached. Use @plan for current plan name.'),
+            '#default_value' => $config->get('ai.upgrade_message') ?: $this->t('You have reached your AI usage limit for your @plan plan. Upgrade to access more AI features.'),
+            '#maxlength' => 255,
+        ];
+
         return parent::buildForm($form, $form_state);
     }
 
@@ -187,6 +310,17 @@ class FinOpsSettingsForm extends ConfigFormBase
             ->set('tier_limits.professional.critical', (float) $form_state->getValue('professional_critical'))
             ->set('tier_limits.enterprise.warning', (float) $form_state->getValue('enterprise_warning'))
             ->set('tier_limits.enterprise.critical', (float) $form_state->getValue('enterprise_critical'))
+            // AI Usage Limits
+            ->set('ai.price_token_input', (float) $form_state->getValue('price_token_input'))
+            ->set('ai.price_token_output', (float) $form_state->getValue('price_token_output'))
+            ->set('ai.basic.tokens_monthly', (int) $form_state->getValue('ai_basic_tokens_monthly'))
+            ->set('ai.basic.warning_percent', (int) $form_state->getValue('ai_basic_warning_percent'))
+            ->set('ai.professional.tokens_monthly', (int) $form_state->getValue('ai_pro_tokens_monthly'))
+            ->set('ai.professional.warning_percent', (int) $form_state->getValue('ai_pro_warning_percent'))
+            ->set('ai.enterprise.tokens_monthly', (int) $form_state->getValue('ai_enterprise_tokens_monthly'))
+            ->set('ai.enterprise.warning_percent', (int) $form_state->getValue('ai_enterprise_warning_percent'))
+            ->set('ai.block_on_limit', (bool) $form_state->getValue('ai_block_on_limit'))
+            ->set('ai.upgrade_message', $form_state->getValue('ai_upgrade_message'))
             ->save();
 
         parent::submitForm($form, $form_state);

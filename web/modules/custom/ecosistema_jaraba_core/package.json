@@ -1,4 +1,10 @@
 {
+  "name": "ecosistema-jaraba-core-styles",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "sass scss/main.scss css/ecosistema-jaraba-core.css --style=compressed",
+    "watch": "sass scss/main.scss css/ecosistema-jaraba-core.css --watch"
+  },
   "devDependencies": {
     "sass": "^1.97.2"
   }

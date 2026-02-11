@@ -55,9 +55,10 @@ if (!$tenant->get('domain_id')->target_id) {
     if ($hostname) {
         echo "\nCreando Domain...\n";
 
-        // Normalizar hostname
+        // BE-08: Normalizar hostname con dominio base configurable.
         if (strpos($hostname, '.') === FALSE) {
-            $hostname = $hostname . '.jaraba-saas.lndo.site';
+            $baseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
+            $hostname = $hostname . '.' . $baseDomain;
         }
 
         $domainId = preg_replace('/[^a-z0-9_]/', '_', strtolower($hostname));

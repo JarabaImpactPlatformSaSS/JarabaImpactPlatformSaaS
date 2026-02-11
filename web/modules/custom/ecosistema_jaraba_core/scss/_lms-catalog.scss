@@ -1,0 +1,628 @@
+/**
+ * @file
+ * Premium styles for LMS Course Catalog.
+ * Features: responsive grid, animations, modern UX, glassmorphism effects.
+ * Uses injectable CSS variables per workflow.
+ */
+
+@use 'variables' as *;
+
+// =============================================================================
+// LMS Catalog Container
+// =============================================================================
+
+.lms-catalog {
+    padding: 2rem 0;
+    min-height: 60vh;
+}
+
+// =============================================================================
+// Catalog Header - Search & Filters
+// =============================================================================
+
+.catalog-header {
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.search-container {
+    margin-bottom: 1.5rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 600px;
+
+    @media (max-width: 576px) {
+        flex-direction: column;
+    }
+}
+
+.search-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    font-size: 1.1rem;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    border: 2px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: var(--ej-bg-card, #fff);
+    transition: all 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+    }
+
+    &::placeholder {
+        color: var(--ej-text-muted, #94a3b8);
+    }
+}
+
+.search-clear {
+    position: absolute;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--ej-gray-200, #e2e8f0);
+    color: var(--ej-text-muted, #64748b);
+    text-decoration: none !important;
+    font-size: 12px;
+    transition: all 0.2s;
+
+    &:hover {
+        background: var(--ej-color-error, #dc2626);
+        color: white;
+    }
+}
+
+.search-btn {
+    padding: 0.875rem 1.5rem;
+    white-space: nowrap;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--ej-border-color, #e2e8f0);
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-text-secondary, #64748b);
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    background: var(--ej-gray-100, #f1f5f9);
+    color: var(--ej-text-secondary, #64748b);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-gray-200, #e2e8f0);
+        color: var(--ej-text-primary, #1a202c);
+    }
+
+    &.active {
+        background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        color: white !important;
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+
+    .chip-count {
+        opacity: 0.7;
+        font-size: 0.75rem;
+    }
+}
+
+.clear-filters {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    color: var(--ej-color-error, #dc2626);
+    text-decoration: none !important;
+    font-weight: 500;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.results-count {
+    padding-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #94a3b8);
+}
+
+// Free Badge for thumbnails
+.free-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 5;
+}
+
+// =============================================================================
+// Responsive Course Grid
+// =============================================================================
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (min-width: 1400px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =============================================================================
+// Course Card - Premium Design
+// =============================================================================
+
+.course-card {
+    background: var(--ej-bg-card, #ffffff);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    // Stagger animation for cards
+    @for $i from 1 through 12 {
+        &:nth-child(#{$i}) {
+            animation: cardSlideIn 0.5s ease-out #{$i * 0.08}s both;
+        }
+    }
+
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+        .course-thumbnail img {
+            transform: scale(1.08);
+        }
+
+        .course-thumbnail::after {
+            opacity: 0.4;
+        }
+    }
+
+    // Enrolled state
+    &.enrolled {
+        border: 2px solid var(--ej-color-primary, #{$ej-color-primary-fallback});
+
+        &::before {
+            content: '✓ Inscrito';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--ej-color-success, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// =============================================================================
+// Course Thumbnail
+// =============================================================================
+
+.course-thumbnail {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    // Gradient overlay on hover
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+}
+
+.premium-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+    z-index: 5;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 16px rgba(251, 191, 36, 0.6);
+    }
+}
+
+// =============================================================================
+// Course Content
+// =============================================================================
+
+.course-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+// Difficulty Badges
+.difficulty-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: fit-content;
+
+    &.difficulty-beginner,
+    &.difficulty-principiante {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+    }
+
+    &.difficulty-intermediate,
+    &.difficulty-intermedio {
+        background: rgba(59, 130, 246, 0.15);
+        color: #2563eb;
+    }
+
+    &.difficulty-advanced,
+    &.difficulty-avanzado {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+    }
+}
+
+.course-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ej-text-primary, #1a202c);
+
+    a {
+        color: inherit;
+        text-decoration: none !important;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+            text-decoration: none !important;
+        }
+    }
+}
+
+.course-summary {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #64748b);
+    line-height: 1.6;
+    flex: 1;
+    overflow: hidden;
+
+    // Modern line-clamp with @supports for compatibility
+    @supports (-webkit-line-clamp: 3) {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+}
+
+
+// =============================================================================
+// Course Meta (Duration, Price)
+// =============================================================================
+
+.course-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+    margin-top: auto;
+}
+
+.duration {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #94a3b8);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+
+    &.free {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+// =============================================================================
+// Progress Bar (for enrolled courses)
+// =============================================================================
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--ej-gray-200, #e2e8f0);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ej-color-primary, #{$ej-color-primary-fallback}) 0%, var(--ej-color-success, #10b981) 100%);
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: progressShine 2s infinite;
+    }
+}
+
+@keyframes progressShine {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+// =============================================================================
+// Action Buttons
+// =============================================================================
+
+.course-card .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+    width: 100%;
+}
+
+.course-card .btn-primary {
+    background: linear-gradient(135deg, var(--ej-color-primary, #{$ej-color-primary-fallback}) 0%, var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 100%);
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(46, 125, 50, 0.25);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.35);
+    }
+}
+
+.course-card .btn-secondary {
+    background: var(--ej-gray-100, #f1f5f9);
+    color: var(--ej-text-primary, #1a202c) !important;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+
+    &:hover {
+        background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        color: white !important;
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+}
+
+// =============================================================================
+// Empty State
+// =============================================================================
+
+.empty-state-premium {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.03) 0%, rgba(27, 94, 32, 0.06) 100%);
+    border-radius: 20px;
+    border: 2px dashed var(--ej-border-color, #e2e8f0);
+    max-width: 500px;
+    margin: 2rem auto;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--ej-color-primary, #{$ej-color-primary-fallback}) 0%, var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+
+    svg {
+        stroke: white;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(46, 125, 50, 0);
+    }
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-text-primary, #1a202c);
+    margin: 0 0 0.75rem;
+}
+
+.empty-message {
+    font-size: 1rem;
+    color: var(--ej-text-secondary, #64748b);
+    margin: 0 0 1.5rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-large {
+    padding: 1rem 2rem !important;
+    font-size: 1rem !important;
+}
+
+// =============================================================================
+// Dark Mode Support (optional)
+// =============================================================================
+
+@media (prefers-color-scheme: dark) {
+    .course-card {
+        background: rgba(30, 41, 59, 0.9);
+        backdrop-filter: blur(10px);
+    }
+
+    .course-title {
+        color: #e2e8f0;
+    }
+
+    .course-summary {
+        color: #94a3b8;
+    }
+}

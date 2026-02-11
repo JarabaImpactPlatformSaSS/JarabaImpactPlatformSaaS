@@ -1,0 +1,37 @@
+# Schema for SaaS Plan seed configuration.
+# Note: SaasPlan is a ContentEntityType, but these configs provide seed data
+# installed with the module. Drupal's ConfigSchemaChecker validates all config.
+ecosistema_jaraba_core.saas_plan.*:
+  type: config_object
+  label: 'SaaS Plan seed data'
+  mapping:
+    langcode:
+      type: string
+      label: 'Language code'
+    status:
+      type: boolean
+      label: 'Status'
+    name:
+      type: string
+      label: 'Plan name'
+    price_monthly:
+      type: string
+      label: 'Monthly price'
+    price_yearly:
+      type: string
+      label: 'Yearly price'
+    features:
+      type: sequence
+      label: 'Enabled features'
+      sequence:
+        type: string
+        label: 'Feature machine name'
+    limits:
+      type: string
+      label: 'Usage limits (JSON serialized)'
+    stripe_price_id:
+      type: string
+      label: 'Stripe Price ID'
+    weight:
+      type: integer
+      label: 'Sort weight'

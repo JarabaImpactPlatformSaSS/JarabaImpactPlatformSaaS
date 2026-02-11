@@ -1,0 +1,168 @@
+{#
+/**
+ * @file
+ * Template para la página de detalle de producto en el Marketplace.
+ *
+ * Variables:
+ * - product: Objeto con información del producto
+ *   - id: ID del producto
+ *   - title: Título del producto
+ *   - image: URL de imagen
+ *   - price: Precio formateado
+ *   - tenant: Nombre del tenant/productor
+ *   - category: Categoría
+ * - related: Array de productos relacionados
+ *
+ * Estilos: scss/_marketplace.scss
+ * Compilar con: npm run build:css
+ */
+#}
+
+<div class="marketplace-product">
+  
+  <nav class="marketplace-product__breadcrumb">
+    <a href="{{ path('ecosistema_jaraba_core.marketplace.landing') }}">{{ 'Marketplace'|t }}</a>
+    <span>/</span>
+    <span>{{ product.category }}</span>
+    <span>/</span>
+    <span>{{ product.title }}</span>
+  </nav>
+
+  <div class="marketplace-product__container">
+    
+    {# Imagen del producto #}
+    <div class="marketplace-product__gallery">
+      <img 
+        src="{{ product.image }}" 
+        alt="{{ product.title }}" 
+        class="marketplace-product__image"
+      >
+      <span class="marketplace-product__tenant-badge">{{ product.tenant }}</span>
+    </div>
+
+    {# Información del producto #}
+    <div class="marketplace-product__info">
+      <span class="marketplace-product__category">{{ product.category }}</span>
+      <h1 class="marketplace-product__title">{{ product.title }}</h1>
+      
+      <div class="marketplace-product__price-box">
+        <span class="marketplace-product__price">{{ product.price }}</span>
+        <span class="marketplace-product__tax-note">{{ 'IVA incluido'|t }}</span>
+      </div>
+
+      <div class="marketplace-product__producer">
+        <strong>{{ 'Producido por:'|t }}</strong>
+        <span>{{ product.tenant }}</span>
+      </div>
+
+      <div class="marketplace-product__description">
+        <h3>{{ 'Descripción'|t }}</h3>
+        <p>{{ 'Producto de alta calidad elaborado artesanalmente por productores locales del ecosistema Jaraba Impact. Garantía de origen y trazabilidad certificada.'|t }}</p>
+        <ul>
+          <li>✓ {{ 'Producto artesanal y local'|t }}</li>
+          <li>✓ {{ 'Trazabilidad completa'|t }}</li>
+          <li>✓ {{ 'Certificación de origen'|t }}</li>
+        </ul>
+      </div>
+
+      <div class="marketplace-product__actions">
+        <button id="btn-add-cart" class="marketplace-product__btn marketplace-product__btn--primary" data-product-id="{{ product.id }}">
+          {{ jaraba_icon('commerce', 'cart', { size: '18px' }) }} {{ 'Añadir al Carrito'|t }}
+        </button>
+        <button id="btn-save" class="marketplace-product__btn marketplace-product__btn--secondary" data-product-id="{{ product.id }}">
+          {{ jaraba_icon('actions', 'heart', { size: '18px' }) }} {{ 'Guardar'|t }}
+        </button>
+      </div>
+      
+      {# Toast de feedback demo #}
+      <div id="demo-toast" class="demo-toast" style="display: none;">
+        <span class="demo-toast__icon">{{ jaraba_icon('status', 'sparkles', { size: '20px', color: 'warning' }) }}</span>
+        <span class="demo-toast__message"></span>
+      </div>
+      
+      <div class="marketplace-product__trust">
+        <span>{{ jaraba_icon('commerce', 'shield', { size: '16px' }) }} {{ 'Compra segura'|t }}</span>
+        <span>{{ jaraba_icon('commerce', 'truck', { size: '16px' }) }} {{ 'Envío en 24-48h'|t }}</span>
+        <span>{{ jaraba_icon('commerce', 'return', { size: '16px' }) }} {{ 'Devolución gratis'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Productos relacionados #}
+  {% if related|length > 0 %}
+  <section class="marketplace-product__related">
+    <h2 class="marketplace-product__related-title">{{ 'Productos relacionados'|t }}</h2>
+    <div class="marketplace-product__related-grid">
+      {% for item in related %}
+      <article class="marketplace-product-card">
+        <a href="{{ item.url }}" class="marketplace-product-card__link">
+          <div class="marketplace-product-card__image-wrapper">
+            <img 
+              src="{{ item.image }}" 
+              alt="{{ item.title }}" 
+              class="marketplace-product-card__image"
+              loading="lazy"
+            >
+          </div>
+          <div class="marketplace-product-card__content">
+            <h3 class="marketplace-product-card__title">{{ item.title }}</h3>
+            <div class="marketplace-product-card__footer">
+              <span class="marketplace-product-card__price">{{ item.price }}</span>
+              <span class="marketplace-product-card__cta">{{ 'Ver'|t }}</span>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <a href="{{ path('ecosistema_jaraba_core.marketplace.landing') }}" class="marketplace-product__back">
+    ← {{ 'Volver al Marketplace'|t }}
+  </a>
+
+</div>
+
+<script>
+(function() {
+  const toast = document.getElementById('demo-toast');
+  const toastMessage = toast?.querySelector('.demo-toast__message');
+  
+  function showToast(message, duration = 3000) {
+    if (!toast || !toastMessage) return;
+    toastMessage.textContent = message;
+    toast.style.display = 'flex';
+    toast.classList.add('demo-toast--visible');
+    setTimeout(() => {
+      toast.classList.remove('demo-toast--visible');
+      setTimeout(() => { toast.style.display = 'none'; }, 300);
+    }, duration);
+  }
+  
+  document.getElementById('btn-add-cart')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    showToast('✅ ¡Demo! "{{ product.title }}" añadido al carrito simulado');
+    this.innerHTML = '✓ {{ "Añadido"|t }}';
+    this.style.background = 'linear-gradient(135deg, #16a34a, #15803d)';
+    setTimeout(() => {
+      this.innerHTML = '🛒 {{ "Añadir al Carrito"|t }}';
+      this.style.background = '';
+    }, 2000);
+  });
+  
+  document.getElementById('btn-save')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    const btn = this;
+    if (btn.classList.contains('saved')) {
+      btn.classList.remove('saved');
+      btn.innerHTML = '❤️ {{ "Guardar"|t }}';
+      showToast('Producto eliminado de favoritos');
+    } else {
+      btn.classList.add('saved');
+      btn.innerHTML = '💖 {{ "Guardado"|t }}';
+      showToast('💖 ¡Demo! "{{ product.title }}" guardado en favoritos');
+    }
+  });
+})();
+</script>

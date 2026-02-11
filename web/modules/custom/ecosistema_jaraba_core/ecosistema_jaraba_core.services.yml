@@ -1,4 +1,36 @@
 services:
+  # BE-14: Este módulo registra 44+ servicios. Cada uno tiene responsabilidad
+  # única (SRP) y están agrupados por dominio. La consolidación recomendada
+  # es extraer a sub-módulos por dominio en Q2/Q3 2026:
+  #   - ecosistema_jaraba_ai: AITelemetry, AIGuardrails, AICost, AIUsageLimit, AIAB, AIOps, AIValue
+  #   - ecosistema_jaraba_finops: FinOpsTracking, TenantMetering, ExpansionRevenue
+  #   - ecosistema_jaraba_onboarding: UserIntent, TTFV, GuidedTours, InAppMessaging, DemoInteractive
+  #   - ecosistema_jaraba_marketplace: MarketplaceRecommendations, TenantCollaboration
+  # Los servicios de tenant core (Manager, Context, Subscription, Domain, Theme)
+  # permanecen aquí como infraestructura base.
+
+  # ===========================================
+  # THEME NEGOTIATOR - FORZAR TEMA FRONTEND EN USER PAGES
+  # ===========================================
+
+  # Negociador de tema para páginas de usuario
+  # Fuerza el uso del tema frontend en lugar del admin theme
+  ecosistema_jaraba_core.user_page_theme_negotiator:
+    class: Drupal\ecosistema_jaraba_core\Theme\UserPageThemeNegotiator
+    tags:
+      - { name: theme_negotiator, priority: 1000 }
+
+  # ===========================================
+  # TWIG EXTENSION - HELPERS DE PLANTILLA
+  # ===========================================
+
+  # Extension de Twig con funciones personalizadas
+  # Provee: jaraba_icon(category, name, options), jaraba_icon_path()
+  ecosistema_jaraba_core.twig_extension:
+    class: Drupal\ecosistema_jaraba_core\Twig\JarabaTwigExtension
+    tags:
+      - { name: twig.extension }
+
   # ===========================================
   # SERVICIOS CORE - GESTIÓN DE TENANTS
   # ===========================================
@@ -10,7 +42,42 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
 
-  # Gestor de Tenants (ciclo de vida, temas, dominios)
+  # BE-03 + BIZ-002: Servicios especializados extraídos de TenantManager
+  # v6.3.0: Eliminada dependencia @state — datos billing ahora en entity fields
+  ecosistema_jaraba_core.tenant_subscription:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantSubscriptionService
+    arguments:
+      - '@ecosistema_jaraba_core.plan_validator'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  ecosistema_jaraba_core.tenant_domain:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantDomainService
+    arguments:
+      - '@entity_type.manager'
+
+  ecosistema_jaraba_core.tenant_theme:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantThemeService
+    arguments:
+      - '@ecosistema_jaraba_core.tenant_manager'
+      - '@ecosistema_jaraba_core.style_preset'
+
+  # Servicio de resolución de Design Tokens con cascada 4 niveles
+  # Platform → Vertical → Plan → Tenant. Genera CSS --ej-* custom properties.
+  ecosistema_jaraba_core.style_preset:
+    class: Drupal\ecosistema_jaraba_core\Service\StylePresetService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Servicio de aplicación de Style Presets a tenants (f-101/f-102)
+  # Crea DesignTokenConfig scope=tenant a partir del preset seleccionado.
+  ecosistema_jaraba_core.preset_applicator:
+    class: Drupal\ecosistema_jaraba_core\Service\PresetApplicatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Gestor de Tenants (fachada que delega a servicios especializados)
   ecosistema_jaraba_core.tenant_manager:
     class: Drupal\ecosistema_jaraba_core\Service\TenantManager
     arguments:
@@ -18,6 +85,8 @@ services:
       - '@current_user'
       - '@ecosistema_jaraba_core.plan_validator'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_subscription'
+      - '@ecosistema_jaraba_core.tenant_domain'
 
   # Servicio de Onboarding de Tenants
   # Gestiona el flujo de registro y activación de nuevos tenants
@@ -62,13 +131,8 @@ services:
   # ===========================================
   # SERVICIOS DE PAGOS Y STRIPE CONNECT
   # ===========================================
-
-  # Servicio de Stripe Connect para split payments (marketplace)
-  ecosistema_jaraba_core.stripe_connect:
-    class: Drupal\ecosistema_jaraba_core\Service\JarabaStripeConnect
-    arguments:
-      - '@config.factory'
-      - '@logger.channel.ecosistema_jaraba_core'
+  # Stripe Connect se gestiona en jaraba_foc.stripe_connect.
+  # JarabaStripeConnect fue eliminado en v12.5.0 (TD-001).
 
   # ===========================================
   # LOGGING
@@ -78,6 +142,22 @@ services:
   logger.channel.ecosistema_jaraba_core:
     parent: logger.channel_base
     arguments: ['ecosistema_jaraba_core']
+
+  # ===========================================
+  # IMPERSONATION SERVICE
+  # ===========================================
+
+  # Servicio de impersonación para "Login as" tenant
+  ecosistema_jaraba_core.impersonation:
+    class: Drupal\ecosistema_jaraba_core\Service\ImpersonationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@session_manager'
+      - '@tempstore.private'
+      - '@request_stack'
+      - '@logger.channel.ecosistema_jaraba_core'
+
 
   # ===========================================
   # FINOPS - TRACKING DE USO POR TENANT
@@ -98,6 +178,373 @@ services:
     class: Drupal\ecosistema_jaraba_core\EventSubscriber\RequestTrackingSubscriber
     arguments:
       - '@ecosistema_jaraba_core.finops_tracking'
+      - '@ecosistema_jaraba_core.tenant_context'
     tags:
       - { name: event_subscriber }
+
+  # SEC-08: Event subscriber para headers de seguridad (CORS, CSP, HSTS)
+  # Configurable desde /admin/config/system/security-headers
+  ecosistema_jaraba_core.security_headers_subscriber:
+    class: Drupal\ecosistema_jaraba_core\EventSubscriber\SecurityHeadersSubscriber
+    arguments:
+      - '@config.factory'
+    tags:
+      - { name: event_subscriber }
+
+  # ===========================================
+  # AI TELEMETRY - MONITOREO DE AGENTES IA
+  # ===========================================
+
+  # Servicio de telemetría para agentes de IA
+  # Registra latencia, tokens utilizados y costos por invocación
+  ecosistema_jaraba_core.ai_telemetry:
+    class: Drupal\ecosistema_jaraba_core\Service\AITelemetryService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+
+  # ===========================================
+  # TENANT ANALYTICS - GRÁFICOS DE TENDENCIAS
+  # ===========================================
+
+  # Servicio de analytics para el dashboard del tenant
+  ecosistema_jaraba_core.tenant_analytics:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantAnalyticsService
+    arguments:
+      - '@database'
+      - '@date.formatter'
+
+  # ===========================================
+  # ALERTING - SLACK/TEAMS WEBHOOKS
+  # ===========================================
+
+  # Servicio de alertas para Slack y Microsoft Teams
+  ecosistema_jaraba_core.alerting:
+    class: Drupal\ecosistema_jaraba_core\Service\AlertingService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  # ===========================================
+  # PHASE 13: MARKETPLACE & NETWORK EFFECTS
+  # ===========================================
+
+  # Servicio de recomendaciones cross-tenant
+  ecosistema_jaraba_core.marketplace_recommendations:
+    class: Drupal\ecosistema_jaraba_core\Service\MarketplaceRecommendationService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_user'
+
+  # Servicio de colaboración tenant-to-tenant
+  ecosistema_jaraba_core.tenant_collaboration:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantCollaborationService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+
+  # ===========================================
+  # Q2 2026: PREDICTIVE ONBOARDING (SPRINT 5-6)
+  # ===========================================
+
+  # Clasificador de intención de usuario con IA
+  ecosistema_jaraba_core.user_intent_classifier:
+    class: Drupal\ecosistema_jaraba_core\Service\UserIntentClassifierService
+    arguments:
+      - '@database'
+      - '@current_user'
+
+  # Métricas de Time-to-First-Value
+  ecosistema_jaraba_core.ttfv:
+    class: Drupal\ecosistema_jaraba_core\Service\TimeToFirstValueService
+    arguments:
+      - '@database'
+      - '@current_user'
+
+  # Tours guiados contextuales
+  ecosistema_jaraba_core.guided_tours:
+    class: Drupal\ecosistema_jaraba_core\Service\GuidedTourService
+    arguments:
+      - '@database'
+      - '@current_user'
+
+  # Mensajería in-app adaptativa
+  ecosistema_jaraba_core.in_app_messaging:
+    class: Drupal\ecosistema_jaraba_core\Service\InAppMessagingService
+    arguments:
+      - '@database'
+      - '@current_user'
+
+  # ===========================================
+  # Q2 2026: EXPANSION LOOPS (SPRINT 7-8)
+  # ===========================================
+
+  # Monitoreo de límites de uso
+  ecosistema_jaraba_core.usage_limits:
+    class: Drupal\ecosistema_jaraba_core\Service\UsageLimitsService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+
+  # Programa de referidos
+  ecosistema_jaraba_core.referral_program:
+    class: Drupal\ecosistema_jaraba_core\Service\ReferralProgramService
+    arguments:
+      - '@database'
+
+  # Recomendaciones de pricing
+  ecosistema_jaraba_core.pricing_recommendations:
+    class: Drupal\ecosistema_jaraba_core\Service\PricingRecommendationService
+    arguments:
+      - '@database'
+
+  # ===========================================
+  # Q3 2026: AI OPERATIONS & RELIABILITY
+  # ===========================================
+
+  # Sprint 9-10: AI Monitoring Stack
+
+  # Guardrails para validación de prompts
+  ecosistema_jaraba_core.ai_guardrails:
+    class: Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService
+    arguments:
+      - '@database'
+
+  # A/B Testing de prompts
+  ecosistema_jaraba_core.ai_ab_testing:
+    class: Drupal\ecosistema_jaraba_core\Service\AIPromptABTestingService
+    arguments:
+      - '@database'
+
+  # Sprint 11-12: Self-Healing & Game Day
+
+  # Self-healing con runbooks automatizados
+  ecosistema_jaraba_core.self_healing:
+    class: Drupal\ecosistema_jaraba_core\Service\SelfHealingService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+
+  # ===========================================
+  # Q4 2026: MARKET EXPANSION & LEVEL 5.0
+  # ===========================================
+
+  # Sprint 13-14: Outcome-Based Pricing
+
+  # Metering avanzado por tenant
+  ecosistema_jaraba_core.tenant_metering:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantMeteringService
+    arguments:
+      - '@database'
+
+  # Motor de cálculo de precios basado en PricingRule (G111 / f111)
+  # Reemplaza los precios hardcodeados de TenantMeteringService::UNIT_PRICES
+  # con reglas dinámicas por plan: flat, tiered, volume, package
+  ecosistema_jaraba_core.pricing_engine:
+    class: Drupal\ecosistema_jaraba_core\Service\PricingRuleEngine
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Dashboard de valor generado por IA
+  ecosistema_jaraba_core.ai_value_dashboard:
+    class: Drupal\ecosistema_jaraba_core\Service\AIValueDashboardService
+    arguments:
+      - '@database'
+
+  # Sprint 15-16: Level 5.0 Certification
+
+  # AIOps con predicción de incidentes
+  ecosistema_jaraba_core.aiops:
+    class: Drupal\ecosistema_jaraba_core\Service\AIOpsService
+    arguments:
+      - '@database'
+      - '@logger.factory'
+
+  # ===========================================
+  # Q1 2027: INSTANT VALUE (GAP P0)
+  # ===========================================
+
+  # Demo interactiva para Time-to-Value < 60s
+  ecosistema_jaraba_core.demo_interactive:
+    class: Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@state'
+
+  # ===========================================
+  # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
+  # ===========================================
+
+  # Servicio de Reverse Trial con downgrade automático
+  ecosistema_jaraba_core.reverse_trial:
+    class: Drupal\ecosistema_jaraba_core\Service\ReverseTrialService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@plugin.manager.mail'
+      - '@state'
+
+  # ===========================================
+  # Q1 2027: AI AGENT AUTONOMY LEVELS (GAP P1)
+  # ===========================================
+
+  # Servicio de gestión de autonomía de agentes IA
+  ecosistema_jaraba_core.agent_autonomy:
+    class: Drupal\ecosistema_jaraba_core\Service\AgentAutonomyService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@state'
+
+  # ===========================================
+  # Q1 2027: CONTEXTUAL AI COPILOT (GAP P2)
+  # ===========================================
+
+  # Servicio de resolución de contexto para copilotos
+  # Detecta dinámicamente avatar, vertical, plan y tenant del usuario
+  ecosistema_jaraba_core.copilot_context:
+    class: Drupal\ecosistema_jaraba_core\Service\CopilotContextService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@current_route_match'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Servicio de copilot contextual embebido
+  ecosistema_jaraba_core.contextual_copilot:
+    class: Drupal\ecosistema_jaraba_core\Service\ContextualCopilotService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_route_match'
+      - '@current_user'
+
+  # ===========================================
+  # Q1 2027: MICRO-AUTOMATIONS (INVISIBLE AI)
+  # ===========================================
+
+  # Servicio de automatizaciones invisibles
+  ecosistema_jaraba_core.micro_automation:
+    class: Drupal\ecosistema_jaraba_core\Service\MicroAutomationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@state'
+
+  # Alias para autowiring de MicroAutomationService en Hook classes (D11 #[Hook])
+  Drupal\ecosistema_jaraba_core\Service\MicroAutomationService:
+    alias: ecosistema_jaraba_core.micro_automation
+
+  # BE-09: Hook class registrada como servicio con inyección explícita.
+  # Drupal 11 #[Hook] requiere que la clase sea un servicio para resolver DI.
+  Drupal\ecosistema_jaraba_core\Hook\NodePresaveHooks:
+    arguments:
+      - '@ecosistema_jaraba_core.micro_automation'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # BE-09: Hook class para page_attachments_alter con DI explícita.
+  # Inyecta Design Tokens CSS + PWA meta tags + premium admin styles.
+  Drupal\ecosistema_jaraba_core\Hook\PageAttachmentsHooks:
+    arguments:
+      - '@path.current'
+      - '@ecosistema_jaraba_core.style_preset'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  # ===========================================
+  # Q1 2027: AI COST OPTIMIZATION (FinOps for AI)
+  # ===========================================
+
+  # Servicio de optimización de costos de IA
+  ecosistema_jaraba_core.ai_cost_optimization:
+    class: Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService
+    arguments:
+      - '@state'
+      - '@logger.factory'
+
+  # ===========================================
+  # Q1 2027: EXPANSION REVENUE TRACKING
+  # ===========================================
+
+  # Servicio de tracking de expansion revenue y PQA
+  ecosistema_jaraba_core.expansion_revenue:
+    class: Drupal\ecosistema_jaraba_core\Service\ExpansionRevenueService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.factory'
+
+  # ===========================================
+  # Q1 2027: VIDEO CONTENT GEO
+  # ===========================================
+
+  # Servicio de Video GEO (Schema.org, YouTube, Transcripciones)
+  ecosistema_jaraba_core.video_geo:
+    class: Drupal\ecosistema_jaraba_core\Service\VideoGeoService
+
+  # ===========================================
+  # Q1 2027: MULTILINGUAL GEO
+  # ===========================================
+
+  # Servicio de GEO multilingüe (hreflang, Answer Capsules)
+  ecosistema_jaraba_core.multilingual_geo:
+    class: Drupal\ecosistema_jaraba_core\Service\MultilingualGeoService
+
+  # ===========================================
+  # Q1 2027: TIME-TO-VALUE - SANDBOX TEMPORAL
+  # ===========================================
+
+  # Servicio de sandbox temporal para demo sin registro
+  ecosistema_jaraba_core.sandbox_tenant:
+    class: Drupal\ecosistema_jaraba_core\Service\SandboxTenantService
+    arguments:
+      - '@state'
+      - '@logger.factory'
+
+  # ===========================================
+  # Q1 2027: RATE LIMITING (Best Practices Gap)
+  # ===========================================
+
+  # Servicio de rate limiting para protección de APIs críticas
+  ecosistema_jaraba_core.rate_limiter:
+    class: Drupal\ecosistema_jaraba_core\Service\RateLimiterService
+    arguments:
+      - '@cache.default'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@config.factory'
+
+  # ===========================================
+  # Q1 2027: CRÉDITOS DE IMPACTO (ECA Flows)
+  # ===========================================
+
+  # Servicio de créditos de impacto para gamificación y engagement
+  ecosistema_jaraba_core.impact_credit:
+    class: Drupal\ecosistema_jaraba_core\Service\ImpactCreditService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # Q1 2027: AI USAGE LIMITS (Per Tenant/Plan)
+  # ===========================================
+
+  # Servicio de verificación de límites de uso de IA por tenant/plan
+  # Implementa warning (80%) y bloqueo (100%) con mensaje de upgrade
+  ecosistema_jaraba_core.ai_usage_limit:
+    class: Drupal\ecosistema_jaraba_core\Service\AIUsageLimitService
+    arguments:
+      - '@config.factory'
+      - '@state'
+
+  # ===========================================
+  # Q1 2027: UNIFIED PROMPT BUILDER (AI Trilogy)
+  # ===========================================
+
+  # Constructor de prompts unificados para agentes IA.
+  # Registrado condicionalmente via EcosistemaJarabaCoreServiceProvider
+  # solo cuando jaraba_skills y jaraba_tenant_knowledge están instalados.
+
 

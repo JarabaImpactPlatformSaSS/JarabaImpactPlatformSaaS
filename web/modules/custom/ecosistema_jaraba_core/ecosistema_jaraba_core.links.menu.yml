@@ -66,6 +66,18 @@ entity.ai_agent.collection:
   weight: -6
 
 # ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - DESIGN TOKENS
+# ---------------------------------------------------------------------------
+
+# Enlace principal para gestión de Design Tokens
+entity.design_token_config.collection:
+  title: 'Design Tokens'
+  description: 'Gestiona las configuraciones de Design Tokens para personalización visual multi-tenant'
+  route_name: entity.design_token_config.collection
+  parent: system.admin_structure
+  weight: -5
+
+# ---------------------------------------------------------------------------
 # MENÚ DE INFORMES - OBSERVABILIDAD
 # ---------------------------------------------------------------------------
 
@@ -118,3 +130,41 @@ ecosistema_jaraba_core.finops_settings_menu:
   route_name: ecosistema_jaraba_core.finops.settings
   parent: system.admin_config_system
   weight: 50
+
+# Configuración Rate Limiting y Protección AI (Admin > Configuration)
+ecosistema_jaraba_core.rate_limit_settings_menu:
+  title: 'Rate Limiting y Protección AI'
+  description: 'Configurar límites de requests, circuit breaker y context window'
+  route_name: ecosistema_jaraba_core.rate_limit_settings
+  parent: system.admin_config_system
+  weight: 51
+
+# SEC-08: Configuración de Headers de Seguridad (Admin > Configuration)
+ecosistema_jaraba_core.security_headers_settings_menu:
+  title: 'Headers de Seguridad'
+  description: 'Configurar CORS, Content Security Policy y HSTS'
+  route_name: ecosistema_jaraba_core.security_headers_settings
+  parent: system.admin_config_system
+  weight: 52
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - STYLE PRESETS (Industry Style Presets f-101/f-102)
+# ---------------------------------------------------------------------------
+
+entity.style_preset.collection:
+  title: 'Style Presets'
+  description: 'Gestiona los presets de estilo por sector industrial (AgroConecta, ComercioConecta, ServiciosConecta)'
+  route_name: entity.style_preset.collection
+  parent: system.admin_structure
+  weight: -6
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - PRICING RULES (G111 / f111)
+# ---------------------------------------------------------------------------
+
+entity.pricing_rule.collection:
+  title: 'Reglas de Precios'
+  description: 'Gestiona las reglas de precios por plan y métrica para facturación basada en uso'
+  route_name: entity.pricing_rule.collection
+  parent: system.admin_structure
+  weight: -4

@@ -1,0 +1,331 @@
+// =============================================================================
+// MARKETPLACE - Estilos para Landing, Búsqueda y Producto
+// =============================================================================
+// Utiliza variables CSS inyectables para personalización por tenant
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// MARKETPLACE PRODUCT (Página de detalle de producto)
+// ---------------------------------------------------------------------------
+
+.marketplace-product {
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    padding: $ej-spacing-lg;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+// Breadcrumb
+.marketplace-product__breadcrumb {
+    display: flex;
+    gap: $ej-spacing-xs;
+    color: var(--ej-text-muted);
+    font-size: $ej-font-size-sm;
+    margin-bottom: $ej-spacing-lg;
+
+    a {
+        color: var(--ej-color-primary);
+        text-decoration: none;
+        transition: var(--ej-transition-fast);
+
+        &:hover {
+            color: var(--ej-color-primary-hover);
+        }
+    }
+}
+
+// Container
+.marketplace-product__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $ej-spacing-xl;
+    margin-bottom: $ej-spacing-xl;
+}
+
+// Gallery
+.marketplace-product__gallery {
+    position: relative;
+}
+
+.marketplace-product__image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: var(--ej-border-radius-lg);
+    box-shadow: var(--ej-shadow-lg);
+}
+
+.marketplace-product__tenant-badge {
+    position: absolute;
+    top: $ej-spacing-sm;
+    left: $ej-spacing-sm;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-full;
+    font-size: $ej-font-size-sm;
+}
+
+// Info
+.marketplace-product__category {
+    display: inline-block;
+    background: var(--ej-gray-100);
+    color: var(--ej-text-secondary);
+    padding: $ej-spacing-xs $ej-spacing-xs;
+    border-radius: var(--ej-border-radius-sm);
+    font-size: $ej-font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $ej-spacing-xs;
+}
+
+.marketplace-product__title {
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+    color: var(--ej-text-primary);
+    margin: 0 0 $ej-spacing-sm;
+}
+
+.marketplace-product__price-box {
+    margin-bottom: $ej-spacing-md;
+}
+
+.marketplace-product__price {
+    font-size: $ej-font-size-3xl;
+    font-weight: $ej-font-weight-bold;
+    color: var(--ej-color-success);
+}
+
+.marketplace-product__tax-note {
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted);
+    margin-left: $ej-spacing-xs;
+}
+
+.marketplace-product__producer {
+    background: var(--ej-gray-50);
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: var(--ej-border-radius);
+    margin-bottom: $ej-spacing-md;
+    font-size: $ej-font-size-sm;
+}
+
+.marketplace-product__description {
+    h3 {
+        font-size: $ej-font-size-base;
+        font-weight: $ej-font-weight-semibold;
+        margin: 0 0 $ej-spacing-xs;
+    }
+
+    p {
+        color: var(--ej-text-secondary);
+        margin: 0 0 $ej-spacing-sm;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 $ej-spacing-md;
+    }
+
+    li {
+        padding: $ej-spacing-xs 0;
+        color: var(--ej-color-success);
+    }
+}
+
+// Actions
+.marketplace-product__actions {
+    display: flex;
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-md;
+}
+
+.marketplace-product__btn {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: var(--ej-border-radius);
+    font-weight: $ej-font-weight-semibold;
+    cursor: pointer;
+    transition: var(--ej-transition);
+    border: none;
+    font-size: $ej-font-size-base;
+
+    &--primary {
+        background: linear-gradient(135deg, var(--ej-color-primary), var(--ej-color-primary-hover));
+        color: white;
+        flex: 1;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ej-shadow-md);
+        }
+    }
+
+    &--secondary {
+        background: var(--ej-gray-100);
+        color: var(--ej-text-secondary);
+
+        &:hover {
+            background: var(--ej-gray-200);
+        }
+
+        &.saved {
+            background: color-mix(in srgb, var(--ej-color-error) 10%, white);
+            color: var(--ej-color-error);
+        }
+    }
+}
+
+.marketplace-product__trust {
+    display: flex;
+    gap: $ej-spacing-md;
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// RELATED PRODUCTS
+// ---------------------------------------------------------------------------
+
+.marketplace-product__related {
+    margin-top: $ej-spacing-xl;
+    padding-top: $ej-spacing-lg;
+    border-top: 1px solid var(--ej-border-color);
+}
+
+.marketplace-product__related-title {
+    font-size: $ej-font-size-xl;
+    font-weight: $ej-font-weight-semibold;
+    margin-bottom: $ej-spacing-md;
+}
+
+.marketplace-product__related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $ej-spacing-md;
+}
+
+.marketplace-product-card {
+    background: var(--ej-bg-card);
+    border-radius: var(--ej-border-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--ej-border-color);
+    transition: var(--ej-transition);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ej-shadow-lg);
+    }
+
+    &__link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    &__image-wrapper {
+        aspect-ratio: 4/3;
+        overflow: hidden;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__content {
+        padding: $ej-spacing-sm;
+    }
+
+    &__title {
+        font-size: $ej-font-size-sm;
+        font-weight: $ej-font-weight-semibold;
+        color: var(--ej-text-primary);
+        margin: 0 0 $ej-spacing-xs;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__price {
+        font-weight: $ej-font-weight-bold;
+        color: var(--ej-color-success);
+    }
+
+    &__cta {
+        color: var(--ej-color-primary);
+        font-size: $ej-font-size-xs;
+    }
+}
+
+.marketplace-product__back {
+    display: inline-block;
+    color: var(--ej-color-primary);
+    text-decoration: none;
+    margin-top: $ej-spacing-lg;
+    transition: var(--ej-transition-fast);
+
+    &:hover {
+        color: var(--ej-color-primary-hover);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO TOAST
+// ---------------------------------------------------------------------------
+
+.demo-toast {
+    position: fixed;
+    bottom: $ej-spacing-lg;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--ej-gray-800), var(--ej-gray-700));
+    color: white;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: var(--ej-border-radius-lg);
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    box-shadow: var(--ej-shadow-lg);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+
+    &--visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+
+    &__icon {
+        font-size: $ej-font-size-lg;
+    }
+
+    &__message {
+        font-size: $ej-font-size-base;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// RESPONSIVE
+// ---------------------------------------------------------------------------
+
+@media (max-width: $ej-breakpoint-md) {
+    .marketplace-product__container {
+        grid-template-columns: 1fr;
+        gap: $ej-spacing-lg;
+    }
+
+    .marketplace-product__related-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .marketplace-product__trust {
+        flex-direction: column;
+        gap: $ej-spacing-xs;
+    }
+}

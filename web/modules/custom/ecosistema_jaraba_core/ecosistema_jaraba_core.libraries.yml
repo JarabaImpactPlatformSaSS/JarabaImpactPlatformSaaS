@@ -114,13 +114,201 @@ health-dashboard:
 # ---------------------------------------------------------------------------
 # Dashboard de optimización de costes con métricas por tenant,
 # proyecciones y recomendaciones de ahorro.
+# Incluye Chart.js para gráficos de tendencias de costes IA.
 
 finops-dashboard:
   version: 1.x
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+    js/finops-ai-charts.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL TENANT SELF-SERVICE DASHBOARD
+# ---------------------------------------------------------------------------
+# Dashboard self-service para tenants con gráficos de tendencias.
+# Incluye Chart.js para visualización de datos.
+
+tenant-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+    js/tenant-dashboard-charts.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL MARKETPLACE
+# ---------------------------------------------------------------------------
+# Landing page del marketplace con productos cross-tenant.
+
+marketplace:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DEMO LANDING
+# ---------------------------------------------------------------------------
+# Landing de selección de perfil de demo.
+
+demo-landing:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DEMO DASHBOARD
+# ---------------------------------------------------------------------------
+# Dashboard interactivo con métricas y gráficos para demo.
+# Incluye Chart.js desde CDN.
+
+demo-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE CHARTS (ALIAS PARA DEMO)
+# ---------------------------------------------------------------------------
+# Alias para Chart.js usado en demos.
+
+charts:
+  version: 1.x
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DEMO STORYTELLING
+# ---------------------------------------------------------------------------
+# Página de generación de historias con IA.
+
+demo-storytelling:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE CONTEXTUAL AI COPILOT (Q1 2027)
+# ---------------------------------------------------------------------------
+# Widget flotante de asistente IA contextual.
+# Se carga globalmente para usuarios autenticados.
+
+contextual-copilot:
+  version: 1.x
+  css:
+    component:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/contextual-copilot.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE PWA (Q1 2027)
+# ---------------------------------------------------------------------------
+# Progressive Web App: Service Worker, offline-first, push notifications.
+# Se carga globalmente para todos los usuarios.
+
+pwa:
+  version: 1.x
+  js:
+    js/pwa-register.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DIAGNÓSTICO EXPRESS (Q1 2027)
+# ---------------------------------------------------------------------------
+# Sistema de diagnóstico TTV < 60s para Value-First Onboarding.
+# Motor de scoring 100% client-side, perfiles, impacto económico.
+
+diagnostic:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/diagnostic-scoring-engine.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE CORRECCIÓN DE TABS ADMIN
+# ---------------------------------------------------------------------------
+# Fix para pestañas administrativas que truncan texto en español.
+# Se carga en todas las páginas /admin/*.
+
+admin-tabs-fix:
+  version: 1.x
+  css:
+    theme:
+      css/admin-tabs-fix.css: {}
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA RBAC MATRIX (Admin Center D.2)
+# ---------------------------------------------------------------------------
+# Matriz visual de permisos por rol con toggle AJAX y filtro por módulo.
+
+rbac-matrix:
+  version: 1.x
+  css:
+    theme:
+      css/rbac-matrix.css: {}
+  js:
+    js/rbac-matrix.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE USAGE DASHBOARD (G111 / f111)
+# ---------------------------------------------------------------------------
+# Dashboard de uso y facturación para tenants.
+# Incluye Chart.js para gráficos de tendencias históricas.
+
+usage-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+    js/usage-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 

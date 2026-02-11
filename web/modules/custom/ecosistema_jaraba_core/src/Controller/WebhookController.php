@@ -539,16 +539,27 @@ class WebhookController extends ControllerBase
             $currentPlan = $tenant->getSubscriptionPlan();
 
             if ($currentPlan && $currentPlan->id() !== $newPlan->id()) {
-                $this->tenantManager->changePlan($tenant, $newPlan);
+                try {
+                    $this->tenantManager->changePlan($tenant, $newPlan);
 
-                $this->logger->info(
-                    '📝 Webhook: Plan cambiado para tenant @tenant: @old → @new',
-                    [
-                        '@tenant' => $tenant->getName(),
-                        '@old' => $currentPlan->getName(),
-                        '@new' => $newPlan->getName(),
-                    ]
-                );
+                    $this->logger->info(
+                        '📝 Webhook: Plan cambiado para tenant @tenant: @old → @new',
+                        [
+                            '@tenant' => $tenant->getName(),
+                            '@old' => $currentPlan->getName(),
+                            '@new' => $newPlan->getName(),
+                        ]
+                    );
+                }
+                catch (\InvalidArgumentException $e) {
+                    $this->logger->error(
+                        'Webhook: Error cambiando plan para tenant @tenant: @error',
+                        [
+                            '@tenant' => $tenant->getName(),
+                            '@error' => $e->getMessage(),
+                        ]
+                    );
+                }
             }
         }
     }
@@ -569,23 +580,64 @@ class WebhookController extends ControllerBase
      */
     public function customWebhook(string $integration_id, Request $request): JsonResponse
     {
-        // Validar token de autenticación
-        $token = $request->headers->get('X-Webhook-Token')
-            ?? $request->query->get('token');
+        // SEC-02: Validar token de autenticación via header HMAC o token.
+        // El token via query param se mantiene solo por compatibilidad.
+        $token = $request->headers->get('X-Webhook-Token');
+        $hmacSignature = $request->headers->get('X-Webhook-Signature');
 
-        if (!$token) {
-            return new JsonResponse(['error' => 'Missing authentication token'], 401);
+        if (!$token && !$hmacSignature) {
+            $this->logger->warning(
+                'Webhook @id rechazado: sin token ni firma HMAC',
+                ['@id' => $integration_id]
+            );
+            return new JsonResponse(['error' => 'Missing authentication'], 401);
         }
 
-        // Buscar la integración configurada
-        // TODO: Implementar entidad WebhookIntegration
+        // SEC-02: Verificar firma HMAC si está presente (preferido sobre token simple).
+        if ($hmacSignature) {
+            $webhookSecret = getenv('WEBHOOK_SECRET_' . strtoupper($integration_id))
+                ?: $this->config('ecosistema_jaraba_core.webhooks')->get("integrations.{$integration_id}.secret");
+
+            if (!$webhookSecret) {
+                $this->logger->error(
+                    'Webhook @id: secreto HMAC no configurado',
+                    ['@id' => $integration_id]
+                );
+                return new JsonResponse(['error' => 'Webhook not configured'], 500);
+            }
+
+            $payload = $request->getContent();
+            $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);
+
+            if (!hash_equals($expectedSignature, $hmacSignature)) {
+                $this->logger->warning(
+                    'Webhook @id rechazado: firma HMAC inválida',
+                    ['@id' => $integration_id]
+                );
+                return new JsonResponse(['error' => 'Invalid signature'], 403);
+            }
+        }
+
+        // Validar token simple como fallback (deprecated, migrar a HMAC).
+        if ($token && !$hmacSignature) {
+            $expectedToken = getenv('WEBHOOK_TOKEN_' . strtoupper($integration_id))
+                ?: $this->config('ecosistema_jaraba_core.webhooks')->get("integrations.{$integration_id}.token");
+
+            if (!$expectedToken || !hash_equals($expectedToken, $token)) {
+                $this->logger->warning(
+                    'Webhook @id rechazado: token inválido',
+                    ['@id' => $integration_id]
+                );
+                return new JsonResponse(['error' => 'Invalid token'], 403);
+            }
+        }
 
         $this->logger->info(
-            '📥 Webhook personalizado recibido: @id',
+            'Webhook personalizado recibido: @id',
             ['@id' => $integration_id]
         );
 
-        // Por ahora, aceptar y loguear
+        // TODO: Implementar entidad WebhookIntegration para procesamiento específico.
         $payload = json_decode($request->getContent(), TRUE);
 
         return new JsonResponse([

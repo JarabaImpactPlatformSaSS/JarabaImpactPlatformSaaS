@@ -12,6 +12,7 @@
 // Las variables CSS --ej-* permiten sobrescribir colores por vertical/tenant.
 // =============================================================================
 
+@use 'sass:color';
 @use 'variables' as *;
 
 // ---------------------------------------------------------------------------
@@ -577,7 +578,7 @@ $premium-gold: #fbbf24;
             transition: color $ej-transition-duration-fast $ej-transition-easing;
 
             &:hover {
-                color: lighten($ej-color-primary-fallback, 15%);
+                color: color.scale($ej-color-primary-fallback, $lightness: 30%);
                 text-decoration: underline;
             }
         }

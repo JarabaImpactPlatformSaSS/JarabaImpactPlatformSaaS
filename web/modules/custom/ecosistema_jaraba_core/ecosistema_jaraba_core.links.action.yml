@@ -59,3 +59,35 @@ entity.ai_agent.add_form:
   title: 'Añadir Agente IA'
   appears_on:
     - entity.ai_agent.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - DESIGN TOKENS
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Design Token Config" en la lista
+entity.design_token_config.add_form:
+  route_name: entity.design_token_config.add_form
+  title: 'Añadir Configuración de Design Tokens'
+  appears_on:
+    - entity.design_token_config.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - STYLE PRESETS (f-101/f-102)
+# ---------------------------------------------------------------------------
+
+# Botón "Añadir Style Preset" en la lista
+entity.style_preset.add_form:
+  route_name: entity.style_preset.add_form
+  title: 'Añadir Style Preset'
+  appears_on:
+    - entity.style_preset.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - PRICING RULES (G111 / f111)
+# ---------------------------------------------------------------------------
+
+entity.pricing_rule.add_form:
+  route_name: entity.pricing_rule.add_form
+  title: 'Añadir Regla de Precios'
+  appears_on:
+    - entity.pricing_rule.collection

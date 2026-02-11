@@ -1,0 +1,11 @@
+id: ai_agents
+label: 'Agentes de IA'
+description: 'Acceso a Copiloto IA y agentes inteligentes para automatización y asistencia.'
+category: ai
+icon: brain
+weight: 1
+status: true
+base_cost_monthly: 5.00
+unit_cost: 0.00001
+cost_category: ai
+usage_metric: ai_tokens

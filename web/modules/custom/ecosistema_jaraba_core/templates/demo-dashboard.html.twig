@@ -1,0 +1,550 @@
+{#
+/**
+ * @file
+ * Template para el dashboard de demo interactiva.
+ *
+ * Variables:
+ * - session_id: ID de la sesión de demo.
+ * - profile: Perfil de demo seleccionado.
+ * - tenant_name: Nombre simulado del tenant.
+ * - metrics: Métricas simuladas.
+ * - products: Productos sintéticos.
+ * - sales_history: Historial de ventas para gráficos.
+ * - magic_actions: Acciones de "Magic Moment".
+ * - tour: Datos del tour guiado.
+ *
+ * Q1 2027 - Gap P0: Time-to-Value < 60s
+ */
+#}
+
+<div class="demo-dashboard-container" data-session-id="{{ session_id }}">
+  {# Banner de Demo #}
+  <div class="demo-banner">
+    <div class="demo-banner-content">
+      <span class="demo-badge">🎮 MODO DEMO</span>
+      <span class="demo-tenant-name">{{ tenant_name }}</span>
+      <span class="demo-profile-type">{{ profile.icon }} {{ profile.name }}</span>
+    </div>
+    <div class="demo-actions">
+      <button class="demo-convert-btn" id="demo-convert-cta">
+        💫 Convertir en Cuenta Real
+      </button>
+    </div>
+  </div>
+
+  {# Magic Moment Actions #}
+  <section class="magic-moment-section">
+    <h2 class="section-title">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '24px' }) }} Tu Primer Paso</h2>
+    <div class="magic-actions-grid">
+      {% for action in magic_actions %}
+        {% set action_url = action.url %}
+        {% if action.url starts with '/demo/ai' %}
+          {% set action_url = action.url ~ '/' ~ session_id %}
+        {% endif %}
+        <a href="{{ action_url }}" 
+           class="magic-action-card {{ action.highlight ? 'highlighted' : '' }}"
+           data-action="{{ action.id }}">
+          <span class="action-icon">{{ action.icon }}</span>
+          <h3>{{ action.label }}</h3>
+          <p>{{ action.description }}</p>
+          {% if action.highlight %}
+            <span class="recommended-badge">{{ jaraba_icon('business', 'achievement', { size: '14px', color: 'naranja-impulso' }) }} Recomendado</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Métricas Simuladas #}
+  <section class="demo-metrics-section" id="metrics">
+    <h2 class="section-title">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }} Tus Métricas</h2>
+    <div class="metrics-grid">
+      {# Métricas para vendedores (producer, winery, cheese) #}
+      {% if metrics.products_count is defined %}
+        <div class="metric-card">
+          <span class="metric-value">{{ metrics.products_count }}</span>
+          <span class="metric-label">Productos</span>
+        </div>
+      {% endif %}
+      {% if metrics.orders_last_month is defined %}
+        <div class="metric-card">
+          <span class="metric-value">{{ metrics.orders_last_month }}</span>
+          <span class="metric-label">Pedidos (mes)</span>
+        </div>
+      {% endif %}
+      {% if metrics.revenue_last_month is defined %}
+        <div class="metric-card highlight">
+          <span class="metric-value">€{{ metrics.revenue_last_month|number_format(0, ',', '.') }}</span>
+          <span class="metric-label">Ingresos (mes)</span>
+        </div>
+      {% endif %}
+      {% if metrics.customers_count is defined %}
+        <div class="metric-card">
+          <span class="metric-value">{{ metrics.customers_count }}</span>
+          <span class="metric-label">Clientes</span>
+        </div>
+      {% endif %}
+      {# Métricas para compradores (buyer) #}
+      {% if metrics.products_available is defined %}
+        <div class="metric-card highlight">
+          <span class="metric-value">{{ metrics.products_available }}</span>
+          <span class="metric-label">Productos Disponibles</span>
+        </div>
+      {% endif %}
+      {% if metrics.tenants_active is defined %}
+        <div class="metric-card">
+          <span class="metric-value">{{ metrics.tenants_active }}</span>
+          <span class="metric-label">Tiendas Activas</span>
+        </div>
+      {% endif %}
+      {% if metrics.categories is defined %}
+        <div class="metric-card">
+          <span class="metric-value">{{ metrics.categories }}</span>
+          <span class="metric-label">Categorías</span>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {# Gráfico de Ventas #}
+  <section class="demo-chart-section">
+    <h2 class="section-title">{{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }} Tendencia de Ventas</h2>
+    <div class="chart-container">
+      <canvas id="salesChart" height="300"></canvas>
+    </div>
+  </section>
+
+  {# Productos (solo para vendedores) #}
+  {% if products %}
+    <section class="demo-products-section" id="products">
+      <h2 class="section-title">🛍️ Tus Productos</h2>
+      <div class="products-grid">
+        {% for product in products %}
+          <article class="product-card">
+            <div class="product-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+            <div class="product-info">
+              <h4>{{ product.name }}</h4>
+              <div class="product-price">€{{ product.price|number_format(2, ',', '.') }}</div>
+              <div class="product-meta">
+                <span class="product-rating">{{ jaraba_icon('business', 'achievement', { size: '16px', color: 'naranja-impulso' }) }} {{ product.rating }}</span>
+                <span class="product-reviews">{{ product.reviews }} reseñas</span>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# CTA Final #}
+  <section class="demo-final-cta">
+    <div class="cta-content">
+      <h2>¿Te gusta lo que ves?</h2>
+      <p>Convierte esta demo en tu cuenta real y mantén todos estos datos.</p>
+      <button class="cta-convert-btn" id="final-convert-cta">
+        Crear Mi Cuenta Real →
+      </button>
+    </div>
+  </section>
+</div>
+
+{# Modal de Conversión #}
+<div class="demo-convert-modal" id="convert-modal" style="display: none;">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <h3>🎉 ¡Convierte tu Demo!</h3>
+    <p>Introduce tu email para crear tu cuenta real:</p>
+    <form id="convert-form">
+      <input type="email" id="convert-email" placeholder="tu@email.com" required>
+      <button type="submit">Crear Cuenta</button>
+    </form>
+    <button class="modal-close" id="modal-close">✕</button>
+  </div>
+</div>
+
+<style>
+  .demo-dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .demo-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .demo-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .demo-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .demo-tenant-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .demo-convert-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .demo-convert-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+  }
+
+  .magic-moment-section {
+    margin-bottom: 3rem;
+  }
+
+  .magic-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .magic-action-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
+  }
+
+  .magic-action-card.highlighted {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+  }
+
+  .magic-action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .magic-action-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+  }
+
+  .magic-action-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .recommended-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+
+  .metric-card.highlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .metric-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .chart-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+
+  .product-image {
+    height: 120px;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+  }
+
+  .product-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .demo-final-cta {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: white;
+  }
+
+  .demo-final-cta h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .demo-final-cta p {
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+  }
+
+  .cta-convert-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .cta-convert-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  /* Modal */
+  .demo-convert-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    max-width: 400px;
+    margin: 10vh auto;
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  .modal-content h3 {
+    margin-bottom: 1rem;
+    color: #1a1a2e;
+  }
+
+  .modal-content input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .modal-content button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sessionId = '{{ session_id }}';
+  const salesHistory = drupalSettings.demo.salesHistory || [];
+  
+  // Inicializar gráfico de ventas
+  if (salesHistory.length > 0 && document.getElementById('salesChart')) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: salesHistory.map(d => d.date.slice(5)),
+        datasets: [{
+          label: 'Ingresos (€)',
+          data: salesHistory.map(d => d.revenue),
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Tracking de acciones
+  document.querySelectorAll('.magic-action-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const action = this.dataset.action;
+      fetch('/api/demo/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, action: action })
+      });
+    });
+  });
+
+  // Modal de conversión
+  const modal = document.getElementById('convert-modal');
+  const openBtns = document.querySelectorAll('#demo-convert-cta, #final-convert-cta');
+  const closeBtn = document.getElementById('modal-close');
+  const overlay = modal.querySelector('.modal-overlay');
+
+  openBtns.forEach(btn => {
+    btn.addEventListener('click', () => modal.style.display = 'block');
+  });
+
+  [closeBtn, overlay].forEach(el => {
+    el.addEventListener('click', () => modal.style.display = 'none');
+  });
+
+  // Form de conversión
+  document.getElementById('convert-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('convert-email').value;
+    
+    fetch('/api/demo/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, email: email })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = '/user/register?demo=' + sessionId + '&email=' + encodeURIComponent(email);
+      }
+    });
+  });
+});
+</script>

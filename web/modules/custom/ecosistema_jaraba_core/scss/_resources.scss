@@ -1,0 +1,465 @@
+/**
+ * @file
+ * Styles for Resources module (Digital Kits, Membership Plans).
+ * 
+ * Uses injectable CSS variables following project standards.
+ */
+
+/* ==========================================================================
+   DIGITAL KIT CARDS
+   ========================================================================== */
+
+.ej-kit-card {
+    background: var(--ej-color-surface, #fff);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-lg, 12px);
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+
+        .ej-kit-card__image {
+            transform: scale(1.05);
+        }
+    }
+
+    &--new::before {
+        content: 'NUEVO';
+        position: absolute;
+        top: 12px;
+        left: -24px;
+        padding: 0.25rem 2rem;
+        background: var(--ej-color-success, #22c55e);
+        color: white;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transform: rotate(-45deg);
+        z-index: 1;
+    }
+
+    &--featured {
+        border-color: var(--ej-color-primary, #6366f1);
+        box-shadow: 0 0 0 1px var(--ej-color-primary);
+    }
+}
+
+.ej-kit-card__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 160px;
+}
+
+.ej-kit-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.ej-kit-card__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--ej-radius-full, 9999px);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &--free {
+        background: var(--ej-color-success-soft, #dcfce7);
+        color: var(--ej-color-success, #166534);
+    }
+
+    &--starter {
+        background: var(--ej-color-info-soft, #dbeafe);
+        color: var(--ej-color-info, #1e40af);
+    }
+
+    &--professional {
+        background: var(--ej-color-primary-soft, #ede9fe);
+        color: var(--ej-color-primary, #5b21b6);
+    }
+
+    &--enterprise {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #78350f;
+    }
+}
+
+.ej-kit-card__content {
+    padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+.ej-kit-card__category {
+    display: inline-block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ej-color-muted-foreground, #64748b);
+    margin-bottom: 0.5rem;
+}
+
+.ej-kit-card__title {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+    margin: 0 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ej-kit-card__description {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+    line-height: 1.6;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ej-kit-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--ej-spacing-md, 1rem);
+    border-top: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+}
+
+.ej-kit-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--ej-color-warning, #f59e0b);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+}
+
+.ej-kit-card__downloads {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+/* ==========================================================================
+   KIT DETAIL PAGE
+   ========================================================================== */
+
+.ej-kit-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.ej-kit-detail__header {
+    display: flex;
+    gap: var(--ej-spacing-xl, 2rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ej-kit-detail__image {
+    width: 300px;
+    height: 200px;
+    border-radius: var(--ej-radius-lg, 12px);
+    object-fit: cover;
+}
+
+.ej-kit-detail__info {
+    flex: 1;
+}
+
+.ej-kit-detail__title {
+    font-size: var(--ej-font-size-3xl, 2rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.ej-kit-detail__files {
+    background: var(--ej-color-surface, #fff);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-lg, 12px);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.ej-kit-detail__file {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-md, 1rem);
+    background: var(--ej-color-muted, #f8fafc);
+    border-radius: var(--ej-radius-md, 8px);
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.ej-kit-detail__file-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ej-color-primary-soft, #eef2ff);
+    border-radius: var(--ej-radius-md, 8px);
+    color: var(--ej-color-primary, #6366f1);
+}
+
+.ej-kit-detail__file-info {
+    flex: 1;
+}
+
+.ej-kit-detail__file-name {
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+}
+
+.ej-kit-detail__file-size {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+/* ==========================================================================
+   PLAN CARDS
+   ========================================================================== */
+
+.ej-plan-card {
+    background: var(--ej-color-surface, #fff);
+    border: 2px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-xl, 16px);
+    padding: var(--ej-spacing-xl, 2rem);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    &--featured {
+        border-color: var(--ej-color-primary, #6366f1);
+        box-shadow: 0 0 0 1px var(--ej-color-primary);
+    }
+
+    &--featured::before {
+        content: 'RECOMENDADO';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.25rem 1rem;
+        background: var(--ej-color-primary, #6366f1);
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border-radius: var(--ej-radius-full, 9999px);
+    }
+}
+
+.ej-plan-card__name {
+    font-size: var(--ej-font-size-xl, 1.5rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: var(--ej-color-foreground, #0f172a);
+}
+
+.ej-plan-card__description {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.ej-plan-card__price {
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.ej-plan-card__amount {
+    font-size: var(--ej-font-size-4xl, 2.5rem);
+    font-weight: 800;
+    color: var(--ej-color-foreground, #0f172a);
+}
+
+.ej-plan-card__currency {
+    font-size: var(--ej-font-size-xl, 1.5rem);
+    font-weight: 600;
+    vertical-align: super;
+}
+
+.ej-plan-card__period {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+}
+
+.ej-plan-card__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--ej-spacing-xl, 2rem);
+    text-align: left;
+}
+
+.ej-plan-card__feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-foreground, #0f172a);
+
+    &::before {
+        content: '✓';
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background: var(--ej-color-success-soft, #dcfce7);
+        color: var(--ej-color-success, #22c55e);
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    &--disabled {
+        color: var(--ej-color-muted-foreground, #94a3b8);
+
+        &::before {
+            content: '—';
+            background: var(--ej-color-muted, #f1f5f9);
+            color: var(--ej-color-muted-foreground, #94a3b8);
+        }
+    }
+}
+
+.ej-plan-card__cta {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: var(--ej-color-primary, #6366f1);
+    color: white;
+    border: none;
+    border-radius: var(--ej-radius-md, 8px);
+    font-size: var(--ej-font-size-base, 1rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: var(--ej-color-primary-dark, #4f46e5);
+        transform: translateY(-2px);
+    }
+
+    &--outline {
+        background: transparent;
+        border: 2px solid var(--ej-color-primary, #6366f1);
+        color: var(--ej-color-primary, #6366f1);
+
+        &:hover {
+            background: var(--ej-color-primary-soft, #eef2ff);
+        }
+    }
+}
+
+/* ==========================================================================
+   SUBSCRIPTION STATUS
+   ========================================================================== */
+
+.ej-subscription-card {
+    background: var(--ej-color-surface, #fff);
+    border: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+    border-radius: var(--ej-radius-lg, 12px);
+    padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+.ej-subscription-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ej-subscription-card__plan {
+    font-size: var(--ej-font-size-xl, 1.5rem);
+    font-weight: 700;
+}
+
+.ej-subscription-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--ej-radius-full, 9999px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+
+    &--active {
+        background: var(--ej-color-success-soft, #dcfce7);
+        color: var(--ej-color-success, #166534);
+    }
+
+    &--trial {
+        background: var(--ej-color-info-soft, #dbeafe);
+        color: var(--ej-color-info, #1e40af);
+    }
+
+    &--expiring {
+        background: var(--ej-color-warning-soft, #fef3c7);
+        color: var(--ej-color-warning, #92400e);
+    }
+
+    &--expired {
+        background: var(--ej-color-danger-soft, #fee2e2);
+        color: var(--ej-color-danger, #dc2626);
+    }
+}
+
+.ej-subscription-card__details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ej-spacing-md, 1rem);
+    padding-top: var(--ej-spacing-md, 1rem);
+    border-top: 1px solid var(--ej-border-color-subtle, #e2e8f0);
+}
+
+.ej-subscription-card__detail-label {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-muted-foreground, #64748b);
+    margin-bottom: 0.25rem;
+}
+
+.ej-subscription-card__detail-value {
+    font-weight: 600;
+    color: var(--ej-color-foreground, #0f172a);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .ej-kit-detail__header {
+        flex-direction: column;
+    }
+
+    .ej-kit-detail__image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .ej-subscription-card__details {
+        grid-template-columns: 1fr;
+    }
+}

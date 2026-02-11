@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Cara izquierda -->
+  <circle cx="6" cy="10" r="4"/>
+  <path d="M10 10 L12 8 L12 12 Z"/>
+  
+  <!-- Cara derecha -->
+  <circle cx="18" cy="10" r="4"/>
+  <path d="M14 10 L12 8 L12 12 Z"/>
+  
+  <!-- Bocadillos de diálogo -->
+  <path d="M3 18 L3 20 L6 18"/>
+  <path d="M21 18 L21 20 L18 18"/>
+</svg>

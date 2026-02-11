@@ -5,6 +5,7 @@
 // Utiliza las variables CSS inyectables del proyecto para mantener consistencia.
 // =============================================================================
 
+@use 'sass:color';
 @use 'variables' as *;
 
 // ---------------------------------------------------------------------------
@@ -552,10 +553,310 @@ $finops-gold: #fbbf24;
     color: white;
 
     &:hover {
-        background: darken($ej-color-primary-fallback, 10%);
+        background: color.scale($ej-color-primary-fallback, $lightness: -20%);
     }
 }
 
 .btn__icon {
     font-size: $ej-font-size-md;
+}
+
+// ---------------------------------------------------------------------------
+// UNIT ECONOMICS SECTION
+// ---------------------------------------------------------------------------
+
+.finops-metrics--compact {
+    gap: $ej-spacing-md;
+}
+
+.finops-section__header {
+    margin-bottom: $ej-spacing-lg;
+}
+
+.finops-section__subtitle {
+    font-size: $ej-font-size-sm;
+    color: $finops-text-muted;
+    margin: $ej-spacing-xs 0 0;
+}
+
+// Legend Box for metric definitions
+.finops-legend-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    margin-bottom: $ej-spacing-xl;
+    border-left: 3px solid $finops-primary;
+
+    &__title {
+        font-size: $ej-font-size-sm;
+        font-weight: $ej-font-weight-semibold;
+        color: $finops-text;
+        margin-bottom: $ej-spacing-sm;
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+    }
+
+    &__items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: $ej-spacing-xs $ej-spacing-lg;
+    }
+
+    &__item {
+        font-size: $ej-font-size-xs;
+        color: $finops-text-muted;
+
+        strong {
+            color: $finops-text;
+            font-weight: $ej-font-weight-medium;
+        }
+    }
+}
+
+// Table for Unit Economics
+.finops-table-container {
+    overflow-x: auto;
+    margin-top: $ej-spacing-lg;
+}
+
+.finops-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: $ej-spacing-md;
+        border-bottom: $ej-border-width solid $finops-border;
+    }
+
+    th {
+        font-size: $ej-font-size-xs;
+        text-transform: uppercase;
+        color: $finops-text-muted;
+        font-weight: $ej-font-weight-semibold;
+        text-align: left;
+    }
+
+    td {
+        font-size: $ej-font-size-sm;
+        color: $finops-text; // White text for better readability
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+}
+
+.finops-table__row {
+    transition: background $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    &--vip {
+        background: rgba($finops-gold, 0.05);
+    }
+
+    &--loss {
+        background: rgba($ej-color-error, 0.05);
+    }
+
+    &--at_risk {
+        background: rgba($ej-color-warning, 0.03);
+    }
+}
+
+// Tenant name in table - make it more visible
+.finops-table__tenant {
+    strong {
+        color: $finops-text;
+        font-weight: $ej-font-weight-semibold;
+        font-size: $ej-font-size-base;
+    }
+}
+
+// Metric card badge variations
+.metric-card__badge {
+    display: inline-block;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+    margin-top: auto;
+
+    &--success {
+        background: rgba($ej-color-success, 0.2);
+        color: $finops-success;
+    }
+
+    &--warning {
+        background: rgba($ej-color-warning, 0.2);
+        color: $finops-warning;
+    }
+
+    &--critical {
+        background: rgba($ej-color-error, 0.2);
+        color: $finops-critical;
+    }
+}
+
+// Status badge extensions for VIP and star
+.status-badge {
+    &--success {
+        background: rgba($ej-color-success, 0.2);
+        color: $finops-success;
+    }
+
+    &--vip {
+        background: rgba($finops-gold, 0.2);
+        color: $finops-gold;
+    }
+
+    &--star {
+        background: rgba($finops-gold, 0.3);
+        color: $finops-gold;
+        font-weight: $ej-font-weight-bold;
+    }
+}
+
+// Text color utilities
+.text-danger {
+    color: $finops-critical !important;
+}
+
+.text-warning {
+    color: $finops-warning !important;
+}
+
+.text-success {
+    color: $finops-success !important;
+}
+
+.text-vip {
+    color: $finops-gold !important;
+}
+
+// ---------------------------------------------------------------------------
+// VERTICAL PROFITABILITY CARDS
+// ---------------------------------------------------------------------------
+
+.finops-verticals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $ej-spacing-lg;
+}
+
+.vertical-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-lg;
+    border-left: 4px solid $finops-border;
+    transition: transform $ej-transition-duration-normal $ej-transition-easing;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &--star {
+        border-left-color: $finops-gold;
+        background: rgba($finops-gold, 0.05);
+    }
+
+    &--healthy {
+        border-left-color: $finops-success;
+    }
+
+    &--warning {
+        border-left-color: $finops-warning;
+        background: rgba($ej-color-warning, 0.03);
+    }
+
+    &--critical {
+        border-left-color: $finops-critical;
+        background: rgba($ej-color-error, 0.05);
+    }
+}
+
+.vertical-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-md;
+}
+
+.vertical-card__title {
+    font-size: $ej-font-size-lg;
+    font-weight: $ej-font-weight-semibold;
+    margin: 0;
+    color: $finops-text;
+}
+
+.vertical-card__count {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+    background: rgba(255, 255, 255, 0.1);
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+}
+
+.vertical-card__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-md;
+}
+
+.vertical-card__metric {
+    text-align: center;
+    padding: $ej-spacing-sm;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: $ej-border-radius-sm;
+
+    &--profit {
+        background: rgba($ej-color-success, 0.05);
+    }
+}
+
+.vertical-card__metric-label {
+    display: block;
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+    text-transform: uppercase;
+    margin-bottom: $ej-spacing-xs;
+}
+
+.vertical-card__metric-value {
+    font-size: $ej-font-size-lg;
+    font-weight: $ej-font-weight-bold;
+    color: $finops-text;
+}
+
+.vertical-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $ej-spacing-md;
+    border-top: $ej-border-width solid $finops-border;
+}
+
+.vertical-card__margin {
+    text-align: left;
+}
+
+.vertical-card__margin-value {
+    display: block;
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+}
+
+.vertical-card__margin-label {
+    font-size: $ej-font-size-xs;
+    color: $finops-text-muted;
+    text-transform: uppercase;
 }

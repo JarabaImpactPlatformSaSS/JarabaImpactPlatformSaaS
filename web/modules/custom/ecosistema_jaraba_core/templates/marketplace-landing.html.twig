@@ -1,0 +1,549 @@
+{#
+/**
+ * @file
+ * Template para la Landing Page del Marketplace.
+ *
+ * Muestra productos de todos los tenants del ecosistema en una
+ * página central con diseño premium y optimizado para conversión.
+ *
+ * Variables:
+ * - featured_products: Array de productos destacados
+ * - categories: Array de categorías con conteo
+ * - active_tenants: Array de tiendas activas
+ * - stats: Estadísticas del marketplace
+ */
+#}
+
+<div class="marketplace">
+  
+  {# Hero Section #}
+  <section class="marketplace-hero">
+    <div class="marketplace-hero__content">
+      <h1 class="marketplace-hero__title">
+        {{ 'Descubre productos únicos de productores locales'|t }}
+      </h1>
+      <p class="marketplace-hero__subtitle">
+        {{ 'El marketplace que conecta consumidores con los mejores productores artesanales'|t }}
+      </p>
+      
+      {# Barra de búsqueda #}
+      <form class="marketplace-search-form" action="{{ path('ecosistema_jaraba_core.marketplace.search') }}" method="get">
+        <div class="marketplace-search-form__wrapper">
+          <span class="marketplace-search-form__icon">{{ jaraba_icon('ui', 'search', { color: 'neutral', size: '20px' }) }}</span>
+          <input 
+            type="text" 
+            name="q" 
+            class="marketplace-search-form__input" 
+            placeholder="{{ 'Buscar productos, tiendas...'|t }}"
+            aria-label="{{ 'Buscar'|t }}"
+          >
+          <button type="submit" class="marketplace-search-form__btn">
+            {{ 'Buscar'|t }}
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    {# Estadísticas #}
+    <div class="marketplace-stats">
+      {% for stat in stats %}
+      <div class="marketplace-stat">
+        <span class="marketplace-stat__icon">{{ stat.icon }}</span>
+        <span class="marketplace-stat__value">{{ stat.value }}</span>
+        <span class="marketplace-stat__label">{{ stat.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Categorías #}
+  <section class="marketplace-categories">
+    <h2 class="marketplace-section-title">{{ 'Explora por categoría'|t }}</h2>
+    <div class="marketplace-categories__grid">
+      {% for category in categories %}
+      <a href="{{ path('ecosistema_jaraba_core.marketplace.search') }}?category={{ category.slug }}" class="marketplace-category-card">
+        <span class="marketplace-category-card__icon">{{ category.icon }}</span>
+        <span class="marketplace-category-card__name">{{ category.name }}</span>
+        <span class="marketplace-category-card__count">{{ category.count }} {{ 'productos'|t }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Productos Destacados #}
+  <section class="marketplace-featured">
+    <div class="marketplace-featured__header">
+      <h2 class="marketplace-section-title">{{ 'Productos destacados'|t }}</h2>
+      <a href="{{ path('ecosistema_jaraba_core.marketplace.search') }}" class="marketplace-view-all">
+        {{ 'Ver todos'|t }} →
+      </a>
+    </div>
+    
+    <div class="marketplace-products-grid">
+      {% for product in featured_products %}
+      <article class="marketplace-product-card" itemscope itemtype="https://schema.org/Product">
+        <a href="{{ product.url }}" class="marketplace-product-card__link">
+          <div class="marketplace-product-card__image-wrapper">
+            <img 
+              src="{{ product.image }}" 
+              alt="{{ product.title }}" 
+              class="marketplace-product-card__image"
+              loading="lazy"
+              itemprop="image"
+            >
+            <span class="marketplace-product-card__tenant">{{ product.tenant }}</span>
+          </div>
+          <div class="marketplace-product-card__content">
+            <h3 class="marketplace-product-card__title" itemprop="name">{{ product.title }}</h3>
+            <div class="marketplace-product-card__footer">
+              <span class="marketplace-product-card__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                <span itemprop="price">{{ product.price }}</span>
+              </span>
+              <span class="marketplace-product-card__cta">{{ 'Ver más'|t }}</span>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Tiendas del Ecosistema #}
+  <section class="marketplace-tenants">
+    <h2 class="marketplace-section-title">{{ 'Tiendas del ecosistema'|t }}</h2>
+    <p class="marketplace-section-subtitle">{{ 'Conoce a los productores que forman parte de nuestra comunidad'|t }}</p>
+    
+    <div class="marketplace-tenants__grid">
+      {% for tenant in active_tenants %}
+      <a href="{{ tenant.url }}" class="marketplace-tenant-card">
+        <img src="{{ tenant.logo }}" alt="{{ tenant.name }}" class="marketplace-tenant-card__logo">
+        <span class="marketplace-tenant-card__name">{{ tenant.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    
+    <div class="marketplace-tenants__cta">
+      <a href="/user/register" class="marketplace-btn marketplace-btn--primary">
+        {{ '¿Quieres vender aquí? Únete al ecosistema'|t }} →
+      </a>
+    </div>
+  </section>
+
+  {# Banner de valor #}
+  <section class="marketplace-value">
+    <div class="marketplace-value__grid">
+      <div class="marketplace-value-card">
+        <span class="marketplace-value-card__icon">🚚</span>
+        <h3 class="marketplace-value-card__title">{{ 'Envío directo'|t }}</h3>
+        <p class="marketplace-value-card__text">{{ 'Del productor a tu puerta, sin intermediarios'|t }}</p>
+      </div>
+      <div class="marketplace-value-card">
+        <span class="marketplace-value-card__icon">✓</span>
+        <h3 class="marketplace-value-card__title">{{ 'Calidad verificada'|t }}</h3>
+        <p class="marketplace-value-card__text">{{ 'Todos nuestros productores son verificados'|t }}</p>
+      </div>
+      <div class="marketplace-value-card">
+        <span class="marketplace-value-card__icon">🔒</span>
+        <h3 class="marketplace-value-card__title">{{ 'Pago seguro'|t }}</h3>
+        <p class="marketplace-value-card__text">{{ 'Transacciones protegidas con Stripe'|t }}</p>
+      </div>
+      <div class="marketplace-value-card">
+        <span class="marketplace-value-card__icon">💬</span>
+        <h3 class="marketplace-value-card__title">{{ 'Soporte incluido'|t }}</h3>
+        <p class="marketplace-value-card__text">{{ 'Te ayudamos en cada paso de tu compra'|t }}</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<style>
+/* Marketplace Landing Page - Premium Design */
+.marketplace {
+  font-family: var(--ej-font-family, 'Inter', sans-serif);
+}
+
+/* Hero */
+.marketplace-hero {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.marketplace-hero__title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  background: linear-gradient(135deg, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.marketplace-hero__subtitle {
+  font-size: 1.25rem;
+  color: #94a3b8;
+  margin: 0 0 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Search Form */
+.marketplace-search-form {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+
+.marketplace-search-form__wrapper {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 3rem;
+  padding: 0.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.marketplace-search-form__icon {
+  padding: 0 1rem;
+  font-size: 1.25rem;
+}
+
+.marketplace-search-form__input {
+  flex: 1;
+  border: none;
+  font-size: 1rem;
+  padding: 0.75rem 0;
+  outline: none;
+  background: transparent;
+  color: #1e293b;
+}
+
+.marketplace-search-form__btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.marketplace-search-form__btn:hover {
+  transform: scale(1.05);
+}
+
+/* Stats */
+.marketplace-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.marketplace-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marketplace-stat__icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.marketplace-stat__value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.marketplace-stat__label {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* Sections */
+.marketplace-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.marketplace-section-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin: 0 0 2rem;
+}
+
+/* Categories */
+.marketplace-categories {
+  padding: 4rem 2rem;
+  background: #f8fafc;
+}
+
+.marketplace-categories__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 2rem auto 0;
+}
+
+.marketplace-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+}
+
+.marketplace-category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.marketplace-category-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.marketplace-category-card__name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.marketplace-category-card__count {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Featured Products */
+.marketplace-featured {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.marketplace-featured__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.marketplace-view-all {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.marketplace-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.marketplace-product-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.marketplace-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.marketplace-product-card__link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.marketplace-product-card__image-wrapper {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.marketplace-product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.marketplace-product-card:hover .marketplace-product-card__image {
+  transform: scale(1.05);
+}
+
+.marketplace-product-card__tenant {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.marketplace-product-card__content {
+  padding: 1rem;
+}
+
+.marketplace-product-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem;
+}
+
+.marketplace-product-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.marketplace-product-card__price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.marketplace-product-card__cta {
+  color: #3b82f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Tenants */
+.marketplace-tenants {
+  padding: 4rem 2rem;
+  background: #f8fafc;
+}
+
+.marketplace-tenants__grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.marketplace-tenant-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.marketplace-tenant-card:hover {
+  transform: scale(1.1);
+}
+
+.marketplace-tenant-card__logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.marketplace-tenant-card__name {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+.marketplace-tenants__cta {
+  text-align: center;
+}
+
+.marketplace-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 3rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.marketplace-btn--primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.marketplace-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+/* Value Props */
+.marketplace-value {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.marketplace-value__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.marketplace-value-card {
+  text-align: center;
+  padding: 2rem;
+}
+
+.marketplace-value-card__icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.marketplace-value-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem;
+}
+
+.marketplace-value-card__text {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .marketplace-hero__title {
+    font-size: 2rem;
+  }
+  
+  .marketplace-stats {
+    gap: 1.5rem;
+  }
+  
+  .marketplace-featured__header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+</style>

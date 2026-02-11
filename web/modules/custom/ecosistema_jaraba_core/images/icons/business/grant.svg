@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Documento/Subvención -->
+  <path d="M14 2 L6 2 C4.9 2 4 2.9 4 4 L4 20 C4 21.1 4.9 22 6 22 L18 22 C19.1 22 20 21.1 20 20 L20 8 Z"/>
+  <!-- Esquina doblada -->
+  <path d="M14 2 L14 8 L20 8"/>
+  <!-- Símbolo Euro/dinero -->
+  <path d="M12 11 C10 11 9 12 9 14 C9 16 10 17 12 17"/>
+  <line x1="8" y1="13" x2="13" y2="13"/>
+  <line x1="8" y1="15" x2="13" y2="15"/>
+  <!-- Check de aprobación -->
+  <path d="M15 18 L16 19 L18 17"/>
+</svg>

@@ -5,6 +5,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\Service\AIUsageLimitService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -36,14 +37,26 @@ class TenantDashboardController extends ControllerBase
     protected TenantContextService $tenantContext;
 
     /**
+     * Servicio de límites de uso de IA.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\AIUsageLimitService
+     */
+    protected AIUsageLimitService $aiUsageLimit;
+
+    /**
      * Constructor del controlador.
      *
      * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
      *   El servicio de contexto del Tenant.
+     * @param \Drupal\ecosistema_jaraba_core\Service\AIUsageLimitService $ai_usage_limit
+     *   El servicio de límites de IA.
      */
-    public function __construct(TenantContextService $tenant_context)
-    {
+    public function __construct(
+        TenantContextService $tenant_context,
+        AIUsageLimitService $ai_usage_limit
+    ) {
         $this->tenantContext = $tenant_context;
+        $this->aiUsageLimit = $ai_usage_limit;
     }
 
     /**
@@ -52,7 +65,8 @@ class TenantDashboardController extends ControllerBase
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('ecosistema_jaraba_core.tenant_context')
+            $container->get('ecosistema_jaraba_core.tenant_context'),
+            $container->get('ecosistema_jaraba_core.ai_usage_limit')
         );
     }
 
@@ -127,7 +141,12 @@ class TenantDashboardController extends ControllerBase
         }
 
         // =====================================================================
-        // PASO 5: PREPARAR ACCIONES RÁPIDAS
+        // PASO 5: OBTENER MÉTRICAS DE USO DE IA
+        // =====================================================================
+        $aiUsage = $this->aiUsageLimit->checkLimit($tenant);
+
+        // =====================================================================
+        // PASO 6: PREPARAR ACCIONES RÁPIDAS
         // =====================================================================
         $quickActions = $this->buildQuickActions($tenant, $group);
 
@@ -147,6 +166,7 @@ class TenantDashboardController extends ControllerBase
             '#is_on_trial' => $isOnTrial,
             '#trial_days_remaining' => $trialDaysRemaining,
             '#quick_actions' => $quickActions,
+            '#ai_usage' => $aiUsage,
             '#cache' => [
                 'contexts' => ['user'],
                 'tags' => ['tenant:' . $tenant->id()],

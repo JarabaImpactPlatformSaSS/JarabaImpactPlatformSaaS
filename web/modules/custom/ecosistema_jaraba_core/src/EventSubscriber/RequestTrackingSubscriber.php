@@ -3,6 +3,7 @@
 namespace Drupal\ecosistema_jaraba_core\EventSubscriber;
 
 use Drupal\ecosistema_jaraba_core\Service\FinOpsTrackingService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -10,31 +11,22 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Event subscriber para tracking de requests por tenant.
  *
- * PROPÓSITO:
+ * BE-09: Refactored to use proper DI instead of \Drupal::service().
+ *
  * Registra cada request HTTP en la tabla finops_usage_log
  * asociándolo al tenant activo. Se ejecuta en el evento
  * TERMINATE para no impactar el tiempo de respuesta.
- *
- * LÓGICA:
- * 1. Obtiene el tenant_id del request (header o sesión)
- * 2. Registra el request con endpoint y tiempo de respuesta
- * 3. Los datos se usan en el Dashboard FinOps
  */
 class RequestTrackingSubscriber implements EventSubscriberInterface
 {
 
     /**
-     * Servicio de tracking FinOps.
-     */
-    protected FinOpsTrackingService $finopsTracking;
-
-    /**
      * Constructor.
      */
-    public function __construct(FinOpsTrackingService $finopsTracking)
-    {
-        $this->finopsTracking = $finopsTracking;
-    }
+    public function __construct(
+        protected readonly FinOpsTrackingService $finopsTracking,
+        protected readonly ?TenantContextService $tenantContext = NULL,
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -116,30 +108,16 @@ class RequestTrackingSubscriber implements EventSubscriberInterface
             return $header_tenant;
         }
 
-        // 2. Intentar desde el servicio TenantContextService
+        // 2. Intentar desde el servicio TenantContextService (DI)
         try {
-            $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
-            if ($tenant_context && method_exists($tenant_context, 'getCurrentTenantId')) {
-                $tenant_id = $tenant_context->getCurrentTenantId();
+            if ($this->tenantContext && method_exists($this->tenantContext, 'getCurrentTenantId')) {
+                $tenant_id = $this->tenantContext->getCurrentTenantId();
                 if (!empty($tenant_id)) {
                     return $tenant_id;
                 }
             }
         } catch (\Exception $e) {
-            // Service may not exist
-        }
-
-        // 3. Intentar desde el dominio (Domain Access)
-        try {
-            $domain_negotiator = \Drupal::service('domain.negotiator');
-            if ($domain_negotiator) {
-                $active_domain = $domain_negotiator->getActiveDomain();
-                if ($active_domain) {
-                    return $active_domain->id();
-                }
-            }
-        } catch (\Exception $e) {
-            // Domain module may not be active
+            // Context service may fail during bootstrap
         }
 
         // 4. Fallback: usar 'default' para requests sin tenant

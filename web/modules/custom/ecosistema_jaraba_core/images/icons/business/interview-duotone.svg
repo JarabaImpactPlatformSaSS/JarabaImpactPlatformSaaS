@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Cara izquierda - silueta con relleno primary -->
+  <circle cx="7" cy="9" r="3.5" fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Bocadillo izquierdo -->
+  <path d="M4 15 Q2 15 2 17 L2 19 Q2 21 4 21 L7 21 L9 23 L9 21 L10 21 Q12 21 12 19 L12 17 Q12 15 10 15 Z" 
+        fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Líneas de texto -->
+  <line x1="4" y1="17.5" x2="9" y2="17.5" stroke="currentColor" stroke-width="1"/>
+  <line x1="4" y1="19.5" x2="7" y2="19.5" stroke="currentColor" stroke-width="1"/>
+
+  <!-- Cara derecha -->
+  <circle cx="17" cy="9" r="3.5" fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Bocadillo derecho -->
+  <path d="M14 15 Q12 15 12 17 L12 19 Q12 21 14 21 L15 21 L15 23 L17 21 L20 21 Q22 21 22 19 L22 17 Q22 15 20 15 Z" 
+        fill="var(--icon-fill, rgba(0,169,165,0.15))" stroke="currentColor"/>
+  <!-- Líneas de texto -->
+  <line x1="15" y1="17.5" x2="20" y2="17.5" stroke="currentColor" stroke-width="1"/>
+  <line x1="17" y1="19.5" x2="20" y2="19.5" stroke="currentColor" stroke-width="1"/>
+</svg>

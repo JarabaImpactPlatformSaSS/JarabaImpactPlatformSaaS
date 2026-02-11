@@ -43,3 +43,97 @@
 
 // 10. Dashboard RAG (Knowledge Base Analytics)
 @use 'rag-dashboard';
+
+// 11. Marketplace (Landing, Búsqueda, Producto)
+@use 'marketplace';
+
+// 12. Diagnóstico Express TTV (Value-First Onboarding)
+@use 'diagnostic';
+
+// 13. Vertical Empleabilidad - Menú contextual por rol
+@use 'employability-menu';
+
+// 14. Vertical Empleabilidad - FAB de Agentes IA
+@use 'agent-fab';
+
+// 15. LMS - Catálogo de Cursos Premium
+@use 'lms-catalog';
+
+// 16. Career Dashboard - Página de Perfil Candidato
+@use 'career-dashboard';
+
+// 17. Recruiter Dashboard - Página de Perfil Empleador
+// 17. Recruiter Dashboard - Página de Perfil Empleador
+@use 'recruiter-dashboard';
+
+// 18. Diagnostic Wizard - Vertical Emprendimiento
+@use 'diagnostic-wizard';
+
+// 19. Path Catalog - Vertical Emprendimiento
+@use 'path-catalog';
+
+// 20. Admin Forms Premium - Emprendimiento
+@use 'admin-forms';
+
+// 21. Business Tools - Canvas, MVP, Proyecciones
+@use 'business-tools';
+
+// 22. Collaboration Groups - Emprendimiento
+@use 'groups';
+
+// 23. Digital Resources - Kits, Memberships
+@use 'resources';
+
+// 24. Canvas List - Business Model Canvas listing
+@use 'canvas-list';
+
+// 25. Journey Engine Dashboard - Block C
+@use 'journey-dashboard';
+
+// 26. Contextual Copilot FAB - Asistente IA por Avatar
+@use 'contextual-copilot';
+
+// 27. Employer Dashboard - Panel Premium Reclutador
+@use 'employer-dashboard';
+
+// 28. Mobile Menu - Overlay y estilos responsive header
+@use 'mobile-menu';
+
+// 29. Vertical Landing Pages - /empleo, /talento, /emprender, /comercio, /instituciones
+@use 'vertical-landing';
+
+// 30. AI Field Generator - Botón "✨ Generar con IA" para FormBuilder (Gap 1 Clase Mundial)
+@use 'ai-field-generator';
+
+// 31. Experiments Dashboard - Dashboard A/B Testing frontend (Gap 2 Clase Mundial)
+@use 'experiments-dashboard';
+
+// 32. Pixel Manager - Configuración Meta CAPI y Google Measurement Protocol
+@use 'pixel-manager';
+
+// 33. Premium Card Pattern - Sistema extensible de cards con efectos premium
+@use 'premium-card-pattern';
+
+// 34. Premium Blocks Gap D - Card Stack 3D, Video Hero, Comparison Table
+@use 'premium-blocks-gap-d';
+
+// 35. Revision Diff - Gap G: Diff Visual de Revisiones
+@use 'revision-diff';
+
+// 36. CRM Dashboard - Premium Dashboard y Pipeline Kanban
+@use 'crm-dashboard';
+
+// 37. AI Skills Dashboard - Sistema de Habilidades IA (Bloque G)
+@use 'skills-dashboard';
+
+// 38. Integration Marketplace - Marketplace de Integraciones (f112)
+@use 'integrations-marketplace';
+
+// 39. Customer Success Dashboard - Health Scores, Churn, Playbooks (f113)
+@use 'customer-success-dashboard';
+
+// 40. Usage Dashboard - Uso y Facturación del Tenant (G111 / f111)
+@use 'usage-dashboard';
+
+// 41. Help Center - Centro de Ayuda Público (G114 / f114)
+@use 'help-center';

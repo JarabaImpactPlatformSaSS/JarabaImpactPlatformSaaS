@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Marco del canvas -->
+  <rect x="2" y="3" width="20" height="18" rx="1"/>
+  
+  <!-- Estructura BMC: 5 columnas superiores -->
+  <!-- Key Partners -->
+  <rect x="3" y="4" width="3" height="10"/>
+  <!-- Key Activities + Resources -->
+  <rect x="7" y="4" width="3" height="5"/>
+  <rect x="7" y="10" width="3" height="4"/>
+  <!-- Value Proposition (centro) -->
+  <rect x="11" y="4" width="3" height="10"/>
+  <!-- Customer Relationships + Channels -->
+  <rect x="15" y="4" width="3" height="5"/>
+  <rect x="15" y="10" width="3" height="4"/>
+  <!-- Customer Segments -->
+  <rect x="19" y="4" width="2" height="10"/>
+  
+  <!-- Bottom: Cost Structure + Revenue -->
+  <rect x="3" y="15" width="8" height="5"/>
+  <rect x="12" y="15" width="9" height="5"/>
+</svg>

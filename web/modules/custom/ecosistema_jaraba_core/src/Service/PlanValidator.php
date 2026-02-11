@@ -130,6 +130,9 @@ class PlanValidator
     /**
      * Calcula el uso de almacenamiento de un tenant.
      *
+     * Cuenta el tamaño total de archivos gestionados (file_managed)
+     * asociados al tenant vía el campo field_tenant.
+     *
      * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
      *   El tenant.
      *
@@ -138,9 +141,52 @@ class PlanValidator
      */
     public function calculateStorageUsage(TenantInterface $tenant): int
     {
-        // TODO: Implementar cálculo real basado en archivos del tenant.
-        // Por ahora retornamos 0.
-        return 0;
+        try {
+            // Obtener todos los archivos asociados a nodos del tenant.
+            $nodeStorage = $this->entityTypeManager->getStorage('node');
+            $nodeIds = $nodeStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('field_tenant', $tenant->id())
+                ->execute();
+
+            if (empty($nodeIds)) {
+                return 0;
+            }
+
+            $totalBytes = 0;
+            $fileStorage = $this->entityTypeManager->getStorage('file');
+
+            // Procesar en lotes para evitar problemas de memoria.
+            foreach (array_chunk($nodeIds, 50) as $batch) {
+                $nodes = $nodeStorage->loadMultiple($batch);
+                foreach ($nodes as $node) {
+                    // Recorrer todos los campos de tipo archivo/imagen del nodo.
+                    foreach ($node->getFieldDefinitions() as $fieldName => $definition) {
+                        $fieldType = $definition->getType();
+                        if (in_array($fieldType, ['file', 'image'], TRUE) && !$node->get($fieldName)->isEmpty()) {
+                            foreach ($node->get($fieldName) as $item) {
+                                $fileId = $item->target_id;
+                                if ($fileId) {
+                                    $file = $fileStorage->load($fileId);
+                                    if ($file) {
+                                        $totalBytes += (int) $file->getSize();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $totalBytes;
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Error calculating storage for tenant @id: @error', [
+                '@id' => $tenant->id(),
+                '@error' => $e->getMessage(),
+            ]);
+            return 0;
+        }
     }
 
     /**
@@ -178,6 +224,9 @@ class PlanValidator
     /**
      * Cuenta las queries de IA del mes actual.
      *
+     * Usa el state API de Drupal donde el AIUsageLimitService
+     * registra los contadores mensuales por tenant.
+     *
      * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
      *   El tenant.
      *
@@ -186,9 +235,18 @@ class PlanValidator
      */
     public function countAiQueriesThisMonth(TenantInterface $tenant): int
     {
-        // TODO: Implementar contador real.
-        // Por ahora retornamos 0.
-        return 0;
+        try {
+            $month = date('Y-m');
+            $stateKey = "ai_usage_queries_{$tenant->id()}_{$month}";
+            return (int) \Drupal::state()->get($stateKey, 0);
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Error counting AI queries for tenant @id: @error', [
+                '@id' => $tenant->id(),
+                '@error' => $e->getMessage(),
+            ]);
+            return 0;
+        }
     }
 
     /**
@@ -264,6 +322,81 @@ class PlanValidator
                 'included' => ($limits['ai_queries'] ?? 0) !== 0,
             ],
         ];
+    }
+
+    /**
+     * BIZ-01: Enforces plan limits for a given action.
+     *
+     * Returns a structured result indicating whether the action is allowed,
+     * with user-facing messages when limits are reached.
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   The tenant.
+     * @param string $action
+     *   The action to validate: 'add_producer', 'use_storage', 'ai_query', 'feature:NAME'.
+     * @param array $params
+     *   Additional params (e.g., 'bytes' for storage, 'feature' name).
+     *
+     * @return array
+     *   ['allowed' => bool, 'reason' => string|null, 'usage' => array]
+     */
+    public function enforceLimit(TenantInterface $tenant, string $action, array $params = []): array
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return ['allowed' => FALSE, 'reason' => 'No subscription plan assigned.', 'usage' => []];
+        }
+
+        if (!$tenant->isActive() && $tenant->getSubscriptionStatus() !== TenantInterface::STATUS_TRIAL) {
+            return ['allowed' => FALSE, 'reason' => 'Tenant subscription is not active.', 'usage' => []];
+        }
+
+        switch ($action) {
+            case 'add_producer':
+                $allowed = $this->canAddProducer($tenant);
+                $limit = $plan->getLimit('productores', 0);
+                $current = $this->countProducers($tenant);
+                return [
+                    'allowed' => $allowed,
+                    'reason' => $allowed ? NULL : "Producer limit reached ({$current}/{$limit}).",
+                    'usage' => ['current' => $current, 'limit' => $limit],
+                ];
+
+            case 'use_storage':
+                $bytes = $params['bytes'] ?? 0;
+                $allowed = $this->canUseStorage($tenant, $bytes);
+                $limitGb = $plan->getLimit('storage_gb', 0);
+                $currentGb = round($this->calculateStorageUsage($tenant) / (1024 * 1024 * 1024), 2);
+                return [
+                    'allowed' => $allowed,
+                    'reason' => $allowed ? NULL : "Storage limit reached ({$currentGb}/{$limitGb} GB).",
+                    'usage' => ['current_gb' => $currentGb, 'limit_gb' => $limitGb],
+                ];
+
+            case 'ai_query':
+                $allowed = $this->canUseAiQuery($tenant);
+                $limit = $plan->getLimit('ai_queries', 0);
+                $current = $this->countAiQueriesThisMonth($tenant);
+                return [
+                    'allowed' => $allowed,
+                    'reason' => $allowed ? NULL : "AI query limit reached ({$current}/{$limit} this month).",
+                    'usage' => ['current' => $current, 'limit' => $limit],
+                ];
+
+            default:
+                // Feature-based check: 'feature:firma_digital'.
+                if (str_starts_with($action, 'feature:')) {
+                    $feature = substr($action, 8);
+                    $allowed = $this->hasFeature($tenant, $feature);
+                    return [
+                        'allowed' => $allowed,
+                        'reason' => $allowed ? NULL : "Feature '{$feature}' not available in current plan.",
+                        'usage' => [],
+                    ];
+                }
+
+                return ['allowed' => TRUE, 'reason' => NULL, 'usage' => []];
+        }
     }
 
     /**

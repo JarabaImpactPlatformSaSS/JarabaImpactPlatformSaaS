@@ -90,6 +90,11 @@ class Tenant extends ContentEntityBase implements TenantInterface
      */
     protected function provisionGroupIfNeeded(): void
     {
+        // Campo group_id es condicional — puede no existir sin módulo group
+        if (!$this->hasField('group_id')) {
+            return;
+        }
+
         // Ya tiene Group? No hacer nada
         if ($this->get('group_id')->target_id) {
             return;
@@ -119,11 +124,13 @@ class Tenant extends ContentEntityBase implements TenantInterface
             $group->addMember($adminUser);
         }
 
-        // Actualizar el Tenant con el group_id (sin trigger recursivo)
-        \Drupal::database()->update('tenant_field_data')
-            ->fields(['group_id' => $group->id()])
-            ->condition('id', $this->id())
-            ->execute();
+        // BE-07: Actualizar group_id via Entity API en vez de query directa.
+        // Usar enforceIsNew(FALSE) + save() sobre la entidad recargada
+        // para que los hooks de entidad se ejecuten correctamente.
+        $this->set('group_id', $group->id());
+        $this->setSyncing(TRUE);
+        $this->save();
+        $this->setSyncing(FALSE);
 
         \Drupal::logger('ecosistema_jaraba_core')->notice(
             'Group @gid creado para Tenant @tid (@name)',
@@ -136,6 +143,11 @@ class Tenant extends ContentEntityBase implements TenantInterface
      */
     protected function provisionDomainIfNeeded(): void
     {
+        // Campo domain_id es condicional — puede no existir sin módulo domain
+        if (!$this->hasField('domain_id')) {
+            return;
+        }
+
         // Ya tiene Domain? No hacer nada
         if ($this->get('domain_id')->target_id) {
             return;
@@ -147,10 +159,10 @@ class Tenant extends ContentEntityBase implements TenantInterface
             return;
         }
 
-        // Normalizar hostname (puede llegar como slug o como FQDN)
+        // BE-08: Normalizar hostname usando dominio base configurable.
         if (strpos($hostname, '.') === FALSE) {
-            // Es solo un slug, añadir el dominio base
-            $hostname = $hostname . '.jaraba-saas.lndo.site';
+            $baseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
+            $hostname = $hostname . '.' . $baseDomain;
         }
 
         // Crear el Domain
@@ -518,6 +530,30 @@ class Tenant extends ContentEntityBase implements TenantInterface
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // BIZ-002: Fecha fin periodo de gracia por impago.
+        // Migrado desde State API (subscription_grace_ends_{id}) para
+        // persistencia auditable y tolerancia a rebuilds.
+        $fields['grace_period_ends'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fin Periodo de Gracia'))
+            ->setDescription(t('Fecha de expiración del periodo de gracia tras fallo de pago.'))
+            ->setSetting('datetime_type', 'datetime')
+            ->setDisplayOptions('view', ['region' => 'hidden'])
+            ->setDisplayOptions('form', ['region' => 'hidden'])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // BIZ-002: Fecha cancelación diferida al fin del periodo de facturación.
+        // Migrado desde State API (subscription_cancel_at_{id}) para
+        // persistencia auditable y tolerancia a rebuilds.
+        $fields['cancel_at'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Cancelación Programada'))
+            ->setDescription(t('Fecha de cancelación diferida al final del periodo de facturación.'))
+            ->setSetting('datetime_type', 'datetime')
+            ->setDisplayOptions('view', ['region' => 'hidden'])
+            ->setDisplayOptions('form', ['region' => 'hidden'])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // Stripe Customer ID.
         $fields['stripe_customer_id'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Stripe Customer ID'))
@@ -569,26 +605,32 @@ class Tenant extends ContentEntityBase implements TenantInterface
         // Este campo vincula el Tenant con su Group de aislamiento.
         // Cuando se crea un Tenant, se debe crear automáticamente un Group
         // del tipo 'tenant' y asociarlo aquí.
+        //
+        // CONDICIONAL: Solo se define si el entity type 'group' existe.
+        // Esto permite que Tenant funcione en entornos de test (Kernel)
+        // sin requerir el módulo contrib 'group'.
         // =====================================================================
-        $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Grupo de Aislamiento'))
-            ->setDescription(t('Grupo asociado para aislamiento de contenido (Group Module).'))
-            ->setSetting('target_type', 'group')
-            ->setSetting('handler', 'default')
-            ->setSetting('handler_settings', [
-                'target_bundles' => ['tenant' => 'tenant'],
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'entity_reference_label',
-                'weight' => 35,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 35,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+        if (\Drupal::entityTypeManager()->hasDefinition('group')) {
+            $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
+                ->setLabel(t('Grupo de Aislamiento'))
+                ->setDescription(t('Grupo asociado para aislamiento de contenido (Group Module).'))
+                ->setSetting('target_type', 'group')
+                ->setSetting('handler', 'default')
+                ->setSetting('handler_settings', [
+                    'target_bundles' => ['tenant' => 'tenant'],
+                ])
+                ->setDisplayOptions('view', [
+                    'label' => 'above',
+                    'type' => 'entity_reference_label',
+                    'weight' => 35,
+                ])
+                ->setDisplayOptions('form', [
+                    'type' => 'entity_reference_autocomplete',
+                    'weight' => 35,
+                ])
+                ->setDisplayConfigurable('form', TRUE)
+                ->setDisplayConfigurable('view', TRUE);
+        }
 
         // =====================================================================
         // INTEGRACIÓN CON DOMAIN ACCESS MODULE
@@ -602,28 +644,67 @@ class Tenant extends ContentEntityBase implements TenantInterface
         //
         // PRIORIDAD: Si domain_id existe, usar getDomainEntity() para obtener
         // la configuración completa (scheme, is_default, etc.).
+        //
+        // CONDICIONAL: Solo se define si el entity type 'domain' existe.
         // =====================================================================
-        $fields['domain_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Dominio Asignado'))
-            ->setDescription(t('Dominio de Domain Access asociado a este tenant.'))
-            ->setSetting('target_type', 'domain')
-            ->setSetting('handler', 'default')
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'entity_reference_label',
-                'weight' => 36,
+        if (\Drupal::entityTypeManager()->hasDefinition('domain')) {
+            $fields['domain_id'] = BaseFieldDefinition::create('entity_reference')
+                ->setLabel(t('Dominio Asignado'))
+                ->setDescription(t('Dominio de Domain Access asociado a este tenant.'))
+                ->setSetting('target_type', 'domain')
+                ->setSetting('handler', 'default')
+                ->setDisplayOptions('view', [
+                    'label' => 'above',
+                    'type' => 'entity_reference_label',
+                    'weight' => 36,
+                ])
+                ->setDisplayOptions('form', [
+                    'type' => 'entity_reference_autocomplete',
+                    'weight' => 36,
+                    'settings' => [
+                        'match_operator' => 'CONTAINS',
+                        'size' => 60,
+                        'placeholder' => t('Buscar dominio...'),
+                    ],
+                ])
+                ->setDisplayConfigurable('form', TRUE)
+                ->setDisplayConfigurable('view', TRUE);
+        }
+
+        // =====================================================================
+        // REVERSE TRIAL MODEL (Q1 2027)
+        // Campos para soportar el modelo de trial inverso donde el usuario
+        // obtiene acceso Pro completo y luego hace downgrade automático.
+        // =====================================================================
+
+        // Flag para indicar si el trial es "reverse" (acceso Pro completo).
+        $fields['is_reverse_trial'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Reverse Trial'))
+            ->setDescription(t('Indica si el tenant está en modo Reverse Trial (acceso Pro completo).'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 22,
             ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Plan al que hacer downgrade después del trial.
+        $fields['downgrade_plan'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Plan Post-Trial'))
+            ->setDescription(t('Plan al que cambiar cuando expire el Reverse Trial.'))
+            ->setSetting('target_type', 'saas_plan')
+            ->setSetting('handler', 'default')
             ->setDisplayOptions('form', [
                 'type' => 'entity_reference_autocomplete',
-                'weight' => 36,
-                'settings' => [
-                    'match_operator' => 'CONTAINS',
-                    'size' => 60,
-                    'placeholder' => t('Buscar dominio...'),
-                ],
+                'weight' => 23,
             ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Flag para evitar spam en recordatorios de trial.
+        $fields['trial_reminder_sent'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Recordatorio de Trial Enviado'))
+            ->setDescription(t('Indica si ya se envió el recordatorio de fin de trial.'))
+            ->setDefaultValue(FALSE);
 
         // Timestamps.
         $fields['created'] = BaseFieldDefinition::create('created')

@@ -1,0 +1,55 @@
+# Schema for DesignTokenConfig config entity.
+# Almacena configuraciones de Design Tokens para personalización visual
+# multi-tenant siguiendo el patrón Federated Design Tokens v2.1.
+ecosistema_jaraba_core.design_token_config.*:
+  type: config_entity
+  label: 'Design Token Configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description'
+    scope:
+      type: string
+      label: 'Scope (platform, vertical, plan, tenant)'
+    vertical_id:
+      type: string
+      label: 'Vertical ID reference'
+    plan_id:
+      type: string
+      label: 'SaaS Plan ID reference'
+    tenant_id:
+      type: string
+      label: 'Tenant ID reference'
+    preset_id:
+      type: string
+      label: 'Style Preset ID'
+    color_tokens:
+      type: string
+      label: 'Color tokens (JSON serialized)'
+    typography_tokens:
+      type: string
+      label: 'Typography tokens (JSON serialized)'
+    spacing_tokens:
+      type: string
+      label: 'Spacing tokens (JSON serialized)'
+    effect_tokens:
+      type: string
+      label: 'Effect tokens (JSON serialized)'
+    component_variants:
+      type: string
+      label: 'Component variants (JSON serialized)'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

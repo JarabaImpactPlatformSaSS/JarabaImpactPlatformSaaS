@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Edificio institucional (mitad izquierda) con relleno -->
+  <path d="M3 21 L3 8 L7 5 L7 21 Z" fill="var(--icon-fill, rgba(35,61,99,0.2))" stroke="currentColor"/>
+  <rect x="4" y="10" width="2" height="2" fill="var(--icon-fill, rgba(35,61,99,0.3))" stroke="currentColor"/>
+  <rect x="4" y="14" width="2" height="2" fill="var(--icon-fill, rgba(35,61,99,0.3))" stroke="currentColor"/>
+  <!-- Columnas clásicas -->
+  <line x1="5" y1="8" x2="5" y2="5" stroke="currentColor"/>
+  
+  <!-- Corazón/manos solidarias (mitad derecha - ONG) con relleno -->
+  <path d="M15 9 C13 7 10 8 10 11 C10 14 15 17 15 17 C15 17 20 14 20 11 C20 8 17 7 15 9" fill="var(--icon-fill, rgba(255,140,66,0.3))" stroke="currentColor"/>
+  
+  <!-- Línea de unión/colaboración -->
+  <path d="M8 12 L10 12" stroke="currentColor" stroke-dasharray="2 1"/>
+  
+  <!-- Base común -->
+  <line x1="2" y1="21" x2="22" y2="21" stroke="currentColor"/>
+</svg>

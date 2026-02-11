@@ -1,0 +1,288 @@
+/**
+ * @file
+ * Estilos Premium para Formularios Admin
+ * Parcial SCSS con variables inyectables
+ */
+
+@use 'variables' as *;
+
+// =============================================
+// PREMIUM ADMIN FORMS
+// =============================================
+.premium-admin-form {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+// Form Header Premium
+.form-header-premium {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, #{$ej-color-primary-fallback}),
+        var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
+    border-radius: 12px;
+    color: #fff;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    .badge-icon {
+        font-size: 1.125rem;
+    }
+}
+
+.score-preview,
+.stat-preview {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+
+    .score-value,
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .score-label,
+    .stat-label {
+        font-size: 0.8125rem;
+        opacity: 0.9;
+    }
+}
+
+// Form Sections
+.form-section {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: 12px;
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    overflow: hidden;
+
+    &[open]>summary {
+        border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    }
+
+    >summary {
+        padding: 1rem 1.5rem;
+        background: var(--ej-surface-background, #fff);
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &::after {
+            content: '';
+            margin-left: auto;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid currentColor;
+            transition: transform 0.2s ease;
+        }
+    }
+
+    &[open]>summary::after {
+        transform: rotate(180deg);
+    }
+
+    >.details-wrapper,
+    >.fieldset-wrapper {
+        padding: 1.5rem;
+        background: var(--ej-surface-background, #fff);
+    }
+
+    // Section description
+    >summary+.details-description,
+    .description {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+        margin-bottom: 1rem;
+        padding: 0 1.5rem;
+        background: var(--ej-surface-hover, #F3F4F6);
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    }
+}
+
+// Highlighted section
+.section-highlight {
+    border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    border-width: 2px;
+
+    >summary {
+        background: linear-gradient(135deg,
+                rgba(46, 125, 50, 0.05),
+                rgba(27, 94, 32, 0.05));
+    }
+}
+
+// Form fields improvements
+.premium-admin-form {
+    .form-item {
+        margin-bottom: 1.25rem;
+
+        label {
+            display: block;
+            font-weight: 500;
+            color: var(--ej-text-primary, #{$ej-color-text-fallback});
+            margin-bottom: 0.25rem;
+        }
+
+        .description {
+            font-size: 0.8125rem;
+            color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+            margin-top: 0.25rem;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            transition: all 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+                box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            }
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+    }
+}
+
+// Quick Actions Grid
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem;
+    background: var(--ej-surface-hover, #F3F4F6);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+        color: #fff;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md, #{$ej-shadow-md-fallback});
+    }
+
+    .action-icon {
+        font-size: 1.5rem;
+    }
+
+    .action-label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        text-align: center;
+    }
+}
+
+// Recalculate button
+.btn-recalculate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+}
+
+// Submit buttons
+.premium-admin-form .form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    margin-top: 1.5rem;
+
+    .button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        &--primary {
+            background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+            color: #fff;
+            border: none;
+
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .form-header-premium {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

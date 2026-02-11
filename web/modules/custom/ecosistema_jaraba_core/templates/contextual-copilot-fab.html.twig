@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Template for contextual copilot FAB block.
+ *
+ * Variables:
+ * - agent_context: Identifier for analytics
+ * - greeting: Welcome message
+ * - avatar_type: Type of avatar (jobseeker, recruiter, etc)
+ * - fab_color: Color of the FAB button
+ * - quick_actions: Array of quick action buttons
+ * - user: Current user
+ */
+#}
+<div class="contextual-copilot" 
+     data-agent="{{ agent_context }}" 
+     data-avatar="{{ avatar_type }}"
+     style="--fab-color: {{ fab_color }};">
+  
+  {# Main FAB Button - AI Sparkles Icon #}
+  <button class="copilot-fab" 
+          aria-label="{{ 'Abrir asistente'|t }}"
+          aria-expanded="false">
+    <span class="fab-icon">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2L13.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        <circle cx="19" cy="5" r="2" fill="var(--ej-color-innovation, #00A9A5)"/>
+      </svg>
+    </span>
+    <span class="fab-pulse"></span>
+  </button>
+
+  {# Agent Panel #}
+  <div class="copilot-panel" aria-hidden="true">
+    
+    {# Header with improved contrast #}
+    <div class="copilot-header">
+      <div class="copilot-avatar">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 2L13.5 7L19 8L14.5 12L15.5 18L12 15L8.5 18L9.5 12L5 8L10.5 7L12 2Z"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="copilot-info">
+        <h3 class="copilot-name">{{ 'Asistente Jaraba'|t }}</h3>
+        <span class="copilot-status">{{ 'Disponible 24/7'|t }}</span>
+      </div>
+      <button class="copilot-close" aria-label="{{ 'Cerrar'|t }}">×</button>
+    </div>
+
+    {# Body #}
+    <div class="copilot-body">
+      
+      {# Greeting #}
+      <div class="copilot-greeting">
+        <p>{{ greeting }}</p>
+      </div>
+
+      {# Quick Actions #}
+      {% if quick_actions %}
+      <div class="copilot-actions">
+        <p class="actions-label">{{ '¿Qué te gustaría hacer?'|t }}</p>
+        <div class="actions-grid">
+          {% for action in quick_actions %}
+          <button class="action-btn" 
+                  data-action="{{ action.action }}"
+                  data-vertical="{{ avatar_type }}">
+            <span class="action-icon">{{ action.icon }}</span>
+            <span class="action-label">{{ action.label }}</span>
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# Chat Messages Area #}
+      <div class="copilot-chat" aria-live="polite">
+        <div class="chat-messages"></div>
+      </div>
+    </div>
+
+    {# Footer Input #}
+    <div class="copilot-footer">
+      <div class="copilot-input-container">
+        <input type="text" 
+               class="copilot-input" 
+               placeholder="{{ 'Escribe tu consulta...'|t }}"
+               aria-label="{{ 'Mensaje al asistente'|t }}">
+        <button class="copilot-send" aria-label="{{ 'Enviar'|t }}">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

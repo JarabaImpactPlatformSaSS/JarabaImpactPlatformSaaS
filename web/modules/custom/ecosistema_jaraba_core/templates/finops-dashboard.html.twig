@@ -19,17 +19,17 @@
   <div class="finops-header">
     <div class="finops-header__content">
       <h1 class="finops-header__title">
-        <span class="finops-header__icon">💰</span>
+        <span class="finops-header__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '32px' }) }}</span>
         {% trans %}FinOps Dashboard{% endtrans %}
       </h1>
       <p class="finops-header__subtitle">{% trans %}Cost optimization and resource usage{% endtrans %}</p>
     </div>
     <div class="finops-header__actions">
       <button class="btn btn-primary" id="refresh-finops" title="{% trans %}Refresh data{% endtrans %}">
-        <span class="btn__icon">🔄</span> {% trans %}Refresh{% endtrans %}
+        {{ jaraba_icon('actions', 'refresh', { color: 'neutral', size: '18px' }) }} {% trans %}Refresh{% endtrans %}
       </button>
       <a href="/admin/config/finops" class="finops-header__settings use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"FinOps Settings"}' title="{% trans %}Configure pricing{% endtrans %}">
-        ⚙️
+        {{ jaraba_icon('ui', 'settings', { color: 'neutral', size: '20px' }) }}
       </a>
       <span class="finops-header__updated">
         {% trans %}Last updated{% endtrans %}: <strong id="last-updated">{{ last_updated }}</strong>
@@ -43,7 +43,7 @@
     {% for alert in alerts %}
     <div class="alert-card alert-card--{{ alert.type }}">
       <span class="alert-card__icon">
-        {% if alert.type == 'critical' %}🚨{% elseif alert.type == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+        {% if alert.type == 'critical' %}{{ jaraba_icon('ui', 'alert-circle', { color: 'danger', size: '24px' }) }}{% elseif alert.type == 'warning' %}{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '24px' }) }}{% else %}{{ jaraba_icon('ui', 'info', { color: 'azul-corporativo', size: '24px' }) }}{% endif %}
       </span>
       <div class="alert-card__content">
         <strong>{{ alert.title }}</strong>
@@ -57,7 +57,7 @@
   {# Cost Overview Cards #}
   <div class="finops-metrics">
     <div class="metric-card metric-card--cost">
-      <div class="metric-card__icon">💵</div>
+      <div class="metric-card__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">€{{ totals.cost_total }}</span>
         <span class="metric-card__label">{% trans %}Current Month{% endtrans %}</span>
@@ -66,18 +66,18 @@
     </div>
 
     <div class="metric-card metric-card--projection">
-      <div class="metric-card__icon">📊</div>
+      <div class="metric-card__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">€{{ projections.monthly_projected }}</span>
         <span class="metric-card__label">{% trans %}Projected Monthly{% endtrans %}</span>
       </div>
       <div class="metric-card__trend metric-card__trend--{{ projections.trend }}">
-        {% if projections.trend == 'up' %}📈{% elseif projections.trend == 'down' %}📉{% else %}➡️{% endif %}
+        {% if projections.trend == 'up' %}{{ jaraba_icon('analytics', 'trend-up', { color: 'success', size: '20px' }) }}{% elseif projections.trend == 'down' %}{{ jaraba_icon('analytics', 'trend-down', { color: 'danger', size: '20px' }) }}{% else %}{{ jaraba_icon('ui', 'arrow-right', { color: 'neutral', size: '20px' }) }}{% endif %}
       </div>
     </div>
 
     <div class="metric-card metric-card--budget">
-      <div class="metric-card__icon">🎯</div>
+      <div class="metric-card__icon">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ projections.budget_usage_percent }}%</span>
         <span class="metric-card__label">{% trans %}Budget Usage{% endtrans %}</span>
@@ -88,7 +88,7 @@
     </div>
 
     <div class="metric-card metric-card--tenants">
-      <div class="metric-card__icon">🏢</div>
+      <div class="metric-card__icon">{{ jaraba_icon('business', 'company', { color: 'azul-corporativo', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ totals.tenant_count }}</span>
         <span class="metric-card__label">{% trans %}Active Tenants{% endtrans %}</span>
@@ -99,13 +99,13 @@
   {# Resource Usage Summary #}
   <div class="finops-section">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">📈</span>
+      <span class="finops-section__icon">{{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}</span>
       {% trans %}Resource Usage{% endtrans %}
     </h2>
     <div class="resource-cards">
       <div class="resource-card">
         <div class="resource-card__header">
-          <span class="resource-card__icon">💾</span>
+          <span class="resource-card__icon">{{ jaraba_icon('ui', 'database', { color: 'verde-innovacion', size: '24px' }) }}</span>
           <span class="resource-card__title">{% trans %}Storage{% endtrans %}</span>
         </div>
         <div class="resource-card__value">{{ totals.storage_mb }} MB</div>
@@ -114,7 +114,7 @@
 
       <div class="resource-card">
         <div class="resource-card__header">
-          <span class="resource-card__icon">🔌</span>
+          <span class="resource-card__icon">{{ jaraba_icon('ui', 'plug', { color: 'naranja-impulso', size: '24px' }) }}</span>
           <span class="resource-card__title">{% trans %}API Requests{% endtrans %}</span>
         </div>
         <div class="resource-card__value">{{ totals.api_requests|number_format }}</div>
@@ -123,19 +123,144 @@
 
       <div class="resource-card">
         <div class="resource-card__header">
-          <span class="resource-card__icon">⚡</span>
+          <span class="resource-card__icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '24px' }) }}</span>
           <span class="resource-card__title">{% trans %}CPU Hours{% endtrans %}</span>
         </div>
         <div class="resource-card__value">{{ totals.cpu_hours }} h</div>
         <div class="resource-card__cost">€{{ totals.cost_cpu }}</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="resource-card__icon">{{ jaraba_icon('ai', 'brain', { color: 'verde-innovacion', size: '24px' }) }}</span>
+          <span class="resource-card__title">{% trans %}AI Usage{% endtrans %}</span>
+        </div>
+        <div class="resource-card__value">{{ totals.ai_tokens|number_format }} tokens</div>
+        <div class="resource-card__cost">€{{ totals.cost_ai }}</div>
+      </div>
     </div>
   </div>
 
-  {# Feature Costs Section #}
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {# AI Costs Section - Costes de Inteligencia Artificial #}
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {% if ai_costs and ai_costs.enabled %}
+  <div class="finops-section finops-section--ai">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">{{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '24px' }) }}</span>
+      {% trans %}AI Costs{% endtrans %}
+      <span class="status-badge status-badge--{{ ai_costs.status|default('normal') }}" style="margin-left: 1rem;">
+        {% if ai_costs.status == 'critical' %}{{ jaraba_icon('ui', 'alert-circle', { color: 'danger', size: '18px' }) }}{% elseif ai_costs.status == 'warning' %}{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '18px' }) }}{% else %}{{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '18px' }) }}{% endif %}
+      </span>
+    </h2>
+
+    {# AI Cost Summary Cards #}
+    <div class="finops-metrics finops-metrics--compact">
+      <div class="metric-card metric-card--ai">
+        <div class="metric-card__icon">{{ jaraba_icon('ai', 'brain', { color: 'verde-innovacion', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ ai_costs.summary.total_tokens|number_format }}</span>
+          <span class="metric-card__label">{% trans %}Total Tokens{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="metric-card metric-card--ai-cost">
+        <div class="metric-card__icon">{{ jaraba_icon('business', 'money', { color: 'naranja-impulso', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">€{{ ai_costs.summary.total_cost }}</span>
+          <span class="metric-card__label">{% trans %}AI Cost (Month){% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="metric-card metric-card--ai-calls">
+        <div class="metric-card__icon">{{ jaraba_icon('ui', 'wifi', { color: 'azul-corporativo', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ ai_costs.summary.total_calls|number_format }}</span>
+          <span class="metric-card__label">{% trans %}API Calls{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="metric-card metric-card--ai-cache">
+        <div class="metric-card__icon">{{ jaraba_icon('ai', 'automation', { color: 'verde-innovacion', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ ai_costs.optimization.cache_hit_rate }}%</span>
+          <span class="metric-card__label">{% trans %}Cache Hit Rate{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+
+    {# AI Usage by Provider #}
+    {% if ai_costs.by_provider %}
+    <div class="resource-cards" style="margin-top: 1rem;">
+      {% for provider, data in ai_costs.by_provider %}
+      <div class="resource-card">
+        <div class="resource-card__header">
+          <span class="resource-card__icon">
+            {% if provider == 'anthropic' %}🟣{% elseif provider == 'openai' %}🟢{% elseif provider == 'google_gemini' %}🔵{% else %}⚪{% endif %}
+          </span>
+          <span class="resource-card__title">{{ provider|replace({'_': ' '})|capitalize }}</span>
+        </div>
+        <div class="resource-card__value">{{ data.tokens|number_format }} tokens</div>
+        <div class="resource-card__cost">€{{ data.cost }} ({{ data.calls }} calls)</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Optimization Stats #}
+    {% if ai_costs.optimization.savings > 0 %}
+    <div class="alert-card alert-card--info" style="margin-top: 1rem;">
+      <span class="alert-card__icon">{{ jaraba_icon('ai', 'lightbulb', { color: 'verde-innovacion', size: '24px' }) }}</span>
+      <div class="alert-card__content">
+        <strong>{% trans %}AI Optimization Savings{% endtrans %}</strong>
+        <p>{% trans %}Saved{% endtrans %} <strong>€{{ ai_costs.optimization.savings }}</strong> ({{ ai_costs.optimization.savings_percent }}%) {% trans %}through smart routing and caching{% endtrans %}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {# Thresholds Info #}
+    <div class="finops-help__note" style="font-size: 0.75rem; color: var(--finops-text-muted, #94a3b8); margin-top: 1rem;">
+      {{ jaraba_icon('finance', 'chart', { size: '14px' }) }} {% trans %}Thresholds{% endtrans %}: 
+      {% trans %}Daily{% endtrans %}: {{ jaraba_icon('status', 'alert-triangle', { size: '14px', color: 'warning' }) }} €{{ ai_costs.thresholds.daily_warning }} / {{ jaraba_icon('status', 'alert-circle', { size: '14px', color: 'danger' }) }} €{{ ai_costs.thresholds.daily_critical }} | 
+      {% trans %}Monthly{% endtrans %}: {{ jaraba_icon('status', 'alert-triangle', { size: '14px', color: 'warning' }) }} €{{ ai_costs.thresholds.monthly_warning }} / {{ jaraba_icon('status', 'alert-circle', { size: '14px', color: 'danger' }) }} €{{ ai_costs.thresholds.monthly_critical }}
+    </div>
+
+    {# AI Cost Charts Section #}
+    {% if ai_costs.history %}
+    <div class="finops-charts" style="margin-top: 2rem;">
+      <h3 class="finops-section__subtitle" style="font-size: 1rem; color: var(--finops-text-secondary, #e2e8f0); margin-bottom: 1rem;">
+        {{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '18px' }) }}
+        {% trans %}AI Cost Trends{% endtrans %}
+      </h3>
+      <div class="finops-charts__grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        {# Daily Trend Chart #}
+        <div class="finops-chart-container" style="background: rgba(30, 41, 59, 0.5); border-radius: 12px; padding: 1rem; min-height: 280px;">
+          <canvas id="ai-cost-daily-chart" style="width: 100%; height: 250px;"></canvas>
+        </div>
+        {# Provider Distribution Chart #}
+        <div class="finops-chart-container" style="background: rgba(30, 41, 59, 0.5); border-radius: 12px; padding: 1rem; min-height: 280px;">
+          <canvas id="ai-cost-provider-chart" style="width: 100%; height: 250px;"></canvas>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% elseif ai_costs and not ai_costs.enabled %}
+  <div class="finops-section finops-section--ai">
+    <h2 class="finops-section__title">
+      <span class="finops-section__icon">{{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '24px' }) }}</span>
+      {% trans %}AI Costs{% endtrans %}
+    </h2>
+    <div class="finops-empty-state" style="text-align: center; padding: 2rem; color: var(--finops-text-muted, #94a3b8);">
+      <span style="font-size: 2rem;">{{ jaraba_icon('ui', 'inbox', { color: 'neutral', size: '32px' }) }}</span>
+      <p>{{ ai_costs.message|default('AI Cost tracking not available.'|trans) }}</p>
+    </div>
+  </div>
+  {% endif %}
   {% if feature_costs.has_costs %}
   <div class="finops-section finops-section--features">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">⚙️</span>
+      <span class="finops-section__icon">{{ jaraba_icon('ui', 'settings', { color: 'naranja-impulso', size: '24px' }) }}</span>
       {% trans %}Feature Costs{% endtrans %}
       <a href="/admin/structure/features" class="finops-section__link" title="{% trans %}Manage Features{% endtrans %}">
         {% trans %}Configure{% endtrans %} →
@@ -145,7 +270,7 @@
     {# Feature costs by category summary #}
     <div class="feature-cost-summary">
       <div class="feature-cost-total">
-        <span class="feature-cost-total__icon">💰</span>
+        <span class="feature-cost-total__icon">{{ jaraba_icon('business', 'money', { color: 'verde-innovacion', size: '24px' }) }}</span>
         <span class="feature-cost-total__value">€{{ feature_costs.totals.base_cost_monthly }}/{% trans %}month{% endtrans %}</span>
         <span class="feature-cost-total__label">{% trans %}Base Cost from Features{% endtrans %}</span>
       </div>
@@ -154,7 +279,7 @@
           {% if category.count > 0 %}
           <div class="feature-category-card">
             <span class="feature-category-card__icon">
-              {% if key == 'ai' %}🤖{% elseif key == 'api' %}🔌{% elseif key == 'storage' %}💾{% elseif key == 'compute' %}⚡{% else %}🌐{% endif %}
+              {% if key == 'ai' %}{{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '20px' }) }}{% elseif key == 'api' %}{{ jaraba_icon('ui', 'plug', { color: 'azul-corporativo', size: '20px' }) }}{% elseif key == 'storage' %}{{ jaraba_icon('ui', 'database', { color: 'verde-innovacion', size: '20px' }) }}{% elseif key == 'compute' %}{{ jaraba_icon('ai', 'automation', { color: 'warning', size: '20px' }) }}{% else %}{{ jaraba_icon('ui', 'globe', { color: 'neutral', size: '20px' }) }}{% endif %}
             </span>
             <span class="feature-category-card__label">{{ category.label }}</span>
             <span class="feature-category-card__count">{{ category.count }} {% trans %}features{% endtrans %}</span>
@@ -181,7 +306,7 @@
           {% for feature in feature_costs.features %}
           <tr class="feature-row">
             <td class="feature-row__name">
-              {% if feature.icon %}<span class="feature-row__icon">{{ feature.icon }}</span>{% endif %}
+              {% if feature.icon %}<span class="feature-row__icon">{{ jaraba_icon('ui', feature.icon, { color: 'naranja-impulso', size: '18px' }) }}</span>{% endif %}
               <strong>{{ feature.label }}</strong>
               {% if feature.description %}
               <span class="feature-row__desc">{{ feature.description|slice(0, 50) }}{% if feature.description|length > 50 %}...{% endif %}</span>
@@ -214,11 +339,11 @@
   {% else %}
   <div class="finops-section finops-section--features">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">⚙️</span>
+      <span class="finops-section__icon">{{ jaraba_icon('ui', 'settings', { color: 'naranja-impulso', size: '24px' }) }}</span>
       {% trans %}Feature Costs{% endtrans %}
     </h2>
     <div class="finops-empty-state" style="text-align: center; padding: 2rem; color: var(--finops-text-muted, #94a3b8);">
-      <span style="font-size: 2rem;">📭</span>
+      <span style="font-size: 2rem;">{{ jaraba_icon('ui', 'inbox', { color: 'neutral', size: '32px' }) }}</span>
       <p>{% trans %}No feature costs configured yet.{% endtrans %}</p>
       <a href="/admin/structure/features" class="btn btn-primary">
         {% trans %}Configure Feature Costs{% endtrans %}
@@ -230,7 +355,7 @@
   {# Tenant Costs Table - Desglose por inquilino #}
   <div class="finops-section">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">🏢</span>
+      <span class="finops-section__icon">{{ jaraba_icon('business', 'company', { color: 'azul-corporativo', size: '24px' }) }}</span>
       {% trans %}Cost by Tenant{% endtrans %}
     </h2>
     <div class="tenant-table">
@@ -243,6 +368,7 @@
             <th>{% trans %}Storage{% endtrans %}</th>
             <th>{% trans %}API Requests{% endtrans %}</th>
             <th>{% trans %}CPU{% endtrans %}</th>
+            <th>{% trans %}AI{% endtrans %}</th>
             <th>{% trans %}Features{% endtrans %}</th>
             <th>{% trans %}Total Cost{% endtrans %}</th>
             <th>{% trans %}Status{% endtrans %}</th>
@@ -261,10 +387,17 @@
             <td class="tenant-row__storage">{{ tenant.storage_mb }} MB</td>
             <td class="tenant-row__api">{{ tenant.api_requests|number_format }}</td>
             <td class="tenant-row__cpu">{{ tenant.cpu_hours }} h</td>
+            <td class="tenant-row__ai">
+              {% if tenant.costs.ai is defined and tenant.costs.ai > 0 %}
+                <span title="{{ tenant.ai_tokens|default(0)|number_format }} tokens">€{{ tenant.costs.ai }}</span>
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
             <td class="tenant-row__features">
               {% if tenant.feature_count > 0 %}
                 <span title="{% for f in tenant.feature_details %}{{ f.label }}: €{{ f.cost }}{% if not loop.last %}, {% endif %}{% endfor %}">
-                  {{ tenant.feature_count }} ⚙️ <span class="feature-cost">€{{ tenant.costs.features }}</span>
+                  {{ tenant.feature_count }} {{ jaraba_icon('ui', 'settings', { size: '14px' }) }} <span class="feature-cost">€{{ tenant.costs.features }}</span>
                 </span>
               {% else %}
                 <span class="text-muted">-</span>
@@ -275,7 +408,7 @@
             </td>
             <td class="tenant-row__status">
               <span class="status-badge status-badge--{{ tenant.status }}">
-                {% if tenant.status == 'normal' %}✅{% elseif tenant.status == 'warning' %}⚠️{% else %}🚨{% endif %}
+                {% if tenant.status == 'normal' %}{{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'success' }) }}{% elseif tenant.status == 'warning' %}{{ jaraba_icon('status', 'alert-triangle', { size: '16px', color: 'warning' }) }}{% else %}{{ jaraba_icon('status', 'alert-circle', { size: '16px', color: 'danger' }) }}{% endif %}
                 {{ tenant.status|upper }}
               </span>
             </td>
@@ -285,7 +418,7 @@
       </table>
       {% else %}
       <div class="finops-empty-state" style="text-align: center; padding: 2rem; color: var(--finops-text-muted, #94a3b8);">
-        <span style="font-size: 2rem;">📭</span>
+        <span style="font-size: 2rem;">{{ jaraba_icon('ui', 'inbox', { color: 'neutral', size: '32px' }) }}</span>
         <p>{% trans %}No tenants found. Create tenants to see cost breakdown.{% endtrans %}</p>
       </div>
       {% endif %}
@@ -296,27 +429,27 @@
   {% if revenue %}
   <div class="finops-section finops-section--revenue">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">💵</span>
+      <span class="finops-section__icon">{{ jaraba_icon('business', 'money', { color: 'verde-innovacion', size: '24px' }) }}</span>
       {% trans %}Revenue{% endtrans %}
     </h2>
     <div class="finops-metrics">
       <div class="metric-card metric-card--revenue">
-        <span class="metric-card__icon">📊</span>
+        <span class="metric-card__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}</span>
         <span class="metric-card__value">€{{ revenue.mrr }}</span>
         <span class="metric-card__label">{% trans %}MRR (Monthly Recurring){% endtrans %}</span>
       </div>
       <div class="metric-card metric-card--revenue">
-        <span class="metric-card__icon">📈</span>
+        <span class="metric-card__icon">{{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}</span>
         <span class="metric-card__value">€{{ revenue.arr }}</span>
         <span class="metric-card__label">{% trans %}ARR (Annual Recurring){% endtrans %}</span>
       </div>
       <div class="metric-card metric-card--tenants">
-        <span class="metric-card__icon">🏢</span>
+        <span class="metric-card__icon">{{ jaraba_icon('business', 'company', { color: 'azul-corporativo', size: '24px' }) }}</span>
         <span class="metric-card__value">{{ revenue.active_subscriptions }}</span>
         <span class="metric-card__label">{% trans %}Active Subscriptions{% endtrans %}</span>
       </div>
       <div class="metric-card metric-card--projection">
-        <span class="metric-card__icon">🎯</span>
+        <span class="metric-card__icon">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '24px' }) }}</span>
         <span class="metric-card__value">€{{ revenue.monthly_projected }}</span>
         <span class="metric-card__label">{% trans %}Projected This Month{% endtrans %}</span>
       </div>
@@ -343,29 +476,29 @@
   {% if net_results %}
   <div class="finops-section finops-section--netresults">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">📉</span>
+      <span class="finops-section__icon">{{ jaraba_icon('analytics', 'trend-down', { color: 'danger', size: '24px' }) }}</span>
       {% trans %}Net Results (P&L){% endtrans %}
     </h2>
     <div class="finops-metrics">
       <div class="metric-card metric-card--revenue">
-        <span class="metric-card__icon">💰</span>
+        <span class="metric-card__icon">{{ jaraba_icon('business', 'money', { color: 'verde-innovacion', size: '24px' }) }}</span>
         <span class="metric-card__value">€{{ net_results.revenue_current }}</span>
         <span class="metric-card__label">{% trans %}Revenue (Current){% endtrans %}</span>
       </div>
       <div class="metric-card metric-card--cost">
-        <span class="metric-card__icon">💸</span>
+        <span class="metric-card__icon">{{ jaraba_icon('business', 'money', { color: 'danger', size: '24px' }) }}</span>
         <span class="metric-card__value">€{{ net_results.costs_current }}</span>
         <span class="metric-card__label">{% trans %}Costs (Current){% endtrans %}</span>
       </div>
       <div class="metric-card metric-card--{% if net_results.status == 'profitable' %}budget{% else %}cost{% endif %}">
-        <span class="metric-card__icon">{% if net_results.status == 'profitable' %}✅{% else %}⚠️{% endif %}</span>
+        <span class="metric-card__icon">{% if net_results.status == 'profitable' %}{{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '24px' }) }}{% else %}{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '24px' }) }}{% endif %}</span>
         <span class="metric-card__value" style="color: {% if net_results.net_current >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">
           €{{ net_results.net_current }}
         </span>
         <span class="metric-card__label">{% trans %}Net Result{% endtrans %}</span>
       </div>
       <div class="metric-card">
-        <span class="metric-card__icon">📊</span>
+        <span class="metric-card__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '24px' }) }}</span>
         <span class="metric-card__value" style="color: {% if net_results.margin_current >= 0 %}var(--ej-color-success, #10b981){% else %}var(--ej-color-error, #ef4444){% endif %}">
           {{ net_results.margin_current }}%
         </span>
@@ -415,7 +548,7 @@
   {% if recommendations is not empty %}
   <div class="finops-section">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">💡</span>
+      <span class="finops-section__icon">{{ jaraba_icon('ai', 'lightbulb', { color: 'naranja-impulso', size: '24px' }) }}</span>
       {% trans %}Optimization Recommendations{% endtrans %}
     </h2>
     <div class="recommendations-grid">
@@ -423,13 +556,13 @@
       <div class="recommendation-card recommendation-card--{{ rec.type }}">
         <div class="recommendation-card__header">
           {% if rec.type == 'summary' %}
-            <span class="recommendation-card__icon">📊</span>
+            <span class="recommendation-card__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '20px' }) }}</span>
           {% elseif rec.type == 'storage' %}
-            <span class="recommendation-card__icon">💾</span>
+            <span class="recommendation-card__icon">{{ jaraba_icon('ui', 'database', { color: 'verde-innovacion', size: '20px' }) }}</span>
           {% elseif rec.type == 'api' %}
-            <span class="recommendation-card__icon">🔌</span>
+            <span class="recommendation-card__icon">{{ jaraba_icon('ui', 'plug', { color: 'naranja-impulso', size: '20px' }) }}</span>
           {% else %}
-            <span class="recommendation-card__icon">💡</span>
+            <span class="recommendation-card__icon">{{ jaraba_icon('ai', 'lightbulb', { color: 'warning', size: '20px' }) }}</span>
           {% endif %}
           <strong>{{ rec.title }}</strong>
         </div>
@@ -448,24 +581,24 @@
   {# Quick Actions #}
   <div class="finops-section">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">⚡</span>
+      <span class="finops-section__icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '24px' }) }}</span>
       {% trans %}Quick Actions{% endtrans %}
     </h2>
     <div class="quick-actions">
       <a href="/admin/structure/tenants" class="action-btn action-btn--primary">
-        <span class="action-btn__icon">🏢</span>
+        <span class="action-btn__icon">{{ jaraba_icon('ui', 'building', { color: 'azul-corporativo', size: '18px' }) }}</span>
         {% trans %}Manage Tenants{% endtrans %}
       </a>
       <a href="/admin/structure/saas-plans" class="action-btn action-btn--secondary">
-        <span class="action-btn__icon">📋</span>
+        <span class="action-btn__icon">{{ jaraba_icon('ui', 'list', { color: 'verde-innovacion', size: '18px' }) }}</span>
         {% trans %}Manage Plans{% endtrans %}
       </a>
       <a href="/admin/health" class="action-btn action-btn--secondary">
-        <span class="action-btn__icon">🏥</span>
+        <span class="action-btn__icon">{{ jaraba_icon('ui', 'heart', { color: 'danger', size: '18px' }) }}</span>
         {% trans %}Health Dashboard{% endtrans %}
       </a>
       <a href="/admin/reports" class="action-btn action-btn--external">
-        <span class="action-btn__icon">📊</span>
+        <span class="action-btn__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'naranja-impulso', size: '18px' }) }}</span>
         {% trans %}Full Reports{% endtrans %}
       </a>
     </div>
@@ -475,14 +608,14 @@
   {% if help_info or data_sources %}
   <div class="finops-section finops-help">
     <h2 class="finops-section__title">
-      <span class="finops-section__icon">ℹ️</span>
+      <span class="finops-section__icon">{{ jaraba_icon('ui', 'info', { color: 'azul-corporativo', size: '24px' }) }}</span>
       {% trans %}About this Dashboard{% endtrans %}
     </h2>
     
     {# Setup Required Alert #}
     {% if data_sources.setup_required %}
     <div class="alert-card alert-card--warning" style="margin-bottom: 1rem;">
-      <span class="alert-card__icon">⚠️</span>
+      <span class="alert-card__icon">{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '24px' }) }}</span>
       <div class="alert-card__content">
         <strong>{% trans %}Setup Required{% endtrans %}</strong>
         <p>{% trans %}Run the following command to enable real-time tracking:{% endtrans %}</p>
@@ -536,21 +669,21 @@
       <div class="resource-cards" style="margin-bottom: 1rem;">
         <div class="resource-card">
           <div class="resource-card__header">
-            <span class="resource-card__icon">💾</span>
+            <span class="resource-card__icon">{{ jaraba_icon('ui', 'database', { color: 'azul-corporativo', size: '20px' }) }}</span>
             <span class="resource-card__title">{% trans %}Storage{% endtrans %}</span>
           </div>
           <div class="resource-card__value">{{ help_info.pricing.storage }}</div>
         </div>
         <div class="resource-card">
           <div class="resource-card__header">
-            <span class="resource-card__icon">🔌</span>
+            <span class="resource-card__icon">{{ jaraba_icon('ui', 'plug', { color: 'verde-innovacion', size: '20px' }) }}</span>
             <span class="resource-card__title">{% trans %}API{% endtrans %}</span>
           </div>
           <div class="resource-card__value">{{ help_info.pricing.api }}</div>
         </div>
         <div class="resource-card">
           <div class="resource-card__header">
-            <span class="resource-card__icon">⚡</span>
+            <span class="resource-card__icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '20px' }) }}</span>
             <span class="resource-card__title">{% trans %}CPU{% endtrans %}</span>
           </div>
           <div class="resource-card__value">{{ help_info.pricing.cpu }}</div>
@@ -562,7 +695,7 @@
     {# Note #}
     {% if help_info.note %}
     <p class="finops-help__note" style="font-size: 0.875rem; color: var(--finops-text-muted, #94a3b8); margin: 0;">
-      <span style="margin-right: 0.5rem;">💡</span>{{ help_info.note }}
+      <span style="margin-right: 0.5rem;">{{ jaraba_icon('ui', 'info', { color: 'warning', size: '18px' }) }}</span>{{ help_info.note }}
     </p>
     {% endif %}
     
@@ -570,11 +703,202 @@
     {% if help_info.settings_url %}
     <div style="margin-top: 1rem;">
       <a href="{{ help_info.settings_url }}" class="action-btn action-btn--primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"FinOps Settings"}'>
-        <span class="action-btn__icon">⚙️</span>
+        <span class="action-btn__icon">{{ jaraba_icon('ui', 'settings', { size: '18px' }) }}</span>
         {% trans %}Configure Pricing{% endtrans %}
       </a>
     </div>
     {% endif %}
+  </div>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {# UNIT ECONOMICS SECTION - LTV, CAC, Payback por Tenant #}
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {% if unit_economics.tenants is not empty %}
+  <div class="finops-section finops-section--unit-economics">
+    <div class="finops-section__header">
+      <h2 class="finops-section__title">
+        <span class="finops-section__icon">{{ jaraba_icon('analytics', 'trend-up', { color: 'verde-innovacion', size: '24px' }) }}</span>
+        {% trans %}Analítica de Inquilinos{% endtrans %}
+      </h2>
+      <p class="finops-section__subtitle">{% trans %}Métricas de rentabilidad y valor de cliente por inquilino{% endtrans %}</p>
+    </div>
+
+    {# Legend Box #}
+    <div class="finops-legend-box">
+      <div class="finops-legend-box__title">
+        <span>{{ jaraba_icon('ui', 'book', { color: 'azul-corporativo', size: '18px' }) }}</span> {% trans %}Glosario de Métricas{% endtrans %}
+      </div>
+      <div class="finops-legend-box__items">
+        <div class="finops-legend-box__item">
+          <strong>MRR</strong>: {% trans %}Ingresos Recurrentes Mensuales - ingreso por suscripción mensual{% endtrans %}
+        </div>
+        <div class="finops-legend-box__item">
+          <strong>LTV</strong>: {% trans %}Valor de Vida del Cliente - ingreso total esperado de un cliente{% endtrans %}
+        </div>
+        <div class="finops-legend-box__item">
+          <strong>CAC</strong>: {% trans %}Coste de Adquisición de Cliente - coste de captar un cliente{% endtrans %}
+        </div>
+        <div class="finops-legend-box__item">
+          <strong>LTV:CAC</strong>: {% trans %}Ratio valor del cliente vs coste de adquisición (objetivo: ≥3:1){% endtrans %}
+        </div>
+        <div class="finops-legend-box__item">
+          <strong>{% trans %}Payback{% endtrans %}</strong>: {% trans %}Meses para recuperar el coste de adquisición{% endtrans %}
+        </div>
+      </div>
+    </div>
+
+    {# Summary Cards #}
+    <div class="finops-metrics finops-metrics--compact">
+      <div class="metric-card metric-card--ltv">
+        <div class="metric-card__icon">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ unit_economics.summary.avg_ltv_cac_ratio }}:1</span>
+          <span class="metric-card__label">{% trans %}Ratio LTV:CAC Promedio{% endtrans %}</span>
+        </div>
+        <span class="metric-card__badge {% if unit_economics.summary.avg_ltv_cac_ratio >= 3 %}metric-card__badge--success{% else %}metric-card__badge--warning{% endif %}">
+          {% if unit_economics.summary.avg_ltv_cac_ratio >= 3 %}✓ {% trans %}Saludable{% endtrans %}{% else %}⚠ {% trans %}Bajo{% endtrans %}{% endif %}
+        </span>
+      </div>
+
+      <div class="metric-card metric-card--payback">
+        <div class="metric-card__icon">{{ jaraba_icon('ui', 'clock', { color: 'azul-corporativo', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ unit_economics.summary.avg_payback_months }} {% trans %}meses{% endtrans %}</span>
+          <span class="metric-card__label">{% trans %}Payback Promedio{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="metric-card metric-card--vip">
+        <div class="metric-card__icon">{{ jaraba_icon('ui', 'star', { color: 'warning', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ unit_economics.summary.vip_count }}</span>
+          <span class="metric-card__label">{% trans %}Inquilinos VIP{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="metric-card metric-card--risk">
+        <div class="metric-card__icon">{{ jaraba_icon('ui', 'alert-triangle', { color: 'danger', size: '28px' }) }}</div>
+        <div class="metric-card__content">
+          <span class="metric-card__value">{{ unit_economics.summary.at_risk_count + unit_economics.summary.loss_count }}</span>
+          <span class="metric-card__label">{% trans %}En Riesgo{% endtrans %}</span>
+        </div>
+        {% if unit_economics.summary.loss_count > 0 %}
+        <span class="metric-card__badge metric-card__badge--critical">{{ unit_economics.summary.loss_count }} {% trans %}en pérdida{% endtrans %}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Unit Economics Table #}
+    <div class="finops-table-container">
+      <table class="finops-table finops-table--unit-economics">
+        <thead>
+          <tr>
+            <th>{% trans %}Inquilino{% endtrans %}</th>
+            <th class="text-right">{% trans %}MRR{% endtrans %}</th>
+            <th class="text-right">{% trans %}Coste Op.{% endtrans %}</th>
+            <th class="text-right">{% trans %}Margen{% endtrans %}</th>
+            <th class="text-right">{% trans %}LTV{% endtrans %}</th>
+            <th class="text-right">{% trans %}CAC{% endtrans %}</th>
+            <th class="text-right">{% trans %}LTV:CAC{% endtrans %}</th>
+            <th class="text-right">{% trans %}Payback{% endtrans %}</th>
+            <th class="text-center">{% trans %}Estado{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tenant in unit_economics.tenants %}
+          <tr class="finops-table__row finops-table__row--{{ tenant.status }}">
+            <td class="finops-table__tenant">
+              <strong>{{ tenant.tenant_name }}</strong>
+            </td>
+            <td class="text-right">€{{ tenant.mrr }}</td>
+            <td class="text-right">€{{ tenant.operating_cost }}</td>
+            <td class="text-right {% if tenant.margin_percent < 0 %}text-danger{% elseif tenant.margin_percent < 20 %}text-warning{% else %}text-success{% endif %}">
+              {{ tenant.margin_percent }}%
+            </td>
+            <td class="text-right">€{{ tenant.ltv }}</td>
+            <td class="text-right">€{{ tenant.cac }}</td>
+            <td class="text-right {% if tenant.ltv_cac_ratio >= 5 %}text-vip{% elseif tenant.ltv_cac_ratio >= 3 %}text-success{% else %}text-warning{% endif %}">
+              <strong>{{ tenant.ltv_cac_ratio }}:1</strong>
+            </td>
+            <td class="text-right">{{ tenant.payback_months }} {% trans %}meses{% endtrans %}</td>
+            <td class="text-center">
+              {% if tenant.status == 'vip' %}
+                <span class="status-badge status-badge--vip">⭐ {% trans %}VIP{% endtrans %}</span>
+              {% elseif tenant.status == 'healthy' %}
+                <span class="status-badge status-badge--success">✓ {% trans %}Saludable{% endtrans %}</span>
+              {% elseif tenant.status == 'at_risk' %}
+                <span class="status-badge status-badge--warning">⚠ {% trans %}En Riesgo{% endtrans %}</span>
+              {% else %}
+                <span class="status-badge status-badge--critical">⛔ {% trans %}Pérdida{% endtrans %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {# VERTICAL PROFITABILITY SECTION - P&L por Vertical #}
+  {# ═══════════════════════════════════════════════════════════════════════════ #}
+  {% if vertical_profitability is not empty %}
+  <div class="finops-section finops-section--verticals">
+    <div class="finops-section__header">
+      <h2 class="finops-section__title">
+        <span class="finops-section__icon">{{ jaraba_icon('ui', 'building', { color: 'naranja-impulso', size: '24px' }) }}</span>
+        {% trans %}Vertical Profitability{% endtrans %}
+      </h2>
+      <p class="finops-section__subtitle">{% trans %}P&L analysis by business vertical{% endtrans %}</p>
+    </div>
+
+    <div class="finops-verticals-grid">
+      {% for vertical in vertical_profitability %}
+      <div class="vertical-card vertical-card--{{ vertical.status }}">
+        <div class="vertical-card__header">
+          <h3 class="vertical-card__title">{{ vertical.name }}</h3>
+          <span class="vertical-card__count">{{ vertical.tenant_count }} {% trans %}inquilino{% endtrans %}{{ vertical.tenant_count != 1 ? 's' : '' }}</span>
+        </div>
+        <div class="vertical-card__metrics">
+          <div class="vertical-card__metric">
+            <span class="vertical-card__metric-label">{% trans %}Revenue{% endtrans %}</span>
+            <span class="vertical-card__metric-value">€{{ vertical.total_revenue }}</span>
+          </div>
+          <div class="vertical-card__metric">
+            <span class="vertical-card__metric-label">{% trans %}Costs{% endtrans %}</span>
+            <span class="vertical-card__metric-value">€{{ vertical.total_cost }}</span>
+          </div>
+          <div class="vertical-card__metric vertical-card__metric--profit">
+            <span class="vertical-card__metric-label">{% trans %}Profit{% endtrans %}</span>
+            <span class="vertical-card__metric-value {% if vertical.total_profit < 0 %}text-danger{% else %}text-success{% endif %}">
+              €{{ vertical.total_profit }}
+            </span>
+          </div>
+        </div>
+        <div class="vertical-card__footer">
+          <div class="vertical-card__margin">
+            <span class="vertical-card__margin-value {% if vertical.margin_percent < 0 %}text-danger{% elseif vertical.margin_percent < 20 %}text-warning{% else %}text-success{% endif %}">
+              {{ vertical.margin_percent }}%
+            </span>
+            <span class="vertical-card__margin-label">{% trans %}Margen{% endtrans %}</span>
+          </div>
+          <div class="vertical-card__status">
+            {% if vertical.status == 'star' %}
+              <span class="status-badge status-badge--star">⭐ {% trans %}Estrella{% endtrans %}</span>
+            {% elseif vertical.status == 'healthy' %}
+              <span class="status-badge status-badge--success">✓ {% trans %}OK{% endtrans %}</span>
+            {% elseif vertical.status == 'warning' %}
+              <span class="status-badge status-badge--warning">⚠ {% trans %}Bajo{% endtrans %}</span>
+            {% else %}
+              <span class="status-badge status-badge--critical">⛔ {% trans %}Pérdida{% endtrans %}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
   {% endif %}
 

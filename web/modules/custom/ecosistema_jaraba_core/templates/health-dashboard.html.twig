@@ -26,14 +26,14 @@
   <div class="health-header">
     <div class="health-header__content">
       <h1 class="health-header__title">
-        <span class="health-header__icon">🏥</span>
+        <span class="health-header__icon">{{ jaraba_icon('ui', 'hospital', { color: 'success', size: '32px' }) }}</span>
         {% trans %}Panel de Salud de la Plataforma{% endtrans %}
       </h1>
       <p class="health-header__subtitle">{% trans %}Monitoreo en tiempo real y estado de servicios{% endtrans %}</p>
     </div>
     <div class="health-header__actions">
       <button class="btn btn-primary" id="refresh-health" title="{% trans %}Actualizar datos{% endtrans %}">
-        <span class="btn__icon">🔄</span> {% trans %}Actualizar{% endtrans %}
+        <span class="btn__icon">{{ jaraba_icon('actions', 'refresh', { color: 'neutral', size: '18px' }) }}</span> {% trans %}Actualizar{% endtrans %}
       </button>
       <span class="health-header__updated">
         {% trans %}Última actualización{% endtrans %}: <strong id="last-updated">{{ last_updated }}</strong>
@@ -44,7 +44,7 @@
   {# Metrics Overview Cards #}
   <div class="health-metrics">
     <div class="metric-card metric-card--health">
-      <div class="metric-card__icon">💚</div>
+      <div class="metric-card__icon">{{ jaraba_icon('ui', 'heartbeat', { color: 'success', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value" id="overall-health">{{ metrics.overall_health }}%</span>
         <span class="metric-card__label">{% trans %}Salud General{% endtrans %}</span>
@@ -53,7 +53,7 @@
     </div>
     
     <div class="metric-card metric-card--services">
-      <div class="metric-card__icon">⚡</div>
+      <div class="metric-card__icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ metrics.services_up }}/{{ metrics.services_total }}</span>
         <span class="metric-card__label">{% trans %}Servicios Activos{% endtrans %}</span>
@@ -61,7 +61,7 @@
     </div>
     
     <div class="metric-card metric-card--uptime">
-      <div class="metric-card__icon">⏱️</div>
+      <div class="metric-card__icon">{{ jaraba_icon('ui', 'clock', { color: 'azul-corporativo', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <span class="metric-card__value">{{ metrics.uptime }}</span>
         <span class="metric-card__label">{% trans %}Tiempo Activo{% endtrans %}</span>
@@ -69,7 +69,7 @@
     </div>
     
     <div class="metric-card metric-card--external">
-      <div class="metric-card__icon">📊</div>
+      <div class="metric-card__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '28px' }) }}</div>
       <div class="metric-card__content">
         <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="metric-card__link">
           {% trans %}Abrir Grafana{% endtrans %} →
@@ -82,7 +82,7 @@
   {# Services Grid #}
   <div class="health-section">
     <h2 class="health-section__title">
-      <span class="health-section__icon">🔧</span>
+      <span class="health-section__icon">{{ jaraba_icon('ui', 'wrench', { color: 'azul-corporativo', size: '24px' }) }}</span>
       {% trans %}Estado de Servicios{% endtrans %}
     </h2>
     <div class="services-grid" id="services-grid">
@@ -90,10 +90,10 @@
         <div class="service-card service-card--{{ service.status }}" data-service="{{ key }}">
           <div class="service-card__header">
             <span class="service-card__icon service-card__icon--{{ service.icon }}">
-              {% if service.icon == 'database' %}💾{% endif %}
-              {% if service.icon == 'brain' %}🧠{% endif %}
-              {% if service.icon == 'bolt' %}⚡{% endif %}
-              {% if service.icon == 'globe' %}🌐{% endif %}
+              {% if service.icon == 'database' %}{{ jaraba_icon('ui', 'database', { color: 'azul-corporativo', size: '24px' }) }}{% endif %}
+              {% if service.icon == 'brain' %}{{ jaraba_icon('ai', 'brain', { color: 'verde-innovacion', size: '24px' }) }}{% endif %}
+              {% if service.icon == 'bolt' %}{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '24px' }) }}{% endif %}
+              {% if service.icon == 'globe' %}{{ jaraba_icon('ui', 'globe', { color: 'azul-verdoso', size: '24px' }) }}{% endif %}
             </span>
             <span class="service-card__status-badge service-card__status-badge--{{ service.status }}">
               {{ status_labels[service.status]|default(service.status|capitalize) }}
@@ -115,7 +115,7 @@
   {# Recent Checks #}
   <div class="health-section">
     <h2 class="health-section__title">
-      <span class="health-section__icon">📋</span>
+      <span class="health-section__icon">{{ jaraba_icon('business', 'diagnostic', { color: 'azul-corporativo', size: '24px' }) }}</span>
       {% trans %}Verificaciones Recientes{% endtrans %}
     </h2>
     <div class="checks-table">
@@ -135,7 +135,7 @@
               <td class="check-row__type">{{ check.type }}</td>
               <td class="check-row__result">
                 <span class="result-badge result-badge--{{ check.result }}">
-                  {% if check.result == 'pass' %}✅{% endif %}
+                  {% if check.result == 'pass' %}{{ jaraba_icon('actions', 'check', { color: 'success', size: '18px' }) }}{% endif %}
                   {% if check.result == 'fail' %}❌{% endif %}
                   {% if check.result == 'recovery' %}🔄{% endif %}
                   {{ check.result|upper }}
@@ -152,7 +152,7 @@
   {# Quick Actions #}
   <div class="health-section">
     <h2 class="health-section__title">
-      <span class="health-section__icon">⚡</span>
+      <span class="health-section__icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '24px' }) }}</span>
       {% trans %}Acciones Rápidas{% endtrans %}
     </h2>
     <div class="quick-actions">
@@ -161,15 +161,15 @@
         {% trans %}Limpiar Caché{% endtrans %}
       </a>
       <a href="/admin/reports/status" class="action-btn action-btn--secondary">
-        <span class="action-btn__icon">📊</span>
+        <span class="action-btn__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '18px' }) }}</span>
         {% trans %}Informe de Estado{% endtrans %}
       </a>
       <a href="http://grafana.jaraba-saas.lndo.site:3000" target="_blank" class="action-btn action-btn--external">
-        <span class="action-btn__icon">📈</span>
+        <span class="action-btn__icon">{{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '18px' }) }}</span>
         {% trans %}Dashboard Grafana{% endtrans %}
       </a>
       <a href="http://prometheus.jaraba-saas.lndo.site:9090" target="_blank" class="action-btn action-btn--external">
-        <span class="action-btn__icon">🔍</span>
+        <span class="action-btn__icon">{{ jaraba_icon('ui', 'search', { color: 'neutral', size: '18px' }) }}</span>
         Prometheus
       </a>
     </div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Caja cerrada -->
+  <path d="M3 8 L12 3 L21 8 L21 16 L12 21 L3 16 Z"/>
+  <!-- Línea superior central -->
+  <path d="M12 3 L12 12"/>
+  <!-- Líneas laterales -->
+  <path d="M3 8 L12 12 L21 8"/>
+  <!-- Cinta de paquete -->
+  <path d="M12 12 L12 21"/>
+</svg>

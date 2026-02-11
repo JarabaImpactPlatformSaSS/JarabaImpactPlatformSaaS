@@ -1,0 +1,385 @@
+{#
+/**
+ * @file diagnostic-widget.html.twig
+ * @description Widget de Diagnóstico Express TTV para Value-First Onboarding
+ * 
+ * PROPÓSITO:
+ * Componente embeddable que implementa el Diagnóstico Express con TTV < 60s.
+ * Renderiza las 3-4 preguntas según vertical y muestra resultado instantáneo.
+ * 
+ * VARIABLES:
+ * - vertical: 'empleabilidad' | 'emprendimiento' (obligatorio)
+ * - title: Título personalizado (opcional)
+ * - subtitle: Subtítulo (opcional)
+ * - show_cta: Mostrar botón CTA tras resultado (default: true)
+ * - cta_url: URL del CTA
+ * - cta_text: Texto del CTA
+ * 
+ * USO:
+ * {{ drupal_render(content.diagnostic_widget) }}
+ * o directamente con include:
+ * {% include '@ecosistema_jaraba_core/diagnostic-widget.html.twig' with {
+ *   vertical: 'empleabilidad',
+ *   title: '¿Cómo está tu empleabilidad digital?'
+ * } %}
+ * 
+ * @version 1.0.0
+ */
+#}
+
+{% set vertical = vertical|default('empleabilidad') %}
+{% set show_cta = show_cta ?? true %}
+
+<div class="diagnostic-widget" data-vertical="{{ vertical }}">
+  
+  {# === HEADER === #}
+  <div class="diagnostic-widget__header">
+    <div class="header-icon">
+      {% if vertical == 'empleabilidad' %}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+      {% endif %}
+    </div>
+    <h2>{{ title|default(vertical == 'empleabilidad' ? '¿Cómo está tu empleabilidad digital?' : '¿Cuánto dinero estás dejando de ganar?') }}</h2>
+    <p>{{ subtitle|default('Responde 3 preguntas y descúbrelo en 30 segundos') }}</p>
+  </div>
+  
+  {# === FORMULARIO DE PREGUNTAS === #}
+  <form class="diagnostic-express-form" data-vertical="{{ vertical }}">
+    
+    {% if vertical == 'empleabilidad' %}
+      {# Pregunta 1: LinkedIn #}
+      <div class="question-group" data-question="linkedin">
+        <span class="question-label">1. ¿Cómo describirías tu presencia en LinkedIn?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="linkedin_0" name="linkedin" value="0">
+            <label for="linkedin_0">
+              <span class="option-icon">❌</span>
+              <span class="option-text">
+                <span class="option-title">No tengo perfil</span>
+                <span class="option-subtitle">O lo creé pero nunca lo uso</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="linkedin_1" name="linkedin" value="1">
+            <label for="linkedin_1">
+              <span class="option-icon">📝</span>
+              <span class="option-text">
+                <span class="option-title">Perfil básico</span>
+                <span class="option-subtitle">Con foto pero sin optimizar</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="linkedin_2" name="linkedin" value="2">
+            <label for="linkedin_2">
+              <span class="option-icon">⭐</span>
+              <span class="option-text">
+                <span class="option-title">Perfil completo</span>
+                <span class="option-subtitle">Con experiencia y habilidades</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="linkedin_3" name="linkedin" value="3">
+            <label for="linkedin_3">
+              <span class="option-icon">🚀</span>
+              <span class="option-text">
+                <span class="option-title">Perfil optimizado</span>
+                <span class="option-subtitle">Publico contenido y tengo red activa</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      {# Pregunta 2: CV #}
+      <div class="question-group" data-question="cv">
+        <span class="question-label">2. ¿Cuál es el estado de tu currículum?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="cv_0" name="cv" value="0">
+            <label for="cv_0">
+              <span class="option-icon">📄</span>
+              <span class="option-text">
+                <span class="option-title">CV genérico</span>
+                <span class="option-subtitle">Mismo CV para todas las ofertas</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="cv_1" name="cv" value="1">
+            <label for="cv_1">
+              <span class="option-icon">📋</span>
+              <span class="option-text">
+                <span class="option-title">CV sectorial</span>
+                <span class="option-subtitle">Adaptado a mi sector objetivo</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="cv_2" name="cv" value="2">
+            <label for="cv_2">
+              <span class="option-icon">🎯</span>
+              <span class="option-text">
+                <span class="option-title">CV personalizado</span>
+                <span class="option-subtitle">Lo adapto a cada oferta importante</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      {# Pregunta 3: Estrategia de búsqueda #}
+      <div class="question-group" data-question="search">
+        <span class="question-label">3. ¿Cómo buscas empleo actualmente?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="search_0" name="search" value="0">
+            <label for="search_0">
+              <span class="option-icon">😴</span>
+              <span class="option-text">
+                <span class="option-title">Espero que me contacten</span>
+                <span class="option-subtitle">No busco activamente</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="search_1" name="search" value="1">
+            <label for="search_1">
+              <span class="option-icon">🔍</span>
+              <span class="option-text">
+                <span class="option-title">Portales de empleo</span>
+                <span class="option-subtitle">InfoJobs, LinkedIn, etc.</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="search_2" name="search" value="2">
+            <label for="search_2">
+              <span class="option-icon">🤝</span>
+              <span class="option-text">
+                <span class="option-title">Networking + Portales</span>
+                <span class="option-subtitle">Combino contactos y ofertas</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="search_3" name="search" value="3">
+            <label for="search_3">
+              <span class="option-icon">🎯</span>
+              <span class="option-text">
+                <span class="option-title">Estrategia multicanal</span>
+                <span class="option-subtitle">Marca personal + contacto directo + portales</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+    {% else %}
+      {# === PREGUNTAS EMPRENDIMIENTO === #}
+      
+      {# Pregunta 1: Presencia digital #}
+      <div class="question-group" data-question="presence">
+        <span class="question-label">1. ¿Cuál es tu presencia digital?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="presence_0" name="presence" value="0">
+            <label for="presence_0">
+              <span class="option-icon">❌</span>
+              <span class="option-text">
+                <span class="option-title">Sin presencia</span>
+                <span class="option-subtitle">No tengo web ni redes sociales</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="presence_1" name="presence" value="1">
+            <label for="presence_1">
+              <span class="option-icon">📱</span>
+              <span class="option-text">
+                <span class="option-title">Redes sociales básicas</span>
+                <span class="option-subtitle">Facebook/Instagram sin estrategia</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="presence_2" name="presence" value="2">
+            <label for="presence_2">
+              <span class="option-icon">🌐</span>
+              <span class="option-text">
+                <span class="option-title">Web + Redes</span>
+                <span class="option-subtitle">Página web y perfiles activos</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="presence_3" name="presence" value="3">
+            <label for="presence_3">
+              <span class="option-icon">🚀</span>
+              <span class="option-text">
+                <span class="option-title">Ecosistema digital completo</span>
+                <span class="option-subtitle">Web + SEO + Redes + Email Marketing</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      {# Pregunta 2: Automatización #}
+      <div class="question-group" data-question="automation">
+        <span class="question-label">2. ¿Qué nivel de automatización tienes?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="automation_0" name="automation" value="0">
+            <label for="automation_0">
+              <span class="option-icon">📝</span>
+              <span class="option-text">
+                <span class="option-title">Todo manual</span>
+                <span class="option-subtitle">Facturas, emails, todo a mano</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="automation_1" name="automation" value="1">
+            <label for="automation_1">
+              <span class="option-icon">📊</span>
+              <span class="option-text">
+                <span class="option-title">Excel/hojas de cálculo</span>
+                <span class="option-subtitle">Uso plantillas básicas</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="automation_2" name="automation" value="2">
+            <label for="automation_2">
+              <span class="option-icon">⚙️</span>
+              <span class="option-text">
+                <span class="option-title">Herramientas digitales</span>
+                <span class="option-subtitle">CRM, facturación online, etc.</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="automation_3" name="automation" value="3">
+            <label for="automation_3">
+              <span class="option-icon">🤖</span>
+              <span class="option-text">
+                <span class="option-title">Automatización avanzada</span>
+                <span class="option-subtitle">Workflows, integraciones, APIs</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      {# Pregunta 3: Adopción IA #}
+      <div class="question-group" data-question="ai_adoption">
+        <span class="question-label">3. ¿Usas inteligencia artificial en tu negocio?</span>
+        <div class="answer-options">
+          <div class="answer-option">
+            <input type="radio" id="ai_0" name="ai_adoption" value="0">
+            <label for="ai_0">
+              <span class="option-icon">🤷</span>
+              <span class="option-text">
+                <span class="option-title">No uso IA</span>
+                <span class="option-subtitle">No sé por dónde empezar</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="ai_1" name="ai_adoption" value="1">
+            <label for="ai_1">
+              <span class="option-icon">💬</span>
+              <span class="option-text">
+                <span class="option-title">ChatGPT ocasional</span>
+                <span class="option-subtitle">Para consultas puntuales</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="ai_2" name="ai_adoption" value="2">
+            <label for="ai_2">
+              <span class="option-icon">📝</span>
+              <span class="option-text">
+                <span class="option-title">IA para contenidos</span>
+                <span class="option-subtitle">Genero textos, imágenes, etc.</span>
+              </span>
+            </label>
+          </div>
+          <div class="answer-option">
+            <input type="radio" id="ai_3" name="ai_adoption" value="3">
+            <label for="ai_3">
+              <span class="option-icon">🧠</span>
+              <span class="option-text">
+                <span class="option-title">IA integrada en procesos</span>
+                <span class="option-subtitle">Agentes, automatizaciones, análisis</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      {# Pregunta 4 (implícita): Operaciones - simplificada #}
+      <input type="hidden" name="operations" value="1">
+      
+    {% endif %}
+    
+    <button type="submit" class="diagnostic-submit" style="display: none;">
+      {{ 'Ver mi diagnóstico'|t }}
+    </button>
+  </form>
+  
+  {# === PANTALLA DE CARGA === #}
+  <div class="diagnostic-loading">
+    <div class="loading-spinner"></div>
+    <p class="loading-message">{{ 'Analizando tu perfil...'|t }}</p>
+    <div class="progress-container">
+      <div class="progress-bar-bg">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+  
+  {# === PANTALLA DE RESULTADOS === #}
+  <div class="diagnostic-result">
+    <div class="result-score-circle">
+      <div class="score-inner">
+        <span class="result-score-value">0</span>
+        <span class="result-score-max">/10</span>
+      </div>
+    </div>
+    
+    <p class="result-profile-label"></p>
+    
+    <div class="result-card">
+      <span class="card-label">{{ 'Tu brecha principal'|t }}</span>
+      <span class="card-value result-primary-gap"></span>
+    </div>
+    
+    {% if vertical == 'emprendimiento' %}
+      <div class="result-economic-impact"></div>
+    {% else %}
+      <div class="result-impact-data"></div>
+    {% endif %}
+    
+    <div class="result-card">
+      <span class="card-label">{{ 'Tu próximo paso'|t }}</span>
+      <span class="card-value result-suggested-action"></span>
+    </div>
+    
+    {% if show_cta %}
+      <div class="result-cta">
+        <a href="{{ cta_url|default('/register') }}" class="cta-button">
+          {{ cta_text|default('Empieza tu transformación gratis') }}
+        </a>
+        <span class="cta-subtitle">{{ 'Sin compromiso · Resultados en 7 días'|t }}</span>
+      </div>
+    {% endif %}
+  </div>
+  
+</div>

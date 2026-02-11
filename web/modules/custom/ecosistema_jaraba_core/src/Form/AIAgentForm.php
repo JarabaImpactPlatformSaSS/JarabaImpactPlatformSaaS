@@ -84,6 +84,45 @@ class AIAgentForm extends EntityForm
             '#description' => $this->t('Si está deshabilitado, no aparece como opción en las verticales.'),
         ];
 
+        // =====================================================================
+        // AUTONOMY SETTINGS (Q1 2027)
+        // =====================================================================
+
+        $form['autonomy'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Configuración de Autonomía'),
+            '#open' => TRUE,
+        ];
+
+        $form['autonomy']['autonomy_level'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Nivel de Autonomía'),
+            '#options' => [
+                0 => $this->t('0 - Suggest (Solo sugiere)'),
+                1 => $this->t('1 - Confirm (Requiere aprobación)'),
+                2 => $this->t('2 - Auto (Ejecuta y notifica)'),
+                3 => $this->t('3 - Silent (Ejecuta sin notificar)'),
+            ],
+            '#default_value' => $agent->getAutonomyLevel(),
+            '#description' => $this->t('Nivel de autonomía del agente para ejecutar acciones.'),
+        ];
+
+        $form['autonomy']['requires_approval'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Requiere Aprobación'),
+            '#default_value' => $agent->requiresApproval(),
+            '#description' => $this->t('Si está marcado, las acciones del agente requieren aprobación del admin.'),
+        ];
+
+        $form['autonomy']['max_daily_auto_actions'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Máximo de Acciones Automáticas/Día'),
+            '#default_value' => $agent->getMaxDailyAutoActions(),
+            '#min' => 0,
+            '#max' => 1000,
+            '#description' => $this->t('Límite de acciones automáticas por día (0 = sin límite).'),
+        ];
+
         return $form;
     }
 

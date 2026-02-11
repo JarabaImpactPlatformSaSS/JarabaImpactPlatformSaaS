@@ -1,0 +1,37 @@
+# Schema for Vertical seed configuration.
+# Note: Vertical is a ContentEntityType, but these configs provide seed data
+# installed with the module. Drupal's ConfigSchemaChecker validates all config.
+ecosistema_jaraba_core.vertical.*:
+  type: config_object
+  label: 'Vertical seed data'
+  mapping:
+    langcode:
+      type: string
+      label: 'Language code'
+    status:
+      type: boolean
+      label: 'Status'
+    name:
+      type: string
+      label: 'Vertical name'
+    machine_name:
+      type: string
+      label: 'Machine name'
+    description:
+      type: text
+      label: 'Description'
+    enabled_features:
+      type: sequence
+      label: 'Enabled features'
+      sequence:
+        type: string
+        label: 'Feature machine name'
+    ai_agents:
+      type: sequence
+      label: 'AI agent IDs'
+      sequence:
+        type: string
+        label: 'Agent machine name'
+    theme_settings:
+      type: string
+      label: 'Theme settings (JSON serialized)'

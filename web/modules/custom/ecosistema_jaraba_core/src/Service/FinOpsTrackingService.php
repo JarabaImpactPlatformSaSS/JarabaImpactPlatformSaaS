@@ -19,6 +19,16 @@ use Psr\Log\LoggerInterface;
  */
 class FinOpsTrackingService
 {
+    /**
+     * Constantes de tipos de métrica soportadas.
+     */
+    public const METRIC_API_REQUEST = 'api_request';
+    public const METRIC_STORAGE = 'storage_update';
+    public const METRIC_WEBHOOK = 'webhook';
+    public const METRIC_RAG_QUERY = 'rag_query';
+    public const METRIC_AI_TOKENS = 'ai_tokens';
+    public const METRIC_FEATURE_USE = 'feature_use';
+
 
     /**
      * Conexión a la base de datos.
@@ -287,6 +297,200 @@ class FinOpsTrackingService
         } catch (\Exception $e) {
             return FALSE;
         }
+    }
+
+    /**
+     * Registra un evento de uso de una Feature específica.
+     *
+     * PROPÓSITO:
+     * Permite tracking granular por feature para calcular costes
+     * basados en `unit_cost` de cada Feature.
+     *
+     * @param string $tenant_id
+     *   ID del tenant que usa la feature.
+     * @param string $feature_id
+     *   ID de la feature usada (ej: 'api_access', 'webhooks').
+     * @param float $units
+     *   Unidades consumidas (por defecto 1.0).
+     * @param array $metadata
+     *   Datos adicionales del evento.
+     */
+    public function trackFeatureUsage(string $tenant_id, string $feature_id, float $units = 1.0, array $metadata = []): void
+    {
+        if (empty($tenant_id) || empty($feature_id)) {
+            return;
+        }
+
+        try {
+            if (!$this->tableExists()) {
+                return;
+            }
+
+            $metadata['feature_id'] = $feature_id;
+
+            $this->database->insert('finops_usage_log')
+                ->fields([
+                    'timestamp' => time(),
+                    'tenant_id' => $tenant_id,
+                    'metric_type' => self::METRIC_FEATURE_USE,
+                    'value' => $units,
+                    'metadata' => json_encode($metadata),
+                ])
+                ->execute();
+
+        } catch (\Exception $e) {
+            // Silent fail - no bloquear por tracking
+        }
+    }
+
+    /**
+     * Registra uso de webhook para un tenant.
+     *
+     * @param string $tenant_id
+     *   ID del tenant.
+     * @param string $webhook_url
+     *   URL del webhook enviado.
+     */
+    public function trackWebhook(string $tenant_id, string $webhook_url = ''): void
+    {
+        if (empty($tenant_id)) {
+            return;
+        }
+
+        try {
+            if (!$this->tableExists()) {
+                return;
+            }
+
+            $this->database->insert('finops_usage_log')
+                ->fields([
+                    'timestamp' => time(),
+                    'tenant_id' => $tenant_id,
+                    'metric_type' => self::METRIC_WEBHOOK,
+                    'value' => 1,
+                    'metadata' => json_encode(['url' => $webhook_url]),
+                ])
+                ->execute();
+
+        } catch (\Exception $e) {
+            // Silent fail
+        }
+    }
+
+    /**
+     * Registra uso de query RAG/AI para un tenant.
+     *
+     * @param string $tenant_id
+     *   ID del tenant.
+     * @param int $tokens_used
+     *   Tokens consumidos (si aplica).
+     */
+    public function trackRagQuery(string $tenant_id, int $tokens_used = 0): void
+    {
+        if (empty($tenant_id)) {
+            return;
+        }
+
+        try {
+            if (!$this->tableExists()) {
+                return;
+            }
+
+            $this->database->insert('finops_usage_log')
+                ->fields([
+                    'timestamp' => time(),
+                    'tenant_id' => $tenant_id,
+                    'metric_type' => self::METRIC_RAG_QUERY,
+                    'value' => 1,
+                    'metadata' => json_encode(['tokens' => $tokens_used]),
+                ])
+                ->execute();
+
+        } catch (\Exception $e) {
+            // Silent fail
+        }
+    }
+
+    /**
+     * Calcula el coste de uso para un tenant basado en Feature unit_cost.
+     *
+     * LÓGICA:
+     * 1. Obtiene el uso acumulado por tipo de métrica
+     * 2. Mapea cada métrica a su Feature correspondiente
+     * 3. Multiplica uso × unit_cost de la Feature
+     *
+     * @param string $tenant_id
+     *   ID del tenant.
+     * @param int $since_timestamp
+     *   Timestamp desde cuándo calcular (0 = mes actual).
+     *
+     * @return array
+     *   Array con desglose de costes por feature.
+     */
+    public function calculateUsageCosts(string $tenant_id, int $since_timestamp = 0): array
+    {
+        if ($since_timestamp === 0) {
+            // Por defecto: inicio del mes actual
+            $since_timestamp = strtotime('first day of this month midnight');
+        }
+
+        $costs = [];
+        $total = 0.0;
+
+        // Mapeo de metric_type a feature_id
+        $metric_to_feature = [
+            self::METRIC_API_REQUEST => 'api_access',
+            self::METRIC_WEBHOOK => 'webhooks',
+            self::METRIC_RAG_QUERY => 'rag_ai',
+        ];
+
+        try {
+            $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
+
+            foreach ($metric_to_feature as $metric_type => $feature_id) {
+                // Obtener uso acumulado
+                $query = $this->database->select('finops_usage_log', 'f')
+                    ->condition('tenant_id', $tenant_id)
+                    ->condition('metric_type', $metric_type)
+                    ->condition('timestamp', $since_timestamp, '>=');
+                $query->addExpression('SUM(value)', 'total');
+                $units = (float) ($query->execute()->fetchField() ?: 0);
+
+                if ($units <= 0) {
+                    continue;
+                }
+
+                /** @var \Drupal\ecosistema_jaraba_core\Entity\FeatureInterface $feature */
+                $feature = $feature_storage->load($feature_id);
+                if (!$feature) {
+                    continue;
+                }
+
+                $unit_cost = $feature->getUnitCost();
+                $cost = $units * $unit_cost;
+
+                $costs[$metric_type] = [
+                    'units' => $units,
+                    'unit_cost' => $unit_cost,
+                    'total_cost' => round($cost, 4),
+                    'feature_id' => $feature_id,
+                    'feature_label' => $feature->label(),
+                ];
+
+                $total += $cost;
+            }
+
+        } catch (\Exception $e) {
+            $this->logger->warning('Error calculando costes de uso: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        return [
+            'breakdown' => $costs,
+            'total_usage_cost' => round($total, 2),
+            'period_start' => $since_timestamp,
+        ];
     }
 
 }

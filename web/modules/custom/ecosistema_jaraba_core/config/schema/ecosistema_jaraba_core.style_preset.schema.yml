@@ -1,0 +1,62 @@
+# Schema for StylePreset config entity.
+# Almacena plantillas de diseño (presets) para sectores industriales
+# específicos. Cada preset contiene tokens, variantes, animaciones y
+# directrices de contenido (f-101/f-102).
+ecosistema_jaraba_core.style_preset.*:
+  type: config_entity
+  label: 'Style Preset'
+  mapping:
+    id:
+      type: string
+      label: 'ID (machine name: agro_gourmet, servicios_legal, etc.)'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Descripción del preset'
+    vertical:
+      type: string
+      label: 'Vertical (agroconecta, comercioconecta, serviciosconecta)'
+    sector:
+      type: string
+      label: 'Sector de negocio (gourmet, legal, tech, barrio...)'
+    mood:
+      type: string
+      label: 'Mood tags (JSON array: ["luxury", "craft"])'
+    target_audience:
+      type: text
+      label: 'Público objetivo'
+    color_tokens:
+      type: string
+      label: 'Color tokens (JSON: {primary, secondary, accent, ...})'
+    typography_tokens:
+      type: string
+      label: 'Typography tokens (JSON: {family-heading, family-body, ...})'
+    spacing_tokens:
+      type: string
+      label: 'Spacing tokens (JSON: {radius-md, shadow-md, ...})'
+    effect_tokens:
+      type: string
+      label: 'Effect tokens (JSON: {glass-bg, gradient-primary, ...})'
+    component_variants:
+      type: string
+      label: 'Component variants (JSON: {header, hero, cards, footer})'
+    animation_config:
+      type: string
+      label: 'Animation config (JSON: {type, speed, ...})'
+    content_guidelines:
+      type: string
+      label: 'Content guidelines (JSON: {photography, copywriting, ...})'
+    font_imports:
+      type: string
+      label: 'Google Fonts import URLs (JSON array)'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

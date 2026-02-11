@@ -1,0 +1,383 @@
+// =============================================================================
+// Pixel Manager Dashboard Styles
+// =============================================================================
+// Estilos para la configuración de pixels de marketing (Meta CAPI, Google MP)
+// Ref: Doc Técnico #178 - Native Tracking System
+// =============================================================================
+// 
+// Usa variables SCSS como fallback para variables CSS inyectables.
+// Patrón: var(--ej-variable, #{$scss-fallback})
+// =============================================================================
+
+@use 'variables' as *;
+
+// =============================================================================
+// Layout Principal
+// =============================================================================
+
+.pixel-settings-dashboard {
+    width: 100%;
+}
+
+// -----------------------------------------------------------------------------
+// Header
+// -----------------------------------------------------------------------------
+
+.pixel-settings__header {
+    margin-bottom: var(--ej-spacing-xl, #{$ej-spacing-xl});
+}
+
+.pixel-settings__title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, #{$ej-spacing-md});
+}
+
+.pixel-settings__icon {
+    flex-shrink: 0;
+    color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+}
+
+.pixel-settings__title {
+    font-family: var(--ej-font-headings, #{$font-primary});
+    font-size: $ej-font-size-3xl;
+    font-weight: $ej-font-weight-bold;
+    color: var(--ej-text-primary, #{$text-primary});
+    margin: 0;
+}
+
+.pixel-settings__subtitle {
+    font-size: $ej-font-size-md;
+    color: var(--ej-text-muted, #{$text-muted});
+    margin: $ej-spacing-xs 0 0 0;
+}
+
+.pixel-settings__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+    font-size: $ej-font-size-lg;
+    font-weight: $ej-font-weight-semibold;
+    color: var(--ej-text-primary, #{$text-primary});
+    margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+
+    svg {
+        color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+    }
+}
+
+// =============================================================================
+// Stats Grid
+// =============================================================================
+
+.pixel-settings__stats {
+    margin-bottom: var(--ej-spacing-xl, #{$ej-spacing-xl});
+}
+
+.pixel-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--ej-spacing-md, #{$ej-spacing-md});
+}
+
+.pixel-stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    background: var(--ej-bg-card, #{$white});
+    border-radius: var(--ej-radius-lg, #{$ej-border-radius-lg});
+    border: $ej-border-width solid var(--ej-border-color, #{$border-color});
+    text-align: center;
+
+    svg {
+        margin-bottom: var(--ej-spacing-xs, #{$ej-spacing-xs});
+    }
+
+    &--success svg {
+        color: var(--ej-color-success, #{$ej-color-success-fallback});
+    }
+
+    &--error svg {
+        color: var(--ej-color-danger, #{$ej-color-error-fallback});
+    }
+
+    &--skipped svg {
+        color: var(--ej-color-neutral, #{$text-secondary});
+    }
+}
+
+.pixel-stat-card__value {
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+    color: var(--ej-text-primary, #{$text-primary});
+}
+
+.pixel-stat-card__label {
+    font-size: $ej-font-size-xs;
+    color: var(--ej-text-muted, #{$text-muted});
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// =============================================================================
+// Platforms Grid
+// =============================================================================
+
+.pixel-platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--ej-spacing-lg, #{$ej-spacing-lg});
+}
+
+.pixel-platform-card {
+    position: relative;
+    padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 250, 252, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--ej-radius-xl, 16px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition:
+        transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+    overflow: hidden;
+
+    // Efecto de brillo premium en hover
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent);
+        transition: left 0.6s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow:
+            0 20px 40px rgba(35, 61, 99, 0.12),
+            0 8px 16px rgba(35, 61, 99, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+        border-color: rgba(35, 61, 99, 0.15);
+
+        &::before {
+            left: 150%;
+        }
+
+        .pixel-platform-card__logo {
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        .pixel-platform-card__logo svg {
+            animation: pulse-icon 0.5s ease;
+        }
+    }
+
+    &--coming-soon {
+        opacity: 0.65;
+        filter: grayscale(30%);
+
+        &:hover {
+            transform: translateY(-2px);
+            filter: grayscale(20%);
+        }
+    }
+
+    &--configured {
+        border-color: rgba($ej-color-success, 0.4);
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.98) 0%,
+                rgba(236, 253, 245, 0.9) 100%);
+
+        // Indicador visual de activo
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                var(--ej-color-success, #{$ej-color-success-fallback}),
+                rgba($ej-color-success, 0.6));
+            border-radius: 0 0 16px 16px;
+        }
+    }
+}
+
+// Animación de pulso para iconos
+@keyframes pulse-icon {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.pixel-platform-card__status {
+    position: absolute;
+    top: var(--ej-spacing-md, #{$ej-spacing-md});
+    right: var(--ej-spacing-md, #{$ej-spacing-md});
+}
+
+.pixel-platform-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-spacing-md, #{$ej-spacing-md});
+    margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+}
+
+.pixel-platform-card__logo {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ej-radius-lg, 12px);
+    flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    svg {
+        width: 28px;
+        height: 28px;
+        transition: transform 0.3s ease;
+    }
+
+    &--meta {
+        background: linear-gradient(135deg, #0078FF 0%, #00C6FF 100%);
+        color: $white;
+        box-shadow: 0 4px 16px rgba(0, 120, 255, 0.35);
+    }
+
+    &--google {
+        background: $white;
+        border: $ej-border-width solid var(--ej-border-color, #{$border-color});
+        color: #4285F4;
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+    }
+
+    &--linkedin {
+        background: linear-gradient(135deg, #0A66C2 0%, #0077B5 100%);
+        color: $white;
+        box-shadow: 0 4px 16px rgba(10, 102, 194, 0.35);
+    }
+
+    &--tiktok {
+        background: linear-gradient(135deg, #000000 0%, #25232F 100%);
+        color: $white;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+}
+
+.pixel-platform-card__name {
+    font-size: $ej-font-size-md;
+    font-weight: $ej-font-weight-semibold;
+    color: var(--ej-text-primary, #{$text-primary});
+    margin: 0 0 $ej-spacing-xs 0;
+}
+
+.pixel-platform-card__description {
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted, #{$text-muted});
+    margin: 0;
+    line-height: $ej-line-height-base;
+}
+
+.pixel-platform-card__stats {
+    display: flex;
+    gap: var(--ej-spacing-md, #{$ej-spacing-md});
+    margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+    padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) 0;
+    border-top: $ej-border-width solid var(--ej-border-color, #{$border-color});
+}
+
+.pixel-platform-card__stat {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, #{$ej-spacing-xs});
+    font-size: $ej-font-size-xs;
+    color: var(--ej-color-success, #{$ej-color-success-fallback});
+
+    &--error {
+        color: var(--ej-color-danger, #{$ej-color-error-fallback});
+    }
+}
+
+.pixel-platform-card__actions {
+    display: flex;
+    gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+    margin-top: auto;
+    padding-top: var(--ej-spacing-md, #{$ej-spacing-md});
+}
+
+// =============================================================================
+// Badges
+// =============================================================================
+
+.pixel-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--ej-radius-sm, #{$ej-border-radius-sm});
+
+    &--active {
+        background: rgba($ej-color-success, 0.1);
+        color: var(--ej-color-success, #{$ej-color-success-fallback});
+    }
+
+    &--disabled {
+        background: rgba($ej-gray-500, 0.1);
+        color: var(--ej-color-neutral, #{$text-secondary});
+    }
+
+    &--error {
+        background: rgba($ej-color-error, 0.1);
+        color: var(--ej-color-danger, #{$ej-color-error-fallback});
+    }
+
+    &--soon {
+        background: rgba($ej-color-info, 0.1);
+        color: var(--ej-color-primary, #{$ej-color-info});
+    }
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
+
+@media (max-width: $ej-breakpoint-md) {
+    .pixel-settings__title {
+        font-size: $ej-font-size-2xl;
+    }
+
+    .pixel-platforms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pixel-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

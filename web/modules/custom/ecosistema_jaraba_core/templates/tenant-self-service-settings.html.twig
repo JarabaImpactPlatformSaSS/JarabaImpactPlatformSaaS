@@ -1,0 +1,200 @@
+{#
+/**
+ * @file
+ * Template para la página de Configuración Self-Service del Tenant.
+ *
+ * Muestra las secciones de configuración disponibles para el tenant,
+ * algunas marcadas como "próximamente" para Sprint 3-4.
+ *
+ * Variables:
+ * - tenant: Entidad del tenant actual
+ * - settings_sections: Array de secciones con 'title', 'description', 'status'
+ */
+#}
+
+<div class="tenant-settings">
+  
+  <header class="tenant-settings__header">
+    <div class="tenant-settings__greeting">
+      <h1 class="tenant-settings__title">{{ 'Configuración'|t }}</h1>
+      <p class="tenant-settings__subtitle">{{ 'Gestiona la configuración de '|t }}{{ tenant.label }}</p>
+    </div>
+    <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.dashboard') }}" class="tenant-btn tenant-btn--secondary">
+      ← {{ 'Volver al Dashboard'|t }}
+    </a>
+  </header>
+
+  <div class="tenant-settings__grid">
+    {% for key, section in settings_sections %}
+    <div class="tenant-settings-card tenant-settings-card--{{ section.status }}">
+      <div class="tenant-settings-card__header">
+        {% if section.icon %}
+        <span class="tenant-settings-card__icon">{{ section.icon }}</span>
+        {% endif %}
+        <h3 class="tenant-settings-card__title">{{ section.title }}</h3>
+        {% if section.status == 'coming_soon' %}
+        <span class="tenant-badge tenant-badge--coming-soon">{{ 'Próximamente'|t }}</span>
+        {% endif %}
+      </div>
+      <p class="tenant-settings-card__description">{{ section.description }}</p>
+      
+      {% if section.status == 'coming_soon' %}
+      <button class="tenant-btn tenant-btn--disabled" disabled>
+        {{ 'Próximamente'|t }}
+      </button>
+      {% elseif section.link %}
+      <a href="{{ section.link }}" class="tenant-btn tenant-btn--primary">
+        {{ 'Configurar'|t }}
+      </a>
+      {% else %}
+      <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.' ~ key) }}" class="tenant-btn tenant-btn--primary">
+        {{ 'Configurar'|t }}
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<style>
+.tenant-settings {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: var(--ej-font-family, 'Inter', sans-serif);
+}
+
+.tenant-settings__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tenant-settings__title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tenant-settings__subtitle {
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+.tenant-settings__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.tenant-settings-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.tenant-settings-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tenant-settings-card--coming_soon {
+  opacity: 0.7;
+  background: #f8fafc;
+}
+
+.tenant-settings-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.tenant-settings-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.tenant-settings-card__description {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.tenant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tenant-btn--primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.tenant-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.tenant-btn--secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.tenant-btn--secondary:hover {
+  background: #e2e8f0;
+}
+
+.tenant-btn--disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.tenant-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tenant-badge--coming-soon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+@media (max-width: 640px) {
+  .tenant-settings {
+    padding: 1rem;
+  }
+  
+  .tenant-settings__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+</style>

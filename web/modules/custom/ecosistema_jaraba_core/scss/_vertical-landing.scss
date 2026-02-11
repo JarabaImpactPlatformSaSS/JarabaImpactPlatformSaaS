@@ -1,0 +1,284 @@
+// =============================================================================
+// VERTICAL LANDING PAGES - Estilos para landing pages públicas de verticales
+// =============================================================================
+// Rutas: /empleo, /talento, /emprender, /comercio, /instituciones
+// Autor: Jaraba Impact Platform
+// =============================================================================
+
+@use 'variables' as *;
+
+// -----------------------------------------------------------------------------
+// CONTENEDOR PRINCIPAL - FULL WIDTH
+// -----------------------------------------------------------------------------
+.vertical-landing {
+    // Forzar full-width sobrescribiendo restricciones del layout Drupal
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    overflow-x: hidden;
+}
+
+.vertical-landing__hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,
+            var(--ej-color-corporate, #233D63) 0%,
+            var(--vertical-color, var(--ej-color-impulse, #FF8C42)) 100%);
+    color: #fff;
+    text-align: center;
+    padding: 4rem 2rem;
+
+    @media (max-width: 768px) {
+        min-height: 60vh;
+        padding: 3rem 1.5rem;
+    }
+}
+
+.vertical-landing__hero-content {
+    max-width: 800px;
+    animation: fadeInUp 0.8s ease;
+}
+
+.vertical-landing__icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+
+    // SVG icons sizing
+    svg {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+.vertical-landing__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+    line-height: 1.2;
+}
+
+.vertical-landing__subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin: 0 0 2rem;
+    max-width: 600px;
+    margin-inline: auto;
+    line-height: 1.6;
+
+    @media (max-width: 768px) {
+        font-size: 1.1rem;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// CTA BUTTONS
+// -----------------------------------------------------------------------------
+.vertical-landing__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vertical-landing__cta-primary,
+.vertical-landing__cta-secondary {
+    padding: 0.875rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.vertical-landing__cta-primary {
+    background: #fff;
+    color: var(--ej-color-corporate, #233D63);
+}
+
+.vertical-landing__cta-secondary {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+
+    &:hover {
+        border-color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// BENEFITS SECTION
+// -----------------------------------------------------------------------------
+.vertical-landing__benefits {
+    padding: 5rem 2rem;
+    background: var(--ej-bg-body, #f8fafc);
+
+    @media (max-width: 768px) {
+        padding: 3rem 1.5rem;
+    }
+}
+
+.vertical-landing__benefits-header {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    h2 {
+        font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        color: var(--ej-text-primary, #1e293b);
+        margin: 0 0 0.5rem;
+    }
+
+    p {
+        color: var(--ej-text-muted, #64748B);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+.vertical-landing__benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// BENEFIT CARD
+// -----------------------------------------------------------------------------
+.vertical-benefit {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        padding: 1.5rem;
+    }
+}
+
+.vertical-benefit__icon {
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    width: 64px;
+    height: 64px;
+    margin-inline: auto;
+    background: var(--vertical-color-light, rgba(255, 140, 66, 0.1));
+    border-radius: 16px;
+
+    svg {
+        width: 32px;
+        height: 32px;
+        color: var(--vertical-color, var(--ej-color-impulse, #FF8C42));
+    }
+}
+
+.vertical-benefit__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem;
+}
+
+.vertical-benefit__description {
+    color: var(--ej-text-muted, #64748B);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+// -----------------------------------------------------------------------------
+// BOTTOM CTA SECTION
+// -----------------------------------------------------------------------------
+.vertical-landing__bottom-cta {
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg,
+            var(--ej-color-impulse, #FF8C42),
+            var(--ej-color-warning, #e67e22));
+    text-align: center;
+    color: #fff;
+
+    h2 {
+        font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        margin: 0 0 1.5rem;
+        color: #fff;
+    }
+
+    .vertical-landing__cta-primary {
+        background: #fff;
+        color: var(--ej-color-impulse, #FF8C42);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+        &:hover {
+            background: #f8fafc;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// VERTICAL MODIFIERS
+// -----------------------------------------------------------------------------
+.vertical-landing--empleo,
+.vertical-landing--talento {
+    --vertical-color: var(--ej-color-innovation, #00A9A5);
+    --vertical-color-light: rgba(0, 169, 165, 0.1);
+}
+
+.vertical-landing--emprender {
+    --vertical-color: var(--ej-color-impulse, #FF8C42);
+    --vertical-color-light: rgba(255, 140, 66, 0.1);
+}
+
+.vertical-landing--comercio {
+    --vertical-color: var(--ej-color-success, #10B981);
+    --vertical-color-light: rgba(16, 185, 129, 0.1);
+}
+
+.vertical-landing--instituciones {
+    --vertical-color: var(--ej-color-corporate, #233D63);
+    --vertical-color-light: rgba(35, 61, 99, 0.1);
+}
+
+// -----------------------------------------------------------------------------
+// ANIMATION
+// -----------------------------------------------------------------------------
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

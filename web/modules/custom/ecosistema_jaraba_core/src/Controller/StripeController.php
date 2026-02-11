@@ -86,22 +86,46 @@ class StripeController extends ControllerBase
             ], 403);
         }
 
-        // Parsear datos de la petición
-        $data = json_decode($request->getContent(), TRUE);
+        // BE-11: Parsear y validar datos de la petición.
+        $rawContent = $request->getContent();
+        $data = json_decode($rawContent, TRUE);
 
-        if (empty($data['payment_method_id']) || empty($data['plan_id'])) {
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => 'Datos de pago incompletos.',
+                'error' => 'JSON inválido en la petición.',
             ], 400);
         }
 
-        // Obtener configuración de Stripe
-        $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
-        $secretKey = $stripeConfig->get('secret_key');
+        // Validar campos requeridos y tipos.
+        if (empty($data['payment_method_id']) || !is_string($data['payment_method_id'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'payment_method_id es requerido y debe ser texto.',
+            ], 400);
+        }
+
+        if (empty($data['plan_id']) || !is_scalar($data['plan_id'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'plan_id es requerido.',
+            ], 400);
+        }
+
+        // Validar formato de payment_method_id (Stripe usa prefijo pm_).
+        if (!preg_match('/^pm_[a-zA-Z0-9]+$/', $data['payment_method_id'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Formato de payment_method_id inválido.',
+            ], 400);
+        }
+
+        // SEC-03: Obtener clave Stripe priorizando variables de entorno.
+        $secretKey = getenv('STRIPE_SECRET_KEY')
+            ?: $this->config('ecosistema_jaraba_core.stripe')->get('secret_key');
 
         if (!$secretKey) {
-            $this->logger->error('🚫 Stripe: Clave secreta no configurada');
+            $this->logger->error('Stripe: Clave secreta no configurada. Definir STRIPE_SECRET_KEY como variable de entorno.');
             return new JsonResponse([
                 'success' => FALSE,
                 'error' => 'Error de configuración de pagos.',
@@ -285,8 +309,10 @@ class StripeController extends ControllerBase
         }
 
         try {
-            $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
-            \Stripe\Stripe::setApiKey($stripeConfig->get('secret_key'));
+            // SEC-03: Priorizar variables de entorno para claves API.
+            $secretKey = getenv('STRIPE_SECRET_KEY')
+                ?: $this->config('ecosistema_jaraba_core.stripe')->get('secret_key');
+            \Stripe\Stripe::setApiKey($secretKey);
 
             // Verificar estado de la suscripción
             $subscription = \Stripe\Subscription::retrieve($data['subscription_id']);
@@ -354,8 +380,10 @@ class StripeController extends ControllerBase
         }
 
         try {
-            $stripeConfig = $this->config('ecosistema_jaraba_core.stripe');
-            \Stripe\Stripe::setApiKey($stripeConfig->get('secret_key'));
+            // SEC-03: Priorizar variables de entorno para claves API.
+            $secretKey = getenv('STRIPE_SECRET_KEY')
+                ?: $this->config('ecosistema_jaraba_core.stripe')->get('secret_key');
+            \Stripe\Stripe::setApiKey($secretKey);
 
             $returnUrl = $request->getSchemeAndHttpHost() . '/admin/config/subscription';
 
@@ -549,8 +577,13 @@ class StripeController extends ControllerBase
                 ];
             }
         } catch (\Exception $e) {
+            // SEC-07: Nunca exponer mensajes internos de excepción al usuario.
+            $this->logger->error(
+                'Error verificando estado Stripe Connect: @error',
+                ['@error' => $e->getMessage()]
+            );
             return [
-                '#markup' => '<p>Error al verificar el estado de tu cuenta: ' . $e->getMessage() . '</p>',
+                '#markup' => '<p>Error al verificar el estado de tu cuenta. Por favor, inténtalo más tarde o contacta con soporte.</p>',
             ];
         }
     }

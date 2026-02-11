@@ -1,0 +1,273 @@
+# BE-15: Config schema for module settings.
+# Defines structure and types for all configuration objects.
+
+ecosistema_jaraba_core.rate_limits:
+  type: config_object
+  label: 'Rate limiting configuration'
+  mapping:
+    api:
+      type: mapping
+      label: 'API rate limits'
+      mapping:
+        requests:
+          type: integer
+          label: 'Max requests per window'
+        window:
+          type: integer
+          label: 'Window size in seconds'
+    api_authenticated:
+      type: mapping
+      label: 'Authenticated API rate limits'
+      mapping:
+        requests:
+          type: integer
+          label: 'Max requests per window'
+        window:
+          type: integer
+          label: 'Window size in seconds'
+    ai:
+      type: mapping
+      label: 'AI endpoint rate limits'
+      mapping:
+        requests:
+          type: integer
+          label: 'Max requests per window'
+        window:
+          type: integer
+          label: 'Window size in seconds'
+    search:
+      type: mapping
+      label: 'Search endpoint rate limits'
+      mapping:
+        requests:
+          type: integer
+          label: 'Max requests per window'
+        window:
+          type: integer
+          label: 'Window size in seconds'
+
+ecosistema_jaraba_core.security_headers:
+  type: config_object
+  label: 'Security headers configuration'
+  mapping:
+    csp_enabled:
+      type: boolean
+      label: 'Enable Content Security Policy'
+    csp_report_only:
+      type: boolean
+      label: 'CSP report-only mode'
+    hsts_enabled:
+      type: boolean
+      label: 'Enable HSTS'
+    hsts_max_age:
+      type: integer
+      label: 'HSTS max-age in seconds'
+    cors_allowed_origins:
+      type: sequence
+      label: 'CORS allowed origins'
+      sequence:
+        type: string
+        label: 'Origin URL'
+
+ecosistema_jaraba_core.stripe:
+  type: config_object
+  label: 'Stripe Connect configuration'
+  mapping:
+    langcode:
+      type: string
+      label: 'Language code'
+    status:
+      type: boolean
+      label: 'Status'
+    dependencies:
+      type: config_dependencies
+      label: 'Dependencies'
+    public_key:
+      type: string
+      label: 'Stripe public key'
+    secret_key:
+      type: string
+      label: 'Stripe secret key'
+    webhook_secret:
+      type: string
+      label: 'Webhook signing secret'
+    mode:
+      type: string
+      label: 'Stripe mode (test/live)'
+    platform_fee_percent:
+      type: float
+      label: 'Platform fee percentage'
+    product_id:
+      type: string
+      label: 'Stripe product ID'
+    checkout:
+      type: mapping
+      label: 'Checkout URLs'
+      mapping:
+        success_url:
+          type: string
+          label: 'Success redirect URL'
+        cancel_url:
+          type: string
+          label: 'Cancel redirect URL'
+    portal:
+      type: mapping
+      label: 'Customer portal configuration'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Portal enabled'
+        allow_cancellation:
+          type: boolean
+          label: 'Allow cancellation'
+        allow_plan_change:
+          type: boolean
+          label: 'Allow plan change'
+    trial:
+      type: mapping
+      label: 'Trial configuration'
+      mapping:
+        days:
+          type: integer
+          label: 'Trial days'
+        require_payment_method:
+          type: boolean
+          label: 'Require payment method for trial'
+    currency:
+      type: string
+      label: 'Default currency'
+
+ecosistema_jaraba_core.alerting:
+  type: config_object
+  label: 'Alerting configuration'
+  mapping:
+    slack_webhook_url:
+      type: string
+      label: 'Slack webhook URL'
+    teams_webhook_url:
+      type: string
+      label: 'Teams webhook URL'
+    enabled:
+      type: boolean
+      label: 'Alerting enabled'
+
+ecosistema_jaraba_core.finops:
+  type: config_object
+  label: 'FinOps configuration'
+  mapping:
+    ai_cost_warning_threshold:
+      type: float
+      label: 'AI cost warning threshold (EUR/day)'
+    ai_cost_critical_threshold:
+      type: float
+      label: 'AI cost critical threshold (EUR/day)'
+    admin_email:
+      type: email
+      label: 'Admin email for cost alerts'
+    price_storage_mb:
+      type: float
+      label: 'Price per MB of storage (EUR)'
+    price_api_request:
+      type: float
+      label: 'Price per API request (EUR)'
+    price_cpu_hour:
+      type: float
+      label: 'Price per CPU hour (EUR)'
+    monthly_budget:
+      type: integer
+      label: 'Monthly budget (EUR)'
+    warning_threshold:
+      type: integer
+      label: 'Budget warning threshold (%)'
+    critical_threshold:
+      type: integer
+      label: 'Budget critical threshold (%)'
+    tier_limits:
+      type: mapping
+      label: 'Cost limits per plan tier'
+      mapping:
+        basic:
+          type: mapping
+          label: 'Basic tier limits'
+          mapping:
+            warning:
+              type: integer
+              label: 'Warning threshold (EUR)'
+            critical:
+              type: integer
+              label: 'Critical threshold (EUR)'
+        professional:
+          type: mapping
+          label: 'Professional tier limits'
+          mapping:
+            warning:
+              type: integer
+              label: 'Warning threshold (EUR)'
+            critical:
+              type: integer
+              label: 'Critical threshold (EUR)'
+        enterprise:
+          type: mapping
+          label: 'Enterprise tier limits'
+          mapping:
+            warning:
+              type: integer
+              label: 'Warning threshold (EUR)'
+            critical:
+              type: integer
+              label: 'Critical threshold (EUR)'
+
+ecosistema_jaraba_core.firma_settings:
+  type: config_object
+  label: 'Digital signature configuration'
+  mapping:
+    certificate_path:
+      type: string
+      label: 'Path to PKCS#12 certificate file'
+    certificate_password:
+      type: string
+      label: 'Certificate password'
+    tsa_url:
+      type: uri
+      label: 'TSA server URL'
+    signature_visible:
+      type: boolean
+      label: 'Show visible signature on PDF'
+    signature_position:
+      type: mapping
+      label: 'Signature position on PDF'
+      mapping:
+        x:
+          type: integer
+          label: 'X position (mm)'
+        y:
+          type: integer
+          label: 'Y position (mm)'
+        width:
+          type: integer
+          label: 'Width (mm)'
+        height:
+          type: integer
+          label: 'Height (mm)'
+    default_signer_info:
+      type: mapping
+      label: 'Default signer information'
+      mapping:
+        name:
+          type: string
+          label: 'Signer name'
+        location:
+          type: string
+          label: 'Signing location'
+        reason:
+          type: string
+          label: 'Signing reason'
+        contact:
+          type: string
+          label: 'Contact email'
+    auto_sign_enabled:
+      type: boolean
+      label: 'Enable automatic signing'
+    output_directory:
+      type: string
+      label: 'Output directory for signed certificates'

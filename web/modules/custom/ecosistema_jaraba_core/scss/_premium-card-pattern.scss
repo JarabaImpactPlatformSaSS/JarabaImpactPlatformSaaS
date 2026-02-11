@@ -1,0 +1,264 @@
+// =============================================================================
+// Premium Card Pattern System
+// =============================================================================
+// Patrón de diseño extensible para cards con efectos visuales de clase mundial.
+// Uso: Combinar clases utility o usar @include con los mixins disponibles.
+// Ref: Lecciones 1.410-1.413 - Learning Journal
+// =============================================================================
+
+@use 'variables' as *;
+
+// =============================================================================
+// MIXINS BASE
+// =============================================================================
+
+/// Mixin para efecto Glassmorphism
+/// @param {Number} $blur [10px] - Intensidad del blur
+/// @param {Color} $bg-start [rgba(255,255,255,0.95)] - Color inicio gradiente
+/// @param {Color} $bg-end [rgba(248,250,252,0.9)] - Color fin gradiente
+@mixin glassmorphism($blur: 10px, $bg-start: rgba(255, 255, 255, 0.95), $bg-end: rgba(248, 250, 252, 0.9)) {
+    background: linear-gradient(135deg, $bg-start 0%, $bg-end 100%);
+    backdrop-filter: blur($blur);
+    -webkit-backdrop-filter: blur($blur);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/// Mixin para hover con elevación 3D
+/// @param {Number} $lift [-6px] - Cantidad de elevación en Y
+/// @param {Number} $scale [1.02] - Factor de escala
+/// @param {String} $timing [0.4s] - Duración de transición
+@mixin hover-3d-lift($lift: -6px, $scale: 1.02, $timing: 0.4s) {
+    transition:
+        transform $timing cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+
+    &:hover {
+        transform: translateY($lift) scale($scale);
+        box-shadow:
+            0 20px 40px rgba(35, 61, 99, 0.12),
+            0 8px 16px rgba(35, 61, 99, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+        border-color: rgba(35, 61, 99, 0.15);
+    }
+}
+
+/// Mixin para efecto de brillo (shine) en hover
+@mixin hover-shine() {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent);
+        transition: left 0.6s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    &:hover::before {
+        left: 150%;
+    }
+}
+
+/// Mixin para animación pulse en elementos internos
+@mixin child-pulse-on-hover($selector, $scale: 1.1, $rotate: 3deg) {
+    #{$selector} {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    &:hover #{$selector} {
+        transform: scale($scale) rotate($rotate);
+    }
+}
+
+/// Mixin para indicador de estado activo (barra inferior)
+/// @param {Color} $color [$ej-color-success] - Color principal
+@mixin active-indicator($color: $ej-color-success) {
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, $color, rgba($color, 0.6));
+        border-radius: 0 0 var(--ej-radius-lg, 12px) var(--ej-radius-lg, 12px);
+    }
+}
+
+/// Mixin para sombra de marca
+/// @param {Color} $color - Color de la marca
+/// @param {Number} $intensity [0.35] - Intensidad de la sombra
+@mixin brand-shadow($color, $intensity: 0.35) {
+    box-shadow: 0 4px 16px rgba($color, $intensity);
+}
+
+// =============================================================================
+// CLASES UTILITY (Composables)
+// =============================================================================
+
+/// Clase base para cards premium
+.card--premium {
+    @include glassmorphism();
+    @include hover-3d-lift();
+    @include hover-shine();
+    border-radius: var(--ej-radius-xl, 16px);
+}
+
+/// Variante: Solo glassmorphism (sin hover effects)
+.card--glass {
+    @include glassmorphism();
+    border-radius: var(--ej-radius-lg, 12px);
+}
+
+/// Variante: Hover 3D sin glassmorphism
+.card--interactive {
+    @include hover-3d-lift();
+    @include hover-shine();
+}
+
+/// Modificadores de estado
+.card--active {
+    position: relative;
+    @include active-indicator();
+}
+
+.card--success {
+    position: relative;
+    @include active-indicator($ej-color-success);
+}
+
+.card--warning {
+    position: relative;
+    @include active-indicator($ej-color-warning);
+}
+
+.card--error {
+    position: relative;
+    @include active-indicator($ej-color-error);
+}
+
+/// Sombras de marca (para logos/iconos de terceros)
+.shadow--meta {
+    @include brand-shadow(#0078FF);
+}
+
+.shadow--google {
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+}
+
+.shadow--linkedin {
+    @include brand-shadow(#0A66C2);
+}
+
+.shadow--tiktok {
+    @include brand-shadow(#000000);
+}
+
+.shadow--corporate {
+    @include brand-shadow(#233D63);
+}
+
+.shadow--innovation {
+    @include brand-shadow(#00A9A5);
+}
+
+.shadow--impulse {
+    @include brand-shadow(#FF8C42);
+}
+
+/// Efecto de hover en elementos hijos (logos, iconos)
+.icon--pulse-hover {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card--premium:hover .icon--pulse-hover,
+.card--interactive:hover .icon--pulse-hover {
+    transform: scale(1.1) rotate(3deg);
+    animation: pulse-icon 0.5s ease;
+}
+
+// =============================================================================
+// KEYFRAMES
+// =============================================================================
+
+@keyframes pulse-icon {
+
+    0%,
+    100% {
+        transform: scale(1.1) rotate(3deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(3deg);
+    }
+}
+
+// =============================================================================
+// VARIANTES DE INTENSIDAD
+// =============================================================================
+
+/// Hover suave (para cards secundarias)
+.card--premium-subtle {
+    @include glassmorphism(8px);
+    @include hover-3d-lift(-3px, 1.01, 0.3s);
+    border-radius: var(--ej-radius-lg, 12px);
+}
+
+/// Hover pronunciado (para CTAs y destacados)
+.card--premium-bold {
+    @include glassmorphism(12px);
+    @include hover-3d-lift(-10px, 1.04, 0.5s);
+    @include hover-shine();
+    border-radius: var(--ej-radius-xl, 16px);
+}
+
+// =============================================================================
+// RESPONSIVE ADJUSTMENTS
+// =============================================================================
+
+@media (max-width: $ej-breakpoint-md) {
+
+    .card--premium,
+    .card--premium-bold {
+        &:hover {
+            // Reducir efectos en móvil para mejor performance
+            transform: translateY(-3px) scale(1.01);
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE VARIANT
+// =============================================================================
+
+@media (prefers-color-scheme: dark) {
+
+    .card--premium,
+    .card--glass {
+        background: linear-gradient(135deg,
+                rgba(30, 30, 30, 0.9) 0%,
+                rgba(45, 45, 45, 0.85) 100%);
+        border-color: rgba(255, 255, 255, 0.1);
+
+        &::before {
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.15),
+                    transparent);
+        }
+    }
+}

@@ -1,0 +1,384 @@
+// =============================================================================
+// CRM DASHBOARD & PIPELINE - Premium World-Class SaaS
+// =============================================================================
+// Estilos premium para CRM Dashboard y Pipeline Kanban.
+// Siguiendo patrón Zero Region Frontend y directrices SCSS.
+// Variables inyectables permiten personalización por tenant/vertical.
+//
+// @see /.agent/workflows/scss-estilos.md
+// @see /_injectable.scss para variables CSS personalizables
+// =============================================================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'premium-card-pattern' as premium;
+
+// =============================================================================
+// BASE LAYOUT - CRM Pages
+// =============================================================================
+.crm-page {
+    min-height: 100vh;
+    background: var(--ej-bg-page, linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%));
+}
+
+.crm-page.hero--split {
+    display: block !important;
+    grid-template-columns: unset !important;
+}
+
+.crm-main {
+    width: 100%;
+    min-height: calc(100vh - 160px);
+}
+
+.crm-page-wrapper {
+    max-width: $ej-container-max-width;
+    margin-inline: auto;
+    padding: $ej-spacing-xl $ej-spacing-lg;
+
+    @media (max-width: $ej-breakpoint-md) {
+        padding: $ej-spacing-lg $ej-spacing-md;
+    }
+}
+
+// =============================================================================
+// CRM HEADER OVERRIDES - Fixes para layout y contraste
+// =============================================================================
+.crm-dashboard .dashboard-header,
+.crm-pipeline .dashboard-header {
+    // Centrar botones verticalmente
+    align-items: center !important;
+}
+
+// Title con icono blanco - selector directo para máxima especificidad
+.crm-dashboard .dashboard-header__title,
+.crm-pipeline .dashboard-header__title {
+    display: flex !important;
+    align-items: center !important;
+    gap: $ej-spacing-sm !important;
+    margin: 0 !important;
+
+    // Icono blanco para contraste
+    svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        flex-shrink: 0;
+    }
+}
+
+// Content en columna
+.crm-dashboard .dashboard-header__content,
+.crm-pipeline .dashboard-header__content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: $ej-spacing-xs !important;
+}
+
+// Subtítulo
+.crm-dashboard .dashboard-header__subtitle,
+.crm-pipeline .dashboard-header__subtitle {
+    margin: 0 !important;
+    opacity: 0.9;
+}
+
+// Actions centradas
+.crm-dashboard .dashboard-header__actions,
+.crm-pipeline .dashboard-header__actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: $ej-spacing-sm !important;
+}
+
+// =============================================================================
+// CRM DASHBOARD CONTAINER
+// =============================================================================
+.crm-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-xl;
+}
+
+// =============================================================================
+// PIPELINE KANBAN BOARD
+// =============================================================================
+.crm-pipeline {
+    min-height: 100%;
+}
+
+// Pipeline Board Grid
+.pipeline-board {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(200px, 1fr));
+    gap: $ej-spacing-md;
+    overflow-x: auto;
+    padding: $ej-spacing-md 0;
+    margin-top: $ej-spacing-md;
+
+    @media (max-width: $ej-breakpoint-xl) {
+        grid-template-columns: repeat(3, minmax(200px, 1fr));
+    }
+
+    @media (max-width: $ej-breakpoint-md) {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+}
+
+// Pipeline Columns
+.pipeline-column {
+    background: var(--ej-bg-card, #fff);
+    border-radius: $ej-border-radius-lg;
+    display: flex;
+    flex-direction: column;
+    min-height: 350px;
+    box-shadow: $ej-shadow-sm;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $ej-spacing-md;
+        border-bottom: 3px solid var(--ej-color-primary, #{$ej-color-impulse-fallback});
+        gap: $ej-spacing-sm;
+
+        // Colores por etapa del pipeline - usando paleta Jaraba
+        &--lead {
+            border-bottom-color: var(--ej-gray-500, #64748b);
+        }
+
+        &--qualified {
+            border-bottom-color: var(--ej-color-info, #1976D2);
+        }
+
+        &--proposal {
+            border-bottom-color: var(--ej-color-secondary, #7C3AED);
+        }
+
+        &--negotiation {
+            border-bottom-color: var(--ej-color-warning, #FFA000);
+        }
+
+        &--won {
+            border-bottom-color: var(--ej-color-success, #43A047);
+        }
+
+        &--lost {
+            border-bottom-color: var(--ej-color-error, #E53935);
+        }
+    }
+
+    &__header-left {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    &__title {
+        font-size: $ej-font-size-sm;
+        font-weight: $ej-font-weight-semibold;
+        color: var(--ej-text-primary, #{$ej-gray-900});
+        margin: 0;
+    }
+
+    &__count {
+        font-size: $ej-font-size-xs;
+        font-weight: $ej-font-weight-semibold;
+        background: var(--ej-color-primary, #{$ej-color-impulse-fallback});
+        color: $white;
+        padding: $ej-spacing-xs $ej-spacing-sm;
+        border-radius: $ej-border-radius-full;
+        min-width: 1.5rem;
+        text-align: center;
+    }
+
+    &__total {
+        font-size: $ej-font-size-xs;
+        font-weight: $ej-font-weight-semibold;
+        color: var(--ej-text-muted, #{$ej-gray-500});
+        text-align: center;
+        padding: $ej-spacing-xs $ej-spacing-md;
+        border-bottom: 1px solid var(--ej-border-color-light, #{$ej-gray-200});
+    }
+
+    &__cards {
+        flex: 1;
+        padding: $ej-spacing-sm;
+        display: flex;
+        flex-direction: column;
+        gap: $ej-spacing-sm;
+        min-height: 100px;
+    }
+
+    &__empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--ej-text-muted, #{$ej-gray-500});
+        font-size: $ej-font-size-sm;
+        font-style: italic;
+    }
+}
+
+// Pipeline Cards (Opportunity Cards) - Aplicando patrón Premium Card
+.pipeline-card {
+    // Patrón Premium World-Class - Valores pronunciados para interactividad
+    @include premium.glassmorphism(10px);
+    @include premium.hover-3d-lift(-8px, 1.03, 0.4s); // Movimiento pronunciado
+    @include premium.hover-shine();
+
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-md;
+    cursor: grab;
+
+    // Micro-animación entrada escalonada
+    animation: cardSlideIn 0.5s ease-out backwards;
+
+    @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.1}s;
+        }
+    }
+
+    &:active {
+        cursor: grabbing;
+        transform: scale(0.96) rotate(-1deg); // Feedback táctil drag más visible
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: $ej-spacing-sm;
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__title {
+        font-size: $ej-font-size-sm;
+        font-weight: $ej-font-weight-semibold;
+        color: var(--ej-text-primary, #{$ej-gray-900});
+        line-height: 1.3;
+    }
+
+    &__probability {
+        font-size: 0.7rem;
+        font-weight: $ej-font-weight-semibold;
+        background: color-mix(in srgb, var(--ej-color-success) 15%, white);
+        color: var(--ej-color-success, #{$ej-color-success});
+        padding: $ej-spacing-xs $ej-spacing-sm;
+        border-radius: $ej-border-radius-full;
+        white-space: nowrap;
+    }
+
+    &__value {
+        font-size: $ej-font-size-md;
+        font-weight: $ej-font-weight-bold;
+        color: var(--ej-color-primary, #{$ej-color-impulse-fallback});
+        margin-bottom: $ej-spacing-sm;
+    }
+
+    &__meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: $ej-font-size-xs;
+        color: var(--ej-text-muted, #{$ej-gray-500});
+        gap: $ej-spacing-sm;
+    }
+
+    &__contact,
+    &__date {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+    }
+
+    &__actions {
+        margin-top: $ej-spacing-sm;
+        padding-top: $ej-spacing-sm;
+        border-top: $ej-border-width solid var(--ej-border-color-light, #{$ej-gray-200});
+    }
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: $ej-spacing-xs $ej-spacing-sm;
+        border-radius: $ej-border-radius-sm;
+        color: var(--ej-text-muted, #{$ej-gray-500});
+        transition: var(--ej-transition-fast);
+
+        &:hover {
+            background: var(--ej-gray-100, #{$ej-gray-100});
+            color: var(--ej-color-secondary, #{$ej-color-corporate-fallback});
+        }
+    }
+}
+
+// =============================================================================
+// QUICK ACTIONS - Premium Card Pattern
+// =============================================================================
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+
+    &--compact {
+        gap: $ej-spacing-xs;
+    }
+}
+
+.quick-action {
+    // Aplicar patrón premium
+    @include premium.glassmorphism(8px);
+    @include premium.hover-3d-lift(-6px, 1.02, 0.35s);
+    @include premium.hover-shine();
+
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-md;
+    border-radius: $ej-border-radius-lg;
+    text-decoration: none;
+    color: var(--ej-text-primary, #{$ej-gray-900});
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: $ej-border-radius-md;
+        background: var(--ej-color-primary-light, rgba(255, 140, 66, 0.1));
+        transition: transform $ej-transition-duration-normal $ej-transition-easing;
+    }
+
+    &:hover &__icon {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    &__title {
+        font-size: $ej-font-size-sm;
+        font-weight: $ej-font-weight-semibold;
+    }
+}
+
+// =============================================================================
+// KEYFRAMES - Animaciones de entrada
+// =============================================================================
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

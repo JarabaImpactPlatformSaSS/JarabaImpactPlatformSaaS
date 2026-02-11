@@ -1,0 +1,854 @@
+/**
+ * @file
+ * Catálogo e Itinerarios de Digitalización
+ * Parcial SCSS con variables inyectables
+ */
+
+@use 'variables' as *;
+
+// =============================================
+// CATÁLOGO: Variables Locales
+// =============================================
+$path-radius: 12px;
+
+// =============================================
+// PATH CATALOG
+// =============================================
+.path-catalog {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.catalog-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 0.5rem;
+    }
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+// Filtros
+.catalog-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--ej-surface-background, #fff);
+    border-radius: $path-radius;
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    margin-bottom: 2rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+        text-transform: uppercase;
+    }
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    min-width: 150px;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+}
+
+.filter-stats {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    .stat-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+
+    .stat-label {
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+}
+
+// Secciones
+.catalog-section {
+    margin-bottom: 3rem;
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+// Grid de paths
+.paths-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.featured-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+// Cards de Path
+.path-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--ej-surface-background, #fff);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $path-radius;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &:hover {
+        box-shadow: var(--ej-shadow-md, #{$ej-shadow-md-fallback});
+        transform: translateY(-2px);
+    }
+}
+
+.card-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--ej-color-warning, #F59E0B);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.featured {
+        background: linear-gradient(135deg, #F59E0B, #EAB308);
+    }
+}
+
+.card-header {
+    position: relative;
+    height: 140px;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, #{$ej-color-primary-fallback}),
+        var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    .placeholder-icon {
+        font-size: 3rem;
+        opacity: 0.5;
+    }
+}
+
+.card-body {
+    flex: 1;
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    margin: 0 0 0.5rem;
+}
+
+.card-description {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    margin: 0 0 1rem;
+    line-height: 1.5;
+}
+
+.card-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.meta-item {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    background: var(--ej-surface-hover, #F3F4F6);
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+.tag-difficulty {
+    &.tag-beginner {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    &.tag-intermediate {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    &.tag-advanced {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+}
+
+.card-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+}
+
+// Empty state
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+}
+
+// CTA
+.catalog-cta {
+    margin-top: 3rem;
+}
+
+.cta-content {
+    text-align: center;
+    padding: 2rem;
+    background: var(--ej-surface-hover, #F3F4F6);
+    border-radius: $path-radius;
+
+    h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+
+    p {
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+// =============================================
+// PATH DETAIL
+// =============================================
+.path-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.detail-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: 1fr 300px;
+    }
+}
+
+.hero-content {
+    .hero-badges {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+}
+
+.hero-image {
+    border-radius: $path-radius;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, #{$ej-color-primary-fallback}),
+        var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// Badges
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    background: var(--ej-surface-hover, #F3F4F6);
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+}
+
+.badge-difficulty {
+    &.badge-beginner {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    &.badge-intermediate {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    &.badge-advanced {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+}
+
+// Enrollment status
+.enrollment-status {
+    padding: 1rem;
+    background: var(--ej-surface-hover, #F3F4F6);
+    border-radius: $path-radius;
+}
+
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+}
+
+// Secciones de detalle
+.detail-section {
+    margin-bottom: 3rem;
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1.5rem;
+    }
+}
+
+// Outcomes
+.outcomes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.outcome-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--ej-surface-background, #fff);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: 8px;
+
+    .outcome-icon {
+        color: var(--ej-color-success, #{$ej-color-success-fallback});
+        font-weight: 700;
+    }
+
+    .outcome-text {
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+}
+
+// Timeline de fases
+.phases-timeline {
+    position: relative;
+    padding-left: 2rem;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0.75rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--ej-border-color, #{$ej-border-color-fallback});
+    }
+}
+
+.phase-item {
+    position: relative;
+    padding-bottom: 2rem;
+
+    &:last-child {
+        padding-bottom: 0;
+    }
+}
+
+.phase-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .marker-number {
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+}
+
+.phase-content {
+    background: var(--ej-surface-background, #fff);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $path-radius;
+    padding: 1.5rem;
+}
+
+.phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+
+    h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+}
+
+.phase-duration {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+.phase-description {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    margin-bottom: 1rem;
+}
+
+.modules-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    font-weight: 500;
+    cursor: pointer;
+
+    .toggle-icon {
+        transition: transform 0.2s;
+    }
+}
+
+.modules-list {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.module-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .module-icon {
+        font-size: 1.25rem;
+    }
+
+    .module-title {
+        flex: 1;
+        font-size: 0.875rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+
+    .module-duration {
+        font-size: 0.75rem;
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+}
+
+// CTA Card
+.cta-card {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg,
+        var(--ej-color-primary, #{$ej-color-primary-fallback}),
+        var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
+    border-radius: $path-radius;
+    color: #fff;
+
+    h3 {
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        background: #fff;
+        color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+    }
+}
+
+// =============================================
+// PATH PROGRESS
+// =============================================
+.path-progress {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.login-required,
+.empty-progress {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--ej-surface-background, #fff);
+    border-radius: $path-radius;
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+
+    .login-icon,
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+        margin-bottom: 1.5rem;
+    }
+}
+
+.progress-header {
+    margin-bottom: 2rem;
+
+    h1 {
+        font-size: 1.75rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+.stats-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--ej-surface-background, #fff);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $path-radius;
+    min-width: 100px;
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+
+    &.stat-xp .stat-value {
+        color: var(--ej-color-warning, #F59E0B);
+    }
+}
+
+// Active section
+.active-section {
+    margin-bottom: 3rem;
+
+    h2 {
+        font-size: 1.125rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+.active-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: var(--ej-surface-background, #fff);
+    border: 2px solid var(--ej-color-primary, #{$ej-color-primary-fallback});
+    border-radius: $path-radius;
+
+    @media (max-width: 640px) {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.active-content {
+    flex: 1;
+
+    h3 {
+        font-size: 1.125rem;
+        margin: 0 0 1rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+}
+
+.progress-visual {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: 4px;
+    overflow: hidden;
+
+    &.large {
+        height: 12px;
+    }
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+        var(--ej-color-primary, #{$ej-color-primary-fallback}),
+        var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-percent {
+    font-weight: 700;
+    color: var(--ej-color-primary, #{$ej-color-primary-fallback});
+}
+
+.next-step {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+
+    .step-label {
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+
+    .step-title {
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        font-weight: 500;
+    }
+}
+
+// Enrollments section
+.enrollments-section {
+    margin-bottom: 3rem;
+
+    h2 {
+        font-size: 1.125rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+        margin-bottom: 1rem;
+    }
+}
+
+.enrollments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.enrollment-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--ej-surface-background, #fff);
+    border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $path-radius;
+    overflow: hidden;
+
+    &.status-completed {
+        opacity: 0.8;
+    }
+}
+
+.enrollment-card .card-header {
+    height: auto;
+    background: none;
+    padding: 1rem 1rem 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+
+    &.active {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    &.completed {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    &.paused {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+}
+
+.enrollment-card .card-body {
+    padding: 1rem;
+
+    h3 {
+        font-size: 1rem;
+        margin: 0 0 0.75rem;
+        color: var(--ej-text-primary, #{$ej-color-text-fallback});
+    }
+}
+
+.enrollment-card .progress-bar {
+    margin-bottom: 0.25rem;
+}
+
+.enrollment-card .progress-text {
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+// More section
+.more-section {
+    .more-card {
+        text-align: center;
+        padding: 2rem;
+        background: var(--ej-surface-hover, #F3F4F6);
+        border-radius: $path-radius;
+
+        h3 {
+            color: var(--ej-text-primary, #{$ej-color-text-fallback});
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+            margin-bottom: 1rem;
+        }
+    }
+}

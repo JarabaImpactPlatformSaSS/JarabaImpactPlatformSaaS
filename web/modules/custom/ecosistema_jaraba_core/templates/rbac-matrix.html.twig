@@ -1,0 +1,89 @@
+{#
+/**
+ * @file
+ * Template para la matriz RBAC.
+ *
+ * Variables:
+ * - roles: Array de roles con id y label
+ * - permissions: Array de permisos con id, title, module
+ * - matrix: Matriz role x permission con booleanos
+ */
+#}
+<div class="rbac-matrix-wrapper">
+  
+  <div class="rbac-matrix-header">
+    <div class="rbac-matrix-filter">
+      <label for="module-filter">{{ 'Filtrar por módulo'|t }}:</label>
+      <select id="module-filter" class="form-select">
+        <option value="">{{ 'Todos los módulos'|t }}</option>
+        {% for module in modules %}
+          <option value="{{ module }}">{{ module }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="rbac-matrix-actions">
+      <a href="/admin/people/rbac-matrix/export" class="button button--secondary">
+        {{ jaraba_icon('tools', 'download') }}
+        {{ 'Exportar CSV'|t }}
+      </a>
+    </div>
+  </div>
+
+  <div class="rbac-matrix-table-container">
+    <table class="rbac-matrix-table">
+      <thead>
+        <tr>
+          <th class="rbac-matrix-th--permission">{{ 'Permiso'|t }}</th>
+          {% for role in roles %}
+            <th class="rbac-matrix-th--role">
+              <span class="role-label">{{ role.label }}</span>
+            </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for perm in permissions %}
+          <tr class="rbac-matrix-row" data-module="{{ perm.module }}" data-permission="{{ perm.id }}">
+            <td class="rbac-matrix-td--permission">
+              <div class="permission-info">
+                <span class="permission-title {% if perm.restrict_access %}permission-restricted{% endif %}">
+                  {{ perm.title }}
+                </span>
+                <span class="permission-module">{{ perm.module }}</span>
+              </div>
+            </td>
+            {% for role in roles %}
+              <td class="rbac-matrix-td--checkbox">
+                <label class="rbac-checkbox">
+                  <input type="checkbox" 
+                         class="rbac-toggle"
+                         data-role="{{ role.id }}"
+                         data-permission="{{ perm.id }}"
+                         {% if matrix[perm.id][role.id] %}checked{% endif %}>
+                  <span class="rbac-checkbox-mark"></span>
+                </label>
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="rbac-matrix-legend">
+    <span class="legend-item">
+      <span class="legend-restricted"></span>
+      {{ 'Permiso restringido (alto riesgo)'|t }}
+    </span>
+    <span class="legend-item">
+      <span class="legend-count">{{ permissions|length }}</span>
+      {{ 'permisos'|t }}
+    </span>
+    <span class="legend-item">
+      <span class="legend-count">{{ roles|length }}</span>
+      {{ 'roles'|t }}
+    </span>
+  </div>
+  
+</div>

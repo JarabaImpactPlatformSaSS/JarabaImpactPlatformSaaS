@@ -1,0 +1,170 @@
+// Canvas List Premium - Business Model Canvas listing
+// Uses injectable CSS variables for tenant/vertical customization
+
+@use 'variables' as *;
+
+// ==========================================================================
+// Canvas Card Actions
+// ==========================================================================
+.canvas-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--ej-color-gray-50, #f9fafb);
+    border-top: 1px solid var(--ej-border-color, #e5e7eb);
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        white-space: nowrap;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .btn-primary {
+        flex-grow: 1;
+    }
+
+    // Ensure icons don't shrink
+    .btn svg {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+    }
+}
+
+// ==========================================================================
+// Status Select Dropdown
+// ==========================================================================
+.status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid var(--ej-border-color, #d1d5db);
+    border-radius: var(--ej-radius-md, 6px);
+    padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    // Chevron icon as data URI
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.25rem center;
+    background-size: 16px;
+    transition: all 0.15s ease;
+
+    &:hover {
+        border-color: var(--ej-color-neutral, #9ca3af);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-success, #10b981);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    // Status variants with semantic colors
+    &--draft {
+        background-color: var(--ej-color-gray-100, #f3f4f6);
+        color: var(--ej-color-neutral, #6b7280);
+    }
+
+    &--active {
+        background-color: var(--ej-color-success-light, #d1fae5);
+        color: var(--ej-color-success-dark, #047857);
+        border-color: var(--ej-color-success-border, #a7f3d0);
+    }
+
+    &--archived {
+        background-color: var(--ej-color-warning-light, #fef3c7);
+        color: var(--ej-color-warning-dark, #92400e);
+        border-color: var(--ej-color-warning-border, #fcd34d);
+    }
+}
+
+// ==========================================================================
+// Stat Cards as Filters
+// ==========================================================================
+.stat-card[data-filter] {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+}
+
+.stat-card--active-filter {
+    box-shadow: 0 0 0 2px var(--ej-color-primary, #4F46E5) !important;
+    transform: translateY(-2px);
+}
+
+// ==========================================================================
+// Search Bar
+// ==========================================================================
+.canvas-list__search {
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+
+    svg:first-child {
+        position: absolute;
+        left: 0.75rem;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.625rem 2.5rem 0.625rem 2.5rem;
+    border: 1px solid var(--ej-border-color, #d1d5db);
+    border-radius: var(--ej-radius-lg, 8px);
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &::placeholder {
+        color: var(--ej-text-muted, #9ca3af);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-primary, #4F46E5);
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.5rem;
+    padding: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+    display: none;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.search-input:not(:placeholder-shown)+.search-clear {
+    display: block;
+}
+
+// ==========================================================================
+// Filtered Cards
+// ==========================================================================
+.canvas-card--filtered-out {
+    display: none !important;
+}

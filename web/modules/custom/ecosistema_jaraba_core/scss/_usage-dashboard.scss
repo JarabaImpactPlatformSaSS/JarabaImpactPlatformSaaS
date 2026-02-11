@@ -1,0 +1,540 @@
+// =============================================================================
+// USAGE DASHBOARD - Dashboard de Uso y Facturación del Tenant (G111 / f111)
+// =============================================================================
+// PROPÓSITO: Estilos para /mi-cuenta/uso — consumo de recursos, costes,
+// proyecciones y alertas de presupuesto por tenant.
+//
+// LÓGICA:
+// - Layout de 4 summary cards en grid responsive
+// - Chart container con ratio fijo para Chart.js
+// - Grid de metric cards con dot de color + barra de proporción
+// - Tabla de factura con zebra striping y footer coloreado
+// - Alertas warning/critical con iconos
+//
+// DIRECTRICES:
+// - Todas las propiedades usan var(--ej-*) con fallbacks SCSS
+// - Dart Sass ^1.80: @use 'sass:color', @use 'sass:math'
+// - BEM naming: .usage-dashboard, .usage-summary-card, .usage-metric-card
+// - Responsive: mobile-first con breakpoints 768px y 1024px
+// =============================================================================
+
+@use 'sass:color';
+@use 'sass:math';
+
+// ---------------------------------------------------------------------------
+// VARIABLES LOCALES
+// ---------------------------------------------------------------------------
+$_primary: #233D63;
+$_accent: #00A9A5;
+$_orange: #FF8C42;
+$_danger: #DC3545;
+$_warning: #FFC107;
+$_success: #28A745;
+$_text: #2D3748;
+$_text-light: #718096;
+$_bg: #F7FAFC;
+$_card-bg: #FFFFFF;
+$_border: #E2E8F0;
+$_radius: 12px;
+$_radius-sm: 8px;
+$_shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+$_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
+
+// ---------------------------------------------------------------------------
+// DASHBOARD LAYOUT
+// ---------------------------------------------------------------------------
+.usage-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: var(--ej-font-family, 'Inter', system-ui, sans-serif);
+}
+
+.usage-dashboard__header {
+  margin-bottom: 2rem;
+}
+
+.usage-dashboard__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, $_primary);
+  margin: 0 0 0.25rem;
+}
+
+.usage-dashboard__subtitle {
+  font-size: 0.95rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+  margin: 0;
+}
+
+.usage-dashboard__section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, $_primary);
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ej-color-accent, $_accent);
+  display: inline-block;
+}
+
+// ---------------------------------------------------------------------------
+// ALERTAS
+// ---------------------------------------------------------------------------
+.usage-dashboard__alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.usage-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: $_radius-sm;
+  font-size: 0.9rem;
+}
+
+.usage-alert--warning {
+  background: color.change($_warning, $alpha: 0.12);
+  border-left: 4px solid $_warning;
+  color: #856404;
+}
+
+.usage-alert--critical {
+  background: color.change($_danger, $alpha: 0.08);
+  border-left: 4px solid $_danger;
+  color: #721C24;
+}
+
+.usage-alert__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+// ---------------------------------------------------------------------------
+// SUMMARY CARDS (4 cards en fila)
+// ---------------------------------------------------------------------------
+.usage-dashboard__summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.usage-summary-card {
+  background: var(--ej-color-surface, $_card-bg);
+  border: 1px solid var(--ej-color-border, $_border);
+  border-radius: $_radius;
+  padding: 1.25rem;
+  box-shadow: $_shadow;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $_shadow-hover;
+    transform: translateY(-2px);
+  }
+}
+
+.usage-summary-card__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ej-color-text-secondary, $_text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.usage-summary-card__value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, $_primary);
+  line-height: 1.2;
+}
+
+.usage-summary-card--forecast .usage-summary-card__value {
+  color: var(--ej-color-accent, $_accent);
+}
+
+.usage-summary-card--budget .usage-summary-card__value {
+  color: var(--ej-color-primary, $_primary);
+}
+
+.usage-summary-card__detail {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+  margin-top: 0.25rem;
+}
+
+.usage-summary-card__progress {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usage-summary-card__pct {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ej-color-text, $_text);
+  white-space: nowrap;
+}
+
+// Confidence badge
+.usage-confidence {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.usage-confidence--high {
+  background: color.change($_success, $alpha: 0.15);
+  color: $_success;
+}
+
+.usage-confidence--medium {
+  background: color.change($_warning, $alpha: 0.15);
+  color: #856404;
+}
+
+.usage-confidence--low {
+  background: color.change($_danger, $alpha: 0.1);
+  color: $_danger;
+}
+
+// ---------------------------------------------------------------------------
+// BARRA DE PROGRESO (presupuesto)
+// ---------------------------------------------------------------------------
+.usage-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--ej-color-border, $_border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.usage-progress-bar__fill {
+  height: 100%;
+  background: var(--ej-color-accent, $_accent);
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.usage-progress-bar__fill--warning {
+  background: $_warning;
+}
+
+.usage-progress-bar__fill--critical {
+  background: $_danger;
+}
+
+// ---------------------------------------------------------------------------
+// GRÁFICO DE TENDENCIAS
+// ---------------------------------------------------------------------------
+.usage-dashboard__chart-section {
+  margin-bottom: 2.5rem;
+}
+
+.usage-dashboard__chart-container {
+  background: var(--ej-color-surface, $_card-bg);
+  border: 1px solid var(--ej-color-border, $_border);
+  border-radius: $_radius;
+  padding: 1.5rem;
+  box-shadow: $_shadow;
+  height: 350px;
+  position: relative;
+}
+
+// ---------------------------------------------------------------------------
+// GRID DE MÉTRICAS
+// ---------------------------------------------------------------------------
+.usage-dashboard__metrics-section {
+  margin-bottom: 2.5rem;
+}
+
+.usage-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.usage-metric-card {
+  background: var(--ej-color-surface, $_card-bg);
+  border: 1px solid var(--ej-color-border, $_border);
+  border-radius: $_radius;
+  padding: 1.25rem;
+  box-shadow: $_shadow;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $_shadow-hover;
+    transform: translateY(-1px);
+  }
+}
+
+.usage-metric-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.usage-metric-card__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.usage-metric-card__label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ej-color-text, $_text);
+}
+
+.usage-metric-card__model {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.usage-metric-card__model--flat {
+  background: color.change($_accent, $alpha: 0.12);
+  color: $_accent;
+}
+
+.usage-metric-card__model--tiered {
+  background: color.change($_primary, $alpha: 0.1);
+  color: $_primary;
+}
+
+.usage-metric-card__model--volume {
+  background: color.change($_orange, $alpha: 0.12);
+  color: $_orange;
+}
+
+.usage-metric-card__model--package {
+  background: color.change($_text-light, $alpha: 0.15);
+  color: $_text-light;
+}
+
+.usage-metric-card__body {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.usage-metric-card__stat-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ej-color-text, $_text);
+  line-height: 1.2;
+}
+
+.usage-metric-card__stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.usage-metric-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.usage-metric-card__cost {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, $_primary);
+}
+
+.usage-metric-card__pct {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+}
+
+.usage-metric-card__bar {
+  height: 4px;
+  background: var(--ej-color-border, $_border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.usage-metric-card__bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+// ---------------------------------------------------------------------------
+// TABLA DE FACTURA
+// ---------------------------------------------------------------------------
+.usage-dashboard__bill-section {
+  margin-bottom: 2.5rem;
+}
+
+.usage-bill-table-wrapper {
+  background: var(--ej-color-surface, $_card-bg);
+  border: 1px solid var(--ej-color-border, $_border);
+  border-radius: $_radius;
+  box-shadow: $_shadow;
+  overflow-x: auto;
+}
+
+.usage-bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--ej-color-border, $_border);
+  }
+
+  th {
+    background: color.change($_primary, $alpha: 0.04);
+    font-weight: 600;
+    color: var(--ej-color-primary, $_primary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  tbody tr:hover {
+    background: color.change($_accent, $alpha: 0.03);
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  tfoot td {
+    font-weight: 500;
+    border-bottom: none;
+  }
+}
+
+.usage-bill-table__subtotal td {
+  border-top: 2px solid var(--ej-color-border, $_border);
+  padding-top: 1rem;
+}
+
+.usage-bill-table__total td {
+  font-size: 1.05rem;
+  color: var(--ej-color-primary, $_primary);
+}
+
+// Badge de modelo en tabla
+.usage-model-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.usage-model-badge--flat {
+  background: color.change($_accent, $alpha: 0.12);
+  color: $_accent;
+}
+
+.usage-model-badge--tiered {
+  background: color.change($_primary, $alpha: 0.1);
+  color: $_primary;
+}
+
+.usage-model-badge--volume {
+  background: color.change($_orange, $alpha: 0.12);
+  color: $_orange;
+}
+
+.usage-model-badge--package {
+  background: color.change($_text-light, $alpha: 0.15);
+  color: $_text-light;
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACÍO
+// ---------------------------------------------------------------------------
+.usage-dashboard__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+}
+
+.usage-dashboard-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.usage-dashboard-empty__icon {
+  margin-bottom: 1.5rem;
+}
+
+.usage-dashboard-empty__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, $_primary);
+  margin-bottom: 0.75rem;
+}
+
+.usage-dashboard-empty__message {
+  font-size: 0.95rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+  margin-bottom: 1.5rem;
+}
+
+.usage-dashboard-empty__action {
+  display: inline-block;
+  padding: 0.625rem 1.5rem;
+  background: var(--ej-color-accent, $_accent);
+  color: #fff;
+  border-radius: $_radius-sm;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: color.adjust($_accent, $lightness: -8%);
+    color: #fff;
+  }
+}
