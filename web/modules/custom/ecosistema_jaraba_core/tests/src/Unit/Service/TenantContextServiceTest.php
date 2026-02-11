@@ -96,9 +96,9 @@ class TenantContextServiceTest extends UnitTestCase
         ]);
 
         $tenant = $this->createMock(TenantInterface::class);
-        $tenant->method('getPlan')->willReturn($plan);
+        $tenant->method('getSubscriptionPlan')->willReturn($plan);
 
-        $tenantPlan = $tenant->getPlan();
+        $tenantPlan = $tenant->getSubscriptionPlan();
         $this->assertInstanceOf(SaasPlanInterface::class, $tenantPlan);
 
         $limits = $tenantPlan->getLimits();

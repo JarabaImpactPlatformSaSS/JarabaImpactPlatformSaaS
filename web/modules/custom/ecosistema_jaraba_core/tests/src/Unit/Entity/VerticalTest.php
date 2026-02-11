@@ -103,25 +103,27 @@ class VerticalTest extends UnitTestCase
     }
 
     /**
-     * Tests AI agents configuration.
+     * Tests AI-related features configuration.
      *
-     * @covers ::getAiAgents
+     * @covers ::getEnabledFeatures
      */
-    public function testGetAiAgents(): void
+    public function testGetAiRelatedFeatures(): void
     {
         $vertical = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\VerticalInterface::class);
-        $vertical->method('getAiAgents')
+        $vertical->method('getEnabledFeatures')
             ->willReturn([
-                'producer_copilot',
-                'consumer_copilot',
-                'marketing_agent',
+                'trazabilidad',
+                'ai_storytelling',
+                'ai_copilot',
+                'qr_codes',
             ]);
 
-        $agents = $vertical->getAiAgents();
+        $features = $vertical->getEnabledFeatures();
+        $aiFeatures = array_filter($features, fn($f) => str_starts_with($f, 'ai_'));
 
-        $this->assertIsArray($agents);
-        $this->assertContains('producer_copilot', $agents);
-        $this->assertCount(3, $agents);
+        $this->assertIsArray($features);
+        $this->assertNotEmpty($aiFeatures);
+        $this->assertCount(2, $aiFeatures);
     }
 
 }

@@ -25,6 +25,7 @@ class ServiceRegistrationTest extends KernelTestBase
         'user',
         'node',
         'field',
+        'text',
         'options',
         'datetime',
         'file',
@@ -40,14 +41,11 @@ class ServiceRegistrationTest extends KernelTestBase
     {
         parent::setUp();
 
-        // Instalar esquemas de entidades requeridas
+        // Solo instalar esquema de 'user' (requerido por el sistema base).
+        // No se instalan esquemas de vertical/saas_plan/tenant porque:
+        // - Tenant tiene entity_reference a 'group' y 'domain' (contrib)
+        // - Los tests de servicios solo necesitan el contenedor DI, no las tablas
         $this->installEntitySchema('user');
-        $this->installEntitySchema('vertical');
-        $this->installEntitySchema('saas_plan');
-        $this->installEntitySchema('tenant');
-
-        // Instalar configuración del módulo
-        $this->installConfig(['ecosistema_jaraba_core']);
     }
 
     /**

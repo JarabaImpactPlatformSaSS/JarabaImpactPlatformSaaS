@@ -25,6 +25,7 @@ class EntityInstallTest extends KernelTestBase
         'user',
         'node',
         'field',
+        'text',
         'options',
         'datetime',
         'ecosistema_jaraba_core',
@@ -34,7 +35,8 @@ class EntityInstallTest extends KernelTestBase
      * {@inheritdoc}
      *
      * Configuración inicial del entorno de prueba.
-     * Instala los esquemas necesarios para las entidades.
+     * Instala los esquemas necesarios para las entidades que NO dependen
+     * de módulos contrib (group, domain).
      */
     protected function setUp(): void
     {
@@ -43,7 +45,12 @@ class EntityInstallTest extends KernelTestBase
         // Instalar esquemas de sistema y usuario requeridos
         $this->installEntitySchema('user');
 
-        // Instalar las entidades del módulo
+        // Instalar las 3 entidades del módulo.
+        // Tenant NO referencia entity types contrib (group/domain):
+        // - vertical → entity_reference a 'vertical' (propia)
+        // - subscription_plan → entity_reference a 'saas_plan' (propia)
+        // - domain → string (texto plano, no entity_reference)
+        // - admin_user → entity_reference a 'user' (core)
         $this->installEntitySchema('vertical');
         $this->installEntitySchema('saas_plan');
         $this->installEntitySchema('tenant');
@@ -84,7 +91,7 @@ class EntityInstallTest extends KernelTestBase
         // Verificar que los valores se guardaron correctamente
         $this->assertEquals('AgroConecta', $loaded->getName());
         $this->assertEquals('agroconecta', $loaded->getMachineName());
-        $this->assertTrue($loaded->isPublished());
+        $this->assertTrue((bool) $loaded->get('status')->value);
     }
 
     /**
@@ -124,8 +131,8 @@ class EntityInstallTest extends KernelTestBase
 
         $loaded = $storage->load($plan->id());
         $this->assertEquals('Profesional', $loaded->getName());
-        $this->assertEquals('79.00', $loaded->getMonthlyPrice());
-        $this->assertEquals('790.00', $loaded->getYearlyPrice());
+        $this->assertEquals('79.00', $loaded->getPriceMonthly());
+        $this->assertEquals('790.00', $loaded->getPriceYearly());
         $this->assertFalse($loaded->isFree());
     }
 
@@ -239,8 +246,7 @@ class EntityInstallTest extends KernelTestBase
         ]);
         $tenant1->save();
 
-        // Intentar crear segundo tenant con el mismo dominio
-        // Esto debería fallar en un entorno real con constraint de unicidad
+        // Crear segundo tenant con el mismo dominio
         $tenant2 = $tenantStorage->create([
             'name' => 'Tenant 2',
             'vertical' => $vertical->id(),
@@ -250,9 +256,9 @@ class EntityInstallTest extends KernelTestBase
             'subscription_status' => 'active',
         ]);
 
-        // Verificar que no existen dos tenants con el mismo dominio
-        $existing = $tenantStorage->loadByProperties(['domain' => 'mi-dominio']);
-        $this->assertCount(1, $existing, 'Solo debe existir un tenant por dominio');
+        // UniqueField constraint se valida vía entity validation API
+        $violations = $tenant2->validate();
+        $this->assertGreaterThan(0, $violations->count(), 'El dominio duplicado debe producir violaciones de validación');
     }
 
 }

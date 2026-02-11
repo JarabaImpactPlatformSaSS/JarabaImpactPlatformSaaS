@@ -17,19 +17,19 @@ class SaasPlanTest extends UnitTestCase
     /**
      * Tests pricing methods.
      *
-     * @covers ::getMonthlyPrice
-     * @covers ::getYearlyPrice
+     * @covers ::getPriceMonthly
+     * @covers ::getPriceYearly
      */
     public function testPricing(): void
     {
         $plan = $this->createMock(SaasPlanInterface::class);
-        $plan->method('getMonthlyPrice')
-            ->willReturn('79.00');
-        $plan->method('getYearlyPrice')
-            ->willReturn('790.00');
+        $plan->method('getPriceMonthly')
+            ->willReturn(79.00);
+        $plan->method('getPriceYearly')
+            ->willReturn(790.00);
 
-        $this->assertEquals('79.00', $plan->getMonthlyPrice());
-        $this->assertEquals('790.00', $plan->getYearlyPrice());
+        $this->assertEquals(79.00, $plan->getPriceMonthly());
+        $this->assertEquals(790.00, $plan->getPriceYearly());
     }
 
     /**
@@ -105,8 +105,8 @@ class SaasPlanTest extends UnitTestCase
     public function testIsFree(string $monthlyPrice, bool $expected): void
     {
         $plan = $this->createMock(SaasPlanInterface::class);
-        $plan->method('getMonthlyPrice')
-            ->willReturn($monthlyPrice);
+        $plan->method('getPriceMonthly')
+            ->willReturn(floatval($monthlyPrice));
         $plan->method('isFree')
             ->willReturnCallback(function () use ($monthlyPrice) {
                 return floatval($monthlyPrice) == 0;
