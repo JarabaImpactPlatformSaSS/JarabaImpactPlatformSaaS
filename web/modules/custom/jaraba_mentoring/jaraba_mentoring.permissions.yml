@@ -1,0 +1,64 @@
+# Permissions for mentor management
+administer mentor profiles:
+  title: 'Administer mentor profiles'
+  description: 'Full access to manage mentor profiles, packages, and settings.'
+  restrict access: true
+
+view mentor profiles:
+  title: 'View mentor profiles'
+  description: 'View published mentor profiles in the catalog.'
+
+create mentor profile:
+  title: 'Create mentor profile'
+  description: 'Apply to become a mentor in the ecosystem.'
+
+edit own mentor profile:
+  title: 'Edit own mentor profile'
+  description: 'Edit your own mentor profile and packages.'
+
+# Permissions for mentoring packages
+administer mentoring packages:
+  title: 'Administer mentoring packages'
+  description: 'Create, edit, and delete mentoring packages.'
+  restrict access: true
+
+view mentoring packages:
+  title: 'View mentoring packages'
+  description: 'View available mentoring packages.'
+
+create mentoring package:
+  title: 'Create mentoring package'
+  description: 'Create new mentoring packages (for mentors).'
+
+edit own mentoring package:
+  title: 'Edit own mentoring package'
+  description: 'Edit your own mentoring packages.'
+
+# Permissions for engagements
+view own engagements:
+  title: 'View own engagements'
+  description: 'View your mentoring engagements (as mentor or mentee).'
+
+manage engagements:
+  title: 'Manage engagements'
+  description: 'Manage all mentoring engagements.'
+  restrict access: true
+
+# Permissions for sessions
+view own sessions:
+  title: 'View own sessions'
+  description: 'View your mentoring sessions.'
+
+book mentoring session:
+  title: 'Book mentoring session'
+  description: 'Book a new mentoring session.'
+
+manage sessions:
+  title: 'Manage sessions'
+  description: 'Manage all mentoring sessions.'
+  restrict access: true
+
+# Dashboard access
+access mentor dashboard:
+  title: 'Access mentor dashboard'
+  description: 'Access the mentor dashboard with KPIs and pipeline.'

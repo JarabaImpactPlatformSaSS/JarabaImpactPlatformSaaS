@@ -1,0 +1,130 @@
+<?php
+
+/**
+ * @file
+ * Módulo principal del Centro de Operaciones Financieras (FOC).
+ *
+ * PROPÓSITO:
+ * Este módulo implementa la arquitectura FinOps para el ecosistema SaaS híbrido
+ * de Jaraba Impact Platform, incluyendo:
+ * - Entidades financieras inmutables (libro mayor digital)
+ * - Integración Stripe Connect con Destination Charges
+ * - Métricas SaaS 2.0 (MRR, ARR, LTV, CAC, Churn)
+ * - Sistema de alertas prescriptivas via ECA
+ *
+ * MODELO ECONÓMICO:
+ * - Motor Institucional (30%): Subvenciones, PERTE, Kit Digital
+ * - Motor Mercado Privado (40%): Infoproductos, membresías, marketplace
+ * - Motor Licencias (30%): Franquicias, cuotas recurrentes, royalties
+ *
+ * @see docs/tecnicos/20260113-FOC_Especificacion_Tecnica_Integracion.md
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ *
+ * Proporciona información de ayuda contextual para el módulo FOC.
+ */
+function jaraba_foc_help(string $route_name, RouteMatchInterface $route_match): string {
+  switch ($route_name) {
+    case 'help.page.jaraba_foc':
+      $output = '<h3>' . t('Centro de Operaciones Financieras (FOC)') . '</h3>';
+      $output .= '<p>' . t('El FOC transforma Drupal en un Data Warehouse Operativo para inteligencia de negocio de nivel empresarial.') . '</p>';
+      $output .= '<h4>' . t('Capacidades') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Entidades financieras inmutables (append-only)') . '</li>';
+      $output .= '<li>' . t('Integración Stripe Connect con split payments') . '</li>';
+      $output .= '<li>' . t('Métricas SaaS 2.0: MRR, ARR, LTV, CAC, NRR, GRR') . '</li>';
+      $output .= '<li>' . t('Cost Allocation para rentabilidad por tenant') . '</li>';
+      $output .= '<li>' . t('Alertas prescriptivas con playbooks automatizados') . '</li>';
+      $output .= '</ul>';
+      return $output;
+
+    default:
+      return '';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Define las plantillas Twig para los dashboards del FOC.
+ */
+function jaraba_foc_theme(): array {
+  return [
+    'foc_dashboard' => [
+      'variables' => [
+        'mrr' => 0,
+        'arr' => 0,
+        'gross_margin' => 0,
+        'net_revenue_retention' => 0,
+        'gross_revenue_retention' => 0,
+        'ltv_cac_ratio' => 0,
+        'cac_payback_months' => 0,
+        'tenants_metrics' => [],
+        'tenants_by_health' => [],
+        'verticals_metrics' => [],
+        'alerts' => [],
+        'projections' => [],
+      ],
+      'template' => 'foc-dashboard',
+    ],
+    'foc_transaction_list' => [
+      'variables' => [
+        'transactions' => [],
+        'filters' => [],
+        'totals' => [],
+      ],
+      'template' => 'foc-transaction-list',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta la evaluación automática de alertas financieras.
+ * Se recomienda configurar cron para ejecutarse cada 15-60 minutos.
+ */
+function jaraba_foc_cron(): void {
+  // Verificar si ha pasado suficiente tiempo desde la última evaluación
+  $lastRun = \Drupal::state()->get('jaraba_foc.last_alert_evaluation', 0);
+  $interval = 3600; // Evaluar cada hora como máximo
+  
+  if ((\Drupal::time()->getRequestTime() - $lastRun) < $interval) {
+    return;
+  }
+  
+  try {
+    /** @var \Drupal\jaraba_foc\Service\AlertService $alertService */
+    $alertService = \Drupal::service('jaraba_foc.alerts');
+    $newAlerts = $alertService->evaluateAllAlerts();
+    
+    if (!empty($newAlerts)) {
+      \Drupal::logger('jaraba_foc')->info('Cron FOC: @count nuevas alertas generadas.', [
+        '@count' => count($newAlerts),
+      ]);
+    }
+    
+    \Drupal::state()->set('jaraba_foc.last_alert_evaluation', \Drupal::time()->getRequestTime());
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_foc')->error('Error en cron FOC: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_type_build().
+ *
+ * Asegura que las tablas de entidades FOC se instalen correctamente.
+ */
+function jaraba_foc_entity_type_build(array &$entity_types): void {
+  // Las entidades se definen via anotaciones en las clases Entity,
+  // este hook está disponible para ajustes dinámicos si es necesario.
+}

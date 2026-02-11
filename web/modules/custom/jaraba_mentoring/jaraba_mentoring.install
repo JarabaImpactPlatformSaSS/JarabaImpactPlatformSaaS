@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Jaraba Mentoring module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_mentoring_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Mentoring module installed. Configure Stripe Connect at /admin/config/jaraba/mentoring.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_mentoring_uninstall(): void {
+  // Clean up configuration.
+  \Drupal::configFactory()->getEditable('jaraba_mentoring.settings')->delete();
+}
+
+/**
+ * Install all mentoring entity types (mentoring_package, mentoring_engagement, etc).
+ */
+function jaraba_mentoring_update_10001(): void {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_types = [
+    'mentoring_package',
+    'mentoring_engagement',
+    'mentoring_session',
+    'availability_slot',
+    'session_notes',
+    'session_review',
+    'session_task',
+  ];
+
+  foreach ($entity_types as $entity_type_id) {
+    try {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      if ($entity_type) {
+        $entity_definition_update_manager->installEntityType($entity_type);
+        \Drupal::logger('jaraba_mentoring')->notice("Installed entity type: @type", ['@type' => $entity_type_id]);
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_mentoring')->warning("Could not install @type: @message", [
+        '@type' => $entity_type_id,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+}

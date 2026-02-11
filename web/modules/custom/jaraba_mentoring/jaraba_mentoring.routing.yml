@@ -1,0 +1,277 @@
+# Rutas administrativas para entidades
+entity.mentor_profile.settings:
+  path: '/admin/structure/mentoring/mentor-profile'
+  defaults:
+    _title: 'Configuración de Perfiles de Mentor'
+    _controller: 'Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'administer mentor profiles'
+
+entity.mentoring_package.settings:
+  path: '/admin/structure/mentoring/packages'
+  defaults:
+    _title: 'Configuración de Paquetes de Mentoría'
+    _controller: 'Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'administer mentoring packages'
+
+entity.mentoring_engagement.settings:
+  path: '/admin/structure/mentoring/engagements'
+  defaults:
+    _title: 'Configuración de Engagements'
+    _controller: 'Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'manage engagements'
+
+entity.mentoring_session.settings:
+  path: '/admin/structure/mentoring/sessions'
+  defaults:
+    _title: 'Configuración de Sesiones'
+    _controller: 'Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'manage sessions'
+
+# NOTA: Las rutas de colección (/admin/content/mentoring-*) son generadas
+# automáticamente por AdminHtmlRouteProvider definido en las anotaciones de las entidades.
+# NO duplicar aquí para evitar conflictos de ruteo.
+
+# Configuración general del módulo
+
+jaraba_mentoring.settings:
+  path: '/admin/config/jaraba/mentoring'
+  defaults:
+    _title: 'Configuración de Mentorías'
+    _form: 'Drupal\jaraba_mentoring\Form\MentoringSettingsForm'
+  requirements:
+    _permission: 'administer mentor profiles'
+  options:
+    _admin_route: TRUE
+
+# Frontend: Catálogo de Mentores
+jaraba_mentoring.mentor_catalog:
+  path: '/mentors'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorCatalogController::catalog'
+    _title: 'Encuentra tu Mentor'
+  requirements:
+    _permission: 'view mentor profiles'
+
+# Frontend: Perfil público de Mentor
+jaraba_mentoring.mentor_public_profile:
+  path: '/mentor/{mentor_profile}'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorProfileController::publicView'
+    _title_callback: 'Drupal\jaraba_mentoring\Controller\MentorProfileController::title'
+  requirements:
+    _permission: 'view mentor profiles'
+  options:
+    parameters:
+      mentor_profile:
+        type: entity:mentor_profile
+
+# Frontend: Convertirse en Mentor
+jaraba_mentoring.become_mentor:
+  path: '/become-mentor'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorProfileController::becomeMentor'
+    _title: 'Conviértete en Mentor'
+  requirements:
+    _permission: 'create mentor profile'
+
+# API: Matching de Mentores
+jaraba_mentoring.api.match:
+  path: '/api/v1/mentors/match'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorApiController::match'
+  methods: [POST]
+  requirements:
+    _permission: 'view mentor profiles'
+    _format: 'json'
+
+# API: Lista de Mentores
+jaraba_mentoring.api.list:
+  path: '/api/v1/mentors'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view mentor profiles'
+    _format: 'json'
+
+# API: Perfil de Mentor
+jaraba_mentoring.api.mentor:
+  path: '/api/v1/mentors/{mentor_profile}'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'view mentor profiles'
+    _format: 'json'
+  options:
+    parameters:
+      mentor_profile:
+        type: entity:mentor_profile
+
+# API: Disponibilidad del Mentor
+jaraba_mentoring.api.availability:
+  path: '/api/v1/mentors/{mentor_profile}/availability'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorApiController::availability'
+  methods: [GET]
+  requirements:
+    _permission: 'view mentor profiles'
+    _format: 'json'
+  options:
+    parameters:
+      mentor_profile:
+        type: entity:mentor_profile
+
+# Dashboard del Mentor
+jaraba_mentoring.mentor_dashboard:
+  path: '/mentor/dashboard'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorDashboardController::dashboard'
+    _title: 'Mi Dashboard de Mentor'
+  requirements:
+    _permission: 'access mentor dashboard'
+
+# ============================================
+# API REST: Sesiones de Mentoría
+# ============================================
+
+jaraba_mentoring.api.sessions.list:
+  path: '/api/v1/sessions'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _format: json
+
+jaraba_mentoring.api.sessions.create:
+  path: '/api/v1/sessions'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::bookSession'
+  methods: [POST]
+  requirements:
+    _permission: 'book mentoring session'
+  options:
+    _format: json
+
+jaraba_mentoring.api.sessions.update:
+  path: '/api/v1/sessions/{session_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'access content'
+    session_id: '\d+'
+  options:
+    _format: json
+
+jaraba_mentoring.api.sessions.cancel:
+  path: '/api/v1/sessions/{session_id}/cancel'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::cancel'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    session_id: '\d+'
+  options:
+    _format: json
+
+jaraba_mentoring.api.sessions.reschedule:
+  path: '/api/v1/sessions/{session_id}/reschedule'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::reschedule'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    session_id: '\d+'
+  options:
+    _format: json
+
+jaraba_mentoring.api.sessions.join_url:
+  path: '/api/v1/sessions/{session_id}/join-url'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\SessionApiController::joinUrl'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    session_id: '\d+'
+  options:
+    _format: json
+
+# ============================================
+# API REST: Paquetes de Mentoría
+# ============================================
+
+jaraba_mentoring.api.packages.list:
+  path: '/api/v1/packages'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\PackageApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _format: json
+
+jaraba_mentoring.api.packages.get:
+  path: '/api/v1/packages/{package_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\PackageApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    package_id: '\d+'
+  options:
+    _format: json
+
+jaraba_mentoring.api.packages.purchase:
+  path: '/api/v1/packages/{package_id}/purchase'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\PackageApiController::purchase'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    package_id: '\d+'
+  options:
+    _format: json
+
+# ============================================
+# API REST: Engagements de Mentoría
+# ============================================
+
+jaraba_mentoring.api.engagements.list:
+  path: '/api/v1/engagements'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::list'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _format: json
+
+jaraba_mentoring.api.engagements.get:
+  path: '/api/v1/engagements/{engagement_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::get'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    engagement_id: '\d+'
+  options:
+    _format: json
+
+jaraba_mentoring.api.engagements.terminate:
+  path: '/api/v1/engagements/{engagement_id}/terminate'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::terminate'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    engagement_id: '\d+'
+  options:
+    _format: json
+

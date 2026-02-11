@@ -1,0 +1,13 @@
+name: Jaraba FOC (Financial Operations Center)
+type: module
+description: 'Centro de Operaciones Financieras - Arquitectura FinOps para SaaS Híbrido Multi-Tenant con Triple Motor Económico, Stripe Connect y Métricas SaaS 2.0'
+package: Jaraba Platform
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:commerce
+  - drupal:commerce_payment
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+configure: jaraba_foc.settings

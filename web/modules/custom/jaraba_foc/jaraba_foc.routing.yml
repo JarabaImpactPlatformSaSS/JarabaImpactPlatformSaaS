@@ -1,0 +1,167 @@
+# Rutas del módulo FOC (Centro de Operaciones Financieras)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# DASHBOARD PRINCIPAL FOC
+# Acceso a la vista ejecutiva de métricas financieras
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.dashboard:
+  path: '/admin/foc'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\FocDashboardController::dashboard'
+    _title: 'Centro de Operaciones Financieras'
+  requirements:
+    _permission: 'access foc dashboard'
+
+jaraba_foc.dashboard.tenants:
+  path: '/admin/foc/tenants'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\FocDashboardController::tenantsAnalytics'
+    _title: 'Analítica de Inquilinos'
+  requirements:
+    _permission: 'access foc dashboard'
+
+jaraba_foc.dashboard.verticals:
+  path: '/admin/foc/verticals'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\FocDashboardController::verticalsAnalytics'
+    _title: 'Rentabilidad por Vertical'
+  requirements:
+    _permission: 'access foc dashboard'
+
+jaraba_foc.dashboard.projections:
+  path: '/admin/foc/projections'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\FocDashboardController::projections'
+    _title: 'Proyecciones y Forecasting'
+  requirements:
+    _permission: 'access foc dashboard'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CONFIGURACIÓN DEL MÓDULO
+# Ajustes de Stripe Connect, umbrales de alertas, etc.
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.settings:
+  path: '/admin/config/jaraba/foc'
+  defaults:
+    _form: '\Drupal\jaraba_foc\Form\FocSettingsForm'
+    _title: 'Configuración FOC'
+  requirements:
+    _permission: 'administer foc'
+  options:
+    _admin_route: TRUE
+
+# ═══════════════════════════════════════════════════════════════════════════
+# TRANSACCIONES FINANCIERAS
+# CRUD y listado de transacciones (solo lectura, entidad inmutable)
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.transactions:
+  path: '/admin/foc/transactions'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\TransactionController::list'
+    _title: 'Transacciones Financieras'
+  requirements:
+    _permission: 'view financial transactions'
+
+jaraba_foc.transaction.view:
+  path: '/admin/foc/transaction/{financial_transaction}'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\TransactionController::view'
+    _title_callback: '\Drupal\jaraba_foc\Controller\TransactionController::viewTitle'
+  requirements:
+    _permission: 'view financial transactions'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# WEBHOOKS STRIPE
+# Endpoint para recibir eventos de Stripe Connect
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.stripe_webhook:
+  path: '/api/foc/stripe-webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\StripeWebhookController::handle'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# ═══════════════════════════════════════════════════════════════════════════
+# API INTERNA
+# Endpoints para consumo interno (dashboards, widgets)
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.api.metrics:
+  path: '/api/foc/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\ApiController::getMetrics'
+  requirements:
+    _permission: 'access foc dashboard'
+  methods: [GET]
+
+jaraba_foc.api.snapshot:
+  path: '/api/foc/snapshot'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\ApiController::createSnapshot'
+  requirements:
+    _permission: 'administer foc'
+  methods: [POST]
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ONBOARDING DE VENDEDORES (STRIPE CONNECT)
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.vendor.onboarding:
+  path: '/admin/foc/vendor/onboarding'
+  defaults:
+    _form: '\Drupal\jaraba_foc\Form\VendorOnboardingForm'
+    _title: 'Onboarding de Vendedor'
+  requirements:
+    _permission: 'administer foc'
+  options:
+    _admin_route: TRUE
+
+jaraba_foc.vendor.onboarding.refresh:
+  path: '/admin/foc/vendor/onboarding/refresh'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\VendorOnboardingController::refresh'
+    _title: 'Reintentar Onboarding'
+  requirements:
+    _permission: 'administer foc'
+
+jaraba_foc.vendor.onboarding.complete:
+  path: '/admin/foc/vendor/onboarding/complete'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\VendorOnboardingController::complete'
+    _title: 'Onboarding Completado'
+  requirements:
+    _permission: 'administer foc'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ALERTAS FOC
+# ═══════════════════════════════════════════════════════════════════════════
+
+jaraba_foc.alerts:
+  path: '/admin/foc/alerts'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\AlertController::list'
+    _title: 'Alertas FOC'
+  requirements:
+    _permission: 'access foc dashboard'
+
+jaraba_foc.alerts.evaluate:
+  path: '/admin/foc/alerts/evaluate'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\AlertController::evaluate'
+    _title: 'Evaluar Alertas'
+  requirements:
+    _permission: 'administer foc'
+
+jaraba_foc.alert.resolve:
+  path: '/admin/foc/alert/{foc_alert}/resolve'
+  defaults:
+    _controller: '\Drupal\jaraba_foc\Controller\AlertController::resolve'
+    _title: 'Resolver Alerta'
+  requirements:
+    _permission: 'administer foc'

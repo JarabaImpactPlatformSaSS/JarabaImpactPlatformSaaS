@@ -1,0 +1,21 @@
+// =============================================================================
+// JARABA FOC - ARCHIVO PRINCIPAL SCSS
+// =============================================================================
+// Punto de entrada para compilar los estilos del módulo FOC.
+//
+// COMPILACIÓN (desde el directorio del módulo jaraba_foc):
+// npx sass scss/main.scss:css/foc-dashboard.css --style=compressed
+//
+// PERSONALIZACIÓN:
+// Los colores y tipografía heredan las variables inyectables del ecosistema
+// definidas en ecosistema_jaraba_core/scss/_injectable.scss
+// =============================================================================
+
+// 1. Variables SCSS del ecosistema (heredadas)
+@use '../../ecosistema_jaraba_core/scss/variables' as *;
+
+// 2. Variables específicas del FOC
+@use 'foc-variables' as *;
+
+// 3. Dashboard FOC
+@use 'foc-dashboard';

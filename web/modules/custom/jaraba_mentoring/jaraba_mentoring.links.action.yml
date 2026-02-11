@@ -1,0 +1,26 @@
+# Action links for Mentoring module entities
+# "Add" buttons on collection pages
+
+entity.mentor_profile.add_form:
+  title: 'Añadir mentor'
+  route_name: entity.mentor_profile.add_form
+  appears_on:
+    - entity.mentor_profile.collection
+
+entity.mentoring_package.add_form:
+  title: 'Añadir paquete'
+  route_name: entity.mentoring_package.add_form
+  appears_on:
+    - entity.mentoring_package.collection
+
+entity.mentoring_engagement.add_form:
+  title: 'Añadir engagement'
+  route_name: entity.mentoring_engagement.add_form
+  appears_on:
+    - entity.mentoring_engagement.collection
+
+entity.mentoring_session.add_form:
+  title: 'Añadir sesión'
+  route_name: entity.mentoring_session.add_form
+  appears_on:
+    - entity.mentoring_session.collection

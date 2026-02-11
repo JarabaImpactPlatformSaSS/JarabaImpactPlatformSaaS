@@ -1,0 +1,664 @@
+// =============================================================================
+// DASHBOARD FOC - ESTILOS SCSS
+// =============================================================================
+// Estilos del Centro de Operaciones Financieras.
+// Utiliza variables inyectables del ecosistema para personalización.
+//
+// ESTRUCTURA:
+// 1. Contenedor principal
+// 2. KPI Cards
+// 3. Salud de Tenants
+// 4. Alertas
+// 5. Legend Box (Glosario)
+// 6. Quick Links
+// 7. Tablas
+// =============================================================================
+
+@use 'sass:color';
+@use '../../ecosistema_jaraba_core/scss/variables' as *;
+@use 'foc-variables' as *;
+
+// =============================================================================
+// 1. CONTENEDOR PRINCIPAL (Estilo Premium con bordes redondeados)
+// =============================================================================
+
+.foc-dashboard {
+    // Usamos variables CSS inyectables del ecosistema
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    color: $foc-text-primary;
+    padding: $foc-spacing-xl;
+    background: $foc-bg-primary;
+    min-height: 100vh;
+
+    // Contenedor con bordes redondeados como /admin/finops
+    .foc-main-container {
+        background: $foc-bg-card;
+        backdrop-filter: $foc-glass-blur;
+        border-radius: $ej-border-radius-xl;
+        border: $foc-glass-border;
+        padding: $foc-spacing-xl;
+        box-shadow: $foc-shadow-card;
+    }
+}
+
+.foc-dashboard__header {
+    text-align: center;
+    margin-bottom: $foc-spacing-xl;
+}
+
+.foc-dashboard__title {
+    font-size: $ej-font-size-3xl;
+    font-weight: $ej-font-weight-bold;
+    margin: 0 0 $foc-spacing-xs;
+    // Gradiente usando color primario inyectable
+    background: linear-gradient(135deg, var(--ej-color-primary), $foc-vip-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.foc-dashboard__subtitle {
+    color: $foc-text-secondary;
+    margin: 0;
+    font-size: $ej-font-size-md;
+}
+
+// =============================================================================
+// 2. KPI GRID
+// =============================================================================
+
+.foc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $foc-spacing-md;
+    margin-bottom: $foc-spacing-xl;
+}
+
+.foc-kpi-card {
+    background: $foc-bg-card;
+    backdrop-filter: $foc-glass-blur;
+    border-radius: $ej-border-radius-lg;
+    padding: $foc-spacing-lg;
+    box-shadow: $foc-shadow-card;
+    border: $foc-glass-border;
+    display: flex;
+    align-items: flex-start;
+    gap: $foc-spacing-md;
+    transition: var(--ej-transition);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $foc-shadow-card-hover;
+    }
+}
+
+.foc-kpi-card--primary {
+    // Usa color primario inyectable
+    background: linear-gradient(135deg, var(--ej-color-primary), var(--ej-color-primary-hover, color.adjust($ej-color-primary-fallback, $lightness: -10%)));
+}
+
+.foc-kpi-card--success {
+    border-left: 4px solid $foc-healthy-color;
+}
+
+.foc-kpi-card--healthy {
+    border-left: 4px solid $foc-neutral-color;
+}
+
+.foc-kpi-card--warning {
+    border-left: 4px solid $foc-at-risk-color;
+}
+
+.foc-kpi-card__icon {
+    font-size: $ej-font-size-3xl;
+    flex-shrink: 0;
+}
+
+.foc-kpi-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.foc-kpi-card__value {
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+    line-height: 1.2;
+}
+
+.foc-kpi-card__label {
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.foc-kpi-card__description,
+.foc-kpi-card__benchmark {
+    font-size: $ej-font-size-xs;
+    color: $foc-text-muted;
+}
+
+// =============================================================================
+// 3. SALUD DE TENANTS
+// =============================================================================
+
+.foc-section-title {
+    font-size: $ej-font-size-xl;
+    font-weight: $ej-font-weight-semibold;
+    margin: 0 0 $foc-spacing-md;
+}
+
+.foc-tenant-health {
+    margin-bottom: $foc-spacing-xl;
+}
+
+.foc-tenant-health__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $foc-spacing-md;
+}
+
+.foc-health-stat {
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    padding: $foc-spacing-md;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.foc-health-stat--vip {
+    border-color: $foc-vip-color;
+    background: rgba($foc-vip-color, 0.1);
+}
+
+.foc-health-stat--healthy {
+    border-color: $foc-healthy-color;
+    background: rgba($foc-healthy-color, 0.1);
+}
+
+.foc-health-stat--at-risk {
+    border-color: $foc-at-risk-color;
+    background: rgba($foc-at-risk-color, 0.1);
+}
+
+.foc-health-stat--in-loss {
+    border-color: $foc-in-loss-color;
+    background: rgba($foc-in-loss-color, 0.1);
+}
+
+.foc-health-stat__count {
+    display: block;
+    font-size: $ej-font-size-3xl;
+    font-weight: $ej-font-weight-bold;
+}
+
+.foc-health-stat__label {
+    display: block;
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-semibold;
+    margin-top: 4px;
+}
+
+.foc-health-stat__description {
+    display: block;
+    font-size: $ej-font-size-xs;
+    color: $foc-text-muted;
+    margin-top: 4px;
+}
+
+// =============================================================================
+// 4. ALERTAS
+// =============================================================================
+
+.foc-alerts {
+    margin-bottom: $foc-spacing-xl;
+}
+
+.foc-alerts__list {
+    display: flex;
+    flex-direction: column;
+    gap: $foc-spacing-sm;
+}
+
+.foc-alert {
+    display: flex;
+    align-items: center;
+    gap: $foc-spacing-md;
+    padding: $foc-spacing-md;
+    border-radius: $ej-border-radius-lg;
+    background: $foc-bg-card;
+}
+
+.foc-alert--warning {
+    border-left: 4px solid $foc-at-risk-color;
+}
+
+.foc-alert--danger {
+    border-left: 4px solid $foc-in-loss-color;
+}
+
+.foc-alert__icon {
+    font-size: $ej-font-size-xl;
+}
+
+.foc-alert__content {
+    flex: 1;
+}
+
+.foc-alert__message {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.foc-alert__action {
+    font-size: $ej-font-size-sm;
+    color: var(--ej-color-primary);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// =============================================================================
+// 5. LEGEND BOX (GLOSARIO)
+// =============================================================================
+
+.foc-legend-box {
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    padding: $foc-spacing-lg;
+    margin-bottom: $foc-spacing-xl;
+}
+
+.foc-legend-box__title {
+    font-size: $ej-font-size-md;
+    font-weight: $ej-font-weight-semibold;
+    margin: 0 0 $foc-spacing-md;
+    color: $foc-text-secondary;
+}
+
+.foc-legend-box__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $foc-spacing-md;
+    margin: 0;
+}
+
+.foc-legend-box__item {
+    display: flex;
+    gap: $foc-spacing-sm;
+
+    dt {
+        font-weight: $ej-font-weight-bold;
+        color: var(--ej-color-primary);
+        min-width: 50px;
+    }
+
+    dd {
+        margin: 0;
+        font-size: $ej-font-size-sm;
+        color: $foc-text-secondary;
+    }
+}
+
+// =============================================================================
+// 6. QUICK LINKS
+// =============================================================================
+
+.foc-quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $foc-spacing-md;
+}
+
+.foc-quick-link {
+    display: flex;
+    align-items: center;
+    gap: $foc-spacing-sm;
+    padding: $foc-spacing-md;
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    text-decoration: none;
+    color: $foc-text-primary;
+    transition: var(--ej-transition);
+
+    &:hover {
+        background: $foc-bg-secondary;
+        transform: translateY(-2px);
+    }
+}
+
+.foc-quick-link__icon {
+    font-size: $ej-font-size-xl;
+}
+
+.foc-quick-link__label {
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-medium;
+}
+
+// =============================================================================
+// 7. TABLAS
+// =============================================================================
+
+.foc-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    overflow: hidden;
+
+    th,
+    td {
+        padding: $foc-spacing-sm $foc-spacing-md;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+        background: $foc-bg-secondary;
+        font-weight: $ej-font-weight-semibold;
+        font-size: $ej-font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $foc-text-secondary;
+    }
+
+    tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+// Status badges en tablas
+.foc-status--vip {
+    color: $foc-vip-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+.foc-status--healthy {
+    color: $foc-healthy-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+.foc-status--at_risk {
+    color: $foc-at-risk-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+.foc-status--in_loss {
+    color: $foc-in-loss-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+// Indicadores de ingresos/gastos
+.foc-revenue {
+    color: $foc-revenue-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+.foc-expense {
+    color: $foc-expense-color;
+    font-weight: $ej-font-weight-semibold;
+}
+
+// =============================================================================
+// 8. RESPONSIVE
+// =============================================================================
+
+@media (max-width: $ej-breakpoint-md) {
+    .foc-dashboard {
+        padding: $foc-spacing-md;
+    }
+
+    .foc-tenant-health__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .foc-kpi-card__value {
+        font-size: $ej-font-size-xl;
+    }
+}
+
+// =============================================================================
+// 9. PÁGINAS DE ALERTAS Y TENANTS (UX Premium)
+// =============================================================================
+
+// Wrapper general para páginas FOC con bordes redondeados
+.foc-page-wrapper {
+    background: $foc-bg-primary;
+    min-height: 100vh;
+    padding: $foc-spacing-xl;
+}
+
+.foc-page-container {
+    background: $foc-bg-card;
+    backdrop-filter: $foc-glass-blur;
+    border-radius: $ej-border-radius-xl;
+    border: $foc-glass-border;
+    padding: $foc-spacing-xl;
+    box-shadow: $foc-shadow-card;
+}
+
+// Header de páginas
+.foc-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $foc-spacing-xl;
+    padding-bottom: $foc-spacing-lg;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    @media (max-width: $ej-breakpoint-md) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $foc-spacing-md;
+    }
+}
+
+.foc-page-title {
+    font-size: $ej-font-size-2xl;
+    font-weight: $ej-font-weight-bold;
+    margin: 0;
+    background: linear-gradient(135deg, var(--ej-color-primary), $foc-vip-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// Alerts Page Premium
+.foc-alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $foc-spacing-lg;
+
+    h2 {
+        font-size: $ej-font-size-xl;
+        font-weight: $ej-font-weight-bold;
+        margin: 0;
+        color: $foc-text-primary;
+    }
+}
+
+.foc-table--alerts {
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    overflow: hidden;
+    border: $foc-glass-border;
+
+    th {
+        background: $foc-bg-secondary;
+        color: $foc-text-secondary;
+        font-weight: $ej-font-weight-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: $ej-font-size-xs;
+        padding: $foc-spacing-md;
+    }
+
+    td {
+        padding: $foc-spacing-md;
+        color: $foc-text-primary;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+// Severity badges con colores premium
+.foc-severity--critical {
+    background: linear-gradient(135deg, $foc-in-loss-color, color.adjust($foc-in-loss-color, $lightness: -15%));
+    color: white;
+    padding: $foc-spacing-xs $foc-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-bold;
+    font-size: $ej-font-size-xs;
+    text-transform: uppercase;
+    animation: pulse-critical 2s infinite;
+}
+
+.foc-severity--warning {
+    background: linear-gradient(135deg, $foc-at-risk-color, color.adjust($foc-at-risk-color, $lightness: -10%));
+    color: #000;
+    padding: $foc-spacing-xs $foc-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-bold;
+    font-size: $ej-font-size-xs;
+    text-transform: uppercase;
+}
+
+.foc-severity--info {
+    background: $foc-neutral-color;
+    color: white;
+    padding: $foc-spacing-xs $foc-spacing-sm;
+    border-radius: $ej-border-radius-sm;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-xs;
+    text-transform: uppercase;
+}
+
+@keyframes pulse-critical {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+// Tenants Analytics Premium
+.foc-tenants-analytics {
+    background: $foc-bg-primary;
+    min-height: 100vh;
+    padding: $foc-spacing-xl;
+}
+
+.foc-section-subtitle {
+    color: $foc-text-secondary;
+    font-size: $ej-font-size-sm;
+    margin: $foc-spacing-xs 0 $foc-spacing-lg;
+}
+
+.foc-table--tenants {
+    background: $foc-bg-card;
+    border-radius: $ej-border-radius-lg;
+    overflow: hidden;
+    border: $foc-glass-border;
+
+    th {
+        background: $foc-bg-secondary;
+        color: $foc-text-secondary;
+        font-weight: $ej-font-weight-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: $ej-font-size-xs;
+        padding: $foc-spacing-md;
+    }
+
+    td {
+        padding: $foc-spacing-md;
+        color: $foc-text-primary;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+// Botones de acción premium
+.foc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $foc-spacing-xs;
+    padding: $foc-spacing-sm $foc-spacing-md;
+    border-radius: $ej-border-radius-md;
+    font-weight: $ej-font-weight-medium;
+    font-size: $ej-font-size-sm;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+
+    &--primary {
+        background: linear-gradient(135deg, var(--ej-color-primary), color.adjust($ej-color-primary-fallback, $lightness: -10%));
+        color: white;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: $foc-shadow-card-hover;
+        }
+    }
+
+    &--secondary {
+        background: $foc-bg-secondary;
+        color: $foc-text-primary;
+        border: $foc-glass-border;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    &--danger {
+        background: linear-gradient(135deg, $foc-in-loss-color, color.adjust($foc-in-loss-color, $lightness: -10%));
+        color: white;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba($foc-in-loss-color, 0.4);
+        }
+    }
+}
+
+// Cards vacías con estado premium
+.foc-empty-state {
+    text-align: center;
+    padding: $foc-spacing-xl * 2;
+    color: $foc-text-secondary;
+
+    &__icon {
+        font-size: 4rem;
+        margin-bottom: $foc-spacing-lg;
+        opacity: 0.5;
+    }
+
+    &__title {
+        font-size: $ej-font-size-xl;
+        font-weight: $ej-font-weight-semibold;
+        margin-bottom: $foc-spacing-sm;
+        color: $foc-text-primary;
+    }
+
+    &__message {
+        font-size: $ej-font-size-md;
+        color: $foc-text-muted;
+    }
+}

@@ -1,0 +1,20 @@
+services:
+  jaraba_mentoring.mentor_matching:
+    class: Drupal\jaraba_mentoring\Service\MentorMatchingService
+    arguments: ['@entity_type.manager', '@database']
+
+  jaraba_mentoring.session_scheduler:
+    class: Drupal\jaraba_mentoring\Service\SessionSchedulerService
+    arguments: ['@entity_type.manager', '@datetime.time']
+
+  jaraba_mentoring.stripe_connect:
+    class: Drupal\jaraba_mentoring\Service\StripeConnectService
+    arguments: ['@jaraba_foc.stripe_connect', '@logger.channel.jaraba_mentoring']
+
+  jaraba_mentoring.video_meeting:
+    class: Drupal\jaraba_mentoring\Service\VideoMeetingService
+    arguments: ['@config.factory', '@http_client']
+
+  logger.channel.jaraba_mentoring:
+    parent: logger.channel_base
+    arguments: ['jaraba_mentoring']

@@ -1,0 +1,80 @@
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SERVICIOS DE CÁLCULO DE MÉTRICAS
+  # Calculan las métricas SaaS 2.0 a partir de las transacciones financieras
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  jaraba_foc.metrics_calculator:
+    class: Drupal\jaraba_foc\Service\MetricsCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@datetime.time'
+      - '@logger.channel.jaraba_foc'
+
+  # Métricas SaaS 2.0 (MRR, ARR, NRR, GRR, LTV, CAC, ARPU)
+  jaraba_foc.saas_metrics:
+    class: Drupal\jaraba_foc\Service\SaasMetricsService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_foc'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SERVICIOS DE INTEGRACIÓN STRIPE CONNECT
+  # Gestiona la integración con Stripe Connect Standard y Destination Charges
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  jaraba_foc.stripe_connect:
+    class: Drupal\jaraba_foc\Service\StripeConnectService
+    arguments:
+      - '@config.factory'
+      - '@http_client'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_foc'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SERVICIOS ETL (Extract-Transform-Load)
+  # Procesan datos de sistemas externos y los almacenan en entidades FOC
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  jaraba_foc.etl:
+    class: Drupal\jaraba_foc\Service\EtlService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_foc.metrics_calculator'
+      - '@logger.channel.jaraba_foc'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SERVICIOS DE PROYECCIONES (AI-Powered)
+  # Utiliza APIs externas (Claude/GPT) para forecasting y modelado de escenarios
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  jaraba_foc.forecasting:
+    class: Drupal\jaraba_foc\Service\ForecastingService
+    arguments:
+      - '@jaraba_foc.metrics_calculator'
+      - '@config.factory'
+      - '@logger.channel.jaraba_foc'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SERVICIO DE ALERTAS PRESCRIPTIVAS
+  # Evalúa métricas y genera alertas con playbooks automatizados
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  jaraba_foc.alerts:
+    class: Drupal\jaraba_foc\Service\AlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_foc.metrics_calculator'
+      - '@config.factory'
+      - '@logger.channel.jaraba_foc'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # LOGGER CHANNEL
+  # Canal de logging dedicado para el módulo FOC
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  logger.channel.jaraba_foc:
+    parent: logger.channel_base
+    arguments: ['jaraba_foc']

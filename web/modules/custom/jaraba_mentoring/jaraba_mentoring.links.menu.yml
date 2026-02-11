@@ -1,0 +1,34 @@
+jaraba_mentoring.admin:
+  title: 'Mentorías'
+  description: 'Gestionar sistema de mentorías del ecosistema.'
+  parent: system.admin_structure
+  route_name: entity.mentor_profile.collection
+  weight: 15
+
+jaraba_mentoring.content.mentors:
+  title: 'Mentores'
+  description: 'Gestionar perfiles de mentores.'
+  parent: system.admin_content
+  route_name: entity.mentor_profile.collection
+  weight: 20
+
+jaraba_mentoring.content.packages:
+  title: 'Paquetes de Mentoría'
+  description: 'Gestionar paquetes de mentoría.'
+  parent: system.admin_content
+  route_name: entity.mentoring_package.collection
+  weight: 21
+
+jaraba_mentoring.content.engagements:
+  title: 'Engagements'
+  description: 'Ver relaciones mentor-emprendedor activas.'
+  parent: system.admin_content
+  route_name: entity.mentoring_engagement.collection
+  weight: 22
+
+jaraba_mentoring.config:
+  title: 'Mentorías'
+  description: 'Configurar el sistema de mentorías.'
+  parent: jaraba_config
+  route_name: jaraba_mentoring.settings
+  weight: 30

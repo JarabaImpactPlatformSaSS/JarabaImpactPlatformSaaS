@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * Template for mentor catalog page.
+ *
+ * Variables:
+ * - mentors: Array of mentor cards.
+ * - filters: Filter options (sectors, stages).
+ * - empty_message: Message when no mentors available.
+ */
+#}
+<div class="mentor-catalog">
+  
+  {# Header #}
+  <div class="mentor-catalog__header">
+    <h1>{{ 'Encuentra tu Mentor Ideal'|t }}</h1>
+    <p class="mentor-catalog__subtitle">{{ 'Conecta con expertos que te guiarán en tu transformación digital'|t }}</p>
+  </div>
+
+  {# Filters #}
+  <div class="mentor-catalog__filters">
+    <div class="filter-group">
+      <label for="filter-sector">{{ 'Sector'|t }}</label>
+      <select id="filter-sector" class="filter-select">
+        <option value="">{{ 'Todos los sectores'|t }}</option>
+        {% for key, label in filters.sectors %}
+          <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filter-stage">{{ 'Fase de Negocio'|t }}</label>
+      <select id="filter-stage" class="filter-select">
+        <option value="">{{ 'Todas las fases'|t }}</option>
+        {% for key, label in filters.stages %}
+          <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filter-price">{{ 'Tarifa Máxima'|t }}</label>
+      <select id="filter-price" class="filter-select">
+        <option value="">{{ 'Sin límite'|t }}</option>
+        <option value="50">{{ 'Hasta €50/h'|t }}</option>
+        <option value="100">{{ 'Hasta €100/h'|t }}</option>
+        <option value="150">{{ 'Hasta €150/h'|t }}</option>
+      </select>
+    </div>
+  </div>
+
+  {# Mentor Grid #}
+  {% if mentors|length > 0 %}
+    <div class="mentor-catalog__grid">
+      {% for mentor in mentors %}
+        <article class="mentor-card" data-sectors="{{ mentor.sectors|join(',') }}">
+          
+          <div class="mentor-card__header">
+            <div class="mentor-card__avatar">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="mentor-card__badge mentor-card__badge--{{ mentor.certification_level }}">
+              {{ mentor.certification_level|capitalize }}
+            </div>
+          </div>
+
+          <div class="mentor-card__body">
+            <h3 class="mentor-card__name">{{ mentor.display_name }}</h3>
+            <p class="mentor-card__headline">{{ mentor.headline }}</p>
+            
+            <div class="mentor-card__sectors">
+              {% for sector in mentor.sectors %}
+                <span class="sector-badge">{{ sector }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="mentor-card__stats">
+              <div class="stat">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>{{ mentor.average_rating }}</span>
+              </div>
+              <div class="stat">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>{{ mentor.total_sessions }} {{ 'sesiones'|t }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mentor-card__footer">
+            <div class="mentor-card__price">
+              <span class="price">€{{ mentor.hourly_rate }}</span>
+              <span class="unit">/{{ 'hora'|t }}</span>
+            </div>
+            <a href="{{ mentor.url }}" class="btn btn--primary">
+              {{ 'Ver Perfil'|t }}
+            </a>
+          </div>
+
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="mentor-catalog__empty">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+      </svg>
+      <p>{{ empty_message }}</p>
+    </div>
+  {% endif %}
+
+</div>

@@ -1,0 +1,78 @@
+// =============================================================================
+// VARIABLES ESPECÍFICAS DEL FOC
+// =============================================================================
+// Variables adicionales para el Centro de Operaciones Financieras.
+// Estas extienden el sistema de variables del ecosistema.
+//
+// ⛔ RECORDATORIO CRÍTICO:
+// - NUNCA usar colores hardcoded (#XXXXXX) en los estilos
+// - SIEMPRE usar var(--ej-*) para valores personalizables por tenant
+// - Los valores SCSS ($ej-*) son SOLO fallbacks para la compilación
+// - La personalización real ocurre via CSS custom properties inyectadas
+// =============================================================================
+
+@use 'sass:color';
+@use '../../ecosistema_jaraba_core/scss/variables' as *;
+
+// ---------------------------------------------------------------------------
+// COLORES SEMÁNTICOS FINANCIEROS
+// ---------------------------------------------------------------------------
+// Estos colores tienen significado específico para métricas financieras
+
+// Estados de salud de tenants (basados en ratio LTV:CAC)
+$foc-vip-color: #8b5cf6 !default; // LTV:CAC ≥ 5:1
+$foc-healthy-color: $ej-color-success !default; // LTV:CAC 3-5:1
+$foc-at-risk-color: $ej-color-warning !default; // LTV:CAC 1-3:1
+$foc-in-loss-color: $ej-color-error !default; // LTV:CAC < 1:1
+
+// Indicadores financieros
+$foc-revenue-color: $ej-color-success !default; // Ingresos (verde)
+$foc-expense-color: $ej-color-error !default; // Gastos (rojo)
+$foc-neutral-color: $ej-color-info !default; // Neutro (azul)
+
+// ---------------------------------------------------------------------------
+// COLORES DE DASHBOARD (DARK MODE NATIVO)
+// ---------------------------------------------------------------------------
+// El dashboard FOC usa dark mode por defecto para estética premium
+
+$foc-bg-primary: #0f172a !default; // Fondo principal
+$foc-bg-secondary: #1e293b !default; // Fondo secundario
+$foc-bg-card: rgba(30, 41, 59, 0.8) !default; // Fondo de cards (glassmorphism)
+$foc-text-primary: #f8fafc !default; // Texto principal
+$foc-text-secondary: #94a3b8 !default; // Texto secundario
+$foc-text-muted: #64748b !default; // Texto muted
+
+// ---------------------------------------------------------------------------
+// GRADIENTES (Dart Sass moderno: color.adjust)
+// ---------------------------------------------------------------------------
+
+$foc-gradient-primary: linear-gradient(135deg, $ej-color-primary-fallback, color.adjust($ej-color-primary-fallback, $lightness: -15%)) !default;
+$foc-gradient-vip: linear-gradient(135deg, $foc-vip-color, color.adjust($foc-vip-color, $lightness: -15%)) !default;
+
+// ---------------------------------------------------------------------------
+// EFECTOS GLASSMORPHISM
+// ---------------------------------------------------------------------------
+
+$foc-glass-blur: blur(10px) !default;
+$foc-glass-border: 1px solid rgba(255, 255, 255, 0.1) !default;
+
+// ---------------------------------------------------------------------------
+// SOMBRAS ESPECÍFICAS
+// ---------------------------------------------------------------------------
+
+$foc-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3) !default;
+$foc-shadow-card-hover: 0 6px 30px rgba(0, 0, 0, 0.4) !default;
+
+// Extra large border radius para contenedores principales
+$ej-border-radius-xl: 1.5rem !default;
+
+// ---------------------------------------------------------------------------
+// ESPACIADO
+// ---------------------------------------------------------------------------
+// Reutilizamos las variables del ecosistema pero con aliases para FOC
+
+$foc-spacing-xs: $ej-spacing-sm !default; // 8px
+$foc-spacing-sm: $ej-spacing-md * 0.75 !default; // 12px
+$foc-spacing-md: $ej-spacing-md !default; // 16px
+$foc-spacing-lg: $ej-spacing-lg !default; // 24px
+$foc-spacing-xl: $ej-spacing-xl !default; // 32px

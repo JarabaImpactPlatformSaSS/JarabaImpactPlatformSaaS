@@ -1,0 +1,194 @@
+{#
+/**
+ * @file
+ * Template for public mentor profile page.
+ *
+ * Variables:
+ * - mentor: MentorProfile entity
+ * - packages: Array of mentor's packages
+ * - reviews: Array of SessionReview entities
+ */
+#}
+<div class="mentor-profile-public">
+
+  {# Hero Section #}
+  <section class="mentor-profile__hero">
+    <div class="hero-backdrop"></div>
+    <div class="hero-content">
+      <div class="mentor-avatar-large">
+        <div class="avatar-placeholder">{{ jaraba_icon('ui', 'user', { variant: 'duotone', color: 'corporate', size: '64px' }) }}</div>
+        {% if mentor.certification_level %}
+          <span class="certification-badge certification-badge--{{ mentor.certification_level }} certification-badge--large">
+            {{ mentor.certification_level|capitalize }}
+          </span>
+        {% endif %}
+      </div>
+
+      <div class="mentor-main-info">
+        <h1>{{ mentor.display_name }}</h1>
+        <p class="headline">{{ mentor.headline }}</p>
+        
+        <div class="mentor-stats-row">
+          <div class="stat-pill">
+            <span class="icon">{{ jaraba_icon('ui', 'star', { color: 'warning', size: '16px' }) }}</span>
+            <span class="value">{{ mentor.average_rating|number_format(1) }}</span>
+            <span class="label">({{ mentor.total_reviews }} {{ 'reseñas'|t }})</span>
+          </div>
+          <div class="stat-pill">
+            <span class="icon">{{ jaraba_icon('ui', 'calendar', { size: '16px' }) }}</span>
+            <span class="value">{{ mentor.total_sessions }}</span>
+            <span class="label">{{ 'sesiones'|t }}</span>
+          </div>
+          <div class="stat-pill">
+            <span class="icon">{{ jaraba_icon('analytics', 'euro', { size: '16px' }) }}</span>
+            <span class="value">€{{ mentor.hourly_rate }}</span>
+            <span class="label">{{ '/hora'|t }}</span>
+          </div>
+        </div>
+
+        {% if mentor.is_available %}
+          <span class="availability-badge available">{{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '16px' }) }} {{ 'Disponible para reservas'|t }}</span>
+        {% else %}
+          <span class="availability-badge unavailable">{{ 'Sin disponibilidad actual'|t }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# Main Content Grid #}
+  <div class="mentor-profile__content">
+    
+    {# Left Column: About #}
+    <div class="mentor-profile__main">
+      
+      {# Bio Section #}
+      <section class="profile-section">
+        <h2>{{ 'Sobre mí'|t }}</h2>
+        <div class="bio-content">
+          {{ mentor.bio|raw }}
+        </div>
+      </section>
+
+      {# Expertise Section #}
+      <section class="profile-section">
+        <h2>{{ 'Áreas de Especialización'|t }}</h2>
+        
+        <div class="expertise-group">
+          <h4>{{ 'Sectores'|t }}</h4>
+          <div class="tag-list">
+            {% for sector in mentor.sectors %}
+              <span class="tag tag--sector">{{ sector }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="expertise-group">
+          <h4>{{ 'Fases de Negocio'|t }}</h4>
+          <div class="tag-list">
+            {% for stage in mentor.business_stages %}
+              <span class="tag tag--stage">{{ stage }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if mentor.specializations %}
+          <div class="expertise-group">
+            <h4>{{ 'Especialidades'|t }}</h4>
+            <div class="tag-list">
+              {% for spec in mentor.specializations %}
+                <span class="tag tag--specialty">{{ spec }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </section>
+
+      {# Reviews Section #}
+      <section class="profile-section">
+        <h2>{{ 'Opiniones de emprendedores'|t }}</h2>
+        
+        {% if reviews|length > 0 %}
+          <div class="reviews-list">
+            {% for review in reviews %}
+              <article class="review-card">
+                <div class="review-header">
+                  <div class="reviewer-avatar">{{ jaraba_icon('ui', 'user', { size: '24px' }) }}</div>
+                  <div class="reviewer-info">
+                    <span class="reviewer-name">{{ review.mentee_name }}</span>
+                    <span class="review-date">{{ review.created|date('d M Y') }}</span>
+                  </div>
+                  <div class="review-rating">
+                    {% for i in 1..5 %}
+                      {% if i <= review.rating %}
+                        <span class="star filled">{{ jaraba_icon('ui', 'star', { color: 'warning', size: '14px' }) }}</span>
+                      {% else %}
+                        <span class="star">{{ jaraba_icon('ui', 'star', { color: 'neutral', size: '14px' }) }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+                {% if review.comment %}
+                  <p class="review-comment">{{ review.comment }}</p>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="reviews-empty">
+            <p>{{ 'Este mentor aún no tiene reseñas. ¡Sé el primero en trabajar con él!'|t }}</p>
+          </div>
+        {% endif %}
+      </section>
+    </div>
+
+    {# Right Column: Booking Sidebar #}
+    <aside class="mentor-profile__sidebar">
+      <div class="booking-sidebar sticky">
+        <h3>{{ 'Reserva tu mentoría'|t }}</h3>
+
+        {% if packages|length > 0 %}
+          <div class="sidebar-packages">
+            {% for package in packages|slice(0, 3) %}
+              <div class="sidebar-package-card {% if loop.first %}recommended{% endif %}">
+                {% if loop.first %}
+                  <span class="recommended-badge">{{ 'Más popular'|t }}</span>
+                {% endif %}
+                <h4>{{ package.title }}</h4>
+                <div class="package-includes">
+                  <span>{{ package.sessions_included }} {{ 'sesiones'|t }}</span>
+                  <span>•</span>
+                  <span>{{ package.session_duration_minutes }} min</span>
+                </div>
+                <div class="package-price">
+                  <span class="amount">€{{ package.price|number_format(0) }}</span>
+                </div>
+                <a href="{{ path('jaraba_mentoring.session_booking', {mentor_profile: mentor.id}) }}?package={{ package.id }}" 
+                   class="btn btn--primary btn--full">
+                  {{ 'Reservar'|t }}
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+          
+          {% if packages|length > 3 %}
+            <a href="{{ path('jaraba_mentoring.session_booking', {mentor_profile: mentor.id}) }}" 
+               class="view-all-packages">
+              {{ 'Ver todos los paquetes →'|t }}
+            </a>
+          {% endif %}
+        {% else %}
+          <div class="no-packages">
+            <p>{{ 'Este mentor no tiene paquetes disponibles actualmente.'|t }}</p>
+          </div>
+        {% endif %}
+
+        <div class="sidebar-contact">
+          <p>{{ '¿Tienes dudas?'|t }}</p>
+          <a href="mailto:info@ecosistemajaraba.com" class="contact-link">{{ 'Escríbenos'|t }}</a>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+</div>

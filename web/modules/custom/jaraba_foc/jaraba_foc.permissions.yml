@@ -1,0 +1,55 @@
+# Permisos del módulo FOC (Centro de Operaciones Financieras)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMISOS ADMINISTRATIVOS
+# Para configuración global del módulo FOC
+# ═══════════════════════════════════════════════════════════════════════════
+
+administer foc:
+  title: 'Administrar Centro de Operaciones Financieras'
+  description: 'Acceso completo a la configuración del FOC, incluyendo Stripe Connect y umbrales de alertas.'
+  restrict access: true
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMISOS DE DASHBOARD
+# Para acceso a las vistas ejecutivas de métricas
+# ═══════════════════════════════════════════════════════════════════════════
+
+access foc dashboard:
+  title: 'Acceder al Dashboard FOC'
+  description: 'Ver el dashboard ejecutivo con métricas SaaS 2.0, proyecciones y alertas.'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMISOS DE TRANSACCIONES
+# Para visualización del libro mayor financiero
+# ═══════════════════════════════════════════════════════════════════════════
+
+view financial transactions:
+  title: 'Ver transacciones financieras'
+  description: 'Acceso de solo lectura al libro mayor de transacciones financieras.'
+
+create financial transactions:
+  title: 'Crear transacciones financieras'
+  description: 'Registrar nuevas transacciones manualmente (para importaciones o ajustes).'
+  restrict access: true
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMISOS DE COST ALLOCATION
+# Para gestión del reparto de costes entre tenants
+# ═══════════════════════════════════════════════════════════════════════════
+
+manage cost allocation:
+  title: 'Gestionar asignación de costes'
+  description: 'Definir reglas de reparto de costes compartidos entre tenants/verticales.'
+  restrict access: true
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMISOS DE SNAPSHOTS
+# Para gestión de capturas históricas de métricas
+# ═══════════════════════════════════════════════════════════════════════════
+
+create metric snapshots:
+  title: 'Crear snapshots de métricas'
+  description: 'Generar capturas manuales del estado de métricas para auditoría.'
+  restrict access: true

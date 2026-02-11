@@ -1,0 +1,204 @@
+{#
+/**
+ * @file
+ * Template para el Dashboard del Centro de Operaciones Financieras (FOC).
+ *
+ * Variables disponibles:
+ * - mrr: Monthly Recurring Revenue actual
+ * - arr: Annual Recurring Revenue
+ * - gross_margin: Margen bruto (%)
+ * - net_revenue_retention: NRR (%)
+ * - gross_revenue_retention: GRR (%)
+ * - ltv_cac_ratio: Ratio LTV:CAC
+ * - cac_payback_months: Meses para recuperar CAC
+ * - tenants_metrics: Array de métricas por tenant
+ * - tenants_by_health: Contadores por estado de salud
+ * - alerts: Alertas activas
+ */
+#}
+
+<div class="foc-dashboard">
+  {# Contenedor principal con bordes redondeados premium #}
+  <div class="foc-main-container">
+  
+  {# ═══════════════════════════════════════════════════════════════════════
+     CABECERA DEL DASHBOARD
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <header class="foc-dashboard__header">
+    <h1 class="foc-dashboard__title">{{ 'Centro de Operaciones Financieras'|t }}</h1>
+    <p class="foc-dashboard__subtitle">{{ 'Inteligencia financiera en tiempo real para el ecosistema SaaS'|t }}</p>
+  </header>
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     MÉTRICAS PRINCIPALES (KPIs)
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <section class="foc-kpi-grid">
+    {# MRR #}
+    <div class="foc-kpi-card foc-kpi-card--primary">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('finance', 'coins', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">€{{ mrr|number_format(2, ',', '.') }}</span>
+        <span class="foc-kpi-card__label">{{ 'MRR'|t }}</span>
+        <span class="foc-kpi-card__description">{{ 'Ingresos Mensuales Recurrentes'|t }}</span>
+      </div>
+    </div>
+
+    {# ARR #}
+    <div class="foc-kpi-card foc-kpi-card--primary">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('finance', 'trending-up', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">€{{ arr|number_format(2, ',', '.') }}</span>
+        <span class="foc-kpi-card__label">{{ 'ARR'|t }}</span>
+        <span class="foc-kpi-card__description">{{ 'Ingresos Anuales Recurrentes'|t }}</span>
+      </div>
+    </div>
+
+    {# Gross Margin #}
+    <div class="foc-kpi-card">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('finance', 'chart', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">{{ gross_margin }}%</span>
+        <span class="foc-kpi-card__label">{{ 'Margen Bruto'|t }}</span>
+        <span class="foc-kpi-card__benchmark">{{ 'Benchmark: 70-85%'|t }}</span>
+      </div>
+    </div>
+
+    {# LTV:CAC Ratio #}
+    <div class="foc-kpi-card{% if ltv_cac_ratio >= 5 %} foc-kpi-card--success{% elseif ltv_cac_ratio >= 3 %} foc-kpi-card--healthy{% else %} foc-kpi-card--warning{% endif %}">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('finance', 'scale', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">{{ ltv_cac_ratio }}:1</span>
+        <span class="foc-kpi-card__label">{{ 'Ratio LTV:CAC'|t }}</span>
+        <span class="foc-kpi-card__benchmark">{{ 'Benchmark: ≥3:1'|t }}</span>
+      </div>
+    </div>
+
+    {# CAC Payback #}
+    <div class="foc-kpi-card{% if cac_payback_months <= 12 %} foc-kpi-card--success{% else %} foc-kpi-card--warning{% endif %}">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('actions', 'clock', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">{{ cac_payback_months }} {{ 'meses'|t }}</span>
+        <span class="foc-kpi-card__label">{{ 'CAC Payback'|t }}</span>
+        <span class="foc-kpi-card__benchmark">{{ 'Benchmark: <12 meses'|t }}</span>
+      </div>
+    </div>
+
+    {# NRR #}
+    <div class="foc-kpi-card{% if net_revenue_retention >= 100 %} foc-kpi-card--success{% else %} foc-kpi-card--warning{% endif %}">
+      <span class="foc-kpi-card__icon">{{ jaraba_icon('actions', 'refresh', { size: '24px' }) }}</span>
+      <div class="foc-kpi-card__content">
+        <span class="foc-kpi-card__value">{{ net_revenue_retention }}%</span>
+        <span class="foc-kpi-card__label">{{ 'NRR'|t }}</span>
+        <span class="foc-kpi-card__description">{{ 'Retención Neta de Ingresos'|t }}</span>
+      </div>
+    </div>
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     RESUMEN DE SALUD DE TENANTS
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <section class="foc-tenant-health">
+    <h2 class="foc-section-title">{{ 'Salud de Inquilinos'|t }}</h2>
+    <div class="foc-tenant-health__grid">
+      <div class="foc-health-stat foc-health-stat--vip">
+        <span class="foc-health-stat__count">{{ tenants_by_health.vip }}</span>
+        <span class="foc-health-stat__label">{{ 'VIP'|t }}</span>
+        <span class="foc-health-stat__description">{{ 'LTV:CAC ≥5:1'|t }}</span>
+      </div>
+      <div class="foc-health-stat foc-health-stat--healthy">
+        <span class="foc-health-stat__count">{{ tenants_by_health.healthy }}</span>
+        <span class="foc-health-stat__label">{{ 'Saludables'|t }}</span>
+        <span class="foc-health-stat__description">{{ 'LTV:CAC 3-5:1'|t }}</span>
+      </div>
+      <div class="foc-health-stat foc-health-stat--at-risk">
+        <span class="foc-health-stat__count">{{ tenants_by_health.at_risk }}</span>
+        <span class="foc-health-stat__label">{{ 'En Riesgo'|t }}</span>
+        <span class="foc-health-stat__description">{{ 'LTV:CAC 1-3:1'|t }}</span>
+      </div>
+      <div class="foc-health-stat foc-health-stat--in-loss">
+        <span class="foc-health-stat__count">{{ tenants_by_health.in_loss }}</span>
+        <span class="foc-health-stat__label">{{ 'En Pérdida'|t }}</span>
+        <span class="foc-health-stat__description">{{ 'LTV:CAC <1:1'|t }}</span>
+      </div>
+    </div>
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     ALERTAS ACTIVAS
+     ═══════════════════════════════════════════════════════════════════════ #}
+  {% if alerts is not empty %}
+  <section class="foc-alerts">
+    <h2 class="foc-section-title">{{ 'Alertas Activas'|t }}</h2>
+    <div class="foc-alerts__list">
+      {% for alert in alerts %}
+      <div class="foc-alert foc-alert--{{ alert.type }}">
+        <span class="foc-alert__icon">{{ jaraba_icon('status', 'alert-triangle', { size: '20px', color: 'warning' }) }}</span>
+        <div class="foc-alert__content">
+          <span class="foc-alert__message">{{ alert.message }}</span>
+          {% if alert.action %}
+          <a href="#" class="foc-alert__action">{{ alert.action }}</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     GLOSARIO DE MÉTRICAS (Legend Box)
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <section class="foc-legend-box">
+    <h3 class="foc-legend-box__title">{{ 'Glosario de Métricas'|t }}</h3>
+    <dl class="foc-legend-box__list">
+      <div class="foc-legend-box__item">
+        <dt>MRR</dt>
+        <dd>{{ 'Monthly Recurring Revenue - Ingresos mensuales recurrentes de suscripciones.'|t }}</dd>
+      </div>
+      <div class="foc-legend-box__item">
+        <dt>ARR</dt>
+        <dd>{{ 'Annual Recurring Revenue - MRR × 12. Proyección anual normalizada.'|t }}</dd>
+      </div>
+      <div class="foc-legend-box__item">
+        <dt>LTV</dt>
+        <dd>{{ 'Lifetime Value - Valor total que aporta un cliente durante su ciclo de vida.'|t }}</dd>
+      </div>
+      <div class="foc-legend-box__item">
+        <dt>CAC</dt>
+        <dd>{{ 'Customer Acquisition Cost - Coste de adquirir un nuevo cliente.'|t }}</dd>
+      </div>
+      <div class="foc-legend-box__item">
+        <dt>NRR</dt>
+        <dd>{{ 'Net Revenue Retention - Retención incluyendo expansiones. Ideal: >100%.'|t }}</dd>
+      </div>
+      <div class="foc-legend-box__item">
+        <dt>GRR</dt>
+        <dd>{{ 'Gross Revenue Retention - Retención sin expansiones. Benchmark: 85-95%.'|t }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     ENLACES RÁPIDOS
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <nav class="foc-quick-links">
+    <a href="{{ path('jaraba_foc.dashboard.tenants') }}" class="foc-quick-link">
+      <span class="foc-quick-link__icon">{{ jaraba_icon('navigation', 'users', { size: '20px' }) }}</span>
+      <span class="foc-quick-link__label">{{ 'Analítica de Inquilinos'|t }}</span>
+    </a>
+    <a href="{{ path('jaraba_foc.dashboard.verticals') }}" class="foc-quick-link">
+      <span class="foc-quick-link__icon">{{ jaraba_icon('finance', 'bar-chart', { size: '20px' }) }}</span>
+      <span class="foc-quick-link__label">{{ 'Rentabilidad por Vertical'|t }}</span>
+    </a>
+    <a href="{{ path('jaraba_foc.dashboard.projections') }}" class="foc-quick-link">
+      <span class="foc-quick-link__icon">{{ jaraba_icon('actions', 'sparkles', { size: '20px' }) }}</span>
+      <span class="foc-quick-link__label">{{ 'Proyecciones'|t }}</span>
+    </a>
+    <a href="{{ path('jaraba_foc.transactions') }}" class="foc-quick-link">
+      <span class="foc-quick-link__icon">{{ jaraba_icon('finance', 'ledger', { size: '20px' }) }}</span>
+      <span class="foc-quick-link__label">{{ 'Libro Mayor'|t }}</span>
+    </a>
+  </nav>
+
+  </div>{# Fin foc-main-container #}
+</div>

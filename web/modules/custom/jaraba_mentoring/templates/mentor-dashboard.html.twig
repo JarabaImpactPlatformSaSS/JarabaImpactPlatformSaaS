@@ -1,0 +1,178 @@
+{#
+/**
+ * @file
+ * Template for mentor dashboard.
+ *
+ * Variables:
+ * - kpis: Array with earnings, sessions_completed, average_rating, active_mentees
+ * - pipeline: Array of upcoming sessions and pending actions
+ * - upcoming_sessions: Array of next 5 sessions
+ */
+#}
+<div class="mentor-dashboard">
+
+  {# Dashboard Header #}
+  <div class="mentor-dashboard__header">
+    <h1>{{ 'Mi Dashboard de Mentor'|t }}</h1>
+    <div class="header-actions">
+      <a href="{{ path('jaraba_mentoring.mentor_availability') }}" class="btn btn--secondary">
+        {{ jaraba_icon('ui', 'calendar', { size: '16px' }) }} {{ 'Gestionar Disponibilidad'|t }}
+      </a>
+      <a href="{{ path('jaraba_mentoring.mentor_packages') }}" class="btn btn--primary">
+        {{ jaraba_icon('actions', 'plus', { size: '16px' }) }} {{ 'Nuevo Paquete'|t }}
+      </a>
+    </div>
+  </div>
+
+  {# KPIs Grid #}
+  <section class="mentor-dashboard__kpis">
+    <article class="kpi-card kpi-card--earnings">
+      <div class="kpi-icon">{{ jaraba_icon('analytics', 'euro', { variant: 'duotone', color: 'success', size: '32px' }) }}</div>
+      <div class="kpi-content">
+        <span class="kpi-value">€{{ kpis.earnings_month|number_format(0) }}</span>
+        <span class="kpi-label">{{ 'Ingresos este mes'|t }}</span>
+        {% if kpis.earnings_trend > 0 %}
+          <span class="kpi-trend positive">↑ {{ kpis.earnings_trend }}%</span>
+        {% elseif kpis.earnings_trend < 0 %}
+          <span class="kpi-trend negative">↓ {{ kpis.earnings_trend|abs }}%</span>
+        {% endif %}
+      </div>
+    </article>
+
+    <article class="kpi-card kpi-card--sessions">
+      <div class="kpi-icon">{{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'corporate', size: '32px' }) }}</div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ kpis.sessions_completed }}</span>
+        <span class="kpi-label">{{ 'Sesiones completadas'|t }}</span>
+      </div>
+    </article>
+
+    <article class="kpi-card kpi-card--rating">
+      <div class="kpi-icon">{{ jaraba_icon('ui', 'star', { variant: 'duotone', color: 'warning', size: '32px' }) }}</div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ kpis.average_rating|number_format(1) }}</span>
+        <span class="kpi-label">{{ 'Valoración media'|t }}</span>
+        <span class="kpi-sub">({{ kpis.total_reviews }} {{ 'reseñas'|t }})</span>
+      </div>
+    </article>
+
+    <article class="kpi-card kpi-card--mentees">
+      <div class="kpi-icon">{{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'innovation', size: '32px' }) }}</div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ kpis.active_mentees }}</span>
+        <span class="kpi-label">{{ 'Emprendedores activos'|t }}</span>
+      </div>
+    </article>
+  </section>
+
+  {# Main Content Grid #}
+  <div class="mentor-dashboard__main">
+
+    {# Upcoming Sessions #}
+    <section class="dashboard-section upcoming-sessions">
+      <div class="section-header">
+        <h2>{{ 'Próximas Sesiones'|t }}</h2>
+        <a href="{{ path('jaraba_mentoring.mentor_sessions') }}" class="view-all">{{ 'Ver todas →'|t }}</a>
+      </div>
+
+      {% if upcoming_sessions|length > 0 %}
+        <div class="sessions-list">
+          {% for session in upcoming_sessions %}
+            <article class="session-card {% if session.is_today %}session-card--today{% endif %}">
+              <div class="session-date">
+                <span class="day">{{ session.scheduled_start|date('d') }}</span>
+                <span class="month">{{ session.scheduled_start|date('M') }}</span>
+              </div>
+              <div class="session-details">
+                <div class="session-time">
+                  <span class="icon">{{ jaraba_icon('ui', 'clock', { size: '16px' }) }}</span>
+                  <span>{{ session.scheduled_start|date('H:i') }} - {{ session.scheduled_end|date('H:i') }}</span>
+                </div>
+                <div class="session-mentee">
+                  <span class="icon">{{ jaraba_icon('ui', 'user', { size: '16px' }) }}</span>
+                  <span>{{ session.mentee_name }}</span>
+                </div>
+                {% if session.agenda %}
+                  <p class="session-agenda">{{ session.agenda|slice(0, 80) }}...</p>
+                {% endif %}
+              </div>
+              <div class="session-actions">
+                {% if session.can_join %}
+                  <a href="{{ session.meeting_url }}" target="_blank" class="btn btn--primary">
+                    {{ jaraba_icon('ui', 'video', { size: '16px' }) }} {{ 'Unirse'|t }}
+                  </a>
+                {% else %}
+                  <span class="session-status status--{{ session.status }}">
+                    {% if session.status == 'confirmed' %}{{ 'Confirmada'|t }}
+                    {% elseif session.status == 'scheduled' %}{{ 'Programada'|t }}
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="sessions-empty">
+          <div class="empty-icon">{{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'neutral', size: '48px' }) }}</div>
+          <p>{{ 'No tienes sesiones programadas'|t }}</p>
+          <p class="empty-hint">{{ 'Los emprendedores reservarán sesiones cuando compren tus paquetes.'|t }}</p>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Pipeline / Pending Actions #}
+    <section class="dashboard-section pending-actions">
+      <div class="section-header">
+        <h2>{{ 'Acciones Pendientes'|t }}</h2>
+      </div>
+
+      {% if pipeline|length > 0 %}
+        <div class="action-list">
+          {% for action in pipeline %}
+            <article class="action-card action-card--{{ action.type }}">
+              <div class="action-icon">
+                {% if action.type == 'notes_pending' %}{{ jaraba_icon('actions', 'edit', { size: '20px' }) }}
+                {% elseif action.type == 'review_received' %}{{ jaraba_icon('ui', 'star', { size: '20px' }) }}
+                {% elseif action.type == 'new_booking' %}{{ jaraba_icon('ui', 'bell', { size: '20px' }) }}
+                {% elseif action.type == 'payment_received' %}{{ jaraba_icon('analytics', 'euro', { size: '20px' }) }}
+                {% else %}{{ jaraba_icon('ui', 'pin', { size: '20px' }) }}{% endif %}
+              </div>
+              <div class="action-content">
+                <span class="action-title">{{ action.title }}</span>
+                <span class="action-meta">{{ action.created|date('d M H:i') }}</span>
+              </div>
+              {% if action.action_url %}
+                <a href="{{ action.action_url }}" class="btn btn--small btn--outline">
+                  {{ action.action_label|default('Ver'|t) }}
+                </a>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="actions-empty">
+          <p>{{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '16px' }) }} {{ 'No tienes acciones pendientes'|t }}</p>
+        </div>
+      {% endif %}
+    </section>
+
+  </div>
+
+  {# Quick Stats Footer #}
+  <section class="mentor-dashboard__footer">
+    <div class="footer-stat">
+      <span class="label">{{ 'Tiempo de respuesta medio'|t }}</span>
+      <span class="value">{{ kpis.avg_response_time|default('< 24h') }}</span>
+    </div>
+    <div class="footer-stat">
+      <span class="label">{{ 'Tasa de repetición'|t }}</span>
+      <span class="value">{{ kpis.repeat_rate|default(0)|number_format(0) }}%</span>
+    </div>
+    <div class="footer-stat">
+      <span class="label">{{ 'Sesiones este mes'|t }}</span>
+      <span class="value">{{ kpis.sessions_this_month|default(0) }}</span>
+    </div>
+  </section>
+
+</div>

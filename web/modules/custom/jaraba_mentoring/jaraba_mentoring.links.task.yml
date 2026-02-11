@@ -1,0 +1,58 @@
+# Task links (tabs) for Mentoring module
+# Adds tabs to /admin/content for mentoring entities
+
+# Tab for Mentor Profiles in Content section
+entity.mentor_profile.collection:
+  title: 'Mentores'
+  route_name: entity.mentor_profile.collection
+  base_route: system.admin_content
+  weight: 25
+
+# Tab for Mentoring Packages in Content section
+entity.mentoring_package.collection:
+  title: 'Paquetes'
+  route_name: entity.mentoring_package.collection
+  base_route: system.admin_content
+  weight: 26
+
+# Tab for Engagements in Content section
+entity.mentoring_engagement.collection:
+  title: 'Engagements'
+  route_name: entity.mentoring_engagement.collection
+  base_route: system.admin_content
+  weight: 27
+
+# Tab for Sessions in Content section
+entity.mentoring_session.collection:
+  title: 'Sesiones'
+  route_name: entity.mentoring_session.collection
+  base_route: system.admin_content
+  weight: 28
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS
+# -----------------------------------------------------------------------------
+
+entity.mentor_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.mentor_profile.settings
+  base_route: entity.mentor_profile.settings
+  weight: -10
+
+entity.mentoring_package.settings_tab:
+  title: 'Configuración'
+  route_name: entity.mentoring_package.settings
+  base_route: entity.mentoring_package.settings
+  weight: -10
+
+entity.mentoring_engagement.settings_tab:
+  title: 'Configuración'
+  route_name: entity.mentoring_engagement.settings
+  base_route: entity.mentoring_engagement.settings
+  weight: -10
+
+entity.mentoring_session.settings_tab:
+  title: 'Configuración'
+  route_name: entity.mentoring_session.settings
+  base_route: entity.mentoring_session.settings
+  weight: -10

@@ -1,0 +1,22 @@
+{
+    "name": "jaraba-foc",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el Financial Operations Center (FOC) de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/main.scss:css/foc-dashboard.css --style=compressed",
+        "build:all": "npm run build && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "foc",
+        "finops",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}
