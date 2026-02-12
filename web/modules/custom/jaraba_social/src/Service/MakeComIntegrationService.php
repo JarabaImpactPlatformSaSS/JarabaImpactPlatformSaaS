@@ -102,16 +102,45 @@ class MakeComIntegrationService {
         'timestamp' => time(),
       ];
 
-      // TODO: Implementar envio HTTP real al webhook de Make.com.
-      $this->logger->info('Post @id enviado a Make.com webhook para tenant @tid (simulado).', [
+      // Send the payload to Make.com webhook via HTTP POST.
+      $httpClient = \Drupal::httpClient();
+      $response = $httpClient->post($webhookUrl, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+          'Accept' => 'application/json',
+        ],
+        'json' => $payload,
+        'timeout' => 30,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $responseBody = $response->getBody()->getContents();
+      $webhookResponse = json_decode($responseBody, TRUE) ?? ['raw' => $responseBody];
+
+      if ($statusCode >= 200 && $statusCode < 300) {
+        $this->logger->info('Post @id enviado exitosamente a Make.com webhook para tenant @tid (HTTP @code).', [
+          '@id' => $postId,
+          '@tid' => $tenantId,
+          '@code' => $statusCode,
+        ]);
+
+        return [
+          'success' => TRUE,
+          'message' => 'Post enviado a Make.com correctamente.',
+          'webhook_response' => $webhookResponse,
+        ];
+      }
+
+      $this->logger->error('Make.com webhook returned HTTP @code for post @id, tenant @tid.', [
+        '@code' => $statusCode,
         '@id' => $postId,
         '@tid' => $tenantId,
       ]);
 
       return [
-        'success' => TRUE,
-        'message' => 'Post enviado a Make.com correctamente.',
-        'webhook_response' => ['status' => 'accepted'],
+        'success' => FALSE,
+        'message' => "Make.com webhook returned HTTP {$statusCode}.",
+        'webhook_response' => $webhookResponse,
       ];
     }
     catch (\Exception $e) {
@@ -259,12 +288,39 @@ class MakeComIntegrationService {
         return FALSE;
       }
 
-      // TODO: Implementar verificacion real de conectividad con Make.com.
-      $this->logger->info('Test de conexion con Make.com para tenant @tid (simulado).', [
-        '@tid' => $tenantId,
+      // Send a lightweight test payload to verify connectivity.
+      $httpClient = \Drupal::httpClient();
+      $testPayload = [
+        'test' => TRUE,
+        'tenant_id' => $tenantId,
+        'timestamp' => time(),
+        'source' => 'jaraba_social_connection_test',
+      ];
+
+      $response = $httpClient->post($webhookUrl, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+          'Accept' => 'application/json',
+        ],
+        'json' => $testPayload,
+        'timeout' => 15,
       ]);
 
-      return TRUE;
+      $statusCode = $response->getStatusCode();
+
+      if ($statusCode >= 200 && $statusCode < 300) {
+        $this->logger->info('Test de conexion con Make.com exitoso para tenant @tid (HTTP @code).', [
+          '@tid' => $tenantId,
+          '@code' => $statusCode,
+        ]);
+        return TRUE;
+      }
+
+      $this->logger->warning('Test de conexion con Make.com fallo para tenant @tid: HTTP @code.', [
+        '@tid' => $tenantId,
+        '@code' => $statusCode,
+      ]);
+      return FALSE;
     }
     catch (\Exception $e) {
       $this->logger->error('Error en test de conexion Make.com para tenant @tid: @error', [

@@ -233,9 +233,36 @@ function _jaraba_groups_remind_upcoming_events(): void {
   
   $ids = $query->execute();
   
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  $userStorage = \Drupal::entityTypeManager()->getStorage('user');
+
   foreach ($storage->loadMultiple($ids) as $event) {
-    // TODO: Send notifications to registered attendees.
-    \Drupal::logger('jaraba_groups')->info('Reminder due for event @id', ['@id' => $event->id()]);
+    // Get registered attendees via group_relationship.
+    try {
+      $group = $event->getGroup();
+      if ($group) {
+        $members = $group->getMembers();
+        foreach ($members as $membership) {
+          $member = $membership->getUser();
+          if ($member && $member->getEmail()) {
+            $mailManager->mail('jaraba_groups', 'event_reminder', $member->getEmail(), $member->getPreferredLangcode(), [
+              'user_name' => $member->getDisplayName(),
+              'event_title' => $event->label(),
+              'start_datetime' => $event->get('start_datetime')->value ?? '',
+              'location' => $event->get('location')->value ?? 'Por confirmar',
+              'event_url' => $event->toUrl('canonical', ['absolute' => TRUE])->toString(),
+            ]);
+          }
+        }
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_groups')->error('Failed to send event reminders for @id: @error', [
+        '@id' => $event->id(),
+        '@error' => $e->getMessage(),
+      ]);
+    }
+    \Drupal::logger('jaraba_groups')->info('Reminder sent for event @id', ['@id' => $event->id()]);
   }
   
   $state->set('jaraba_groups_event_reminder_last', $now);
@@ -304,6 +331,21 @@ function jaraba_groups_mail($key, &$message, $params): void {
         '@group' => $params['group']->getName(),
       ]);
       $message['body'][] = t('Puedes aprobar o rechazar la solicitud en la gestión del grupo.');
+      break;
+
+    case 'event_reminder':
+      $message['subject'] = t('Recordatorio: @event', [
+        '@event' => $params['event_title'],
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user_name']]);
+      $message['body'][] = t('Te recordamos que mañana tiene lugar el evento "@event".', [
+        '@event' => $params['event_title'],
+      ]);
+      $message['body'][] = t('Fecha y hora: @datetime', ['@datetime' => $params['start_datetime']]);
+      $message['body'][] = t('Lugar: @location', ['@location' => $params['location']]);
+      if (!empty($params['event_url'])) {
+        $message['body'][] = t('Más información: @url', ['@url' => $params['event_url']]);
+      }
       break;
   }
 }

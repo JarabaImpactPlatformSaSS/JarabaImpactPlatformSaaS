@@ -127,7 +127,30 @@ class EnrollmentService
             '@type' => $type,
         ]);
 
-        // TODO: Dispatch enrollment event for ECA
+        // Dispatch enrollment event for ECA.
+        $event = new \Symfony\Component\EventDispatcher\GenericEvent($enrollment, [
+            'type' => 'enrollment_created',
+            'user_id' => $user_id,
+            'course_id' => $course_id,
+            'enrollment_type' => $type,
+        ]);
+        $this->eventDispatcher->dispatch($event, 'jaraba_lms.enrollment.created');
+
+        // Send welcome email.
+        try {
+            $user = $this->entityTypeManager->getStorage('user')->load($user_id);
+            $course = $this->entityTypeManager->getStorage('lms_course')->load($course_id);
+            if ($user && $course && $user->getEmail()) {
+                \Drupal::service('plugin.manager.mail')->mail('jaraba_lms', 'enrollment_created', $user->getEmail(), $user->getPreferredLangcode(), [
+                    'user_name' => $user->getDisplayName(),
+                    'course_name' => $course->label(),
+                    'course_id' => $course_id,
+                ]);
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send enrollment email: @error', ['@error' => $e->getMessage()]);
+        }
 
         return $enrollment;
     }
@@ -224,7 +247,31 @@ class EnrollmentService
         if ($progress >= 100 && !$enrollment->isCompleted()) {
             $enrollment->markCompleted();
             $this->logger->info('Enrollment @id completed', ['@id' => $enrollment_id]);
-            // TODO: Dispatch completion event for certificate issuance
+
+            // Dispatch completion event for certificate issuance.
+            $completionEvent = new \Symfony\Component\EventDispatcher\GenericEvent($enrollment, [
+                'type' => 'enrollment_completed',
+                'user_id' => $enrollment->get('user_id')->target_id,
+                'course_id' => $enrollment->get('course_id')->target_id,
+                'completion_date' => date('Y-m-d\TH:i:s'),
+            ]);
+            $this->eventDispatcher->dispatch($completionEvent, 'jaraba_lms.enrollment.completed');
+
+            // Send completion email.
+            try {
+                $user = $this->entityTypeManager->getStorage('user')->load($enrollment->get('user_id')->target_id);
+                $course = $this->entityTypeManager->getStorage('lms_course')->load($enrollment->get('course_id')->target_id);
+                if ($user && $course && $user->getEmail()) {
+                    \Drupal::service('plugin.manager.mail')->mail('jaraba_lms', 'enrollment_completed', $user->getEmail(), $user->getPreferredLangcode(), [
+                        'user_name' => $user->getDisplayName(),
+                        'course_name' => $course->label(),
+                        'course_id' => $enrollment->get('course_id')->target_id,
+                    ]);
+                }
+            }
+            catch (\Exception $e) {
+                $this->logger->error('Failed to send completion email: @error', ['@error' => $e->getMessage()]);
+            }
         }
 
         $enrollment->save();
@@ -290,9 +337,28 @@ class EnrollmentService
 
         $enrollment_ids = $query->execute();
 
-        foreach ($enrollment_ids as $id) {
-            // TODO: Queue reminder email
-            $this->logger->debug('Queued reminder for enrollment @id', ['@id' => $id]);
+        $enrollments = $this->entityTypeManager->getStorage('lms_enrollment')->loadMultiple($enrollment_ids);
+        $mailManager = \Drupal::service('plugin.manager.mail');
+
+        foreach ($enrollments as $enrollment) {
+            try {
+                $user = $this->entityTypeManager->getStorage('user')->load($enrollment->get('user_id')->target_id);
+                $course = $this->entityTypeManager->getStorage('lms_course')->load($enrollment->get('course_id')->target_id);
+                if ($user && $course && $user->getEmail()) {
+                    $mailManager->mail('jaraba_lms', 'enrollment_reminder', $user->getEmail(), $user->getPreferredLangcode(), [
+                        'user_name' => $user->getDisplayName(),
+                        'course_name' => $course->label(),
+                        'progress' => $enrollment->get('progress_percent')->value ?? 0,
+                    ]);
+                    $this->logger->debug('Queued reminder for enrollment @id', ['@id' => $enrollment->id()]);
+                }
+            }
+            catch (\Exception $e) {
+                $this->logger->error('Failed to send reminder for enrollment @id: @error', [
+                    '@id' => $enrollment->id(),
+                    '@error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 

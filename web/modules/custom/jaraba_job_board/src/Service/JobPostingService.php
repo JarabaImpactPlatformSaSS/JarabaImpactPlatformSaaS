@@ -89,12 +89,45 @@ class JobPostingService
     }
 
     /**
-     * Closes expired jobs (placeholder).
+     * Closes expired jobs.
      */
     public function closeExpiredJobs(): int
     {
-        // TODO: Implement job expiration
-        return 0;
+        $now = date('Y-m-d\TH:i:s');
+        try {
+            $ids = $this->entityTypeManager
+                ->getStorage('job_posting')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('status', 'published')
+                ->condition('expiration_date', $now, '<')
+                ->execute();
+
+            $count = 0;
+            foreach ($this->entityTypeManager->getStorage('job_posting')->loadMultiple($ids) as $job) {
+                $job->setStatus('expired');
+                $job->save();
+                $count++;
+
+                // Dispatch expiration event.
+                $this->eventDispatcher->dispatch(
+                    new \Symfony\Component\EventDispatcher\GenericEvent($job, [
+                        'type' => 'job_posting_expired',
+                        'job_id' => $job->id(),
+                    ]),
+                    'jaraba_job_board.job_posting.expired'
+                );
+            }
+
+            if ($count > 0) {
+                $this->logger->info('Closed @count expired job postings', ['@count' => $count]);
+            }
+
+            return $count;
+        } catch (\Exception $e) {
+            $this->logger->error('Error closing expired jobs: @error', ['@error' => $e->getMessage()]);
+            return 0;
+        }
     }
 
     /**

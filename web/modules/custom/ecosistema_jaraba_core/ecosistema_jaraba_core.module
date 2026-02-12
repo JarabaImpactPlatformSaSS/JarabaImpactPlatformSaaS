@@ -1170,7 +1170,30 @@ function _ecosistema_jaraba_core_check_expiring_trials() {
   foreach ($tenantIds as $tenantId) {
     $tenant = $tenantStorage->load($tenantId);
     if ($tenant && !$tenant->get('trial_reminder_sent')->value) {
-      // TODO: Enviar email de recordatorio
+      // Enviar email de recordatorio de fin de trial.
+      try {
+        $adminUser = $tenant->getAdminUser();
+        if ($adminUser && $adminUser->getEmail()) {
+          \Drupal::service('plugin.manager.mail')->mail(
+            'ecosistema_jaraba_core',
+            'trial_ending_reminder',
+            $adminUser->getEmail(),
+            $adminUser->getPreferredLangcode(),
+            [
+              'tenant_name' => $tenant->getName(),
+              'trial_end_date' => $tenant->get('trial_ends')->value ?? '',
+              'upgrade_url' => '/admin/subscription/upgrade',
+            ]
+          );
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('ecosistema_jaraba_core')->error(
+          'Failed to send trial reminder for tenant @tenant: @error',
+          ['@tenant' => $tenant->getName(), '@error' => $e->getMessage()]
+        );
+      }
+
       \Drupal::logger('ecosistema_jaraba_core')->info(
         '📧 Recordatorio de trial enviado a tenant @tenant',
         ['@tenant' => $tenant->getName()]

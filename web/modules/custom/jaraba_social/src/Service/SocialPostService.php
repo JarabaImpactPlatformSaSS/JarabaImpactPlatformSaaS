@@ -163,20 +163,103 @@ class SocialPostService
     {
         $platform = $account->getPlatform();
         $content = $post->getContent();
+        $accessToken = $account->getAccessToken();
 
-        // TODO: Implementar clientes de API para cada plataforma.
-        // Por ahora, retornamos un placeholder.
-        $this->logger->info('Publishing to @platform: @content', [
-            '@platform' => $platform,
-            '@content' => substr($content, 0, 100),
-        ]);
+        try {
+            $httpClient = \Drupal::httpClient();
 
-        return [
-            'success' => TRUE,
-            'platform' => $platform,
-            'external_id' => 'placeholder_' . time(),
-            'message' => 'Published successfully (simulated)',
-        ];
+            // Extraer URLs de media asociados al post.
+            $mediaUrls = [];
+            $mediaEntities = $post->get('media')->referencedEntities();
+            foreach ($mediaEntities as $mediaEntity) {
+                /** @var \Drupal\media\MediaInterface $mediaEntity */
+                $sourceField = $mediaEntity->getSource()->getConfiguration()['source_field'] ?? NULL;
+                if ($sourceField && $mediaEntity->hasField($sourceField)) {
+                    $fileEntity = $mediaEntity->get($sourceField)->entity;
+                    if ($fileEntity) {
+                        $mediaUrls[] = \Drupal::service('file_url_generator')->generateAbsoluteString($fileEntity->getFileUri());
+                    }
+                }
+            }
+
+            switch ($platform) {
+                case 'facebook':
+                    $response = $httpClient->post('https://graph.facebook.com/v19.0/me/feed', [
+                        'form_params' => [
+                            'message' => $content,
+                            'access_token' => $accessToken,
+                        ],
+                    ]);
+                    $result = json_decode($response->getBody()->getContents(), TRUE);
+                    return ['success' => TRUE, 'external_post_id' => $result['id'] ?? NULL, 'platform' => $platform];
+
+                case 'instagram':
+                    // Instagram requires media. Create container then publish.
+                    if (empty($mediaUrls)) {
+                        return ['success' => FALSE, 'error' => 'Instagram requires at least one image', 'platform' => $platform];
+                    }
+                    $containerResponse = $httpClient->post('https://graph.facebook.com/v19.0/me/media', [
+                        'form_params' => [
+                            'image_url' => $mediaUrls[0],
+                            'caption' => $content,
+                            'access_token' => $accessToken,
+                        ],
+                    ]);
+                    $container = json_decode($containerResponse->getBody()->getContents(), TRUE);
+                    $publishResponse = $httpClient->post('https://graph.facebook.com/v19.0/me/media_publish', [
+                        'form_params' => [
+                            'creation_id' => $container['id'],
+                            'access_token' => $accessToken,
+                        ],
+                    ]);
+                    $result = json_decode($publishResponse->getBody()->getContents(), TRUE);
+                    return ['success' => TRUE, 'external_post_id' => $result['id'] ?? NULL, 'platform' => $platform];
+
+                case 'twitter':
+                case 'x':
+                    $response = $httpClient->post('https://api.twitter.com/2/tweets', [
+                        'headers' => [
+                            'Authorization' => 'Bearer ' . $accessToken,
+                            'Content-Type' => 'application/json',
+                        ],
+                        'json' => ['text' => $content],
+                    ]);
+                    $result = json_decode($response->getBody()->getContents(), TRUE);
+                    return ['success' => TRUE, 'external_post_id' => $result['data']['id'] ?? NULL, 'platform' => $platform];
+
+                case 'linkedin':
+                    $externalAccountId = $account->get('account_id')->value ?? '';
+                    $response = $httpClient->post('https://api.linkedin.com/v2/ugcPosts', [
+                        'headers' => [
+                            'Authorization' => 'Bearer ' . $accessToken,
+                            'Content-Type' => 'application/json',
+                            'X-Restli-Protocol-Version' => '2.0.0',
+                        ],
+                        'json' => [
+                            'author' => 'urn:li:person:' . $externalAccountId,
+                            'lifecycleState' => 'PUBLISHED',
+                            'specificContent' => [
+                                'com.linkedin.ugc.ShareContent' => [
+                                    'shareCommentary' => ['text' => $content],
+                                    'shareMediaCategory' => 'NONE',
+                                ],
+                            ],
+                            'visibility' => ['com.linkedin.ugc.MemberNetworkVisibility' => 'PUBLIC'],
+                        ],
+                    ]);
+                    $result = json_decode($response->getBody()->getContents(), TRUE);
+                    return ['success' => TRUE, 'external_post_id' => $result['id'] ?? NULL, 'platform' => $platform];
+
+                default:
+                    return ['success' => FALSE, 'error' => "Unsupported platform: {$platform}", 'platform' => $platform];
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to publish to @platform: @error', [
+                '@platform' => $platform,
+                '@error' => $e->getMessage(),
+            ]);
+            return ['success' => FALSE, 'error' => $e->getMessage(), 'platform' => $platform];
+        }
     }
 
     /**

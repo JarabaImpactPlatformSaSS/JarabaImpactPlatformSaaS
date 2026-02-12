@@ -146,9 +146,79 @@ class SocialAccountService {
         return FALSE;
       }
 
-      // TODO: Implementar llamadas OAuth reales a cada plataforma.
-      $this->logger->info('Token refrescado para cuenta social @id (simulado).', [
+      $httpClient = \Drupal::httpClient();
+      $platform = $account->get('platform')->value ?? '';
+      $refreshToken = $account->get('refresh_token')->value ?? '';
+      $config = \Drupal::config('jaraba_social.settings');
+      $response = NULL;
+
+      switch ($platform) {
+        case 'facebook':
+        case 'instagram':
+          $response = $httpClient->get('https://graph.facebook.com/oauth/access_token', [
+            'query' => [
+              'grant_type' => 'fb_exchange_token',
+              'client_id' => $config->get('facebook_app_id') ?? '',
+              'client_secret' => $config->get('facebook_app_secret') ?? '',
+              'fb_exchange_token' => $account->get('access_token')->value ?? '',
+            ],
+          ]);
+          break;
+
+        case 'twitter':
+        case 'x':
+          $response = $httpClient->post('https://api.twitter.com/2/oauth2/token', [
+            'form_params' => [
+              'grant_type' => 'refresh_token',
+              'refresh_token' => $refreshToken,
+              'client_id' => $config->get('twitter_client_id') ?? '',
+            ],
+          ]);
+          break;
+
+        case 'linkedin':
+          $response = $httpClient->post('https://www.linkedin.com/oauth/v2/accessToken', [
+            'form_params' => [
+              'grant_type' => 'refresh_token',
+              'refresh_token' => $refreshToken,
+              'client_id' => $config->get('linkedin_client_id') ?? '',
+              'client_secret' => $config->get('linkedin_client_secret') ?? '',
+            ],
+          ]);
+          break;
+
+        default:
+          $this->logger->warning('Token refresh not supported for platform @platform.', [
+            '@platform' => $platform,
+          ]);
+          return FALSE;
+      }
+
+      if (!$response) {
+        return FALSE;
+      }
+
+      $tokenData = json_decode($response->getBody()->getContents(), TRUE);
+
+      if (empty($tokenData['access_token'])) {
+        $this->logger->error('Token refresh response missing access_token for account @id.', [
+          '@id' => $accountId,
+        ]);
+        return FALSE;
+      }
+
+      $account->set('access_token', $tokenData['access_token']);
+      if (isset($tokenData['expires_in'])) {
+        $account->set('token_expires', \Drupal::time()->getRequestTime() + (int) $tokenData['expires_in']);
+      }
+      if (isset($tokenData['refresh_token'])) {
+        $account->set('refresh_token', $tokenData['refresh_token']);
+      }
+      $account->save();
+
+      $this->logger->info('Token refrescado correctamente para cuenta social @id (@platform).', [
         '@id' => $accountId,
+        '@platform' => $platform,
       ]);
 
       return TRUE;

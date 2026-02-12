@@ -421,9 +421,68 @@ class MetricsCalculatorService
      */
     protected function getCAC(): string
     {
-        // TODO: Calcular CAC real desde transacciones de marketing
-        // Por ahora usamos el valor de referencia del documento FOC
-        return '200.00';
+        try {
+            // Query marketing expenses for the current period (last 3 months
+            // for a more stable CAC calculation).
+            $periodStart = strtotime('-3 months');
+            $periodEnd = $this->time->getRequestTime();
+
+            $query = $this->database->select('financial_transaction', 'ft')
+                ->condition('ft.source_system', [
+                    'marketing_expense',
+                    'activecampaign',
+                    'ads_expense',
+                    'sales_expense',
+                ], 'IN')
+                ->condition('ft.transaction_timestamp', $periodStart, '>=')
+                ->condition('ft.transaction_timestamp', $periodEnd, '<=');
+
+            $query->addExpression('ABS(SUM(ft.amount))', 'total_marketing');
+            $totalMarketing = (float) ($query->execute()->fetchField() ?: 0);
+
+            if ($totalMarketing <= 0) {
+                // No marketing expense data; fall back to reference value.
+                return '200.00';
+            }
+
+            // Count new customers acquired in the same period.
+            // New customers = groups created during the period.
+            $newCustomers = 0;
+            try {
+                $groupQuery = $this->entityTypeManager->getStorage('group')->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('created', $periodStart, '>=')
+                    ->condition('created', $periodEnd, '<=')
+                    ->count();
+                $newCustomers = (int) $groupQuery->execute();
+            }
+            catch (\Exception $e) {
+                // If group query fails, try counting distinct new tenants
+                // from recurring transactions in the period.
+                $tenantQuery = $this->database->select('financial_transaction', 'ft')
+                    ->condition('ft.is_recurring', 1)
+                    ->condition('ft.transaction_timestamp', $periodStart, '>=')
+                    ->condition('ft.transaction_timestamp', $periodEnd, '<=');
+                $tenantQuery->addExpression('COUNT(DISTINCT ft.related_tenant)', 'tenant_count');
+                $newCustomers = (int) ($tenantQuery->execute()->fetchField() ?: 0);
+            }
+
+            if ($newCustomers <= 0) {
+                // No new customers acquired; fall back to reference value.
+                return '200.00';
+            }
+
+            $cac = $totalMarketing / $newCustomers;
+
+            return number_format($cac, 2, '.', '');
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Error calculating CAC: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+            // Fall back to reference value from FOC document.
+            return '200.00';
+        }
     }
 
 }
