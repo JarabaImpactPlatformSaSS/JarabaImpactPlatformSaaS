@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-12
-**Versión:** 9.0.0 (Avatar Detection + Empleabilidad UI)
+**Versión:** 14.0.0 (Copilot v2 Gaps Closure — BD Triggers + SSE Streaming + Multi-Provider + Milestones + Metrics P50/P99)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 5.0 / 5.0
 
@@ -629,6 +629,29 @@
 │   │   └── @jaraba_ai_agents.observability, @ecosistema_jaraba_core.unified_prompt_builder │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
+│   📦 jaraba_self_discovery ✅ (Self-Discovery Empleabilidad)               │
+│   ├── Herramientas autoconocimiento: Rueda de Vida, Timeline, RIASEC,  │
+│   │   Fortalezas VIA                                                     │
+│   ├── 4 Content Entities:                                                │
+│   │   ├── LifeWheelAssessment: 8 áreas, scores 1-10, trend              │
+│   │   ├── LifeTimeline: Eventos vitales, Phase 2/3 (factores, skills)   │
+│   │   ├── InterestProfile (RIASEC): 6 scores 0-100, riasec_code 3ch,   │
+│   │   │   dominant_types JSON, suggested_careers JSON                    │
+│   │   └── StrengthAssessment (VIA): top_strengths JSON (top 5),         │
+│   │       all_scores JSON (24 fortalezas), answers JSON                  │
+│   ├── 4 Servicios Dedicados:                                             │
+│   │   ├── LifeWheelService: average, lowest/highest areas, trend         │
+│   │   ├── TimelineAnalysisService: patterns, top skills/values           │
+│   │   ├── RiasecService: profile, code, scores (fallback user.data)     │
+│   │   └── StrengthAnalysisService: top5, catalog (fallback user.data)   │
+│   ├── SelfDiscoveryContextService: Agregador para Copilot v2 context    │
+│   │   └── Delega a 4 servicios (DI nullable) + fallback directo         │
+│   ├── Forms: InterestsAssessmentForm (36 qs), StrengthsAssessmentForm   │
+│   │   (20 pares), TimelinePhase2Form, TimelinePhase3Form                │
+│   ├── Admin: /admin/content tabs + /admin/structure links                │
+│   ├── Tests: 5 unit test files (38 test methods)                        │
+│   └── Estado: ✅ Producción (Specs 20260122-25 100%)                     │
+│                                                                         │
 │   📦 jaraba_business_tools (Vertical Emprendimiento)                     │
 │   ├── Entidades: BusinessModelCanvas (9 bloques)                        │
 │   ├── CanvasAiService: Sugerencias IA por sector (7 sectores)           │
@@ -652,20 +675,48 @@
 │   ├── Círculos de Responsabilidad: Grupos de 3 emprendedores             │
 │   └── Estado: ✅ Producción                                              │
 │                                                                         │
-│   📦 jaraba_copilot_v2 ✅                                                │
+│   📦 jaraba_copilot_v2 ✅ (Clase Mundial — Specs 20260121a-e 100% + Gaps) │
 │   ├── Copiloto IA Emprendimiento: 7 modos adaptativos                    │
 │   │   └── coach, consultor, sparring, cfo, fiscal, laboral, devil        │
-│   ├── ModeDetectorService: Router inteligente con scoring por triggers   │
-│   │   └── +100 triggers, modificadores por carril, análisis emocional    │
-│   ├── NormativeRAGService: RAG semántico Qdrant + fallback keyword       │
-│   │   └── Colección: normative_knowledge (33 docs indexados)             │
-│   ├── CopilotOrchestratorService: Multi-proveedor con failover           │
-│   │   ├── Proveedores: Anthropic → OpenAI → Google Gemini                │
-│   │   └── AI Usage Tracking: tokens, costes, métricas State API          │
+│   ├── 22 API Endpoints REST:                                             │
+│   │   ├── Hypothesis: CRUD + Prioritize ICE (5 endpoints)                │
+│   │   ├── Experiment: Lifecycle Test→Start→Learning Card (5 endpoints)   │
+│   │   ├── BMC Validation: Semáforos 9 bloques + Pivot Log (2 endpoints)  │
+│   │   ├── Entrepreneur: CRUD + DIME Scores (4 endpoints)                 │
+│   │   ├── Session History + Knowledge Search (2 endpoints)               │
+│   │   ├── Copilot Chat + Field Exit (4 endpoints)                        │
+│   │   └── Chat SSE Stream: POST /api/copilot/chat/stream (streaming)    │
+│   ├── 14+ Servicios Producción:                                          │
+│   │   ├── HypothesisPrioritizationService (ICE Score algorithm)          │
+│   │   ├── BmcValidationService (semáforos RED/YELLOW/GREEN/GRAY)         │
+│   │   ├── LearningCardService + TestCardGeneratorService                 │
+│   │   ├── ModeDetectorService: 175 triggers BD + fallback const          │
+│   │   │   └── copilot_mode_triggers tabla + cache 1h + admin UI          │
+│   │   ├── NormativeRAGService: Qdrant + fallback keyword                 │
+│   │   ├── CopilotOrchestratorService: Gemini→Anthropic→OpenAI            │
+│   │   │   ├── + SelfDiscoveryContextService (10o arg nullable)           │
+│   │   │   ├── + recordLatencySample() + recordFallbackEvent()            │
+│   │   │   └── + getMetricsSummary() (P50/P99, fallback rate, costes)    │
+│   │   └── PivotDetector, ContentGrounding, VPC, BusinessPattern          │
+│   ├── 5 Content Entities (Access Handlers + ListBuilders):               │
+│   │   └── EntrepreneurProfile, Hypothesis, Experiment,                   │
+│   │       EntrepreneurLearning, FieldExit                                │
+│   ├── 2 Tablas Custom:                                                   │
+│   │   ├── copilot_mode_triggers (175 triggers, admin gestionable)        │
+│   │   └── entrepreneur_milestone (hitos con puntos, append-only)         │
+│   ├── 3 Páginas Frontend Full-Width + Widget Chat SSE:                   │
+│   │   ├── BMC Dashboard (/emprendimiento/bmc) — Grid 5×3, semáforos      │
+│   │   ├── Hypothesis Manager (/emprendimiento/hipotesis) — CRUD modales  │
+│   │   ├── Experiment Lifecycle (/emprendimiento/experimentos/gestion)    │
+│   │   └── Chat Widget (Alpine.js + fetch ReadableStream, modo visual)   │
+│   ├── Gamification: Impact Points + Milestones persistentes              │
+│   │   └── PERSEVERE=100, PIVOT/ZOOM=75, KILL=50 + niveles 1-5           │
 │   ├── Biblioteca: 44 experimentos Osterwalder                            │
-│   ├── Patrón: Desbloqueo Progresivo UX (12 semanas)                       │
-│   ├── Entidades: entrepreneur_profile, hypothesis, experiment            │
-│   └── Estado: ✅ Producción (v2.0 - Smart Router + RAG)                  │
+│   ├── Patrón: Desbloqueo Progresivo UX (12 semanas)                     │
+│   ├── Multi-proveedor optimizado: Gemini Flash (consultor/landing)       │
+│   │   └── claude-sonnet-4-5, gpt-4o, gemini-2.5-flash, claude-haiku-4-5│
+│   ├── 7 Unit Test Suites (PHPUnit 11): 64 tests, 184 assertions         │
+│   └── Estado: ✅ Producción (v2.1 - Clase Mundial, Gaps cerrados)        │
 │                                                                         │
 │   📦 jaraba_journey ✅ (Block C Journey Engine)                           │
 │   ├── Motor de navegación inteligente: 7 verticales, 19 avatares         │
@@ -829,6 +880,132 @@
 │   ├── Cypress E2E: 12 suites, ~670 líneas                               │
 │   └── Estado: ✅ Producción (Plan v3.1 100%, ~1,200h total)             │
 │                                                                         │
+│   📦 jaraba_agent_flows ✅ (Agent Flows Visual Builder)                  │
+│   ├── Entidades: AgentFlow, AgentFlowExecution, AgentFlowStepLog       │
+│   ├── AgentFlowExecutionService: Orquestación via jaraba_ai_agents     │
+│   ├── AgentFlowTriggerService: Triggers por evento/cron/webhook        │
+│   ├── AgentFlowValidatorService: Validación flows pre-ejecución        │
+│   ├── AgentFlowMetricsService: KPIs por flow y tenant                  │
+│   ├── AgentFlowTemplateService: Templates de flows reutilizables       │
+│   ├── API REST: /api/v1/agent-flows/* (dashboard + CRUD)               │
+│   ├── Tests: 2 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 38 archivos)                       │
+│                                                                         │
+│   📦 jaraba_pwa ✅ (Progressive Web App + Push + Offline)                │
+│   ├── Entidades: PushSubscription (migrada), PendingSyncAction         │
+│   ├── PlatformPushService: Web Push con VAPID keys                     │
+│   ├── PwaSyncManagerService: Background sync con retry                 │
+│   ├── PwaManifestService: Manifest.json dinámico por tenant            │
+│   ├── PwaOfflineDataService: Cache de datos críticos offline           │
+│   ├── PwaCacheStrategyService: Estrategias cache (CacheFirst, etc.)    │
+│   ├── Service Worker avanzado: strategies + offline-first              │
+│   ├── Tests: 2 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 32 archivos)                       │
+│                                                                         │
+│   📦 jaraba_onboarding ✅ (Onboarding PLG + Gamificación)               │
+│   ├── Entidades: OnboardingTemplate, UserOnboardingProgress            │
+│   ├── OnboardingOrchestratorService: Wraps TenantOnboardingService     │
+│   ├── OnboardingGamificationService: Puntos, badges, streaks           │
+│   ├── OnboardingChecklistService: Progreso por vertical                │
+│   ├── OnboardingContextualHelpService: Ayuda contextual in-app         │
+│   ├── OnboardingAnalyticsService: Métricas activación + retención      │
+│   ├── API REST: /api/v1/onboarding/* (dashboard + API)                 │
+│   ├── Tests: 2 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 34 archivos)                       │
+│                                                                         │
+│   📦 jaraba_usage_billing ✅ (Usage-Based Billing Pipeline)              │
+│   ├── Entidades: UsageEvent, UsageAggregate, PricingRule               │
+│   ├── UsageIngestionService: Ingesta eventos con idempotency           │
+│   ├── UsageAggregatorService: Agregación horaria/diaria/mensual        │
+│   ├── UsagePricingService: Cálculo precios por regla + tiers           │
+│   ├── UsageStripeSyncService: Sync usage records a Stripe Billing      │
+│   ├── UsageAlertService: Alertas umbrales por tenant/métrica           │
+│   ├── QueueWorker: UsageAggregationWorker (Drupal Queue API)           │
+│   ├── API REST: /api/v1/usage/* (dashboard + ingest + alerts)          │
+│   ├── Tests: 3 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 36 archivos)                       │
+│                                                                         │
+│   📦 jaraba_integrations ✅ (Integration Marketplace + Developer Portal) │
+│   ├── Entidades: ConnectorConfig, ConnectorInstance, WebhookEndpoint,  │
+│   │   IntegrationLog                                                    │
+│   ├── RateLimiterService: Sliding window rate limiting por API key      │
+│   ├── AppApprovalService: Workflow aprobación conectores terceros      │
+│   ├── ConnectorSdkService: Scaffold para desarrolladores externos      │
+│   ├── MarketplaceController: UI pública marketplace + búsqueda         │
+│   ├── DeveloperPortalController: Portal para desarrolladores           │
+│   ├── API REST: /api/v1/integrations/*, OAuth callbacks                │
+│   ├── Tests: 2 unit test files                                         │
+│   └── Estado: ✅ Producción (v2.0 - 66 archivos, extendido)            │
+│                                                                         │
+│   📦 jaraba_customer_success ✅ (Customer Success + NPS + Health Scores) │
+│   ├── Entidades: HealthScore, NpsSurvey, NpsResponse, ChurnRisk,      │
+│   │   ExpansionOpportunity                                              │
+│   ├── HealthScoreService: Scoring multidimensional por tenant          │
+│   ├── NpsSurveyService: Encuestas NPS + análisis sentiment             │
+│   ├── ChurnPredictionService: Predicción churn ML-ready               │
+│   ├── CustomerSegmentationService: Segmentación por comportamiento    │
+│   ├── ExpansionPipelineService: Pipeline expansión + upsell            │
+│   ├── API REST: /api/v1/customer-success/* (5+ controllers)            │
+│   ├── Tests: 1 unit test file                                          │
+│   └── Estado: ✅ Producción (v2.0 - 65 archivos, extendido)            │
+│                                                                         │
+│   📦 jaraba_security_compliance ✅ (Security + Compliance + Audit)       │
+│   ├── Entidades: AuditLog (migrada), ComplianceAssessment,             │
+│   │   SecurityPolicy                                                    │
+│   ├── PolicyEnforcerService: Enforcement políticas de seguridad        │
+│   ├── ComplianceTrackerService: Tracking estado SOC2/ISO/GDPR/ENS     │
+│   ├── DataRetentionService: Políticas retención datos + purge          │
+│   ├── AuditLogService: Logging centralizado eventos seguridad          │
+│   ├── Dashboard: SOC 2 readiness + audit trail export                  │
+│   ├── Tests: 3 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 40 archivos)                       │
+│                                                                         │
+│   📦 jaraba_whitelabel ✅ (White-Label + Custom Domains + Reseller)      │
+│   ├── Entidades: WhitelabelConfig, CustomDomain,                       │
+│   │   WhitelabelEmailTemplate, WhitelabelReseller                      │
+│   ├── ConfigResolverService: Resolución config por tenant/dominio      │
+│   ├── DomainManagerService: Gestión dominios custom + DNS verify       │
+│   ├── EmailRendererService: Templates email con token replacement      │
+│   ├── ResellerManagerService: Gestión resellers + comisiones           │
+│   ├── WhitelabelRequestSubscriber: Resolución dominio en request       │
+│   ├── Controllers: BrandingWizard, DomainManagement, EmailEditor,     │
+│   │   ResellerPortal, WhitelabelApi                                    │
+│   ├── Tests: 2 unit test files                                         │
+│   └── Estado: ✅ Producción (v1.0 - 54 archivos)                       │
+│                                                                         │
+│   📦 jaraba_credentials ✅ (Open Badge 3.0 — 5 Gaps cerrados)            │
+│   ├── Sistema completo de credenciales verificables Open Badge 3.0     │
+│   ├── 6 Content Entities (core):                                       │
+│   │   ├── IssuerProfile, CredentialTemplate, IssuedCredential          │
+│   │   ├── RevocationEntry (audit trail inmutable, reason enum)         │
+│   │   ├── CredentialStack (diplomas compuestos, min_required)          │
+│   │   └── UserStackProgress (progreso %, auto-evaluación)             │
+│   ├── 11 Servicios:                                                     │
+│   │   ├── CryptographyService (Ed25519), OpenBadgeBuilder (JSON-LD)    │
+│   │   ├── CredentialIssuer, CredentialVerifier (+RevocationEntry check)│
+│   │   ├── QrCodeGenerator, LmsCredentialsIntegration, PdfGenerator     │
+│   │   ├── RevocationService (revoke, isRevoked, history)              │
+│   │   ├── StackEvaluationService (auto-eval on credential issue)       │
+│   │   ├── StackProgressTracker (progress, recommended stacks)          │
+│   │   └── AccessibilityAuditService (WCAG contrast, ARIA, audit)       │
+│   ├── API REST: verify, verify_json, list, get, revoke,               │
+│   │   stacks (5 endpoints), emprendimiento (5), cross-vertical (3)     │
+│   ├── Frontend: 5 Twig templates (ARIA), 4 SCSS (focus-visible,       │
+│   │   prefers-reduced-motion), 4 JS (keyboard nav, IntersectionObserver)│
+│   ├── Submódulo: jaraba_credentials_emprendimiento                     │
+│   │   ├── 15 credential template YAMLs (12 badges + 3 diplomas)       │
+│   │   ├── 3 Services: CredentialService, ExpertiseService (5 niveles), │
+│   │   │   JourneyTracker (6 fases)                                     │
+│   │   └── Diplomas: Basico → Avanzado → Transformador Digital Expert   │
+│   ├── Submódulo: jaraba_credentials_cross_vertical                     │
+│   │   ├── 2 Entities: CrossVerticalRule, CrossVerticalProgress         │
+│   │   ├── 2 Services: CrossVerticalEvaluator, VerticalActivityTracker  │
+│   │   ├── Rareza visual: common, rare, epic, legendary                 │
+│   │   └── Evaluación: hook_entity_insert + cron diario (State API)     │
+│   ├── Patrón: Hooks nativos (NO ECA YAML), anti-recursión evidence     │
+│   ├── WCAG 2.1 AA: focus-visible, reduced-motion, keyboard nav, ARIA  │
+│   └── Estado: ✅ Producción (v2.0 — 115 archivos, 8 entities, 16 svcs)│
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -853,7 +1030,7 @@
 │   │                    MÓDULOS SATÉLITE                              │  │
 │   │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐             │  │
 │   │  │ page_builder │ │ interactive  │ │ credentials  │             │  │
-│   │  │ 7 SCSS       │ │ 2 SCSS       │ │ 1 SCSS       │             │  │
+│   │  │ 7 SCSS       │ │ 2 SCSS       │ │ 4 SCSS       │             │  │
 │   │  │ package.json │ │ package.json │ │ package.json │             │  │
 │   │  └──────────────┘ └──────────────┘ └──────────────┘             │  │
 │   │  Solo consumen: var(--ej-*, $fallback)                          │  │
@@ -1442,6 +1619,8 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 | **Copiloto v2 Especificaciones** | `docs/tecnicos/20260121a-Especificaciones_Tecnicas_Copiloto_v2_Claude.md` |
 | **Programa Andalucía +ei** | `docs/tecnicos/20260115c-Programa%20Maestro%20Andaluc%C3%ADa%20+ei%20V2.0_Gemini.md` |
 | **Aprendizajes Avatar + Empleabilidad** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_avatar_empleabilidad_activation.md` |
+| **Aprendizajes Self-Discovery Entities + Services** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_self_discovery_content_entities_services.md` |
+| **Plan Cierre Gaps Specs 20260122-25** ⭐ | `docs/implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260122_20260125.md` |
 
 ---
 

@@ -1,0 +1,71 @@
+{#
+ # Stack Progress Card — Componente visual de progreso de un stack.
+ #
+ # Variables:
+ #   - stack: CredentialStack entity
+ #   - progress_percent: integer (0-100)
+ #   - completed_templates: array of template names
+ #   - total_required: integer
+ #   - status: string (in_progress|completed|not_started)
+ #}
+
+<article class="stack-progress-card stack-progress-card--{{ status }}"
+         role="region"
+         aria-label="{{ stack.name|t }}"
+         tabindex="0">
+
+  <div class="stack-progress-card__header">
+    <h3 class="stack-progress-card__title">{{ stack.name }}</h3>
+    {% if stack.eqf_level %}
+      <span class="stack-progress-card__eqf" aria-label="{{ 'Nivel EQF %level'|t({'%level': stack.eqf_level}) }}">
+        EQF {{ stack.eqf_level }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if stack.description %}
+    <p class="stack-progress-card__description">{{ stack.description }}</p>
+  {% endif %}
+
+  <div class="stack-progress-card__progress"
+       role="progressbar"
+       aria-valuenow="{{ progress_percent }}"
+       aria-valuemin="0"
+       aria-valuemax="100"
+       aria-label="{{ 'Progreso del stack: %percent%'|t({'%percent': progress_percent}) }}">
+    <div class="stack-progress-card__progress-bar">
+      <div class="stack-progress-card__progress-fill" style="width: {{ progress_percent }}%"></div>
+    </div>
+    <span class="stack-progress-card__progress-text">{{ progress_percent }}%</span>
+  </div>
+
+  <div class="stack-progress-card__badges">
+    <span class="stack-progress-card__badge-count">
+      {{ completed_templates|length }} / {{ total_required }} {% trans %}badges{% endtrans %}
+    </span>
+  </div>
+
+  {% if stack.bonus_credits > 0 or stack.bonus_xp > 0 %}
+    <div class="stack-progress-card__bonus" aria-label="{% trans %}Bonus al completar{% endtrans %}">
+      {% if stack.bonus_credits > 0 %}
+        <span class="stack-progress-card__bonus-item">
+          {{ jaraba_icon('ui', 'coin', { size: '14px', color: 'corporate' }) }}
+          +{{ stack.bonus_credits }} {% trans %}créditos{% endtrans %}
+        </span>
+      {% endif %}
+      {% if stack.bonus_xp > 0 %}
+        <span class="stack-progress-card__bonus-item">
+          {{ jaraba_icon('ui', 'trophy', { size: '14px', color: 'innovation' }) }}
+          +{{ stack.bonus_xp }} XP
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if status == 'completed' %}
+    <div class="stack-progress-card__completed" aria-live="polite">
+      {{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}
+      <span>{% trans %}Completado{% endtrans %}</span>
+    </div>
+  {% endif %}
+</article>

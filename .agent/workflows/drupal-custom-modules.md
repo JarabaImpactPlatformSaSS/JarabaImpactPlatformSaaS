@@ -541,4 +541,5 @@ $vertical-surface: #FFFFFF;     // Fondo de superficie
 |----------|--------|----------|--------|
 | **AgroConecta** | `jaraba_agroconecta_core` | 20 | ✅ Producción |
 | **ServiciosConecta** | `jaraba_servicios_conecta` | 5 | ✅ Fase 1 |
+| **Credentials** | `jaraba_credentials` | 8 (6 core + 2 cross-vertical) | ✅ Producción v2.0 |
 | **ComercioConecta** | `jaraba_comercio_conecta` | — | 📋 Planificado |

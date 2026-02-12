@@ -1,0 +1,78 @@
+{#
+ # Emprendimiento Journey Map — Mapa visual del recorrido de emprendimiento.
+ #
+ # Variables:
+ #   - phases: array of phase data with badges and progress
+ #   - user_progress: overall progress data
+ #   - next_recommended: next badge to earn
+ #   - expertise_level: string (explorador|iniciado|profesional|experto|master)
+ #}
+{{ attach_library('jaraba_credentials_emprendimiento/journey-map') }}
+
+<div class="emprendimiento-journey" role="main" aria-label="{% trans %}Mapa del Journey de Emprendimiento{% endtrans %}">
+
+  <header class="emprendimiento-journey__header">
+    <h2 class="emprendimiento-journey__title">{% trans %}Mi Journey de Emprendimiento{% endtrans %}</h2>
+    {% if expertise_level %}
+      <span class="emprendimiento-journey__level emprendimiento-journey__level--{{ expertise_level }}"
+            aria-label="{% trans %}Nivel de expertise{% endtrans %}">
+        {{ jaraba_icon('ui', 'trophy', { size: '16px', color: 'innovation' }) }}
+        {{ expertise_level|capitalize }}
+      </span>
+    {% endif %}
+  </header>
+
+  {% if next_recommended %}
+    <div class="emprendimiento-journey__recommended" role="alert" aria-live="polite">
+      {{ jaraba_icon('actions', 'rocket', { size: '18px', color: 'primary' }) }}
+      <span>
+        {% trans %}Siguiente paso:{% endtrans %}
+        <strong>{{ next_recommended.name|default(next_recommended.machine_name) }}</strong>
+        ({{ next_recommended.phase_label }})
+      </span>
+    </div>
+  {% endif %}
+
+  <div class="emprendimiento-journey__phases">
+    {% for phase in phases %}
+      <section class="emprendimiento-journey__phase emprendimiento-journey__phase--{{ phase.status }}"
+               role="region"
+               aria-label="{{ phase.label|t }}"
+               tabindex="0">
+
+        <div class="emprendimiento-journey__phase-header">
+          <span class="emprendimiento-journey__phase-number">{{ phase.order }}</span>
+          <div>
+            <h3 class="emprendimiento-journey__phase-title">{{ phase.label|t }}</h3>
+            <p class="emprendimiento-journey__phase-desc">{{ phase.description|t }}</p>
+          </div>
+        </div>
+
+        <div class="emprendimiento-journey__phase-progress"
+             role="progressbar"
+             aria-valuenow="{{ phase.percent }}"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             aria-label="{{ '%label: %percent%'|t({'%label': phase.label, '%percent': phase.percent}) }}">
+          <div class="emprendimiento-journey__phase-bar">
+            <div class="emprendimiento-journey__phase-fill" style="width: {{ phase.percent }}%"></div>
+          </div>
+          <span class="emprendimiento-journey__phase-pct">{{ phase.percent }}%</span>
+        </div>
+
+        <ul class="emprendimiento-journey__badges" aria-label="{% trans %}Badges de esta fase{% endtrans %}">
+          {% for badge in phase.badges %}
+            <li class="emprendimiento-journey__badge emprendimiento-journey__badge--{{ badge.completed ? 'earned' : 'locked' }}">
+              {% if badge.completed %}
+                {{ jaraba_icon('ui', 'check', { size: '14px', color: 'success' }) }}
+              {% else %}
+                {{ jaraba_icon('ui', 'circle', { size: '14px' }) }}
+              {% endif %}
+              <span>{{ badge.machine_name|replace({'_': ' '})|capitalize }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  </div>
+</div>
