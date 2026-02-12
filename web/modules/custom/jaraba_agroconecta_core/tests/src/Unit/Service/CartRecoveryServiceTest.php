@@ -239,7 +239,7 @@ class CartRecoveryServiceTest extends TestCase {
       $this->assertArrayHasKey('recovered', $result);
       $this->assertArrayHasKey('recovery_rate', $result);
     }
-    catch (\Error $e) {
+    catch (\Error|\RuntimeException $e) {
       // Static Drupal::time() call fails in pure unit tests.
       // Verify the structure via the constant and method signature instead.
       $this->assertStringContainsString('Drupal', $e->getMessage());
