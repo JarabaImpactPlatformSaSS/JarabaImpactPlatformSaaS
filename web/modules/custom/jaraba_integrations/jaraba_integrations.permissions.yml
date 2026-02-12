@@ -1,0 +1,20 @@
+administer integrations:
+  title: 'Administer Integrations'
+  description: 'Configure and manage the integration marketplace.'
+  restrict access: true
+
+manage connectors:
+  title: 'Manage Connectors'
+  description: 'Create, edit, and publish connectors in the marketplace.'
+
+install connectors:
+  title: 'Install Connectors'
+  description: 'Install and configure connectors for a tenant.'
+
+manage webhooks:
+  title: 'Manage Webhooks'
+  description: 'Create and manage webhook subscriptions.'
+
+manage oauth clients:
+  title: 'Manage OAuth Clients'
+  description: 'Create and manage OAuth2 client applications.'

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_rag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\RateLimiterService;
 use Drupal\jaraba_rag\Service\JarabaRagService;
 use Drupal\jaraba_rag\Service\KbIndexerService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,6 +29,7 @@ class RagApiController extends ControllerBase
     public function __construct(
         protected JarabaRagService $ragService,
         protected KbIndexerService $indexerService,
+        protected RateLimiterService $rateLimiter,
     ) {
     }
 
@@ -39,6 +41,7 @@ class RagApiController extends ControllerBase
         return new static(
             $container->get('jaraba_rag.rag_service'),
             $container->get('jaraba_rag.indexer'),
+            $container->get('ecosistema_jaraba_core.rate_limiter'),
         );
     }
 
@@ -70,6 +73,20 @@ class RagApiController extends ControllerBase
     public function query(Request $request): JsonResponse
     {
         try {
+            // AI-01: Rate limiting para proteger contra abuso y costes excesivos.
+            $userId = (string) $this->currentUser()->id();
+            $rateLimitResult = $this->rateLimiter->consume($userId, 'ai');
+            if (!$rateLimitResult['allowed']) {
+                $response = new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.',
+                ], 429);
+                foreach ($this->rateLimiter->getHeaders($rateLimitResult) as $header => $value) {
+                    $response->headers->set($header, $value);
+                }
+                return $response;
+            }
+
             $content = json_decode($request->getContent(), TRUE);
 
             if (empty($content['query'])) {
@@ -116,12 +133,24 @@ class RagApiController extends ControllerBase
     /**
      * Endpoint para reindexar una entidad.
      *
+     * SEC-09: Verifica que la entidad pertenece al tenant del usuario
+     * antes de permitir la reindexación.
+     *
      * POST /api/jaraba-rag/reindex/{entity_type}/{entity_id}
      */
     public function reindex(string $entity_type, int $entity_id): JsonResponse
     {
         try {
-            // Cargar entidad
+            // Validar entity_type contra whitelist de tipos permitidos.
+            $allowedTypes = ['node', 'commerce_product', 'entrepreneur_profile'];
+            if (!in_array($entity_type, $allowedTypes, TRUE)) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Tipo de entidad no permitido para reindexación.',
+                ], 400);
+            }
+
+            // Cargar entidad.
             $storage = $this->entityTypeManager()->getStorage($entity_type);
             $entity = $storage->load($entity_id);
 
@@ -132,7 +161,39 @@ class RagApiController extends ControllerBase
                 ], 404);
             }
 
-            // Reindexar
+            // SEC-09: Verificar tenant ownership si el usuario no es admin global.
+            if (!$this->currentUser()->hasPermission('administer site configuration')) {
+                $entityTenantId = NULL;
+
+                // Obtener tenant_id de la entidad (campo field_tenant).
+                if ($entity->hasField('field_tenant') && !$entity->get('field_tenant')->isEmpty()) {
+                    $entityTenantId = (string) $entity->get('field_tenant')->target_id;
+                }
+
+                // Obtener tenant del usuario actual via TenantContextService.
+                try {
+                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $currentTenant = $tenantContext->getCurrentTenant();
+                    $userTenantId = $currentTenant ? (string) $currentTenant->id() : NULL;
+                } catch (\Exception $e) {
+                    $userTenantId = NULL;
+                }
+
+                // Verificar que coinciden.
+                if ($entityTenantId && $userTenantId && $entityTenantId !== $userTenantId) {
+                    $this->getLogger('jaraba_rag')->warning('SEC-09: Intento de reindex cross-tenant denegado. User tenant: @user, Entity tenant: @entity', [
+                        '@user' => $userTenantId,
+                        '@entity' => $entityTenantId,
+                    ]);
+
+                    return new JsonResponse([
+                        'success' => FALSE,
+                        'error' => 'No tienes permisos para reindexar esta entidad.',
+                    ], 403);
+                }
+            }
+
+            // Reindexar.
             $this->indexerService->indexEntity($entity);
 
             return new JsonResponse([
@@ -147,7 +208,7 @@ class RagApiController extends ControllerBase
 
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Error interno del servidor.',
             ], 500);
         }
     }

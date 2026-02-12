@@ -1,0 +1,49 @@
+services:
+  # Logger channel
+  logger.channel.jaraba_email:
+    parent: logger.channel_base
+    arguments: ['jaraba_email']
+
+  # Email List Service
+  jaraba_email.list_service:
+    class: Drupal\jaraba_email\Service\EmailListService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_email'
+
+  # Subscriber Service
+  jaraba_email.subscriber_service:
+    class: Drupal\jaraba_email\Service\SubscriberService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_email'
+
+  # Campaign Service
+  jaraba_email.campaign_service:
+    class: Drupal\jaraba_email\Service\CampaignService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_email'
+
+  # MJML Compiler Service
+  jaraba_email.mjml_compiler:
+    class: Drupal\jaraba_email\Service\MjmlCompilerService
+    arguments:
+      - '@logger.channel.jaraba_email'
+
+  # Newsletter Service (integrates with Content Hub)
+  jaraba_email.newsletter_service:
+    class: Drupal\jaraba_email\Service\NewsletterService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_email.campaign_service'
+      - '@jaraba_email.subscriber_service'
+      - '@logger.channel.jaraba_email'
+
+  # Email AI Service - Generación con IA
+  jaraba_email.ai_service:
+    class: Drupal\jaraba_email\Service\EmailAIService
+    arguments:
+      - '@jaraba_ai_agents.orchestrator'
+      - '@logger.channel.jaraba_email'

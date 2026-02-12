@@ -71,3 +71,126 @@ function jaraba_commerce_entity_bundle_field_info(\Drupal\Core\Entity\EntityType
   
   return $fields;
 }
+
+/**
+ * Implements hook_preprocess_HOOK() for commerce_product.
+ *
+ * Inyecta Schema.org Product JSON-LD automáticamente en páginas de producto.
+ */
+function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
+  $product = $variables['product_entity'] ?? NULL;
+  if (!$product) {
+    return;
+  }
+
+  // Preparar datos para Schema.org.
+  $productData = [
+    'name' => $product->getTitle(),
+    'description' => $product->get('body')->value ?? '',
+  ];
+
+  // URL del producto.
+  try {
+    $productData['url'] = $product->toUrl('canonical', ['absolute' => TRUE])->toString();
+  }
+  catch (\Exception $e) {
+    // URL no disponible.
+  }
+
+  // Imagen.
+  if ($product->hasField('field_product_images') && !$product->get('field_product_images')->isEmpty()) {
+    $image = $product->get('field_product_images')->first();
+    if ($image && $image->entity) {
+      $productData['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->entity->getFileUri());
+    }
+  } elseif ($product->hasField('field_image') && !$product->get('field_image')->isEmpty()) {
+    $image = $product->get('field_image')->first();
+    if ($image && $image->entity) {
+      $productData['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->entity->getFileUri());
+    }
+  }
+
+  // SKU (del primer variation).
+  $variations = $product->getVariations();
+  if (!empty($variations)) {
+    $firstVariation = reset($variations);
+    if ($firstVariation) {
+      $productData['sku'] = $firstVariation->getSku();
+      
+      // Precio.
+      $price = $firstVariation->getPrice();
+      if ($price) {
+        $productData['price'] = $price->getNumber();
+        $productData['currency'] = $price->getCurrencyCode();
+      }
+    }
+  }
+
+  // Marca (campo personalizado si existe).
+  if ($product->hasField('field_brand') && !$product->get('field_brand')->isEmpty()) {
+    $productData['brand'] = $product->get('field_brand')->entity->label() ?? $product->get('field_brand')->value;
+  }
+
+  // Categorías.
+  if ($product->hasField('field_product_category') && !$product->get('field_product_category')->isEmpty()) {
+    $categories = [];
+    foreach ($product->get('field_product_category') as $term) {
+      if ($term->entity) {
+        $categories[] = $term->entity->label();
+      }
+    }
+    if (!empty($categories)) {
+      $productData['category'] = implode(' > ', $categories);
+    }
+  }
+
+  // Stock disponible.
+  // TODO: Integrar con inventario de Commerce cuando esté disponible.
+  $productData['in_stock'] = TRUE;
+
+  // Datos del tenant/vendedor.
+  $tenant = [];
+  try {
+    if (\Drupal::hasService('jaraba_page_builder.tenant_resolver')) {
+      $tenantEntity = \Drupal::service('jaraba_page_builder.tenant_resolver')->getCurrentTenant();
+      if ($tenantEntity) {
+        $tenant['name'] = $tenantEntity->label();
+        if ($tenantEntity->hasField('field_website')) {
+          $tenant['url'] = $tenantEntity->get('field_website')->value ?? '';
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Usar valores por defecto.
+  }
+
+  // Generar Schema.org JSON-LD.
+  try {
+    if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
+      $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
+      $jsonLd = $schemaService->generateProductSchema($productData, $tenant);
+      
+      if (!empty($jsonLd)) {
+        $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
+        
+        // Añadir al head de la página via #attached.
+        $variables['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'script',
+            '#attributes' => ['type' => 'application/ld+json'],
+            '#value' => $jsonLd,
+          ],
+          'commerce_product_schema_org',
+        ];
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_commerce')->warning('Error generating Product schema: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+

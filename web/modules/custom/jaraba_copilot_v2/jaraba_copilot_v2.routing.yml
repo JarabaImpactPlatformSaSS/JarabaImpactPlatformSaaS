@@ -1,0 +1,156 @@
+jaraba_copilot_v2.settings:
+  path: '/admin/config/jaraba/copilot-v2'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\CopilotSettingsForm'
+    _title: 'Copiloto v2 - Configuración'
+  requirements:
+    _permission: 'administer site configuration'
+
+# Analytics Dashboard - Métricas de uso del copiloto
+jaraba_copilot_v2.analytics:
+  path: '/admin/copilot/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotAnalyticsController::dashboard'
+    _title: 'Copiloto Analytics'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# FAQ Generator - Genera FAQs desde preguntas frecuentes
+jaraba_copilot_v2.faq_generator:
+  path: '/admin/copilot/generate-faqs'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\FaqGeneratorForm'
+    _title: 'Generar FAQs Automáticas'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+
+jaraba_copilot_v2.dashboard:
+  path: '/emprendimiento/copilot/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotDashboardController::dashboard'
+    _title: 'Mi Panel de Emprendimiento'
+  requirements:
+    _permission: 'access copilot'
+
+jaraba_copilot_v2.experiments:
+  path: '/emprendimiento/experimentos'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentController::library'
+    _title: 'Biblioteca de Experimentos'
+  requirements:
+    _permission: 'access copilot'
+
+jaraba_copilot_v2.experiment_detail:
+  path: '/emprendimiento/experimentos/{experiment_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentController::detail'
+    _title: 'Detalle de Experimento'
+  requirements:
+    _permission: 'access copilot'
+    experiment_id: '\d+'
+
+# API Endpoints
+jaraba_copilot_v2.api.chat:
+  path: '/api/copilot/chat'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::chat'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+# Endpoint público para usuarios anónimos (rate limited)
+jaraba_copilot_v2.api.public_chat:
+  path: '/api/public-copilot/chat'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\PublicCopilotController::chat'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    _format: 'json'
+
+# Endpoint para guardar feedback de usuarios (aprendizaje IA)
+jaraba_copilot_v2.api.feedback:
+  path: '/api/copilot/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\PublicCopilotController::saveFeedback'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    _format: 'json'
+
+jaraba_copilot_v2.api.context:
+  path: '/api/copilot/context'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::getContext'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.unlock_status:
+  path: '/api/copilot/unlock-status'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::unlockStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.experiments:
+  path: '/api/copilot/experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.experiment_suggest:
+  path: '/api/copilot/experiments/suggest'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::suggest'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.modes:
+  path: '/api/copilot/modes'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::getModes'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+# Entity Settings Routes (Field UI)
+entity.entrepreneur_profile.settings:
+  path: '/admin/structure/entrepreneur-profile'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\EntrepreneurProfileSettingsForm'
+    _title: 'Configuración de Perfiles de Emprendedor'
+  requirements:
+    _permission: 'administer entrepreneur profiles'
+
+entity.hypothesis.settings:
+  path: '/admin/structure/hypothesis'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\HypothesisSettingsForm'
+    _title: 'Configuración de Hipótesis'
+  requirements:
+    _permission: 'administer hypotheses'
+
+entity.experiment.settings:
+  path: '/admin/structure/experiment'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\ExperimentSettingsForm'
+    _title: 'Configuración de Experimentos'
+  requirements:
+    _permission: 'administer experiments'
+

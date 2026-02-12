@@ -60,6 +60,9 @@ class QueryAnalyticsService
      *   - 'response_time_ms': float - Tiempo de respuesta.
      *   - 'sources_count': int - Número de fuentes usadas.
      *   - 'user_id': int|null - ID del usuario (opcional).
+     *   - 'hallucination_count': int - Claims detectados como alucinación (0+).
+     *   - 'token_usage': int - Tokens totales consumidos (prompt + completion).
+     *   - 'provider_id': string|null - ID del proveedor AI (e.g., 'openai', 'anthropic').
      */
     public function log(array $data): void
     {
@@ -84,6 +87,9 @@ class QueryAnalyticsService
                     'confidence_score' => $data['confidence'] ?? 0,
                     'response_time_ms' => (int) ($data['response_time_ms'] ?? 0),
                     'sources_count' => $data['sources_count'] ?? 0,
+                    'hallucination_count' => (int) ($data['hallucination_count'] ?? 0),
+                    'token_usage' => (int) ($data['token_usage'] ?? 0),
+                    'provider_id' => $data['provider_id'] ?? NULL,
                     'created' => \Drupal::time()->getRequestTime(),
                 ])
                 ->execute();
@@ -206,6 +212,9 @@ class QueryAnalyticsService
      *   - 'avg_response_time_ms': float
      *   - 'top_unanswered': array
      *   - 'purchase_intents': int
+     *   - 'total_hallucinations': int
+     *   - 'total_tokens': int
+     *   - 'avg_tokens_per_query': float
      */
     public function getStats(?int $tenantId, string $period = 'week'): array
     {
@@ -229,6 +238,9 @@ class QueryAnalyticsService
                 'avg_response_time_ms' => 0,
                 'top_unanswered' => [],
                 'purchase_intents' => 0,
+                'total_hallucinations' => 0,
+                'total_tokens' => 0,
+                'avg_tokens_per_query' => 0,
             ];
         }
 
@@ -261,6 +273,17 @@ class QueryAnalyticsService
         // Top unanswered queries
         $topUnanswered = $this->getTopUnansweredQueries($tenantId, $since);
 
+        // AI-12: Métricas AI agregadas.
+        $totalHallucinations = (clone $query)
+            ->addExpression('SUM(hallucination_count)', 'total_hal')
+            ->execute()
+            ->fetchField();
+
+        $totalTokens = (clone $query)
+            ->addExpression('SUM(token_usage)', 'total_tok')
+            ->execute()
+            ->fetchField();
+
         return [
             'total_queries' => (int) $totalQueries,
             'answered_rate' => $totalQueries > 0 ? $answered / $totalQueries : 0,
@@ -268,6 +291,9 @@ class QueryAnalyticsService
             'avg_response_time_ms' => (float) $avgResponseTime,
             'top_unanswered' => $topUnanswered,
             'purchase_intents' => (int) $purchaseIntents,
+            'total_hallucinations' => (int) ($totalHallucinations ?: 0),
+            'total_tokens' => (int) ($totalTokens ?: 0),
+            'avg_tokens_per_query' => $totalQueries > 0 ? round((int) ($totalTokens ?: 0) / $totalQueries, 1) : 0,
         ];
     }
 
@@ -298,6 +324,126 @@ class QueryAnalyticsService
                 'count' => (int) $row->count,
             ];
         }, $results);
+    }
+
+    /**
+     * BIZ-03: Records an AI-driven conversion (query → purchase).
+     *
+     * Called when a user who recently interacted with the AI copilot
+     * completes a purchase. Links the PURCHASE_INTENT query to the order.
+     *
+     * @param int $tenantId
+     *   The tenant where the conversion happened.
+     * @param int $userId
+     *   The user who converted.
+     * @param string $orderId
+     *   The commerce order ID.
+     * @param float $orderTotal
+     *   The order total in EUR.
+     */
+    public function recordAiConversion(int $tenantId, int $userId, string $orderId, float $orderTotal): void
+    {
+        try {
+            // Find the most recent PURCHASE_INTENT query from this user (last 30 min).
+            $windowStart = \Drupal::time()->getRequestTime() - 1800;
+
+            $queryLog = $this->database->select(self::TABLE_NAME, 'q')
+                ->fields('q', ['query_text', 'query_hash', 'confidence_score'])
+                ->condition('tenant_id', $tenantId)
+                ->condition('user_id', $userId)
+                ->condition('classification', self::PURCHASE_INTENT)
+                ->condition('created', $windowStart, '>=')
+                ->orderBy('created', 'DESC')
+                ->range(0, 1)
+                ->execute()
+                ->fetchAssoc();
+
+            // Store conversion via State API (lightweight, no extra table).
+            $month = date('Y-m');
+            $stateKey = "ai_conversions_{$tenantId}_{$month}";
+            $conversions = \Drupal::state()->get($stateKey, [
+                'count' => 0,
+                'revenue' => 0.0,
+                'queries_matched' => 0,
+            ]);
+
+            $conversions['count']++;
+            $conversions['revenue'] += $orderTotal;
+            if ($queryLog) {
+                $conversions['queries_matched']++;
+            }
+
+            \Drupal::state()->set($stateKey, $conversions);
+
+            $this->loggerFactory->get('jaraba_rag')->info(
+                'BIZ-03: AI conversion recorded - tenant @tenant, order @order, total @total EUR, query matched: @matched',
+                [
+                    '@tenant' => $tenantId,
+                    '@order' => $orderId,
+                    '@total' => number_format($orderTotal, 2),
+                    '@matched' => $queryLog ? 'yes' : 'no',
+                ]
+            );
+        } catch (\Exception $e) {
+            $this->loggerFactory->get('jaraba_rag')->error('Error recording AI conversion: @message', [
+                '@message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * BIZ-03: Gets AI conversion metrics for a tenant.
+     *
+     * @param int $tenantId
+     *   The tenant ID.
+     * @param string $period
+     *   Period: 'month' (current), 'quarter' (last 3 months).
+     *
+     * @return array
+     *   Conversion metrics:
+     *   - 'total_conversions': int
+     *   - 'total_revenue': float
+     *   - 'queries_matched': int (conversions with a linked AI query)
+     *   - 'purchase_intent_queries': int (total PURCHASE_INTENT queries)
+     *   - 'conversion_rate': float (conversions / purchase_intent queries)
+     */
+    public function getAiConversionMetrics(int $tenantId, string $period = 'month'): array
+    {
+        $months = $period === 'quarter' ? 3 : 1;
+        $totals = ['count' => 0, 'revenue' => 0.0, 'queries_matched' => 0];
+
+        for ($i = 0; $i < $months; $i++) {
+            $month = date('Y-m', strtotime("-{$i} months"));
+            $stateKey = "ai_conversions_{$tenantId}_{$month}";
+            $data = \Drupal::state()->get($stateKey, []);
+            $totals['count'] += $data['count'] ?? 0;
+            $totals['revenue'] += $data['revenue'] ?? 0.0;
+            $totals['queries_matched'] += $data['queries_matched'] ?? 0;
+        }
+
+        // Get total PURCHASE_INTENT queries in the same period.
+        $since = $this->getPeriodTimestamp($period === 'quarter' ? 'month' : 'month');
+        if ($period === 'quarter') {
+            $since = \Drupal::time()->getRequestTime() - (86400 * 90);
+        }
+
+        $purchaseIntents = $this->database->select(self::TABLE_NAME, 'q')
+            ->condition('tenant_id', $tenantId)
+            ->condition('classification', self::PURCHASE_INTENT)
+            ->condition('created', $since, '>=')
+            ->countQuery()
+            ->execute()
+            ->fetchField();
+
+        return [
+            'total_conversions' => $totals['count'],
+            'total_revenue' => round($totals['revenue'], 2),
+            'queries_matched' => $totals['queries_matched'],
+            'purchase_intent_queries' => (int) $purchaseIntents,
+            'conversion_rate' => $purchaseIntents > 0
+                ? round($totals['count'] / $purchaseIntents, 4)
+                : 0.0,
+        ];
     }
 
     /**

@@ -1,0 +1,31 @@
+chat:
+  input:
+    description: 'Input provided to the model.'
+    type: 'array'
+    default:
+      - { role: "user", content: "Hello!" }
+    required: true
+  authentication:
+    description: 'API Key from Google AI Studio'
+    type: 'string'
+    default: ''
+    required: true
+  configuration:
+    max_tokens:
+      label: 'Max Output Tokens'
+      description: 'The maximum number of tokens that can be generated in the response.'
+      type: 'integer'
+      default: 8192
+      required: false
+      constraints:
+        min: 1
+        max: 8192
+    temperature:
+      label: 'Temperature'
+      description: 'Controls randomness in generation. Lower = more focused, higher = more creative.'
+      type: 'float'
+      default: 0.7
+      required: false
+      constraints:
+        min: 0.0
+        max: 2.0

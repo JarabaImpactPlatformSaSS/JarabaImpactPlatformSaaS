@@ -1,0 +1,21 @@
+administer training products:
+  title: 'Administrar productos de training'
+  description: 'Gestionar la escalera de valor y productos formativos.'
+  restrict access: true
+
+view training products:
+  title: 'Ver productos de training'
+  description: 'Ver el catálogo de productos formativos.'
+
+administer certification programs:
+  title: 'Administrar programas de certificación'
+  description: 'Gestionar certificaciones Método Jaraba™.'
+  restrict access: true
+
+grant certifications:
+  title: 'Otorgar certificaciones'
+  description: 'Otorgar certificaciones a usuarios.'
+
+view own certifications:
+  title: 'Ver propias certificaciones'
+  description: 'Ver las certificaciones propias del usuario.'

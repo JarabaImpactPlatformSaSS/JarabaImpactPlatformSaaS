@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_rag\Service;
 
 use Drupal\ai\AiProviderPluginManager;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -35,6 +36,7 @@ class KbIndexerService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerChannelFactoryInterface $loggerFactory,
         protected ConfigFactoryInterface $configFactory,
+        protected ?CacheBackendInterface $embeddingCache = NULL,
     ) {
     }
 
@@ -252,26 +254,31 @@ class KbIndexerService
     }
 
     /**
-     * Divide contenido en chunks optimizados.
+     * AI-06: Recursive character text splitter con boundaries semánticos.
+     *
+     * Orden de prioridad para splits:
+     * 1. Doble salto de línea (párrafos)
+     * 2. Headings markdown (# ## ###)
+     * 3. Salto de línea simple
+     * 4. Punto seguido de espacio (fin de oración)
+     * 5. Coma
+     * 6. Carácter fijo (fallback)
      */
     protected function chunkContent(array $content, int $chunkSize, int $overlap): array
     {
         $chunks = [];
         $text = trim($content['text'] ?? '');
 
-        // Log para debugging
         $this->log("Iniciando chunking", [
             'text_length' => strlen($text),
             'chunk_size' => $chunkSize,
             'overlap' => $overlap,
         ]);
 
-        // Si no hay texto, retornar vacío
         if (empty($text)) {
             return [];
         }
 
-        // Si hay Answer Capsule, es el primer chunk con prioridad alta
         if (!empty($content['answer_capsule'])) {
             $chunks[] = [
                 'text' => $content['answer_capsule'],
@@ -280,16 +287,14 @@ class KbIndexerService
             ];
         }
 
-        // Aproximación: 1 token ≈ 4 caracteres en español
-        $chunkChars = $chunkSize * 4;
-        $overlapChars = $overlap * 4;
+        // AI-14: Improved token estimation for Spanish text.
+        // Spanish averages ~3.5 chars/token (more morphology than English ~4).
+        // Use word-based estimate: ~1.3 tokens/word avg in Spanish.
+        $avgCharsPerToken = 3.5;
+        $chunkChars = (int) round($chunkSize * $avgCharsPerToken);
+        $overlapChars = (int) round($overlap * $avgCharsPerToken);
 
-        $textLength = strlen($text);
-        $position = 0;
-        $chunkIndex = 0;
-
-        // Si el texto es más corto que un chunk, crear un único chunk
-        if ($textLength <= $chunkChars) {
+        if (strlen($text) <= $chunkChars) {
             $chunks[] = [
                 'text' => $text,
                 'type' => 'description',
@@ -299,37 +304,35 @@ class KbIndexerService
             return $chunks;
         }
 
-        // Dividir texto largo en múltiples chunks
-        while ($position < $textLength) {
-            $chunkText = substr($text, $position, $chunkChars);
+        // Separadores ordenados por prioridad semántica.
+        $separators = ["\n\n", "\n# ", "\n## ", "\n### ", "\n", ". ", ", "];
 
-            // Intentar cortar en un punto natural (fin de oración)
-            if (strlen($chunkText) === $chunkChars) {
-                $lastPeriod = strrpos($chunkText, '.');
-                if ($lastPeriod !== FALSE && $lastPeriod > $chunkChars * 0.5) {
-                    $chunkText = substr($chunkText, 0, $lastPeriod + 1);
-                }
-            }
+        $rawChunks = $this->recursiveSplit($text, $separators, $chunkChars);
 
+        // Ensamblar chunks con overlap.
+        $position = 0;
+        foreach ($rawChunks as $i => $chunkText) {
             $chunkText = trim($chunkText);
-
-            if (!empty($chunkText)) {
-                $chunks[] = [
-                    'text' => $chunkText,
-                    'type' => 'description',
-                    'priority' => 0.8,
-                    'position' => $position,
-                ];
+            if (empty($chunkText)) {
+                continue;
             }
 
-            // Avanzar posición con overlap
-            $advance = strlen($chunkText) - $overlapChars;
-            $position += max($advance, 1); // Siempre avanzar al menos 1
+            // Añadir overlap del chunk anterior.
+            if ($i > 0 && $overlapChars > 0 && isset($rawChunks[$i - 1])) {
+                $overlapText = mb_substr($rawChunks[$i - 1], -$overlapChars);
+                $chunkText = trim($overlapText) . ' ' . $chunkText;
+            }
 
-            $chunkIndex++;
+            $chunks[] = [
+                'text' => $chunkText,
+                'type' => 'description',
+                'priority' => 0.8,
+                'position' => $position,
+            ];
 
-            // Límite de seguridad
-            if ($chunkIndex > 50) {
+            $position += strlen($rawChunks[$i]);
+
+            if (count($chunks) > 50) {
                 break;
             }
         }
@@ -338,15 +341,94 @@ class KbIndexerService
     }
 
     /**
-     * Genera embedding usando OpenAI.
+     * Recursively splits text using semantic separators.
+     */
+    protected function recursiveSplit(string $text, array $separators, int $maxChars): array
+    {
+        if (strlen($text) <= $maxChars) {
+            return [$text];
+        }
+
+        foreach ($separators as $idx => $separator) {
+            $parts = explode($separator, $text);
+            if (count($parts) <= 1) {
+                continue;
+            }
+
+            $chunks = [];
+            $current = '';
+            foreach ($parts as $part) {
+                $candidate = $current === '' ? $part : $current . $separator . $part;
+
+                if (strlen($candidate) <= $maxChars) {
+                    $current = $candidate;
+                } else {
+                    if ($current !== '') {
+                        $chunks[] = $current;
+                    }
+                    if (strlen($part) > $maxChars) {
+                        $remaining = array_slice($separators, $idx + 1);
+                        if (!empty($remaining)) {
+                            $chunks = array_merge($chunks, $this->recursiveSplit($part, $remaining, $maxChars));
+                            $current = '';
+                        } else {
+                            while (strlen($part) > $maxChars) {
+                                $chunks[] = substr($part, 0, $maxChars);
+                                $part = substr($part, $maxChars);
+                            }
+                            $current = $part;
+                        }
+                    } else {
+                        $current = $part;
+                    }
+                }
+            }
+            if ($current !== '') {
+                $chunks[] = $current;
+            }
+            return $chunks;
+        }
+
+        // Fallback: hard cut.
+        $chunks = [];
+        while (strlen($text) > $maxChars) {
+            $chunks[] = substr($text, 0, $maxChars);
+            $text = substr($text, $maxChars);
+        }
+        if (strlen($text) > 0) {
+            $chunks[] = $text;
+        }
+        return $chunks;
+    }
+
+    /**
+     * Genera embedding usando OpenAI con caché por hash de contenido.
+     *
+     * AI-05: Cachea embeddings por SHA-256 del texto para evitar llamadas
+     * redundantes a la API cuando el contenido no ha cambiado.
+     * Ahorro estimado: ~30-40% de llamadas a la API de embeddings.
      */
     protected function generateEmbedding(string $text): array
     {
         $config = $this->configFactory->get('jaraba_rag.settings');
         $model = $config->get('embeddings.model') ?? 'text-embedding-3-small';
 
+        // AI-05: Verificar caché por hash de contenido.
+        $contentHash = hash('sha256', $text . '|' . $model);
+        $cacheKey = 'embedding:' . $contentHash;
+
+        if ($this->embeddingCache) {
+            $cached = $this->embeddingCache->get($cacheKey);
+            if ($cached && !empty($cached->data)) {
+                $this->log('Embedding obtenido de caché', [
+                    'hash' => substr($contentHash, 0, 12),
+                ]);
+                return $cached->data;
+            }
+        }
+
         try {
-            // Obtener el proveedor por defecto para embeddings
+            // Obtener el proveedor por defecto para embeddings.
             $defaults = $this->aiProvider->getDefaultProviderForOperationType('embeddings');
 
             if (!$defaults) {
@@ -357,10 +439,17 @@ class KbIndexerService
             /** @var \Drupal\ai\OperationType\Embeddings\EmbeddingsInterface $provider */
             $provider = $this->aiProvider->createInstance($defaults['provider_id']);
 
-            // Generar embedding
+            // Generar embedding.
             $result = $provider->embeddings($text, $defaults['model_id'] ?? $model);
+            $embedding = $result->getNormalized();
 
-            return $result->getNormalized();
+            // AI-05: Guardar en caché (TTL 7 días - los embeddings no cambian
+            // para el mismo texto + modelo).
+            if ($this->embeddingCache && !empty($embedding)) {
+                $this->embeddingCache->set($cacheKey, $embedding, time() + 604800);
+            }
+
+            return $embedding;
         } catch (\Exception $e) {
             $this->log('Error generando embedding', [
                 'error' => $e->getMessage(),

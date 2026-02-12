@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * jaraba-integrations-connector-card.html.twig
+ *
+ * Detalle completo de un conector del marketplace.
+ *
+ * Variables:
+ * - connector: Entidad Connector
+ * - is_installed: Boolean
+ * - installation: ConnectorInstallation o NULL
+ */
+#}
+
+<div class="connector-detail">
+  <div class="connector-detail__header">
+    <div class="connector-detail__icon">
+      {% if connector.get('logo_url').value %}
+        <img src="{{ connector.get('logo_url').value }}" alt="{{ connector.getName() }}" class="connector-detail__logo" />
+      {% else %}
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-primary, #233D63)" stroke-width="1.5">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      {% endif %}
+    </div>
+
+    <div class="connector-detail__info">
+      <h1 class="connector-detail__name">{{ connector.getName() }}</h1>
+      <div class="connector-detail__meta">
+        <span class="badge">{{ connector.getCategory()|capitalize }}</span>
+        <span class="connector-detail__version">v{{ connector.get('version').value|default('1.0.0') }}</span>
+        {% if connector.get('provider').value %}
+          <span class="connector-detail__provider">
+            {% trans %}por{% endtrans %} {{ connector.get('provider').value }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="connector-detail__actions">
+      {% if is_installed %}
+        <span class="badge badge--success badge--lg">{% trans %}Instalado{% endtrans %}</span>
+        <a href="/integraciones/{{ connector.id() }}/configurar" class="btn btn--secondary">
+          {% trans %}Configurar{% endtrans %}
+        </a>
+      {% else %}
+        <form method="post" action="/integraciones/{{ connector.id() }}/instalar">
+          <button type="submit" class="btn btn--primary btn--lg">{% trans %}Instalar{% endtrans %}</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="connector-detail__body">
+    <div class="connector-detail__description">
+      {{ connector.get('description').value|raw }}
+    </div>
+
+    <div class="connector-detail__specs">
+      <h3>{% trans %}Especificaciones{% endtrans %}</h3>
+      <dl class="connector-detail__spec-list">
+        <dt>{% trans %}Autenticación{% endtrans %}</dt>
+        <dd>{{ connector.get('auth_type').value|capitalize }}</dd>
+
+        {% if connector.getApiBaseUrl() %}
+          <dt>{% trans %}API Base URL{% endtrans %}</dt>
+          <dd><code>{{ connector.getApiBaseUrl() }}</code></dd>
+        {% endif %}
+
+        <dt>{% trans %}Instalaciones{% endtrans %}</dt>
+        <dd>{{ connector.get('install_count').value|default(0) }}</dd>
+
+        {% if connector.get('docs_url').value %}
+          <dt>{% trans %}Documentación{% endtrans %}</dt>
+          <dd>
+            <a href="{{ connector.get('docs_url').value }}" target="_blank" rel="noopener">
+              {% trans %}Ver documentación{% endtrans %}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
+          </dd>
+        {% endif %}
+      </dl>
+    </div>
+  </div>
+
+  <div class="connector-detail__back">
+    <a href="/integraciones" class="btn btn--outline">
+      {% trans %}Volver al marketplace{% endtrans %}
+    </a>
+  </div>
+</div>

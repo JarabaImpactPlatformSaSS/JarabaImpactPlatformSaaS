@@ -12,6 +12,14 @@
  * @see docs/tecnicos/20260111b-Anexo_A1_Integracion_Qdrant_Seguro_v3_Claude.md
  */
 
+// ═══════════════════════════════════════════════════════════════════
+// CONFIG SYNC DIRECTORY - Git-tracked en raiz del proyecto
+// Sobrescribe el valor por defecto de settings.php (linea 879) que apunta a
+// web/sites/default/files/config_*/ (gitignored, nunca llega a produccion).
+// Ruta relativa a DRUPAL_ROOT (web/): ../config/sync = <repo>/config/sync
+// ═══════════════════════════════════════════════════════════════════
+$settings['config_sync_directory'] = '../config/sync';
+
 // Detect environment.
 $is_lando = getenv('LANDO') === 'ON';
 $drupal_env = getenv('DRUPAL_ENV') ?: ($is_lando ? 'development' : 'production');

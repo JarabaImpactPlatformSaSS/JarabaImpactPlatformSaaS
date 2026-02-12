@@ -1,0 +1,173 @@
+{#
+/**
+ * @file
+ * jaraba-integrations-dashboard.html.twig
+ *
+ * Dashboard del marketplace de integraciones para tenants.
+ *
+ * DIRECTRICES:
+ * - BEM naming: .integrations-dashboard__*
+ * - i18n: todos los textos con {% trans %}
+ * - Variables CSS: var(--ej-*) con fallbacks
+ * - Sin regiones Drupal heredadas
+ *
+ * Variables:
+ * - connectors: Array de entidades Connector disponibles
+ * - installed: Mapa connector_id => ConnectorInstallation
+ * - categories: Mapa category => count
+ * - stats: Array con total_available, total_installed, active_installations
+ * - tenant_id: ID del tenant actual
+ */
+#}
+
+<div class="integrations-dashboard">
+
+  {# =============================================
+     HEADER - Título y barra de búsqueda
+     ============================================= #}
+  <div class="integrations-dashboard__header">
+    <div class="integrations-dashboard__header-content">
+      <h1 class="integrations-dashboard__title">{% trans %}Integraciones{% endtrans %}</h1>
+      <p class="integrations-dashboard__subtitle">
+        {% trans %}Conecta tu plataforma con las herramientas que ya usas{% endtrans %}
+      </p>
+    </div>
+    <div class="integrations-dashboard__search">
+      <form method="get" action="" class="integrations-dashboard__search-form">
+        <input
+          type="search"
+          name="q"
+          class="integrations-dashboard__search-input"
+          placeholder="{{ 'Buscar integraciones...'|t }}"
+          value="{{ app.request.query.get('q') }}"
+          aria-label="{{ 'Buscar integraciones'|t }}"
+        />
+        <button type="submit" class="integrations-dashboard__search-btn" aria-label="{{ 'Buscar'|t }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# =============================================
+     STATS - Tarjetas de estadísticas
+     ============================================= #}
+  <div class="integrations-dashboard__stats">
+    <div class="integrations-dashboard__stat-card">
+      <div class="integrations-dashboard__stat-value">{{ stats.total_available }}</div>
+      <div class="integrations-dashboard__stat-label">{% trans %}Disponibles{% endtrans %}</div>
+    </div>
+    <div class="integrations-dashboard__stat-card integrations-dashboard__stat-card--primary">
+      <div class="integrations-dashboard__stat-value">{{ stats.total_installed }}</div>
+      <div class="integrations-dashboard__stat-label">{% trans %}Instaladas{% endtrans %}</div>
+    </div>
+    <div class="integrations-dashboard__stat-card integrations-dashboard__stat-card--success">
+      <div class="integrations-dashboard__stat-value">{{ stats.active_installations }}</div>
+      <div class="integrations-dashboard__stat-label">{% trans %}Activas{% endtrans %}</div>
+    </div>
+  </div>
+
+  {# =============================================
+     LAYOUT - Sidebar de categorías + Grid de conectores
+     ============================================= #}
+  <div class="integrations-dashboard__layout">
+
+    {# Sidebar de categorías #}
+    <aside class="integrations-dashboard__sidebar">
+      <h3 class="integrations-dashboard__sidebar-title">{% trans %}Categorías{% endtrans %}</h3>
+      <ul class="integrations-dashboard__category-list">
+        <li class="integrations-dashboard__category-item {{ not app.request.query.get('category') ? 'is-active' : '' }}">
+          <a href="?" class="integrations-dashboard__category-link">
+            {% trans %}Todas{% endtrans %}
+            <span class="integrations-dashboard__category-count">{{ stats.total_available }}</span>
+          </a>
+        </li>
+        {% for category, count in categories %}
+          <li class="integrations-dashboard__category-item {{ app.request.query.get('category') == category ? 'is-active' : '' }}">
+            <a href="?category={{ category }}" class="integrations-dashboard__category-link">
+              {{ category|capitalize }}
+              <span class="integrations-dashboard__category-count">{{ count }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
+
+    {# Grid de conectores #}
+    <div class="integrations-dashboard__grid">
+      {% if connectors|length > 0 %}
+        {% for connector in connectors %}
+          {% set connector_id = connector.id() %}
+          {% set is_installed = connector_id in installed|keys %}
+          {% set installation = installed[connector_id]|default(null) %}
+
+          <article class="integrations-card {{ is_installed ? 'integrations-card--installed' : '' }}">
+            <div class="integrations-card__header">
+              <div class="integrations-card__icon">
+                {% if connector.get('logo_url').value %}
+                  <img src="{{ connector.get('logo_url').value }}" alt="{{ connector.getName() }}" class="integrations-card__logo" loading="lazy" />
+                {% else %}
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-primary, #233D63)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                {% endif %}
+              </div>
+              <div class="integrations-card__meta">
+                <h3 class="integrations-card__name">
+                  <a href="/integraciones/{{ connector_id }}">{{ connector.getName() }}</a>
+                </h3>
+                <span class="integrations-card__category badge">
+                  {{ connector.getCategory()|capitalize }}
+                </span>
+              </div>
+            </div>
+
+            <div class="integrations-card__body">
+              <p class="integrations-card__description">
+                {{ connector.get('description').value|striptags|length > 120
+                  ? connector.get('description').value|striptags|slice(0, 120) ~ '...'
+                  : connector.get('description').value|striptags }}
+              </p>
+            </div>
+
+            <div class="integrations-card__footer">
+              <div class="integrations-card__info">
+                <span class="integrations-card__version">v{{ connector.get('version').value|default('1.0.0') }}</span>
+                <span class="integrations-card__installs">
+                  {{ connector.get('install_count').value|default(0) }} {% trans %}instalaciones{% endtrans %}
+                </span>
+              </div>
+
+              <div class="integrations-card__actions">
+                {% if is_installed %}
+                  <span class="integrations-card__status badge badge--success">{% trans %}Instalado{% endtrans %}</span>
+                  <form method="post" action="/integraciones/{{ connector_id }}/desinstalar" class="integrations-card__form">
+                    <input type="hidden" name="form_token" value="{{ csrf_token('jaraba_integrations_uninstall_' ~ connector_id) }}" />
+                    <button type="submit" class="btn btn--outline btn--sm btn--danger">{% trans %}Desinstalar{% endtrans %}</button>
+                  </form>
+                {% else %}
+                  <form method="post" action="/integraciones/{{ connector_id }}/instalar" class="integrations-card__form">
+                    <input type="hidden" name="form_token" value="{{ csrf_token('jaraba_integrations_install_' ~ connector_id) }}" />
+                    <button type="submit" class="btn btn--primary btn--sm">{% trans %}Instalar{% endtrans %}</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="integrations-dashboard__empty">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ej-gray-400, #BDBDBD)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+          <p>{% trans %}No se encontraron integraciones.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>

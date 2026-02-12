@@ -1,0 +1,19 @@
+services:
+  jaraba_training.ladder_service:
+    class: Drupal\jaraba_training\Service\LadderService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+
+  jaraba_training.upsell_engine:
+    class: Drupal\jaraba_training\Service\UpsellEngine
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@queue'
+
+  jaraba_training.royalty_tracker:
+    class: Drupal\jaraba_training\Service\RoyaltyTracker
+    arguments:
+      - '@entity_type.manager'
+      - '@database'

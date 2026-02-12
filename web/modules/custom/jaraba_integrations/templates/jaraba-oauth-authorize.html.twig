@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * jaraba-oauth-authorize.html.twig
+ *
+ * Pantalla de consentimiento OAuth2.
+ *
+ * Variables:
+ * - client_name: Nombre de la aplicación
+ * - scopes: Array de scopes solicitados
+ * - client_id, redirect_uri, scope, state: Parámetros OAuth
+ */
+#}
+
+<div class="oauth-authorize">
+  <div class="oauth-authorize__card">
+    <div class="oauth-authorize__header">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-primary, #233D63)" stroke-width="1.5">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <h2 class="oauth-authorize__title">{% trans %}Autorizar Aplicación{% endtrans %}</h2>
+    </div>
+
+    <div class="oauth-authorize__body">
+      <p class="oauth-authorize__message">
+        {% trans %}<strong>{{ client_name }}</strong> solicita acceso a tu cuenta:{% endtrans %}
+      </p>
+
+      <ul class="oauth-authorize__scopes">
+        {% for scope_item in scopes %}
+          <li class="oauth-authorize__scope-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-success, #43A047)" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ scope_item }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="oauth-authorize__actions">
+      <form method="post" action="">
+        <input type="hidden" name="client_id" value="{{ client_id }}" />
+        <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}" />
+        <input type="hidden" name="scope" value="{{ scope }}" />
+        <input type="hidden" name="state" value="{{ state }}" />
+        <input type="hidden" name="response_type" value="code" />
+
+        <button type="submit" name="consent" value="allow" class="btn btn--primary">
+          {% trans %}Autorizar{% endtrans %}
+        </button>
+        <button type="submit" name="consent" value="deny" class="btn btn--outline">
+          {% trans %}Denegar{% endtrans %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

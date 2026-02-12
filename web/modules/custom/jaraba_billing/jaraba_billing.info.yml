@@ -1,0 +1,9 @@
+name: 'Jaraba Billing'
+type: module
+description: 'Módulo de billing y subscripción SaaS — servicios de metering, pricing, trials, y créditos de impacto'
+package: Jaraba
+core_version_requirement: ^11
+php: 8.4
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

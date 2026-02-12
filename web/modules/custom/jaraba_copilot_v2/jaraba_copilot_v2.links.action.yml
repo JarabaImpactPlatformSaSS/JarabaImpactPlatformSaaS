@@ -1,0 +1,18 @@
+# Botones de acción "Añadir"
+entity.entrepreneur_profile.add_form:
+  title: 'Añadir Perfil de Emprendedor'
+  route_name: entity.entrepreneur_profile.add_form
+  appears_on:
+    - entity.entrepreneur_profile.collection
+
+entity.hypothesis.add_form:
+  title: 'Añadir Hipótesis'
+  route_name: entity.hypothesis.add_form
+  appears_on:
+    - entity.hypothesis.collection
+
+entity.experiment.add_form:
+  title: 'Añadir Experimento'
+  route_name: entity.experiment.add_form
+  appears_on:
+    - entity.experiment.collection

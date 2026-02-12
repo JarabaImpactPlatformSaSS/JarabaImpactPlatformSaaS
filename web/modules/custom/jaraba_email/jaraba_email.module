@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Email module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_email_theme(): array {
+  return [
+    'email_campaign' => [
+      'render element' => 'elements',
+    ],
+    'email_template_preview' => [
+      'variables' => [
+        'template' => NULL,
+        'preview_data' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_email_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'campaign':
+    case 'sequence':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+      if (!empty($params['from'])) {
+        $message['from'] = $params['from'];
+      }
+      break;
+
+    case 'double_optin':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+      break;
+  }
+}

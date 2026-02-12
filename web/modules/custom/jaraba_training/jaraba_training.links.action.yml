@@ -1,0 +1,11 @@
+entity.training_product.add_form:
+  title: 'Añadir Producto Training'
+  route_name: entity.training_product.add_form
+  appears_on:
+    - entity.training_product.collection
+
+entity.certification_program.add_form:
+  title: 'Añadir Programa de Certificación'
+  route_name: entity.certification_program.add_form
+  appears_on:
+    - entity.certification_program.collection

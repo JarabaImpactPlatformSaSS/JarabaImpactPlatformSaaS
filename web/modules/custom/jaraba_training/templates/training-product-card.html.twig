@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Template para card de producto de training.
+ *
+ * Variables:
+ * - product: Entidad TrainingProduct.
+ * - is_current: Si es el nivel actual del usuario.
+ * - is_recommended: Si es el producto recomendado.
+ */
+#}
+
+<article class="training-product-card {{ is_current ? 'current' : '' }} {{ is_recommended ? 'recommended' : '' }}">
+  {% if is_recommended %}
+    <div class="recommended-badge">
+      {% trans %}Recomendado{% endtrans %}
+    </div>
+  {% endif %}
+
+  <header class="card-header">
+    <h3 class="product-title">{{ product.title }}</h3>
+    <span class="product-type type-{{ product.productType }}">
+      {{ product.productType|replace({'_': ' '})|capitalize }}
+    </span>
+  </header>
+
+  <div class="card-body">
+    {% if product.description.value %}
+      <p class="product-description">{{ product.description.value|striptags|slice(0, 150) }}...</p>
+    {% endif %}
+
+    <div class="product-pricing">
+      {% if product.isFree %}
+        <span class="price price-free">{% trans %}Gratis{% endtrans %}</span>
+      {% else %}
+        <span class="price">€{{ product.price|number_format(2) }}</span>
+        {% if product.billingType == 'recurring_monthly' %}
+          <span class="billing-period">/{% trans %}mes{% endtrans %}</span>
+        {% elseif product.billingType == 'recurring_annual' %}
+          <span class="billing-period">/{% trans %}año{% endtrans %}</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <footer class="card-footer">
+    <a href="/training/product/{{ product.id }}" class="btn {{ is_recommended ? 'btn-primary' : 'btn-secondary' }}">
+      {% if product.isFree %}
+        {% trans %}Obtener Gratis{% endtrans %}
+      {% else %}
+        {% trans %}Ver Detalles{% endtrans %}
+      {% endif %}
+    </a>
+  </footer>
+</article>

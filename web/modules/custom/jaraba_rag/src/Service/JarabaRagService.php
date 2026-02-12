@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_rag\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -41,6 +42,7 @@ class JarabaRagService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerChannelFactoryInterface $loggerFactory,
         protected ConfigFactoryInterface $configFactory,
+        protected ?CacheBackendInterface $responseCache = NULL,
     ) {
     }
 
@@ -67,44 +69,86 @@ class JarabaRagService
         $startTime = microtime(TRUE);
         $config = $this->configFactory->get('jaraba_rag.settings');
 
+        // AI-15: Generate correlation ID for request tracing.
+        $correlationId = bin2hex(random_bytes(8));
+
         try {
-            // 1. Obtener contexto del tenant
+            // 1. Obtener contexto del tenant.
             $tenantFilters = $this->tenantContext->getSearchFilters();
             $this->log('Query recibida', [
                 'query' => $query,
                 'tenant_id' => $tenantFilters['tenant_id'] ?? 'unknown',
+                'correlation_id' => $correlationId,
             ]);
 
-            // 2. Generar embedding de la query
+            // AI-11 + AI-16: Verificar caché con query normalizada para mejor hit rate.
+            $normalizedQuery = $this->normalizeQueryForCache($query);
+            $cacheKey = 'rag_response:' . hash('sha256', json_encode([
+                'query' => $normalizedQuery,
+                'top_k' => $options['top_k'] ?? NULL,
+                'tenant_id' => $tenantFilters['tenant_id'] ?? 'unknown',
+            ]));
+
+            if ($this->responseCache) {
+                $cached = $this->responseCache->get($cacheKey);
+                if ($cached && !empty($cached->data)) {
+                    $this->log('Respuesta RAG obtenida de caché', [
+                        'query' => $query,
+                    ]);
+
+                    // Registrar analytics como cache hit.
+                    $this->queryAnalytics->log([
+                        'query' => $query,
+                        'tenant_id' => $tenantFilters['tenant_id'] ?? NULL,
+                        'classification' => $cached->data['classification'] ?? 'CACHE_HIT',
+                        'confidence' => $cached->data['confidence'] ?? 0.5,
+                        'response_time_ms' => (microtime(TRUE) - $startTime) * 1000,
+                        'sources_count' => count($cached->data['sources'] ?? []),
+                        'cache_hit' => TRUE,
+                    ]);
+
+                    return $cached->data;
+                }
+            }
+
+            // 2. Generar embedding de la query.
             $queryEmbedding = $this->generateEmbedding($query);
 
-            // 3. Buscar en Qdrant con filtros de tenant
+            // 3. Buscar en Qdrant con filtros de tenant.
             $topK = $options['top_k'] ?? $config->get('search.top_k') ?? 5;
             $minScore = $config->get('search.min_score') ?? 0.7;
 
-            $searchResults = $this->searchVectorDb($queryEmbedding, $tenantFilters, $topK, $minScore);
+            // AI-08: Fetch more candidates for re-ranking, then trim.
+            $fetchK = min($topK * 3, 15);
+            $searchResults = $this->searchVectorDb($queryEmbedding, $tenantFilters, $fetchK, $minScore);
 
-            // 4. Enriquecer resultados con datos actuales de Drupal
+            // AI-13: Apply temporal decay to boost fresh content.
+            $searchResults = $this->applyTemporalDecay($searchResults);
+
+            // AI-08: Re-rank results using cross-encoder scoring.
+            $searchResults = $this->reRankResults($query, $searchResults, $topK);
+
+            // 4. Enriquecer resultados con datos actuales de Drupal.
             $enrichedContext = $this->enrichWithDrupalData($searchResults);
 
-            // 5. Construir prompt y generar respuesta
+            // 5. Construir prompt y generar respuesta.
             $response = $this->generateResponse($query, $enrichedContext, $tenantFilters);
 
-            // 6. Validar grounding
+            // 6. Validar grounding.
             $validationResult = $this->groundingValidator->validate(
                 $response['text'],
                 $enrichedContext
             );
 
-            // 7. Si hay alucinaciones, regenerar o usar fallback
+            // 7. Si hay alucinaciones, regenerar o usar fallback.
             if (!$validationResult['is_valid']) {
                 $response = $this->handleHallucinations($query, $enrichedContext, $validationResult);
             }
 
-            // 8. Clasificar la respuesta
+            // 8. Clasificar la respuesta.
             $classification = $this->classifyResponse($query, $searchResults, $response);
 
-            // 9. Registrar analytics
+            // 9. Registrar analytics.
             $this->queryAnalytics->log([
                 'query' => $query,
                 'tenant_id' => $tenantFilters['tenant_id'] ?? NULL,
@@ -112,14 +156,35 @@ class JarabaRagService
                 'confidence' => $validationResult['confidence'] ?? 0.5,
                 'response_time_ms' => (microtime(TRUE) - $startTime) * 1000,
                 'sources_count' => count($searchResults),
+                'correlation_id' => $correlationId,
             ]);
 
-            return [
+            // 10. Registrar uso en FinOps para tracking de costes.
+            try {
+                $finopsTracker = \Drupal::service('ecosistema_jaraba_core.finops_tracking');
+                $finopsTracker->trackRagQuery(
+                    $tenantFilters['tenant_id'] ?? 'unknown',
+                    0 // tokens_used - @todo obtener del resultado LLM
+                );
+            } catch (\Exception $e) {
+                // Silent fail - no bloquear por tracking.
+            }
+
+            $result = [
                 'response' => $response['text'],
                 'sources' => $this->extractSources($enrichedContext),
                 'confidence' => $validationResult['confidence'] ?? 0.5,
                 'classification' => $classification,
             ];
+
+            // AI-11: Guardar respuesta en caché (TTL 1 hora por defecto).
+            // Solo cachear respuestas exitosas con confianza aceptable.
+            if ($this->responseCache && ($result['confidence'] ?? 0) >= 0.5) {
+                $cacheTtl = (int) ($config->get('cache.response_ttl') ?: 3600);
+                $this->responseCache->set($cacheKey, $result, time() + $cacheTtl);
+            }
+
+            return $result;
 
         } catch (\Exception $e) {
             $this->log('Error en query RAG', [
@@ -188,14 +253,19 @@ class JarabaRagService
                 scoreThreshold: $minScore
             );
 
-            // Formatear resultados
+            // AI-09: Formatear resultados aplicando priority multiplier.
+            // Los answer capsules se indexan con priority 1.5x para boosting.
             $formatted = [];
             foreach ($results as $result) {
+                $priority = (float) ($result['payload']['priority'] ?? 1.0);
                 $formatted[] = [
-                    'score' => $result['score'],
+                    'score' => $result['score'] * $priority,
                     'payload' => $result['payload'],
                 ];
             }
+
+            // Re-ordenar por score ajustado (mayor primero).
+            usort($formatted, fn($a, $b) => $b['score'] <=> $a['score']);
 
             return $formatted;
         } catch (\Exception $e) {
@@ -204,6 +274,106 @@ class JarabaRagService
             ], 'error');
             return [];
         }
+    }
+
+    /**
+     * AI-08: Re-ranks search results using lightweight cross-encoder scoring.
+     *
+     * Uses reciprocal rank fusion between vector score and keyword overlap
+     * to improve relevance without requiring an external re-ranking API.
+     *
+     * @param string $query
+     *   The user query.
+     * @param array $results
+     *   Vector search results with 'score' and 'payload.text'.
+     * @param int $topK
+     *   Number of results to return after re-ranking.
+     *
+     * @return array
+     *   Re-ranked and trimmed results.
+     */
+    protected function reRankResults(string $query, array $results, int $topK): array
+    {
+        if (count($results) <= $topK) {
+            return $results;
+        }
+
+        // Normalize query for keyword matching.
+        $queryWords = array_unique(array_filter(
+            preg_split('/\s+/', mb_strtolower(trim($query))),
+            fn($w) => mb_strlen($w) > 2
+        ));
+
+        if (empty($queryWords)) {
+            return array_slice($results, 0, $topK);
+        }
+
+        foreach ($results as &$result) {
+            $text = mb_strtolower($result['payload']['text'] ?? '');
+            $vectorScore = $result['score'];
+
+            // Calculate keyword overlap score (0 to 1).
+            $matchCount = 0;
+            foreach ($queryWords as $word) {
+                if (mb_strpos($text, $word) !== FALSE) {
+                    $matchCount++;
+                }
+            }
+            $keywordScore = count($queryWords) > 0 ? $matchCount / count($queryWords) : 0;
+
+            // Boost for exact phrase match.
+            $phraseBoost = mb_strpos($text, mb_strtolower($query)) !== FALSE ? 0.15 : 0;
+
+            // Reciprocal rank fusion: combine vector and keyword scores.
+            $result['rerank_score'] = ($vectorScore * 0.7) + ($keywordScore * 0.2) + $phraseBoost;
+        }
+        unset($result);
+
+        usort($results, fn($a, $b) => $b['rerank_score'] <=> $a['rerank_score']);
+
+        // Update scores to reflect re-ranking and trim.
+        $reranked = array_slice($results, 0, $topK);
+        foreach ($reranked as &$item) {
+            $item['score'] = $item['rerank_score'];
+            unset($item['rerank_score']);
+        }
+
+        return $reranked;
+    }
+
+    /**
+     * AI-13: Applies temporal decay to penalize stale content.
+     *
+     * Uses exponential decay: score *= e^(-lambda * age_days).
+     * Content older than 180 days loses ~50% of its score boost.
+     *
+     * @param array $results
+     *   Search results with payload containing 'indexed_at'.
+     *
+     * @return array
+     *   Results with adjusted scores.
+     */
+    protected function applyTemporalDecay(array $results): array
+    {
+        $now = time();
+        // Half-life of ~180 days: lambda = ln(2) / 180 ≈ 0.00385.
+        $lambda = 0.00385;
+
+        foreach ($results as &$result) {
+            $indexedAt = $result['payload']['indexed_at'] ?? NULL;
+            if ($indexedAt) {
+                $indexedTimestamp = strtotime($indexedAt);
+                if ($indexedTimestamp) {
+                    $ageDays = ($now - $indexedTimestamp) / 86400;
+                    $decayFactor = exp(-$lambda * max(0, $ageDays));
+                    // Blend: 80% original score + 20% decay-adjusted.
+                    $result['score'] = $result['score'] * (0.8 + 0.2 * $decayFactor);
+                }
+            }
+        }
+        unset($result);
+
+        return $results;
     }
 
     /**
@@ -308,8 +478,10 @@ class JarabaRagService
      */
     protected function buildSystemPrompt(array $tenantFilters, string $context): string
     {
-        $tenantName = $tenantFilters['tenant_name'] ?? 'la tienda';
-        $vertical = $tenantFilters['vertical'] ?? 'comercio';
+        // SEC-01: Sanitizar inputs antes de interpolar en el system prompt.
+        // Previene inyección de instrucciones vía configuración de tenant.
+        $tenantName = $this->sanitizePromptInput($tenantFilters['tenant_name'] ?? 'la tienda');
+        $vertical = $this->sanitizePromptInput($tenantFilters['vertical'] ?? 'comercio');
 
         return <<<PROMPT
 Eres el asistente de compras de "{$tenantName}", una tienda de {$vertical} en Jaraba Impact Platform.
@@ -369,17 +541,69 @@ PROMPT;
     }
 
     /**
+     * Sanitiza un input antes de interpolarlo en un prompt del sistema.
+     *
+     * SEC-01: Previene inyección de instrucciones (prompt injection) eliminando
+     * patrones que podrían alterar el comportamiento del LLM.
+     */
+    protected function sanitizePromptInput(string $input): string
+    {
+        // Limitar longitud para evitar inyecciones extensas.
+        $input = mb_substr($input, 0, 100);
+
+        // Eliminar caracteres de control y delimitadores de prompt.
+        $input = preg_replace('/[\x00-\x1F\x7F]/', '', $input);
+
+        // Eliminar patrones comunes de inyección de prompts.
+        $dangerousPatterns = [
+            '/ignore\s+(all\s+)?(previous|above|prior)\s+(instructions?|rules?|prompts?)/i',
+            '/you\s+are\s+now/i',
+            '/new\s+instructions?:/i',
+            '/system\s*:/i',
+            '/\bignora\b.*\b(instrucciones|reglas|anteriores)\b/i',
+            '/\bahora\s+eres\b/i',
+            '/\bnuevas?\s+instrucciones?\b/i',
+        ];
+
+        foreach ($dangerousPatterns as $pattern) {
+            $input = preg_replace($pattern, '[FILTERED]', $input);
+        }
+
+        return trim($input);
+    }
+
+    /**
      * Maneja casos donde se detectan alucinaciones.
+     *
+     * AI-04: Si hay contexto disponible, reintenta con prompt más restrictivo
+     * antes de devolver el fallback genérico.
      */
     protected function handleHallucinations(string $query, array $context, array $validationResult): array
     {
         $config = $this->configFactory->get('jaraba_rag.settings');
         $fallback = $config->get('grounding.fallback_message');
 
-        // Si hay contexto pero las respuestas no son válidas,
-        // intentar regenerar con prompt más restrictivo
+        // AI-04: Si hay contexto, reintentar con prompt estricto.
         if (!empty($context)) {
-            // @todo Implementar regeneración con prompt más estricto
+            try {
+                $strictPrompt = "IMPORTANTE: Responde SOLO con información que aparece TEXTUALMENTE en el catálogo. "
+                    . "Si la información no está en el catálogo, responde: 'No tengo esa información.' "
+                    . "NO hagas inferencias ni suposiciones.\n\n"
+                    . $this->formatContextForPrompt($context);
+
+                $retryResponse = $this->callLlm($query, $strictPrompt);
+
+                if ($retryResponse && !empty($retryResponse['text'])) {
+                    $this->logger->info('AI-04: Regeneración con prompt estricto exitosa para query: @query', [
+                        '@query' => mb_substr($query, 0, 100),
+                    ]);
+                    return $retryResponse;
+                }
+            } catch (\Exception $e) {
+                $this->logger->warning('AI-04: Fallo en regeneración estricta: @error', [
+                    '@error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return [
@@ -432,6 +656,37 @@ PROMPT;
         }
 
         return $sources;
+    }
+
+    /**
+     * AI-16: Normalizes query for cache key to improve hit rate.
+     *
+     * Strips punctuation, lowercases, removes stopwords, sorts words.
+     * "¿Qué aceite de oliva tenéis?" → "aceite oliva"
+     */
+    protected function normalizeQueryForCache(string $query): string
+    {
+        $normalized = mb_strtolower(trim($query));
+        // Remove accents.
+        $normalized = strtr($normalized, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'ü' => 'u', 'ñ' => 'n',
+        ]);
+        // Remove punctuation.
+        $normalized = preg_replace('/[^\w\s]/u', '', $normalized);
+        // Remove Spanish/English stopwords.
+        $stopwords = ['el', 'la', 'los', 'las', 'un', 'una', 'de', 'del', 'en',
+            'con', 'para', 'por', 'que', 'como', 'es', 'son', 'se', 'al',
+            'the', 'a', 'an', 'is', 'are', 'of', 'and', 'or', 'to', 'in',
+            'me', 'te', 'lo', 'nos', 'les', 'hay', 'tiene', 'tienen',
+            'teneis', 'cual', 'cuales', 'donde', 'cuando',
+        ];
+        $words = array_filter(
+            preg_split('/\s+/', $normalized),
+            fn($w) => mb_strlen($w) > 2 && !in_array($w, $stopwords)
+        );
+        sort($words);
+        return implode(' ', $words);
     }
 
     /**

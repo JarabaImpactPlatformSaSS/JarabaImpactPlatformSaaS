@@ -18,7 +18,7 @@
   <div class="premium-header">
     <div class="premium-header__content">
       <h1 class="premium-header__title">
-        <span class="premium-header__icon">🧠</span>
+        <span class="premium-header__icon">{{ jaraba_icon('ai', 'brain', { variant: 'duotone', color: 'innovation', size: '32px' }) }}</span>
         {% trans %}Panel de Analítica KB{% endtrans %}
       </h1>
       <p class="premium-header__subtitle">
@@ -27,7 +27,7 @@
     </div>
     <div class="premium-header__actions">
       <a href="{{ path('jaraba_rag.settings') }}" class="btn btn-primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":700,"title":"{% trans %}Configuración de RAG{% endtrans %}"}' title="{% trans %}Configurar RAG{% endtrans %}">
-        <span class="btn__icon">⚙️</span> {% trans %}Configurar RAG{% endtrans %}
+        <span class="btn__icon">{{ jaraba_icon('ui', 'cog', { size: '16px' }) }}</span> {% trans %}Configurar RAG{% endtrans %}
       </a>
     </div>
   </div>
@@ -35,39 +35,39 @@
   {# Métricas Semanales #}
   <div class="premium-section">
     <h2 class="premium-section__title">
-      <span class="premium-section__icon">📊</span>
+      <span class="premium-section__icon">{{ jaraba_icon('analytics', 'chart', { color: 'corporate', size: '24px' }) }}</span>
       {% trans %}Esta Semana{% endtrans %}
     </h2>
 
     {% if week_stats %}
     <div class="premium-cards">
       <div class="premium-card premium-card--primary">
-        <span class="premium-card__icon">💬</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'message', { variant: 'duotone', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.total_queries|default(0)|number_format }}</span>
         <span class="premium-card__label">{% trans %}Consultas Totales{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--gold">
-        <span class="premium-card__icon">⚡</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'bolt', { variant: 'duotone', color: 'warning', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.avg_response_time|default(0)|number_format(0) }} ms</span>
         <span class="premium-card__label">{% trans %}Tiempo Promedio{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--success">
-        <span class="premium-card__icon">✅</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: 'success', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.success_rate|default(0)|number_format(1) }}%</span>
         <span class="premium-card__label">{% trans %}Tasa de Éxito{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--purple">
-        <span class="premium-card__icon">🎯</span>
+        <span class="premium-card__icon">{{ jaraba_icon('business', 'target', { variant: 'duotone', color: 'secondary', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.grounding_score|default(0)|number_format(2) }}</span>
         <span class="premium-card__label">{% trans %}Score de Grounding{% endtrans %}</span>
       </div>
     </div>
     {% else %}
     <div class="premium-empty">
-      <span class="premium-empty__icon">📭</span>
+      <span class="premium-empty__icon">{{ jaraba_icon('ui', 'inbox', { variant: 'duotone', color: 'neutral', size: '48px' }) }}</span>
       <p class="premium-empty__message">{% trans %}Sin datos disponibles{% endtrans %}</p>
     </div>
     {% endif %}
@@ -76,39 +76,39 @@
   {# Métricas Mensuales #}
   <div class="premium-section">
     <h2 class="premium-section__title">
-      <span class="premium-section__icon">📈</span>
+      <span class="premium-section__icon">{{ jaraba_icon('analytics', 'trending-up', { color: 'success', size: '24px' }) }}</span>
       {% trans %}Este Mes{% endtrans %}
     </h2>
 
     {% if month_stats %}
     <div class="premium-cards">
       <div class="premium-card premium-card--primary">
-        <span class="premium-card__icon">💬</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'message', { variant: 'duotone', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ month_stats.total_queries|default(0)|number_format }}</span>
         <span class="premium-card__label">{% trans %}Consultas Totales{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--gold">
-        <span class="premium-card__icon">⚡</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'bolt', { variant: 'duotone', color: 'warning', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ month_stats.avg_response_time|default(0)|number_format(0) }} ms</span>
         <span class="premium-card__label">{% trans %}Tiempo Promedio{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--success">
-        <span class="premium-card__icon">✅</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: 'success', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ month_stats.success_rate|default(0)|number_format(1) }}%</span>
         <span class="premium-card__label">{% trans %}Tasa de Éxito{% endtrans %}</span>
       </div>
 
       <div class="premium-card premium-card--purple">
-        <span class="premium-card__icon">🎯</span>
+        <span class="premium-card__icon">{{ jaraba_icon('business', 'target', { variant: 'duotone', color: 'secondary', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ month_stats.grounding_score|default(0)|number_format(2) }}</span>
         <span class="premium-card__label">{% trans %}Score de Grounding{% endtrans %}</span>
       </div>
     </div>
     {% else %}
     <div class="premium-empty">
-      <span class="premium-empty__icon">📭</span>
+      <span class="premium-empty__icon">{{ jaraba_icon('ui', 'inbox', { variant: 'duotone', color: 'neutral', size: '48px' }) }}</span>
       <p class="premium-empty__message">{% trans %}Sin datos disponibles{% endtrans %}</p>
     </div>
     {% endif %}
@@ -117,13 +117,13 @@
   {# Información Adicional #}
   <div class="premium-section">
     <h2 class="premium-section__title">
-      <span class="premium-section__icon">ℹ️</span>
+      <span class="premium-section__icon">{{ jaraba_icon('ui', 'info', { color: 'corporate', size: '24px' }) }}</span>
       {% trans %}Información{% endtrans %}
     </h2>
     <div class="premium-recommendations">
       <div class="premium-recommendation">
         <div class="premium-recommendation__header">
-          <span class="premium-recommendation__icon">🔗</span>
+          <span class="premium-recommendation__icon">{{ jaraba_icon('ui', 'link', { size: '20px' }) }}</span>
           <strong>{% trans %}Qdrant Vector DB{% endtrans %}</strong>
         </div>
         <p class="premium-recommendation__message">
@@ -132,7 +132,7 @@
       </div>
       <div class="premium-recommendation">
         <div class="premium-recommendation__header">
-          <span class="premium-recommendation__icon">🛡️</span>
+          <span class="premium-recommendation__icon">{{ jaraba_icon('ui', 'shield', { size: '20px' }) }}</span>
           <strong>{% trans %}Grounding Validator{% endtrans %}</strong>
         </div>
         <p class="premium-recommendation__message">
@@ -141,7 +141,7 @@
       </div>
       <div class="premium-recommendation">
         <div class="premium-recommendation__header">
-          <span class="premium-recommendation__icon">🏢</span>
+          <span class="premium-recommendation__icon">{{ jaraba_icon('ui', 'building', { size: '20px' }) }}</span>
           <strong>{% trans %}Multi-Tenant{% endtrans %}</strong>
         </div>
         <p class="premium-recommendation__message">

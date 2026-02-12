@@ -1,0 +1,9 @@
+entity.training_product.collection:
+  title: 'Productos'
+  route_name: entity.training_product.collection
+  base_route: entity.training_product.collection
+
+entity.certification_program.collection:
+  title: 'Programas'
+  route_name: entity.certification_program.collection
+  base_route: entity.certification_program.collection

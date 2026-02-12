@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Integrations.
+ *
+ * PROPÓSITO:
+ * Marketplace de integraciones y conectores OAuth2 para tenants SaaS.
+ * Incluye registro de conectores, instalación por tenant, webhooks y health checks.
+ *
+ * DIRECTRICES:
+ * - Hook-first: hooks nativos de Drupal, no ECA.
+ * - i18n: todos los textos con t() / {% trans %}.
+ * - Aislamiento: tenant_id en cada entidad.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_integrations_help(string $route_name): string {
+  if ($route_name === 'help.page.jaraba_integrations') {
+    return '<p>' . t('Marketplace de integraciones y conectores para tenants SaaS multi-vertical.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_integrations_theme(): array {
+  return [
+    'jaraba_integrations_dashboard' => [
+      'variables' => [
+        'connectors' => [],
+        'installed' => [],
+        'categories' => [],
+        'stats' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'jaraba-integrations-dashboard',
+    ],
+    'jaraba_integrations_connector_card' => [
+      'variables' => [
+        'connector' => NULL,
+        'is_installed' => FALSE,
+        'installation' => NULL,
+      ],
+      'template' => 'jaraba-integrations-connector-card',
+    ],
+    'jaraba_integrations_webhook_log' => [
+      'variables' => [
+        'subscriptions' => [],
+        'recent_deliveries' => [],
+      ],
+      'template' => 'jaraba-integrations-webhook-log',
+    ],
+    'jaraba_oauth_authorize' => [
+      'variables' => [
+        'client_name' => '',
+        'scopes' => [],
+        'client_id' => '',
+        'redirect_uri' => '',
+        'scope' => '',
+        'state' => '',
+      ],
+      'template' => 'jaraba-oauth-authorize',
+    ],
+  ];
+}

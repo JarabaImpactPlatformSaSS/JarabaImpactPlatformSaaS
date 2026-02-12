@@ -1,0 +1,46 @@
+services:
+  # Logger channel
+  logger.channel.jaraba_integrations:
+    parent: logger.channel_base
+    arguments: ['jaraba_integrations']
+
+  # Registro central de conectores disponibles
+  jaraba_integrations.connector_registry:
+    class: Drupal\jaraba_integrations\Service\ConnectorRegistryService
+    arguments:
+      - '@entity_type.manager'
+      - '@cache.default'
+      - '@logger.channel.jaraba_integrations'
+
+  # Instalación y desinstalación de conectores por tenant
+  jaraba_integrations.connector_installer:
+    class: Drupal\jaraba_integrations\Service\ConnectorInstallerService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_integrations.connector_registry'
+      - '@current_user'
+      - '@logger.channel.jaraba_integrations'
+
+  # Servidor OAuth2 para autorización de apps externas
+  jaraba_integrations.oauth_server:
+    class: Drupal\jaraba_integrations\Service\OauthServerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_integrations'
+
+  # Dispatcher de webhooks con retry y firma HMAC
+  jaraba_integrations.webhook_dispatcher:
+    class: Drupal\jaraba_integrations\Service\WebhookDispatcherService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_integrations'
+
+  # Health check de conectores instalados
+  jaraba_integrations.health_check:
+    class: Drupal\jaraba_integrations\Service\ConnectorHealthCheckService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_integrations'

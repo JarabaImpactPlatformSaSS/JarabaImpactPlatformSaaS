@@ -1,0 +1,68 @@
+administer copilot:
+  title: 'Administrar Copiloto v2'
+  description: 'Configurar el Copiloto de Emprendimiento v2.'
+
+access copilot:
+  title: 'Acceder al Copiloto'
+  description: 'Permite usar el Copiloto de Emprendimiento y ver experimentos.'
+
+# Permisos para EntrepreneurProfile
+administer entrepreneur profiles:
+  title: 'Administrar Perfiles de Emprendedor'
+  description: 'Gestionar configuración y campos de perfiles de emprendedor.'
+
+# Permisos para Hypothesis
+administer hypotheses:
+  title: 'Administrar Hipótesis'
+  description: 'Gestionar configuración y campos de hipótesis.'
+
+create hypotheses:
+  title: 'Crear hipótesis'
+  description: 'Permite crear hipótesis de negocio.'
+
+# Permisos para Experiment
+administer experiments:
+  title: 'Administrar Experimentos'
+  description: 'Gestionar configuración y campos de experimentos.'
+
+create experiments:
+  title: 'Crear experimentos'
+  description: 'Permite crear Test Cards y registrar Learning Cards.'
+
+view experiment library:
+  title: 'Ver biblioteca de experimentos'
+  description: 'Permite ver el catálogo de 44 experimentos de validación.'
+
+view program dashboard:
+  title: 'Ver dashboard del programa'
+  description: 'Permite ver el dashboard de métricas del programa (admin).'
+
+bypass feature unlock:
+  title: 'Saltarse desbloqueo de features'
+  description: 'Permite acceder a todas las features ignorando el sistema de desbloqueo progresivo (solo para admins/testing).'
+
+# Permisos para EntrepreneurLearning
+administer entrepreneur learnings:
+  title: 'Administrar Aprendizajes'
+  description: 'Gestionar configuración y campos de learning cards.'
+
+create entrepreneur learnings:
+  title: 'Crear aprendizajes'
+  description: 'Permite documentar aprendizajes de experimentos.'
+
+view own entrepreneur learnings:
+  title: 'Ver propios aprendizajes'
+  description: 'Permite ver los aprendizajes documentados por el usuario.'
+
+# Permisos para FieldExit (Customer Discovery tracking)
+administer field exits:
+  title: 'Administrar Field Exits'
+  description: 'Gestionar configuración y campos de FieldExit.'
+
+create field exits:
+  title: 'Registrar salidas de campo'
+  description: 'Permite registrar entrevistas y observaciones de Customer Discovery.'
+
+view own field exits:
+  title: 'Ver propias salidas de campo'
+  description: 'Permite ver los registros de Customer Discovery del usuario.'

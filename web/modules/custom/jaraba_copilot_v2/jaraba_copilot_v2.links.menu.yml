@@ -1,0 +1,29 @@
+# Menú en Structure para Field UI
+entity.entrepreneur_profile.settings:
+  title: 'Perfiles de Emprendedor'
+  description: 'Configurar campos y presentación de Perfiles de Emprendedor.'
+  route_name: entity.entrepreneur_profile.settings
+  parent: system.admin_structure
+  weight: 30
+
+entity.hypothesis.settings:
+  title: 'Hipótesis'
+  description: 'Configurar campos y presentación de Hipótesis.'
+  route_name: entity.hypothesis.settings
+  parent: system.admin_structure
+  weight: 31
+
+entity.experiment.settings:
+  title: 'Experimentos'
+  description: 'Configurar campos y presentación de Experimentos.'
+  route_name: entity.experiment.settings
+  parent: system.admin_structure
+  weight: 32
+
+# Configuración del módulo Copiloto v2
+jaraba_copilot_v2.settings:
+  title: 'Copiloto v2 Emprendimiento'
+  description: 'Configuración del Copiloto de Emprendimiento v2.'
+  route_name: jaraba_copilot_v2.settings
+  parent: system.admin_config_system
+  weight: 50

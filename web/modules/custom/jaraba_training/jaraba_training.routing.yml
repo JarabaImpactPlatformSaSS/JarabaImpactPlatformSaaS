@@ -1,0 +1,146 @@
+# Rutas del módulo Training
+# CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
+
+# === PRODUCTOS FORMATIVOS ===
+entity.training_product.collection:
+  path: '/admin/content/training-products'
+  defaults:
+    _entity_list: 'training_product'
+    _title: 'Productos de Training'
+  requirements:
+    _permission: 'administer training products'
+
+entity.training_product.canonical:
+  path: '/admin/content/training-products/{training_product}'
+  defaults:
+    _entity_view: 'training_product'
+    _title: 'Ver Producto'
+  requirements:
+    _permission: 'view training products'
+
+entity.training_product.add_form:
+  path: '/admin/content/training-products/add'
+  defaults:
+    _entity_form: 'training_product.add'
+    _title: 'Añadir Producto'
+  requirements:
+    _permission: 'administer training products'
+
+entity.training_product.edit_form:
+  path: '/admin/content/training-products/{training_product}/edit'
+  defaults:
+    _entity_form: 'training_product.edit'
+    _title: 'Editar Producto'
+  requirements:
+    _permission: 'administer training products'
+
+entity.training_product.delete_form:
+  path: '/admin/content/training-products/{training_product}/delete'
+  defaults:
+    _entity_form: 'training_product.delete'
+    _title: 'Eliminar Producto'
+  requirements:
+    _permission: 'administer training products'
+
+# === SETTINGS PRODUCTO (para Field UI) ===
+entity.training_product.settings:
+  path: '/admin/structure/training-product'
+  defaults:
+    _form: 'Drupal\jaraba_training\Form\TrainingProductSettingsForm'
+    _title: 'Configuración Producto Training'
+  requirements:
+    _permission: 'administer training products'
+
+# === PROGRAMAS DE CERTIFICACIÓN ===
+entity.certification_program.collection:
+  path: '/admin/content/certification-programs'
+  defaults:
+    _entity_list: 'certification_program'
+    _title: 'Programas de Certificación'
+  requirements:
+    _permission: 'administer certification programs'
+
+entity.certification_program.canonical:
+  path: '/admin/content/certification-programs/{certification_program}'
+  defaults:
+    _entity_view: 'certification_program'
+    _title: 'Ver Programa'
+  requirements:
+    _permission: 'administer certification programs'
+
+entity.certification_program.add_form:
+  path: '/admin/content/certification-programs/add'
+  defaults:
+    _entity_form: 'certification_program.add'
+    _title: 'Añadir Programa de Certificación'
+  requirements:
+    _permission: 'administer certification programs'
+
+entity.certification_program.edit_form:
+  path: '/admin/content/certification-programs/{certification_program}/edit'
+  defaults:
+    _entity_form: 'certification_program.edit'
+    _title: 'Editar Programa'
+  requirements:
+    _permission: 'administer certification programs'
+
+# === SETTINGS CERTIFICACIÓN (para Field UI) ===
+entity.certification_program.settings:
+  path: '/admin/structure/certification-program'
+  defaults:
+    _form: 'Drupal\jaraba_training\Form\CertificationProgramSettingsForm'
+    _title: 'Configuración Programa Certificación'
+  requirements:
+    _permission: 'administer certification programs'
+
+# === CERTIFICACIONES DE USUARIO ===
+entity.user_certification.collection:
+  path: '/admin/content/user-certifications'
+  defaults:
+    _entity_list: 'user_certification'
+    _title: 'Certificaciones Otorgadas'
+  requirements:
+    _permission: 'grant certifications'
+
+# === CONFIGURACIÓN DEL MÓDULO ===
+jaraba_training.settings:
+  path: '/admin/config/training/settings'
+  defaults:
+    _form: 'Drupal\jaraba_training\Form\TrainingSettingsForm'
+    _title: 'Configuración Training'
+  requirements:
+    _permission: 'administer training products'
+
+# === FRONTEND: ESCALERA DE VALOR ===
+jaraba_training.ladder:
+  path: '/training/ladder'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\TrainingController::ladder'
+    _title: 'Escalera de Valor'
+  requirements:
+    _permission: 'access content'
+
+# === API REST ===
+jaraba_training.api.products:
+  path: '/api/v1/training/products'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::listProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_training.api.ladder:
+  path: '/api/v1/training/ladder'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::getLadder'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_training.api.recommend:
+  path: '/api/v1/training/ladder/recommend'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::recommend'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'

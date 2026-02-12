@@ -79,6 +79,26 @@ function jaraba_rag_schema(): array {
         'not null' => TRUE,
         'description' => 'Timestamp de creación.',
       ],
+      'hallucination_count' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Número de claims marcados como alucinación por GroundingValidator.',
+      ],
+      'token_usage' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Tokens totales consumidos (prompt + completion).',
+      ],
+      'provider_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'description' => 'Identificador del proveedor AI usado (e.g., openai, anthropic).',
+      ],
     ],
     'primary key' => ['id'],
     'indexes' => [
@@ -86,6 +106,7 @@ function jaraba_rag_schema(): array {
       'query_hash' => ['query_hash'],
       'classification' => ['classification'],
       'created' => ['created'],
+      'provider_id' => ['provider_id'],
     ],
   ];
 
@@ -97,6 +118,51 @@ function jaraba_rag_schema(): array {
  */
 function jaraba_rag_install(): void {
   \Drupal::messenger()->addStatus(t('Jaraba RAG module installed. Configure at /admin/config/jaraba/rag'));
+}
+
+/**
+ * AI-12: Add hallucination_count, token_usage, provider_id columns to query log.
+ */
+function jaraba_rag_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+  $table = 'jaraba_rag_query_log';
+
+  if (!$schema->fieldExists($table, 'hallucination_count')) {
+    $schema->addField($table, 'hallucination_count', [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+      'description' => 'Número de claims marcados como alucinación por GroundingValidator.',
+    ]);
+  }
+
+  if (!$schema->fieldExists($table, 'token_usage')) {
+    $schema->addField($table, 'token_usage', [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+      'description' => 'Tokens totales consumidos (prompt + completion).',
+    ]);
+  }
+
+  if (!$schema->fieldExists($table, 'provider_id')) {
+    $schema->addField($table, 'provider_id', [
+      'type' => 'varchar',
+      'length' => 64,
+      'not null' => FALSE,
+      'description' => 'Identificador del proveedor AI usado (e.g., openai, anthropic).',
+    ]);
+    $schema->addIndex($table, 'provider_id', ['provider_id'], [
+      'fields' => [
+        'provider_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+        ],
+      ],
+    ]);
+  }
 }
 
 /**

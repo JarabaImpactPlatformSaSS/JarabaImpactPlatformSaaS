@@ -1,0 +1,25 @@
+jaraba_training.admin.products:
+  title: 'Productos de Training'
+  parent: system.admin_content
+  route_name: entity.training_product.collection
+  weight: 30
+
+jaraba_training.admin.certifications:
+  title: 'Programas de Certificación'
+  route_name: entity.certification_program.collection
+  parent: system.admin_content
+  weight: 31
+
+jaraba_training.structure.product:
+  title: 'Producto Training'
+  route_name: entity.training_product.settings
+  parent: system.admin_structure
+  description: 'Configurar campos para productos de training.'
+  weight: 60
+
+jaraba_training.structure.certification:
+  title: 'Programa Certificación'
+  route_name: entity.certification_program.settings
+  parent: system.admin_structure
+  description: 'Configurar campos para programas de certificación.'
+  weight: 61

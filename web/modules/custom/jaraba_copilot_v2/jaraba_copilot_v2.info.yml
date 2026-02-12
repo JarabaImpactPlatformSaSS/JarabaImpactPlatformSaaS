@@ -1,0 +1,10 @@
+name: 'Jaraba Copilot v2'
+type: module
+description: 'Copiloto de Emprendimiento con 5 modos adaptativos, 44 experimentos Osterwalder, y desbloqueo progresivo por semana de programa.'
+core_version_requirement: ^10 || ^11
+package: Jaraba Emprendimiento
+dependencies:
+  - drupal:user
+  - jaraba_business_tools:jaraba_business_tools
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: jaraba_copilot_v2.settings

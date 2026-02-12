@@ -1,0 +1,213 @@
+# Admin routes
+jaraba_email.dashboard:
+  path: '/admin/jaraba/email'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailDashboardController::dashboard'
+    _title: 'Email Marketing'
+  requirements:
+    _permission: 'view email analytics'
+
+# List routes
+entity.email_list.collection:
+  path: '/admin/jaraba/email/lists'
+  defaults:
+    _entity_list: 'email_list'
+    _title: 'Email Lists'
+  requirements:
+    _permission: 'administer email lists'
+
+entity.email_list.add_form:
+  path: '/admin/jaraba/email/lists/add'
+  defaults:
+    _entity_form: 'email_list.add'
+    _title: 'Add Email List'
+  requirements:
+    _permission: 'administer email lists'
+
+entity.email_list.edit_form:
+  path: '/admin/jaraba/email/lists/{email_list}/edit'
+  defaults:
+    _entity_form: 'email_list.edit'
+    _title: 'Edit Email List'
+  requirements:
+    _permission: 'administer email lists'
+
+entity.email_list.canonical:
+  path: '/admin/jaraba/email/lists/{email_list}'
+  defaults:
+    _entity_form: 'email_list.edit'
+    _title: 'Email List'
+  requirements:
+    _permission: 'administer email lists'
+
+entity.email_list.delete_form:
+  path: '/admin/jaraba/email/lists/{email_list}/delete'
+  defaults:
+    _entity_form: 'email_list.delete'
+    _title: 'Delete Email List'
+  requirements:
+    _permission: 'administer email lists'
+
+# Subscriber routes
+entity.email_subscriber.collection:
+  path: '/admin/jaraba/email/subscribers'
+  defaults:
+    _entity_list: 'email_subscriber'
+    _title: 'Email Subscribers'
+  requirements:
+    _permission: 'administer email subscribers'
+
+entity.email_subscriber.add_form:
+  path: '/admin/jaraba/email/subscribers/add'
+  defaults:
+    _entity_form: 'email_subscriber.add'
+    _title: 'Add Subscriber'
+  requirements:
+    _permission: 'administer email subscribers'
+
+entity.email_subscriber.edit_form:
+  path: '/admin/jaraba/email/subscribers/{email_subscriber}/edit'
+  defaults:
+    _entity_form: 'email_subscriber.edit'
+    _title: 'Edit Subscriber'
+  requirements:
+    _permission: 'administer email subscribers'
+
+entity.email_subscriber.canonical:
+  path: '/admin/jaraba/email/subscribers/{email_subscriber}'
+  defaults:
+    _entity_form: 'email_subscriber.edit'
+    _title: 'Subscriber'
+  requirements:
+    _permission: 'administer email subscribers'
+
+entity.email_subscriber.delete_form:
+  path: '/admin/jaraba/email/subscribers/{email_subscriber}/delete'
+  defaults:
+    _entity_form: 'email_subscriber.delete'
+    _title: 'Delete Subscriber'
+  requirements:
+    _permission: 'administer email subscribers'
+
+# Campaign routes
+entity.email_campaign.collection:
+  path: '/admin/jaraba/email/campaigns'
+  defaults:
+    _entity_list: 'email_campaign'
+    _title: 'Email Campaigns'
+  requirements:
+    _permission: 'administer email campaigns'
+
+entity.email_campaign.add_form:
+  path: '/admin/jaraba/email/campaigns/add'
+  defaults:
+    _entity_form: 'email_campaign.add'
+    _title: 'Create Campaign'
+  requirements:
+    _permission: 'administer email campaigns'
+
+entity.email_campaign.edit_form:
+  path: '/admin/jaraba/email/campaigns/{email_campaign}/edit'
+  defaults:
+    _entity_form: 'email_campaign.edit'
+    _title: 'Edit Campaign'
+  requirements:
+    _permission: 'administer email campaigns'
+
+entity.email_campaign.canonical:
+  path: '/admin/jaraba/email/campaigns/{email_campaign}'
+  defaults:
+    _entity_form: 'email_campaign.edit'
+    _title: 'Campaign'
+  requirements:
+    _permission: 'administer email campaigns'
+
+entity.email_campaign.delete_form:
+  path: '/admin/jaraba/email/campaigns/{email_campaign}/delete'
+  defaults:
+    _entity_form: 'email_campaign.delete'
+    _title: 'Delete Campaign'
+  requirements:
+    _permission: 'administer email campaigns'
+
+# Template routes
+entity.email_template.collection:
+  path: '/admin/jaraba/email/templates'
+  defaults:
+    _entity_list: 'email_template'
+    _title: 'Email Templates'
+  requirements:
+    _permission: 'administer email templates'
+
+entity.email_template.add_form:
+  path: '/admin/jaraba/email/templates/add'
+  defaults:
+    _entity_form: 'email_template.add'
+    _title: 'Create Template'
+  requirements:
+    _permission: 'administer email templates'
+
+entity.email_template.edit_form:
+  path: '/admin/jaraba/email/templates/{email_template}/edit'
+  defaults:
+    _entity_form: 'email_template.edit'
+    _title: 'Edit Template'
+  requirements:
+    _permission: 'administer email templates'
+
+entity.email_template.canonical:
+  path: '/admin/jaraba/email/templates/{email_template}'
+  defaults:
+    _entity_form: 'email_template.edit'
+    _title: 'Template'
+  requirements:
+    _permission: 'administer email templates'
+
+entity.email_template.delete_form:
+  path: '/admin/jaraba/email/templates/{email_template}/delete'
+  defaults:
+    _entity_form: 'email_template.delete'
+    _title: 'Delete Template'
+  requirements:
+    _permission: 'administer email templates'
+
+# Sequence routes
+entity.email_sequence.collection:
+  path: '/admin/jaraba/email/sequences'
+  defaults:
+    _entity_list: 'email_sequence'
+    _title: 'Email Sequences'
+  requirements:
+    _permission: 'administer email sequences'
+
+entity.email_sequence.add_form:
+  path: '/admin/jaraba/email/sequences/add'
+  defaults:
+    _entity_form: 'email_sequence.add'
+    _title: 'Create Sequence'
+  requirements:
+    _permission: 'administer email sequences'
+
+entity.email_sequence.edit_form:
+  path: '/admin/jaraba/email/sequences/{email_sequence}/edit'
+  defaults:
+    _entity_form: 'email_sequence.edit'
+    _title: 'Edit Sequence'
+  requirements:
+    _permission: 'administer email sequences'
+
+entity.email_sequence.canonical:
+  path: '/admin/jaraba/email/sequences/{email_sequence}'
+  defaults:
+    _entity_form: 'email_sequence.edit'
+    _title: 'Sequence'
+  requirements:
+    _permission: 'administer email sequences'
+
+entity.email_sequence.delete_form:
+  path: '/admin/jaraba/email/sequences/{email_sequence}/delete'
+  defaults:
+    _entity_form: 'email_sequence.delete'
+    _title: 'Delete Sequence'
+  requirements:
+    _permission: 'administer email sequences'

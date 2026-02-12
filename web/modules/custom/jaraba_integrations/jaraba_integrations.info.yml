@@ -1,0 +1,11 @@
+name: 'Jaraba Integrations'
+type: module
+description: 'Marketplace de integraciones y conectores para tenants SaaS multi-vertical.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+
+configure: jaraba_integrations.settings

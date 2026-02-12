@@ -1,0 +1,17 @@
+jaraba_integrations.connector_add:
+  route_name: entity.connector.add_form
+  title: 'Add Connector'
+  appears_on:
+    - jaraba_integrations.admin_dashboard
+
+jaraba_integrations.oauth_client_add:
+  route_name: entity.oauth_client.add_form
+  title: 'Add OAuth Client'
+  appears_on:
+    - jaraba_integrations.admin_oauth
+
+jaraba_integrations.webhook_subscription_add:
+  route_name: entity.webhook_subscription.add_form
+  title: 'Add Webhook Subscription'
+  appears_on:
+    - jaraba_integrations.admin_webhooks

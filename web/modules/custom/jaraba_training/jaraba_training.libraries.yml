@@ -1,0 +1,6 @@
+ladder:
+  css:
+    theme:
+      css/training-ladder.css: {}
+  dependencies:
+    - core/drupal

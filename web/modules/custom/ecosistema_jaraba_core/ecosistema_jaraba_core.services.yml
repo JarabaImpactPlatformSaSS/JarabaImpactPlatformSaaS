@@ -35,20 +35,15 @@ services:
   # SERVICIOS CORE - GESTIÓN DE TENANTS
   # ===========================================
 
-  # Validador de límites de planes SaaS
+  # ===========================================
+  # ALIASES → jaraba_billing (TD-003 God Object extraction)
+  # Los servicios billing ahora viven en jaraba_billing module.
+  # Estos aliases mantienen backward-compatibility.
+  # ===========================================
   ecosistema_jaraba_core.plan_validator:
-    class: Drupal\ecosistema_jaraba_core\Service\PlanValidator
-    arguments:
-      - '@entity_type.manager'
-      - '@logger.channel.ecosistema_jaraba_core'
-
-  # BE-03 + BIZ-002: Servicios especializados extraídos de TenantManager
-  # v6.3.0: Eliminada dependencia @state — datos billing ahora en entity fields
+    alias: jaraba_billing.plan_validator
   ecosistema_jaraba_core.tenant_subscription:
-    class: Drupal\ecosistema_jaraba_core\Service\TenantSubscriptionService
-    arguments:
-      - '@ecosistema_jaraba_core.plan_validator'
-      - '@logger.channel.ecosistema_jaraba_core'
+    alias: jaraba_billing.tenant_subscription
 
   ecosistema_jaraba_core.tenant_domain:
     class: Drupal\ecosistema_jaraba_core\Service\TenantDomainService
@@ -333,20 +328,11 @@ services:
 
   # Sprint 13-14: Outcome-Based Pricing
 
-  # Metering avanzado por tenant
+  # Aliases → jaraba_billing
   ecosistema_jaraba_core.tenant_metering:
-    class: Drupal\ecosistema_jaraba_core\Service\TenantMeteringService
-    arguments:
-      - '@database'
-
-  # Motor de cálculo de precios basado en PricingRule (G111 / f111)
-  # Reemplaza los precios hardcodeados de TenantMeteringService::UNIT_PRICES
-  # con reglas dinámicas por plan: flat, tiered, volume, package
+    alias: jaraba_billing.tenant_metering
   ecosistema_jaraba_core.pricing_engine:
-    class: Drupal\ecosistema_jaraba_core\Service\PricingRuleEngine
-    arguments:
-      - '@entity_type.manager'
-      - '@logger.channel.ecosistema_jaraba_core'
+    alias: jaraba_billing.pricing_engine
 
   # Dashboard de valor generado por IA
   ecosistema_jaraba_core.ai_value_dashboard:
@@ -379,14 +365,9 @@ services:
   # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
   # ===========================================
 
-  # Servicio de Reverse Trial con downgrade automático
+  # Alias → jaraba_billing
   ecosistema_jaraba_core.reverse_trial:
-    class: Drupal\ecosistema_jaraba_core\Service\ReverseTrialService
-    arguments:
-      - '@entity_type.manager'
-      - '@logger.factory'
-      - '@plugin.manager.mail'
-      - '@state'
+    alias: jaraba_billing.reverse_trial
 
   # ===========================================
   # Q1 2027: AI AGENT AUTONOMY LEVELS (GAP P1)
@@ -468,13 +449,9 @@ services:
   # Q1 2027: EXPANSION REVENUE TRACKING
   # ===========================================
 
-  # Servicio de tracking de expansion revenue y PQA
+  # Alias → jaraba_billing
   ecosistema_jaraba_core.expansion_revenue:
-    class: Drupal\ecosistema_jaraba_core\Service\ExpansionRevenueService
-    arguments:
-      - '@entity_type.manager'
-      - '@state'
-      - '@logger.factory'
+    alias: jaraba_billing.expansion_revenue
 
   # ===========================================
   # Q1 2027: VIDEO CONTENT GEO
@@ -519,13 +496,9 @@ services:
   # Q1 2027: CRÉDITOS DE IMPACTO (ECA Flows)
   # ===========================================
 
-  # Servicio de créditos de impacto para gamificación y engagement
+  # Alias → jaraba_billing
   ecosistema_jaraba_core.impact_credit:
-    class: Drupal\ecosistema_jaraba_core\Service\ImpactCreditService
-    arguments:
-      - '@database'
-      - '@entity_type.manager'
-      - '@logger.channel.ecosistema_jaraba_core'
+    alias: jaraba_billing.impact_credit
 
   # ===========================================
   # Q1 2027: AI USAGE LIMITS (Per Tenant/Plan)

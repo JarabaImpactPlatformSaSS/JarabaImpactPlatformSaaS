@@ -1,0 +1,74 @@
+{#
+/**
+ * @file
+ * jaraba-integrations-webhook-log.html.twig
+ *
+ * Panel de webhooks del tenant con suscripciones y entregas recientes.
+ *
+ * Variables:
+ * - subscriptions: Array de WebhookSubscription
+ * - recent_deliveries: Array de entregas recientes
+ */
+#}
+
+<div class="webhook-panel">
+  <div class="webhook-panel__header">
+    <h2 class="webhook-panel__title">{% trans %}Webhooks{% endtrans %}</h2>
+    <p class="webhook-panel__subtitle">
+      {% trans %}Recibe notificaciones en tiempo real cuando ocurren eventos en tu plataforma.{% endtrans %}
+    </p>
+  </div>
+
+  {# Suscripciones activas #}
+  <div class="webhook-panel__subscriptions">
+    <h3>{% trans %}Suscripciones Activas{% endtrans %}</h3>
+
+    {% if subscriptions|length > 0 %}
+      <div class="webhook-panel__table-wrapper">
+        <table class="webhook-panel__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Nombre{% endtrans %}</th>
+              <th>{% trans %}URL Destino{% endtrans %}</th>
+              <th>{% trans %}Eventos{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}Entregas{% endtrans %}</th>
+              <th>{% trans %}Último Disparo{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for subscription in subscriptions %}
+              <tr>
+                <td>{{ subscription.getLabel() }}</td>
+                <td><code>{{ subscription.getTargetUrl()|length > 40 ? subscription.getTargetUrl()|slice(0, 40) ~ '...' : subscription.getTargetUrl() }}</code></td>
+                <td>
+                  {% set events = subscription.getEvents() %}
+                  {% for event in events|slice(0, 2) %}
+                    <span class="badge badge--sm">{{ event }}</span>
+                  {% endfor %}
+                  {% if events|length > 2 %}
+                    <span class="badge badge--sm badge--muted">+{{ events|length - 2 }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% set status = subscription.getSubscriptionStatus() %}
+                  {% set status_class = status == 'active' ? 'badge--success' : (status == 'failing' ? 'badge--error' : 'badge--warning') %}
+                  <span class="badge {{ status_class }}">{{ status|capitalize }}</span>
+                </td>
+                <td>{{ subscription.get('total_deliveries').value|default(0) }}</td>
+                <td>{{ subscription.get('last_triggered').value ? subscription.get('last_triggered').value|date('d/m/Y H:i') : '-' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="webhook-panel__empty">
+        <p>{% trans %}No tienes suscripciones webhook configuradas.{% endtrans %}</p>
+        <a href="/admin/structure/integrations/webhooks/add" class="btn btn--primary btn--sm">
+          {% trans %}Crear Webhook{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

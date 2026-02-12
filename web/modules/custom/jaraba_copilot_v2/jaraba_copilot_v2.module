@@ -1,0 +1,158 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Copilot v2.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_copilot_v2_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_copilot_v2':
+      $output = '<h3>' . t('Acerca del Copiloto de Emprendimiento v2') . '</h3>';
+      $output .= '<p>' . t('Este módulo proporciona un Copiloto IA adaptativo con 5 modos para emprendedores del programa Andalucía +ei.') . '</p>';
+      $output .= '<h4>' . t('Funcionalidades principales') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('<strong>5 Modos Adaptativos</strong>: Coach Emocional, Consultor Táctico, Sparring Partner, CFO Sintético, Abogado del Diablo') . '</li>';
+      $output .= '<li>' . t('<strong>44 Experimentos de Validación</strong>: Basados en Testing Business Ideas de Strategyzer') . '</li>';
+      $output .= '<li>' . t('<strong>Desbloqueo Progresivo</strong>: Las funcionalidades se desbloquean según la semana del programa') . '</li>';
+      $output .= '<li>' . t('<strong>Dashboard BMC</strong>: Visualización del estado de validación con semáforos') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
+  return [
+    'feature_locked' => [
+      'variables' => [
+        'feature' => NULL,
+        'unlock_week' => NULL,
+        'preview' => NULL,
+        'message' => NULL,
+        'current_week' => 0,
+        'weeks_remaining' => 0,
+      ],
+      'template' => 'feature-locked',
+    ],
+    'copilot_mode_indicator' => [
+      'variables' => [
+        'mode' => NULL,
+        'mode_label' => NULL,
+        'available' => FALSE,
+        'unlock_week' => NULL,
+      ],
+    ],
+    'experiment_card' => [
+      'variables' => [
+        'experiment' => [],
+        'available' => TRUE,
+        'suggested' => FALSE,
+        'match_reason' => NULL,
+      ],
+    ],
+    'bmc_validation_status' => [
+      'variables' => [
+        'blocks' => [],
+        'overall_percentage' => 0,
+        'profile' => NULL,
+      ],
+    ],
+    // Dashboard Analytics del Copiloto
+    'copilot_analytics_dashboard' => [
+      'variables' => [
+        'table_ready' => FALSE,
+        'message' => NULL,
+        'stats' => [],
+        'stats_by_source' => [],
+        'recent_queries' => [],
+        'problematic_queries' => [],
+        'frequent_questions' => [],
+      ],
+      'template' => 'copilot-analytics-dashboard',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_preprocess_HOOK() for feature_locked.
+ */
+function jaraba_copilot_v2_preprocess_feature_locked(&$variables) {
+  // Calcular semanas restantes
+  if (isset($variables['unlock_week']) && isset($variables['current_week'])) {
+    $variables['weeks_remaining'] = max(0, $variables['unlock_week'] - $variables['current_week']);
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function jaraba_copilot_v2_page_attachments(array &$attachments) {
+  // Adjuntar biblioteca de estilos en páginas relevantes
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  
+  // Páginas donde adjuntar el Copilot
+  $copilot_routes = [
+    'jaraba_copilot_v2.dashboard',
+    'jaraba_copilot_v2.chat',
+    'jaraba_business_tools.canvas_view',
+    'jaraba_business_tools.hypotheses',
+    'jaraba_paths.catalog',
+  ];
+  
+  if (in_array($route_name, $copilot_routes)) {
+    $attachments['#attached']['library'][] = 'jaraba_copilot_v2/copilot-widget';
+    
+    // Pasar configuración de desbloqueo
+    $featureUnlock = \Drupal::service('jaraba_copilot_v2.feature_unlock');
+    $status = $featureUnlock->getUnlockStatus();
+    
+    $attachments['#attached']['drupalSettings']['jarabaCopilot'] = [
+      'currentWeek' => $status['current_week'],
+      'unlockedFeatures' => $status['unlocked_features'],
+      'copilotModes' => $status['copilot_modes'],
+      'experimentTypes' => $status['experiment_types'],
+    ];
+  }
+}
+
+/**
+ * Verifica si una feature está desbloqueada para el usuario actual.
+ *
+ * Función helper para usar en otros módulos y templates.
+ *
+ * @param string $feature
+ *   Identificador de la feature.
+ *
+ * @return bool
+ *   TRUE si la feature está disponible.
+ */
+function jaraba_copilot_v2_is_feature_unlocked(string $feature): bool {
+  return \Drupal::service('jaraba_copilot_v2.feature_unlock')
+    ->isFeatureUnlocked($feature);
+}
+
+/**
+ * Obtiene información de feature bloqueada para renderizar.
+ *
+ * @param string $feature
+ *   Identificador de la feature.
+ *
+ * @return array
+ *   Array con información de la feature bloqueada.
+ */
+function jaraba_copilot_v2_get_locked_feature_info(string $feature): array {
+  return \Drupal::service('jaraba_copilot_v2.feature_unlock')
+    ->getLockedFeatureInfo($feature);
+}
