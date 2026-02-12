@@ -1,0 +1,633 @@
+/**
+ * @file
+ * Estilos del Slide-Panel "⚙ Configuración de Página" del Canvas Editor.
+ *
+ * PROPÓSITO:
+ * Panel premium de clase mundial para editar metadatos de página
+ * directamente desde el Canvas Editor del Page Builder.
+ *
+ * DIRECTRIZ:
+ * - Solo var(--ej-*, $fallback) — cero colores hardcoded.
+ * - SCSS compilado con Dart Sass.
+ * - BEM: .page-config-panel__element--modifier.
+ *
+ * @see page-config-panel.html.twig
+ */
+
+// ============================================================================
+// VARIABLES LOCALES (con fallback a design tokens del ecosistema)
+// ============================================================================
+$panel-width: 420px;
+$panel-bg: var(--ej-color-bg-elevated, #FFFFFF);
+$panel-text: var(--ej-color-text, #1F2937);
+$panel-text-secondary: var(--ej-color-text-muted, #6B7280);
+$panel-border: var(--ej-border-color, #E5E7EB);
+$panel-primary: var(--ej-color-primary, #FF8C42);
+$panel-primary-rgb: var(--ej-color-primary-rgb, 255, 140, 66);
+$panel-success: var(--ej-color-success, #10B981);
+$panel-warning: var(--ej-color-warning, #F59E0B);
+$panel-danger: var(--ej-color-danger, #EF4444);
+$panel-radius: var(--ej-border-radius, 12px);
+$panel-shadow: var(--ej-shadow-xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+
+// ============================================================================
+// PANEL CONTAINER
+// ============================================================================
+.page-config-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1100;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &.is-open {
+        pointer-events: all;
+    }
+}
+
+// ============================================================================
+// OVERLAY
+// ============================================================================
+.page-config-panel__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s ease;
+    cursor: pointer;
+
+    .page-config-panel.is-open & {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+    }
+}
+
+// ============================================================================
+// SLIDE CONTAINER
+// ============================================================================
+.page-config-panel__container {
+    position: relative;
+    width: $panel-width;
+    max-width: 100vw;
+    height: 100%;
+    background: $panel-bg;
+    box-shadow: $panel-shadow;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
+
+    .page-config-panel.is-open & {
+        transform: translateX(0);
+    }
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.page-config-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid $panel-border;
+    flex-shrink: 0;
+}
+
+.page-config-panel__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: $panel-text;
+    margin: 0;
+    font-family: var(--ej-font-family-heading, 'Inter', system-ui, sans-serif);
+}
+
+.page-config-panel__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: $panel-text-secondary;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.06);
+        color: $panel-text;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $panel-primary;
+        outline-offset: 2px;
+    }
+}
+
+// ============================================================================
+// SAVE INDICATOR
+// ============================================================================
+.page-config-panel__save-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    font-size: 12px;
+    color: $panel-primary;
+    background: rgba($panel-primary-rgb, 0.06);
+    border-bottom: 1px solid $panel-border;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &.is-saved {
+        color: $panel-success;
+
+        .page-config-panel__save-dot {
+            background: $panel-success;
+            animation: none;
+        }
+    }
+}
+
+.page-config-panel__save-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $panel-primary;
+    animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+}
+
+// ============================================================================
+// BODY (scrollable)
+// ============================================================================
+.page-config-panel__body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
+
+    // Scrollbar premium
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 2px;
+    }
+}
+
+// ============================================================================
+// SECTIONS (collapsible)
+// ============================================================================
+.page-config-panel__section {
+    border-bottom: 1px solid $panel-border;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.page-config-panel__section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: $panel-text;
+    text-align: left;
+    transition: background 0.15s ease;
+    font-family: var(--ej-font-family-heading, 'Inter', system-ui, sans-serif);
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $panel-primary;
+        outline-offset: -2px;
+    }
+}
+
+.page-config-panel__section-icon {
+    display: flex;
+    color: $panel-text-secondary;
+}
+
+.page-config-panel__section-chevron {
+    display: flex;
+    margin-left: auto;
+    color: $panel-text-secondary;
+    transition: transform 0.2s ease;
+
+    [aria-expanded="false"] & {
+        transform: rotate(-90deg);
+    }
+}
+
+.page-config-panel__section-content {
+    padding: 0 20px 16px;
+
+    &--collapsed {
+        display: none;
+    }
+}
+
+// ============================================================================
+// FORM FIELDS
+// ============================================================================
+.page-config-panel__field {
+    margin-bottom: 16px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: $panel-text-secondary;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.page-config-panel__input,
+.page-config-panel__textarea,
+.page-config-panel__select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid $panel-border;
+    border-radius: 8px;
+    font-size: 14px;
+    color: $panel-text;
+    background: $panel-bg;
+    transition: all 0.15s ease;
+    font-family: var(--ej-font-family, 'Inter', system-ui, sans-serif);
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: $panel-text-secondary;
+        opacity: 0.6;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $panel-primary;
+        box-shadow: 0 0 0 3px rgba($panel-primary-rgb, 0.12);
+    }
+
+    &:hover:not(:focus) {
+        border-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+.page-config-panel__textarea {
+    resize: vertical;
+    min-height: 72px;
+}
+
+.page-config-panel__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+// ── Slug field ──
+.page-config-panel__slug-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid $panel-border;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.15s ease;
+
+    &:focus-within {
+        border-color: $panel-primary;
+        box-shadow: 0 0 0 3px rgba($panel-primary-rgb, 0.12);
+    }
+}
+
+.page-config-panel__slug-prefix {
+    display: flex;
+    align-items: center;
+    padding: 10px 8px 10px 12px;
+    color: $panel-text-secondary;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    background: rgba(0, 0, 0, 0.03);
+    user-select: none;
+}
+
+.page-config-panel__input--slug {
+    border: none;
+    border-radius: 0;
+    padding-left: 0;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.page-config-panel__field-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: $panel-text-secondary;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+// ============================================================================
+// STATUS TOGGLE
+// ============================================================================
+.page-config-panel__toggle-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.page-config-panel__status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px 0;
+
+    &:focus-visible {
+        outline: 2px solid $panel-primary;
+        outline-offset: 4px;
+        border-radius: 4px;
+    }
+}
+
+.page-config-panel__toggle-track {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: #D1D5DB;
+    border-radius: 11px;
+    transition: background 0.2s ease;
+
+    .is-published & {
+        background: $panel-success;
+    }
+}
+
+.page-config-panel__toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+
+    .is-published & {
+        transform: translateX(18px);
+    }
+}
+
+.page-config-panel__toggle-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: $panel-text-secondary;
+
+    .is-published & {
+        color: $panel-success;
+    }
+}
+
+// ============================================================================
+// CHARACTER COUNTER
+// ============================================================================
+.page-config-panel__char-counter {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: $panel-text-secondary;
+}
+
+.page-config-panel__char-count {
+    font-weight: 600;
+    transition: color 0.2s ease;
+
+    &.is-optimal {
+        color: $panel-success;
+    }
+
+    &.is-warning {
+        color: $panel-warning;
+    }
+
+    &.is-over {
+        color: $panel-danger;
+    }
+}
+
+// ============================================================================
+// SEO SCORE BADGE
+// ============================================================================
+.page-config-panel__seo-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    background: $panel-text-secondary;
+
+    &.score-good {
+        background: $panel-success;
+    }
+
+    &.score-ok {
+        background: $panel-warning;
+    }
+
+    &.score-bad {
+        background: $panel-danger;
+    }
+}
+
+// ============================================================================
+// SERP PREVIEW
+// ============================================================================
+.page-config-panel__serp-preview {
+    margin-top: 12px;
+}
+
+.page-config-panel__serp-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $panel-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.page-config-panel__serp-card {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid $panel-border;
+}
+
+.page-config-panel__serp-url {
+    font-size: 12px;
+    color: $panel-text-secondary;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.page-config-panel__serp-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a0dab;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    &:empty::after {
+        content: 'Sin título';
+        color: $panel-text-secondary;
+        font-style: italic;
+    }
+}
+
+.page-config-panel__serp-desc {
+    font-size: 13px;
+    color: #545454;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    &:empty::after {
+        content: 'Sin descripción';
+        color: $panel-text-secondary;
+        font-style: italic;
+    }
+}
+
+// ============================================================================
+// REVISIONS
+// ============================================================================
+.page-config-panel__revision-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.page-config-panel__revision-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.page-config-panel__revision-label {
+    font-size: 12px;
+    color: $panel-text-secondary;
+}
+
+.page-config-panel__revision-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: $panel-text;
+}
+
+.page-config-panel__revision-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $panel-primary;
+    background: rgba($panel-primary-rgb, 0.06);
+    text-decoration: none;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba($panel-primary-rgb, 0.12);
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $panel-primary;
+        outline-offset: 2px;
+    }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 480px) {
+    .page-config-panel__container {
+        width: 100vw;
+    }
+}

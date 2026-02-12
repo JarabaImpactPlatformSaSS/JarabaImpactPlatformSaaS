@@ -1,0 +1,24 @@
+# Menú de administración - Structure (Field UI)
+# Las entidades aparecen en /admin/structure para gestión de campos
+
+entity.interactive_content.settings:
+  title: 'Contenido Interactivo'
+  description: 'Administrar campos y visualización de Contenido Interactivo.'
+  route_name: entity.interactive_content.settings
+  parent: system.admin_structure
+  weight: 70
+
+entity.interactive_result.settings:
+  title: 'Resultados Interactivos'
+  description: 'Administrar campos de Resultados de usuarios.'
+  route_name: entity.interactive_result.settings
+  parent: system.admin_structure
+  weight: 71
+
+# Configuración del módulo
+jaraba_interactive.admin:
+  title: 'Jaraba Interactive'
+  description: 'Configuración del sistema de contenido interactivo AI-Powered.'
+  route_name: jaraba_interactive.admin_settings
+  parent: system.admin_config
+  weight: 50

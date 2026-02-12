@@ -1,0 +1,133 @@
+langcode: es
+status: true
+dependencies: {}
+id: stats_counter
+label: 'Contador de Estadísticas'
+description: 'Sección con métricas animadas para mostrar logros y datos clave.'
+category: stats
+twig_template: '@jaraba_page_builder/blocks/stats/stats-counter.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: 'Texto superior (eyebrow)'
+      description: 'Texto pequeño sobre el título principal.'
+      maxLength: 100
+      default: 'Nuestro impacto'
+    title:
+      type: string
+      title: 'Título de la sección'
+      maxLength: 100
+      default: 'Cifras que nos avalan'
+    subtitle:
+      type: text
+      title: 'Subtítulo'
+      rows: 2
+      default: 'Resultados reales que demuestran nuestra efectividad.'
+    stats:
+      type: array
+      title: 'Estadísticas'
+      description: 'Lista de métricas a mostrar (máximo 6).'
+      minItems: 2
+      maxItems: 6
+      itemLabel: 'métrica'
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+            title: 'Valor'
+            description: 'El número o porcentaje a mostrar (ej: 1500, 98%)'
+            maxLength: 20
+          label:
+            type: string
+            title: 'Etiqueta'
+            description: 'Descripción de la métrica'
+            maxLength: 50
+          icon:
+            type: select
+            title: 'Icono'
+            enum:
+              - users
+              - building
+              - chart-line
+              - star
+              - award
+              - briefcase
+              - graduation-cap
+              - handshake
+            enumLabels:
+              - 'Usuarios'
+              - 'Empresas'
+              - 'Crecimiento'
+              - 'Estrellas'
+              - 'Premio'
+              - 'Trabajo'
+              - 'Educación'
+              - 'Colaboración'
+          prefix:
+            type: string
+            title: 'Prefijo'
+            description: 'Texto antes del número (ej: +, €)'
+            maxLength: 5
+          suffix:
+            type: string
+            title: 'Sufijo'
+            description: 'Texto después del número (ej: %, K, M)'
+            maxLength: 5
+        required:
+          - value
+          - label
+    background:
+      type: select
+      title: 'Fondo'
+      enum:
+        - light
+        - dark
+        - gradient
+        - primary
+      enumLabels:
+        - 'Claro'
+        - 'Oscuro'
+        - 'Degradado'
+        - 'Color primario'
+      default: dark
+    animate:
+      type: boolean
+      title: 'Animación de conteo'
+      description: 'Animar los números al aparecer en pantalla.'
+      default: true
+  required:
+    - title
+    - stats
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: "/modules/custom/jaraba_page_builder/images/previews/stats-counter.png"
+weight: 20
+preview_data:
+  eyebrow: "BY THE NUMBERS"
+  title: "Our Impact in Numbers"
+  subtitle: "Real results that demonstrate our commitment to excellence"
+  stats:
+    - value: "50K"
+      label: "Active Users"
+      icon: "users"
+      prefix: "+"
+    - value: "98"
+      label: "Customer Satisfaction"
+      icon: "star"
+      suffix: "%"
+    - value: "500"
+      label: "Enterprise Clients"
+      icon: "building"
+      prefix: "+"
+    - value: "24/7"
+      label: "Support Available"
+      icon: "cog"
+  background: dark
+  animate: true
+

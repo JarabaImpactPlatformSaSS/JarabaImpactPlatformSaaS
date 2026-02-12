@@ -1,0 +1,610 @@
+/**
+ * @file
+ * Entry point SCSS para la vista previa premium de plantillas.
+ *
+ * ESTRUCTURA:
+ * Importa los estilos del componente template-preview-premium
+ * desde el tema ecosistema_jaraba_theme.
+ *
+ * COMPILACIÓN:
+ * npx sass scss/preview.scss:css/preview.css --style=compressed
+ *
+ * @ingroup jaraba_page_builder
+ */
+
+// =============================================================================
+// VISTA PREVIA PREMIUM DE PLANTILLAS
+// Estilos para la página de preview con viewport switcher, zoom y glassmorphism.
+// =============================================================================
+
+// Variables locales (fallbacks de compilación)
+$preview-header-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+$preview-glass-bg: rgba(255, 255, 255, 0.08);
+$preview-glass-border: rgba(255, 255, 255, 0.12);
+$preview-glow-color: rgba(134, 205, 253, 0.2);
+$preview-accent: #86cdfd;
+$preview-radius: 16px;
+
+// =============================================================================
+// PREMIUM PREVIEW CONTAINER
+// =============================================================================
+
+.template-preview-premium {
+    min-height: 100vh;
+    background: var(--ej-color-bg-dark, #0f0f1a);
+    color: var(--ej-color-text-light, #fff);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    grid-template-rows: auto auto 1fr;
+    gap: 0;
+
+    @media (min-width: 1025px) {
+        grid-template-columns: 1fr 320px;
+    }
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto 1fr;
+    }
+}
+
+// =============================================================================
+// HEADER CON PARTÍCULAS
+// =============================================================================
+
+.template-preview-premium__header {
+    grid-column: 1 / -1;
+    position: relative;
+    padding: var(--ej-spacing-lg, 2rem) var(--ej-spacing-xl, 2.5rem);
+    background: $preview-header-bg;
+    overflow: hidden;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+}
+
+.template-preview-premium__particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.6;
+
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.template-preview-premium__header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--ej-spacing-lg, 2rem);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ej-spacing-md, 1.5rem);
+    }
+}
+
+.template-preview-premium__nav {
+    flex-shrink: 0;
+}
+
+.template-preview-premium__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: $preview-glass-bg;
+    border: 1px solid $preview-glass-border;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        transform: translateX(-4px);
+    }
+}
+
+.template-preview-premium__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.template-preview-premium__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.template-preview-premium__description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 0.75rem;
+    max-width: 600px;
+}
+
+.template-preview-premium__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.template-preview-premium__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 20px;
+
+    &--category {
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    &--premium {
+        background: linear-gradient(135deg, var(--ej-color-warning, #f59e0b) 0%, #d97706 100%);
+        color: #1a1a2e;
+
+        svg {
+            fill: currentColor;
+        }
+    }
+}
+
+.template-preview-premium__actions {
+    flex-shrink: 0;
+}
+
+// =============================================================================
+// CONTROLES DE VIEWPORT Y ZOOM
+// =============================================================================
+
+.template-preview-premium__controls {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem;
+    }
+}
+
+.template-preview-premium__viewport-switcher {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.template-preview-premium__viewport-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.is-active {
+        background: $preview-accent;
+        color: #1a1a2e;
+        box-shadow: 0 2px 8px rgba(134, 205, 253, 0.3);
+    }
+}
+
+.template-preview-premium__resolution {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--ej-font-mono, monospace);
+    min-width: 100px;
+    text-align: center;
+}
+
+.template-preview-premium__zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.template-preview-premium__zoom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+}
+
+.template-preview-premium__zoom-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 40px;
+    text-align: center;
+}
+
+.template-preview-premium__fullscreen-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+    }
+}
+
+// =============================================================================
+// PREVIEW FRAME CON GLASSMORPHISM
+// =============================================================================
+
+.template-preview-premium__preview-container {
+    padding: var(--ej-spacing-lg, 2rem);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+    background: radial-gradient(ellipse at 50% 0%, rgba(134, 205, 253, 0.08) 0%, transparent 60%);
+
+    &.is-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.95);
+
+        .template-preview-premium__frame {
+            max-width: none;
+            height: calc(100vh - 2rem);
+        }
+    }
+}
+
+// Botón Escape Fullscreen
+.template-preview-premium__escape-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    svg {
+        flex-shrink: 0;
+        stroke-width: 2.5;
+    }
+
+    &:hover {
+        background: rgba(220, 38, 38, 0.9);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: scale(1.05);
+    }
+
+    &:focus {
+        outline: 2px solid $preview-accent;
+        outline-offset: 2px;
+    }
+}
+
+.template-preview-premium__frame {
+    background: #fff;
+    border-radius: $preview-radius;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 8px 40px rgba(0, 0, 0, 0.4),
+        0 0 80px $preview-glow-color;
+    overflow: hidden;
+    transition: width 0.3s ease, transform 0.3s ease;
+    transform-origin: top center;
+    max-width: 100%;
+}
+
+// Browser Chrome Decorativo
+.template-preview-premium__chrome {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: #f1f3f4;
+    border-bottom: 1px solid #e1e3e6;
+}
+
+.template-preview-premium__chrome-dots {
+    display: flex;
+    gap: 6px;
+
+    span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+
+        &:nth-child(1) {
+            background: #ff5f57;
+        }
+
+        &:nth-child(2) {
+            background: #febc2e;
+        }
+
+        &:nth-child(3) {
+            background: #28c841;
+        }
+    }
+}
+
+.template-preview-premium__chrome-url {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #5f6368;
+
+    svg {
+        color: #9aa0a6;
+    }
+}
+
+.template-preview-premium__content {
+    aspect-ratio: 16/10;
+    min-height: 500px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.template-preview-premium__iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.template-preview-premium__thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.template-preview-premium__thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+.template-preview-premium__thumbnail-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+
+    span {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+}
+
+.template-preview-premium__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    gap: 1rem;
+
+    svg {
+        opacity: 0.5;
+    }
+
+    p {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+}
+
+// =============================================================================
+// SIDEBAR PREMIUM
+// =============================================================================
+
+.template-preview-premium__sidebar {
+    padding: var(--ej-spacing-lg, 2rem) var(--ej-spacing-md, 1.5rem);
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-lg, 2rem);
+
+    @media (max-width: 1024px) {
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: var(--ej-spacing-md, 1.5rem);
+    }
+
+    h3 {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 0 0 1rem;
+    }
+}
+
+.template-preview-premium__metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.template-preview-premium__metric {
+    background: $preview-glass-bg;
+    border: 1px solid $preview-glass-border;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.template-preview-premium__metric-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $preview-accent;
+}
+
+.template-preview-premium__metric-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.template-preview-premium__feature-list,
+.template-preview-premium__field-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.template-preview-premium__feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+
+    svg {
+        flex-shrink: 0;
+        color: var(--ej-color-success, #10b981);
+    }
+}
+
+.template-preview-premium__field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+}
+
+.template-preview-premium__field-icon {
+    display: flex;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.template-preview-premium__cta {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+// =============================================================================
+// FULLSCREEN MODE BODY CLASS
+// =============================================================================
+
+body.preview-fullscreen-mode {
+    overflow: hidden;
+}
+
+// =============================================================================
+// SCREEN READER ONLY
+// =============================================================================
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

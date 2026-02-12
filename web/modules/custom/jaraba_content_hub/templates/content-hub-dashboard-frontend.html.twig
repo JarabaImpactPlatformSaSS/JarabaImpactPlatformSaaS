@@ -1,0 +1,278 @@
+{#
+/**
+ * @file
+ * Template for Content Hub Dashboard content (tenant editors).
+ *
+ * This template renders ONLY the dashboard content, not the full page.
+ * The page wrapper (HTML, header, footer) is handled by page--content-hub.html.twig.
+ *
+ * Variables:
+ * - stats: Array with content statistics
+ * - recent_articles: Array of recently modified articles
+ * - top_categories: Array of categories with article counts
+ * - drafts: Array of draft articles awaiting publication
+ * - quick_actions: Array of quick action buttons
+ *
+ * @see docs/00_DIRECTRICES_PROYECTO.md section 2.2.2 (Plantillas Twig Limpias)
+ * @see .agent/workflows/slide-panel-modales.md (Patrón CRUD modales)
+ */
+#}
+
+<div class="content-hub-dashboard content-hub-dashboard--frontend">
+  {# ============================================== #}
+  {# DASHBOARD HEADER - Premium con Partículas     #}
+  {# ============================================== #}
+  <header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+    {# Canvas de partículas (mismo estilo que homepage) #}
+    <canvas id="dashboard-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    
+    <div class="dashboard-header__content">
+      <h1 class="dashboard-header__title">{% trans %}Content Hub{% endtrans %}</h1>
+      <p class="dashboard-header__subtitle">
+        {% trans %}Manage your blog articles and categories{% endtrans %}
+      </p>
+    </div>
+    <div class="dashboard-header__actions">
+      {% for action in quick_actions %}
+        {% if action.primary %}
+          <a href="{{ action.url }}" 
+             class="btn btn--primary btn--glow" 
+             data-slide-panel="large"
+             data-slide-panel-title="{{ action.title }}">
+            {{ jaraba_icon('actions', 'plus', { size: '20px' }) }}
+            {{ action.title }}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </header>
+
+  {# ============================================== #}
+  {# STATS GRID - Clickables con enlaces frontend  #}
+  {# ============================================== #}
+  <section class="dashboard-stats" aria-label="{% trans %}Content statistics{% endtrans %}">
+    <a href="/content-hub/articles" class="stat-card stat-card--corporate stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'document', { size: '32px', variant: 'duotone', color: 'azul-corporativo' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.total_articles|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Total Articles{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <a href="/content-hub/articles?status=published" class="stat-card stat-card--success stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'check-circle', { size: '32px', variant: 'duotone', color: 'verde-innovacion' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.published|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Published{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <a href="/content-hub/articles?status=draft" class="stat-card stat-card--warning stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('actions', 'edit', { size: '32px', variant: 'duotone', color: 'naranja-impulso' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.drafts|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Drafts{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <a href="/content-hub/ai-logs" class="stat-card stat-card--ai stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ai', 'sparkle', { size: '32px', variant: 'duotone', color: 'verde-innovacion' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.ai_assisted|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}AI Assisted{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+  </section>
+
+  {# ============================================== #}
+  {# MAIN GRID: 2 columnas (principal + sidebar)   #}
+  {# ============================================== #}
+  <div class="dashboard-grid">
+    {# ========================================== #}
+    {# COLUMNA PRINCIPAL: Artículos Recientes    #}
+    {# ========================================== #}
+    <section class="dashboard-panel dashboard-panel--recent dashboard-grid__main">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Recent Articles{% endtrans %}</h2>
+        <a href="/content-hub/articles" class="dashboard-panel__link">
+          {% trans %}View All{% endtrans %}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+        </a>
+      </header>
+      
+      {# Filtros rápidos y búsqueda #}
+      <div class="dashboard-filters">
+        <div class="dashboard-filters__search">
+          {{ jaraba_icon('ui', 'search', { size: '18px' }) }}
+          <input type="search" 
+                 id="article-search" 
+                 class="dashboard-filters__input" 
+                 placeholder="{% trans %}Search articles...{% endtrans %}"
+                 aria-label="{% trans %}Search articles{% endtrans %}">
+        </div>
+        <div class="dashboard-filters__pills">
+          <button class="filter-pill filter-pill--active" data-filter="all">{% trans %}All{% endtrans %}</button>
+          <button class="filter-pill" data-filter="published">{% trans %}Published{% endtrans %}</button>
+          <button class="filter-pill" data-filter="draft">{% trans %}Drafts{% endtrans %}</button>
+        </div>
+      </div>
+      
+      <div class="dashboard-panel__content">
+        {% if recent_articles is not empty %}
+          <ul class="article-list" id="article-list">
+            {% for article in recent_articles %}
+              <li class="article-list__item" data-status="{{ article.status }}">
+                <div class="article-list__content">
+                  <a href="{{ article.edit_url }}" 
+                     class="article-list__title"
+                     data-slide-panel="large"
+                     data-slide-panel-title="{% trans %}Edit Article{% endtrans %}">
+                    {{ article.title }}
+                  </a>
+                  <div class="article-list__meta">
+                    <span class="article-list__author">{{ article.author }}</span>
+                    <span class="article-list__date">{{ article.changed|date('d M Y') }}</span>
+                  </div>
+                </div>
+                <span class="article-list__status article-list__status--{{ article.status }}">
+                  {{ article.status == 'published' ? 'Publicado'|t : 'Borrador'|t }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="dashboard-panel__empty">{% trans %}No articles yet. Create your first article!{% endtrans %}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# ========================================== #}
+    {# SIDEBAR DERECHA: Drafts, Actions, Cats    #}
+    {# ========================================== #}
+    <aside class="dashboard-grid__sidebar">
+      {# Drafts (En espera de publicación) #}
+      <section class="dashboard-panel dashboard-panel--drafts">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Awaiting Publication{% endtrans %}</h2>
+        </header>
+        <div class="dashboard-panel__content">
+          {% if drafts is not empty %}
+            <ul class="draft-list">
+              {% for draft in drafts %}
+                <li class="draft-list__item">
+                  <a href="{{ draft.edit_url }}" 
+                     class="draft-list__link"
+                     data-slide-panel="large"
+                     data-slide-panel-title="{% trans %}Edit Draft{% endtrans %}">
+                    <span class="draft-list__title">{{ draft.title }}</span>
+                    <span class="draft-list__action">
+                      {% trans %}Edit{% endtrans %}
+                      {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+                    </span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="dashboard-panel__empty">{% trans %}All caught up! No pending drafts.{% endtrans %}</p>
+          {% endif %}
+        </div>
+      </section>
+      
+      {# Quick Actions (entre Drafts y Categories) #}
+      <section class="dashboard-panel dashboard-panel--actions">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Quick Actions{% endtrans %}</h2>
+        </header>
+        <div class="dashboard-panel__content">
+          <div class="quick-actions quick-actions--compact">
+            {% for action in quick_actions %}
+              <a href="{{ action.url }}" 
+                 class="quick-action"
+                 {% if action.modal|default(true) %}
+                   data-slide-panel="medium"
+                   data-slide-panel-title="{{ action.title }}"
+                 {% endif %}>
+                <span class="quick-action__icon">
+                  {% if action.icon == 'plus' %}
+                    {{ jaraba_icon('actions', 'plus', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+                  {% elseif action.icon == 'sparkles' %}
+                    {{ jaraba_icon('ai', 'sparkle', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+                  {% elseif action.icon == 'folder' %}
+                    {{ jaraba_icon('ui', 'folder', { size: '20px', variant: 'duotone', color: 'azul-corporativo' }) }}
+                  {% elseif action.icon == 'eye' %}
+                    {{ jaraba_icon('ui', 'eye', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+                  {% else %}
+                    {{ jaraba_icon('ui', 'document', { size: '20px', variant: 'duotone', color: 'azul-corporativo' }) }}
+                  {% endif %}
+                </span>
+                <span class="quick-action__title">{{ action.title }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      {# Categories #}
+      <section class="dashboard-panel dashboard-panel--categories">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Categories{% endtrans %}</h2>
+          <a href="/content-hub/categories" class="dashboard-panel__link">
+            {% trans %}Manage{% endtrans %}
+            {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+          </a>
+        </header>
+        <div class="dashboard-panel__content">
+          {% if top_categories is not empty %}
+            <ul class="category-list">
+              {% for category in top_categories %}
+                <li class="category-list__item">
+                  <span class="category-list__color" style="background-color: {{ category.color|default('#233D63') }}"></span>
+                  <span class="category-list__name">{{ category.name }}</span>
+                  <span class="category-list__count">{{ category.count }} {% trans %}articles{% endtrans %}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="dashboard-panel__empty">{% trans %}No categories yet.{% endtrans %}</p>
+          {% endif %}
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  {# Performance Summary #}
+  <section class="dashboard-panel dashboard-panel--performance">
+    <header class="dashboard-panel__header">
+      <h2 class="dashboard-panel__title">{% trans %}This Month{% endtrans %}</h2>
+    </header>
+    <div class="dashboard-panel__content">
+      <div class="performance-grid">
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.this_month|default(0) }}</span>
+          <span class="performance-stat__label">{% trans %}New Articles{% endtrans %}</span>
+        </div>
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.publish_rate|default(0) }}%</span>
+          <span class="performance-stat__label">{% trans %}Publish Rate{% endtrans %}</span>
+        </div>
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.categories|default(0) }}</span>
+          <span class="performance-stat__label">{% trans %}Active Categories{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

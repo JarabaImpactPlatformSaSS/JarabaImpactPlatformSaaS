@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * Template para el bloque Sticky Scroll.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set sticky_position = content.sticky_position|default('left') %}
+
+<section class="jaraba-sticky-scroll jaraba-sticky-scroll--{{ bg_class }} jaraba-sticky-scroll--media-{{ sticky_position }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    <div class="jaraba-sticky-scroll__wrapper">
+      
+      {# Sticky Media #}
+      <div class="jaraba-sticky-scroll__media">
+        <div class="jaraba-sticky-scroll__media-inner">
+          {% if content.sticky_content.type == 'device_mockup' %}
+            <div class="jaraba-sticky-scroll__device jaraba-sticky-scroll__device--{{ content.sticky_content.device|default('iphone') }}">
+              <img src="{{ content.sticky_content.image }}" alt="">
+            </div>
+          {% elseif content.sticky_content.type == 'video' %}
+            <video src="{{ content.sticky_content.video_url }}" autoplay muted loop playsinline></video>
+          {% else %}
+            <img src="{{ content.sticky_content.image }}" alt="" class="jaraba-sticky-scroll__image">
+          {% endif %}
+        </div>
+      </div>
+      
+      {# Scrolling Content #}
+      <div class="jaraba-sticky-scroll__content">
+        {% for section in content.sections %}
+          <div class="jaraba-sticky-scroll__section" data-highlight="{{ section.highlight_area }}">
+            <h3 class="jaraba-sticky-scroll__section-title">{{ section.title }}</h3>
+            <p class="jaraba-sticky-scroll__section-desc">{{ section.description }}</p>
+          </div>
+        {% endfor %}
+      </div>
+      
+    </div>
+  </div>
+</section>

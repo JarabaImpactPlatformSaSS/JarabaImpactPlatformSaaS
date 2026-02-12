@@ -1,0 +1,48 @@
+# Permisos de administración
+administer interactive content:
+  title: 'Administrar contenido interactivo'
+  description: 'Acceso completo a configuración y gestión de contenido interactivo.'
+  restrict access: true
+
+# Permisos de contenido
+view interactive content:
+  title: 'Ver contenido interactivo'
+  description: 'Ver y reproducir contenido interactivo publicado.'
+
+view own interactive content:
+  title: 'Ver contenido interactivo propio'
+  description: 'Ver contenido interactivo creado por el usuario.'
+
+create interactive content:
+  title: 'Crear contenido interactivo'
+  description: 'Crear nuevo contenido interactivo.'
+
+edit any interactive content:
+  title: 'Editar cualquier contenido interactivo'
+  description: 'Editar contenido interactivo de cualquier autor.'
+
+edit own interactive content:
+  title: 'Editar contenido interactivo propio'
+  description: 'Editar contenido interactivo creado por el usuario.'
+
+delete any interactive content:
+  title: 'Eliminar cualquier contenido interactivo'
+  description: 'Eliminar contenido interactivo de cualquier autor.'
+
+delete own interactive content:
+  title: 'Eliminar contenido interactivo propio'
+  description: 'Eliminar contenido interactivo creado por el usuario.'
+
+# Permisos de resultados
+view interactive results:
+  title: 'Ver resultados interactivos'
+  description: 'Ver resultados y respuestas de todos los usuarios.'
+
+view own interactive results:
+  title: 'Ver resultados propios'
+  description: 'Ver los propios resultados de contenido interactivo.'
+
+# Permisos de IA
+use interactive ai generator:
+  title: 'Usar generador IA'
+  description: 'Generar contenido interactivo automáticamente con IA.'

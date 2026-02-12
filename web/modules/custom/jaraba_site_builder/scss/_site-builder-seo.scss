@@ -1,0 +1,89 @@
+/**
+ * @file
+ * Sprint B2: SEO Score Badge Styles.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_site_builder && npx sass scss/main.scss css/site-builder.css --style=compressed"
+ */
+
+// ---------------------------------------------------------------------------
+// SEO Score Badge — Color-coded indicator for tree nodes
+// ---------------------------------------------------------------------------
+
+.seo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 22px;
+    padding: 0 var(--ej-spacing-xs, 6px);
+    border-radius: var(--ej-radius-full, 999px);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+
+    // Variants by SEO score range
+    &--danger {
+        background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 15%, transparent);
+        color: var(--ej-color-danger, #EF4444);
+    }
+
+    &--warning {
+        background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 15%, transparent);
+        color: var(--ej-color-warning-dark, #B45309);
+    }
+
+    &--success {
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 15%, transparent);
+        color: var(--ej-color-success-dark, #047857);
+    }
+
+    &--neutral {
+        background: var(--ej-bg-muted, #F3F4F6);
+        color: var(--ej-text-muted, #6B7280);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Tree node SEO score integration
+// ---------------------------------------------------------------------------
+
+.site-tree__seo {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+// Tooltip-like label on hover
+.seo-badge[title] {
+    cursor: help;
+}
+
+// ---------------------------------------------------------------------------
+// Dark mode overrides
+// ---------------------------------------------------------------------------
+
+@media (prefers-color-scheme: dark) {
+    .seo-badge {
+        &--danger {
+            background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 20%, transparent);
+            color: var(--ej-color-danger-light, #FCA5A5);
+        }
+
+        &--warning {
+            background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 20%, transparent);
+            color: var(--ej-color-warning-light, #FBBF24);
+        }
+
+        &--success {
+            background: color-mix(in srgb, var(--ej-color-success, #10B981) 20%, transparent);
+            color: var(--ej-color-success-light, #34D399);
+        }
+    }
+}

@@ -1,0 +1,194 @@
+/**
+ * @file
+ * Estilos premium para el selector visual de variantes (Tab Diseño).
+ *
+ * Reemplaza los <select> planos con un grid de cards con thumbnails SVG.
+ * Cada card muestra un wireframe esquemático del layout de la variante.
+ *
+ * CUMPLIMIENTO DIRECTRICES:
+ * - ✅ Solo CSS custom properties con fallback inline (--ej-*)
+ * - ✅ Sin definición de variables SCSS propias (Federated Design Tokens)
+ * - ✅ Dart Sass moderno
+ * - ✅ Iconos en blanco via filter para panel oscuro
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/_variant-selector.scss css/variant-selector.css --style=compressed"
+ *
+ * @package jaraba_page_builder
+ */
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB BAR: Distribución equitativa para 4 tabs sin cortar texto
+// Solo añade flex-distribution; los estilos base están en _canvas-editor.scss
+// ═══════════════════════════════════════════════════════════════════════════
+
+body.canvas-editor-page {
+    .jaraba-grapesjs-panel__tabs {
+        flex-wrap: nowrap !important;
+        gap: 2px !important;
+    }
+
+    .jaraba-grapesjs-tab {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 0.35rem 0.4rem !important;
+        font-size: 0.7rem !important;
+        gap: 4px !important;
+        justify-content: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECCIÓN DE VARIANTES — Wrapper principal
+// ═══════════════════════════════════════════════════════════════════════════
+
+.variant-selector {
+    padding: var(--ej-spacing-md, 1rem);
+
+    // ── Section ──
+    &__section {
+        margin-bottom: var(--ej-spacing-lg, 1.5rem);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // ── Título de sección (ENCABEZADO, PIE DE PÁGINA) ──
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px 0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.85);
+
+        // Iconos SVG inline
+        svg {
+            color: #fff;
+            opacity: 0.85;
+        }
+
+        // Iconos IMG (jaraba_icon) — forzar blancos sobre fondo oscuro
+        img {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+    }
+
+    // ── Grid: 2 columnas ──
+    &__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    // ── Card de variante ──
+    &__card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 8px 8px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.75);
+        cursor: pointer;
+        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        appearance: none;
+        -webkit-appearance: none;
+        font-family: inherit;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            color: #fff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-impulse, #FF8C42);
+            outline-offset: 2px;
+        }
+
+        // Card activa
+        &.is-active {
+            border-color: var(--ej-color-impulse, #FF8C42);
+            background: rgba(255, 140, 66, 0.12);
+            color: var(--ej-color-impulse, #FF8C42);
+            box-shadow:
+                0 0 0 1px rgba(255, 140, 66, 0.2),
+                0 4px 16px rgba(255, 140, 66, 0.15);
+        }
+
+        // Animación de selección (crossfade)
+        &.is-selecting {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    }
+
+    // ── Thumbnail SVG ──
+    &__thumb {
+        width: 100%;
+        aspect-ratio: 3 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    // ── Label ──
+    &__label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
+    }
+
+    // ── Checkmark ──
+    &__check {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        border-radius: 50%;
+        background: var(--ej-color-impulse, #FF8C42);
+        color: #fff;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+    }
+
+    &__card.is-active &__check {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -1,0 +1,224 @@
+{#
+/**
+ * @file
+ * Template para el bloque Animated Beam (Magic UI).
+ *
+ * Visualización animada de conexiones entre elementos.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set beam_style = content.beam_style|default('glowing') %}
+{% set beam_speed = content.beam_speed|default('normal') %}
+{% set center = content.center_element|default({}) %}
+{% set elements = content.connected_elements|default([]) %}
+
+{# Inline styles for iframe preview #}
+<style>
+.jaraba-animated-beam {
+  padding: 4rem 2rem;
+  min-height: 500px;
+}
+.jaraba-animated-beam--dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+}
+.jaraba-animated-beam__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.jaraba-block__title--light {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+.jaraba-block__subtitle--light {
+  color: rgba(255,255,255,0.8);
+  font-size: 1.125rem;
+  margin: 0;
+}
+.jaraba-animated-beam__visualization {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  margin: 0 auto;
+}
+.jaraba-animated-beam__svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.jaraba-animated-beam__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+}
+.jaraba-animated-beam__center-inner {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
+}
+.jaraba-animated-beam__text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+.jaraba-animated-beam__center-label {
+  display: block;
+  margin-top: 0.5rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.875rem;
+}
+.jaraba-animated-beam__elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+.jaraba-animated-beam__element {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+}
+.jaraba-animated-beam__element[data-index="0"] { transform: translate(-50%, -50%) rotate(0deg) translateX(150px) rotate(0deg); }
+.jaraba-animated-beam__element[data-index="1"] { transform: translate(-50%, -50%) rotate(60deg) translateX(150px) rotate(-60deg); }
+.jaraba-animated-beam__element[data-index="2"] { transform: translate(-50%, -50%) rotate(120deg) translateX(150px) rotate(-120deg); }
+.jaraba-animated-beam__element[data-index="3"] { transform: translate(-50%, -50%) rotate(180deg) translateX(150px) rotate(-180deg); }
+.jaraba-animated-beam__element[data-index="4"] { transform: translate(-50%, -50%) rotate(240deg) translateX(150px) rotate(-240deg); }
+.jaraba-animated-beam__element[data-index="5"] { transform: translate(-50%, -50%) rotate(300deg) translateX(150px) rotate(-300deg); }
+.jaraba-animated-beam__element-inner {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+.jaraba-animated-beam__element-label {
+  display: block;
+  margin-top: 0.5rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.75rem;
+  text-align: center;
+}
+.jaraba-animated-beam__line {
+  stroke-width: 2;
+  opacity: 0.6;
+}
+.jaraba-animated-beam__line--glowing {
+  animation: beam-glow 2s ease-in-out infinite;
+}
+@keyframes beam-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+</style>
+
+<section class="jaraba-animated-beam jaraba-animated-beam--{{ bg_class }} jaraba-block"
+         data-block-type="animated_beam"
+         data-beam-style="{{ beam_style }}"
+         data-beam-speed="{{ beam_speed }}">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-animated-beam__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title jaraba-block__title--light">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle jaraba-block__subtitle--light">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Beam Visualization #}
+    <div class="jaraba-animated-beam__visualization">
+      {# SVG for beam lines #}
+      <svg class="jaraba-animated-beam__svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="beam-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:var(--ej-color-primary);stop-opacity:0" />
+            <stop offset="50%" style="stop-color:var(--ej-color-primary);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:var(--ej-color-accent);stop-opacity:0" />
+          </linearGradient>
+          <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {# Beam lines - positioned dynamically via CSS #}
+        {% for i in 0..(elements|length - 1) %}
+          <line class="jaraba-animated-beam__line jaraba-animated-beam__line--{{ beam_style }}"
+                data-index="{{ i }}"
+                x1="300" y1="200" x2="300" y2="200"
+                stroke="url(#beam-gradient)"
+                stroke-width="2"
+                {% if beam_style == 'glowing' %}filter="url(#beam-glow)"{% endif %}/>
+        {% endfor %}
+      </svg>
+
+      {# Center Element #}
+      <div class="jaraba-animated-beam__center">
+        <div class="jaraba-animated-beam__center-inner">
+          {% if center.type == 'logo' and center.logo_url %}
+            <img src="{{ center.logo_url }}" alt="{{ center.label|default('Central') }}" class="jaraba-animated-beam__logo">
+          {% elseif center.type == 'icon' and center.icon %}
+            {{ jaraba_icon('ui', center.icon, { size: '48px', color: 'white' }) }}
+          {% else %}
+            <span class="jaraba-animated-beam__text">{{ center.text|default('HUB') }}</span>
+          {% endif %}
+        </div>
+        {% if center.label %}
+          <span class="jaraba-animated-beam__center-label">{{ center.label }}</span>
+        {% endif %}
+      </div>
+
+      {# Connected Elements #}
+      <div class="jaraba-animated-beam__elements">
+        {% for element in elements %}
+          {% set angle = (loop.index0 / elements|length) * 360 %}
+          <div class="jaraba-animated-beam__element"
+               data-index="{{ loop.index0 }}"
+               style="--angle: {{ angle }}deg;">
+            <div class="jaraba-animated-beam__element-inner jaraba-animated-beam__element-inner--{{ element.beam_color|default('gradient') }}">
+              {% if element.type == 'logo' and element.logo_url %}
+                <img src="{{ element.logo_url }}" alt="{{ element.label }}" class="jaraba-animated-beam__element-logo">
+              {% else %}
+                {{ jaraba_icon('ui', element.icon|default('globe'), { size: '32px', color: 'white' }) }}
+              {% endif %}
+            </div>
+            {% if element.label %}
+              <span class="jaraba-animated-beam__element-label">{{ element.label }}</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>

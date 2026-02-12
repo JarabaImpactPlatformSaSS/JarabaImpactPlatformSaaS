@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Partial para el panel de configuración del sitio.
+ *
+ * Variables:
+ * - config: Entidad SiteConfig
+ * - form: Formulario renderizado (opcional)
+ */
+#}
+
+<div class="site-config-panel">
+  <div class="site-config-panel__header">
+    <h3 class="site-config-panel__title">{{ 'Configuración del Sitio'|t }}</h3>
+  </div>
+
+  <div class="site-config-panel__content">
+    {% if form %}
+      {{ form }}
+    {% else %}
+      {# Vista de solo lectura #}
+      <div class="site-config-panel__section">
+        <h4>{{ 'Identidad'|t }}</h4>
+        <dl class="config-list">
+          <dt>{{ 'Nombre del sitio'|t }}</dt>
+          <dd>{{ config.site_name.value }}</dd>
+          
+          <dt>{{ 'Eslogan'|t }}</dt>
+          <dd>{{ config.site_tagline.value ?: '-' }}</dd>
+        </dl>
+      </div>
+
+      <div class="site-config-panel__section">
+        <h4>{{ 'Contacto'|t }}</h4>
+        <dl class="config-list">
+          <dt>{{ 'Email'|t }}</dt>
+          <dd>{{ config.contact_email.value ?: '-' }}</dd>
+          
+          <dt>{{ 'Teléfono'|t }}</dt>
+          <dd>{{ config.contact_phone.value ?: '-' }}</dd>
+          
+          <dt>{{ 'Dirección'|t }}</dt>
+          <dd>{{ config.contact_address.value ?: '-' }}</dd>
+        </dl>
+      </div>
+
+      <div class="site-config-panel__section">
+        <h4>{{ 'Analytics'|t }}</h4>
+        <dl class="config-list">
+          <dt>{{ 'Google Analytics'|t }}</dt>
+          <dd>{{ config.google_analytics_id.value ?: 'No configurado' }}</dd>
+          
+          <dt>{{ 'Tag Manager'|t }}</dt>
+          <dd>{{ config.google_tag_manager_id.value ?: 'No configurado' }}</dd>
+        </dl>
+      </div>
+    {% endif %}
+  </div>
+</div>

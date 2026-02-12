@@ -1,0 +1,47 @@
+# Enlaces de pestaña (tabs) en /admin/content para entidades del Page Builder
+
+entity.homepage_content.collection:
+  title: 'Homepage'
+  route_name: entity.homepage_content.collection
+  base_route: system.admin_content
+  weight: 15
+
+entity.feature_card.collection:
+  title: 'Feature Cards'
+  route_name: entity.feature_card.collection
+  base_route: system.admin_content
+  weight: 16
+
+entity.stat_item.collection:
+  title: 'Estadísticas'
+  route_name: entity.stat_item.collection
+  base_route: system.admin_content
+  weight: 17
+
+entity.intention_card.collection:
+  title: 'Intenciones'
+  route_name: entity.intention_card.collection
+  base_route: system.admin_content
+  weight: 18
+
+# Experimentos A/B - Double Navigation Pattern
+entity.page_experiment.collection:
+  title: 'Experimentos A/B'
+  route_name: entity.page_experiment.collection
+  base_route: system.admin_content
+  weight: 25
+
+# Field UI tabs para PageExperiment (/admin/structure/experiment)
+jaraba_page_builder.experiment_settings:
+  title: 'Configuración'
+  route_name: entity.page_experiment.settings
+  base_route: entity.page_experiment.settings
+  weight: -10
+
+# Field UI tabs para ExperimentVariant (/admin/structure/experiment-variant)
+jaraba_page_builder.variant_settings:
+  title: 'Configuración'
+  route_name: entity.experiment_variant.settings
+  base_route: entity.experiment_variant.settings
+  weight: -10
+

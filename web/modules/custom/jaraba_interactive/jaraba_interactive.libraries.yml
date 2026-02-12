@@ -1,0 +1,49 @@
+player:
+  version: 1.x
+  css:
+    theme:
+      css/player.css: {}
+  js:
+    js/player.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global
+
+editor:
+  version: 1.x
+  css:
+    theme:
+      css/editor.css: {}
+  js:
+    js/editor.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global
+    - ecosistema_jaraba_theme/slide-panel
+
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/dashboard.css: {}
+  js:
+    js/dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global
+    - ecosistema_jaraba_theme/slide-panel
+    - jaraba_interactive/engine-loader
+
+engine-loader:
+  version: 1.x
+  js:
+    js/engine-loader.js: { weight: -10 }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings

@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_interactive.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_interactive_install(): void {
+  // Las tablas de entidades se crean automáticamente por Drupal.
+  // Este hook es para configuración adicional post-instalación.
+  
+  \Drupal::messenger()->addStatus(t('Jaraba Interactive AI-Powered instalado correctamente.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_interactive_uninstall(): void {
+  // Limpiar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_interactive.settings')->delete();
+  
+  \Drupal::messenger()->addStatus(t('Jaraba Interactive desinstalado. Las entidades han sido eliminadas.'));
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_interactive_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+    // Verificar dependencias críticas.
+    $moduleHandler = \Drupal::moduleHandler();
+
+    if (!$moduleHandler->moduleExists('jaraba_lms')) {
+      $requirements['jaraba_interactive_lms'] = [
+        'title' => t('Jaraba Interactive - LMS Integration'),
+        'value' => t('Jaraba LMS no instalado'),
+        'description' => t('Para tracking xAPI completo, instala el módulo jaraba_lms.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+
+    if (!$moduleHandler->moduleExists('jaraba_ai_agents')) {
+      $requirements['jaraba_interactive_ai'] = [
+        'title' => t('Jaraba Interactive - AI Integration'),
+        'value' => t('Jaraba AI Agents no instalado'),
+        'description' => t('Para generación de contenido con IA, instala el módulo jaraba_ai_agents.'),
+        'severity' => REQUIREMENT_INFO,
+      ];
+    }
+  }
+
+  return $requirements;
+}

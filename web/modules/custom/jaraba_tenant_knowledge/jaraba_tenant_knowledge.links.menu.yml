@@ -1,0 +1,55 @@
+# Links de menú para integración con admin/structure y admin/content.
+
+# === ADMIN/STRUCTURE ===
+# Entrada principal en admin/structure para gestión de tipos.
+entity.tenant_knowledge.collection:
+  title: 'Tenant Knowledge'
+  route_name: jaraba_tenant_knowledge.admin.settings
+  description: 'Configuración de Tenant Knowledge (FAQs, Políticas, Documentos, Productos).'
+  parent: system.admin_structure
+  weight: 50
+
+# === ADMIN/CONTENT ===
+# Entradas en admin/content para las entidades de contenido.
+
+entity.tenant_faq.collection:
+  title: 'FAQs de Tenants'
+  route_name: jaraba_tenant_knowledge.admin.faqs
+  description: 'Gestiona las preguntas frecuentes de todos los tenants.'
+  parent: system.admin_content
+  weight: 20
+
+entity.tenant_policy.collection:
+  title: 'Políticas de Tenants'
+  route_name: jaraba_tenant_knowledge.admin.policies
+  description: 'Gestiona las políticas y procedimientos de todos los tenants.'
+  parent: system.admin_content
+  weight: 21
+
+entity.tenant_document.collection:
+  title: 'Documentos de Tenants'
+  route_name: jaraba_tenant_knowledge.admin.documents
+  description: 'Gestiona los documentos subidos por tenants.'
+  parent: system.admin_content
+  weight: 22
+
+entity.tenant_product_enrichment.collection:
+  title: 'Productos de Tenants'
+  route_name: jaraba_tenant_knowledge.admin.products
+  description: 'Gestiona el enriquecimiento de productos de tenants.'
+  parent: system.admin_content
+  weight: 23
+
+entity.tenant_ai_correction.collection:
+  title: 'Correcciones IA'
+  route_name: jaraba_tenant_knowledge.admin.corrections
+  description: 'Gestiona las correcciones de IA de tenants.'
+  parent: system.admin_content
+  weight: 24
+
+entity.tenant_knowledge_config.collection:
+  title: 'Configuración de Conocimiento'
+  route_name: jaraba_tenant_knowledge.admin.configs
+  description: 'Configuraciones de conocimiento de tenants.'
+  parent: system.admin_content
+  weight: 25

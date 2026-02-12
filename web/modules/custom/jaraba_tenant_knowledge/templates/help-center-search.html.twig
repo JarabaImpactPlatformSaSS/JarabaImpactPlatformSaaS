@@ -1,0 +1,63 @@
+{#
+/**
+ * @file
+ * help-center-search.html.twig — Resultados de búsqueda del Centro de Ayuda.
+ *
+ * Variables:
+ * - query: Término de búsqueda.
+ * - results: Array de resultados con keys: id, question, answer_preview, category.
+ * - result_count: Número de resultados.
+ */
+#}
+
+<div class="help-search">
+  {# Breadcrumb #}
+  <nav class="help-article__breadcrumb">
+    <a href="{{ path('jaraba_tenant_knowledge.help.index') }}" class="help-article__breadcrumb-link">
+      {% trans %}Centro de Ayuda{% endtrans %}
+    </a>
+    <span class="help-article__breadcrumb-sep">/</span>
+    <span class="help-article__breadcrumb-current">{% trans %}Resultados de Búsqueda{% endtrans %}</span>
+  </nav>
+
+  {# Barra de búsqueda #}
+  <div class="help-search__header">
+    <form class="help-center__search-form" action="{{ path('jaraba_tenant_knowledge.help.search') }}" method="get">
+      <div class="help-center__search-wrapper">
+        <svg class="help-center__search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" name="q" class="help-center__search-input" value="{{ query }}" placeholder="{{ 'Buscar artículos...'|trans }}">
+        <button type="submit" class="help-center__search-btn">{% trans %}Buscar{% endtrans %}</button>
+      </div>
+    </form>
+  </div>
+
+  {# Contador de resultados #}
+  <p class="help-search__count">
+    {% if result_count > 0 %}
+      {{ result_count }} {% trans %}resultado(s) para{% endtrans %} "<strong>{{ query }}</strong>"
+    {% else %}
+      {% trans %}No se encontraron resultados para{% endtrans %} "<strong>{{ query }}</strong>"
+    {% endif %}
+  </p>
+
+  {# Lista de resultados #}
+  {% if results is not empty %}
+    <div class="help-search__results">
+      {% for result in results %}
+        <a href="{{ path('jaraba_tenant_knowledge.help.article', { faq_id: result.id }) }}" class="help-search-result">
+          <h3 class="help-search-result__title">{{ result.question }}</h3>
+          <p class="help-search-result__preview">{{ result.answer_preview }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="help-search__empty">
+      <p>{% trans %}Intenta con otros términos de búsqueda o explora las categorías.{% endtrans %}</p>
+      <a href="{{ path('jaraba_tenant_knowledge.help.index') }}" class="help-search__back-link">
+        ← {% trans %}Volver al Centro de Ayuda{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

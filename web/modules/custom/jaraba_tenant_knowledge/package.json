@@ -1,0 +1,13 @@
+{
+    "name": "jaraba-tenant-knowledge",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para Knowledge Training Dashboard",
+    "scripts": {
+        "build": "sass scss/main.scss:css/knowledge-dashboard.css --style=compressed",
+        "build:all": "npm run build && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    }
+}

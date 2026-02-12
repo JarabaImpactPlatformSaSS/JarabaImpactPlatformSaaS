@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * site-builder-sitemap.html.twig - Vista del sitemap frontend.
+ */
+#}
+<div class="site-builder-frontend site-builder-sitemap">
+  {# Navegación por tabs #}
+  <nav class="site-builder-tabs" aria-label="{% trans %}Site Builder Navigation{% endtrans %}">
+    <ul class="site-builder-tabs__list">
+      {% for tab in tabs %}
+        <li class="site-builder-tabs__item">
+          <a href="{{ tab.url }}" 
+             class="site-builder-tabs__link {{ tab.active ? 'is-active' : '' }}"
+             {% if tab.active %}aria-current="page"{% endif %}>
+            {{ tab.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <header class="dashboard-header--premium">
+    <h1 class="dashboard-header__title">{% trans %}Sitemap{% endtrans %}</h1>
+    <p class="dashboard-header__subtitle">
+      {% trans %}Vista previa del mapa del sitio para motores de búsqueda.{% endtrans %}
+    </p>
+  </header>
+
+  {# Info general #}
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <span class="stat-card__value">{{ data.total_pages|default(0) }}</span>
+      <span class="stat-card__label">{% trans %}Páginas en sitemap{% endtrans %}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ data.last_generated|default('N/A') }}</span>
+      <span class="stat-card__label">{% trans %}Última generación{% endtrans %}</span>
+    </div>
+  </div>
+
+  <section class="dashboard-panel">
+    <div class="site-builder-actions">
+      <a href="/sitemap.xml" target="_blank" class="btn btn--primary">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+        </svg>
+        {% trans %}Ver sitemap.xml{% endtrans %}
+      </a>
+    </div>
+
+    <h3>{% trans %}Vista previa del sitemap{% endtrans %}</h3>
+    
+    {% if pages|length > 0 %}
+      <ul class="sitemap-preview">
+        {% for page in pages %}
+          <li class="sitemap-preview__item">
+            <span class="sitemap-page-title">{{ page.nav_title }}</span>
+            <small class="sitemap-page-url">{{ page.page_url }}</small>
+            {% if page.children|length > 0 %}
+              <ul class="sitemap-preview__children">
+                {% for child in page.children %}
+                  <li>
+                    <span class="sitemap-page-title">{{ child.nav_title }}</span>
+                    <small class="sitemap-page-url">{{ child.page_url }}</small>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <p>{% trans %}El sitemap está vacío. Añade páginas al árbol de navegación.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+</div>

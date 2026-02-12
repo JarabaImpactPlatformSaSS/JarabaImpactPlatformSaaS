@@ -1,0 +1,317 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Site Builder module.
+ *
+ * Este módulo proporciona el Site Structure Manager:
+ * - Árbol visual de páginas con drag & drop
+ * - URLs jerárquicas automáticas
+ * - Redirects 301/302 con tracking
+ * - Sitemap XML dinámico
+ * - Configuración global del sitio por tenant
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_site_builder_help(string $route_name, RouteMatchInterface $route_match): ?string {
+  if ($route_name === 'help.page.jaraba_site_builder') {
+    $output = '<h3>' . t('About') . '</h3>';
+    $output .= '<p>' . t('El módulo Site Builder permite gestionar la estructura del sitio con un árbol visual de páginas.') . '</p>';
+    return $output;
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_site_builder_theme(): array {
+  return [
+    'site_tree_manager' => [
+      'variables' => [
+        'tree' => [],
+        'config' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'site-tree-manager',
+    ],
+    'site_tree_node' => [
+      'variables' => [
+        'node' => [],
+        'depth' => 0,
+        'children' => [],
+      ],
+      'template' => 'partials/tree-node',
+    ],
+    'site_config_panel' => [
+      'variables' => [
+        'config' => [],
+        'form' => NULL,
+      ],
+      'template' => 'partials/site-config-panel',
+    ],
+    // =========================================================================
+    // Frontend templates - Sin tema de administración
+    // =========================================================================
+    'site_builder_dashboard_frontend' => [
+      'variables' => [
+        'tree' => [],
+        'tabs' => [],
+        'kpis' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'frontend/site-builder-dashboard',
+    ],
+    'site_builder_tree_frontend' => [
+      'variables' => [
+        'tree' => [],
+        'tabs' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'frontend/site-builder-tree',
+    ],
+    'site_builder_config_frontend' => [
+      'variables' => [
+        'form' => NULL,
+        'tabs' => [],
+      ],
+      'template' => 'frontend/site-builder-config',
+    ],
+    'site_builder_redirects_frontend' => [
+      'variables' => [
+        'redirects' => [],
+        'stats' => [],
+        'tabs' => [],
+      ],
+      'template' => 'frontend/site-builder-redirects',
+    ],
+    'site_builder_sitemap_frontend' => [
+      'variables' => [
+        'data' => [],
+        'pages' => [],
+        'tabs' => [],
+      ],
+      'template' => 'frontend/site-builder-sitemap',
+    ],
+    'site_builder_error_frontend' => [
+      'variables' => [
+        'message' => '',
+        'tabs' => [],
+      ],
+      'template' => 'frontend/site-builder-error',
+    ],
+    // =========================================================================
+    // Canvas v2 Full Page Editor - Header/Footer Variants
+    // Nombres alineados con theme settings (/admin/appearance/settings)
+    // =========================================================================
+    // Header variants: classic, centered, hero, split, minimal
+    'jaraba_header_classic' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'sticky' => TRUE,
+        'transparent' => FALSE,
+        'cta_text' => NULL,
+        'cta_url' => NULL,
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-header-classic',
+    ],
+    'jaraba_header_centered' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'sticky' => TRUE,
+        'transparent' => FALSE,
+        'cta_text' => NULL,
+        'cta_url' => NULL,
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-header-centered',
+    ],
+    'jaraba_header_hero' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'sticky' => TRUE,
+        'transparent' => TRUE,
+        'cta_text' => NULL,
+        'cta_url' => NULL,
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-header-hero',
+    ],
+    'jaraba_header_split' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'sticky' => TRUE,
+        'transparent' => FALSE,
+        'cta_text' => NULL,
+        'cta_url' => NULL,
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-header-split',
+    ],
+    'jaraba_header_minimal' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'sticky' => TRUE,
+        'transparent' => FALSE,
+        'cta_text' => NULL,
+        'cta_url' => NULL,
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-header-minimal',
+    ],
+    // Footer variants: minimal, standard, mega, split
+    'jaraba_footer_minimal' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'show_social' => TRUE,
+        'show_newsletter' => FALSE,
+        'copyright' => '',
+        'social_links' => [],
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-footer-minimal',
+    ],
+    'jaraba_footer_standard' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'columns' => 4,
+        'show_social' => TRUE,
+        'show_newsletter' => TRUE,
+        'copyright' => '',
+        'social_links' => [],
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-footer-standard',
+    ],
+    'jaraba_footer_mega' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'columns' => 4,
+        'show_social' => TRUE,
+        'show_newsletter' => TRUE,
+        'copyright' => '',
+        'social_links' => [],
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-footer-mega',
+    ],
+    'jaraba_footer_split' => [
+      'variables' => [
+        'config' => NULL,
+        'navigation' => [],
+        'show_social' => TRUE,
+        'show_newsletter' => FALSE,
+        'copyright' => '',
+        'social_links' => [],
+        'site_name' => 'Jaraba',
+        'logo' => NULL,
+      ],
+      'template' => 'partials/jaraba-footer-split',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_entity_update() para detectar cambios de URL.
+ *
+ * Cuando una página cambia su path_alias:
+ * 1. Creamos un redirect automático 301
+ * 2. Registramos el cambio en el historial para auditoría
+ */
+function jaraba_site_builder_entity_update(EntityInterface $entity): void {
+  // Solo procesar entidades page_content.
+  if ($entity->getEntityTypeId() !== 'page_content') {
+    return;
+  }
+
+  // Verificar si cambió el path_alias.
+  if (!$entity->hasField('path_alias')) {
+    return;
+  }
+
+  $original = $entity->original ?? NULL;
+  if (!$original) {
+    return;
+  }
+
+  $oldPath = $original->get('path_alias')->value ?? '';
+  $newPath = $entity->get('path_alias')->value ?? '';
+
+  // Si el path cambió, crear redirect automático y registrar en historial.
+  if (!empty($oldPath) && !empty($newPath) && $oldPath !== $newPath) {
+    $tenantId = (int) $entity->get('tenant_id')->target_id;
+
+    // 1. Crear redirect automático.
+    /** @var \Drupal\jaraba_site_builder\Service\RedirectService $redirectService */
+    $redirectService = \Drupal::service('jaraba_site_builder.redirect');
+    $redirectId = $redirectService->createAutoRedirect($oldPath, $newPath, $tenantId);
+
+    // 2. Registrar en historial de URLs.
+    try {
+      $historyStorage = \Drupal::entityTypeManager()->getStorage('site_url_history');
+      $history = $historyStorage->create([
+        'tenant_id' => $tenantId,
+        'page_id' => $entity->id(),
+        'old_path' => $oldPath,
+        'new_path' => $newPath,
+        'change_type' => 'slug_change',
+        'changed_by' => \Drupal::currentUser()->id(),
+        'redirect_id' => $redirectId,
+        'notes' => t('Cambio automático de URL detectado durante edición de página.'),
+      ]);
+      $history->save();
+
+      \Drupal::logger('jaraba_site_builder')->info(
+        'URL cambiada: @old -> @new (Página @id)',
+        ['@old' => $oldPath, '@new' => $newPath, '@id' => $entity->id()]
+      );
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_site_builder')->error(
+        'Error registrando historial de URL: @error',
+        ['@error' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_cron() para limpiar redirects expirados.
+ */
+function jaraba_site_builder_cron(): void {
+  /** @var \Drupal\jaraba_site_builder\Service\RedirectService $redirectService */
+  $redirectService = \Drupal::service('jaraba_site_builder.redirect');
+  $deleted = $redirectService->cleanupExpired();
+
+  if ($deleted > 0) {
+    \Drupal::logger('jaraba_site_builder')->info(
+      'Cron: Eliminados @count redirects expirados.',
+      ['@count' => $deleted]
+    );
+  }
+}

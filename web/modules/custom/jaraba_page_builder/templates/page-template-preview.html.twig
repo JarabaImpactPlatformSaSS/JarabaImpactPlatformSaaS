@@ -1,0 +1,406 @@
+{#
+/**
+ * @file
+ * Vista Previa Premium de Plantilla del Page Builder.
+ *
+ * CARACTERÍSTICAS PREMIUM:
+ * - Live Preview con iframe de plantilla renderizada
+ * - Viewport Switcher (Desktop/Tablet/Mobile)
+ * - Zoom Controls (50%/75%/100%/125%)
+ * - Glassmorphism frame con bordes premium
+ * - Partículas animadas en header
+ * - Métricas de uso de la plantilla
+ *
+ * VARIABLES:
+ * - template: La entidad PageTemplate
+ * - preview_data: Datos de ejemplo para el preview
+ * - preview_url: URL del iframe de preview (si existe)
+ * - usage_count: Número de páginas que usan esta plantilla
+ * - avg_engagement: Engagement score promedio
+ *
+ * @see TemplatePickerController::previewTemplate()
+ */
+#}
+
+<div class="template-preview-premium"
+     data-template-id="{{ template.id }}"
+     x-data="templatePreviewPremium()">
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     HEADER PREMIUM CON PARTÍCULAS
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <header class="template-preview-premium__header">
+    <div class="template-preview-premium__particles" aria-hidden="true">
+      <canvas id="preview-particles"></canvas>
+    </div>
+
+    <div class="template-preview-premium__header-content">
+      {# Navegación #}
+      <div class="template-preview-premium__nav">
+        <a href="{{ path('jaraba_page_builder.template_picker') }}"
+           class="template-preview-premium__back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          {% trans %}Volver{% endtrans %}
+        </a>
+      </div>
+
+      {# Info de la plantilla #}
+      <div class="template-preview-premium__info">
+        <h1 class="template-preview-premium__title">{{ template.label }}</h1>
+        {% if template.description %}
+          <p class="template-preview-premium__description">{{ template.description }}</p>
+        {% endif %}
+
+        <div class="template-preview-premium__badges">
+          <span class="template-preview-premium__badge template-preview-premium__badge--category">
+            {{ template.category|default('General')|capitalize }}
+          </span>
+          {% if template.premium %}
+            <span class="template-preview-premium__badge template-preview-premium__badge--premium">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              {% trans %}Premium{% endtrans %}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Acciones principales #}
+      <div class="template-preview-premium__actions">
+        <a href="{{ path('jaraba_page_builder.create_from_template', {'page_template': template.id}) }}"
+           class="jaraba-btn jaraba-btn--primary jaraba-btn--glow jaraba-btn--lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          {% trans %}Usar esta plantilla{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     CONTROLES DE VIEWPORT & ZOOM
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="template-preview-premium__controls">
+    {# Viewport Switcher #}
+    <div class="template-preview-premium__viewport-switcher" role="tablist">
+      <button class="template-preview-premium__viewport-btn"
+              :class="{ 'is-active': viewport === 'desktop' }"
+              @click="setViewport('desktop')"
+              role="tab"
+              :aria-selected="viewport === 'desktop'"
+              title="{% trans %}Desktop (1440px){% endtrans %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+        <span class="sr-only">Desktop</span>
+      </button>
+      <button class="template-preview-premium__viewport-btn"
+              :class="{ 'is-active': viewport === 'tablet' }"
+              @click="setViewport('tablet')"
+              role="tab"
+              :aria-selected="viewport === 'tablet'"
+              title="{% trans %}Tablet (768px){% endtrans %}">
+        {# Tablet icon - horizontal orientation with home button #}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <circle cx="19" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="sr-only">Tablet</span>
+      </button>
+      <button class="template-preview-premium__viewport-btn"
+              :class="{ 'is-active': viewport === 'mobile' }"
+              @click="setViewport('mobile')"
+              role="tab"
+              :aria-selected="viewport === 'mobile'"
+              title="{% trans %}Mobile (375px){% endtrans %}">
+        {# Mobile icon - narrow phone with notch and side buttons #}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="6" y="2" width="12" height="20" rx="2.5"/>
+          <path d="M10 5h4" stroke-linecap="round"/>
+          <circle cx="12" cy="18" r="1" fill="currentColor"/>
+        </svg>
+        <span class="sr-only">Mobile</span>
+      </button>
+    </div>
+
+    {# Indicador de resolución #}
+    <div class="template-preview-premium__resolution">
+      <span x-text="resolutionLabel"></span>
+    </div>
+
+    {# Zoom Controls #}
+    <div class="template-preview-premium__zoom-controls">
+      <button class="template-preview-premium__zoom-btn"
+              @click="zoomOut()"
+              :disabled="zoom <= 50"
+              title="{% trans %}Reducir{% endtrans %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35M8 11h6"/>
+        </svg>
+      </button>
+      <span class="template-preview-premium__zoom-value" x-text="zoom + '%'"></span>
+      <button class="template-preview-premium__zoom-btn"
+              @click="zoomIn()"
+              :disabled="zoom >= 150"
+              title="{% trans %}Ampliar{% endtrans %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+        </svg>
+      </button>
+    </div>
+
+    {# Fullscreen Toggle #}
+    <button class="template-preview-premium__fullscreen-btn"
+            @click="toggleFullscreen()"
+            title="{% trans %}Pantalla completa{% endtrans %}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path x-show="!isFullscreen" d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        <path x-show="isFullscreen" d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M14 3v6m0 0h6m-6 0l7-7M3 10V4m0 0h6M3 4l7 7"/>
+      </svg>
+    </button>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     PREVIEW FRAME CON GLASSMORPHISM
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="template-preview-premium__preview-container"
+       :class="{ 'is-fullscreen': isFullscreen }"
+       @keydown.escape.window="if (isFullscreen) toggleFullscreen()">
+
+    {# Botón Escape Fullscreen - Solo visible en modo pantalla completa #}
+    <button class="template-preview-premium__escape-btn"
+            x-show="isFullscreen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            @click="toggleFullscreen()"
+            title="{% trans %}Salir de pantalla completa (ESC){% endtrans %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+      <span>{% trans %}Salir{% endtrans %}</span>
+    </button>
+
+    <div class="template-preview-premium__frame"
+         :style="{ width: viewportWidth + 'px', maxWidth: 'none', flexShrink: 0, transform: 'scale(' + finalScale + ')', transformOrigin: 'top center' }">
+
+      {# Browser Chrome Decorativo #}
+      <div class="template-preview-premium__chrome">
+        <div class="template-preview-premium__chrome-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="template-preview-premium__chrome-url">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+          </svg>
+          <span>{{ preview_url|default('tudominio.com/' ~ template.id) }}</span>
+        </div>
+      </div>
+
+      {# Preview Content #}
+      <div class="template-preview-premium__content">
+        {% if preview_iframe_url %}
+          {# Live Preview con iframe real - Alpine.js controla width y src #}
+          <iframe x-bind:src="'{{ preview_iframe_url }}' + '?viewport=' + viewportWidth + '&t=' + reloadTimestamp"
+                  x-bind:style="{ width: viewportWidth + 'px', height: '100%' }"
+                  class="template-preview-premium__iframe"
+                  title="{% trans %}Vista previa de{% endtrans %} {{ template.label }}"
+                  loading="lazy"
+                  sandbox="allow-scripts allow-same-origin"></iframe>
+        {% elseif template.thumbnail %}
+          {# Fallback: Thumbnail estático #}
+          <div class="template-preview-premium__thumbnail-wrapper">
+            <img src="{{ template.thumbnail }}"
+                 alt="{{ template.label }}"
+                 class="template-preview-premium__thumbnail"
+                 loading="lazy"/>
+            <div class="template-preview-premium__thumbnail-overlay">
+              <span>{% trans %}Vista previa estática{% endtrans %}</span>
+            </div>
+          </div>
+        {% else %}
+          {# Placeholder cuando no hay preview #}
+          <div class="template-preview-premium__placeholder">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
+            <p>{% trans %}Sin vista previa disponible{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     PANEL DE INFORMACIÓN LATERAL
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <aside class="template-preview-premium__sidebar">
+    {# Métricas de Uso #}
+    {% if usage_count is defined or avg_engagement is defined %}
+      <div class="template-preview-premium__metrics">
+        <h3>{% trans %}Rendimiento{% endtrans %}</h3>
+        <div class="template-preview-premium__metrics-grid">
+          {% if usage_count is defined %}
+            <div class="template-preview-premium__metric">
+              <span class="template-preview-premium__metric-value">{{ usage_count }}</span>
+              <span class="template-preview-premium__metric-label">{% trans %}páginas{% endtrans %}</span>
+            </div>
+          {% endif %}
+          {% if avg_engagement is defined %}
+            <div class="template-preview-premium__metric">
+              <span class="template-preview-premium__metric-value">{{ avg_engagement }}%</span>
+              <span class="template-preview-premium__metric-label">{% trans %}engagement{% endtrans %}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {# Características #}
+    <div class="template-preview-premium__features">
+      <h3>{% trans %}Características{% endtrans %}</h3>
+      <ul class="template-preview-premium__feature-list">
+        <li class="template-preview-premium__feature">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <path d="M22 4L12 14.01l-3-3"/>
+          </svg>
+          {% trans %}Responsive{% endtrans %}
+        </li>
+        <li class="template-preview-premium__feature">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <path d="M22 4L12 14.01l-3-3"/>
+          </svg>
+          {% trans %}SEO Optimizado{% endtrans %}
+        </li>
+        {% if template.premium %}
+          <li class="template-preview-premium__feature">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <path d="M22 4L12 14.01l-3-3"/>
+            </svg>
+            {% trans %}Animaciones Premium{% endtrans %}
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    {# Campos Personalizables #}
+    {% if preview_data is not empty %}
+      <div class="template-preview-premium__fields">
+        <h3>{% trans %}Campos Editables{% endtrans %}</h3>
+        <ul class="template-preview-premium__field-list">
+          {% for key, value in preview_data %}
+            <li class="template-preview-premium__field">
+              <span class="template-preview-premium__field-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </span>
+              <span class="template-preview-premium__field-name">{{ key|replace({'_': ' '})|capitalize }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {# CTA Secundario #}
+    <div class="template-preview-premium__cta">
+      <a href="{{ path('jaraba_page_builder.create_from_template', {'page_template': template.id}) }}"
+         class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+        {% trans %}Crear página con esta plantilla{% endtrans %}
+      </a>
+    </div>
+  </aside>
+</div>
+
+{# Alpine.js Component Logic #}
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('templatePreviewPremium', () => ({
+    viewport: 'desktop',
+    zoom: 100,
+    isFullscreen: false,
+    calculatedScale: 1,
+    reloadTimestamp: Date.now(),
+
+    get viewportWidth() {
+      const widths = { desktop: 1440, tablet: 768, mobile: 375 };
+      return widths[this.viewport] || 1440;
+    },
+
+    get resolutionLabel() {
+      const labels = {
+        desktop: '1440 × 900',
+        tablet: '768 × 1024',
+        mobile: '375 × 812'
+      };
+      return labels[this.viewport] || '1440 × 900';
+    },
+
+    // Escala final combinando escala calculada y zoom del usuario
+    get finalScale() {
+      return this.calculatedScale * (this.zoom / 100);
+    },
+
+    // Calcula escala automática para que el frame quepa en el contenedor
+    updateScale() {
+      this.$nextTick(() => {
+        const container = document.querySelector('.template-preview-premium__preview-container');
+        if (!container) {
+          this.calculatedScale = 1;
+          return;
+        }
+        // Ancho disponible menos padding
+        const availableWidth = container.clientWidth - 64;
+        const vw = this.viewportWidth;
+        this.calculatedScale = (vw > availableWidth) ? (availableWidth / vw) : 1;
+      });
+    },
+
+    init() {
+      // Calcular escala inicial
+      this.updateScale();
+      // Recalcular al resize
+      window.addEventListener('resize', () => this.updateScale());
+    },
+
+    setViewport(vp) {
+      this.viewport = vp;
+      this.reloadTimestamp = Date.now();
+      // Recalcular escala después de cambiar viewport
+      this.updateScale();
+    },
+
+    zoomIn() {
+      if (this.zoom < 150) this.zoom += 25;
+    },
+
+    zoomOut() {
+      if (this.zoom > 50) this.zoom -= 25;
+    },
+
+    toggleFullscreen() {
+      this.isFullscreen = !this.isFullscreen;
+      if (this.isFullscreen) {
+        document.body.classList.add('preview-fullscreen-mode');
+      } else {
+        document.body.classList.remove('preview-fullscreen-mode');
+      }
+    }
+  }));
+});
+</script>

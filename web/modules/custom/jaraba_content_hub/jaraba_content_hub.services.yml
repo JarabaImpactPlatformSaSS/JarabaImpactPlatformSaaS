@@ -1,0 +1,74 @@
+services:
+  # Logger channel
+  logger.channel.jaraba_content_hub:
+    parent: logger.channel_base
+    arguments: ['jaraba_content_hub']
+
+  # Article Service
+  jaraba_content_hub.article_service:
+    class: Drupal\jaraba_content_hub\Service\ArticleService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_content_hub'
+
+  # Category Service
+  jaraba_content_hub.category_service:
+    class: Drupal\jaraba_content_hub\Service\CategoryService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_content_hub'
+
+  # SEO Service
+  jaraba_content_hub.seo_service:
+    class: Drupal\jaraba_content_hub\Service\SeoService
+    arguments:
+      - '@logger.channel.jaraba_content_hub'
+
+  # Content Writer AI Agent
+  jaraba_content_hub.content_writer_agent:
+    class: Drupal\jaraba_content_hub\Agent\ContentWriterAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_content_hub'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@entity_type.manager'
+      - '@current_user'
+
+  # Writing Assistant Service
+  jaraba_content_hub.writing_assistant:
+    class: Drupal\jaraba_content_hub\Service\WritingAssistantService
+    arguments:
+      - '@jaraba_content_hub.content_writer_agent'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_content_hub'
+
+  # F.4 Recommendations Services
+
+  # Content Embedding Service
+  jaraba_content_hub.content_embedding:
+    class: Drupal\jaraba_content_hub\Service\ContentEmbeddingService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  # Qdrant Content Client
+  jaraba_content_hub.qdrant_content:
+    class: Drupal\jaraba_content_hub\Service\QdrantContentClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  # Recommendation Service
+  jaraba_content_hub.recommendation_service:
+    class: Drupal\jaraba_content_hub\Service\RecommendationService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_content_hub.content_embedding'
+      - '@jaraba_content_hub.qdrant_content'
+      - '@logger.factory'
+

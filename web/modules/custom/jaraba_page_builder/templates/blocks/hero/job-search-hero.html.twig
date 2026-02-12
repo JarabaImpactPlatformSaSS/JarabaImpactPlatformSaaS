@@ -1,0 +1,100 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hero Búsqueda de Empleo.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient') %}
+
+<section class="jaraba-job-search-hero jaraba-job-search-hero--{{ bg_class }} jaraba-block"
+         data-block-type="job_search_hero"
+         {% if bg_class == 'image' and content.background_image %}
+           style="--hero-bg: url('{{ content.background_image }}')"
+         {% endif %}>
+  
+  {% if bg_class == 'image' %}
+    <div class="jaraba-job-search-hero__overlay"></div>
+  {% endif %}
+  
+  <div class="jaraba-block__container">
+    <div class="jaraba-job-search-hero__content">
+      
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h1 class="jaraba-job-search-hero__title">{{ content.title|default('Encuentra tu próximo empleo'|trans) }}</h1>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-job-search-hero__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+      
+      {# Buscador #}
+      <form class="jaraba-job-search-hero__search" action="/empleos" method="get">
+        <div class="jaraba-job-search-hero__search-fields">
+          <div class="jaraba-job-search-hero__search-field">
+            {{ jaraba_icon('ui', 'search', { size: '20px', color: 'neutral' }) }}
+            <input type="text" 
+                   name="keyword"
+                   placeholder="{{ content.search_placeholder_keyword|default('Desarrollador, Marketing...'|trans) }}"
+                   aria-label="{% trans %}Palabras clave{% endtrans %}">
+          </div>
+          
+          <div class="jaraba-job-search-hero__search-field">
+            {{ jaraba_icon('ui', 'location', { size: '20px', color: 'neutral' }) }}
+            <input type="text" 
+                   name="location"
+                   placeholder="{{ content.search_placeholder_location|default('Madrid, Barcelona...'|trans) }}"
+                   aria-label="{% trans %}Ubicación{% endtrans %}">
+          </div>
+          
+          <button type="submit" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+            {{ content.search_button_text|default('Buscar empleos'|trans) }}
+          </button>
+        </div>
+      </form>
+      
+      {# Categorías populares #}
+      {% if content.categories is not empty %}
+        <div class="jaraba-job-search-hero__categories">
+          <span class="jaraba-job-search-hero__categories-title">
+            {{ content.categories_title|default('Categorías populares'|trans) }}:
+          </span>
+          <div class="jaraba-job-search-hero__category-list">
+            {% for category in content.categories %}
+              <a href="{{ category.url }}" class="jaraba-job-search-hero__category">
+                {% if category.icon %}
+                  {{ jaraba_icon('business', category.icon, { size: '16px' }) }}
+                {% endif %}
+                {{ category.name }}
+                {% if category.count %}
+                  <span class="jaraba-job-search-hero__category-count">{{ category.count }}</span>
+                {% endif %}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      
+      {# Estadísticas #}
+      {% if content.stats is not empty %}
+        <div class="jaraba-job-search-hero__stats">
+          {% for stat in content.stats %}
+            <div class="jaraba-job-search-hero__stat">
+              <span class="jaraba-job-search-hero__stat-value">{{ stat.value }}</span>
+              <span class="jaraba-job-search-hero__stat-label">{{ stat.label }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+    </div>
+  </div>
+</section>

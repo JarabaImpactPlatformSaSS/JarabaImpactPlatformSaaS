@@ -1,0 +1,5 @@
+default_passing_score: 70
+max_attempts: 3
+enable_xapi: true
+ai_enabled: true
+ai_model: 'claude-sonnet-4-20250514'

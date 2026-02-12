@@ -1,0 +1,47 @@
+# Collaboration Group permissions
+administer collaboration groups:
+  title: 'Administer Collaboration Groups'
+  description: 'Full administrative access to groups.'
+  restrict access: true
+
+create collaboration group:
+  title: 'Create Collaboration Group'
+  description: 'Create new collaboration groups.'
+
+view any collaboration group:
+  title: 'View any Collaboration Group'
+  description: 'View any group.'
+
+edit own collaboration group:
+  title: 'Edit own Collaboration Group'
+  description: 'Edit groups where user is admin.'
+
+delete own collaboration group:
+  title: 'Delete own Collaboration Group'
+  description: 'Delete groups where user is admin.'
+
+join collaboration group:
+  title: 'Join Collaboration Groups'
+  description: 'Request to join or leave groups.'
+
+# Group Content permissions
+create group discussion:
+  title: 'Create Group Discussion'
+  description: 'Create new discussion threads in groups.'
+
+create group event:
+  title: 'Create Group Event'
+  description: 'Create events within groups.'
+
+create group resource:
+  title: 'Upload Group Resource'
+  description: 'Upload resources to group library.'
+
+moderate group content:
+  title: 'Moderate Group Content'
+  description: 'Moderate discussions and hide content.'
+
+# API access
+access groups api:
+  title: 'Access Groups API'
+  description: 'Access REST API endpoints for groups.'

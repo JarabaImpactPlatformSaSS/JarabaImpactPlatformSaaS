@@ -1,0 +1,90 @@
+langcode: es
+status: true
+dependencies: {}
+id: logo_grid
+label: 'Grid de Logos/Partners'
+description: 'Muestra logos de clientes, partners o certificaciones en grid o carrusel.'
+category: trust
+twig_template: '@jaraba_page_builder/blocks/trust/logo-grid.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+    title:
+      type: string
+      title: 'Título'
+      default: 'Confían en nosotros'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+    logos:
+      type: array
+      title: 'Logos'
+      items:
+        type: object
+        properties:
+          image:
+            type: string
+            title: 'URL Logo'
+            format: image
+          name:
+            type: string
+            title: 'Nombre empresa'
+          url:
+            type: string
+            title: 'URL (opcional)'
+    layout:
+      type: string
+      title: 'Layout'
+      enum:
+        - grid
+        - carousel
+        - scroll
+      default: grid
+    grayscale:
+      type: boolean
+      title: 'Logos en escala de grises'
+      default: true
+    background:
+      type: string
+      title: 'Fondo'
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - logos
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  eyebrow: "TRUSTED BY"
+  title: "Industry Leaders Trust Our Platform"
+  subtitle: "Join thousands of companies that rely on us"
+  logos:
+    - image: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
+      name: "Google"
+      url: "#"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+      name: "Amazon"
+      url: "#"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+      name: "Microsoft"
+      url: "#"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+      name: "Apple"
+      url: "#"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+      name: "Netflix"
+      url: "#"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg"
+      name: "Slack"
+      url: "#"
+  layout: grid
+  grayscale: true
+  background: light
+

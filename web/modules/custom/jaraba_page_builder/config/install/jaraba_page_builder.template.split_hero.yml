@@ -1,0 +1,103 @@
+langcode: es
+status: true
+dependencies: {}
+id: split_hero
+label: 'Hero Dividido'
+description: 'Hero con contenido a un lado e imagen/video al otro (50/50 split).'
+category: hero
+twig_template: '@jaraba_page_builder/blocks/hero/split-hero.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+    title:
+      type: string
+      title: 'Título'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+    media_type:
+      type: string
+      title: 'Tipo de media'
+      enum:
+        - image
+        - video
+        - illustration
+      default: image
+    media_url:
+      type: string
+      title: 'URL de la imagen/video'
+      format: image
+    media_position:
+      type: string
+      title: 'Posición de la imagen'
+      enum:
+        - left
+        - right
+      default: right
+    primary_cta:
+      type: object
+      title: 'CTA Principal'
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    secondary_cta:
+      type: object
+      title: 'CTA Secundario'
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    features:
+      type: array
+      title: 'Mini-features bajo título'
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          text:
+            type: string
+    background:
+      type: string
+      title: 'Fondo'
+      enum:
+        - light
+        - dark
+        - gradient
+      default: light
+  required:
+    - title
+    - media_url
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  eyebrow: "INTRODUCING"
+  title: "Build Something Amazing Together"
+  subtitle: "Transform your ideas into reality with our powerful platform. Start building today."
+  media_type: image
+  media_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+  media_position: right
+  primary_cta:
+    text: "Get Started Free"
+    url: "#"
+  secondary_cta:
+    text: "Watch Demo"
+    url: "#"
+  features:
+    - icon: "check"
+      text: "No credit card required"
+    - icon: "check"
+      text: "14-day free trial"
+    - icon: "check"
+      text: "Cancel anytime"
+  background: light
+

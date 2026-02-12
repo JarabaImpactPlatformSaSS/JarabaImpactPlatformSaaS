@@ -1,0 +1,12 @@
+{
+    "name": "jaraba-site-builder",
+    "version": "1.0.0",
+    "description": "Site Structure Manager - Árbol de páginas con drag & drop",
+    "scripts": {
+        "build": "sass scss/main.scss css/site-builder.css --style=compressed",
+        "watch": "sass scss/main.scss css/site-builder.css --watch"
+    },
+    "devDependencies": {
+        "sass": "^1.77.0"
+    }
+}

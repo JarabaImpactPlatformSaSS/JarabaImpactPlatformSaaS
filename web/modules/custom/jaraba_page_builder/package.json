@@ -1,0 +1,23 @@
+{
+    "name": "jaraba-page-builder",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo Page Builder de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/page-builder-blocks.scss:css/jaraba-page-builder.css --style=compressed",
+        "build:editor": "sass scss/_canvas-editor.scss:css/canvas-editor.css --style=compressed",
+        "build:onboarding": "sass scss/_onboarding.scss:css/grapesjs-onboarding.css --style=compressed",
+        "build:all": "npm run build && npm run build:editor && npm run build:onboarding && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "page-builder",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

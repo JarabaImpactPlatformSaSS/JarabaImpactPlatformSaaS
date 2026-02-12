@@ -1,0 +1,72 @@
+langcode: es
+status: true
+dependencies: {}
+id: spotlight_text
+label: 'Texto con Spotlight'
+description: 'Texto con efecto de foco de luz que sigue el cursor.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/spotlight-text.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título'
+    subtitle:
+      type: string
+    spotlight_color:
+      type: string
+      enum:
+        - white
+        - primary
+        - warm
+        - cool
+      default: white
+    spotlight_size:
+      type: string
+      enum:
+        - small
+        - medium
+        - large
+      default: medium
+    font_size:
+      type: string
+      enum:
+        - large
+        - xl
+        - hero
+      default: hero
+    ctas:
+      type: array
+      title: 'CTAs'
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+          url:
+            type: string
+          style:
+            type: string
+            enum:
+              - primary
+              - outline
+  required:
+    - title
+plans_required:
+  - enterprise
+is_premium: true
+preview_data:
+  title: "Illuminate Your Success"
+  subtitle: "Hover to discover the spotlight effect"
+  spotlight_color: white
+  spotlight_size: large
+  font_size: hero
+  ctas:
+    - text: "Get Started"
+      url: "#"
+      style: primary
+    - text: "Learn More"
+      url: "#"
+      style: outline
+

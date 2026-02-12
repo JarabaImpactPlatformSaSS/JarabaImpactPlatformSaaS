@@ -1,0 +1,60 @@
+{#
+/**
+ * @file
+ * Template Kanban para Pipeline de Oportunidades CRM.
+ *
+ * Variables:
+ * - columns: Array de columnas por stage.
+ */
+#}
+<div class="crm-kanban">
+  <header class="crm-kanban__header">
+    <h1 class="crm-kanban__title">{{ 'Pipeline de Ventas'|t }}</h1>
+    <div class="crm-kanban__actions">
+      <a href="{{ path('entity.crm_opportunity.add_form') }}" class="btn btn--primary">
+        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        {{ 'Nueva Oportunidad'|t }}
+      </a>
+    </div>
+  </header>
+
+  <div class="crm-kanban__board" id="crm-kanban-board">
+    {% for column in columns %}
+      <div class="crm-kanban__column" data-stage="{{ column.key }}">
+        <div class="crm-kanban__column-header">
+          <h3 class="crm-kanban__column-title">{{ column.label }}</h3>
+          <span class="crm-kanban__column-count">{{ column.opportunities|length }}</span>
+        </div>
+
+        <div class="crm-kanban__cards" data-stage="{{ column.key }}">
+          {% for opportunity in column.opportunities %}
+            <div class="crm-kanban__card" data-id="{{ opportunity.id }}" draggable="true">
+              <div class="crm-kanban__card-title">{{ opportunity.title }}</div>
+              <div class="crm-kanban__card-meta">
+                <span class="crm-kanban__card-value">
+                  {{ opportunity.value|number_format(0, ',', '.') }} €
+                </span>
+                <span class="crm-kanban__card-probability">
+                  {{ opportunity.probability }}%
+                </span>
+              </div>
+              {% if opportunity.expected_close %}
+                <div class="crm-kanban__card-date">
+                  {{ opportunity.expected_close|date('d/m/Y') }}
+                </div>
+              {% endif %}
+              <a href="{{ opportunity.url }}" class="crm-kanban__card-edit">
+                {{ 'Editar'|t }}
+              </a>
+            </div>
+          {% else %}
+            <div class="crm-kanban__empty">{{ 'Sin oportunidades'|t }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

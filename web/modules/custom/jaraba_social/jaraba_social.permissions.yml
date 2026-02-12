@@ -1,0 +1,15 @@
+access social dashboard:
+  title: 'Acceso al dashboard de Social Media'
+  description: 'Permite ver el dashboard de redes sociales.'
+
+administer social accounts:
+  title: 'Administrar cuentas sociales'
+  description: 'Conectar y gestionar cuentas de redes sociales.'
+
+administer social posts:
+  title: 'Administrar publicaciones sociales'
+  description: 'Crear, editar y eliminar publicaciones.'
+
+create social posts:
+  title: 'Crear publicaciones sociales'
+  description: 'Crear nuevas publicaciones en redes sociales.'

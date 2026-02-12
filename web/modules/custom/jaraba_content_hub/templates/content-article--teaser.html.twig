@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Template for article teaser card.
+ */
+#}
+<article class="content-article content-article--teaser" data-article-id="{{ article.id }}">
+  {% if article.featured_image %}
+    <a href="{{ article.url }}" class="content-article__image-link">
+      <img src="{{ article.featured_image }}" alt="{{ article.title }}" loading="lazy" class="content-article__image">
+    </a>
+  {% endif %}
+
+  <div class="content-article__content">
+    {% if article.category %}
+      <a href="{{ article.category_url }}" class="content-article__category" style="background-color: {{ article.category_color }}">
+        {{ article.category_name }}
+      </a>
+    {% endif %}
+
+    <h3 class="content-article__title">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h3>
+
+    {% if article.excerpt %}
+      <p class="content-article__excerpt">{{ article.excerpt }}</p>
+    {% endif %}
+
+    <div class="content-article__meta">
+      <span class="content-article__date">
+        {{ article.publish_date|date('d M Y') }}
+      </span>
+      {% if show_reading_time %}
+        <span class="content-article__reading-time">
+          {{ article.reading_time }} {% trans %}min{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</article>

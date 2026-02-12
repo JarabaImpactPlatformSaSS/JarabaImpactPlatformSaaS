@@ -1,0 +1,55 @@
+# Valores configurables para campos de selección del CRM.
+#
+# Siguiendo la Directriz #20 (Zero-Code Configurability), estos valores
+# son configurables desde archivo YAML en lugar de hardcodeados en código.
+#
+# Para añadir o modificar opciones:
+# 1. Editar este archivo
+# 2. Ejecutar: lando drush cr
+#
+# @see jaraba_crm.allowed_values.inc
+
+industry:
+  technology: 'Tecnología'
+  agriculture: 'Agricultura'
+  manufacturing: 'Manufactura'
+  retail: 'Comercio minorista'
+  services: 'Servicios profesionales'
+  healthcare: 'Salud'
+  education: 'Educación'
+  finance: 'Finanzas y banca'
+  construction: 'Construcción'
+  hospitality: 'Hostelería y turismo'
+  logistics: 'Logística y transporte'
+  energy: 'Energía'
+  other: 'Otro'
+
+size:
+  micro: 'Microempresa (1-9 empleados)'
+  small: 'Pequeña (10-49 empleados)'
+  medium: 'Mediana (50-249 empleados)'
+  large: 'Grande (250+ empleados)'
+
+opportunity_stage:
+  lead: 'Lead'
+  qualified: 'Cualificado'
+  proposal: 'Propuesta'
+  negotiation: 'Negociación'
+  closed_won: 'Cerrado ganado'
+  closed_lost: 'Cerrado perdido'
+
+activity_type:
+  call: 'Llamada'
+  email: 'Email'
+  meeting: 'Reunión'
+  task: 'Tarea'
+  note: 'Nota'
+
+contact_source:
+  website: 'Sitio web'
+  referral: 'Referencia'
+  social: 'Redes sociales'
+  event: 'Evento'
+  advertising: 'Publicidad'
+  cold_outreach: 'Prospección directa'
+  other: 'Otro'

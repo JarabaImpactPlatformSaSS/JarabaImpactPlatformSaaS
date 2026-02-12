@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Template para el bloque Caja de Descarga.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set file_type = content.file_type|default('pdf') %}
+
+<section class="jaraba-download-box jaraba-download-box--{{ bg_class }} jaraba-block">
+  <div class="jaraba-block__container">
+    <div class="jaraba-download-box__wrapper">
+      
+      {# Cover image #}
+      {% if content.cover_image %}
+        <div class="jaraba-download-box__cover">
+          <img src="{{ content.cover_image }}" 
+               alt="{{ content.title }}"
+               class="jaraba-download-box__image">
+          <span class="jaraba-download-box__badge">
+            {{ file_type|upper }}
+          </span>
+        </div>
+      {% endif %}
+      
+      {# Content #}
+      <div class="jaraba-download-box__content">
+        {% if content.eyebrow %}
+          <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+        {% endif %}
+        
+        <h2 class="jaraba-download-box__title">{{ content.title }}</h2>
+        
+        {% if content.description %}
+          <p class="jaraba-download-box__description">{{ content.description }}</p>
+        {% endif %}
+        
+        {# Benefits #}
+        {% if content.benefits is not empty %}
+          <ul class="jaraba-download-box__benefits">
+            {% for benefit in content.benefits %}
+              <li>
+                {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '18px', color: 'success' }) }}
+                {{ benefit }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        
+        {# File info #}
+        {% if content.file_size %}
+          <div class="jaraba-download-box__meta">
+            {{ jaraba_icon('ui', 'file', { size: '14px', color: 'neutral' }) }}
+            <span>{{ file_type|upper }} · {{ content.file_size }}</span>
+          </div>
+        {% endif %}
+        
+        {# CTA #}
+        {% if content.require_email %}
+          <form class="jaraba-download-box__form" action="{{ content.download_url }}" method="post">
+            <input type="email" 
+                   name="email"
+                   placeholder="{% trans %}Tu email{% endtrans %}"
+                   required
+                   class="jaraba-download-box__input">
+            <button type="submit" class="jaraba-btn jaraba-btn--primary">
+              {{ jaraba_icon('ui', 'download', { size: '18px' }) }}
+              {% trans %}Descargar gratis{% endtrans %}
+            </button>
+          </form>
+        {% else %}
+          <a href="{{ content.download_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+            {{ jaraba_icon('ui', 'download', { size: '18px' }) }}
+            {% trans %}Descargar ahora{% endtrans %}
+          </a>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</section>

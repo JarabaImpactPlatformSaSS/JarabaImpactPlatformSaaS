@@ -1,0 +1,21 @@
+# Admin menu links
+jaraba_content_hub.admin:
+  title: 'Content Hub'
+  description: 'Manage blog articles and categories.'
+  route_name: jaraba_content_hub.dashboard
+  parent: system.admin_content
+  weight: 5
+
+jaraba_content_hub.categories:
+  title: 'Content Categories'
+  description: 'Manage article categories.'
+  route_name: entity.content_category.collection
+  parent: system.admin_structure
+  weight: 10
+
+jaraba_content_hub.settings:
+  title: 'Content Hub'
+  description: 'Configure Content Hub settings.'
+  route_name: jaraba_content_hub.settings
+  parent: system.admin_config_content
+  weight: 10

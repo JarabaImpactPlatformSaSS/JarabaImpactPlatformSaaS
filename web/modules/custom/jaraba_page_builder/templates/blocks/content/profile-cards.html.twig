@@ -1,0 +1,75 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas de Perfil.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set card_style = content.card_style|default('full') %}
+
+<section class="jaraba-profiles jaraba-profiles--{{ bg_class }} jaraba-profiles--{{ card_style }} jaraba-block">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-profiles__header">
+      <h2 class="jaraba-block__title">{{ content.title|default('Nuestros Expertos'|trans) }}</h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.profiles is not empty %}
+      <div class="jaraba-profiles__grid jaraba-profiles__grid--{{ columns }}">
+        {% for profile in content.profiles %}
+          <article class="jaraba-profile-card">
+            {% if profile.photo %}
+              <div class="jaraba-profile-card__photo-wrapper">
+                <img src="{{ profile.photo }}" alt="{{ profile.name }}" class="jaraba-profile-card__photo">
+              </div>
+            {% endif %}
+            <div class="jaraba-profile-card__body">
+              <h3 class="jaraba-profile-card__name">{{ profile.name }}</h3>
+              {% if profile.role %}
+                <span class="jaraba-profile-card__role">{{ profile.role }}</span>
+              {% endif %}
+              {% if profile.specialization %}
+                <span class="jaraba-profile-card__specialization">{{ profile.specialization }}</span>
+              {% endif %}
+              {% if profile.bio %}
+                <p class="jaraba-profile-card__bio">{{ profile.bio }}</p>
+              {% endif %}
+              <div class="jaraba-profile-card__stats">
+                {% if profile.rating %}
+                  <span>{{ jaraba_icon('ui', 'star', { variant: 'filled', size: '14px', color: 'warning' }) }} {{ profile.rating }}</span>
+                {% endif %}
+                {% if profile.sessions %}
+                  <span>{{ profile.sessions }} {% trans %}sesiones{% endtrans %}</span>
+                {% endif %}
+              </div>
+              <div class="jaraba-profile-card__actions">
+                {% if profile.linkedin %}
+                  <a href="{{ profile.linkedin }}" target="_blank" rel="noopener" class="jaraba-profile-card__social">
+                    {{ jaraba_icon('social', 'linkedin', { size: '20px' }) }}
+                  </a>
+                {% endif %}
+                {% if profile.cta_text %}
+                  <a href="{{ profile.cta_url }}" class="jaraba-btn jaraba-btn--sm jaraba-btn--primary">
+                    {{ profile.cta_text }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

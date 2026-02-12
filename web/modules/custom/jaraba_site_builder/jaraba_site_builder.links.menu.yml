@@ -1,0 +1,9 @@
+# Links de menú y tabs del módulo Site Builder
+
+# Menú principal en admin/structure
+jaraba_site_builder.admin_menu:
+  title: 'Estructura del Sitio'
+  description: 'Gestiona el árbol de páginas, configuración y redirects.'
+  route_name: jaraba_site_builder.dashboard
+  parent: system.admin_structure
+  weight: 10

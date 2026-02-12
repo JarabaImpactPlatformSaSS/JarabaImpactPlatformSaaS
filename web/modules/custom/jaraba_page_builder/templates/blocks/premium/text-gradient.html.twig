@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * Template para el bloque Texto con Gradiente Animado.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set gradient = content.gradient|default('sunset') %}
+{% set font_size = content.font_size|default('hero') %}
+{% set font_weight = content.font_weight|default('bold') %}
+{% set text_align = content.text_align|default('center') %}
+
+<section class="jaraba-text-gradient jaraba-text-gradient--{{ bg_class }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    <div class="jaraba-text-gradient__wrapper jaraba-text-gradient__wrapper--{{ text_align }}">
+      
+      <h1 class="jaraba-text-gradient__text jaraba-text-gradient__text--{{ font_size }} jaraba-text-gradient__text--{{ font_weight }} jaraba-text-gradient__text--{{ gradient }} {{ content.animate ? 'is-animated' : '' }}">
+        {{ content.text }}
+      </h1>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-text-gradient__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+      
+    </div>
+  </div>
+</section>

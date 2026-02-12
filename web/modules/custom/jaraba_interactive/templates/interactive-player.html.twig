@@ -1,0 +1,116 @@
+{#
+/**
+ * @file
+ * Template del player interactivo.
+ *
+ * FRONTEND LIMPIO: Usa page--interactive.html.twig via hook_theme_suggestions_page_alter()
+ * 
+ * Variables (valores escalares, NO FieldItemList):
+ *   - content.id: ID del contenido.
+ *   - content.label: Título del contenido.
+ *   - content.content_type: Tipo (question_set, etc).
+ *   - content.difficulty: Nivel de dificultad.
+ *   - content.duration_minutes: Duración estimada.
+ *   - content.content_data: Array con datos del contenido.
+ *   - content.settings: Array con configuración.
+ *   - settings: Alias de content.settings.
+ *   - xapi_endpoint: El endpoint para enviar eventos xAPI.
+ *   - enrollment_id: ID de inscripción LMS asociada.
+ *
+ * DIRECTRIZ ICONOS:
+ *   - Categorías verificadas: ui, actions, ai, analytics, education
+ *   - Todas las flechas están en categoría `ui` (NOT navigation)
+ *   - Siempre usar variant: 'duotone' para consistencia premium
+ */
+#}
+<div class="interactive-player"
+     data-content-id="{{ content.id }}"
+     data-content-type="{{ content.content_type }}"
+     data-xapi-endpoint="{{ xapi_endpoint }}"
+     data-enrollment-id="{{ enrollment_id }}">
+
+  <header class="interactive-player__header">
+    <h1 class="interactive-player__title">{{ content.label }}</h1>
+    <div class="interactive-player__meta">
+      {% if content.difficulty %}
+        <span class="badge badge--{{ content.difficulty }}">
+          {{ content.difficulty|t }}
+        </span>
+      {% endif %}
+      {% if content.duration_minutes %}
+        <span class="interactive-player__duration">
+          {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px' }) }}
+          {{ content.duration_minutes }} {{ 'min'|t }}
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="interactive-player__content" id="interactive-content-container">
+    {# El contenido se carga dinámicamente por JavaScript #}
+    <div class="interactive-player__loading">
+      <div class="spinner"></div>
+      <span>{{ 'Cargando contenido...'|t }}</span>
+    </div>
+  </div>
+
+  <footer class="interactive-player__footer">
+    <div class="interactive-player__progress">
+      <div class="progress-bar">
+        <div class="progress-bar__fill" style="width: 0%;"></div>
+      </div>
+      <span class="progress-bar__label">0%</span>
+    </div>
+
+    <div class="interactive-player__actions">
+      <button type="button" class="btn btn--secondary" id="btn-previous" disabled>
+        {{ jaraba_icon('ui', 'arrow-left', { variant: 'duotone', size: '16px' }) }}
+        {{ 'Anterior'|t }}
+      </button>
+      <button type="button" class="btn btn--primary" id="btn-next">
+        {{ 'Siguiente'|t }}
+        {{ jaraba_icon('ui', 'arrow-right', { variant: 'duotone', size: '16px' }) }}
+      </button>
+      <button type="button" class="btn btn--success hidden" id="btn-submit">
+        {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '16px' }) }}
+        {{ 'Enviar Respuestas'|t }}
+      </button>
+    </div>
+  </footer>
+
+</div>
+
+{# Panel de resultados (oculto inicialmente) #}
+<div class="interactive-player__results hidden" id="results-panel">
+  <div class="results-card results-card--premium">
+    <div class="results-card__header"></div>
+    <div class="results-card__score">
+      <span class="results-card__percentage">0%</span>
+      <span class="results-card__label">{{ 'Puntuación'|t }}</span>
+    </div>
+    <div class="results-card__details">
+      <div class="results-stat">
+        <span class="results-stat__value" id="stat-correct">0</span>
+        <span class="results-stat__label">{{ 'Correctas'|t }}</span>
+      </div>
+      <div class="results-stat">
+        <span class="results-stat__value" id="stat-incorrect">0</span>
+        <span class="results-stat__label">{{ 'Incorrectas'|t }}</span>
+      </div>
+      <div class="results-stat">
+        <span class="results-stat__value" id="stat-time">0:00</span>
+        <span class="results-stat__label">{{ 'Tiempo'|t }}</span>
+      </div>
+    </div>
+    <div class="results-card__actions">
+      <button type="button" class="btn btn--secondary" id="btn-review">
+        {{ jaraba_icon('ui', 'eye', { variant: 'duotone', size: '16px' }) }}
+        {{ 'Revisar Respuestas'|t }}
+      </button>
+      <button type="button" class="btn btn--primary" id="btn-retry">
+        {{ jaraba_icon('actions', 'refresh', { variant: 'duotone', size: '16px' }) }}
+        {{ 'Reintentar'|t }}
+      </button>
+    </div>
+  </div>
+</div>

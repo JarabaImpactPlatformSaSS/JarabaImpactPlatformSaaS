@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * site-builder-redirects.html.twig - Gestión de redirects frontend.
+ */
+#}
+<div class="site-builder-frontend site-builder-redirects">
+  {# Navegación por tabs #}
+  <nav class="site-builder-tabs" aria-label="{% trans %}Site Builder Navigation{% endtrans %}">
+    <ul class="site-builder-tabs__list">
+      {% for tab in tabs %}
+        <li class="site-builder-tabs__item">
+          <a href="{{ tab.url }}" 
+             class="site-builder-tabs__link {{ tab.active ? 'is-active' : '' }}"
+             {% if tab.active %}aria-current="page"{% endif %}>
+            {{ tab.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <header class="dashboard-header--premium">
+    <h1 class="dashboard-header__title">{% trans %}Redirects{% endtrans %}</h1>
+    <p class="dashboard-header__subtitle">
+      {% trans %}Gestiona las redirecciones de URLs antiguas a nuevas.{% endtrans %}
+    </p>
+  </header>
+
+  {# Estadísticas #}
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.total|default(0) }}</span>
+      <span class="stat-card__label">{% trans %}Total{% endtrans %}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.active|default(0) }}</span>
+      <span class="stat-card__label">{% trans %}Activos{% endtrans %}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.auto_generated|default(0) }}</span>
+      <span class="stat-card__label">{% trans %}Auto-generados{% endtrans %}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.total_hits|default(0) }}</span>
+      <span class="stat-card__label">{% trans %}Hits totales{% endtrans %}</span>
+    </div>
+  </div>
+
+  <section class="dashboard-panel">
+    <div class="site-builder-actions">
+      <a href="/admin/structure/site-builder/redirects/add" class="btn btn--primary">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        {% trans %}Añadir Redirect{% endtrans %}
+      </a>
+    </div>
+
+    {% if redirects|length > 0 %}
+      <table class="redirects-table data-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Origen{% endtrans %}</th>
+            <th>{% trans %}Destino{% endtrans %}</th>
+            <th>{% trans %}Tipo{% endtrans %}</th>
+            <th>{% trans %}Hits{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Auto{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for redirect in redirects %}
+            <tr>
+              <td><code>{{ redirect.source }}</code></td>
+              <td><code>{{ redirect.destination }}</code></td>
+              <td><span class="badge">{{ redirect.type }}</span></td>
+              <td>{{ redirect.hits }}</td>
+              <td>
+                <span class="badge {{ redirect.active ? 'badge--success' : 'badge--muted' }}">
+                  {{ redirect.active ? 'Activo'|t : 'Inactivo'|t }}
+                </span>
+              </td>
+              <td>{{ redirect.auto ? 'Sí'|t : 'No'|t }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <p>{% trans %}No hay redirects configurados.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+</div>

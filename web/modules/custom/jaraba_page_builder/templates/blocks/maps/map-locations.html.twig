@@ -1,0 +1,101 @@
+{#
+/**
+ * @file
+ * Template para el bloque Mapa con Ubicaciones.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set height_class = content.height|default('medium') %}
+{% set locations = content.locations|default([]) %}
+
+<section class="jaraba-map-locations jaraba-map-locations--{{ bg_class }} jaraba-block"
+         data-block-type="map_locations"
+         aria-labelledby="map-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-map-locations__header">
+      <h2 id="map-title" class="jaraba-block__title">{{ content.title|default('Encuéntranos'|trans) }}</h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    <div class="jaraba-map-locations__wrapper jaraba-map-locations__wrapper--{{ content.show_list ? 'with-list' : 'map-only' }}">
+      {# Mapa #}
+      <div class="jaraba-map-locations__map jaraba-map-locations__map--{{ height_class }}"
+           data-map
+           data-center-lat="{{ content.map_center.lat|default(40.4168) }}"
+           data-center-lng="{{ content.map_center.lng|default(-3.7038) }}"
+           data-zoom="{{ content.zoom|default(12) }}"
+           data-style="{{ content.map_style|default('default') }}">
+        {# El mapa se inicializa via JS #}
+        <noscript>
+          <p class="jaraba-map-locations__noscript">
+            {% trans %}Activa JavaScript para ver el mapa interactivo.{% endtrans %}
+          </p>
+        </noscript>
+      </div>
+      
+      {# Lista de ubicaciones #}
+      {% if content.show_list and locations is not empty %}
+        <div class="jaraba-map-locations__list">
+          {# Filtros #}
+          {% if content.filter_by_category %}
+            <div class="jaraba-map-locations__filters">
+              <button type="button" 
+                      class="jaraba-map-locations__filter is-active" 
+                      data-filter="all">
+                {% trans %}Todas{% endtrans %}
+              </button>
+              {% set categories = [] %}
+              {% for location in locations %}
+                {% if location.category and location.category not in categories %}
+                  {% set categories = categories|merge([location.category]) %}
+                {% endif %}
+              {% endfor %}
+              {% for category in categories %}
+                <button type="button" 
+                        class="jaraba-map-locations__filter" 
+                        data-filter="{{ category }}">
+                  {{ category }}
+                </button>
+              {% endfor %}
+            </div>
+          {% endif %}
+          
+          <ul class="jaraba-map-locations__items">
+            {% for location in locations %}
+              <li class="jaraba-map-locations__item" 
+                  data-category="{{ location.category }}"
+                  data-lat="{{ location.lat }}"
+                  data-lng="{{ location.lng }}">
+                <div class="jaraba-map-locations__item-icon">
+                  {{ jaraba_icon('ui', location.icon|default('location'), { variant: 'duotone', size: '24px', color: 'azul-corporativo' }) }}
+                </div>
+                <div class="jaraba-map-locations__item-info">
+                  <h3 class="jaraba-map-locations__item-name">
+                    {% if location.url %}
+                      <a href="{{ location.url }}">{{ location.name }}</a>
+                    {% else %}
+                      {{ location.name }}
+                    {% endif %}
+                  </h3>
+                  <p class="jaraba-map-locations__item-address">{{ location.address }}</p>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+    
+  </div>
+</section>

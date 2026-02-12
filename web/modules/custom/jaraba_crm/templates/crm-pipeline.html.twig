@@ -1,0 +1,113 @@
+{#
+/**
+ * @file
+ * Pipeline Kanban template - Premium World-Class Design.
+ *
+ * ARQUITECTURA PREMIUM:
+ * - Header con partículas animadas
+ * - Kanban board con drag-drop (SortableJS)
+ * - Cards con glassmorphism
+ * - Animaciones de transición
+ */
+#}
+
+<div class="crm-pipeline crm-pipeline--frontend">
+  {# ============================================== #}
+  {# PIPELINE HEADER - Premium con Partículas      #}
+  {# ============================================== #}
+  <header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+    <canvas id="pipeline-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    
+    <div class="dashboard-header__content">
+      <h1 class="dashboard-header__title">
+        {{ jaraba_icon('ui', 'funnel', { size: '28px', variant: 'duotone', color: 'white' }) }}
+        <span>{% trans %}Pipeline de Ventas{% endtrans %}</span>
+      </h1>
+      <p class="dashboard-header__subtitle">
+        {% trans %}Valor total:{% endtrans %} 
+        <strong class="pipeline-total-value">{{ total_value|default(0)|number_format(0, ',', '.') }} €</strong>
+      </p>
+    </div>
+    <div class="dashboard-header__actions">
+      <a href="/admin/content/opportunities/add" 
+         class="btn btn--primary btn--glow" 
+         data-slide-panel="large"
+         data-slide-panel-title="{% trans %}Nueva Oportunidad{% endtrans %}">
+        {{ jaraba_icon('actions', 'plus', { size: '20px' }) }}
+        {% trans %}Nueva Oportunidad{% endtrans %}
+      </a>
+      <a href="/crm" class="btn btn--secondary">
+        {{ jaraba_icon('analytics', 'dashboard', { size: '20px' }) }}
+        {% trans %}Dashboard{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# ============================================== #}
+  {# KANBAN BOARD - Premium Drag & Drop            #}
+  {# ============================================== #}
+  <div class="pipeline-board" id="pipeline-board">
+    {% for stage_key, stage in stages %}
+      {% set stage_icon = {
+        'lead': 'funnel',
+        'qualified': 'check-circle',
+        'proposal': 'file-text',
+        'negotiation': 'handshake',
+        'won': 'trophy',
+        'lost': 'x-circle'
+      } %}
+      <div class="pipeline-column" data-stage="{{ stage_key }}">
+        <div class="pipeline-column__header pipeline-column__header--{{ stage_key }}">
+          <div class="pipeline-column__header-left">
+            {{ jaraba_icon('ui', stage_icon[stage_key]|default('circle'), { size: '18px', variant: 'duotone' }) }}
+            <h3 class="pipeline-column__title">{{ stage.label }}</h3>
+          </div>
+          <span class="pipeline-column__count">{{ stage.opportunities|length }}</span>
+        </div>
+        <div class="pipeline-column__total">
+          {{ stage.total_value|default(0)|number_format(0, ',', '.') }} €
+        </div>
+        
+        <div class="pipeline-column__cards" data-sortable-group="pipeline">
+          {% if stage.opportunities is not empty %}
+            {% for opp in stage.opportunities %}
+              <div class="pipeline-card" data-id="{{ opp.id }}" draggable="true">
+                <div class="pipeline-card__header">
+                  <span class="pipeline-card__title">{{ opp.title }}</span>
+                  <span class="pipeline-card__probability">{{ opp.probability|default(0) }}%</span>
+                </div>
+                <div class="pipeline-card__value">
+                  {{ opp.value|number_format(0, ',', '.') }} €
+                </div>
+                <div class="pipeline-card__meta">
+                  <span class="pipeline-card__contact">
+                    {{ jaraba_icon('ui', 'user', { size: '14px' }) }}
+                    {{ opp.contact_name|default('Sin contacto') }}
+                  </span>
+                  {% if opp.expected_close %}
+                    <span class="pipeline-card__date">
+                      {{ jaraba_icon('ui', 'calendar', { size: '14px' }) }}
+                      {{ opp.expected_close|date('d M') }}
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="pipeline-card__actions">
+                  <a href="/admin/content/opportunities/{{ opp.id }}/edit" 
+                     class="pipeline-card__btn"
+                     data-slide-panel="large"
+                     data-slide-panel-title="{% trans %}Editar Oportunidad{% endtrans %}">
+                    {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="pipeline-column__empty">
+              <p>{% trans %}Sin oportunidades{% endtrans %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas Flotantes 3D.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set tilt = content.tilt_intensity|default('medium') %}
+
+<section class="jaraba-floating-cards jaraba-floating-cards--{{ bg_class }} jaraba-floating-cards--tilt-{{ tilt }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-floating-cards__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.cards is not empty %}
+      <div class="jaraba-floating-cards__grid jaraba-floating-cards__grid--{{ columns }}">
+        {% for card in content.cards %}
+          <article class="jaraba-floating-card" data-tilt>
+            {% if card.image %}
+              <div class="jaraba-floating-card__image-wrapper">
+                <img src="{{ card.image }}" alt="{{ card.title }}" loading="lazy">
+                {% if card.badge %}
+                  <span class="jaraba-floating-card__badge">{{ card.badge }}</span>
+                {% endif %}
+              </div>
+            {% endif %}
+            <div class="jaraba-floating-card__body">
+              <h3 class="jaraba-floating-card__title">{{ card.title }}</h3>
+              {% if card.description %}
+                <p class="jaraba-floating-card__description">{{ card.description }}</p>
+              {% endif %}
+              {% if card.url %}
+                <a href="{{ card.url }}" class="jaraba-floating-card__link">
+                  {% trans %}Ver más{% endtrans %}
+                </a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

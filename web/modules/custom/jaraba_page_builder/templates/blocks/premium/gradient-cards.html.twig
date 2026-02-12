@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas con Gradiente.
+ *
+ * DIRECTRICES PREMIUM:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ * - Efectos premium con CSS animations
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set columns = content.columns|default(3) %}
+{% set speed = content.animation_speed|default('normal') %}
+
+<section class="jaraba-gradient-cards jaraba-gradient-cards--{{ bg_class }} jaraba-block jaraba-block--premium"
+         data-animation-speed="{{ speed }}">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-gradient-cards__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.cards is not empty %}
+      <div class="jaraba-gradient-cards__grid jaraba-gradient-cards__grid--{{ columns }}">
+        {% for card in content.cards %}
+          {% set gradient = card.gradient|default('blue-purple') %}
+          <article class="jaraba-gradient-card jaraba-gradient-card--{{ gradient }}">
+            <div class="jaraba-gradient-card__border"></div>
+            <div class="jaraba-gradient-card__content">
+              {% if card.icon %}
+                <div class="jaraba-gradient-card__icon">
+                  {{ jaraba_icon('ui', card.icon, { variant: 'duotone', size: '32px' }) }}
+                </div>
+              {% endif %}
+              <h3 class="jaraba-gradient-card__title">{{ card.title }}</h3>
+              {% if card.description %}
+                <p class="jaraba-gradient-card__description">{{ card.description }}</p>
+              {% endif %}
+              {% if card.url %}
+                <a href="{{ card.url }}" class="jaraba-gradient-card__link">
+                  {% trans %}Ver más{% endtrans %}
+                  {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+                </a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

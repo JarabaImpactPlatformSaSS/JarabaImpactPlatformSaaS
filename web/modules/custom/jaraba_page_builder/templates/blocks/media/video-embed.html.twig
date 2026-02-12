@@ -1,0 +1,74 @@
+{#
+/**
+ * @file
+ * Template para el bloque Video Embebido.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout = content.layout|default('centered') %}
+{% set aspect_ratio = content.aspect_ratio|default('16:9') %}
+
+{# Detectar plataforma de video #}
+{% if 'youtube.com' in content.video_url or 'youtu.be' in content.video_url %}
+  {% set video_platform = 'youtube' %}
+  {% if 'youtu.be' in content.video_url %}
+    {% set video_id = content.video_url|split('/')|last %}
+  {% else %}
+    {% set video_id = content.video_url|split('v=')|last|split('&')|first %}
+  {% endif %}
+  {% set embed_url = 'https://www.youtube.com/embed/' ~ video_id ~ '?rel=0' %}
+{% elseif 'vimeo.com' in content.video_url %}
+  {% set video_platform = 'vimeo' %}
+  {% set video_id = content.video_url|split('/')|last %}
+  {% set embed_url = 'https://player.vimeo.com/video/' ~ video_id %}
+{% else %}
+  {% set video_platform = 'custom' %}
+  {% set embed_url = content.video_url %}
+{% endif %}
+
+<section class="jaraba-video-embed jaraba-video-embed--{{ bg_class }} jaraba-video-embed--{{ layout }} jaraba-block">
+  <div class="jaraba-block__container">
+    
+    {% if content.title %}
+      <header class="jaraba-video-embed__header">
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% if content.description %}
+          <p class="jaraba-block__subtitle">{{ content.description }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    <div class="jaraba-video-embed__wrapper jaraba-video-embed__wrapper--{{ aspect_ratio|replace({':': '-'}) }}">
+      {% if content.poster_image %}
+        <div class="jaraba-video-embed__poster" data-video-trigger>
+          <img src="{{ content.poster_image }}" 
+               alt="{{ content.title }}"
+               class="jaraba-video-embed__poster-image">
+          <button type="button" class="jaraba-video-embed__play" aria-label="{% trans %}Reproducir video{% endtrans %}">
+            {{ jaraba_icon('ui', 'play', { variant: 'filled', size: '32px' }) }}
+          </button>
+        </div>
+      {% endif %}
+      
+      <div class="jaraba-video-embed__frame {{ content.poster_image ? 'is-hidden' : '' }}">
+        {% if video_platform == 'custom' %}
+          <video controls {{ content.autoplay ? 'autoplay muted' : '' }}>
+            <source src="{{ embed_url }}" type="video/mp4">
+          </video>
+        {% else %}
+          <iframe src="{{ embed_url }}{{ content.autoplay ? '&autoplay=1' : '' }}"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"></iframe>
+        {% endif %}
+      </div>
+    </div>
+    
+  </div>
+</section>

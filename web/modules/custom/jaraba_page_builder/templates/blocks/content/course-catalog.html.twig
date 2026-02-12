@@ -1,0 +1,104 @@
+{#
+/**
+ * @file
+ * Template para el bloque Catálogo de Cursos.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * Variables:
+ * - content.source_mode: 'manual' o 'dynamic'
+ * - content.courses: Array de cursos (modo manual)
+ * - dynamic_courses: Array de cursos cargados del LMS (modo dinámico)
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set layout = content.layout|default('grid') %}
+
+{# Seleccionar fuente de datos según el modo #}
+{% if content.source_mode == 'dynamic' and dynamic_courses is defined and dynamic_courses is not empty %}
+  {% set courses_to_render = dynamic_courses %}
+{% else %}
+  {% set courses_to_render = content.courses|default([]) %}
+{% endif %}
+
+<section class="jaraba-course-catalog jaraba-course-catalog--{{ bg_class }} jaraba-course-catalog--{{ layout }} jaraba-block">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-course-catalog__header">
+      <h2 class="jaraba-block__title">{{ content.title|default('Nuestros Cursos'|trans) }}</h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Filters #}
+    {% if content.show_filters and courses_to_render is not empty %}
+      <div class="jaraba-course-catalog__filters">
+        <button type="button" class="jaraba-course-catalog__filter is-active" data-filter="all">
+          {% trans %}Todos{% endtrans %}
+        </button>
+        {% set categories = [] %}
+        {% for course in courses_to_render %}
+          {% if course.category and course.category not in categories %}
+            {% set categories = categories|merge([course.category]) %}
+          {% endif %}
+        {% endfor %}
+        {% for category in categories %}
+          <button type="button" class="jaraba-course-catalog__filter" data-filter="{{ category }}">
+            {{ category }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Grid #}
+    {% if courses_to_render is not empty %}
+      <div class="jaraba-course-catalog__grid jaraba-course-catalog__grid--{{ columns }}">
+        {% for course in courses_to_render %}
+          <article class="jaraba-course-card" data-category="{{ course.category }}">
+            {% if course.image %}
+              <div class="jaraba-course-card__image-wrapper">
+                <img src="{{ course.image }}" alt="{{ course.title }}" loading="lazy">
+                {% if course.level %}
+                  <span class="jaraba-course-card__level jaraba-course-card__level--{{ course.level }}">
+                    {{ course.level|capitalize }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+            <div class="jaraba-course-card__body">
+              <span class="jaraba-course-card__category">{{ course.category }}</span>
+              <h3 class="jaraba-course-card__title">
+                <a href="{{ course.url }}">{{ course.title }}</a>
+              </h3>
+              <div class="jaraba-course-card__meta">
+                {% if course.duration %}
+                  <span>{{ jaraba_icon('ui', 'clock', { size: '14px' }) }} {{ course.duration }}</span>
+                {% endif %}
+                {% if course.rating %}
+                  <span>{{ jaraba_icon('ui', 'star', { variant: 'filled', size: '14px', color: 'warning' }) }} {{ course.rating }}</span>
+                {% endif %}
+              </div>
+              {% if course.instructor %}
+                <div class="jaraba-course-card__instructor">
+                  {{ jaraba_icon('ui', 'user', { size: '14px' }) }} {{ course.instructor }}
+                </div>
+              {% endif %}
+              {% if course.price %}
+                <div class="jaraba-course-card__price">{{ course.price }}</div>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

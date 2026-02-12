@@ -1,0 +1,11 @@
+name: 'Jaraba CRM'
+type: module
+description: 'Sistema CRM nativo para gestión de relaciones comerciales multi-tenant.'
+package: Jaraba Marketing
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:telephone
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: jaraba_crm.settings

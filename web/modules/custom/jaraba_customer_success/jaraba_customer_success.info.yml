@@ -1,0 +1,11 @@
+name: 'Jaraba Customer Success'
+type: module
+description: 'Customer Success proactivo con health scores, churn prediction, playbooks y expansion signals.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+
+configure: jaraba_customer_success.settings

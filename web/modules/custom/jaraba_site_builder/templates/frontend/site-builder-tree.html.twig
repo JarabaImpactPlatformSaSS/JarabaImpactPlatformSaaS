@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * site-builder-tree.html.twig - Árbol de páginas frontend.
+ */
+#}
+<div class="site-builder-frontend site-builder-tree">
+  {# Navegación por tabs #}
+  <nav class="site-builder-tabs" aria-label="{% trans %}Site Builder Navigation{% endtrans %}">
+    <ul class="site-builder-tabs__list">
+      {% for tab in tabs %}
+        <li class="site-builder-tabs__item">
+          <a href="{{ tab.url }}" 
+             class="site-builder-tabs__link {{ tab.active ? 'is-active' : '' }}"
+             {% if tab.active %}aria-current="page"{% endif %}>
+            {{ tab.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <header class="dashboard-header--premium">
+    <h1 class="dashboard-header__title">{% trans %}Árbol de Páginas{% endtrans %}</h1>
+    <p class="dashboard-header__subtitle">
+      {% trans %}Organiza la estructura de navegación de tu sitio arrastrando y soltando.{% endtrans %}
+    </p>
+  </header>
+
+  <section class="dashboard-panel">
+    {% if can_edit %}
+    <div class="site-builder-actions">
+      <button type="button" class="btn btn--primary js-add-root-page">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        {% trans %}Añadir página{% endtrans %}
+      </button>
+      <button type="button" class="btn btn--secondary js-expand-all">{% trans %}Expandir todo{% endtrans %}</button>
+      <button type="button" class="btn btn--secondary js-collapse-all">{% trans %}Colapsar todo{% endtrans %}</button>
+    </div>
+    {% endif %}
+
+    {% if tree|length > 0 %}
+      <div id="site-tree-container" class="site-tree-manager" data-tree="{{ tree|json_encode }}" data-can-edit="{{ can_edit ? 'true' : 'false' }}">
+        <ul class="site-tree-list" data-sortable="true">
+          {% for node in tree %}
+            {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {'node': node, 'depth': 0} %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16" style="opacity: 0.3;">
+          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3z"/>
+        </svg>
+        <p>{% trans %}No hay páginas en el árbol de navegación.{% endtrans %}</p>
+        <a href="/page-builder/templates" class="btn btn--primary">{% trans %}Crear primera página{% endtrans %}</a>
+      </div>
+    {% endif %}
+  </section>
+</div>

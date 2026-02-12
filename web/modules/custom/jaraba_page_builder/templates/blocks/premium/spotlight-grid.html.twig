@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Template para el bloque Spotlight Grid (Aceternity UI style).
+ *
+ * Grid premium con efectos de spotlight en hover.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set columns = content.columns|default('3') %}
+{% set animation = content.animation_style|default('spotlight') %}
+{% set items = content.items|default([]) %}
+
+<section class="jaraba-spotlight-grid jaraba-spotlight-grid--{{ bg_class }} jaraba-block"
+         data-block-type="spotlight_grid"
+         data-animation="{{ animation }}">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-spotlight-grid__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title jaraba-block__title--light">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle jaraba-block__subtitle--light">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Grid #}
+    <div class="jaraba-spotlight-grid__grid jaraba-spotlight-grid__grid--cols-{{ columns }}">
+      {% for item in items %}
+        <article class="jaraba-spotlight-grid__item jaraba-spotlight-grid__item--{{ item.spotlight_color|default('primary') }}"
+                 data-spotlight-color="{{ item.spotlight_color|default('primary') }}">
+          <div class="jaraba-spotlight-grid__spotlight"></div>
+          <div class="jaraba-spotlight-grid__content">
+            {% if item.icon %}
+              <div class="jaraba-spotlight-grid__icon">
+                {{ jaraba_icon('ui', item.icon, { size: '48px', color: 'white' }) }}
+              </div>
+            {% endif %}
+            <h3 class="jaraba-spotlight-grid__title">{{ item.title }}</h3>
+            {% if item.description %}
+              <p class="jaraba-spotlight-grid__description">{{ item.description }}</p>
+            {% endif %}
+            {% if item.link_url and item.link_text %}
+              <a href="{{ item.link_url }}" class="jaraba-spotlight-grid__link">
+                {{ item.link_text }}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '16px', color: 'primary' }) }}
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>

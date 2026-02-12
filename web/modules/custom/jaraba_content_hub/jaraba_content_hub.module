@@ -1,0 +1,266 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Content Hub.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Oculta las guías de formato de texto y ayuda en los formularios del Content Hub.
+ * Esto proporciona una UX más limpia para los editores de contenido del tenant,
+ * eliminando elementos técnicos de Drupal que pueden confundir a usuarios no técnicos.
+ *
+ * Utiliza str_contains() para capturar todas las variantes del formulario
+ * (add, edit, AJAX rebuilds) en lugar de comparación exacta de form_id.
+ */
+function jaraba_content_hub_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  // Detectar formularios del Content Hub usando coincidencia parcial.
+  // Esto captura: content_article_add_form, content_article_edit_form, etc.
+  $is_content_hub_form = str_contains($form_id, 'content_article') 
+    || str_contains($form_id, 'content_category');
+
+  if ($is_content_hub_form) {
+    // Ocultar recursivamente las guías de formato de todos los campos de texto.
+    _jaraba_content_hub_hide_format_guidelines($form);
+  }
+}
+
+/**
+ * Oculta recursivamente las guías de formato y ayuda de los elementos del formulario.
+ *
+ * Esta función recorre el árbol del formulario buscando elementos 'format'
+ * (selectores de formato de texto, ayuda "HTML Restringido", enlaces "Acerca de formatos").
+ * Al establecer #access = FALSE en el elemento padre 'format', ocultamos todo el
+ * subárbol sin necesidad de ocultar cada hijo individualmente.
+ *
+ * @param array $element
+ *   El elemento del formulario a procesar.
+ *
+ * @see _slide-panel.scss para CSS de respaldo adicional.
+ */
+function _jaraba_content_hub_hide_format_guidelines(array &$element): void {
+  // Verificar si este elemento tiene un sub-elemento 'format'.
+  if (isset($element['format'])) {
+    // Ocultar todo el wrapper de formato (incluye desplegable, guías y enlace de ayuda).
+    $element['format']['#access'] = FALSE;
+  }
+
+  // Procesar recursivamente los elementos hijos (claves que no empiezan con #).
+  foreach (array_keys($element) as $key) {
+    if (is_array($element[$key]) && !str_starts_with((string) $key, '#')) {
+      _jaraba_content_hub_hide_format_guidelines($element[$key]);
+    }
+  }
+}
+
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_content_hub_help(string $route_name): string {
+  if ($route_name === 'help.page.jaraba_content_hub') {
+    return '<p>' . t('AI-powered content hub with blog articles, categories, and newsletter integration.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_content_hub_theme(): array {
+  return [
+    'content_article' => [
+      'render element' => 'elements',
+    ],
+    'content_article__full' => [
+      'template' => 'content-article--full',
+      'base hook' => 'content_article',
+    ],
+    'content_article__teaser' => [
+      'template' => 'content-article--teaser',
+      'base hook' => 'content_article',
+    ],
+    'content_category' => [
+      'render element' => 'elements',
+    ],
+    'content_hub_blog_index' => [
+      'template' => 'content-hub-blog-index',
+      'variables' => [
+        'title' => NULL,
+        'articles' => [],
+        'categories' => [],
+        'trending' => [],
+        'show_reading_time' => TRUE,
+      ],
+    ],
+    'content_hub_category_page' => [
+      'template' => 'content-hub-category-page',
+      'variables' => [
+        'category' => [],
+        'articles' => [],
+        'show_reading_time' => TRUE,
+      ],
+    ],
+    'content_hub_dashboard' => [
+      'template' => 'content-hub-dashboard',
+      'variables' => [
+        'stats' => [],
+        'recent_articles' => [],
+        'top_categories' => [],
+        'drafts' => [],
+        'quick_actions' => [],
+      ],
+    ],
+    'content_hub_dashboard_frontend' => [
+      'template' => 'content-hub-dashboard-frontend',
+      'variables' => [
+        'stats' => [],
+        'recent_articles' => [],
+        'top_categories' => [],
+        'drafts' => [],
+        'quick_actions' => [],
+        // Theme variables for partials
+        'site_name' => NULL,
+        'logo' => NULL,
+        'logged_in' => FALSE,
+        'theme_settings' => [],
+      ],
+    ],
+    // === Frontend List Templates (Tenant Editors - NO admin theme) ===
+    'content_hub_articles_list' => [
+      'template' => 'content-hub-articles-list',
+      'variables' => [
+        'articles' => [],
+        'stats' => [],
+        'current_filter' => 'all',
+        'search_query' => '',
+        'pager' => NULL,
+        'back_url' => NULL,
+        'add_url' => NULL,
+      ],
+    ],
+    'content_hub_categories_list' => [
+      'template' => 'content-hub-categories-list',
+      'variables' => [
+        'categories' => [],
+        'total_count' => 0,
+        'back_url' => NULL,
+        'add_url' => NULL,
+      ],
+    ],
+    'content_hub_ai_logs_list' => [
+      'template' => 'content-hub-ai-logs-list',
+      'variables' => [
+        'logs' => [],
+        'total_count' => 0,
+        'pager' => NULL,
+        'back_url' => NULL,
+      ],
+    ],
+    'content_hub_article_form' => [
+      'template' => 'content-hub-article-form',
+      'variables' => [
+        'form' => NULL,
+        'title' => NULL,
+        'back_url' => NULL,
+      ],
+    ],
+    'content_hub_category_form' => [
+      'template' => 'content-hub-category-form',
+      'variables' => [
+        'form' => NULL,
+        'title' => NULL,
+        'back_url' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for content_article.
+ */
+function jaraba_content_hub_content_article_presave(EntityInterface $entity): void {
+  // Calculate reading time based on body length.
+  if ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
+    $text = strip_tags($entity->get('body')->value);
+    $word_count = str_word_count($text);
+    // Average reading speed: 200 words per minute.
+    $reading_time = (int) ceil($word_count / 200);
+    $entity->set('reading_time', max(1, $reading_time));
+  }
+
+  // Auto-generate slug if empty.
+  if ($entity->hasField('slug') && $entity->get('slug')->isEmpty()) {
+    $title = $entity->label();
+    $slug = \Drupal::service('pathauto.alias_cleaner')->cleanString($title);
+    $entity->set('slug', $slug);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for content_article.
+ */
+function jaraba_content_hub_content_article_insert(EntityInterface $entity): void {
+  _jaraba_content_hub_index_article_if_published($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for content_article.
+ */
+function jaraba_content_hub_content_article_update(EntityInterface $entity): void {
+  _jaraba_content_hub_index_article_if_published($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for content_article.
+ */
+function jaraba_content_hub_content_article_delete(EntityInterface $entity): void {
+  // Remove from Qdrant index.
+  if (\Drupal::hasService('jaraba_content_hub.recommendation_service')) {
+    try {
+      $recommendationService = \Drupal::service('jaraba_content_hub.recommendation_service');
+      $recommendationService->removeArticle((int) $entity->id());
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->error('Failed to remove article from index: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+}
+
+/**
+ * Helper to index article if published.
+ */
+function _jaraba_content_hub_index_article_if_published(EntityInterface $entity): void {
+  // Only index published articles.
+  if (!$entity->hasField('status')) {
+    return;
+  }
+
+  $status = $entity->get('status')->value;
+  if ($status !== 'published') {
+    return;
+  }
+
+  // Index in Qdrant for recommendations.
+  if (\Drupal::hasService('jaraba_content_hub.recommendation_service')) {
+    try {
+      $recommendationService = \Drupal::service('jaraba_content_hub.recommendation_service');
+      $recommendationService->indexArticle((int) $entity->id());
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->warning('Failed to index article: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+}
+

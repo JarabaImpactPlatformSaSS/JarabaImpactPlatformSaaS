@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Template para el bloque Texto Máquina de Escribir.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set font_size = content.font_size|default('large') %}
+{% set text_align = content.text_align|default('center') %}
+{% set cursor = content.cursor_style|default('bar') %}
+
+<section class="jaraba-typewriter jaraba-typewriter--{{ bg_class }} jaraba-typewriter--{{ text_align }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <div class="jaraba-typewriter__content jaraba-typewriter__content--{{ font_size }}"
+         data-typewriter
+         data-typing-speed="{{ content.typing_speed|default(100) }}"
+         data-delete-speed="{{ content.delete_speed|default(50) }}"
+         data-pause-time="{{ content.pause_time|default(2000) }}"
+         data-phrases='{{ content.phrases|json_encode }}'>
+      
+      {% if content.prefix %}
+        <span class="jaraba-typewriter__prefix">{{ content.prefix }}</span>
+      {% endif %}
+      
+      <span class="jaraba-typewriter__text"></span>
+      <span class="jaraba-typewriter__cursor jaraba-typewriter__cursor--{{ cursor }}"></span>
+      
+      {% if content.suffix %}
+        <span class="jaraba-typewriter__suffix">{{ content.suffix }}</span>
+      {% endif %}
+      
+    </div>
+    
+  </div>
+</section>

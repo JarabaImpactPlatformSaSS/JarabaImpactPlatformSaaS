@@ -1,0 +1,1552 @@
+@use 'sass:color';
+
+/**
+ * @file
+ * Canvas Editor - Estilos para el editor visual side-by-side.
+ *
+ * CUMPLIMIENTO DIRECTRICES:
+ * - ✅ Usa paleta oficial Jaraba via CSS custom properties (--ej-*)
+ * - ✅ Variables inyectables configurables desde UI Drupal
+ * - ✅ Mobile-first responsive layout
+ * - ✅ Fallbacks hardcoded para cuando vars no están definidas
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/_canvas-editor.scss css/canvas-editor.css --style=compressed"
+ *
+ * @package jaraba_page_builder
+ */
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN CON FALLBACKS (Paleta Jaraba Oficial)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Colores corporativos con fallbacks
+$ej-color-corporate: #233D63;
+$ej-color-impulse: #FF8C42;
+$ej-color-innovation: #00A9A5;
+
+// UI
+$ej-color-success: #10B981;
+$ej-color-warning: #F59E0B;
+$ej-color-danger: #EF4444;
+$ej-color-muted: #64748B;
+
+// Fondos
+$ej-bg-body: #F8FAFC;
+$ej-bg-surface: #FFFFFF;
+$ej-bg-dark: #1A1A2E;
+
+// Texto
+$ej-color-headings: #1A1A2E;
+$ej-color-body: #334155;
+
+// Spacing
+$ej-spacing-xs: 0.25rem;
+$ej-spacing-sm: 0.5rem;
+$ej-spacing-md: 1rem;
+$ej-spacing-lg: 1.5rem;
+$ej-spacing-xl: 2rem;
+$ej-spacing-2xl: 3rem;
+
+// Bordes
+$ej-border-radius: 12px;
+$ej-btn-radius: 8px;
+$ej-border-color: #E5E7EB;
+
+// Sombras
+$ej-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$ej-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$ej-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// Layout
+$canvas-sidebar-width: 340px;
+$canvas-header-height: 60px;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FULL-VIEWPORT LAYOUT (Oculta admin toolbar y regiones Drupal)
+// Para página limpia de edición visual sin distracciones
+// ═══════════════════════════════════════════════════════════════════════════
+
+body.canvas-editor-page {
+
+    // Ocultar SOLO la barra de admin de Drupal (NO el header/footer del tenant)
+    .admin-toolbar,
+    .admin-toolbar-control-bar,
+    .admin-toolbar-control-bar__burger,
+    .admin-toolbar__content,
+    .toolbar-tray-horizontal,
+    .toolbar-tray-vertical,
+    .toolbar-oriented,
+    .gin-secondary-toolbar,
+    .gin-toolbar-secondary,
+    #toolbar-administration,
+    #toolbar-bar,
+    .toolbar-menu-administration,
+    .toolbar-item,
+    .toolbar,
+    [class*="toolbar-"]:not(.canvas-editor__toolbar):not(.canvas-editor__toolbar-left):not(.canvas-editor__toolbar-center):not(.canvas-editor__toolbar-right),
+    [class*="gin-toolbar"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    // Override: Restaurar visibilidad del toolbar propio del canvas editor
+    // z-index alto para superar el layout de GrapesJS (position:absolute)
+    .canvas-editor__toolbar {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: relative !important;
+        z-index: 10002 !important;
+        flex-shrink: 0 !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: $ej-spacing-sm $ej-spacing-lg;
+        background: var(--ej-bg-surface, #{$ej-bg-surface});
+        border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+        min-height: $canvas-header-height;
+    }
+
+    .canvas-editor__toolbar-left,
+    .canvas-editor__toolbar-center,
+    .canvas-editor__toolbar-right {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        overflow: visible !important;
+        align-items: center;
+        gap: $ej-spacing-sm;
+    }
+
+    // NOTE: El header/footer del tenant NO se oculta
+    // Estos elementos muestran la personalización del tenant y deben ser visibles/editables
+    // Solo ocultamos elementos administrativos, no de frontend
+
+    // Ocultar breadcrumbs, mensajes de sistema y bloques administrativos
+    .breadcrumb,
+    .messages--status,
+    .messages--warning,
+    .messages--error,
+    .block-local-tasks-block,
+    .block-page-title-block,
+    .region-breadcrumb {
+        display: none !important;
+    }
+
+    // Full-viewport layout - Root level
+    overflow: hidden !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: fixed !important;
+    width: 100vw !important;
+    top: 0 !important;
+    left: 0 !important;
+
+    // Asegurar que main ocupe todo el viewport
+    main,
+    .canvas-editor-main,
+    #main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 10000 !important;
+    }
+
+    // Anular cualquier grid/flex layout del tema
+    .page-wrapper,
+    .layout-container,
+    .main-content,
+    .content,
+    .page,
+    .dialog-off-canvas-main-canvas {
+        display: contents !important;
+    }
+
+    // Canvas Editor ocupa todo el viewport con máxima z-index
+    .canvas-editor {
+        height: 100vh !important;
+        width: 100vw !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 10001 !important;
+        background: var(--ej-bg-body, #F8FAFC) !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTENEDOR PRINCIPAL
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    border-radius: var(--ej-border-radius, #{$ej-border-radius});
+    overflow: hidden;
+    box-shadow: $ej-shadow-lg;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEADER SAAS (Barra de branding del tenant)
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__saas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $ej-spacing-sm $ej-spacing-lg;
+    // Gradiente premium azul corporativo
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+        #1a2d4a 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 40px;
+    // Evitar que el header se encoja o solape
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+    width: 100%;
+}
+
+.canvas-editor__saas-branding {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+.canvas-editor__saas-logo {
+    height: 28px;
+    width: auto;
+    border-radius: 4px;
+}
+
+.canvas-editor__saas-name {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    letter-spacing: 0.02em;
+}
+
+.canvas-editor__saas-context {
+    display: flex;
+    align-items: center;
+}
+
+.canvas-editor__saas-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.75rem;
+    border-radius: $ej-btn-radius;
+    backdrop-filter: blur(4px);
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEADER (Toolbar del editor)
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $ej-spacing-sm $ej-spacing-lg;
+    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    min-height: $canvas-header-height;
+}
+
+.canvas-editor__header-left {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+.canvas-editor__title {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    margin: 0;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #{$ej-color-headings});
+
+    svg {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+    }
+}
+
+.canvas-editor__count {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: 20px;
+}
+
+.canvas-editor__header-actions {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Toolbar Sections (Left, Center, Right)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+}
+
+.canvas-editor__toolbar-center {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-lg;
+}
+
+.canvas-editor__toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Back Link (Volver)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__back {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+    text-decoration: none;
+    border-radius: $ej-btn-radius;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        background: rgba($ej-color-corporate, 0.06);
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Botones del Toolbar (Premium Design System)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-xs;
+    padding: 10px 16px;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    border: none;
+    border-radius: $ej-btn-radius;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ej-color-impulse, #{$ej-color-impulse});
+        outline-offset: 2px;
+    }
+
+    // Secondary Button (Vista previa)
+    &--secondary {
+        color: var(--ej-text-body, #{$ej-color-body});
+        background: var(--ej-bg-body, #{$ej-bg-body});
+        border: 1px solid var(--ej-border-color, #{$ej-border-color});
+        box-shadow: $ej-shadow-sm;
+
+        &:hover {
+            background: var(--ej-bg-surface, #{$ej-bg-surface});
+            border-color: color.adjust($ej-border-color, $lightness: -10%);
+            box-shadow: $ej-shadow-md;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+
+    // Primary Button (Guardar)
+    &--primary {
+        color: #fff;
+        background: linear-gradient(135deg,
+            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+            color.adjust($ej-color-corporate, $lightness: -8%) 100%);
+        box-shadow: 0 2px 8px rgba($ej-color-corporate, 0.25), $ej-shadow-sm;
+
+        svg {
+            color: #fff;
+        }
+
+        &:hover {
+            background: linear-gradient(135deg,
+                color.adjust($ej-color-corporate, $lightness: 5%) 0%,
+                var(--ej-color-corporate, #{$ej-color-corporate}) 100%);
+            box-shadow: 0 4px 12px rgba($ej-color-corporate, 0.35), $ej-shadow-md;
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0) scale(0.98);
+        }
+    }
+
+    // Success Button (Publicar) - Acción principal destacada
+    &--success {
+        color: #fff;
+        background: linear-gradient(135deg,
+            var(--ej-color-impulse, #{$ej-color-impulse}) 0%,
+            color.adjust($ej-color-impulse, $lightness: -10%) 100%);
+        box-shadow: 0 2px 8px rgba($ej-color-impulse, 0.3), $ej-shadow-sm;
+
+        &:hover {
+            background: linear-gradient(135deg,
+                color.adjust($ej-color-impulse, $lightness: 5%) 0%,
+                var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
+            box-shadow: 0 4px 14px rgba($ej-color-impulse, 0.45), $ej-shadow-md;
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0) scale(0.98);
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEO Toggle Button
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__seo-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-muted, #{$ej-color-muted});
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $ej-btn-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    span {
+        // Forzar texto SEO visible siempre con color oscuro
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        color: var(--ej-color-muted, #{$ej-color-muted}) !important;
+    }
+
+    &:hover {
+        color: var(--ej-color-innovation, #{$ej-color-innovation});
+        background: rgba($ej-color-innovation, 0.08);
+        border-color: rgba($ej-color-innovation, 0.2);
+    }
+
+    &.is-active,
+    &[aria-pressed="true"] {
+        color: #fff;
+        background: linear-gradient(135deg,
+            var(--ej-color-innovation, #{$ej-color-innovation}) 0%,
+            color.adjust($ej-color-innovation, $lightness: -10%) 100%);
+        box-shadow: 0 2px 6px rgba($ej-color-innovation, 0.3);
+
+        svg {
+            color: #fff;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Viewport Toggle Buttons (Desktop, Tablet, Mobile)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__viewport-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    border-radius: $ej-btn-radius;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+}
+
+.canvas-editor__viewport-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ej-color-muted, #{$ej-color-muted});
+    transition: all 0.2s ease;
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    // Soporte para iconos IMG
+    img {
+        width: 20px;
+        height: 20px;
+        transition: all 0.2s ease;
+    }
+
+    &:hover:not(.is-active) {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        background: rgba($ej-color-corporate, 0.08);
+    }
+
+    &.is-active {
+        color: #fff !important;
+        background: var(--ej-color-corporate, #{$ej-color-corporate}) !important;
+        box-shadow: 0 2px 4px rgba($ej-color-corporate, 0.3);
+
+        svg {
+            color: #fff !important;
+        }
+
+        // Iconos IMG se vuelven blancos con filtro de inversión
+        img {
+            filter: brightness(0) invert(1);
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// History Controls (Undo/Redo)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__history-controls {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-shrink: 0;
+    gap: 4px;
+    padding: 4px;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    border-radius: $ej-btn-radius;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+}
+
+.canvas-editor__history-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ej-color-muted, #{$ej-color-muted});
+    transition: all 0.2s ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover:not(:disabled) {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        background: rgba($ej-color-corporate, 0.1);
+    }
+
+    &:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+
+    // Estado deshabilitado (sin acciones disponibles)
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+
+        svg {
+            color: var(--ej-color-muted, #{$ej-color-muted});
+        }
+    }
+
+    // Estado activo (cuando hay acciones disponibles)
+    &.has-actions {
+        color: var(--ej-color-body, #{$ej-color-body});
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tenant Branding (Logo en toolbar)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__branding {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+.canvas-editor__tenant-logo {
+    height: 32px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.canvas-editor__separator {
+    width: 1px;
+    height: 24px;
+    background: linear-gradient(180deg,
+        transparent 0%,
+        var(--ej-border-color, #{$ej-border-color}) 50%,
+        transparent 100%);
+    margin: 0 $ej-spacing-sm;
+}
+
+.canvas-editor__tenant-name {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem; // 18px - más grande y legible
+    font-weight: 700; // Más bold
+    color: var(--ej-color-corporate, #{$ej-color-corporate}); // Azul corporativo oscuro
+    letter-spacing: 0.01em;
+    padding: $ej-spacing-xs $ej-spacing-md;
+    background: linear-gradient(135deg,
+            rgba($ej-color-corporate, 0.08) 0%,
+            rgba($ej-color-impulse, 0.05) 100%);
+    border-radius: $ej-btn-radius;
+    border-left: 3px solid var(--ej-color-impulse, #{$ej-color-impulse});
+    white-space: nowrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mode Toggle (Config / Canvas)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__mode-toggle {
+    display: flex;
+    gap: $ej-spacing-xs;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    padding: $ej-spacing-xs;
+    border-radius: $ej-btn-radius;
+    margin-right: $ej-spacing-md;
+}
+
+.canvas-editor__mode-btn {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--ej-border-color, #{$ej-border-color});
+        color: var(--ej-color-body, #{$ej-color-body});
+    }
+
+    &.is-active {
+        background: linear-gradient(135deg,
+            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+            color.adjust($ej-color-corporate, $lightness: -8%) 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba($ej-color-corporate, 0.35);
+
+        svg {
+            color: #fff;
+        }
+    }
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LAYOUT SIDE-BY-SIDE (Mobile-First)
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SIDEBAR: LISTA DE BLOQUES
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__sidebar {
+    display: flex;
+    flex-direction: column;
+    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    overflow: hidden;
+    max-height: 40vh;
+
+    @media (min-width: 768px) {
+        max-height: none;
+        width: 280px;
+        min-width: 280px;
+        border-bottom: none;
+        border-right: 1px solid var(--ej-border-color, #{$ej-border-color});
+    }
+
+    @media (min-width: 1024px) {
+        width: $canvas-sidebar-width;
+        min-width: $canvas-sidebar-width;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Canvas v2: Global Partials (Header/Footer Selectors)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.canvas-editor__partials {
+    padding: $ej-spacing-md;
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    background: linear-gradient(180deg,
+        var(--ej-bg-surface, #{$ej-bg-surface}) 0%,
+        var(--ej-bg-body, #{$ej-bg-body}) 100%);
+}
+
+.canvas-editor__partials-header {
+    margin-bottom: $ej-spacing-md;
+
+    h2 {
+        margin: 0;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ej-text-muted, #{$ej-color-muted});
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+}
+
+.canvas-editor__partial-group {
+    margin-bottom: $ej-spacing-sm;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.canvas-editor__partial-label {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    margin-bottom: $ej-spacing-xs;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-body, #{$ej-color-body});
+
+    svg {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+    }
+}
+
+.canvas-editor__partial-select {
+    width: 100%;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    border-radius: $ej-btn-radius;
+    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    font-size: 0.875rem;
+    font-family: var(--ej-font-body, "Inter", sans-serif);
+    color: var(--ej-color-body, #{$ej-color-body});
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right $ej-spacing-sm center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+    }
+}
+
+.canvas-editor__sidebar-divider {
+    height: 1px;
+    background: var(--ej-border-color, #{$ej-border-color});
+    margin: 0;
+}
+
+.canvas-editor__sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+}
+
+.canvas-editor__sidebar-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// Lista de bloques scrollable
+.canvas-editor__blocks {
+    flex: 1;
+    overflow-y: auto;
+    padding: $ej-spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--ej-border-color, #{$ej-border-color});
+        border-radius: 3px;
+    }
+}
+
+// Bloque individual
+.canvas-editor__block {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    border-radius: $ej-btn-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        transform: translateX(2px);
+
+        .canvas-editor__block-actions {
+            opacity: 1;
+        }
+    }
+
+    &--selected {
+        background: rgba($ej-color-corporate, 0.08);
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        box-shadow: 0 0 0 2px rgba($ej-color-corporate, 0.2);
+    }
+
+    &--hidden {
+        opacity: 0.5;
+
+        .canvas-editor__block-name {
+            text-decoration: line-through;
+        }
+    }
+
+    &--ghost {
+        opacity: 0.4;
+        background: var(--ej-border-color, #{$ej-border-color});
+    }
+
+    &--chosen {
+        box-shadow: $ej-shadow-lg;
+        transform: scale(1.02);
+    }
+}
+
+.canvas-editor__drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: grab;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.canvas-editor__block-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.canvas-editor__block-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-color-body, #{$ej-color-body});
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.canvas-editor__block-meta {
+    display: flex;
+    gap: $ej-spacing-xs;
+    margin-top: 2px;
+}
+
+.canvas-editor__badge {
+    font-size: 0.6875rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+
+    &--hidden {
+        background: rgba($ej-color-warning, 0.15);
+        color: $ej-color-warning;
+    }
+}
+
+.canvas-editor__block-actions {
+    display: flex;
+    gap: $ej-spacing-xs;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.canvas-editor__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: var(--ej-border-color, #{$ej-border-color});
+        color: var(--ej-color-body, #{$ej-color-body});
+    }
+
+    &--delete:hover {
+        background: rgba($ej-color-danger, 0.1);
+        color: $ej-color-danger;
+    }
+}
+
+// Empty state
+.canvas-editor__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $ej-spacing-2xl $ej-spacing-lg;
+    text-align: center;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+
+    svg {
+        margin-bottom: $ej-spacing-sm;
+        opacity: 0.5;
+    }
+
+    p {
+        margin: 0 0 $ej-spacing-md;
+        font-size: 0.875rem;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CANVAS: PREVIEW EN IFRAME
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__canvas {
+    display: none;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    padding: $ej-spacing-md;
+    overflow: auto;
+    position: relative;
+
+    @media (min-width: 768px) {
+        display: flex;
+    }
+}
+
+.canvas-editor__preview-container {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    border-radius: $ej-btn-radius;
+    box-shadow: $ej-shadow-lg;
+    overflow: hidden;
+    transition: max-width 0.3s ease, margin 0.3s ease;
+
+    &--desktop {
+        max-width: 100%;
+    }
+
+    &--tablet {
+        max-width: 768px;
+        margin: 0 auto;
+    }
+
+    &--mobile {
+        max-width: 375px;
+        margin: 0 auto;
+        border-radius: 24px;
+        box-shadow: $ej-shadow-lg,
+        inset 0 0 0 3px var(--ej-color-headings, #{$ej-color-headings});
+    }
+}
+
+.canvas-editor__iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.canvas-editor__preview-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba($ej-bg-body, 0.9);
+    color: var(--ej-text-muted, #{$ej-color-muted});
+
+    p {
+        margin: $ej-spacing-sm 0 0;
+        font-size: 0.875rem;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOADING & SPINNERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $ej-spacing-2xl;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+
+    p {
+        margin: $ej-spacing-sm 0 0;
+        font-size: 0.875rem;
+    }
+}
+
+.canvas-editor__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--ej-border-color, #{$ej-border-color});
+    border-top-color: var(--ej-color-corporate, #{$ej-color-corporate});
+    border-radius: 50%;
+    animation: canvas-spin 0.8s linear infinite;
+}
+
+@keyframes canvas-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.canvas-editor__saving-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SLIDE-PANEL: TEMPLATES GRID
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__search {
+    margin-bottom: $ej-spacing-md;
+
+    .jaraba-input {
+        width: 100%;
+        padding: $ej-spacing-sm $ej-spacing-md;
+        border: 1px solid var(--ej-border-color, #{$ej-border-color});
+        border-radius: $ej-btn-radius;
+        font-size: 0.875rem;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+            box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+        }
+    }
+}
+
+.canvas-editor__template-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $ej-spacing-sm;
+
+    @media (min-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.canvas-editor__template-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    border-radius: $ej-border-radius;
+    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        box-shadow: 0 4px 12px rgba($ej-color-corporate, 0.15);
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.canvas-editor__template-thumb {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+}
+
+.canvas-editor__template-info {
+    padding: $ej-spacing-sm $ej-spacing-md;
+}
+
+.canvas-editor__template-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-color-headings, #{$ej-color-headings});
+    margin-bottom: 2px;
+}
+
+.canvas-editor__template-category {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ej-text-muted, #{$ej-color-muted});
+}
+
+.canvas-editor__template-badge {
+    position: absolute;
+    top: $ej-spacing-sm;
+    right: $ej-spacing-sm;
+    padding: 3px 8px;
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+        var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FORM GROUP (para panel de edición)
+// ═══════════════════════════════════════════════════════════════════════════
+
+.canvas-editor__form-group {
+    margin-bottom: $ej-spacing-md;
+
+    label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ej-color-body, #{$ej-color-body});
+        margin-bottom: $ej-spacing-xs;
+    }
+
+    .jaraba-textarea {
+        width: 100%;
+        padding: $ej-spacing-md;
+        border: 1px solid var(--ej-border-color, #{$ej-border-color});
+        border-radius: $ej-btn-radius;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        resize: vertical;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+            box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GRAPESJS PANEL TABS (Estilos, Propiedades, Capas)
+// Mayor especificidad para sobrescribir estilos del tema global
+// ═══════════════════════════════════════════════════════════════════════════
+
+body.canvas-editor-page .jaraba-grapesjs-panel__tabs {
+    display: flex !important;
+    gap: 4px;
+    padding: $ej-spacing-sm;
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+        color.adjust($ej-color-corporate, $lightness: -10%) 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.canvas-editor-page .jaraba-grapesjs-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7) !important;
+    background: transparent !important;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Soporte para iconos SVG
+    svg {
+        width: 16px;
+        height: 16px;
+        color: rgba(255, 255, 255, 0.7) !important;
+        transition: all 0.25s ease;
+    }
+
+    // Soporte para iconos IMG (con filtro de inversión para volverlos blancos)
+    img {
+        width: 16px;
+        height: 16px;
+        filter: brightness(0) invert(1);
+        opacity: 0.7;
+        transition: all 0.25s ease;
+    }
+
+    &:hover {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        transform: translateY(-2px);
+
+        svg {
+            color: #fff !important;
+            transform: scale(1.1);
+        }
+
+        img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+
+    &.is-active {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+        svg {
+            color: #fff !important;
+        }
+
+        img {
+            opacity: 1;
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REFUERZO GLOBAL DE ICONOS BLANCOS EN ESTADOS ACTIVOS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Forzar iconos blancos en todos los botones con fondo de color
+.canvas-editor__mode-btn.is-active,
+.canvas-editor__viewport-btn.is-active,
+.canvas-editor__btn--primary,
+.canvas-editor__btn--success {
+
+    svg,
+    svg path,
+    svg circle,
+    svg rect,
+    svg polyline,
+    svg line {
+        color: #fff !important;
+        fill: currentColor !important;
+        stroke: currentColor !important;
+    }
+
+    // Iconos IMG se vuelven blancos con filtro de inversión
+    img {
+        filter: brightness(0) invert(1) !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANIMACIONES PREMIUM PARA BOTONES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Keyframes para efecto pulse sutil
+@keyframes pulse-subtle {
+
+    0%,
+    100% {
+        box-shadow: 0 2px 8px rgba(35, 61, 99, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 4px 16px rgba(35, 61, 99, 0.5);
+    }
+}
+
+// Aplicar animaciones y transiciones premium a todos los botones
+.canvas-editor__btn,
+.canvas-editor__mode-btn,
+.canvas-editor__viewport-btn,
+.canvas-editor__seo-toggle {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    // Efecto ripple en hover
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    &:hover::before {
+        opacity: 1;
+    }
+
+    // Elevación en hover
+    &:hover {
+        transform: translateY(-2px) !important;
+    }
+
+    // Efecto presionado
+    &:active {
+        transform: translateY(0) scale(0.98) !important;
+        transition-duration: 0.1s !important;
+    }
+}
+
+// Animación especial para CTA principal (Publicar)
+.canvas-editor__btn--success {
+    animation: pulse-subtle 3s ease-in-out infinite;
+
+    &:hover {
+        animation: none;
+        box-shadow: 0 6px 20px rgba(255, 140, 66, 0.5);
+    }
+}
+
+// Transición suave para iconos
+.canvas-editor__btn svg,
+.canvas-editor__mode-btn svg,
+.canvas-editor__viewport-btn svg {
+    transition: transform 0.25s ease, color 0.25s ease !important;
+}
+
+.canvas-editor__btn:hover svg,
+.canvas-editor__mode-btn:hover svg,
+.canvas-editor__viewport-btn:hover svg {
+    transform: scale(1.1);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BLOQUES PREMIUM BLOQUEADOS (Feature Flags)
+// Estilos visuales para bloques que requieren plan superior
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Bloques bloqueados en el panel de GrapesJS
+.gjs-block[data-is-locked="true"],
+.gjs-block.gjs-block--locked {
+    position: relative;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+
+    // Overlay semi-transparente
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg,
+                rgba(100, 116, 139, 0.1) 0%,
+                rgba(100, 116, 139, 0.2) 100%);
+        border-radius: 8px;
+        pointer-events: none;
+    }
+
+    // Indicador de candado en esquina superior derecha
+    &::before {
+        content: '🔒';
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 10;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 4px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    // Deshabilitar interacción
+    .gjs-block-label {
+        opacity: 0.7;
+    }
+}
+
+// Badge de plan requerido (tooltip visual)
+.gjs-block[data-required-plan]:not([data-required-plan="free"]) {
+    .gjs-block-label::after {
+        content: attr(data-required-plan);
+        display: inline-block;
+        margin-left: 4px;
+        padding: 1px 4px;
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #fff;
+        background: linear-gradient(135deg,
+            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+            var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
+        border-radius: 3px;
+        vertical-align: middle;
+    }
+}
+
+// Bloques premium desbloqueados (accesibles)
+.gjs-block[data-is-premium="true"]:not([data-is-locked="true"]) {
+    position: relative;
+
+    // Badge premium sutil
+    &::after {
+        content: '✨';
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        font-size: 10px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    &:hover::after {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,95 @@
+# Rutas del módulo Jaraba CRM.
+#
+# Estructura:
+# - /admin/content/* → Collections de entidades
+# - /admin/structure/crm-* → Settings para Field UI
+# - /crm → Dashboard frontend (ruta limpia)
+
+# =============================================================================
+# RUTAS DE SETTINGS (Field UI) - /admin/structure
+# =============================================================================
+
+entity.crm_company.settings:
+  path: '/admin/structure/crm-company'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\CompanySettingsForm'
+    _title: 'Configuración de Empresas'
+  requirements:
+    _permission: 'administer crm entities'
+
+entity.crm_contact.settings:
+  path: '/admin/structure/crm-contact'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\ContactSettingsForm'
+    _title: 'Configuración de Contactos'
+  requirements:
+    _permission: 'administer crm entities'
+
+entity.crm_opportunity.settings:
+  path: '/admin/structure/crm-opportunity'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\OpportunitySettingsForm'
+    _title: 'Configuración de Oportunidades'
+  requirements:
+    _permission: 'administer crm entities'
+
+entity.crm_activity.settings:
+  path: '/admin/structure/crm-activity'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\ActivitySettingsForm'
+    _title: 'Configuración de Actividades'
+  requirements:
+    _permission: 'administer crm entities'
+
+# =============================================================================
+# DASHBOARD FRONTEND - /crm
+# =============================================================================
+
+jaraba_crm.dashboard:
+  path: '/crm'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmDashboardController::dashboard'
+    _title: 'CRM Dashboard'
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.pipeline:
+  path: '/crm/pipeline'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmDashboardController::pipeline'
+    _title: 'Pipeline de Ventas'
+  requirements:
+    _permission: 'view crm entities'
+
+# =============================================================================
+# SETTINGS GLOBALES
+# =============================================================================
+
+jaraba_crm.settings:
+  path: '/admin/config/jaraba/crm'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\CrmSettingsForm'
+    _title: 'Configuración del CRM'
+  requirements:
+    _permission: 'administer crm entities'
+
+# =============================================================================
+# KANBAN BOARD - /crm/kanban
+# =============================================================================
+
+jaraba_crm.kanban:
+  path: '/crm/kanban'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\PipelineKanbanController::kanban'
+    _title: 'Pipeline Kanban'
+  requirements:
+    _permission: 'view crm entities'
+
+# API: Mover oportunidad entre etapas
+jaraba_crm.api.pipeline.move:
+  path: '/api/v1/crm/pipeline/move'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\PipelineKanbanController::move'
+  methods: [POST]
+  requirements:
+    _permission: 'edit crm entities'

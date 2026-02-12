@@ -1,0 +1,37 @@
+services:
+  # Plugin Manager para tipos de contenido interactivo
+  plugin.manager.interactive_type:
+    class: Drupal\jaraba_interactive\Plugin\InteractiveTypeManager
+    parent: default_plugin_manager
+
+  # Servicio de scoring y evaluación
+  jaraba_interactive.scorer:
+    class: Drupal\jaraba_interactive\Service\Scorer
+    arguments:
+      - '@plugin.manager.interactive_type'
+      - '@logger.channel.jaraba_interactive'
+
+  # Canal de logging
+  logger.channel.jaraba_interactive:
+    parent: logger.channel_base
+    arguments: ['jaraba_interactive']
+
+  # ============================================================================
+  # SERVICIOS DE INTEGRACIÓN (Sprint 2)
+  # ============================================================================
+
+  # Emisor de eventos xAPI para tracking en LMS
+  jaraba_interactive.xapi_emitter:
+    class: Drupal\jaraba_interactive\Service\XApiEmitter
+    arguments:
+      - '@jaraba_lms.xapi'
+      - '@current_user'
+      - '@logger.channel.jaraba_interactive'
+
+  # Generador de contenido con IA
+  jaraba_interactive.content_generator:
+    class: Drupal\jaraba_interactive\Service\ContentGenerator
+    arguments:
+      - '@jaraba_ai_agents.orchestrator'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_interactive'

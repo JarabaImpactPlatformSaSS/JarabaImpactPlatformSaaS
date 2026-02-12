@@ -1,0 +1,71 @@
+# Task links (tabs) for Groups module
+# Adds tabs to /admin/content for Groups and related entities
+
+# Tab for Collaboration Groups in Content section
+entity.collaboration_group.collection:
+  title: 'Grupos'
+  route_name: entity.collaboration_group.collection
+  base_route: system.admin_content
+  weight: 33
+
+# Tab for Group Memberships in Content section
+entity.group_membership.collection:
+  title: 'Membresías'
+  route_name: entity.group_membership.collection
+  base_route: system.admin_content
+  weight: 34
+
+# Tab for Group Discussions in Content section
+entity.group_discussion.collection:
+  title: 'Discusiones'
+  route_name: entity.group_discussion.collection
+  base_route: system.admin_content
+  weight: 35
+
+# Tab for Group Events in Content section
+entity.group_event.collection:
+  title: 'Eventos de Grupo'
+  route_name: entity.group_event.collection
+  base_route: system.admin_content
+  weight: 36
+
+# Tab for Group Resources in Content section
+entity.group_resource.collection:
+  title: 'Recursos de Grupo'
+  route_name: entity.group_resource.collection
+  base_route: system.admin_content
+  weight: 37
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS
+# -----------------------------------------------------------------------------
+
+entity.collaboration_group.settings_tab:
+  title: 'Configuración'
+  route_name: entity.collaboration_group.settings
+  base_route: entity.collaboration_group.settings
+  weight: -10
+
+entity.group_membership.settings_tab:
+  title: 'Configuración'
+  route_name: entity.group_membership.settings
+  base_route: entity.group_membership.settings
+  weight: -10
+
+entity.group_discussion.settings_tab:
+  title: 'Configuración'
+  route_name: entity.group_discussion.settings
+  base_route: entity.group_discussion.settings
+  weight: -10
+
+entity.group_event.settings_tab:
+  title: 'Configuración'
+  route_name: entity.group_event.settings
+  base_route: entity.group_event.settings
+  weight: -10
+
+entity.group_resource.settings_tab:
+  title: 'Configuración'
+  route_name: entity.group_resource.settings
+  base_route: entity.group_resource.settings
+  weight: -10

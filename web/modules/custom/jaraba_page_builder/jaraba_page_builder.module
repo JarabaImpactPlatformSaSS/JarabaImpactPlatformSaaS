@@ -1,0 +1,591 @@
+<?php
+
+/**
+ * @file
+ * Módulo principal del Constructor de Páginas SaaS.
+ *
+ * PROPÓSITO:
+ * Proporciona un constructor de páginas visual con plantillas premium
+ * para que cada tenant pueda crear páginas personalizadas según su plan.
+ *
+ * ARQUITECTURA:
+ * - PageTemplate (Config Entity): Plantillas predefinidas por el sistema
+ * - PageContent (Content Entity): Páginas creadas por tenants
+ * - Bloques Premium: Aceternity UI + Magic UI
+ *
+ * DIRECTRICES:
+ * - Límites configurables por Vertical/Plan (SaasPlan)
+ * - Content Entity con Field UI/Views
+ * - Design Tokens CSS (var(--ej-*))
+ * - Textos traducibles con t() y {% trans %}
+ *
+ * @see docs/planificacion/20260126-Plan_Constructor_Paginas_SaaS_v1.md
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_page_builder_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_page_builder':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('El Constructor de Páginas SaaS permite crear páginas personalizadas
+        utilizando plantillas premium con bloques de Aceternity UI y Magic UI.') . '</p>';
+      $output .= '<h3>' . t('Features') . '</h3>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('67 bloques disponibles (45 base + 22 premium)') . '</li>';
+      $output .= '<li>' . t('Límites configurables por Vertical y Plan') . '</li>';
+      $output .= '<li>' . t('Integración con Design Tokens del tema') . '</li>';
+      $output .= '<li>' . t('SEO avanzado con Schema.org') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig para los bloques del Page Builder.
+ *
+ * REGISTRO DINÁMICO (2026-02-02):
+ * Además de los templates estáticos, lee todas las Config Entities PageTemplate
+ * y registra automáticamente un theme `page_builder_block__{template_id}` para cada una.
+ * Esto permite que PageContentViewBuilder pueda renderizar páginas en modo Legacy
+ * y Multi-Block correctamente.
+ *
+ * @see PageContentViewBuilder::buildLegacyView()
+ * @see PageContentViewBuilder::buildMultiBlockView()
+ * @see docs/tecnicos/aprendizajes/2026-02-02_page_builder_dynamic_theme_registration.md
+ */
+function jaraba_page_builder_theme($existing, $type, $theme, $path) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TEMPLATES ESTÁTICOS
+  // Registrados manualmente para dashboards y componentes administrativos
+  // ═══════════════════════════════════════════════════════════════════════════
+  $themes = [
+    // Template base para páginas del Page Builder.
+    'page_builder_page' => [
+      'variables' => [
+        'page_content' => NULL,
+        'blocks' => [],
+        'meta' => [],
+      ],
+      'template' => 'page-builder-page',
+    ],
+    // Template para preview de plantillas.
+    'page_template_preview' => [
+      'variables' => [
+        'template' => NULL,
+        'preview_data' => [],
+        'usage_count' => NULL,
+        'avg_engagement' => NULL,
+        'preview_iframe_url' => NULL,
+      ],
+      'template' => 'page-template-preview',
+    ],
+    // Template para el selector de plantillas (Template Picker).
+    'page_builder_template_picker' => [
+      'variables' => [
+        'categories' => [],
+        'category_labels' => [],
+      ],
+      'template' => 'page-builder-template-picker',
+    ],
+    // Dashboard visual de experimentos A/B - Gap 2 Clase Mundial
+    'experiment_dashboard' => [
+      'variables' => [
+        'experiments' => [],
+        'metrics' => [],
+      ],
+      'template' => 'experiment-dashboard',
+    ],
+    // Bloque de cursos recomendados con carga dinámica desde LMS.
+    'recommended_courses' => [
+      'variables' => [
+        'content' => [],
+        'courses' => [],
+      ],
+      'template' => 'blocks/content/recommended-courses',
+    ],
+    // Dashboard principal del Page Builder - Hub Central.
+    'page_builder_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'quick_actions' => [],
+      ],
+      'template' => 'page-builder-dashboard',
+    ],
+    // Dashboard de Analytics - Gap C.
+    'analytics_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'pages_metrics' => [],
+        'trends_data' => [],
+        'quick_actions' => [],
+      ],
+      'template' => 'analytics-dashboard',
+    ],
+    // Editor de Secciones Multi-Block - Gap J.
+    'section_editor' => [
+      'variables' => [
+        'page' => NULL,
+        'sections' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'section-editor',
+    ],
+    // Canvas Editor Visual - Editor lado a lado clase mundial.
+    // Canvas v3: Soporta modo dual (config=legacy, canvas=GrapesJS).
+    'canvas_editor' => [
+      'variables' => [
+        'page' => NULL,
+        'sections' => [],
+        'available_templates' => [],
+        'preview_url' => '',
+        'tenant_info' => [],
+        // Branding del tenant para el header del editor.
+        'tenant_logo' => NULL,
+        'tenant_name' => NULL,
+        // Canvas v2: Variantes de Header/Footer para hot-swap.
+        'header_data' => [],
+        'footer_data' => [],
+        // Canvas v3: Modo de edición (config|canvas).
+        'editor_mode' => 'config',
+      ],
+      'template' => 'canvas-editor',
+    ],
+    // Lista de revisiones - Gap G.
+    'revision_list' => [
+      'variables' => [
+        'page' => NULL,
+        'revisions' => [],
+      ],
+      'template' => 'revision-list',
+    ],
+    // Comparación visual de revisiones - Gap G.
+    'revision_diff' => [
+      'variables' => [
+        'page' => NULL,
+        'older' => NULL,
+        'newer' => NULL,
+        'older_id' => 0,
+        'newer_id' => 0,
+        'diff' => [],
+        'has_changes' => FALSE,
+      ],
+      'template' => 'revision-diff',
+    ],
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REGISTRO DINÁMICO DE BLOQUES DESDE CONFIG ENTITIES
+  // Lee todas las PageTemplate entities y registra theme para cada una
+  // ═══════════════════════════════════════════════════════════════════════════
+  try {
+    // Obtener el storage de PageTemplate.
+    // Nota: Durante la instalación inicial, las entidades pueden no existir aún.
+    $template_storage = \Drupal::entityTypeManager()
+      ->getStorage('page_template');
+    $templates = $template_storage->loadMultiple();
+
+    $registered_count = 0;
+
+    foreach ($templates as $template) {
+      /** @var \Drupal\jaraba_page_builder\PageTemplateInterface $template */
+      $template_id = $template->id();
+      $twig_template = $template->getTwigTemplate();
+
+      // Solo registrar si tiene template Twig definido.
+      if (empty($twig_template)) {
+        continue;
+      }
+
+      // Convertir namespace path a path relativo para Drupal theme system.
+      // Ejemplo:
+      //   @jaraba_page_builder/blocks/hero/split-hero.html.twig
+      //   → blocks/hero/split-hero
+      $template_path = preg_replace(
+        '/^@jaraba_page_builder\/(.+)\.html\.twig$/',
+        '$1',
+        $twig_template
+      );
+
+      // Si no coincide el patrón, intentar con el path directo.
+      if ($template_path === $twig_template) {
+        // Podría ser un path relativo ya, quitar extensión.
+        $template_path = preg_replace('/\.html\.twig$/', '', $twig_template);
+      }
+
+      // Registrar theme dinámico para este bloque.
+      // El nombre sigue el patrón: page_builder_block__{template_id}
+      $theme_name = 'page_builder_block__' . $template_id;
+
+      $themes[$theme_name] = [
+        'variables' => [
+          'content' => [],
+          'template_id' => '',
+          'page' => NULL,
+          'section_uuid' => '',
+          'section_weight' => 0,
+        ],
+        'template' => $template_path,
+        // Indicar que es un template del módulo.
+        'path' => $path . '/templates',
+      ];
+
+      $registered_count++;
+    }
+
+    // Log informativo (solo en nivel debug para no saturar logs).
+    if ($registered_count > 0) {
+      \Drupal::logger('jaraba_page_builder')->debug(
+        'Registered @count dynamic block themes from PageTemplate entities',
+        ['@count' => $registered_count]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    // Durante instalación o si hay error, continuar sin temas dinámicos.
+    // Los templates estáticos seguirán funcionando.
+    \Drupal::logger('jaraba_page_builder')->notice(
+      'Skipping dynamic theme registration: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  return $themes;
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Añade estilos, scripts y meta tags SEO del Page Builder.
+ * También carga el cliente A/B testing cuando hay experimentos activos.
+ */
+function jaraba_page_builder_page_attachments(array &$attachments) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // ============================================================
+  // CANVAS PREVIEW RECEIVER - Canvas v2 Hot-Swap
+  // ============================================================
+  // Cargar receiver en páginas públicas para permitir hot-swap
+  // de variantes header/footer desde el Canvas Editor.
+  // El script se auto-desactiva si no está en un iframe.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/canvas-preview-receiver';
+
+  // Solo continuar con lógica específica de page_content.
+  if (!str_starts_with($route_name ?? '', 'entity.page_content.')) {
+    return;
+  }
+
+  // Cargar librería del Page Builder.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/page-builder';
+
+  // Cargar interactividad FAQ Accordion para bloques con acordeón.
+  // El JS maneja expand/collapse, los estilos ya están en page-builder.css.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/faq-accordion';
+
+  // Cargar bloques premium con efectos interactivos:
+  // - Animated Beam (líneas SVG animadas)
+  // - Typewriter Effect
+  // - Parallax
+  // - Tilt 3D
+  // - Spotlight cursor
+  // - Card Stack 3D
+  // - Counters animados
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/premium-blocks';
+
+  // Sprint PB-1: Behaviors para bloques interactivos del Canvas Editor.
+  // Cada behavior usa once() y solo actúa si encuentra su selector en el DOM,
+  // por lo que no generan overhead en páginas sin esos bloques.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-stats-counter';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-pricing-toggle';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-tabs';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-countdown';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-timeline';
+
+  // ============================================================
+  // A/B TESTING CLIENT - Gap #2 (Doc 168)
+  // ============================================================
+  // Cargar cliente JavaScript para tracking de experimentos.
+  // El cliente verificará automáticamente si hay experimento activo para esta página.
+  $page_content = $route_match->getParameter('page_content');
+  if ($page_content) {
+    $pageId = $page_content->id();
+    
+    // Siempre adjuntar el cliente para que pueda verificar con la API.
+    $attachments['#attached']['library'][] = 'jaraba_page_builder/ab-testing';
+    $attachments['#attached']['drupalSettings']['jarabaPageBuilder'] = [
+      'pageId' => $pageId,
+    ];
+  }
+
+  // ============================================================
+  // HREFLANG + CANONICAL + OG:LOCALE - Gap #2 (Doc 166)
+  // ============================================================
+  try {
+    /** @var \Drupal\jaraba_page_builder\Service\HreflangService $hreflangService */
+    $hreflangService = \Drupal::service('jaraba_page_builder.hreflang');
+
+    // Añadir tags hreflang para todas las traducciones.
+    $hreflangTags = $hreflangService->generateHreflangTags();
+    foreach ($hreflangTags as $tag) {
+      $attachments['#attached']['html_head'][] = [
+        $tag,
+        'hreflang_' . ($tag['#attributes']['hreflang'] ?? 'unknown'),
+      ];
+    }
+
+    // Añadir tag canonical.
+    $canonicalTag = $hreflangService->generateCanonicalTag();
+    if ($canonicalTag) {
+      $attachments['#attached']['html_head'][] = [
+        $canonicalTag,
+        'page_content_canonical',
+      ];
+    }
+
+    // Añadir og:locale tags.
+    $ogLocaleTags = $hreflangService->generateOgLocaleTags();
+    foreach ($ogLocaleTags as $index => $tag) {
+      $property = $tag['#attributes']['property'] ?? 'og_locale';
+      $attachments['#attached']['html_head'][] = [
+        $tag,
+        $property . '_' . $index,
+      ];
+    }
+  }
+  catch (\Exception $e) {
+    // Log error pero no romper la página.
+    \Drupal::logger('jaraba_page_builder')->warning('Hreflang error: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() para bloques de cursos recomendados.
+ *
+ * Carga las entidades lms_course por sus IDs y las prepara para el template.
+ *
+ * @param array $variables
+ *   Variables del template.
+ */
+function jaraba_page_builder_preprocess_recommended_courses(array &$variables): void {
+  $content = $variables['content'] ?? [];
+  $course_ids = $content['course_ids'] ?? [];
+  
+  if (empty($course_ids)) {
+    $variables['courses'] = [];
+    return;
+  }
+  
+  // Cargar entidades de cursos.
+  try {
+    $course_storage = \Drupal::entityTypeManager()->getStorage('lms_course');
+    $courses = $course_storage->loadMultiple($course_ids);
+    
+    $variables['courses'] = [];
+    foreach ($courses as $course) {
+      // Obtener imagen del curso si existe.
+      $image_url = NULL;
+      if ($course->hasField('field_image') && !$course->get('field_image')->isEmpty()) {
+        $image = $course->get('field_image')->entity;
+        if ($image) {
+          $image_url = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($image->getFileUri());
+        }
+      }
+      
+      // Formatear duración.
+      $duration_minutes = $course->getDurationMinutes();
+      $duration_formatted = $duration_minutes 
+        ? ($duration_minutes >= 60 
+          ? floor($duration_minutes / 60) . 'h ' . ($duration_minutes % 60 > 0 ? ($duration_minutes % 60) . 'min' : '')
+          : $duration_minutes . ' min')
+        : NULL;
+      
+      // Construir datos del curso para el template.
+      $variables['courses'][] = [
+        'id' => $course->id(),
+        'title' => $course->getTitle(),
+        'image' => $image_url,
+        'level' => $course->getDifficultyLevel(),
+        'duration' => $duration_formatted,
+        'price' => $course->getPrice() ? '€' . number_format($course->getPrice(), 2, ',', '.') : NULL,
+        'rating' => NULL, // TODO: Implementar sistema de ratings.
+        'instructor' => $course->getOwner()->getDisplayName(),
+        'category' => NULL, // TODO: Añadir campo categoría a Course.
+        'url' => $course->toUrl()->toString(),
+      ];
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_page_builder')->error('Error cargando cursos: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+    $variables['courses'] = [];
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() para el catálogo de cursos en modo dinámico.
+ *
+ * @param array $variables
+ *   Variables del template.
+ */
+function jaraba_page_builder_preprocess_course_catalog(array &$variables): void {
+  $content = $variables['content'] ?? [];
+  
+  // Solo procesar en modo dinámico.
+  if (($content['source_mode'] ?? 'manual') !== 'dynamic') {
+    return;
+  }
+  
+  $course_ids = $content['course_ids'] ?? [];
+  if (empty($course_ids)) {
+    $variables['dynamic_courses'] = [];
+    return;
+  }
+  
+  // Reutilizar la lógica de carga de cursos.
+  try {
+    $course_storage = \Drupal::entityTypeManager()->getStorage('lms_course');
+    $courses = $course_storage->loadMultiple($course_ids);
+    
+    $variables['dynamic_courses'] = [];
+    foreach ($courses as $course) {
+      $image_url = NULL;
+      if ($course->hasField('field_image') && !$course->get('field_image')->isEmpty()) {
+        $image = $course->get('field_image')->entity;
+        if ($image) {
+          $image_url = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($image->getFileUri());
+        }
+      }
+      
+      $duration_minutes = $course->getDurationMinutes();
+      $duration_formatted = $duration_minutes 
+        ? ($duration_minutes >= 60 
+          ? floor($duration_minutes / 60) . 'h ' . ($duration_minutes % 60 > 0 ? ($duration_minutes % 60) . 'min' : '')
+          : $duration_minutes . ' min')
+        : NULL;
+      
+      $variables['dynamic_courses'][] = [
+        'id' => $course->id(),
+        'title' => $course->getTitle(),
+        'image' => $image_url,
+        'level' => $course->getDifficultyLevel(),
+        'duration' => $duration_formatted,
+        'price' => $course->getPrice() ? '€' . number_format($course->getPrice(), 2, ',', '.') : NULL,
+        'rating' => NULL,
+        'instructor' => $course->getOwner()->getDisplayName(),
+        'category' => NULL,
+        'url' => $course->toUrl()->toString(),
+      ];
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_page_builder')->error('Error cargando cursos para catálogo: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+    $variables['dynamic_courses'] = [];
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Añade template page--revisions para páginas de historial de revisiones.
+ * Usa layout full-width sin regiones de admin.
+ */
+function jaraba_page_builder_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Rutas de revisiones: lista, comparar, revertir.
+  $revision_routes = [
+    'jaraba_page_builder.revision_list',
+    'jaraba_page_builder.revision_compare',
+    'jaraba_page_builder.revision_revert',
+  ];
+
+  if (in_array($route_name, $revision_routes, TRUE)) {
+    // Template específico para revisiones con ancho completo.
+    $suggestions[] = 'page__revisions';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body para páginas de revisiones.
+ * NOTA: Las clases al body DEBEN añadirse via hook_preprocess_html(),
+ * no con attributes.addClass() en templates (problema D11).
+ *
+ * @see docs/tecnicos/aprendizajes/2026-02-03_body_class_ghosting.md
+ */
+function jaraba_page_builder_preprocess_html(array &$variables) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Rutas de revisiones.
+  $revision_routes = [
+    'jaraba_page_builder.revision_list',
+    'jaraba_page_builder.revision_compare',
+    'jaraba_page_builder.revision_revert',
+  ];
+
+  if (in_array($route_name, $revision_routes, TRUE)) {
+    // Layout purificado ancho completo.
+    $variables['attributes']['class'][] = 'layout-purified';
+    $variables['attributes']['class'][] = 'layout-revisions';
+    $variables['attributes']['class'][] = 'full-width-content';
+  }
+
+  // Canvas Editor: Layout full-viewport para edición visual.
+  if ($route_name === 'jaraba_page_builder.canvas_editor') {
+    $variables['attributes']['class'][] = 'canvas-editor-page';
+    $variables['attributes']['class'][] = 'full-viewport-layout';
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ *
+ * Añade el link "Editar en Canvas" a las entidades page_content.
+ * El Canvas Editor proporciona una experiencia de edición visual clase mundial
+ * con preview en tiempo real y hot-swap de variantes header/footer.
+ *
+ * @see jaraba_page_builder.canvas_editor route
+ * @see docs/tecnicos/20260203a-178_Page_Builder_Canvas_Visual_v2_Claude.md
+ */
+function jaraba_page_builder_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+  $operations = [];
+
+  // Solo para entidades page_content.
+  if ($entity->getEntityTypeId() !== 'page_content') {
+    return $operations;
+  }
+
+  // Verificar permisos de edición.
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasPermission('edit page builder content')) {
+    return $operations;
+  }
+
+  // Añadir operación "Editar en Canvas" con icono y peso para ordenarlo.
+  $operations['canvas_editor'] = [
+    'title' => t('Editar en Canvas'),
+    'url' => \Drupal\Core\Url::fromRoute('jaraba_page_builder.canvas_editor', [
+      'page_content' => $entity->id(),
+    ]),
+    'weight' => 5,
+  ];
+
+  return $operations;
+}
+

@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * Template for Content Hub AI Generation Logs (frontend - tenant editors).
+ *
+ * Variables:
+ * - logs: Array with id, action, model, status, tokens_used, created, article_title
+ * - total_count: Total logs count
+ * - pager: Pager render array
+ * - back_url: URL to dashboard
+ */
+#}
+
+<div class="content-hub-page content-hub-page--ai-logs">
+  {# Header #}
+  <header class="content-hub-page__header">
+    <div class="content-hub-page__nav">
+      <a href="{{ back_url }}" class="btn btn--ghost btn--small">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+        {% trans %}Back to Dashboard{% endtrans %}
+      </a>
+    </div>
+    <div class="content-hub-page__title-row">
+      <h1 class="content-hub-page__title">{% trans %}AI Generation Logs{% endtrans %}</h1>
+    </div>
+    <p class="content-hub-page__count">{{ total_count }} {% trans %}entries{% endtrans %}</p>
+  </header>
+
+  {# Logs table #}
+  <div class="content-hub-page__content">
+    {% if logs is not empty %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Action{% endtrans %}</th>
+            <th>{% trans %}Model{% endtrans %}</th>
+            <th>{% trans %}Article{% endtrans %}</th>
+            <th>{% trans %}Tokens{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+            <th>{% trans %}Date{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td>
+                <span class="action-badge action-badge--{{ log.action }}">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td><code class="model-badge">{{ log.model }}</code></td>
+              <td>{{ log.article_title }}</td>
+              <td>{{ log.tokens_used|number_format }}</td>
+              <td>
+                <span class="status-badge status-badge--{{ log.status }}">
+                  {{ log.status }}
+                </span>
+              </td>
+              <td>{{ log.created|date('d/m/Y H:i') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if pager %}
+        <div class="content-hub-page__pager">
+          {{ pager }}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">
+        {{ jaraba_icon('ai', 'sparkle', { size: '48px', color: 'verde-innovacion' }) }}
+        <h3>{% trans %}No AI generations yet{% endtrans %}</h3>
+        <p>{% trans %}Use the AI Writing Assistant to generate content.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

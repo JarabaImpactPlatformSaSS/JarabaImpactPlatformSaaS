@@ -1,0 +1,60 @@
+langcode: es
+status: true
+dependencies: {}
+id: alert_banner
+label: 'Banner de Alerta'
+description: 'Mensaje de alerta o notificación destacada en la página.'
+category: cta
+twig_template: '@jaraba_page_builder/blocks/cta/alert-banner.html.twig'
+fields_schema:
+  type: object
+  properties:
+    message:
+      type: string
+      title: 'Mensaje'
+    type:
+      type: string
+      title: 'Tipo'
+      enum:
+        - info
+        - success
+        - warning
+        - error
+        - neutral
+      default: info
+    icon:
+      type: string
+      title: 'Icono'
+    cta:
+      type: object
+      title: 'CTA'
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    dismissible:
+      type: boolean
+      title: 'Cerrable'
+      default: true
+    persist:
+      type: boolean
+      title: 'Persistir al cerrar'
+      default: false
+  required:
+    - message
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  message: "🚀 New Feature Available! Check out our latest updates and improvements."
+  type: info
+  icon: "bell"
+  cta:
+    text: "Learn More"
+    url: "#"
+  dismissible: true
+  persist: false
+

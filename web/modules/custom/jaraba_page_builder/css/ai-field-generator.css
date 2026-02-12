@@ -1,0 +1,310 @@
+/**
+ * @file
+ * Estilos para el generador de campos con IA.
+ *
+ * PROPÓSITO:
+ * Define los estilos del botón "✨ Generar" y el modal de generación.
+ * Usa colores hardcoded compatibles con la paleta Jaraba.
+ *
+ * ESPECIFICACIÓN: Gap 1 - Plan Elevación Clase Mundial
+ */
+
+/* ==========================================================================
+   Botón de generación
+   ========================================================================== */
+
+.ai-generate-btn-container {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.ai-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #00A9A5;
+  background: transparent;
+  border: 1px solid #00A9A5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-generate-btn:hover {
+  background: #00A9A5;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.ai-generate-btn:focus {
+  outline: 2px solid #00A9A5;
+  outline-offset: 2px;
+}
+
+.ai-generate-btn:active {
+  transform: translateY(0);
+}
+
+.ai-generate-btn .ai-icon {
+  font-size: 1rem;
+}
+
+.ai-generate-btn .ai-label {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .ai-generate-btn .ai-label {
+    display: inline;
+  }
+}
+
+/* ==========================================================================
+   Modal overlay
+   ========================================================================== */
+
+.ai-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Modal principal
+   ========================================================================== */
+
+.ai-generate-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  overflow: hidden;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Header del modal */
+.ai-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #233D63, #00A9A5);
+  color: #fff;
+}
+
+.ai-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ai-modal-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.ai-modal-close:hover {
+  opacity: 1;
+}
+
+/* Body del modal */
+.ai-modal-body {
+  padding: 1.25rem;
+  max-height: calc(90vh - 150px);
+  overflow-y: auto;
+}
+
+.ai-form-group {
+  margin-bottom: 1rem;
+}
+
+.ai-form-group label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.ai-select,
+.ai-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ai-select:focus,
+.ai-textarea:focus {
+  outline: none;
+  border-color: #00A9A5;
+  box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.15);
+}
+
+.ai-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Información de contexto */
+.ai-context-info {
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.ai-context-info small {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Área de preview */
+.ai-preview-area {
+  margin-top: 1rem;
+}
+
+.ai-preview-area label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #233D63;
+}
+
+.ai-preview-content {
+  padding: 1rem;
+  background: #f0faf9;
+  border: 1px solid #00A9A5;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 60px;
+  white-space: pre-wrap;
+}
+
+.ai-error {
+  color: #dc3545;
+}
+
+/* Footer del modal */
+.ai-modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding: 1rem 1.25rem;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+/* Botones del modal */
+.ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-btn-primary {
+  background: #00A9A5;
+  color: #fff;
+}
+
+.ai-btn-primary:hover:not(:disabled) {
+  background: #008F8C;
+  transform: translateY(-1px);
+}
+
+.ai-btn-secondary {
+  background: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.ai-btn-secondary:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.ai-btn-success {
+  background: #28a745;
+  color: #fff;
+}
+
+.ai-btn-success:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Feedback visual en campo
+   ========================================================================== */
+
+.ai-field-updated {
+  animation: aiUpdatePulse 0.5s ease;
+  box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.3) !important;
+}
+
+@keyframes aiUpdatePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 169, 165, 0.5);
+  }
+
+  100% {
+    box-shadow: 0 0 0 8px rgba(0, 169, 165, 0);
+  }
+}

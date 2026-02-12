@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Template para Hero Fullscreen.
+ *
+ * Variables disponibles:
+ * - content: Array con los datos configurados:
+ *   - eyebrow: Texto eyebrow
+ *   - title: Título principal
+ *   - subtitle: Subtítulo
+ *   - cta_primary_text: Texto del CTA principal
+ *   - cta_primary_url: URL del CTA principal
+ *   - cta_secondary_text: Texto del CTA secundario
+ *   - cta_secondary_url: URL del CTA secundario
+ *   - background_image: URL de imagen de fondo
+ *   - overlay_opacity: Opacidad del overlay (0-100)
+ */
+#}
+
+<section 
+  class="jaraba-hero jaraba-hero--fullscreen"
+  style="
+    --hero-overlay-opacity: {{ (content.overlay_opacity|default(50)) / 100 }};
+    {% if content.background_image %}
+      --hero-bg-image: url('{{ content.background_image }}');
+    {% endif %}
+  "
+>
+  {# Overlay #}
+  <div class="jaraba-hero__overlay"></div>
+
+  {# Contenido #}
+  <div class="jaraba-hero__content container">
+    {% if content.eyebrow %}
+      <span class="jaraba-hero__eyebrow">{{ content.eyebrow }}</span>
+    {% endif %}
+
+    <h1 class="jaraba-hero__title">{{ content.title }}</h1>
+
+    {% if content.subtitle %}
+      <div class="jaraba-hero__subtitle">{{ content.subtitle|raw }}</div>
+    {% endif %}
+
+    {# CTAs #}
+    <div class="jaraba-hero__actions">
+      {% if content.cta_primary_text and content.cta_primary_url %}
+        <a href="{{ content.cta_primary_url }}" class="btn-primary btn-primary--large">
+          {{ content.cta_primary_text }}
+        </a>
+      {% endif %}
+
+      {% if content.cta_secondary_text and content.cta_secondary_url %}
+        <a href="{{ content.cta_secondary_url }}" class="btn-secondary btn-secondary--large">
+          {{ content.cta_secondary_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>

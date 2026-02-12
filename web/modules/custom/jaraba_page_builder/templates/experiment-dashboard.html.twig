@@ -1,0 +1,219 @@
+{#
+/**
+ * @file
+ * experiment-dashboard.html.twig - Template de contenido del dashboard A/B.
+ *
+ * PROPÓSITO:
+ * Renderiza el contenido interior del dashboard de experimentos:
+ * - Header con partículas y título
+ * - Cards de métricas KPI
+ * - Lista de experimentos con acciones
+ * - Gráficos de conversión
+ *
+ * VARIABLES:
+ * - experiments: array de experimentos con métricas
+ * - metrics: métricas agregadas del dashboard
+ *
+ * ESPECIFICACIÓN: Gap 2 - Plan Elevación Clase Mundial
+ */
+#}
+
+{# Librerías requeridas #}
+{{ attach_library('ecosistema_jaraba_core/global') }}
+{{ attach_library('jaraba_page_builder/experiment-dashboard') }}
+
+{# ===== HEADER PREMIUM CON PARTÍCULAS ===== #}
+<header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+  <canvas id="experiments-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+  
+  <div class="dashboard-header__content">
+    <div class="dashboard-header__title-group">
+      <span class="dashboard-header__icon">
+        {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', color: 'innovation', size: '40px' }) }}
+      </span>
+      <div>
+        <h1 class="dashboard-header__title">{% trans %}Experimentos A/B{% endtrans %}</h1>
+        <p class="dashboard-header__subtitle">{% trans %}Optimiza tus páginas con tests de conversión{% endtrans %}</p>
+      </div>
+    </div>
+    
+    {# Botón crear experimento - Abre slide-panel #}
+    <a href="/page-builder/experiments/create" 
+       class="btn btn--primary btn--with-icon js-create-experiment"
+       data-slide-panel="large"
+       data-slide-panel-url="/page-builder/experiments/create"
+       data-slide-panel-title="{% trans %}Crear Experimento{% endtrans %}">
+      {{ jaraba_icon('actions', 'plus', { color: 'white', size: '20px' }) }}
+      <span>{% trans %}Nuevo Experimento{% endtrans %}</span>
+    </a>
+  </div>
+</header>
+
+{# ===== BARRA DE MÉTRICAS KPI ===== #}
+<section class="kpi-bar" aria-label="{% trans %}Métricas principales{% endtrans %}">
+  <a href="#experiments-list" class="kpi-card kpi-card--clickable" aria-label="{% trans %}Ver todos los experimentos{% endtrans %}">
+    <span class="kpi-card__icon">
+      {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', color: 'innovation', size: '24px' }) }}
+    </span>
+    <div class="kpi-card__content">
+      <span class="kpi-card__value">{{ metrics.total_experiments|default(0) }}</span>
+      <span class="kpi-card__label">{% trans %}Total Experimentos{% endtrans %}</span>
+    </div>
+  </a>
+  
+  <a href="?status=running" class="kpi-card kpi-card--active kpi-card--clickable" aria-label="{% trans %}Filtrar experimentos en ejecución{% endtrans %}">
+    <span class="kpi-card__icon">
+      {{ jaraba_icon('analytics', 'active', { variant: 'duotone', color: 'success', size: '24px' }) }}
+    </span>
+    <div class="kpi-card__content">
+      <span class="kpi-card__value">{{ metrics.active_experiments|default(0) }}</span>
+      <span class="kpi-card__label">{% trans %}En Ejecución{% endtrans %}</span>
+    </div>
+  </a>
+  
+  <a href="#experiments-list" class="kpi-card kpi-card--clickable" aria-label="{% trans %}Ver detalles de visitas{% endtrans %}">
+    <span class="kpi-card__icon">
+      {{ jaraba_icon('analytics', 'visits', { variant: 'duotone', color: 'corporate', size: '24px' }) }}
+    </span>
+    <div class="kpi-card__content">
+      <span class="kpi-card__value">{{ metrics.total_visits|default(0)|number_format }}</span>
+      <span class="kpi-card__label">{% trans %}Total Visitas{% endtrans %}</span>
+    </div>
+  </a>
+  
+  <a href="?status=completed" class="kpi-card kpi-card--highlight kpi-card--clickable" aria-label="{% trans %}Ver experimentos con resultados{% endtrans %}">
+    <span class="kpi-card__icon">
+      {{ jaraba_icon('analytics', 'conversion', { variant: 'duotone', color: 'impulse', size: '24px' }) }}
+    </span>
+    <div class="kpi-card__content">
+      <span class="kpi-card__value">{{ metrics.overall_conversion_rate|default(0) }}%</span>
+      <span class="kpi-card__label">{% trans %}Tasa Conversión{% endtrans %}</span>
+    </div>
+  </a>
+</section>
+
+{# ===== LISTA DE EXPERIMENTOS ===== #}
+<section class="experiments-section">
+  <div class="section-header">
+    <h2 class="section-title">{% trans %}Mis Experimentos{% endtrans %}</h2>
+    
+    {# Filtros opcionales #}
+    <div class="section-filters">
+      <select id="filter-status" class="form-select form-select--compact">
+        <option value="">{% trans %}Todos los estados{% endtrans %}</option>
+        <option value="running">{% trans %}En ejecución{% endtrans %}</option>
+        <option value="draft">{% trans %}Borrador{% endtrans %}</option>
+        <option value="completed">{% trans %}Completado{% endtrans %}</option>
+      </select>
+    </div>
+  </div>
+  
+  {% if experiments|length > 0 %}
+    <div class="experiments-grid">
+      {% for experiment in experiments %}
+        <article class="experiment-card experiment-card--{{ experiment.status }}" 
+                 data-experiment-id="{{ experiment.id }}"
+                 data-status="{{ experiment.status }}">
+          {# Cabecera con estado #}
+          <div class="experiment-card__header">
+            <span class="experiment-card__status experiment-card__status--{{ experiment.status }}">
+              {{ experiment.status_label }}
+            </span>
+            
+            {% if experiment.significance %}
+              <span class="experiment-card__badge experiment-card__badge--significant">
+                {{ jaraba_icon('analytics', 'check-circle', { color: 'success', size: '16px' }) }}
+                {% trans %}Significativo{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+          
+          {# Contenido #}
+          <div class="experiment-card__body">
+            <h3 class="experiment-card__title">{{ experiment.name }}</h3>
+            <p class="experiment-card__page">
+              {{ jaraba_icon('ui', 'document', { color: 'neutral', size: '14px' }) }}
+              {{ experiment.page_title }}
+            </p>
+            
+            {# Métricas del experimento #}
+            <div class="experiment-card__metrics">
+              <div class="experiment-metric">
+                <span class="experiment-metric__value">{{ experiment.variants_count }}</span>
+                <span class="experiment-metric__label">{% trans %}Variantes{% endtrans %}</span>
+              </div>
+              <div class="experiment-metric">
+                <span class="experiment-metric__value">{{ experiment.total_visits|number_format }}</span>
+                <span class="experiment-metric__label">{% trans %}Visitas{% endtrans %}</span>
+              </div>
+              <div class="experiment-metric experiment-metric--highlight">
+                <span class="experiment-metric__value">{{ experiment.conversion_rate }}%</span>
+                <span class="experiment-metric__label">{% trans %}Conversión{% endtrans %}</span>
+              </div>
+            </div>
+          </div>
+          
+          {# Acciones #}
+          <div class="experiment-card__actions">
+            <a href="/page-builder/experiments/{{ experiment.id }}/results" 
+               class="btn btn--ghost btn--small"
+               data-slide-panel="large"
+               data-slide-panel-title="{% trans %}Resultados{% endtrans %}: {{ experiment.name }}">
+              {{ jaraba_icon('analytics', 'chart-bar', { size: '16px' }) }}
+              <span>{% trans %}Resultados{% endtrans %}</span>
+            </a>
+            
+            {% if experiment.status == 'draft' %}
+              <button type="button" 
+                      class="btn btn--primary btn--small js-start-experiment"
+                      data-experiment-id="{{ experiment.id }}">
+                {{ jaraba_icon('ui', 'play', { color: 'white', size: '16px' }) }}
+                <span>{% trans %}Iniciar{% endtrans %}</span>
+              </button>
+            {% elseif experiment.status == 'running' %}
+              <button type="button" 
+                      class="btn btn--warning btn--small js-pause-experiment"
+                      data-experiment-id="{{ experiment.id }}">
+                {{ jaraba_icon('ui', 'pause', { color: 'white', size: '16px' }) }}
+                <span>{% trans %}Pausar{% endtrans %}</span>
+              </button>
+              
+              {# Botón declarar ganador (solo para running o paused) #}
+              <button type="button" 
+                      class="btn btn--success btn--small js-declare-winner"
+                      data-experiment-id="{{ experiment.id }}">
+                {{ jaraba_icon('analytics', 'trophy', { color: 'white', size: '16px' }) }}
+                <span>{% trans %}Ganador{% endtrans %}</span>
+              </button>
+            {% endif %}
+            
+            <a href="/page-builder/experiments/{{ experiment.id }}/edit" 
+               class="btn btn--ghost btn--small"
+               data-slide-panel="medium"
+               data-slide-panel-title="{% trans %}Editar{% endtrans %}">
+              {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    {# Estado vacío #}
+    <div class="empty-state">
+      <div class="empty-state__icon">
+        {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', color: 'neutral', size: '64px' }) }}
+      </div>
+      <h3 class="empty-state__title">{% trans %}No tienes experimentos{% endtrans %}</h3>
+      <p class="empty-state__description">
+        {% trans %}Crea tu primer experimento A/B para optimizar las conversiones de tus páginas.{% endtrans %}
+      </p>
+      <a href="/page-builder/experiments/create" 
+         class="btn btn--primary btn--large"
+         data-slide-panel="large"
+         data-slide-panel-title="{% trans %}Crear Experimento{% endtrans %}">
+        {{ jaraba_icon('actions', 'plus', { color: 'white', size: '20px' }) }}
+        <span>{% trans %}Crear Primer Experimento{% endtrans %}</span>
+      </a>
+    </div>
+  {% endif %}
+</section>

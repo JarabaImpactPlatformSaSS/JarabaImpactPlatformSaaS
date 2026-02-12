@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Template for Content Hub Categories List (frontend - tenant editors).
+ *
+ * Variables:
+ * - categories: Array with name, color, description, article_count, edit_url
+ * - total_count: Total categories count
+ * - back_url: URL to dashboard
+ * - add_url: URL to add category
+ *
+ * @see docs/00_DIRECTRICES_PROYECTO.md section 2.2.2
+ */
+#}
+
+<div class="content-hub-page content-hub-page--categories">
+  {# Header #}
+  <header class="content-hub-page__header">
+    <div class="content-hub-page__nav">
+      <a href="{{ back_url }}" class="btn btn--ghost btn--small">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+        {% trans %}Back to Dashboard{% endtrans %}
+      </a>
+    </div>
+    <div class="content-hub-page__title-row">
+      <h1 class="content-hub-page__title">{% trans %}Categories{% endtrans %}</h1>
+      <a href="{{ add_url }}" 
+         class="btn btn--primary"
+         data-slide-panel="medium"
+         data-slide-panel-title="{% trans %}New Category{% endtrans %}">
+        {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+        {% trans %}New Category{% endtrans %}
+      </a>
+    </div>
+    <p class="content-hub-page__count">{{ total_count }} {% trans %}categories{% endtrans %}</p>
+  </header>
+
+  {# Categories grid #}
+  <div class="content-hub-page__content">
+    {% if categories is not empty %}
+      <div class="category-grid">
+        {% for category in categories %}
+          <div class="category-card">
+            <div class="category-card__header">
+              <span class="category-card__color" style="background-color: {{ category.color }}"></span>
+              <h3 class="category-card__name">{{ category.name }}</h3>
+            </div>
+            {% if category.description %}
+              <p class="category-card__description">{{ category.description }}</p>
+            {% endif %}
+            <div class="category-card__footer">
+              <span class="category-card__count">
+                {{ category.article_count }} {% trans %}articles{% endtrans %}
+              </span>
+              <a href="{{ category.edit_url }}"
+                 class="btn btn--ghost btn--small"
+                 data-slide-panel="medium"
+                 data-slide-panel-title="{% trans %}Edit Category{% endtrans %}">
+                {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                {% trans %}Edit{% endtrans %}
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ jaraba_icon('ui', 'folder', { size: '48px', color: 'azul-corporativo' }) }}
+        <h3>{% trans %}No categories yet{% endtrans %}</h3>
+        <p>{% trans %}Create your first category to organize your articles.{% endtrans %}</p>
+        <a href="{{ add_url }}" 
+           class="btn btn--primary"
+           data-slide-panel="medium"
+           data-slide-panel-title="{% trans %}New Category{% endtrans %}">
+          {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+          {% trans %}New Category{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

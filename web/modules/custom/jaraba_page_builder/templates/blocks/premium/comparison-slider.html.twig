@@ -1,0 +1,53 @@
+{#
+/**
+ * @file
+ * Template para el bloque Comparador Deslizante.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set orientation = content.slider_orientation|default('horizontal') %}
+{% set initial = content.initial_position|default(50) %}
+{% set layout = content.layout|default('single') %}
+
+<section class="jaraba-comparison-slider jaraba-comparison-slider--{{ bg_class }} jaraba-comparison-slider--{{ layout }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-comparison-slider__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.comparisons is not empty %}
+      <div class="jaraba-comparison-slider__grid">
+        {% for comparison in content.comparisons %}
+          <div class="jaraba-comparison-item jaraba-comparison-item--{{ orientation }}"
+               data-initial="{{ initial }}">
+            <div class="jaraba-comparison-item__before">
+              <img src="{{ comparison.before_image }}" alt="{{ comparison.before_label|default('Antes'|trans) }}">
+              <span class="jaraba-comparison-item__label">{{ comparison.before_label|default('Antes'|trans) }}</span>
+            </div>
+            <div class="jaraba-comparison-item__after">
+              <img src="{{ comparison.after_image }}" alt="{{ comparison.after_label|default('Después'|trans) }}">
+              <span class="jaraba-comparison-item__label">{{ comparison.after_label|default('Después'|trans) }}</span>
+            </div>
+            <div class="jaraba-comparison-item__slider">
+              <div class="jaraba-comparison-item__handle">
+                {{ jaraba_icon('ui', 'arrows-horizontal', { size: '24px' }) }}
+              </div>
+            </div>
+            {% if comparison.caption %}
+              <p class="jaraba-comparison-item__caption">{{ comparison.caption }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

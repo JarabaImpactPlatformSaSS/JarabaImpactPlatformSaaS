@@ -1,0 +1,70 @@
+# Schema de configuración para jaraba_page_builder
+
+jaraba_page_builder.settings:
+  type: config_object
+  label: 'Configuración del Page Builder'
+  mapping:
+    default_plans_limit:
+      type: mapping
+      label: 'Límites por defecto de páginas por plan'
+      mapping:
+        starter:
+          type: integer
+          label: 'Límite para Starter'
+        professional:
+          type: integer
+          label: 'Límite para Professional'
+        enterprise:
+          type: integer
+          label: 'Límite para Enterprise (-1 = ilimitado)'
+    enable_revisions:
+      type: boolean
+      label: 'Habilitar revisiones'
+    enable_seo:
+      type: boolean
+      label: 'Habilitar campos SEO'
+    enable_ab_testing:
+      type: boolean
+      label: 'Habilitar A/B Testing'
+
+jaraba_page_builder.template.*:
+  type: config_entity
+  label: 'Plantilla de página'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Nombre'
+    description:
+      type: text
+      label: 'Descripción'
+    category:
+      type: string
+      label: 'Categoría'
+    twig_template:
+      type: string
+      label: 'Template Twig'
+    fields_schema:
+      type: sequence
+      label: 'JSON Schema'
+      sequence:
+        type: ignore
+    plans_required:
+      type: sequence
+      label: 'Planes requeridos'
+      sequence:
+        type: string
+    is_premium:
+      type: boolean
+      label: 'Es premium'
+    preview_image:
+      type: string
+      label: 'Imagen de preview'
+    preview_data:
+      type: ignore
+      label: 'Datos curados de preview'
+    weight:
+      type: integer
+      label: 'Peso'

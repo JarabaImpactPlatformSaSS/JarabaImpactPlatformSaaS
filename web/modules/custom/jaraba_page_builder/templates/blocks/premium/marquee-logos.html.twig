@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Template para el bloque Marquee de Logos (Magic UI style).
+ *
+ * Carrusel infinito de logos con animación CSS pura.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('transparent') %}
+{% set direction = content.direction|default('left') %}
+{% set speed = content.speed|default('normal') %}
+{% set rows = content.rows|default('1') %}
+{% set logos = content.logos|default([]) %}
+{% set pause_on_hover = content.pause_on_hover|default(true) %}
+{% set grayscale = content.grayscale|default(true) %}
+
+<section class="jaraba-marquee-logos jaraba-marquee-logos--{{ bg_class }} jaraba-block"
+         data-block-type="marquee_logos">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-marquee-logos__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Marquee Row 1 #}
+    <div class="jaraba-marquee-logos__track jaraba-marquee-logos__track--{{ direction }} jaraba-marquee-logos__track--{{ speed }}{{ pause_on_hover ? ' jaraba-marquee-logos__track--pause-hover' : '' }}">
+      <div class="jaraba-marquee-logos__scroll{{ grayscale ? ' jaraba-marquee-logos__scroll--grayscale' : '' }}">
+        {# Original set #}
+        {% for logo in logos %}
+          <div class="jaraba-marquee-logos__item">
+            {% if logo.url %}
+              <a href="{{ logo.url }}" target="_blank" rel="noopener" class="jaraba-marquee-logos__link">
+            {% endif %}
+            <img src="{{ logo.image }}" alt="{{ logo.alt_text }}" class="jaraba-marquee-logos__logo" loading="lazy">
+            {% if logo.url %}
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+        {# Duplicate for seamless loop #}
+        {% for logo in logos %}
+          <div class="jaraba-marquee-logos__item" aria-hidden="true">
+            {% if logo.url %}
+              <a href="{{ logo.url }}" target="_blank" rel="noopener" class="jaraba-marquee-logos__link" tabindex="-1">
+            {% endif %}
+            <img src="{{ logo.image }}" alt="{{ logo.alt_text }}" class="jaraba-marquee-logos__logo" loading="lazy">
+            {% if logo.url %}
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Marquee Row 2 (optional, opposite direction) #}
+    {% if rows == '2' %}
+      {% set reverse_direction = direction == 'left' ? 'right' : 'left' %}
+      <div class="jaraba-marquee-logos__track jaraba-marquee-logos__track--{{ reverse_direction }} jaraba-marquee-logos__track--{{ speed }}{{ pause_on_hover ? ' jaraba-marquee-logos__track--pause-hover' : '' }}">
+        <div class="jaraba-marquee-logos__scroll{{ grayscale ? ' jaraba-marquee-logos__scroll--grayscale' : '' }}">
+          {% for logo in logos %}
+            <div class="jaraba-marquee-logos__item">
+              {% if logo.url %}
+                <a href="{{ logo.url }}" target="_blank" rel="noopener" class="jaraba-marquee-logos__link">
+              {% endif %}
+              <img src="{{ logo.image }}" alt="{{ logo.alt_text }}" class="jaraba-marquee-logos__logo" loading="lazy">
+              {% if logo.url %}
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+          {% for logo in logos %}
+            <div class="jaraba-marquee-logos__item" aria-hidden="true">
+              {% if logo.url %}
+                <a href="{{ logo.url }}" target="_blank" rel="noopener" class="jaraba-marquee-logos__link" tabindex="-1">
+              {% endif %}
+              <img src="{{ logo.image }}" alt="{{ logo.alt_text }}" class="jaraba-marquee-logos__logo" loading="lazy">
+              {% if logo.url %}
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>

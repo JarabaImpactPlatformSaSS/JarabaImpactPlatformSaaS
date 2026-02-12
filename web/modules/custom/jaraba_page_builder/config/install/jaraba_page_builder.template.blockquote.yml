@@ -1,0 +1,60 @@
+langcode: es
+status: true
+dependencies: {}
+id: blockquote
+label: 'Cita Destacada'
+description: 'Muestra una cita prominente con autor y contexto.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/blockquote.html.twig'
+fields_schema:
+  type: object
+  properties:
+    quote:
+      type: string
+      title: 'Cita'
+    author:
+      type: string
+      title: 'Autor'
+    author_title:
+      type: string
+      title: 'Cargo del autor'
+    author_image:
+      type: string
+      title: 'Imagen del autor'
+      format: image
+    source:
+      type: string
+      title: 'Fuente'
+    source_url:
+      type: string
+    style:
+      type: string
+      title: 'Estilo'
+      enum:
+        - simple
+        - bordered
+        - highlighted
+        - large
+      default: highlighted
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - accent
+      default: light
+  required:
+    - quote
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  quote: "Design is not just what it looks like and feels like. Design is how it works."
+  author: "Steve Jobs"
+  author_title: "Co-founder, Apple"
+  author_image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"
+  style: highlighted
+  background: light
+

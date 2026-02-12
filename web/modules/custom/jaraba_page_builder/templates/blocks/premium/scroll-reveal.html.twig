@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Template para el bloque Scroll Reveal.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set stagger = content.stagger|default(true) %}
+{% set threshold = content.threshold|default(0.2) %}
+
+<section class="jaraba-scroll-reveal jaraba-scroll-reveal--{{ bg_class }} jaraba-block jaraba-block--premium"
+         data-stagger="{{ stagger ? 'true' : 'false' }}"
+         data-threshold="{{ threshold }}">
+  <div class="jaraba-block__container">
+    
+    {% if content.items is not empty %}
+      <div class="jaraba-scroll-reveal__items">
+        {% for item in content.items %}
+          <div class="jaraba-scroll-reveal__item" 
+               data-reveal 
+               data-animation="{{ item.animation|default('fade-up') }}"
+               data-delay="{{ item.delay|default(0) }}">
+            {% if item.type == 'text' %}
+              <div class="jaraba-scroll-reveal__text">{{ item.content|raw }}</div>
+            {% elseif item.type == 'image' %}
+              <img src="{{ item.image }}" alt="" class="jaraba-scroll-reveal__image" loading="lazy">
+            {% elseif item.type == 'card' %}
+              <div class="jaraba-scroll-reveal__card">{{ item.content|raw }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

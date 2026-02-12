@@ -1,0 +1,12 @@
+name: Jaraba Site Builder
+type: module
+description: 'Site Structure Manager - Árbol de páginas, URLs jerárquicas, redirects y sitemap.'
+package: Jaraba
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - jaraba_page_builder:jaraba_page_builder
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+php: 8.1
+
+configure: jaraba_site_builder.settings

@@ -1,0 +1,80 @@
+# Plantilla: Hero Fullscreen
+# Una plantilla base para secciones hero a pantalla completa
+
+id: hero_fullscreen
+label: 'Hero Pantalla Completa'
+description: 'Sección hero con imagen de fondo, título, subtítulo y CTA. Ideal para la parte superior de landing pages.'
+category: hero
+twig_template: '@jaraba_page_builder/blocks/hero/hero-fullscreen.html.twig'
+fields_schema:
+  type: object
+  title: 'Hero Fullscreen'
+  properties:
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 100
+      ui:widget: text
+      ui:placeholder: 'Texto pequeño sobre el título'
+    title:
+      type: string
+      title: 'Título Principal'
+      maxLength: 150
+      ui:widget: text
+      ui:placeholder: 'Tu próximo gran proyecto comienza aquí'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 300
+      ui:widget: textarea
+    cta_primary_text:
+      type: string
+      title: 'Texto CTA Principal'
+      maxLength: 50
+      default: 'Empezar ahora'
+    cta_primary_url:
+      type: string
+      format: uri
+      title: 'URL CTA Principal'
+    cta_secondary_text:
+      type: string
+      title: 'Texto CTA Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      format: uri
+      title: 'URL CTA Secundario'
+    background_image:
+      type: string
+      format: uri
+      title: 'Imagen de Fondo'
+      ui:widget: image-upload
+    overlay_opacity:
+      type: number
+      title: 'Opacidad del overlay'
+      minimum: 0
+      maximum: 100
+      default: 50
+      ui:widget: slider
+  required:
+    - title
+    - cta_primary_text
+    - cta_primary_url
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/hero-fullscreen.png'
+weight: 0
+preview_data:
+  eyebrow: "Welcome to the Future"
+  title: "Build Something Amazing Today"
+  subtitle: "Powerful tools and intuitive design to help you create, launch, and grow your next big idea."
+  cta_primary_text: "Get Started Free"
+  cta_primary_url: "#"
+  cta_secondary_text: "Watch Demo"
+  cta_secondary_url: "#"
+  background_image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
+  overlay_opacity: 60
+

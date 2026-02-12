@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hover Glow Cards.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set columns = content.columns|default(3) %}
+{% set glow_intensity = content.glow_intensity|default('medium') %}
+
+<section class="jaraba-glow-cards jaraba-glow-cards--{{ bg_class }} jaraba-glow-cards--intensity-{{ glow_intensity }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-glow-cards__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.cards is not empty %}
+      <div class="jaraba-glow-cards__grid jaraba-glow-cards__grid--{{ columns }}">
+        {% for card in content.cards %}
+          {% set glow_color = card.glow_color|default('primary') %}
+          <article class="jaraba-glow-card jaraba-glow-card--{{ glow_color }}">
+            {% if card.icon %}
+              <div class="jaraba-glow-card__icon">
+                {{ jaraba_icon('ui', card.icon, { variant: 'duotone', size: '40px' }) }}
+              </div>
+            {% endif %}
+            <h3 class="jaraba-glow-card__title">{{ card.title }}</h3>
+            {% if card.description %}
+              <p class="jaraba-glow-card__description">{{ card.description }}</p>
+            {% endif %}
+            {% if card.url %}
+              <a href="{{ card.url }}" class="jaraba-glow-card__link">
+                {% trans %}Explorar{% endtrans %}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+              </a>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

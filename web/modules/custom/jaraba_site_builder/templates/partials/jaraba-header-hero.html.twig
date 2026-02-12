@@ -1,0 +1,92 @@
+{#
+/**
+ * @file
+ * Header variante: Mega (Canvas v2)
+ *
+ * Header con mega menú desplegable para navegaciones complejas.
+ * Soporta múltiples columnas y contenido enriquecido en submenús.
+ */
+#}
+{% set header_classes = [
+  'jaraba-header',
+  'jaraba-header--mega',
+  sticky ? 'jaraba-header--sticky',
+  transparent ? 'jaraba-header--transparent',
+] %}
+
+<header class="{{ header_classes|join(' ')|trim }}" role="banner" data-grapesjs-type="jaraba-header" data-header-type="mega">
+  <div class="jaraba-header__container">
+    {# Logo / Brand #}
+    <div class="jaraba-header__brand">
+      {% if logo %}
+        <a href="/" class="jaraba-header__logo-link" rel="home">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-header__logo" />
+        </a>
+      {% else %}
+        <a href="/" class="jaraba-header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación Mega Menu #}
+    <nav class="jaraba-header__nav jaraba-header__nav--mega" aria-label="{{ 'Navegación principal'|t }}">
+      {% if navigation %}
+        <ul class="jaraba-header__menu">
+          {% for item in navigation %}
+            <li class="jaraba-header__menu-item{% if item.children %} jaraba-header__menu-item--has-mega{% endif %}">
+              <a href="{{ item.url }}" class="jaraba-header__menu-link">
+                {{ item.label }}
+                {% if item.children %}
+                  <svg class="jaraba-header__menu-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                {% endif %}
+              </a>
+              {% if item.children %}
+                <div class="jaraba-header__mega-dropdown">
+                  <div class="jaraba-header__mega-container">
+                    <div class="jaraba-header__mega-columns">
+                      {% for child in item.children %}
+                        <div class="jaraba-header__mega-column">
+                          <a href="{{ child.url }}" class="jaraba-header__mega-title">
+                            {{ child.label }}
+                          </a>
+                          {% if child.children %}
+                            <ul class="jaraba-header__mega-list">
+                              {% for subchild in child.children %}
+                                <li>
+                                  <a href="{{ subchild.url }}" class="jaraba-header__mega-link">
+                                    {{ subchild.label }}
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    {# Acciones #}
+    <div class="jaraba-header__actions">
+      {% if cta_text and cta_url %}
+        <a href="{{ cta_url }}" class="jaraba-header__cta btn btn--primary">
+          {{ cta_text }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Mobile toggle #}
+    <button class="jaraba-header__mobile-toggle" aria-label="{{ 'Abrir menú'|t }}" aria-expanded="false">
+      <span class="jaraba-header__hamburger"></span>
+    </button>
+  </div>
+</header>

@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Template del Dashboard de Social Media.
+ *
+ * Variables:
+ * - stats: Estadísticas de posts (total, published, scheduled, drafts).
+ */
+#}
+<div class="social-dashboard">
+  <header class="social-dashboard__header">
+    <h1 class="social-dashboard__title">{{ 'Social Media Manager'|t }}</h1>
+    <div class="social-dashboard__actions">
+      <a href="{{ path('entity.social_post.add_form') }}" class="btn btn--primary">
+        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        {{ 'Nueva Publicación'|t }}
+      </a>
+    </div>
+  </header>
+
+  {# Tarjetas de estadísticas #}
+  <section class="social-stats">
+    <div class="social-stat-card">
+      <div class="social-stat-card__value">{{ stats.total|default(0) }}</div>
+      <div class="social-stat-card__label">{{ 'Total Posts'|t }}</div>
+    </div>
+
+    <div class="social-stat-card social-stat-card--published">
+      <div class="social-stat-card__value">{{ stats.published|default(0) }}</div>
+      <div class="social-stat-card__label">{{ 'Publicados'|t }}</div>
+    </div>
+
+    <div class="social-stat-card social-stat-card--scheduled">
+      <div class="social-stat-card__value">{{ stats.scheduled|default(0) }}</div>
+      <div class="social-stat-card__label">{{ 'Programados'|t }}</div>
+    </div>
+
+    <div class="social-stat-card social-stat-card--draft">
+      <div class="social-stat-card__value">{{ stats.drafts|default(0) }}</div>
+      <div class="social-stat-card__label">{{ 'Borradores'|t }}</div>
+    </div>
+  </section>
+
+  {# Lista de posts recientes #}
+  <section class="social-posts">
+    <div class="social-posts__header">
+      <h2>{{ 'Publicaciones Recientes'|t }}</h2>
+    </div>
+    <div class="social-posts__list" id="social-posts-list">
+      {# Cargado via JavaScript/AJAX #}
+      <p class="social-posts__empty">{{ 'Cargando publicaciones...'|t }}</p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,8 @@
+# Action links para botones "+ Añadir" en collections
+
+entity.interactive_content.add:
+  title: 'Crear Contenido Interactivo'
+  route_name: entity.interactive_content.add_form
+  appears_on:
+    - entity.interactive_content.collection
+  weight: 0

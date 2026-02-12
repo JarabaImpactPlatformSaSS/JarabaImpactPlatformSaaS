@@ -1,0 +1,33 @@
+{#
+/**
+ * @file
+ * jaraba-cs-churn-panel.html.twig - Panel de tenants en riesgo.
+ *
+ * VARIABLES:
+ * - predictions: array de entidades ChurnPrediction
+ */
+#}
+
+<div class="cs-churn-panel">
+  {% for prediction in predictions %}
+    {% set risk = prediction.risk_level.value|default('low') %}
+    {% set probability = prediction.probability.value|default(0) %}
+    <div class="cs-churn-panel__item cs-churn-panel__item--{{ risk }}">
+      <div class="cs-churn-panel__risk">
+        <span class="cs-churn-panel__badge cs-churn-panel__badge--{{ risk }}">
+          {{ risk|capitalize }}
+        </span>
+      </div>
+      <div class="cs-churn-panel__info">
+        <span class="cs-churn-panel__tenant">{{ prediction.tenant_id.entity.label|default('Unknown') }}</span>
+        <span class="cs-churn-panel__probability">{{ (probability * 100)|round }}% {% trans %}probability{% endtrans %}</span>
+        {% if prediction.predicted_churn_date.value %}
+          <span class="cs-churn-panel__date">{% trans %}Est. churn:{% endtrans %} {{ prediction.predicted_churn_date.value }}</span>
+        {% endif %}
+      </div>
+      <div class="cs-churn-panel__confidence">
+        {{ (prediction.confidence.value|default(0) * 100)|round }}% {% trans %}confidence{% endtrans %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

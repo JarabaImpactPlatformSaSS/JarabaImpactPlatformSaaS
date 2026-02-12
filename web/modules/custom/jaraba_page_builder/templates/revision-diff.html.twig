@@ -1,0 +1,190 @@
+{#
+ # Template: Comparación Visual de Revisiones
+ #
+ # Variables:
+ #   - page: PageContent entity
+ #   - older: Revisión más antigua (PageContent)
+ #   - newer: Revisión más reciente (PageContent)
+ #   - older_id: ID de la revisión antigua
+ #   - newer_id: ID de la revisión nueva
+ #   - diff: Array de diferencias por campo
+ #   - has_changes: Boolean si hay cambios
+ #
+ # Gap G: Diff Visual de Revisiones
+ #}
+
+{{ attach_library('jaraba_page_builder/revision-diff') }}
+
+<div class="revision-diff" 
+     data-page-id="{{ page.id() }}"
+     data-older="{{ older_id }}"
+     data-newer="{{ newer_id }}">
+  
+  {# Header con contexto #}
+  <header class="revision-diff__header operational-tower__hero operational-tower__hero--compact">
+    <div class="operational-tower__hero-content">
+      <h1 class="operational-tower__title">
+        {{ jaraba_icon('actions', 'git-compare', { color: 'corporate', size: '28px' }) }}
+        {% trans %}Comparar Revisiones{% endtrans %}
+      </h1>
+      <p class="operational-tower__subtitle">
+        {{ page.label() }}
+      </p>
+    </div>
+    
+    <div class="operational-tower__hero-actions">
+      <a href="{{ path('jaraba_page_builder.revision_list', {page_content: page.id()}) }}" 
+         class="btn btn--outline">
+        {{ jaraba_icon('actions', 'arrow-left', { size: '18px' }) }}
+        {% trans %}Volver al historial{% endtrans %}
+      </a>
+    </div>
+  </header>
+  
+  {# Barra de versiones #}
+  <div class="revision-diff__versions">
+    <div class="revision-diff__version revision-diff__version--old">
+      <div class="revision-diff__version-badge">
+        {{ jaraba_icon('ui', 'clock', { color: 'warning', size: '16px' }) }}
+        {% trans %}Revisión anterior{% endtrans %}
+      </div>
+      <div class="revision-diff__version-meta">
+        <span class="revision-diff__date">
+          {{ older.getRevisionCreationTime()|date('d/m/Y H:i') }}
+        </span>
+        <span class="revision-diff__user">
+          {{ older.getRevisionUser().getDisplayName() }}
+        </span>
+      </div>
+      {% if older.getRevisionLogMessage() %}
+        <div class="revision-diff__log">
+          "{{ older.getRevisionLogMessage() }}"
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="revision-diff__arrow">
+      {{ jaraba_icon('actions', 'arrow-right', { size: '24px' }) }}
+    </div>
+    
+    <div class="revision-diff__version revision-diff__version--new">
+      <div class="revision-diff__version-badge">
+        {{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '16px' }) }}
+        {% trans %}Revisión nueva{% endtrans %}
+      </div>
+      <div class="revision-diff__version-meta">
+        <span class="revision-diff__date">
+          {{ newer.getRevisionCreationTime()|date('d/m/Y H:i') }}
+        </span>
+        <span class="revision-diff__user">
+          {{ newer.getRevisionUser().getDisplayName() }}
+        </span>
+      </div>
+      {% if newer.getRevisionLogMessage() %}
+        <div class="revision-diff__log">
+          "{{ newer.getRevisionLogMessage() }}"
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  {# Contenido del diff #}
+  <main class="revision-diff__content">
+    {% if has_changes %}
+      {% for field_name, change in diff %}
+        <div class="revision-diff__field revision-diff__field--{{ change.type }}">
+          <h3 class="revision-diff__field-name">
+            {% if change.type == 'added' %}
+              {{ jaraba_icon('actions', 'plus-circle', { color: 'success', size: '18px' }) }}
+            {% elseif change.type == 'removed' %}
+              {{ jaraba_icon('actions', 'minus-circle', { color: 'danger', size: '18px' }) }}
+            {% else %}
+              {{ jaraba_icon('actions', 'edit', { color: 'impulse', size: '18px' }) }}
+            {% endif %}
+            {{ change.label|default(field_name) }}
+          </h3>
+          
+          {% if change.type == 'sections' %}
+            {# Cambios en secciones JSON #}
+            <div class="revision-diff__sections">
+              {% for section_change in change.changes %}
+                <div class="revision-diff__section-change revision-diff__section-change--{{ section_change.type }}">
+                  <span class="revision-diff__section-type">
+                    {% if section_change.type == 'added' %}
+                      {{ jaraba_icon('actions', 'plus', { color: 'success', size: '14px' }) }}
+                      {% trans %}Añadida{% endtrans %}
+                    {% elseif section_change.type == 'removed' %}
+                      {{ jaraba_icon('actions', 'trash', { color: 'danger', size: '14px' }) }}
+                      {% trans %}Eliminada{% endtrans %}
+                    {% elseif section_change.type == 'modified' %}
+                      {{ jaraba_icon('actions', 'edit-2', { color: 'impulse', size: '14px' }) }}
+                      {% trans %}Modificada{% endtrans %}
+                    {% elseif section_change.type == 'reordered' %}
+                      {{ jaraba_icon('actions', 'move', { color: 'innovation', size: '14px' }) }}
+                      {% trans %}Reordenada{% endtrans %}
+                    {% endif %}
+                  </span>
+                  <span class="revision-diff__section-label">
+                    {{ section_change.label|default(section_change.template|default(section_change.message|default('Sección'))) }}
+                  </span>
+                  {% if section_change.fields_changed %}
+                    <span class="revision-diff__fields-changed">
+                      ({{ section_change.fields_changed|join(', ') }})
+                    </span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            {# Cambios en campos de texto #}
+            <div class="revision-diff__comparison">
+              <div class="revision-diff__old">
+                <div class="revision-diff__label">{% trans %}Antes{% endtrans %}</div>
+                <div class="revision-diff__value">
+                  {% if change.old %}
+                    {{ change.old }}
+                  {% else %}
+                    <span class="text-muted">{% trans %}(vacío){% endtrans %}</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="revision-diff__new">
+                <div class="revision-diff__label">{% trans %}Después{% endtrans %}</div>
+                <div class="revision-diff__value">
+                  {% if change.new %}
+                    {{ change.new }}
+                  {% else %}
+                    <span class="text-muted">{% trans %}(vacío){% endtrans %}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="revision-diff__no-changes">
+        <div class="empty-state">
+          {{ jaraba_icon('ui', 'check', { color: 'success', variant: 'duotone', size: '48px' }) }}
+          <h3>{% trans %}Sin diferencias{% endtrans %}</h3>
+          <p>{% trans %}Estas dos revisiones son idénticas.{% endtrans %}</p>
+        </div>
+      </div>
+    {% endif %}
+  </main>
+  
+  {# Acciones de rollback #}
+  <footer class="revision-diff__actions">
+    <div class="revision-diff__actions-info">
+      {{ jaraba_icon('ui', 'alert-circle', { color: 'warning', size: '16px' }) }}
+      <span>{% trans %}Restaurar creará una nueva revisión con el contenido de la versión anterior.{% endtrans %}</span>
+    </div>
+    
+    <a href="{{ path('jaraba_page_builder.revision_revert', {page_content: page.id(), revision: older_id}) }}" 
+       class="btn btn--danger"
+       data-confirm="{% trans %}¿Restaurar a la versión del {{ older.getRevisionCreationTime()|date('d/m/Y H:i') }}? Se creará una nueva revisión.{% endtrans %}">
+      {{ jaraba_icon('actions', 'rotate-ccw', { color: 'neutral', size: '18px' }) }}
+      {% trans %}Restaurar versión anterior{% endtrans %}
+    </a>
+  </footer>
+</div>

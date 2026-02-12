@@ -1,0 +1,136 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tabla de Precios.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set style_class = content.style|default('cards') %}
+{% set plans = content.plans|default([]) %}
+
+<section class="jaraba-block jaraba-pricing jaraba-pricing--{{ bg_class }} jaraba-pricing--{{ style_class }}"
+         data-block-type="pricing_table">
+  
+  <div class="jaraba-block__container">
+    
+    {# Encabezado #}
+    <header class="jaraba-pricing__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+      
+      {# Toggle Mensual/Anual #}
+      {% if content.billing_toggle %}
+        <div class="jaraba-pricing__toggle">
+          <span class="jaraba-pricing__toggle-label" data-billing="monthly">{% trans %}Mensual{% endtrans %}</span>
+          <label class="jaraba-switch">
+            <input type="checkbox" 
+                   class="jaraba-switch__input" 
+                   data-pricing-toggle
+                   aria-label="{% trans %}Cambiar entre facturación mensual y anual{% endtrans %}">
+            <span class="jaraba-switch__slider"></span>
+          </label>
+          <span class="jaraba-pricing__toggle-label" data-billing="annual">
+            {% trans %}Anual{% endtrans %}
+            {% if content.annual_discount %}
+              <span class="jaraba-pricing__discount-badge">-{{ content.annual_discount }}%</span>
+            {% endif %}
+          </span>
+        </div>
+      {% endif %}
+    </header>
+    
+    {# Grid de planes #}
+    {% if plans is not empty %}
+      <div class="jaraba-pricing__grid jaraba-pricing__grid--{{ plans|length }}">
+        {% for plan in plans %}
+          {% set annual_monthly = plan.price_annual ? (plan.price_annual / 12)|round(2) : plan.price_monthly %}
+          
+          <article class="jaraba-plan-card {{ plan.is_popular ? 'jaraba-plan-card--popular' : '' }}">
+            
+            {# Badge popular #}
+            {% if plan.is_popular %}
+              <div class="jaraba-plan-card__popular-badge">
+                {{ jaraba_icon('ui', 'star', { variant: 'filled', size: '14px', color: 'warning' }) }}
+                <span>{% trans %}Más popular{% endtrans %}</span>
+              </div>
+            {% endif %}
+            
+            {# Cabecera del plan #}
+            <header class="jaraba-plan-card__header">
+              <h3 class="jaraba-plan-card__name">{{ plan.name }}</h3>
+              {% if plan.description %}
+                <p class="jaraba-plan-card__description">{{ plan.description }}</p>
+              {% endif %}
+            </header>
+            
+            {# Precio #}
+            <div class="jaraba-plan-card__pricing">
+              {# Precio mensual #}
+              <div class="jaraba-plan-card__price" data-price-type="monthly">
+                <span class="jaraba-plan-card__currency">€</span>
+                <span class="jaraba-plan-card__amount">{{ plan.price_monthly }}</span>
+                <span class="jaraba-plan-card__period">/{% trans %}mes{% endtrans %}</span>
+              </div>
+              
+              {# Precio anual (oculto por defecto) #}
+              {% if plan.price_annual %}
+                <div class="jaraba-plan-card__price jaraba-plan-card__price--hidden" data-price-type="annual">
+                  <span class="jaraba-plan-card__currency">€</span>
+                  <span class="jaraba-plan-card__amount">{{ annual_monthly }}</span>
+                  <span class="jaraba-plan-card__period">/{% trans %}mes{% endtrans %}</span>
+                  <small class="jaraba-plan-card__billed">{% trans %}Facturado anualmente{% endtrans %}</small>
+                </div>
+              {% endif %}
+            </div>
+            
+            {# CTA del plan #}
+            <a href="{{ plan.cta_url|default('/contact') }}" 
+               class="jaraba-btn {{ plan.is_popular ? 'jaraba-btn--primary' : 'jaraba-btn--outline' }} jaraba-btn--block">
+              {{ plan.cta_text|default('Empezar'|trans) }}
+            </a>
+            
+            {# Lista de características #}
+            {% if plan.features is not empty %}
+              <ul class="jaraba-plan-card__features">
+                {% for feature in plan.features %}
+                  <li class="jaraba-plan-card__feature {{ feature.included ? '' : 'jaraba-plan-card__feature--excluded' }} {{ feature.highlight ? 'jaraba-plan-card__feature--highlight' : '' }}">
+                    <span class="jaraba-plan-card__feature-icon">
+                      {% if feature.included %}
+                        {{ jaraba_icon('ui', 'check', { variant: 'outline', size: '16px', color: 'success' }) }}
+                      {% else %}
+                        {{ jaraba_icon('ui', 'x', { variant: 'outline', size: '16px', color: 'muted' }) }}
+                      {% endif %}
+                    </span>
+                    <span class="jaraba-plan-card__feature-text">{{ feature.text }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    {# Tabla de comparación (opcional) #}
+    {% if content.show_comparison and plans is not empty %}
+      <div class="jaraba-pricing__comparison">
+        <h3 class="jaraba-pricing__comparison-title">{% trans %}Comparación detallada{% endtrans %}</h3>
+        {# TODO: Implementar tabla de comparación #}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

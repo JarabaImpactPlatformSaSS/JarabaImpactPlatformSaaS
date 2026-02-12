@@ -1,0 +1,17 @@
+name: 'Jaraba Interactive AI-Powered'
+type: module
+description: 'Sistema de contenido interactivo world-class con IA generativa para formación y certificaciones.'
+package: Jaraba
+core_version_requirement: ^11
+php: 8.2
+
+dependencies:
+  - drupal:user
+  - drupal:options
+  - drupal:file
+  - jaraba_page_builder:jaraba_page_builder
+  - jaraba_lms:jaraba_lms
+  - jaraba_ai_agents:jaraba_ai_agents
+  - group:group
+
+configure: admin/config/jaraba/interactive

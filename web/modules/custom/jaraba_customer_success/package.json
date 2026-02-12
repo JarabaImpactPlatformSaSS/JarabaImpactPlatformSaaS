@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-customer-success",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dart Sass build para Customer Success Dashboard.",
+  "scripts": {
+    "build:scss": "sass scss/main.scss css/customer-success-dashboard.css --style=compressed --no-source-map",
+    "watch:scss": "sass scss/main.scss css/customer-success-dashboard.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

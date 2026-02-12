@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Template de página limpia para Social Dashboard.
+ *
+ * DIRECTRIZ: Página frontend limpia sin regiones ni bloques de Drupal.
+ * Layout full-width, mobile-first, sin sidebar admin para tenants.
+ */
+#}
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {{ 'Skip to main content'|t }}
+  </a>
+
+  {# Header del tema - incluir parcial si existe #}
+  {% include '@ecosistema_jaraba_theme/partials/header.html.twig' ignore missing %}
+
+  {# Navegación del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/navigation.html.twig' ignore missing %}
+
+  {# Contenido principal - SIN page.content, renderizado directo #}
+  <main id="main-content" class="main-content main-content--full-width">
+    {{ page.content }}
+  </main>
+
+  {# Footer del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/footer.html.twig' ignore missing %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

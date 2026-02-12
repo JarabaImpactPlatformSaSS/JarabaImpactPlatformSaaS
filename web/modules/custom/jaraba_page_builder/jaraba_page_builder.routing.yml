@@ -1,0 +1,767 @@
+# Rutas del módulo Page Builder
+
+# Dashboard principal del Page Builder - Hub Central.
+jaraba_page_builder.dashboard:
+  path: '/page-builder'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageBuilderDashboardController::dashboard'
+    _title: 'Constructor de Páginas'
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+
+# Dashboard de Analytics - Gap C.
+jaraba_page_builder.analytics_dashboard:
+  path: '/page-builder/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AnalyticsDashboardController::dashboard'
+    _title: 'Analytics de Páginas'
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+
+# Rutas administrativas
+jaraba_page_builder.admin:
+  path: '/admin/config/jaraba/page-builder'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Constructor de Páginas'
+  requirements:
+    _permission: 'administer page builder'
+
+jaraba_page_builder.settings:
+  path: '/admin/config/jaraba/page-builder/settings'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\PageBuilderSettingsForm'
+    _title: 'Configuración del Page Builder'
+  requirements:
+    _permission: 'administer page builder'
+  options:
+    _admin_route: FALSE
+
+# Settings via slide-panel (AJAX sniffing)
+jaraba_page_builder.settings_ajax:
+  path: '/page-builder/settings'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageBuilderSettingsController::settings'
+    _title: 'Configuración'
+  requirements:
+    _permission: 'administer page builder'
+  options:
+    _admin_route: FALSE
+
+# Tracking settings via slide-panel (AJAX sniffing)
+jaraba_page_builder.tracking_settings_ajax:
+  path: '/page-builder/tracking/settings'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TrackingSettingsController::settings'
+    _title: 'Configurar Tracking'
+  requirements:
+    _permission: 'administer page builder'
+  options:
+    _admin_route: FALSE
+
+
+# Template Picker (selección de plantilla al crear página)
+jaraba_page_builder.template_picker:
+  path: '/page-builder/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplatePickerController::listTemplates'
+    _title: 'Elegir Plantilla'
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+
+# Template Picker AJAX (para slide-panel sin página completa)
+# Esta ruta devuelve SOLO el fragmento HTML del picker,
+# permitiendo cargarlo directamente en un slide-panel.
+jaraba_page_builder.template_picker_ajax:
+  path: '/page-builder/templates/ajax'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplatePickerController::listTemplatesAjax'
+    _title: 'Elegir Plantilla'
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+    no_cache: TRUE
+
+# Preview de plantilla
+jaraba_page_builder.template_preview:
+  path: '/page-builder/templates/{page_template}/preview'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplatePickerController::previewTemplate'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\TemplatePickerController::previewTitle'
+  requirements:
+    _permission: 'view page templates'
+  options:
+    parameters:
+      page_template:
+        type: entity:page_template
+
+# Preview iframe aislado (sin UI de Drupal) - Para Live Preview
+jaraba_page_builder.template_iframe_preview:
+  path: '/page-builder/templates/{page_template}/iframe'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplatePickerController::renderIframe'
+  requirements:
+    _permission: 'view page templates'
+  options:
+    parameters:
+      page_template:
+        type: entity:page_template
+    no_cache: TRUE
+
+# Crear página desde plantilla
+jaraba_page_builder.create_from_template:
+  path: '/page-builder/create/{page_template}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageContentController::createFromTemplate'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\PageContentController::createTitle'
+  requirements:
+    _permission: 'create page content'
+  options:
+    parameters:
+      page_template:
+        type: entity:page_template
+
+# Dashboard de páginas del tenant
+jaraba_page_builder.my_pages:
+  path: '/my-pages'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageContentController::myPages'
+    _title: 'Mis Páginas'
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+
+# Canvas Editor Visual - Editor lado a lado con preview en vivo
+# Gap J: Experiencia de edición clase mundial
+jaraba_page_builder.canvas_editor:
+  path: '/page/{page_content}/editor'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasEditorController::editor'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\CanvasEditorController::editorTitle'
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _admin_route: FALSE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Settings routes para Field UI
+entity.homepage_content.settings:
+  path: '/admin/structure/homepage-content'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\HomepageContentSettingsForm'
+    _title: 'Configuración Contenido Homepage'
+  requirements:
+    _permission: 'administer page builder'
+
+entity.feature_card.settings:
+  path: '/admin/structure/feature-card'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\FeatureCardSettingsForm'
+    _title: 'Configuración Feature Cards'
+  requirements:
+    _permission: 'administer page builder'
+
+entity.stat_item.settings:
+  path: '/admin/structure/stat-item'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\StatItemSettingsForm'
+    _title: 'Configuración Estadísticas'
+  requirements:
+    _permission: 'administer page builder'
+
+entity.intention_card.settings:
+  path: '/admin/structure/intention-card'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\IntentionCardSettingsForm'
+    _title: 'Configuración Intenciones'
+  requirements:
+    _permission: 'administer page builder'
+
+# Settings para Experimentos A/B - Double Navigation Pattern
+entity.page_experiment.settings:
+  path: '/admin/structure/page-builder/experiment'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\PageExperimentSettingsForm'
+    _title: 'Configuración de Experimentos'
+  requirements:
+    _permission: 'administer page builder'
+
+# Settings para Variantes de Experimento
+entity.experiment_variant.settings:
+  path: '/admin/structure/page-builder/experiment-variant'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\ExperimentVariantSettingsForm'
+    _title: 'Configuración de Variantes'
+  requirements:
+    _permission: 'administer page builder'
+
+# API para generación de contenido con IA
+jaraba_page_builder.api.generate_content:
+  path: '/api/page-builder/generate-content'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::generateContent'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API para sugerencias SEO con IA — Sprint C4.1
+# Analiza HTML de una página y genera sugerencias SEO accionables via LLM.
+jaraba_page_builder.api.seo_ai_suggest:
+  path: '/api/v1/page-builder/seo-ai-suggest'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::seoSuggest'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API para generación de templates con IA — Sprint C4.2
+# Genera landing pages completas a partir de prompt + vertical + tono.
+jaraba_page_builder.api.ai_generate_template:
+  path: '/api/v1/page-builder/ai/generate-template'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::generateAITemplate'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API para Prompt-to-Page — Sprint C4.4
+# Genera una página completa con múltiples secciones coherentes.
+jaraba_page_builder.api.ai_generate_page:
+  path: '/api/v1/page-builder/ai/generate-page'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::generateFullPage'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API v1 para generación de campos con IA - Gap 1 Clase Mundial
+jaraba_page_builder.api.generate_field:
+  path: '/api/v1/page-builder/generate-field'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiFieldGeneratorController::generateField'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+
+# ============================================================
+# SITEMAP XML DINÁMICO - Gap #1 (Doc 164)
+# ============================================================
+
+jaraba_page_builder.sitemap_index:
+  path: '/sitemap.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::index'
+    _title: 'Sitemap'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
+
+jaraba_page_builder.sitemap_pages:
+  path: '/sitemap-pages.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::pages'
+    _title: 'Sitemap - Páginas'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
+
+jaraba_page_builder.sitemap_articles:
+  path: '/sitemap-articles.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::articles'
+    _title: 'Sitemap - Artículos'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
+
+jaraba_page_builder.sitemap_static:
+  path: '/sitemap-static.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::staticPages'
+    _title: 'Sitemap - Páginas Estáticas'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
+
+# ============================================================
+# A/B TESTING API - Gap #3 (Doc 168)
+# ============================================================
+
+jaraba_page_builder.api.experiments_list:
+  path: '/api/v1/experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::listExperiments'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_track_visit:
+  path: '/api/v1/experiments/track-visit'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::trackVisit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    _auth: ['cookie']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_track_conversion:
+  path: '/api/v1/experiments/track-conversion'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::trackConversion'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    _auth: ['cookie']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_results:
+  path: '/api/v1/experiments/{id}/results'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::getResults'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_start:
+  path: '/api/v1/experiments/{id}/start'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::startExperiment'
+  methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_stop:
+  path: '/api/v1/experiments/{id}/stop'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::stopExperiment'
+  methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_declare_winner:
+  path: '/api/v1/experiments/{id}/declare-winner'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::declareWinner'
+  methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# ============================================================
+# DASHBOARD VISUAL EXPERIMENTOS A/B - Gap #2 Clase Mundial
+# ============================================================
+
+jaraba_page_builder.experiments_dashboard:
+  path: '/page-builder/experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentDashboardController::dashboard'
+    _title: 'Experimentos A/B'
+  requirements:
+    _permission: 'view page experiment'
+  options:
+    _admin_route: FALSE
+
+# Crear experimento (slide-panel desde dashboard)
+jaraba_page_builder.experiments_create:
+  path: '/page-builder/experiments/create'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentDashboardController::createForm'
+    _title: 'Crear Experimento'
+  requirements:
+    _permission: 'create page experiment'
+  options:
+    _admin_route: FALSE
+
+
+# ============================================================
+# MULTI-BLOCK SYSTEM API (Gap J)
+# Endpoints para gestión de secciones en páginas multi-block.
+# ============================================================
+
+# Lista secciones de una página
+jaraba_page_builder.api.sections.list:
+  path: '/api/pages/{page_content}/sections'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Añade una sección
+jaraba_page_builder.api.sections.add:
+  path: '/api/pages/{page_content}/sections'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::add'
+  methods: [POST]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Actualiza una sección
+jaraba_page_builder.api.sections.update:
+  path: '/api/pages/{page_content}/sections/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::update'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Elimina una sección
+jaraba_page_builder.api.sections.delete:
+  path: '/api/pages/{page_content}/sections/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::delete'
+  methods: [DELETE]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Reordena secciones
+jaraba_page_builder.api.sections.reorder:
+  path: '/api/pages/{page_content}/sections/reorder'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::reorder'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Lista templates disponibles para secciones
+jaraba_page_builder.api.sections.templates:
+  path: '/api/page-builder/section-templates'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::availableTemplates'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# ============================================================
+# REVISION DIFF VISUAL - Gap G Clase Mundial
+# Comparación visual de revisiones con rollback de un clic.
+# ============================================================
+
+# Lista de revisiones de una página
+jaraba_page_builder.revision_list:
+  path: '/page/{page_content}/revisions'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::listRevisions'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::listRevisionsTitle'
+  requirements:
+    _permission: 'view page content revisions'
+    page_content: \d+
+  options:
+    _admin_route: FALSE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Comparación visual lado a lado entre dos revisiones
+jaraba_page_builder.revision_compare:
+  path: '/page/{page_content}/revisions/compare/{older}/{newer}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::compare'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::compareTitle'
+  requirements:
+    _permission: 'view page content revisions'
+    page_content: \d+
+    older: \d+
+    newer: \d+
+  options:
+    _admin_route: FALSE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Revertir a una revisión anterior
+jaraba_page_builder.revision_revert:
+  path: '/page/{page_content}/revisions/{revision}/revert'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::revert'
+    _title_callback: '\Drupal\jaraba_page_builder\Controller\RevisionDiffController::revertTitle'
+  requirements:
+    _permission: 'revert page content revisions'
+    page_content: \d+
+    revision: \d+
+  options:
+    _admin_route: FALSE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# ============================================================
+# CANVAS EDITOR GRAPESJS API - Sprint 2
+# Persistencia del canvas visual y bloques dinámicos.
+# ============================================================
+
+# Obtener contenido del canvas GrapesJS
+jaraba_page_builder.api.canvas_get:
+  path: '/api/v1/pages/{page_content}/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::getCanvas'
+  methods: [GET]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Guardar contenido del canvas GrapesJS
+jaraba_page_builder.api.canvas_save:
+  path: '/api/v1/pages/{page_content}/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::saveCanvas'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Listar bloques disponibles para GrapesJS
+jaraba_page_builder.api.canvas_blocks:
+  path: '/api/v1/page-builder/blocks'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::listBlocks'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# ============================================================
+# MEDIA BROWSER API - Asset Manager Integration
+# Gestión de medios para el Canvas Editor GrapesJS.
+# ============================================================
+
+# Listar assets del tenant
+jaraba_page_builder.api.assets_list:
+  path: '/api/v1/page-builder/assets'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\MediaBrowserController::listAssets'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Subir nuevo asset
+jaraba_page_builder.api.assets_upload:
+  path: '/api/v1/page-builder/assets'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\MediaBrowserController::uploadAsset'
+  methods: [POST]
+  requirements:
+    _permission: 'create media'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Obtener detalle de un asset
+jaraba_page_builder.api.assets_get:
+  path: '/api/v1/page-builder/assets/{media}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\MediaBrowserController::getAsset'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      media:
+        type: entity:media
+
+# ============================================================
+# TEMPLATE REGISTRY API - SSoT para Templates (Fase 8)
+# Acceso centralizado a templates con filtros por plan/categoría.
+# @see docs/arquitectura/2026-02-06_arquitectura_unificada_templates_bloques.md
+# ============================================================
+
+# Listar templates disponibles
+jaraba_page_builder.api.templates_list:
+  path: '/api/v1/page-builder/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplateRegistryApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Obtener template por ID
+jaraba_page_builder.api.templates_get:
+  path: '/api/v1/page-builder/templates/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplateRegistryApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Estadísticas del registry
+jaraba_page_builder.api.templates_stats:
+  path: '/api/v1/page-builder/templates/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplateRegistryApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Categorías disponibles
+jaraba_page_builder.api.templates_categories:
+  path: '/api/v1/page-builder/templates/categories'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplateRegistryApiController::categories'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Invalidar caché de templates (admin only)
+jaraba_page_builder.api.templates_cache_invalidate:
+  path: '/api/v1/page-builder/templates/cache/invalidate'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\TemplateRegistryApiController::invalidateCache'
+  methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# =============================================================================
+# ONBOARDING TOUR API (Sprint A1 — Plan v3.1)
+# =============================================================================
+
+# GET: Obtener estado del tour para el usuario actual.
+jaraba_page_builder.api.onboarding_get:
+  path: '/api/v1/page-builder/onboarding'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\OnboardingController::getState'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# POST: Marcar tour como completado/reseteado.
+jaraba_page_builder.api.onboarding_set:
+  path: '/api/v1/page-builder/onboarding'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\OnboardingController::setState'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _admin_route: FALSE
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API: Configuración de página desde el Canvas Editor (slide-panel ⚙ Página).
+# GET: Obtener metadatos (título, slug, SEO, estado, revisiones).
+# PATCH: Actualizar metadatos con nueva revisión.
+jaraba_page_builder.api.page_config:
+  path: '/api/v1/pages/{id}/config'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageConfigApiController::handleRequest'
+  methods: [GET, PATCH]
+  requirements:
+    _permission: 'edit page builder content'
+    id: '\d+'
+  options:
+    _admin_route: FALSE
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+

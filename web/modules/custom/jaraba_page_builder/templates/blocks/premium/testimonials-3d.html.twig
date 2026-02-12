@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Template para el bloque Testimonios 3D Carousel.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set effect = content.effect|default('coverflow') %}
+{% set autoplay = content.autoplay|default(true) %}
+{% set autoplay_speed = content.autoplay_speed|default(5000) %}
+
+<section class="jaraba-testimonials-3d jaraba-testimonials-3d--{{ bg_class }} jaraba-block jaraba-block--premium"
+         data-effect="{{ effect }}"
+         data-autoplay="{{ autoplay ? 'true' : 'false' }}"
+         data-autoplay-speed="{{ autoplay_speed }}">
+  <div class="jaraba-block__container">
+    
+    {% if content.title %}
+      <h2 class="jaraba-block__title">{{ content.title }}</h2>
+    {% endif %}
+
+    {% if content.testimonials is not empty %}
+      <div class="jaraba-testimonials-3d__carousel">
+        {% for testimonial in content.testimonials %}
+          <article class="jaraba-testimonial-3d">
+            {% if testimonial.rating %}
+              <div class="jaraba-testimonial-3d__rating">
+                {% for i in 1..5 %}
+                  {{ jaraba_icon('ui', 'star', { variant: i <= testimonial.rating ? 'filled' : 'outline', size: '18px', color: 'warning' }) }}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <blockquote class="jaraba-testimonial-3d__quote">
+              "{{ testimonial.quote }}"
+            </blockquote>
+            <footer class="jaraba-testimonial-3d__footer">
+              {% if testimonial.avatar %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.author }}" class="jaraba-testimonial-3d__avatar">
+              {% endif %}
+              <div class="jaraba-testimonial-3d__author-info">
+                <strong class="jaraba-testimonial-3d__author">{{ testimonial.author }}</strong>
+                <span class="jaraba-testimonial-3d__role">{{ testimonial.role }}{% if testimonial.company %}, {{ testimonial.company }}{% endif %}</span>
+              </div>
+            </footer>
+          </article>
+        {% endfor %}
+      </div>
+      <div class="jaraba-testimonials-3d__nav">
+        <button type="button" class="jaraba-testimonials-3d__prev" aria-label="{% trans %}Anterior{% endtrans %}">
+          {{ jaraba_icon('ui', 'chevron-left', { size: '24px' }) }}
+        </button>
+        <button type="button" class="jaraba-testimonials-3d__next" aria-label="{% trans %}Siguiente{% endtrans %}">
+          {{ jaraba_icon('ui', 'chevron-right', { size: '24px' }) }}
+        </button>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

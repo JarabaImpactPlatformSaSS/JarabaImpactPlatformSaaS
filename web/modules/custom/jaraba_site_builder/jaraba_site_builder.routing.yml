@@ -1,0 +1,285 @@
+# Rutas del módulo Site Builder
+
+# ========================================================================
+# Frontend Routes (Tenant Editors - NO admin theme)
+# El tenant accede a /site-builder/* con layout limpio sin tema de admin
+# ========================================================================
+
+jaraba_site_builder.frontend.dashboard:
+  path: '/site-builder'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::dashboardFrontend'
+    _title: 'Constructor del Sitio'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+jaraba_site_builder.frontend.tree:
+  path: '/site-builder/tree'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::treeFrontend'
+    _title: 'Árbol de Páginas'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+jaraba_site_builder.frontend.config:
+  path: '/site-builder/config'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::configFrontend'
+    _title: 'Configuración del Sitio'
+  requirements:
+    _permission: 'view site config'
+  options:
+    _admin_route: FALSE
+
+jaraba_site_builder.frontend.redirects:
+  path: '/site-builder/redirects'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::redirectsFrontend'
+    _title: 'Redirects'
+  requirements:
+    _permission: 'manage site redirects'
+  options:
+    _admin_route: FALSE
+
+jaraba_site_builder.frontend.sitemap:
+  path: '/site-builder/sitemap'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::sitemapFrontend'
+    _title: 'Sitemap'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+# ========================================================================
+# Admin Routes (Super Admins only - kept for backward compatibility)
+# ========================================================================
+
+# Página principal del Site Builder
+jaraba_site_builder.dashboard:
+  path: '/admin/structure/site-builder'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::dashboard'
+    _title: 'Estructura del Sitio'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+
+# Tab: Árbol de páginas
+jaraba_site_builder.tree:
+  path: '/admin/structure/site-builder/tree'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::tree'
+    _title: 'Árbol de Páginas'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+# Tab: Configuración
+jaraba_site_builder.settings:
+  path: '/admin/structure/site-builder/config'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::siteConfig'
+    _title: 'Configuración del Sitio'
+  requirements:
+    _permission: 'view site config'
+  options:
+    _admin_route: FALSE
+
+# Tab: Redirects
+jaraba_site_builder.redirects:
+  path: '/admin/structure/site-builder/redirects'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::redirects'
+    _title: 'Redirects'
+  requirements:
+    _permission: 'manage site redirects'
+  options:
+    _admin_route: FALSE
+
+# Formulario para añadir redirect
+jaraba_site_builder.redirect_add:
+  path: '/admin/structure/site-builder/redirects/add'
+  defaults:
+    _entity_form: 'site_redirect.add'
+    _title: 'Añadir Redirect'
+  requirements:
+    _permission: 'manage site redirects'
+  options:
+    _admin_route: FALSE
+
+# Editar redirect
+jaraba_site_builder.redirect_edit:
+  path: '/admin/structure/site-builder/redirects/{site_redirect}/edit'
+  defaults:
+    _entity_form: 'site_redirect.edit'
+    _title: 'Editar Redirect'
+  requirements:
+    _permission: 'manage site redirects'
+  options:
+    _admin_route: FALSE
+    parameters:
+      site_redirect:
+        type: entity:site_redirect
+
+# Tab: Sitemap visual
+jaraba_site_builder.sitemap:
+  path: '/admin/structure/site-builder/sitemap'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteTreePageController::sitemap'
+    _title: 'Sitemap'
+  requirements:
+    _permission: 'view site structure'
+  options:
+    _admin_route: FALSE
+
+# Sitemap XML público
+jaraba_site_builder.sitemap_xml:
+  path: '/sitemap.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SitemapController::xml'
+  requirements:
+    _access: 'TRUE'
+
+# --- APIs REST ---
+
+# Obtener árbol de páginas
+jaraba_site_builder.api.tree:
+  path: '/api/v1/site/tree'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::getTree'
+  methods: [GET]
+  requirements:
+    _permission: 'view site structure'
+
+# Sprint B1: Estadísticas del dashboard
+jaraba_site_builder.api.stats:
+  path: '/api/v1/site/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'view site structure'
+
+# Sprint B2: Auditoría SEO por página
+jaraba_site_builder.api.seo_audit:
+  path: '/api/v1/site/pages/{id}/seo-audit'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::seoAudit'
+  methods: [GET]
+  requirements:
+    _permission: 'view site structure'
+    id: '\d+'
+
+# Reordenar árbol (drag & drop)
+jaraba_site_builder.api.tree_reorder:
+  path: '/api/v1/site/tree/reorder'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::reorderTree'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+
+# Añadir página al árbol
+jaraba_site_builder.api.pages_add:
+  path: '/api/v1/site/pages'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::addPage'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+
+# Obtener páginas disponibles del Page Builder
+jaraba_site_builder.api.pages_available:
+  path: '/api/v1/site/pages/available'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::getAvailablePages'
+  methods: [GET]
+  requirements:
+    _permission: 'administer site structure'
+
+# Actualizar configuración de página
+jaraba_site_builder.api.pages_update:
+  path: '/api/v1/site/pages/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::updatePage'
+  methods: [PATCH]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+# Eliminar página del árbol
+jaraba_site_builder.api.pages_delete:
+  path: '/api/v1/site/pages/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::deletePage'
+  methods: [DELETE]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+# Mover página a otro padre
+jaraba_site_builder.api.pages_move:
+  path: '/api/v1/site/pages/{id}/move'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::movePage'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+# Obtener configuración global
+jaraba_site_builder.api.config:
+  path: '/api/v1/site/config'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::getConfig'
+  methods: [GET]
+  requirements:
+    _permission: 'view site config'
+
+# Actualizar configuración global
+jaraba_site_builder.api.config_update:
+  path: '/api/v1/site/config'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::updateConfig'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit site config'
+
+# Subir logo
+jaraba_site_builder.api.config_logo:
+  path: '/api/v1/site/config/logo'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::uploadLogo'
+  methods: [POST]
+  requirements:
+    _permission: 'edit site config'
+
+# ========================================================================
+# Canvas v2: Variantes Header/Footer
+# ========================================================================
+
+# Cambiar variante de header
+jaraba_site_builder.api.header_variant:
+  path: '/api/v1/site-config/header-variant'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::updateHeaderVariant'
+  methods: [POST]
+  requirements:
+    _permission: 'edit site config'
+
+# Cambiar variante de footer
+jaraba_site_builder.api.footer_variant:
+  path: '/api/v1/site-config/footer-variant'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::updateFooterVariant'
+  methods: [POST]
+  requirements:
+    _permission: 'edit site config'

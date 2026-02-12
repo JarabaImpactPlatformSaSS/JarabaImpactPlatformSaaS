@@ -1,0 +1,266 @@
+{#
+/**
+ * @file
+ * CRM Dashboard template - Premium World-Class Design.
+ *
+ * ARQUITECTURA PREMIUM:
+ * - Header con partículas animadas (canvas)
+ * - Stat cards con iconos duotone
+ * - Grid layout 2 columnas
+ * - Glassmorphism y micro-animaciones
+ *
+ * @see content-hub-dashboard-frontend.html.twig (patrón de referencia)
+ */
+#}
+
+<div class="crm-dashboard crm-dashboard--frontend">
+  {# ============================================== #}
+  {# DASHBOARD HEADER - Premium con Partículas     #}
+  {# ============================================== #}
+  <header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+    {# Canvas de partículas (mismo estilo que homepage) #}
+    <canvas id="crm-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    
+    <div class="dashboard-header__content">
+      <h1 class="dashboard-header__title">
+        {{ jaraba_icon('analytics', 'dashboard', { size: '32px', variant: 'duotone', color: 'white' }) }}
+        <span>{% trans %}Panel de control de CRM{% endtrans %}</span>
+      </h1>
+      <p class="dashboard-header__subtitle">
+        {% trans %}Gestiona tus relaciones comerciales{% endtrans %}
+      </p>
+    </div>
+    <div class="dashboard-header__actions">
+      <a href="/admin/content/companies/add" 
+         class="btn btn--primary btn--glow" 
+         data-slide-panel="large"
+         data-slide-panel-title="{% trans %}Nueva Empresa{% endtrans %}">
+        {{ jaraba_icon('actions', 'plus', { size: '20px' }) }}
+        {% trans %}Nueva Empresa{% endtrans %}
+      </a>
+      <a href="/crm/pipeline" class="btn btn--secondary">
+        {{ jaraba_icon('analytics', 'chart-bar', { size: '20px' }) }}
+        {% trans %}Ver Pipeline{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# ============================================== #}
+  {# STATS GRID - KPIs Premium con iconos          #}
+  {# ============================================== #}
+  <section class="dashboard-stats" aria-label="{% trans %}CRM Metrics{% endtrans %}">
+    <a href="/admin/content/companies" class="stat-card stat-card--corporate stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'building', { size: '32px', variant: 'duotone', color: 'azul-corporativo' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ companies_count|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Empresas{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <a href="/admin/content/contacts" class="stat-card stat-card--success stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'users', { size: '32px', variant: 'duotone', color: 'verde-innovacion' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ contacts_count|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Contactos{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <a href="/crm/pipeline" class="stat-card stat-card--warning stat-card--clickable">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('business', 'target', { size: '32px', variant: 'duotone', color: 'naranja-impulso' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ opportunities_count|default(0) }}</span>
+        <span class="stat-card__label">{% trans %}Oportunidades{% endtrans %}</span>
+      </div>
+      <span class="stat-card__arrow">{{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}</span>
+    </a>
+
+    <div class="stat-card stat-card--highlight stat-card--gradient">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('analytics', 'euro', { size: '32px', variant: 'duotone', color: 'white' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ pipeline_value|default(0)|number_format(0, ',', '.') }} €</span>
+        <span class="stat-card__label">{% trans %}Valor Pipeline{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# ============================================== #}
+  {# MAIN GRID: 2 columnas (principal + sidebar)   #}
+  {# ============================================== #}
+  <div class="dashboard-grid">
+    {# ========================================== #}
+    {# COLUMNA PRINCIPAL: Actividades Recientes  #}
+    {# ========================================== #}
+    <section class="dashboard-panel dashboard-panel--recent dashboard-grid__main">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Actividades Recientes{% endtrans %}</h2>
+        <a href="/admin/content/activities" class="dashboard-panel__link">
+          {% trans %}Ver Todas{% endtrans %}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+        </a>
+      </header>
+      
+      <div class="dashboard-panel__content">
+        {% if recent_activities is not empty %}
+          <ul class="activity-list activity-list--premium">
+            {% for activity in recent_activities %}
+              <li class="activity-list__item activity-list__item--{{ activity.type|default('note') }}">
+                <div class="activity-list__icon">
+                  {% if activity.type == 'email' %}
+                    {{ jaraba_icon('ui', 'mail', { size: '20px', variant: 'duotone', color: 'azul-corporativo' }) }}
+                  {% elseif activity.type == 'call' %}
+                    {{ jaraba_icon('ui', 'phone', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+                  {% elseif activity.type == 'meeting' %}
+                    {{ jaraba_icon('ui', 'calendar', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+                  {% else %}
+                    {{ jaraba_icon('ui', 'document', { size: '20px', variant: 'duotone', color: 'neutral' }) }}
+                  {% endif %}
+                </div>
+                <div class="activity-list__content">
+                  <span class="activity-list__subject">{{ activity.subject }}</span>
+                  <span class="activity-list__meta">
+                    {{ activity.contact_name|default('') }} · {{ activity.date|date('d M H:i') }}
+                  </span>
+                </div>
+                <span class="activity-list__badge activity-list__badge--{{ activity.type }}">
+                  {{ activity.type|capitalize }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="dashboard-panel__empty dashboard-panel__empty--premium">
+            {{ jaraba_icon('ui', 'calendar', { size: '48px', variant: 'duotone', color: 'neutral' }) }}
+            <p>{% trans %}No hay actividades recientes{% endtrans %}</p>
+            <a href="/admin/content/activities/add" 
+               class="btn btn--secondary btn--sm"
+               data-slide-panel="medium"
+               data-slide-panel-title="{% trans %}Registrar Actividad{% endtrans %}">
+              {% trans %}Registrar Primera Actividad{% endtrans %}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    {# ========================================== #}
+    {# SIDEBAR: Quick Actions + Top Contacts     #}
+    {# ========================================== #}
+    <aside class="dashboard-grid__sidebar">
+      {# Quick Actions #}
+      <section class="dashboard-panel dashboard-panel--actions">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Acciones Rápidas{% endtrans %}</h2>
+        </header>
+        <div class="dashboard-panel__content">
+          <div class="quick-actions quick-actions--compact">
+            <a href="/admin/content/companies/add" 
+               class="quick-action"
+               data-slide-panel="large"
+               data-slide-panel-title="{% trans %}Nueva Empresa{% endtrans %}">
+              <span class="quick-action__icon">
+                {{ jaraba_icon('ui', 'building', { size: '20px', variant: 'duotone', color: 'azul-corporativo' }) }}
+              </span>
+              <span class="quick-action__title">{% trans %}Nueva Empresa{% endtrans %}</span>
+            </a>
+            <a href="/admin/content/contacts/add" 
+               class="quick-action"
+               data-slide-panel="large"
+               data-slide-panel-title="{% trans %}Nuevo Contacto{% endtrans %}">
+              <span class="quick-action__icon">
+                {{ jaraba_icon('ui', 'user-plus', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+              </span>
+              <span class="quick-action__title">{% trans %}Nuevo Contacto{% endtrans %}</span>
+            </a>
+            <a href="/admin/content/opportunities/add" 
+               class="quick-action"
+               data-slide-panel="large"
+               data-slide-panel-title="{% trans %}Nueva Oportunidad{% endtrans %}">
+              <span class="quick-action__icon">
+                {{ jaraba_icon('business', 'target', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              </span>
+              <span class="quick-action__title">{% trans %}Nueva Oportunidad{% endtrans %}</span>
+            </a>
+            <a href="/admin/content/activities/add" 
+               class="quick-action"
+               data-slide-panel="medium"
+               data-slide-panel-title="{% trans %}Registrar Actividad{% endtrans %}">
+              <span class="quick-action__icon">
+                {{ jaraba_icon('ui', 'calendar', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+              </span>
+              <span class="quick-action__title">{% trans %}Registrar Actividad{% endtrans %}</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {# Contactos Destacados #}
+      <section class="dashboard-panel dashboard-panel--contacts">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Top Contactos{% endtrans %}</h2>
+          <a href="/admin/content/contacts" class="dashboard-panel__link">
+            {% trans %}Ver Todos{% endtrans %}
+            {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+          </a>
+        </header>
+        <div class="dashboard-panel__content">
+          {% if top_contacts is not empty %}
+            <ul class="contact-list contact-list--premium">
+              {% for contact in top_contacts %}
+                <li class="contact-list__item">
+                  <div class="contact-list__avatar">
+                    {{ contact.name|first|upper }}
+                  </div>
+                  <div class="contact-list__info">
+                    <span class="contact-list__name">{{ contact.name }}</span>
+                    <span class="contact-list__company">{{ contact.company|default('Sin empresa') }}</span>
+                  </div>
+                  <div class="contact-list__score">
+                    <span class="score-badge">{{ contact.engagement_score|default(0) }}</span>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="dashboard-panel__empty">{% trans %}No hay contactos con actividad{% endtrans %}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      {# Oportunidades Próximas #}
+      <section class="dashboard-panel dashboard-panel--closing">
+        <header class="dashboard-panel__header">
+          <h2 class="dashboard-panel__title">{% trans %}Próximos Cierres{% endtrans %}</h2>
+        </header>
+        <div class="dashboard-panel__content">
+          {% if closing_soon is not empty %}
+            <ul class="opportunity-list opportunity-list--compact">
+              {% for opp in closing_soon %}
+                <li class="opportunity-list__item">
+                  <div class="opportunity-list__info">
+                    <span class="opportunity-list__title">{{ opp.title }}</span>
+                    <span class="opportunity-list__date">{{ opp.expected_close|date('d M') }}</span>
+                  </div>
+                  <div class="opportunity-list__value">
+                    {{ opp.value|number_format(0, ',', '.') }} €
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="dashboard-panel__empty">{% trans %}Sin cierres próximos{% endtrans %}</p>
+          {% endif %}
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

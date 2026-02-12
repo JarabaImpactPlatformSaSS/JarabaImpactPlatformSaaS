@@ -1,0 +1,180 @@
+/**
+ * @file
+ * Estilos del Kanban Board CRM.
+ *
+ * Sigue el patrón de variables inyectables CSS (Federated Design Tokens).
+ */
+
+// ============================================
+// CRM KANBAN BOARD
+// ============================================
+
+.crm-kanban {
+    padding: var(--ej-spacing-lg, 2rem);
+    background: var(--ej-bg-surface, #f8fafc);
+    min-height: 100vh;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--ej-spacing-lg, 2rem);
+        padding-bottom: var(--ej-spacing-md, 1rem);
+        border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+    }
+
+    &__title {
+        font-size: var(--ej-font-size-2xl, 1.5rem);
+        font-weight: 700;
+        color: var(--ej-color-corporate, #233D63);
+        margin: 0;
+    }
+
+    &__board {
+        display: flex;
+        gap: var(--ej-spacing-md, 1rem);
+        overflow-x: auto;
+        padding-bottom: var(--ej-spacing-md, 1rem);
+    }
+}
+
+// ============================================
+// KANBAN COLUMNS
+// ============================================
+
+.crm-kanban__column {
+    flex: 0 0 280px;
+    min-width: 280px;
+    background: var(--ej-bg-white, #ffffff);
+    border-radius: var(--ej-radius-lg, 1rem);
+    padding: var(--ej-spacing-md, 1rem);
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--ej-spacing-md, 1rem);
+    }
+
+    &-title {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 600;
+        color: var(--ej-color-text-muted, #6b7280);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    &-count {
+        background: var(--ej-color-primary-bg, #eef2ff);
+        color: var(--ej-color-primary, #4f46e5);
+        padding: 2px 8px;
+        border-radius: var(--ej-radius-full, 9999px);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        font-weight: 600;
+    }
+}
+
+// ============================================
+// KANBAN CARDS
+// ============================================
+
+.crm-kanban__cards {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+
+    // Drag-over state
+    &.drag-over {
+        background: var(--ej-color-primary-bg, #eef2ff);
+        border-radius: var(--ej-radius-md, 0.5rem);
+    }
+}
+
+.crm-kanban__card {
+    background: var(--ej-bg-white, #ffffff);
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    padding: var(--ej-spacing-sm, 0.75rem);
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    &.dragging {
+        opacity: 0.5;
+        transform: rotate(3deg);
+    }
+
+    &-title {
+        font-weight: 600;
+        color: var(--ej-color-text, #1f2937);
+        margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    &-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    &-value {
+        color: var(--ej-color-success, #10b981);
+        font-weight: 600;
+    }
+
+    &-probability {
+        color: var(--ej-color-text-muted, #6b7280);
+    }
+
+    &-date {
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-text-muted, #6b7280);
+        margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    &-edit {
+        display: inline-block;
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-primary, #4f46e5);
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.crm-kanban__empty {
+    text-align: center;
+    color: var(--ej-color-text-muted, #6b7280);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+// ============================================
+// MOBILE RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+    .crm-kanban {
+        padding: var(--ej-spacing-md, 1rem);
+    }
+
+    .crm-kanban__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ej-spacing-md, 1rem);
+    }
+
+    .crm-kanban__column {
+        flex: 0 0 260px;
+        min-width: 260px;
+    }
+}

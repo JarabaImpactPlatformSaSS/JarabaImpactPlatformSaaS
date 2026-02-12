@@ -1,0 +1,82 @@
+langcode: es
+status: true
+dependencies: {}
+id: image_text_block
+label: 'Imagen + Texto'
+description: 'Bloque flexible de imagen junto a contenido de texto.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/image-text-block.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+    title:
+      type: string
+      title: 'Título'
+    content:
+      type: string
+      title: 'Contenido'
+      format: richtext
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    image_position:
+      type: string
+      title: 'Posición imagen'
+      enum:
+        - left
+        - right
+      default: left
+    image_size:
+      type: string
+      title: 'Tamaño imagen'
+      enum:
+        - small
+        - medium
+        - large
+      default: medium
+    cta:
+      type: object
+      title: 'CTA'
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    vertical_align:
+      type: string
+      title: 'Alineación vertical'
+      enum:
+        - top
+        - center
+        - bottom
+      default: center
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - title
+    - image
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  eyebrow: "ABOUT US"
+  title: "We're Building the Future of Work"
+  content: "Our mission is to empower teams to do their best work. With over 10 years of experience helping businesses grow, we understand what it takes to succeed in today's fast-paced environment.\n\nWe believe that great tools should be accessible to everyone, not just enterprise companies with big budgets."
+  image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+  image_position: left
+  image_size: medium
+  cta:
+    text: "Learn Our Story"
+    url: "#"
+  vertical_align: center
+  background: light
+

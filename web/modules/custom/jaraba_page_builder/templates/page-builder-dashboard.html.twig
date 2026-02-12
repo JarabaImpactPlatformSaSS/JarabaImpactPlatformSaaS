@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * Template para el dashboard principal del Page Builder.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - Iconos: jaraba_icon() con iconos de la librería
+ * - i18n: {% trans %} en todos los textos
+ * - Colores: Paleta Jaraba (corporate, impulse, innovation, agro)
+ * - CSS: Tokens SCSS con fallback dual
+ *
+ * Variables disponibles:
+ * - stats: Array con estadísticas (pages, templates, experiments).
+ * - quick_actions: Array de acciones rápidas.
+ */
+#}
+
+<div class="pb-dashboard">
+  {# ====== HERO HEADER CON PARTÍCULAS ====== #}
+  <header class="pb-dashboard__hero">
+    <canvas id="page-builder-particles" class="pb-dashboard__particles" aria-hidden="true"></canvas>
+    <div class="pb-dashboard__hero-content">
+      <div class="pb-dashboard__hero-icon">
+        {{ jaraba_icon('ui', 'code', { variant: 'duotone', size: '56px', color: 'white' }) }}
+      </div>
+      <h1 class="pb-dashboard__title">{% trans %}Constructor de Páginas{% endtrans %}</h1>
+      <p class="pb-dashboard__subtitle">{% trans %}Crea páginas impactantes sin código, optimiza con A/B testing y organiza tu sitio{% endtrans %}</p>
+    </div>
+  </header>
+
+  {# ====== ESTADÍSTICAS KPI ====== #}
+  <section class="pb-dashboard__stats">
+    <div class="pb-dashboard__stats-grid">
+      {# Páginas Publicadas #}
+      <div class="pb-stat pb-stat--pages">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '32px', color: 'corporate' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value" data-count="{{ stats.pages.value }}">{{ stats.pages.value }}</span>
+          <span class="pb-stat__label">{% trans %}Páginas Publicadas{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# Plantillas Disponibles #}
+      <div class="pb-stat pb-stat--templates">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value" data-count="{{ stats.templates.value }}">{{ stats.templates.value }}</span>
+          <span class="pb-stat__label">{% trans %}Plantillas Disponibles{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# Experimentos Activos #}
+      <div class="pb-stat pb-stat--experiments">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', size: '32px', color: 'success' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value" data-count="{{ stats.experiments.value }}">{{ stats.experiments.value }}</span>
+          <span class="pb-stat__label">{% trans %}Experimentos Activos{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ====== ACCIONES RÁPIDAS - CARDS PREMIUM ====== #}
+  <section class="pb-dashboard__actions">
+    <h2 class="pb-dashboard__section-title">{% trans %}¿Qué quieres hacer?{% endtrans %}</h2>
+    <div class="pb-dashboard__actions-grid">
+      
+      {# PLANTILLAS (índice 0) #}
+      <a href="{{ quick_actions[0].url }}" class="pb-card pb-card--impulse">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '40px', color: 'impulse' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Plantillas{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Elige una plantilla premium para crear una nueva página{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+
+      {# MIS PÁGINAS (índice 1) #}
+      <a href="{{ quick_actions[1].url }}" class="pb-card pb-card--innovation">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '40px', color: 'innovation' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Mis Páginas{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Gestiona las páginas de tu organización{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+
+      {# EXPERIMENTOS A/B (índice 2) #}
+      <a href="{{ quick_actions[2].url }}" class="pb-card pb-card--corporate">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', size: '40px', color: 'corporate' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Experimentos A/B{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Optimiza conversiones con tests científicos{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+
+      {# ANALYTICS DE PÁGINAS (índice 3) #}
+      <a href="{{ quick_actions[3].url }}" class="pb-card pb-card--success">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', size: '40px', color: 'success' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Analytics{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Métricas de rendimiento de páginas{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+
+      {# ESTRUCTURA DEL SITIO (índice 4) #}
+      <a href="{{ quick_actions[4].url }}" class="pb-card pb-card--agro">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'sitemap', { variant: 'duotone', size: '40px', color: 'agro' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Estructura del Sitio{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Organiza navegación, menús y arquitectura{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+
+      {# CONFIGURACIÓN (índice 5) - Abre en slide-panel #}
+      {% if quick_actions[5] is defined %}
+      <a href="{{ quick_actions[5].url }}" 
+         class="pb-card pb-card--neutral"
+         {% if quick_actions[5].data_attrs is defined %}
+           data-slide-panel="{{ quick_actions[5].data_attrs['slide-panel'] }}"
+           data-slide-panel-title="{{ quick_actions[5].data_attrs['slide-panel-title'] }}"
+         {% endif %}
+      >
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '40px', color: 'neutral' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{% trans %}Configuración{% endtrans %}</h3>
+          <p class="pb-card__description">{% trans %}Ajustes del Page Builder{% endtrans %}</p>
+        </div>
+        <div class="pb-card__arrow">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px' }) }}
+        </div>
+      </a>
+      {% endif %}
+
+    </div>
+  </section>
+</div>
+

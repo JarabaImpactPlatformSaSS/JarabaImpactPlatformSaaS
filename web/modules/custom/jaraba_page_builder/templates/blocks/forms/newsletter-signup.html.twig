@@ -1,0 +1,75 @@
+{#
+/**
+ * @file
+ * Template para el bloque Newsletter Signup.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient') %}
+{% set layout_class = content.layout|default('card') %}
+
+<section class="jaraba-newsletter jaraba-newsletter--{{ bg_class }} jaraba-newsletter--{{ layout_class }} jaraba-block"
+         data-block-type="newsletter_signup">
+  <div class="jaraba-block__container">
+    
+    <div class="jaraba-newsletter__content">
+      {# Texto #}
+      <div class="jaraba-newsletter__text">
+        <h2 class="jaraba-newsletter__title">{{ content.title|default('Mantente al día'|trans) }}</h2>
+        
+        {% if content.subtitle %}
+          <p class="jaraba-newsletter__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+        
+        {# Beneficios #}
+        {% if content.benefits is not empty %}
+          <ul class="jaraba-newsletter__benefits">
+            {% for benefit in content.benefits %}
+              <li class="jaraba-newsletter__benefit">
+                {% if benefit.icon %}
+                  {{ jaraba_icon('ui', benefit.icon, { variant: 'filled', size: '16px', color: 'success' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'check', { variant: 'filled', size: '16px', color: 'success' }) }}
+                {% endif %}
+                <span>{{ benefit.text }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      
+      {# Formulario #}
+      <div class="jaraba-newsletter__form-wrapper">
+        <form class="jaraba-newsletter__form" data-newsletter-form>
+          <div class="jaraba-newsletter__input-group jaraba-newsletter__input-group--{{ layout_class }}">
+            <input type="email" 
+                   class="jaraba-newsletter__input"
+                   placeholder="{{ content.placeholder|default('Tu email'|trans) }}"
+                   required
+                   aria-label="{% trans %}Email{% endtrans %}">
+            <button type="submit" class="jaraba-btn jaraba-btn--primary">
+              {{ content.button_text|default('Suscribirme'|trans) }}
+            </button>
+          </div>
+          
+          {# Mensaje de éxito #}
+          <div class="jaraba-newsletter__success" hidden>
+            {{ jaraba_icon('ui', 'check-circle', { variant: 'filled', size: '20px', color: 'success' }) }}
+            <span>{{ content.success_message|default('¡Gracias por suscribirte!'|trans) }}</span>
+          </div>
+        </form>
+        
+        {% if content.privacy_text %}
+          <p class="jaraba-newsletter__privacy">{{ content.privacy_text }}</p>
+        {% endif %}
+      </div>
+    </div>
+    
+  </div>
+</section>

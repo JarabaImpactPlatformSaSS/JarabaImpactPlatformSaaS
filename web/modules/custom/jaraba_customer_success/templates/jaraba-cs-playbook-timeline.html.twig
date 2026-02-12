@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * jaraba-cs-playbook-timeline.html.twig - Timeline de ejecuciones.
+ *
+ * VARIABLES:
+ * - executions: array de entidades PlaybookExecution
+ * - playbooks: array de entidades CsPlaybook (activos)
+ */
+#}
+
+<div class="cs-playbook-timeline">
+  {# Active playbooks summary #}
+  {% if playbooks|length > 0 %}
+    <div class="cs-playbook-timeline__summary">
+      <h3>{% trans %}Active Playbooks{% endtrans %} ({{ playbooks|length }})</h3>
+      <div class="cs-playbook-timeline__playbooks">
+        {% for playbook in playbooks %}
+          <div class="cs-playbook-timeline__playbook">
+            <span class="cs-playbook-timeline__playbook-name">{{ playbook.name.value }}</span>
+            <span class="cs-playbook-timeline__playbook-trigger">{{ playbook.trigger_type.value|replace({'_': ' '})|capitalize }}</span>
+            <span class="cs-playbook-timeline__playbook-count">{{ playbook.execution_count.value|default(0) }} {% trans %}runs{% endtrans %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Execution timeline #}
+  {% if executions|length > 0 %}
+    <div class="cs-playbook-timeline__executions">
+      <h3>{% trans %}Recent Executions{% endtrans %}</h3>
+      {% for execution in executions %}
+        {% set status = execution.status.value|default('running') %}
+        <div class="cs-playbook-timeline__execution cs-playbook-timeline__execution--{{ status }}">
+          <div class="cs-playbook-timeline__dot"></div>
+          <div class="cs-playbook-timeline__content">
+            <div class="cs-playbook-timeline__execution-header">
+              <span class="cs-playbook-timeline__execution-playbook">{{ execution.playbook_id.entity.label|default('—') }}</span>
+              <span class="cs-playbook-timeline__execution-status cs-playbook-timeline__execution-status--{{ status }}">{{ status|capitalize }}</span>
+            </div>
+            <div class="cs-playbook-timeline__execution-details">
+              <span>{% trans %}Tenant:{% endtrans %} {{ execution.tenant_id.entity.label|default('Unknown') }}</span>
+              <span>{% trans %}Step{% endtrans %} {{ execution.current_step.value|default(0) }} / {{ execution.total_steps.value|default(0) }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="cs-empty-inline">
+      <p>{% trans %}No playbook executions yet. Configure playbooks to start automating customer success workflows.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

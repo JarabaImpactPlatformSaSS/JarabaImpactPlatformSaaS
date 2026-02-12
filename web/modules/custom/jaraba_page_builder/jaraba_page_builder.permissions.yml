@@ -1,0 +1,111 @@
+# Permisos del módulo Page Builder
+# Siguiendo directriz RBAC del proyecto
+
+# Permisos básicos de acceso
+access page builder:
+  title: 'Acceder al Constructor de Páginas'
+  description: 'Permite acceder al Constructor de Páginas (verificado por plan).'
+  restrict access: false
+
+view page templates:
+  title: 'Ver galería de plantillas'
+  description: 'Permite ver la galería de plantillas disponibles.'
+  restrict access: false
+
+use premium templates:
+  title: 'Usar plantillas premium'
+  description: 'Permite usar plantillas de Aceternity UI y Magic UI.'
+  restrict access: true
+
+# Permisos CRUD de contenido
+create page content:
+  title: 'Crear páginas'
+  description: 'Permite crear nuevas páginas con el constructor.'
+  restrict access: false
+
+view own page content:
+  title: 'Ver páginas propias'
+  description: 'Permite ver las páginas creadas por el usuario.'
+  restrict access: false
+
+view any page content:
+  title: 'Ver cualquier página'
+  description: 'Permite ver páginas creadas por otros usuarios del tenant.'
+  restrict access: false
+
+edit own page content:
+  title: 'Editar páginas propias'
+  description: 'Permite editar las páginas creadas por el usuario.'
+  restrict access: false
+
+edit any page content:
+  title: 'Editar cualquier página'
+  description: 'Permite editar páginas creadas por otros usuarios del tenant.'
+  restrict access: true
+
+delete own page content:
+  title: 'Eliminar páginas propias'
+  description: 'Permite eliminar las páginas creadas por el usuario.'
+  restrict access: false
+
+delete any page content:
+  title: 'Eliminar cualquier página'
+  description: 'Permite eliminar páginas creadas por otros usuarios del tenant.'
+  restrict access: true
+
+# Permisos de gestión
+manage page menus:
+  title: 'Gestionar menús de páginas'
+  description: 'Permite añadir o quitar páginas de los menús.'
+  restrict access: true
+
+# Permisos administrativos
+administer page builder:
+  title: 'Administrar Constructor de Páginas'
+  description: 'Acceso completo a la configuración del Page Builder.'
+  restrict access: true
+
+administer page templates:
+  title: 'Administrar plantillas'
+  description: 'Permite crear, editar y eliminar plantillas de páginas.'
+  restrict access: true
+
+# Permisos de Experimentos A/B (Doc 168)
+view page experiment:
+  title: 'Ver experimentos A/B'
+  description: 'Permite ver la lista de experimentos A/B y sus resultados.'
+  restrict access: false
+
+create page experiment:
+  title: 'Crear experimentos A/B'
+  description: 'Permite crear nuevos experimentos A/B en las páginas.'
+  restrict access: true
+
+edit page experiment:
+  title: 'Editar experimentos A/B'
+  description: 'Permite editar experimentos existentes y gestionar variantes.'
+  restrict access: true
+
+delete page experiment:
+  title: 'Eliminar experimentos A/B'
+  description: 'Permite eliminar experimentos A/B completamente.'
+  restrict access: true
+
+# Permisos de Revisiones (Gap G)
+view page content revisions:
+  title: 'Ver revisiones de páginas'
+  description: 'Permite ver el historial de revisiones y comparar versiones.'
+  restrict access: false
+
+revert page content revisions:
+  title: 'Revertir revisiones de páginas'
+  description: 'Permite restaurar una página a una revisión anterior.'
+  restrict access: true
+
+# Permisos de editor canvas
+edit page builder content:
+  title: 'Editar contenido en el constructor'
+  description: 'Permite usar el editor visual de páginas.'
+  restrict access: false
+
+

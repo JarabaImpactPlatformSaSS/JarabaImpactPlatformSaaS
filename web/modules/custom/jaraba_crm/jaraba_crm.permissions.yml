@@ -1,0 +1,22 @@
+# Permisos del módulo Jaraba CRM.
+
+administer crm entities:
+  title: 'Administrar entidades CRM'
+  description: 'Acceso completo a todas las entidades del CRM.'
+  restrict access: true
+
+view crm entities:
+  title: 'Ver entidades CRM'
+  description: 'Ver empresas, contactos, oportunidades y actividades.'
+
+create crm entities:
+  title: 'Crear entidades CRM'
+  description: 'Crear nuevas empresas, contactos, oportunidades y actividades.'
+
+edit crm entities:
+  title: 'Editar entidades CRM'
+  description: 'Editar empresas, contactos, oportunidades y actividades existentes.'
+
+delete crm entities:
+  title: 'Eliminar entidades CRM'
+  description: 'Eliminar empresas, contactos, oportunidades y actividades.'

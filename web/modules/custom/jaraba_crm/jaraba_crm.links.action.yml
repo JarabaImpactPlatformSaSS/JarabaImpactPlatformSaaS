@@ -1,0 +1,25 @@
+# Botones de acción "Añadir" en las páginas de colección.
+
+entity.crm_company.add:
+  title: 'Añadir empresa'
+  route_name: entity.crm_company.add_form
+  appears_on:
+    - entity.crm_company.collection
+
+entity.crm_contact.add:
+  title: 'Añadir contacto'
+  route_name: entity.crm_contact.add_form
+  appears_on:
+    - entity.crm_contact.collection
+
+entity.crm_opportunity.add:
+  title: 'Añadir oportunidad'
+  route_name: entity.crm_opportunity.add_form
+  appears_on:
+    - entity.crm_opportunity.collection
+
+entity.crm_activity.add:
+  title: 'Añadir actividad'
+  route_name: entity.crm_activity.add_form
+  appears_on:
+    - entity.crm_activity.collection

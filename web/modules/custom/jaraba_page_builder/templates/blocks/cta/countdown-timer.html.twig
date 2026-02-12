@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Template para el bloque Cuenta Regresiva.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient') %}
+{% set style = content.style|default('cards') %}
+
+<section class="jaraba-countdown jaraba-countdown--{{ bg_class }} jaraba-countdown--{{ style }} jaraba-block"
+         data-target-date="{{ content.target_date }}"
+         data-end-action="{{ content.end_action|default('show_message') }}"
+         data-end-message="{{ content.end_message }}"
+         data-end-url="{{ content.end_url }}">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-countdown__header">
+      <h2 class="jaraba-countdown__title">{{ content.title|default('Próximo lanzamiento'|trans) }}</h2>
+      {% if content.description %}
+        <p class="jaraba-countdown__description">{{ content.description }}</p>
+      {% endif %}
+    </header>
+
+    <div class="jaraba-countdown__timer">
+      <div class="jaraba-countdown__unit">
+        <span class="jaraba-countdown__value" data-unit="days">00</span>
+        <span class="jaraba-countdown__label">{% trans %}Días{% endtrans %}</span>
+      </div>
+      <span class="jaraba-countdown__separator">:</span>
+      <div class="jaraba-countdown__unit">
+        <span class="jaraba-countdown__value" data-unit="hours">00</span>
+        <span class="jaraba-countdown__label">{% trans %}Horas{% endtrans %}</span>
+      </div>
+      <span class="jaraba-countdown__separator">:</span>
+      <div class="jaraba-countdown__unit">
+        <span class="jaraba-countdown__value" data-unit="minutes">00</span>
+        <span class="jaraba-countdown__label">{% trans %}Minutos{% endtrans %}</span>
+      </div>
+      <span class="jaraba-countdown__separator">:</span>
+      <div class="jaraba-countdown__unit">
+        <span class="jaraba-countdown__value" data-unit="seconds">00</span>
+        <span class="jaraba-countdown__label">{% trans %}Segundos{% endtrans %}</span>
+      </div>
+    </div>
+
+    {% if content.cta.text %}
+      <div class="jaraba-countdown__cta">
+        <a href="{{ content.cta.url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+          {{ content.cta.text }}
+        </a>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

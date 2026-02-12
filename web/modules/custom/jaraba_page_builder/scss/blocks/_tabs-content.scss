@@ -1,0 +1,93 @@
+/**
+ * @file
+ * Tabs Content - Estilos para pestañas de contenido con ARIA.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * @package jaraba_page_builder
+ */
+
+// ============================================================================
+// TABS COMPONENT
+// Pestañas de navegación con soporte ARIA completo
+// ============================================================================
+
+.jaraba-tabs {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--ej-spacing-lg, 2rem);
+    font-family: var(--ej-font-family, Inter, sans-serif);
+}
+
+// Barra de pestañas
+.jaraba-tabs__nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--ej-border-color, #e2e8f0);
+    margin-bottom: var(--ej-spacing-lg, 2rem);
+
+    // Scroll horizontal en móvil si hay muchas pestañas
+    @media (max-width: 640px) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+// Pestaña individual
+.jaraba-tabs__tab {
+    padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 3px solid transparent;
+    color: var(--ej-text-muted, #64748b);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+
+    &:hover:not(&--active) {
+        color: var(--ej-text-primary, #1e293b);
+        border-bottom-color: var(--ej-border-color, #e2e8f0);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ej-color-corporate, #233D63);
+        outline-offset: -2px;
+    }
+
+    // Estado activo
+    &--active {
+        color: var(--ej-text-primary, #1e293b);
+        border-bottom-color: var(--ej-color-corporate, #233D63);
+    }
+}
+
+// Panel de contenido
+.jaraba-tabs__panel {
+    padding: var(--ej-spacing-md, 1rem) 0;
+    animation: jarabaTabFadeIn 0.3s ease;
+
+    p {
+        color: var(--ej-text-primary, #1e293b);
+        font-size: 1.1rem;
+        line-height: 1.7;
+    }
+}
+
+// Animación de entrada del panel
+@keyframes jarabaTabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

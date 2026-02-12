@@ -1,0 +1,102 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tabla Comparativa.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default([]) %}
+{% set rows = content.rows|default([]) %}
+
+<section class="jaraba-comparison jaraba-comparison--{{ bg_class }} jaraba-block"
+         aria-labelledby="comparison-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-comparison__header">
+      <h2 id="comparison-title" class="jaraba-block__title">
+        {{ content.title|default('Compara nuestras opciones'|trans) }}
+      </h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Tabla comparativa #}
+    {% if columns is not empty and rows is not empty %}
+      <div class="jaraba-comparison__table-wrapper">
+        <table class="jaraba-comparison__table">
+          <thead>
+            <tr>
+              <th class="jaraba-comparison__feature-header">{% trans %}Característica{% endtrans %}</th>
+              {% for column in columns %}
+                <th class="jaraba-comparison__column-header {{ column.highlight ? 'jaraba-comparison__column-header--highlight' : '' }}">
+                  {% if column.badge %}
+                    <span class="jaraba-comparison__badge">{{ column.badge }}</span>
+                  {% endif %}
+                  <span class="jaraba-comparison__column-name">{{ column.name }}</span>
+                  {% if column.price %}
+                    <span class="jaraba-comparison__price">{{ column.price }}</span>
+                  {% endif %}
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td class="jaraba-comparison__feature">
+                  {{ row.feature }}
+                  {% if row.tooltip %}
+                    <button type="button" 
+                            class="jaraba-comparison__tooltip-trigger"
+                            aria-label="{% trans %}Más información{% endtrans %}"
+                            data-tooltip="{{ row.tooltip }}">
+                      {{ jaraba_icon('ui', 'info', { size: '14px', color: 'neutral' }) }}
+                    </button>
+                  {% endif %}
+                </td>
+                {% for value in row.values %}
+                  <td class="jaraba-comparison__value jaraba-comparison__value--{{ value.type }}">
+                    {% if value.type == 'check' %}
+                      {{ jaraba_icon('ui', 'check', { variant: 'filled', size: '20px', color: 'success' }) }}
+                      <span class="visually-hidden">{% trans %}Incluido{% endtrans %}</span>
+                    {% elseif value.type == 'cross' %}
+                      {{ jaraba_icon('ui', 'x', { size: '20px', color: 'danger' }) }}
+                      <span class="visually-hidden">{% trans %}No incluido{% endtrans %}</span>
+                    {% elseif value.type == 'partial' %}
+                      {{ jaraba_icon('ui', 'minus', { size: '20px', color: 'warning' }) }}
+                      <span class="visually-hidden">{% trans %}Parcial{% endtrans %}</span>
+                    {% else %}
+                      {{ value.value }}
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      {# CTAs #}
+      {% if content.show_cta %}
+        <div class="jaraba-comparison__ctas">
+          {% for column in columns %}
+            <a href="{{ column.cta_url|default('#') }}" 
+               class="jaraba-btn {{ column.highlight ? 'jaraba-btn--primary' : 'jaraba-btn--outline' }}">
+              {{ column.cta_text|default('Elegir ' ~ column.name) }}
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endif %}
+    
+  </div>
+</section>

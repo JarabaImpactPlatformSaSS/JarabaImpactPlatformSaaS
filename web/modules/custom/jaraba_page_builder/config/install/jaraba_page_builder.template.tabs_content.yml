@@ -1,0 +1,87 @@
+langcode: es
+status: true
+dependencies: {}
+id: tabs_content
+label: 'Contenido en Tabs'
+description: 'Organiza contenido en pestañas navegables.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/tabs-content.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título (opcional)'
+    tabs:
+      type: array
+      title: 'Pestañas'
+      items:
+        type: object
+        properties:
+          label:
+            type: string
+            title: 'Etiqueta'
+          icon:
+            type: string
+            title: 'Icono'
+          content:
+            type: string
+            title: 'Contenido'
+            format: richtext
+          image:
+            type: string
+            title: 'Imagen (opcional)'
+            format: image
+    tab_style:
+      type: string
+      title: 'Estilo de tabs'
+      enum:
+        - underline
+        - pills
+        - bordered
+      default: underline
+    orientation:
+      type: string
+      title: 'Orientación'
+      enum:
+        - horizontal
+        - vertical
+      default: horizontal
+    default_tab:
+      type: integer
+      title: 'Tab por defecto'
+      default: 0
+    background:
+      type: string
+      title: 'Fondo'
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - tabs
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  title: "Explore Our Features"
+  tabs:
+    - label: "Dashboard"
+      icon: "layout"
+      content: "Get a bird's-eye view of all your metrics, projects, and team activity in one centralized dashboard. Real-time updates keep you in the loop."
+    - label: "Analytics"
+      icon: "chart"
+      content: "Dive deep into your data with advanced analytics. Track trends, identify opportunities, and make data-driven decisions with confidence."
+    - label: "Automation"
+      icon: "settings"
+      content: "Set up powerful automations to handle repetitive tasks. Save hours every week and let the platform do the heavy lifting."
+    - label: "Integrations"
+      icon: "layout-grid"
+      content: "Connect with 100+ popular tools like Slack, Salesforce, and Google Workspace. Keep your workflow seamless across all platforms."
+  tab_style: underline
+  orientation: horizontal
+  default_tab: 0
+  background: light
+

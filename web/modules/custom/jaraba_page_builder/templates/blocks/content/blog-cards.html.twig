@@ -1,0 +1,102 @@
+{#
+/**
+ * @file
+ * Template para el bloque Blog Cards.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set posts = content.posts|default([]) %}
+
+<section class="jaraba-blog-cards jaraba-blog-cards--{{ bg_class }} jaraba-block"
+         aria-labelledby="blog-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-blog-cards__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="blog-title" class="jaraba-block__title">{{ content.title|default('Últimas Publicaciones'|trans) }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de artículos #}
+    {% if posts is not empty %}
+      <div class="jaraba-blog-cards__grid jaraba-blog-cards__grid--{{ columns }}">
+        {% for post in posts %}
+          <article class="jaraba-blog-card">
+            {# Imagen #}
+            {% if post.image %}
+              <a href="{{ post.url }}" class="jaraba-blog-card__image-wrapper">
+                <img src="{{ post.image }}" 
+                     alt="{{ post.title }}"
+                     class="jaraba-blog-card__image"
+                     loading="lazy">
+                {% if post.category %}
+                  <span class="jaraba-blog-card__category">{{ post.category }}</span>
+                {% endif %}
+              </a>
+            {% endif %}
+            
+            {# Contenido #}
+            <div class="jaraba-blog-card__content">
+              {# Meta #}
+              <div class="jaraba-blog-card__meta">
+                {% if post.date %}
+                  <span class="jaraba-blog-card__date">
+                    {{ jaraba_icon('ui', 'calendar', { size: '14px', color: 'neutral' }) }}
+                    {{ post.date }}
+                  </span>
+                {% endif %}
+                {% if post.read_time %}
+                  <span class="jaraba-blog-card__read-time">
+                    {{ jaraba_icon('ui', 'clock', { size: '14px', color: 'neutral' }) }}
+                    {{ post.read_time }}
+                  </span>
+                {% endif %}
+              </div>
+              
+              <h3 class="jaraba-blog-card__title">
+                <a href="{{ post.url }}">{{ post.title }}</a>
+              </h3>
+              
+              {% if post.excerpt %}
+                <p class="jaraba-blog-card__excerpt">{{ post.excerpt }}</p>
+              {% endif %}
+              
+              {# Autor #}
+              {% if post.author %}
+                <div class="jaraba-blog-card__author">
+                  <span>{% trans %}Por{% endtrans %} {{ post.author }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# CTA Ver todos #}
+    {% if content.show_cta %}
+      <div class="jaraba-blog-cards__cta">
+        <a href="{{ content.cta_url|default('/blog') }}" class="jaraba-btn jaraba-btn--outline">
+          {{ content.cta_text|default('Ver todos los artículos'|trans) }}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '18px' }) }}
+        </a>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

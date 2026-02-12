@@ -1,0 +1,13 @@
+name: 'Jaraba Tenant Knowledge Training'
+description: 'Sistema de entrenamiento de conocimiento del negocio para personalización de IA por tenant.'
+type: module
+package: Jaraba AI
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - drupal:language
+  - drupal:content_translation
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_rag:jaraba_rag
+  - ai:ai
+

@@ -1,0 +1,566 @@
+/**
+ * @file
+ * Estilos premium para la página "Mis Páginas" (/my-pages).
+ *
+ * Sigue el patrón Premium Card documentado en:
+ *   .agent/workflows/premium-cards-pattern.md
+ *
+ * Valores obligatorios:
+ *   - Curva transición: cubic-bezier(0.175, 0.885, 0.32, 1.275)
+ *   - Blur glassmorphism: 10px mínimo
+ *   - Border-radius: 16px (--ej-radius-xl)
+ *   - Hover lift: translateY(-6px)
+ *   - Hover scale: scale(1.02)
+ */
+
+/* =====================================================================
+   VARIABLES
+   ===================================================================== */
+:root {
+    --mypages-bg: #f1f5f9;
+    --mypages-card-bg: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 250, 252, 0.9) 100%);
+    --mypages-card-border: rgba(255, 255, 255, 0.8);
+    --mypages-card-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --mypages-card-shadow-hover:
+        0 20px 40px rgba(35, 61, 99, 0.12),
+        0 8px 16px rgba(35, 61, 99, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+    --mypages-accent: #e97a2b;
+    --mypages-accent-hover: #d46a1e;
+    --mypages-accent-light: #fef3e8;
+    --mypages-success: #22c55e;
+    --mypages-warning: #f59e0b;
+    --mypages-text: #1e293b;
+    --mypages-text-muted: #64748b;
+    --mypages-radius: var(--ej-radius-xl, 16px);
+    --mypages-transition-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =====================================================================
+   PAGE WRAPPER
+   ===================================================================== */
+.my-pages {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 6rem 2rem 2.5rem;
+    min-height: 60vh;
+}
+
+/* =====================================================================
+   HEADER
+   ===================================================================== */
+.my-pages__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.my-pages__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--mypages-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.my-pages__title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--mypages-accent), #f5a623);
+    color: white;
+    box-shadow: 0 4px 12px rgba(233, 122, 43, 0.3);
+}
+
+.my-pages__actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.my-pages__btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--mypages-accent), #f5a623);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+        transform 0.4s var(--mypages-transition-bounce),
+        box-shadow 0.3s ease;
+    box-shadow: 0 4px 16px rgba(233, 122, 43, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.my-pages__btn-create::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
+}
+
+.my-pages__btn-create:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(233, 122, 43, 0.45);
+    color: white;
+}
+
+.my-pages__btn-create:hover::before {
+    left: 150%;
+}
+
+/* =====================================================================
+   BARRA DE FILTROS
+   ===================================================================== */
+.my-pages__filters {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0.875rem 1rem;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(248, 250, 252, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.my-pages__search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.my-pages__search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mypages-text-muted);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.my-pages__search {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    color: var(--mypages-text);
+    font-size: 0.8125rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.my-pages__search::placeholder {
+    color: var(--mypages-text-muted);
+    opacity: 0.6;
+}
+
+.my-pages__search:focus {
+    border-color: rgba(233, 122, 43, 0.4);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(233, 122, 43, 0.1);
+}
+
+.my-pages__search::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    cursor: pointer;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E") center no-repeat;
+}
+
+.my-pages__filter-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.my-pages__filter-select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    color: var(--mypages-text);
+    font-size: 0.8125rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}
+
+.my-pages__filter-select:focus {
+    border-color: rgba(233, 122, 43, 0.4);
+    box-shadow: 0 0 0 3px rgba(233, 122, 43, 0.1);
+}
+
+.my-pages__results-count {
+    font-size: 0.75rem;
+    color: var(--mypages-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* =====================================================================
+   GRID DE CARDS
+   ===================================================================== */
+.my-pages__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =====================================================================
+   CARD PREMIUM — Patrón Premium Card
+   ===================================================================== */
+.my-pages__card {
+    position: relative;
+    overflow: hidden;
+    background: var(--mypages-card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--mypages-radius);
+    border: 1px solid var(--mypages-card-border);
+    box-shadow: var(--mypages-card-shadow);
+    transition:
+        transform 0.4s var(--mypages-transition-bounce),
+        box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Efecto shine */
+.my-pages__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.my-pages__card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--mypages-card-shadow-hover);
+}
+
+.my-pages__card:hover::before {
+    left: 150%;
+}
+
+/* =====================================================================
+   PREVIEW / THUMBNAIL
+   ===================================================================== */
+.my-pages__card-preview {
+    height: 160px;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #cbd5e1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Imagen thumbnail real del template */
+.my-pages__card-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 0.4s ease;
+}
+
+.my-pages__card:hover .my-pages__card-thumb {
+    transform: scale(1.05);
+}
+
+/* Patrón decorativo cuando no hay thumbnail */
+.my-pages__card-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(135deg, rgba(233, 122, 43, 0.05) 0%, rgba(245, 166, 35, 0.08) 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0, 0, 0, 0.015) 8px, rgba(0, 0, 0, 0.015) 9px),
+        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0, 0, 0, 0.015) 8px, rgba(0, 0, 0, 0.015) 9px);
+    pointer-events: none;
+}
+
+.my-pages__card-preview-icon {
+    color: var(--mypages-text-muted);
+    opacity: 0.2;
+    z-index: 1;
+}
+
+/* Badge de estado */
+.my-pages__card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.my-pages__card-badge--published {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.my-pages__card-badge--draft {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* =====================================================================
+   CARD BODY
+   ===================================================================== */
+.my-pages__card-body {
+    padding: 1.125rem 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.my-pages__card-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--mypages-text);
+    margin: 0 0 0.375rem;
+    line-height: 1.4;
+}
+
+.my-pages__card-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.my-pages__card-title a:hover {
+    color: var(--mypages-accent);
+}
+
+.my-pages__card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--mypages-text-muted);
+    flex-wrap: wrap;
+}
+
+.my-pages__card-template {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1875rem 0.625rem;
+    background: var(--mypages-accent-light);
+    color: var(--mypages-accent);
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+/* =====================================================================
+   CARD FOOTER — Acciones
+   ===================================================================== */
+.my-pages__card-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.375rem;
+}
+
+.my-pages__card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--mypages-text-muted);
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.my-pages__card-action:hover {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--mypages-text);
+}
+
+.my-pages__card-action--primary {
+    background: var(--mypages-accent-light);
+    color: var(--mypages-accent);
+    font-weight: 600;
+}
+
+.my-pages__card-action--primary:hover {
+    background: var(--mypages-accent);
+    color: white;
+    box-shadow: 0 2px 8px rgba(233, 122, 43, 0.3);
+}
+
+.my-pages__card-action--danger:hover {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+}
+
+.my-pages__card-action svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* =====================================================================
+   EMPTY STATE
+   ===================================================================== */
+.my-pages__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 2px dashed rgba(0, 0, 0, 0.08);
+    border-radius: var(--mypages-radius);
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 250, 252, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.my-pages__empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--mypages-accent-light), rgba(233, 122, 43, 0.08));
+    margin-bottom: 1.5rem;
+}
+
+.my-pages__empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mypages-text);
+    margin: 0 0 0.5rem;
+}
+
+.my-pages__empty-desc {
+    color: var(--mypages-text-muted);
+    margin: 0 0 1.5rem;
+    max-width: 400px;
+    margin-inline: auto;
+    line-height: 1.6;
+}
+
+/* =====================================================================
+   NO RESULTS STATE
+   ===================================================================== */
+.my-pages__no-results {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--mypages-text-muted);
+}
+
+.my-pages__no-results p {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width: 768px) {
+    .my-pages {
+        padding: 1.5rem 1rem;
+    }
+
+    .my-pages__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .my-pages__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .my-pages__filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .my-pages__filter-group {
+        flex-wrap: wrap;
+    }
+
+    .my-pages__results-count {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .my-pages__card-footer {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,410 @@
+{#
+/**
+ * @file
+ * Template del dashboard de contenido interactivo.
+ *
+ * PATRÓN PREMIUM: Usa mismas clases BEM que page-builder-dashboard.
+ * - pb-dashboard: Container principal
+ * - pb-dashboard__hero: Header con gradient y partículas
+ * - pb-stat: Cards de estadísticas
+ * - pb-card: Cards de acción
+ *
+ * ICONOS: Mapeo verificado contra ecosistema_jaraba_core/images/icons
+ * - education/book-open: Contenido educativo
+ * - ui/check-circle: Publicados
+ * - ui/edit: Borradores
+ * - analytics/chart-bar: Resultados
+ * - actions/plus: Crear
+ * - ai/sparkles: IA
+ *
+ * Variables:
+ *   - contents: Array de entidades InteractiveContent.
+ *   - stats: Estadísticas del usuario.
+ */
+#}
+<div class="pb-dashboard interactive-dashboard">
+  {# HERO HEADER CON PARTÍCULAS #}
+  <header class="pb-dashboard__hero">
+    <canvas id="dashboard-particles" class="pb-dashboard__particles" aria-hidden="true"></canvas>
+    <div class="pb-dashboard__hero-content">
+      <div class="pb-dashboard__hero-icon">
+        {{ jaraba_icon('education', 'book-open', { variant: 'duotone', size: '48px', color: 'white' }) }}
+      </div>
+      <h1 class="pb-dashboard__title">
+        {{ 'Contenido Interactivo'|t }}
+      </h1>
+      <p class="pb-dashboard__subtitle">
+        {{ 'Crea y gestiona contenido interactivo para formación.'|t }}
+      </p>
+    </div>
+  </header>
+
+  {# STATS CARDS - Flotando sobre el header #}
+  <section class="pb-dashboard__stats">
+    <div class="pb-dashboard__stats-grid">
+      <div class="pb-stat">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '28px' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value">{{ stats.total }}</span>
+          <span class="pb-stat__label">{{ 'Contenidos'|t }}</span>
+        </div>
+      </div>
+
+      <div class="pb-stat">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '28px' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value">{{ stats.published }}</span>
+          <span class="pb-stat__label">{{ 'Publicados'|t }}</span>
+        </div>
+      </div>
+
+      <div class="pb-stat">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('ui', 'edit', { variant: 'duotone', size: '28px' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value">{{ stats.draft }}</span>
+          <span class="pb-stat__label">{{ 'Borradores'|t }}</span>
+        </div>
+      </div>
+
+      <div class="pb-stat">
+        <div class="pb-stat__icon">
+          {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', size: '28px' }) }}
+        </div>
+        <div class="pb-stat__content">
+          <span class="pb-stat__value">{{ stats.results }}</span>
+          <span class="pb-stat__label">{{ 'Resultados'|t }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ACTION CARDS #}
+  <section class="pb-dashboard__actions">
+    <h2 class="pb-dashboard__section-title">{{ 'Acciones Rápidas'|t }}</h2>
+    <div class="pb-dashboard__actions-grid">
+      <a href="{{ path('entity.interactive_content.add_form') }}" class="pb-card pb-card--impulse">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('actions', 'plus', { variant: 'duotone', size: '32px' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{{ 'Crear Contenido'|t }}</h3>
+          <p class="pb-card__description">{{ 'Añade cuestionarios, escenarios y más.'|t }}</p>
+        </div>
+        <div class="pb-card__arrow">→</div>
+      </a>
+
+      <button type="button" class="pb-card pb-card--innovation" id="btn-ai-generate">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '32px' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{{ 'Generar con IA'|t }}</h3>
+          <p class="pb-card__description">{{ 'Crea contenido automáticamente.'|t }}</p>
+        </div>
+        <div class="pb-card__arrow">→</div>
+      </button>
+
+      <button type="button" class="pb-card pb-card--insight" id="btn-smart-import">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '32px' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{{ 'Smart Import'|t }}</h3>
+          <p class="pb-card__description">{{ 'Importa desde URL o video.'|t }}</p>
+        </div>
+        <div class="pb-card__arrow">→</div>
+      </button>
+
+      <a href="{{ path('entity.interactive_result.collection') }}" class="pb-card pb-card--corporate">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', size: '32px' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{{ 'Ver Resultados'|t }}</h3>
+          <p class="pb-card__description">{{ 'Analiza el rendimiento de usuarios.'|t }}</p>
+        </div>
+        <div class="pb-card__arrow">→</div>
+      </a>
+
+      <a href="{{ path('entity.interactive_content.collection') }}" class="pb-card pb-card--agro">
+        <div class="pb-card__glow"></div>
+        <div class="pb-card__icon">
+          {{ jaraba_icon('ui', 'folder', { variant: 'duotone', size: '32px' }) }}
+        </div>
+        <div class="pb-card__content">
+          <h3 class="pb-card__title">{{ 'Gestionar Todo'|t }}</h3>
+          <p class="pb-card__description">{{ 'Lista completa de contenidos.'|t }}</p>
+        </div>
+        <div class="pb-card__arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  {# CONTENT LIST #}
+  <section class="pb-dashboard__actions">
+    {% if contents is not empty %}
+      <h2 class="pb-dashboard__section-title">{{ 'Tus Contenidos'|t }}</h2>
+      <div class="pb-dashboard__actions-grid">
+        {% for content in contents %}
+          <a href="{{ path('jaraba_interactive.player', {'interactive_content': content.id()}) }}" class="pb-card pb-card--corporate">
+            <div class="pb-card__glow"></div>
+            <div class="pb-card__icon">
+              {{ jaraba_icon('education', 'book-open', { variant: 'duotone', size: '32px' }) }}
+            </div>
+            <div class="pb-card__content">
+              <h3 class="pb-card__title">{{ content.label }}</h3>
+              <p class="pb-card__description">
+                {{ content.content_type.value|capitalize|t }}
+                {% if content.difficulty.value %}
+                  • {{ content.difficulty.value|t }}
+                {% endif %}
+              </p>
+            </div>
+            <div class="pb-card__arrow">→</div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      {# EMPTY STATE #}
+      <div class="pb-empty-state">
+        <div class="pb-empty-state__icon">
+          {{ jaraba_icon('education', 'book-open', { variant: 'duotone', size: '64px' }) }}
+        </div>
+        <h3 class="pb-empty-state__title">{{ 'No hay contenido todavía'|t }}</h3>
+        <p class="pb-empty-state__description">
+          {{ 'Crea tu primer contenido interactivo o genera uno con IA.'|t }}
+        </p>
+        <a href="{{ path('entity.interactive_content.add_form') }}" class="btn btn--primary btn--lg">
+          {{ jaraba_icon('actions', 'plus', { variant: 'duotone', size: '18px' }) }}
+          {{ 'Crear Contenido'|t }}
+        </a>
+      </div>
+    {% endif %}
+  </section>
+
+  {# AI GENERATOR SLIDE-PANEL #}
+  <div class="slide-panel slide-panel--right" id="ai-generator-panel" aria-hidden="true">
+    <div class="slide-panel__overlay"></div>
+    <div class="slide-panel__content">
+      <header class="slide-panel__header">
+        <div class="slide-panel__header-icon">
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <h2 class="slide-panel__title">{{ 'Generar con IA'|t }}</h2>
+        <button type="button" class="slide-panel__close" aria-label="{{ 'Cerrar'|t }}">
+          {{ jaraba_icon('ui', 'x', { variant: 'duotone', size: '20px' }) }}
+        </button>
+      </header>
+
+      <div class="slide-panel__body">
+        <form id="ai-generator-form" class="form form--ai-generator">
+          {# Type Selection #}
+          <div class="form-group">
+            <label for="ai-content-type" class="form-label">{{ 'Tipo de Contenido'|t }}</label>
+            <select id="ai-content-type" name="type" class="form-select" required>
+              <option value="quiz">{{ 'Cuestionario'|t }}</option>
+              <option value="scenario">{{ 'Escenario Ramificado'|t }}</option>
+              <option value="flashcards">{{ 'Flashcards'|t }}</option>
+            </select>
+          </div>
+
+          {# Title #}
+          <div class="form-group">
+            <label for="ai-title" class="form-label">{{ 'Título'|t }}</label>
+            <input type="text" id="ai-title" name="title" class="form-input" 
+                   placeholder="{{ 'Ej: Cuestionario de Conceptos Básicos'|t }}" required>
+          </div>
+
+          {# Source Text #}
+          <div class="form-group">
+            <label for="ai-source-text" class="form-label">{{ 'Texto Fuente'|t }}</label>
+            <textarea id="ai-source-text" name="source_text" class="form-textarea" rows="6"
+                      placeholder="{{ 'Pega aquí el contenido del que quieres generar preguntas o flashcards...'|t }}" required></textarea>
+            <p class="form-help">{{ 'La IA analizará este texto para generar contenido interactivo.'|t }}</p>
+          </div>
+
+          {# Difficulty (for quizzes) #}
+          <div class="form-group" id="group-difficulty">
+            <label for="ai-difficulty" class="form-label">{{ 'Dificultad'|t }}</label>
+            <select id="ai-difficulty" name="difficulty" class="form-select">
+              <option value="beginner">{{ 'Principiante'|t }}</option>
+              <option value="intermediate" selected>{{ 'Intermedio'|t }}</option>
+              <option value="advanced">{{ 'Avanzado'|t }}</option>
+            </select>
+          </div>
+
+          {# Count #}
+          <div class="form-group" id="group-count">
+            <label for="ai-count" class="form-label">{{ 'Cantidad'|t }}</label>
+            <input type="number" id="ai-count" name="count" class="form-input" 
+                   value="5" min="1" max="20">
+            <p class="form-help">{{ 'Número de preguntas o tarjetas a generar.'|t }}</p>
+          </div>
+
+          {# Learning Objective (for scenarios) #}
+          <div class="form-group hidden" id="group-objective">
+            <label for="ai-objective" class="form-label">{{ 'Objetivo de Aprendizaje'|t }}</label>
+            <input type="text" id="ai-objective" name="learning_objective" class="form-input"
+                   placeholder="{{ 'Ej: Aprender a manejar conflictos laborales'|t }}">
+          </div>
+
+          {# Submit Button #}
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary btn--lg btn--block" id="btn-generate-submit">
+              {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '18px' }) }}
+              <span class="btn__text">{{ 'Generar Contenido'|t }}</span>
+              <span class="btn__loading hidden">
+                <span class="spinner spinner--sm"></span>
+                {{ 'Generando...'|t }}
+              </span>
+            </button>
+          </div>
+        </form>
+
+        {# Result Preview #}
+        <div id="ai-result-preview" class="ai-result-preview hidden">
+          <h3 class="ai-result-preview__title">{{ 'Contenido Generado'|t }}</h3>
+          <div class="ai-result-preview__content"></div>
+          <div class="ai-result-preview__actions">
+            <button type="button" class="btn btn--secondary" id="btn-discard">
+              {{ 'Descartar'|t }}
+            </button>
+            <button type="button" class="btn btn--success" id="btn-save-content">
+              {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '18px' }) }}
+              {{ 'Guardar Contenido'|t }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# SMART IMPORT SLIDE-PANEL (Sprint 5) #}
+  <div class="slide-panel slide-panel--right slide-panel--large" id="smart-import-panel" aria-hidden="true">
+    <div class="slide-panel__overlay"></div>
+    <div class="slide-panel__content">
+      <header class="slide-panel__header">
+        <div class="slide-panel__header-icon">
+          {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <h2 class="slide-panel__title">{{ 'Smart Import'|t }}</h2>
+        <button type="button" class="slide-panel__close" aria-label="{{ 'Cerrar'|t }}">
+          {{ jaraba_icon('ui', 'x', { variant: 'duotone', size: '20px' }) }}
+        </button>
+      </header>
+
+      <div class="slide-panel__body">
+        {# Tabs Navigation #}
+        <div class="smart-import-tabs">
+          <button type="button" class="smart-import-tab active" data-tab="url">
+            {{ jaraba_icon('ui', 'link', { variant: 'duotone', size: '16px' }) }}
+            {{ 'Desde URL'|t }}
+          </button>
+          <button type="button" class="smart-import-tab" data-tab="video">
+            {{ jaraba_icon('ui', 'play-circle', { variant: 'duotone', size: '16px' }) }}
+            {{ 'Desde Video'|t }}
+          </button>
+        </div>
+
+        {# Tab Content: URL Import #}
+        <div class="smart-import-content active" id="tab-content-url">
+          <form id="smart-import-url-form" class="form form--smart-import">
+            <div class="form-group">
+              <label for="import_url" class="form-label">{{ 'URL del Artículo'|t }}</label>
+              <input type="url" id="import_url" name="import_url" class="form-input"
+                     placeholder="{{ 'https://ejemplo.com/articulo'|t }}" required>
+              <p class="form-help">{{ 'Pega la URL de cualquier página web para extraer su contenido.'|t }}</p>
+            </div>
+
+            <div class="form-group">
+              <label for="import_content_type" class="form-label">{{ 'Tipo de Contenido'|t }}</label>
+              <select id="import_content_type" name="import_content_type" class="form-select">
+                <option value="quiz">{{ 'Cuestionario'|t }}</option>
+                <option value="flashcards">{{ 'Flashcards'|t }}</option>
+                <option value="scenario">{{ 'Escenario'|t }}</option>
+                <option value="presentation">{{ 'Presentación'|t }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="difficulty" class="form-label">{{ 'Dificultad'|t }}</label>
+              <select id="difficulty" name="difficulty" class="form-select">
+                <option value="beginner">{{ 'Principiante'|t }}</option>
+                <option value="intermediate" selected>{{ 'Intermedio'|t }}</option>
+                <option value="advanced">{{ 'Avanzado'|t }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="count" class="form-label">{{ 'Cantidad de Preguntas'|t }}</label>
+              <input type="number" id="count" name="count" class="form-input" value="5" min="1" max="20">
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn--primary btn--lg btn--block btn-import-url">
+                {{ jaraba_icon('ui', 'download', { variant: 'duotone', size: '18px' }) }}
+                {{ 'Importar desde URL'|t }}
+              </button>
+            </div>
+          </form>
+
+          <div id="url-import-result" class="import-result hidden"></div>
+        </div>
+
+        {# Tab Content: Video Import #}
+        <div class="smart-import-content" id="tab-content-video">
+          <form id="smart-import-video-form" class="form form--smart-import">
+            <div class="form-group">
+              <label for="video_url" class="form-label">{{ 'URL del Video'|t }}</label>
+              <input type="url" id="video_url" name="video_url" class="form-input"
+                     placeholder="{{ 'https://youtube.com/watch?v=...'|t }}" required>
+              <p class="form-help">{{ 'Soporta YouTube y otros proveedores de video.'|t }}</p>
+            </div>
+
+            <div class="form-group">
+              <label for="video_content_type" class="form-label">{{ 'Tipo de Contenido'|t }}</label>
+              <select id="video_content_type" name="video_content_type" class="form-select">
+                <option value="quiz">{{ 'Cuestionario con Timestamps'|t }}</option>
+                <option value="checkpoints">{{ 'Video con Checkpoints'|t }}</option>
+                <option value="flashcards">{{ 'Flashcards'|t }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="video_difficulty" class="form-label">{{ 'Dificultad'|t }}</label>
+              <select id="video_difficulty" name="video_difficulty" class="form-select">
+                <option value="beginner">{{ 'Principiante'|t }}</option>
+                <option value="intermediate" selected>{{ 'Intermedio'|t }}</option>
+                <option value="advanced">{{ 'Avanzado'|t }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="video_count" class="form-label">{{ 'Puntos de Control'|t }}</label>
+              <input type="number" id="video_count" name="video_count" class="form-input" value="5" min="1" max="10">
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn--primary btn--lg btn--block btn-import-video">
+                {{ jaraba_icon('ui', 'play-circle', { variant: 'duotone', size: '18px' }) }}
+                {{ 'Importar desde Video'|t }}
+              </button>
+            </div>
+          </form>
+
+          <div id="video-import-result" class="import-result hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

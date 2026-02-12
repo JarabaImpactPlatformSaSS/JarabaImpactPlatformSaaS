@@ -1,0 +1,82 @@
+{#
+/**
+ * @file
+ * Template para la Línea de Tiempo.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout_class = content.layout|default('alternating') %}
+{% set events = content.events|default([]) %}
+
+<section class="jaraba-timeline jaraba-timeline--{{ bg_class }} jaraba-timeline--{{ layout_class }} jaraba-block"
+         aria-labelledby="timeline-title"
+         {% if content.animate_on_scroll %}data-animate-on-scroll="true"{% endif %}>
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-timeline__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="timeline-title" class="jaraba-block__title">{{ content.title }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Timeline #}
+    {% if events is not empty %}
+      <div class="jaraba-timeline__track">
+        {# Línea conectora #}
+        {% if content.show_connector %}
+          <div class="jaraba-timeline__line" aria-hidden="true"></div>
+        {% endif %}
+        
+        {% for event in events %}
+          <div class="jaraba-timeline__event {{ event.highlight ? 'jaraba-timeline__event--highlight' : '' }}"
+               data-event-index="{{ loop.index0 }}">
+            
+            {# Marcador/Punto #}
+            <div class="jaraba-timeline__marker">
+              {% if event.icon %}
+                {{ jaraba_icon('ui', event.icon, { variant: 'outline', size: '20px', color: 'primary' }) }}
+              {% else %}
+                <span class="jaraba-timeline__dot"></span>
+              {% endif %}
+            </div>
+            
+            {# Contenido #}
+            <div class="jaraba-timeline__content">
+              {% if event.date %}
+                <time class="jaraba-timeline__date">{{ event.date }}</time>
+              {% endif %}
+              
+              <h3 class="jaraba-timeline__event-title">{{ event.title }}</h3>
+              
+              {% if event.description %}
+                <p class="jaraba-timeline__description">{{ event.description }}</p>
+              {% endif %}
+              
+              {% if event.image %}
+                <img src="{{ event.image }}" 
+                     alt="{{ event.title }}"
+                     class="jaraba-timeline__image"
+                     loading="lazy">
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

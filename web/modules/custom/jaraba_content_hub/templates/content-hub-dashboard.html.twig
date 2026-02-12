@@ -1,0 +1,220 @@
+{#
+/**
+ * @file
+ * Template for Content Hub Editor Dashboard.
+ *
+ * Variables:
+ * - stats: Array with content statistics
+ * - recent_articles: Array of recently modified articles
+ * - top_categories: Array of categories with article counts
+ * - drafts: Array of draft articles awaiting publication
+ * - quick_actions: Array of quick action buttons
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+
+<div class="content-hub-dashboard">
+  {# Header #}
+  <header class="dashboard-header">
+    <div class="dashboard-header__content">
+      <h1 class="dashboard-header__title">{% trans %}Content Hub{% endtrans %}</h1>
+      <p class="dashboard-header__subtitle">
+        {% trans %}Manage your blog articles and categories{% endtrans %}
+      </p>
+    </div>
+    <div class="dashboard-header__actions">
+      {% for action in quick_actions %}
+        {% if action.primary %}
+          <a href="{{ action.url }}" class="btn btn--primary">
+            {{ jaraba_icon('actions', 'plus', { size: '20px' }) }}
+            {{ action.title }}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </header>
+
+  {# Stats Grid - Usando iconos existentes verificados #}
+  <section class="dashboard-stats">
+    <div class="stat-card stat-card--corporate">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'document', { size: '32px', variant: 'duotone', color: 'corporate' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.total_articles }}</span>
+        <span class="stat-card__label">{% trans %}Total Articles{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--success">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ui', 'check-circle', { size: '32px', variant: 'duotone', color: 'success' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.published }}</span>
+        <span class="stat-card__label">{% trans %}Published{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--warning">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('actions', 'edit', { size: '32px', variant: 'duotone', color: 'warning' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.drafts }}</span>
+        <span class="stat-card__label">{% trans %}Drafts{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--ai">
+      <div class="stat-card__icon">
+        {{ jaraba_icon('ai', 'sparkle', { size: '32px', variant: 'duotone', color: 'secondary' }) }}
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ stats.ai_assisted }}</span>
+        <span class="stat-card__label">{% trans %}AI Assisted{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# Main Content #}
+  <div class="dashboard-grid">
+    {# Recent Articles #}
+    <section class="dashboard-panel dashboard-panel--recent">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Recent Articles{% endtrans %}</h2>
+        <a href="{{ path('entity.content_article.collection') }}" class="dashboard-panel__link">
+          {% trans %}View All{% endtrans %}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+        </a>
+      </header>
+      <div class="dashboard-panel__content">
+        {% if recent_articles is not empty %}
+          <ul class="article-list">
+            {% for article in recent_articles %}
+              <li class="article-list__item">
+                <div class="article-list__content">
+                  <a href="{{ article.edit_url }}" class="article-list__title">{{ article.title }}</a>
+                  <div class="article-list__meta">
+                    <span class="article-list__author">{{ article.author }}</span>
+                    <span class="article-list__date">{{ article.changed|date('d M Y') }}</span>
+                  </div>
+                </div>
+                <span class="article-list__status article-list__status--{{ article.status }}">
+                  {{ article.status }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="dashboard-panel__empty">{% trans %}No articles yet. Create your first article!{% endtrans %}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# Drafts Awaiting Publication #}
+    <section class="dashboard-panel dashboard-panel--drafts">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Awaiting Publication{% endtrans %}</h2>
+      </header>
+      <div class="dashboard-panel__content">
+        {% if drafts is not empty %}
+          <ul class="draft-list">
+            {% for draft in drafts %}
+              <li class="draft-list__item">
+                <a href="{{ draft.edit_url }}" class="draft-list__link">
+                  <span class="draft-list__title">{{ draft.title }}</span>
+                  <span class="draft-list__action">
+                    {% trans %}Edit{% endtrans %}
+                    {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+                  </span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="dashboard-panel__empty">{% trans %}All caught up! No pending drafts.{% endtrans %}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# Top Categories #}
+    <section class="dashboard-panel dashboard-panel--categories">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Categories{% endtrans %}</h2>
+        <a href="{{ path('entity.content_category.collection') }}" class="dashboard-panel__link">
+          {% trans %}Manage{% endtrans %}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+        </a>
+      </header>
+      <div class="dashboard-panel__content">
+        {% if top_categories is not empty %}
+          <ul class="category-list">
+            {% for category in top_categories %}
+              <li class="category-list__item">
+                <span class="category-list__color" style="background-color: {{ category.color }}"></span>
+                <span class="category-list__name">{{ category.name }}</span>
+                <span class="category-list__count">{{ category.count }} {% trans %}articles{% endtrans %}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="dashboard-panel__empty">{% trans %}No categories yet.{% endtrans %}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# Quick Actions #}
+    <section class="dashboard-panel dashboard-panel--actions">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">{% trans %}Quick Actions{% endtrans %}</h2>
+      </header>
+      <div class="dashboard-panel__content">
+        <div class="quick-actions">
+          {% for action in quick_actions %}
+            <a href="{{ action.url }}" class="quick-action">
+              <span class="quick-action__icon">
+                {% if action.icon == 'plus' %}
+                  {{ jaraba_icon('actions', 'plus', { size: '24px', variant: 'duotone', color: 'impulse' }) }}
+                {% elseif action.icon == 'sparkles' %}
+                  {{ jaraba_icon('ai', 'sparkle', { size: '24px', variant: 'duotone', color: 'innovation' }) }}
+                {% elseif action.icon == 'folder' %}
+                  {{ jaraba_icon('ui', 'folder', { size: '24px', variant: 'duotone', color: 'corporate' }) }}
+                {% elseif action.icon == 'eye' %}
+                  {{ jaraba_icon('ui', 'eye', { size: '24px', variant: 'duotone', color: 'innovation' }) }}
+                {% endif %}
+              </span>
+              <span class="quick-action__content">
+                <span class="quick-action__title">{{ action.title }}</span>
+                <span class="quick-action__description">{{ action.description }}</span>
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {# Performance Summary #}
+  <section class="dashboard-panel dashboard-panel--performance">
+    <header class="dashboard-panel__header">
+      <h2 class="dashboard-panel__title">{% trans %}This Month{% endtrans %}</h2>
+    </header>
+    <div class="dashboard-panel__content">
+      <div class="performance-grid">
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.this_month }}</span>
+          <span class="performance-stat__label">{% trans %}New Articles{% endtrans %}</span>
+        </div>
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.publish_rate }}%</span>
+          <span class="performance-stat__label">{% trans %}Publish Rate{% endtrans %}</span>
+        </div>
+        <div class="performance-stat">
+          <span class="performance-stat__value">{{ stats.categories }}</span>
+          <span class="performance-stat__label">{% trans %}Active Categories{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

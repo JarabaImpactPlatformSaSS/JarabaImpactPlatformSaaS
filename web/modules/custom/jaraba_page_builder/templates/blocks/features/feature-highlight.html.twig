@@ -1,0 +1,75 @@
+{#
+/**
+ * @file
+ * Template para el bloque Feature Highlight.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set image_position = content.image_position|default('right') %}
+
+<section class="jaraba-feature-highlight jaraba-feature-highlight--{{ bg_class }} jaraba-feature-highlight--image-{{ image_position }} jaraba-block">
+  <div class="jaraba-block__container">
+    <div class="jaraba-feature-highlight__wrapper">
+      
+      {# Content #}
+      <div class="jaraba-feature-highlight__content">
+        {% if content.eyebrow %}
+          <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+        {% endif %}
+        
+        <h2 class="jaraba-feature-highlight__title">{{ content.title }}</h2>
+        
+        {% if content.description %}
+          <div class="jaraba-feature-highlight__description">
+            {{ content.description|raw }}
+          </div>
+        {% endif %}
+        
+        {# Sub-features #}
+        {% if content.features is not empty %}
+          <div class="jaraba-feature-highlight__features">
+            {% for feature in content.features %}
+              <div class="jaraba-feature-highlight__feature">
+                {% if feature.icon %}
+                  <div class="jaraba-feature-highlight__feature-icon">
+                    {{ jaraba_icon('ui', feature.icon, { variant: 'duotone', size: '24px', color: 'primary' }) }}
+                  </div>
+                {% endif %}
+                <div class="jaraba-feature-highlight__feature-text">
+                  <h3>{{ feature.title }}</h3>
+                  {% if feature.description %}
+                    <p>{{ feature.description }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        
+        {# CTA #}
+        {% if content.cta.text %}
+          <a href="{{ content.cta.url }}" class="jaraba-btn jaraba-btn--primary">
+            {{ content.cta.text }}
+            {{ jaraba_icon('ui', 'arrow-right', { size: '18px' }) }}
+          </a>
+        {% endif %}
+      </div>
+      
+      {# Image #}
+      <div class="jaraba-feature-highlight__image-wrapper">
+        <img src="{{ content.image }}" 
+             alt="{{ content.title }}"
+             class="jaraba-feature-highlight__image"
+             loading="lazy">
+      </div>
+      
+    </div>
+  </div>
+</section>

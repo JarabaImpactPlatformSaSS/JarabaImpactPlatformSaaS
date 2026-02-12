@@ -1,0 +1,20 @@
+administer customer success:
+  title: 'Administer Customer Success'
+  description: 'Manage health scores, playbooks and customer success configuration.'
+  restrict access: true
+
+view customer health scores:
+  title: 'View customer health scores'
+  description: 'View health scores and engagement metrics for tenants.'
+
+manage playbooks:
+  title: 'Manage playbooks'
+  description: 'Create, edit and execute customer success playbooks.'
+
+view churn predictions:
+  title: 'View churn predictions'
+  description: 'View churn risk analysis and predictions.'
+
+manage expansion signals:
+  title: 'Manage expansion signals'
+  description: 'View and action expansion opportunities.'

@@ -1,0 +1,89 @@
+{#
+/**
+ * @file
+ * Template para el bloque Sección Footer.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set style = content.style|default('dark') %}
+
+<footer class="jaraba-footer jaraba-footer--{{ style }}">
+  <div class="jaraba-block__container">
+    
+    <div class="jaraba-footer__main">
+      {# Brand column #}
+      <div class="jaraba-footer__brand">
+        {% if content.logo %}
+          <img src="{{ content.logo }}" alt="Logo" class="jaraba-footer__logo">
+        {% endif %}
+        {% if content.tagline %}
+          <p class="jaraba-footer__tagline">{{ content.tagline }}</p>
+        {% endif %}
+        
+        {# Social links #}
+        {% if content.social_links is not empty %}
+          <div class="jaraba-footer__social">
+            {% for social in content.social_links %}
+              <a href="{{ social.url }}" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="jaraba-footer__social-link"
+                 aria-label="{{ social.platform }}">
+                {{ jaraba_icon('social', social.platform, { size: '20px' }) }}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      
+      {# Link columns #}
+      {% if content.columns is not empty %}
+        {% for column in content.columns %}
+          <div class="jaraba-footer__column">
+            <h4 class="jaraba-footer__column-title">{{ column.title }}</h4>
+            <ul class="jaraba-footer__links">
+              {% for link in column.links %}
+                <li><a href="{{ link.url }}">{{ link.text }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      {# Newsletter #}
+      {% if content.newsletter.enabled %}
+        <div class="jaraba-footer__newsletter">
+          <h4 class="jaraba-footer__column-title">{{ content.newsletter.title|default('Newsletter'|trans) }}</h4>
+          <form class="jaraba-footer__newsletter-form">
+            <input type="email" 
+                   placeholder="{{ content.newsletter.placeholder|default('Tu email'|trans) }}"
+                   required>
+            <button type="submit">
+              {{ jaraba_icon('ui', 'send', { size: '18px' }) }}
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="jaraba-footer__bottom">
+      {% if content.copyright %}
+        <p class="jaraba-footer__copyright">{{ content.copyright }}</p>
+      {% endif %}
+      {% if content.legal_links is not empty %}
+        <nav class="jaraba-footer__legal">
+          {% for link in content.legal_links %}
+            <a href="{{ link.url }}">{{ link.text }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+    </div>
+    
+  </div>
+</footer>

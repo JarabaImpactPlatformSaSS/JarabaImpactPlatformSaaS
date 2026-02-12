@@ -1,0 +1,9 @@
+{
+    "name": "jaraba_social",
+    "version": "1.0.0",
+    "description": "AI Social Manager SCSS Build",
+    "scripts": {
+        "build": "sass scss/_social-dashboard.scss css/social-dashboard.css --style=compressed --no-source-map",
+        "watch": "sass scss/_social-dashboard.scss css/social-dashboard.css --watch"
+    }
+}

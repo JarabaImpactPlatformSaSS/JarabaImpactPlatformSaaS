@@ -1,0 +1,10 @@
+/**
+ * @file
+ * Estilos principales del módulo Site Builder.
+ * 
+ * Importa todos los parciales SCSS.
+ */
+
+@use 'site-tree';
+@use 'site-builder-dashboard';
+@use 'site-builder-seo';

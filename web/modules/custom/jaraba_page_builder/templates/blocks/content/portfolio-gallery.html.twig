@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * Template para el bloque Galería de Portfolio.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set layout = content.layout|default('grid') %}
+
+<section class="jaraba-portfolio jaraba-portfolio--{{ bg_class }} jaraba-block"
+         aria-labelledby="portfolio-title"
+         data-block-type="portfolio_gallery">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-portfolio__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      <h2 id="portfolio-title" class="jaraba-block__title">
+        {{ content.title|default('Nuestro Portfolio'|trans) }}
+      </h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Filters #}
+    {% if content.show_filters and content.projects is not empty %}
+      <div class="jaraba-portfolio__filters">
+        <button type="button" class="jaraba-portfolio__filter is-active" data-filter="all">
+          {% trans %}Todos{% endtrans %}
+        </button>
+        {% set categories = [] %}
+        {% for project in content.projects %}
+          {% if project.category and project.category not in categories %}
+            {% set categories = categories|merge([project.category]) %}
+          {% endif %}
+        {% endfor %}
+        {% for category in categories %}
+          <button type="button" class="jaraba-portfolio__filter" data-filter="{{ category }}">
+            {{ category }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Grid #}
+    {% if content.projects is not empty %}
+      <div class="jaraba-portfolio__grid jaraba-portfolio__grid--{{ layout }} jaraba-portfolio__grid--{{ columns }}">
+        {% for project in content.projects %}
+          <article class="jaraba-portfolio__item" data-category="{{ project.category }}">
+            <a href="{{ project.url }}" class="jaraba-portfolio__link">
+              <img src="{{ project.image }}" 
+                   alt="{{ project.title }}"
+                   class="jaraba-portfolio__image"
+                   loading="lazy">
+              
+              {% if content.show_overlay %}
+                <div class="jaraba-portfolio__overlay">
+                  <span class="jaraba-portfolio__category">{{ project.category }}</span>
+                  <h3 class="jaraba-portfolio__title">{{ project.title }}</h3>
+                  {% if project.client %}
+                    <span class="jaraba-portfolio__client">{{ project.client }}</span>
+                  {% endif %}
+                  {% if project.tags is not empty %}
+                    <div class="jaraba-portfolio__tags">
+                      {% for tag in project.tags %}
+                        <span class="jaraba-portfolio__tag">{{ tag }}</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

@@ -1,0 +1,272 @@
+/**
+ * @file
+ * Estilos para el bloque Features Grid.
+ *
+ * Usa tokens de diseño inyectables (--ej-*).
+ *
+ * @ingroup jaraba_page_builder
+ */
+
+// ============================================================================
+// Features Section
+// ============================================================================
+.jaraba-features {
+    padding: var(--ej-spacing-section, 4rem) 0;
+    background: var(--ej-bg-primary, white);
+
+    // === Header ===
+    &__header {
+        text-align: center;
+        margin-bottom: var(--ej-spacing-xl, 3rem);
+        max-width: 720px;
+        margin-inline: auto;
+    }
+
+    &__title {
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: var(--ej-text-primary, #1e293b);
+        margin-bottom: var(--ej-spacing-sm, 1rem);
+        line-height: 1.2;
+    }
+
+    &__subtitle {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        color: var(--ej-text-secondary, #64748b);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    // === Grid Layout ===
+    &__grid {
+        display: grid;
+        gap: var(--ej-spacing-lg, 2rem);
+
+        &--2-cols {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &--3-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        &--4-cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        // Responsive breakpoints.
+        @media (max-width: 1024px) {
+            &--4-cols {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            &--3-cols,
+            &--4-cols {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            &--2-cols,
+            &--3-cols,
+            &--4-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+
+    // === Variantes de fondo ===
+    &--light {
+        background: var(--ej-bg-secondary, #f8fafc);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, #0f172a);
+        color: var(--ej-text-on-dark, #f1f5f9);
+
+        .jaraba-features__title {
+            color: white;
+        }
+
+        .jaraba-features__subtitle {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .jaraba-feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .jaraba-feature-card__title {
+            color: white;
+        }
+
+        .jaraba-feature-card__description {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg,
+                var(--ej-corporate-blue, #003366) 0%,
+                var(--ej-primary, #0066CC) 100%);
+        color: white;
+
+        .jaraba-features__title {
+            color: white;
+        }
+
+        .jaraba-features__subtitle {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .jaraba-feature-card {
+            background: rgba(255, 255, 255, 0.95);
+        }
+    }
+}
+
+// ============================================================================
+// Feature Card - Premium Design
+// ============================================================================
+.jaraba-feature-card {
+    background: var(--ej-bg-primary, white);
+    border-radius: var(--ej-radius-lg, 16px);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    padding: var(--ej-spacing-lg, 2rem);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+
+    // Gradient accent top border.
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg,
+                var(--ej-primary, #0066CC),
+                var(--ej-accent, #00AAFF));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    // Hover state.
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.1),
+            0 8px 16px rgba(0, 0, 0, 0.06);
+        border-color: transparent;
+
+        &::before {
+            opacity: 1;
+        }
+
+        .jaraba-feature-card__icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg,
+                    var(--ej-primary, #0066CC),
+                    var(--ej-accent, #00AAFF));
+
+            svg,
+            .icon {
+                color: white;
+            }
+        }
+    }
+
+    // === Icon ===
+    &__icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto var(--ej-spacing-md, 1.5rem);
+        border-radius: var(--ej-radius-md, 12px);
+        background: var(--ej-bg-secondary, #f1f5f9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+
+        svg,
+        .icon {
+            width: 28px;
+            height: 28px;
+            color: var(--ej-primary, #0066CC);
+            transition: color 0.3s ease;
+        }
+    }
+
+    // === Title ===
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--ej-text-primary, #1e293b);
+        margin-bottom: var(--ej-spacing-sm, 0.75rem);
+        line-height: 1.4;
+    }
+
+    // === Description ===
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--ej-text-secondary, #64748b);
+        line-height: 1.6;
+        margin: 0 0 var(--ej-spacing-sm, 0.75rem) 0;
+    }
+
+    // === Badge ===
+    &__badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: var(--ej-spacing-xs, 0.5rem);
+
+        &--primary {
+            background: var(--ej-primary-light, #e0f2fe);
+            color: var(--ej-primary, #0066CC);
+        }
+
+        &--secondary {
+            background: var(--ej-secondary-light, #f3e8ff);
+            color: var(--ej-secondary, #7c3aed);
+        }
+
+        &--corporate {
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--ej-corporate-blue, #003366);
+        }
+
+        &--success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+    }
+}
+
+// ============================================================================
+// Icon Fallback (cuando jaraba_icon no encuentra el icono)
+// ============================================================================
+.jaraba-feature-card__icon {
+
+    // Fallback para iconos que no se renderizan.
+    &:empty::after {
+        content: '✨';
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,122 @@
+{#
+/**
+ * @file
+ * Template para el bloque Testimonios con Slider.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set style_class = content.style|default('cards') %}
+{% set testimonials = content.testimonials|default([]) %}
+
+<section class="jaraba-block jaraba-testimonials jaraba-testimonials--{{ bg_class }} jaraba-testimonials--{{ style_class }}"
+         data-block-type="testimonials_slider"
+         data-autoplay="{{ content.autoplay ? 'true' : 'false' }}"
+         data-autoplay-speed="{{ content.autoplay_speed|default(5) }}">
+  
+  <div class="jaraba-block__container">
+    
+    {# Encabezado #}
+    <header class="jaraba-testimonials__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+    
+    {# Slider de testimonios #}
+    {% if testimonials is not empty %}
+      <div class="jaraba-testimonials__slider" data-testimonials-slider>
+        <div class="jaraba-testimonials__track">
+          {% for testimonial in testimonials %}
+            <article class="jaraba-testimonial-card" 
+                     data-slide-index="{{ loop.index0 }}"
+                     {% if loop.first %}aria-current="true"{% endif %}>
+              
+              {# Comilla decorativa para estilo quotes #}
+              {% if style_class == 'quotes' %}
+                <div class="jaraba-testimonial-card__quote-mark" aria-hidden="true">"</div>
+              {% endif %}
+              
+              {# Rating con estrellas #}
+              {% if content.show_rating and testimonial.rating %}
+                <div class="jaraba-testimonial-card__rating" aria-label="{{ testimonial.rating }} {% trans %}de 5 estrellas{% endtrans %}">
+                  {% for i in 1..5 %}
+                    <span class="jaraba-star {{ i <= testimonial.rating ? 'jaraba-star--filled' : '' }}">
+                      {{ jaraba_icon('ui', 'star', { variant: i <= testimonial.rating ? 'filled' : 'outline', size: '16px', color: i <= testimonial.rating ? 'warning' : 'muted' }) }}
+                    </span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              
+              {# Cita #}
+              <blockquote class="jaraba-testimonial-card__quote">
+                {{ testimonial.quote }}
+              </blockquote>
+              
+              {# Autor #}
+              <footer class="jaraba-testimonial-card__author">
+                {% if testimonial.author_image %}
+                  <img src="{{ file_url(testimonial.author_image) }}" 
+                       alt="{{ testimonial.author_name }}"
+                       class="jaraba-testimonial-card__avatar"
+                       loading="lazy">
+                {% else %}
+                  <div class="jaraba-testimonial-card__avatar jaraba-testimonial-card__avatar--placeholder">
+                    {{ testimonial.author_name|first|upper }}
+                  </div>
+                {% endif %}
+                
+                <div class="jaraba-testimonial-card__author-info">
+                  <cite class="jaraba-testimonial-card__name">{{ testimonial.author_name }}</cite>
+                  {% if testimonial.author_title or testimonial.author_company %}
+                    <span class="jaraba-testimonial-card__role">
+                      {{ testimonial.author_title }}
+                      {% if testimonial.author_company %}
+                        • {{ testimonial.author_company }}
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </div>
+              </footer>
+              
+            </article>
+          {% endfor %}
+        </div>
+        
+        {# Controles del slider #}
+        <div class="jaraba-testimonials__controls">
+          <button class="jaraba-testimonials__btn jaraba-testimonials__btn--prev" 
+                  aria-label="{% trans %}Testimonio anterior{% endtrans %}">
+            {{ jaraba_icon('ui', 'chevron-left', { size: '20px' }) }}
+          </button>
+          
+          <div class="jaraba-testimonials__dots" role="tablist">
+            {% for testimonial in testimonials %}
+              <button class="jaraba-testimonials__dot {{ loop.first ? 'is-active' : '' }}"
+                      role="tab"
+                      aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                      aria-label="{% trans %}Ir al testimonio{% endtrans %} {{ loop.index }}">
+              </button>
+            {% endfor %}
+          </div>
+          
+          <button class="jaraba-testimonials__btn jaraba-testimonials__btn--next" 
+                  aria-label="{% trans %}Siguiente testimonio{% endtrans %}">
+            {{ jaraba_icon('ui', 'chevron-right', { size: '20px' }) }}
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

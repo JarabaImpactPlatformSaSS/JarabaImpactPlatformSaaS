@@ -1,0 +1,60 @@
+jaraba_customer_success.settings:
+  type: config_object
+  label: 'Customer Success settings'
+  mapping:
+    health_score_weights:
+      type: mapping
+      label: 'Health Score weights'
+      mapping:
+        engagement:
+          type: integer
+          label: 'Engagement weight'
+        adoption:
+          type: integer
+          label: 'Adoption weight'
+        satisfaction:
+          type: integer
+          label: 'Satisfaction weight'
+        support:
+          type: integer
+          label: 'Support weight'
+        growth:
+          type: integer
+          label: 'Growth weight'
+    health_score_thresholds:
+      type: mapping
+      label: 'Health Score thresholds'
+      mapping:
+        healthy:
+          type: integer
+          label: 'Healthy threshold'
+        neutral:
+          type: integer
+          label: 'Neutral threshold'
+        at_risk:
+          type: integer
+          label: 'At risk threshold'
+    calculation_interval:
+      type: integer
+      label: 'Calculation interval (hours)'
+    cron_batch_size:
+      type: integer
+      label: 'Cron batch size'
+    churn_model_version:
+      type: string
+      label: 'Churn model version'
+    playbook_max_retries:
+      type: integer
+      label: 'Playbook max retries'
+    nps_survey_cooldown:
+      type: integer
+      label: 'NPS survey cooldown (days)'
+    expansion_usage_threshold:
+      type: integer
+      label: 'Expansion usage threshold (%)'
+    alert_channels:
+      type: sequence
+      label: 'Alert channels'
+      sequence:
+        type: string
+        label: 'Channel'

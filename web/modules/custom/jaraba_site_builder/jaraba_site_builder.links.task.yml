@@ -1,0 +1,25 @@
+# Tabs locales del Site Builder
+
+jaraba_site_builder.tree:
+  title: 'Árbol'
+  route_name: jaraba_site_builder.tree
+  base_route: jaraba_site_builder.dashboard
+  weight: 0
+
+jaraba_site_builder.settings:
+  title: 'Configuración'
+  route_name: jaraba_site_builder.settings
+  base_route: jaraba_site_builder.dashboard
+  weight: 10
+
+jaraba_site_builder.redirects:
+  title: 'Redirects'
+  route_name: jaraba_site_builder.redirects
+  base_route: jaraba_site_builder.dashboard
+  weight: 20
+
+jaraba_site_builder.sitemap:
+  title: 'Sitemap'
+  route_name: jaraba_site_builder.sitemap
+  base_route: jaraba_site_builder.dashboard
+  weight: 30

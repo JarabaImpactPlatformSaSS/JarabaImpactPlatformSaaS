@@ -1,0 +1,14 @@
+# Permisos del módulo jaraba_tenant_knowledge.
+
+administer tenant knowledge:
+  title: 'Administrar Conocimiento del Tenant'
+  description: 'Acceso completo a la configuración de conocimiento de todos los tenants.'
+  restrict access: true
+
+access tenant knowledge:
+  title: 'Acceder a Knowledge Training'
+  description: 'Ver el dashboard de entrenamiento de conocimiento del propio tenant.'
+
+edit tenant knowledge:
+  title: 'Editar Conocimiento del Tenant'
+  description: 'Modificar la información, FAQs, políticas y documentos del propio tenant.'

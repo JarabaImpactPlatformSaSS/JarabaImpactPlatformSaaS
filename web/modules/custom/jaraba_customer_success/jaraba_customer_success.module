@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * @file
+ * Customer Success Proactivo - Health scores, churn prediction, playbooks.
+ *
+ * PROPÓSITO:
+ * Módulo principal de Customer Success. Implementa hook_cron para
+ * cálculo programado de health scores y ejecución de playbooks.
+ * Define hook_theme() para templates del dashboard frontend.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_customer_success_help(string $route_name): string {
+  if ($route_name === 'help.page.jaraba_customer_success') {
+    return '<p>' . t('Customer Success proactivo con health scores 0-100, predicción de churn, playbooks automatizados y señales de expansión. Dashboard del CSM en /customer-success.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_customer_success_theme(): array {
+  return [
+    'jaraba_cs_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'category_counts' => [],
+        'recent_health' => [],
+        'at_risk_tenants' => [],
+        'active_playbooks' => [],
+        'expansion_signals' => [],
+        'nps_trend' => [],
+      ],
+      'template' => 'jaraba-cs-dashboard',
+    ],
+    'jaraba_cs_health_card' => [
+      'variables' => [
+        'health' => NULL,
+        'tenant' => NULL,
+      ],
+      'template' => 'jaraba-cs-health-card',
+    ],
+    'jaraba_cs_churn_panel' => [
+      'variables' => [
+        'predictions' => [],
+      ],
+      'template' => 'jaraba-cs-churn-panel',
+    ],
+    'jaraba_cs_playbook_timeline' => [
+      'variables' => [
+        'executions' => [],
+        'playbooks' => [],
+      ],
+      'template' => 'jaraba-cs-playbook-timeline',
+    ],
+    'jaraba_cs_empty_state' => [
+      'variables' => [
+        'title' => '',
+        'message' => '',
+        'action_url' => '',
+        'action_label' => '',
+      ],
+      'template' => 'jaraba-cs-empty-state',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * LÓGICA:
+ * 1. Ejecutar cálculo programado de health scores (según intervalo).
+ * 2. Evaluar triggers de playbooks activos.
+ * 3. Avanzar ejecuciones de playbooks pendientes.
+ */
+function jaraba_customer_success_cron(): void {
+  // 1. Cálculo de health scores.
+  try {
+    /** @var \Drupal\jaraba_customer_success\Service\HealthScoreCalculatorService $calculator */
+    $calculator = \Drupal::service('jaraba_customer_success.health_calculator');
+    $processed = $calculator->runScheduledCalculation();
+    if ($processed > 0) {
+      \Drupal::logger('jaraba_customer_success')->info('Cron: @count health scores calculated.', [
+        '@count' => $processed,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_customer_success')->error('Cron health calculation error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+
+  // 2. Evaluar triggers de playbooks.
+  try {
+    /** @var \Drupal\jaraba_customer_success\Service\PlaybookExecutorService $executor */
+    $executor = \Drupal::service('jaraba_customer_success.playbook_executor');
+    $started = $executor->evaluateTriggers();
+    if ($started > 0) {
+      \Drupal::logger('jaraba_customer_success')->info('Cron: @count playbook executions started.', [
+        '@count' => $started,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_customer_success')->error('Cron playbook trigger error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+
+  // 3. Avanzar ejecuciones pendientes.
+  try {
+    /** @var \Drupal\jaraba_customer_success\Service\PlaybookExecutorService $executor */
+    $executor = \Drupal::service('jaraba_customer_success.playbook_executor');
+    $advanced = $executor->advancePendingExecutions();
+    if ($advanced > 0) {
+      \Drupal::logger('jaraba_customer_success')->info('Cron: @count playbook steps advanced.', [
+        '@count' => $advanced,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_customer_success')->error('Cron playbook advance error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}

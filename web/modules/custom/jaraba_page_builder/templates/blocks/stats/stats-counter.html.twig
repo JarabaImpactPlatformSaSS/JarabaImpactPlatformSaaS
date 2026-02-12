@@ -1,0 +1,72 @@
+{#
+/**
+ * @file
+ * Template para el bloque Contador de Estadísticas.
+ *
+ * Variables disponibles:
+ * - content.eyebrow: Texto superior.
+ * - content.title: Título de la sección.
+ * - content.subtitle: Subtítulo descriptivo.
+ * - content.stats: Array de estadísticas.
+ * - content.background: Tipo de fondo.
+ * - content.animate: Si animar los números.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+{% set stats = content.stats|default([]) %}
+
+<section class="jaraba-block jaraba-stats-counter jaraba-stats-counter--{{ bg_class }}" 
+         data-block-type="stats_counter"
+         {% if content.animate %}data-animate-counters{% endif %}>
+  <div class="jaraba-block__container">
+    
+    {# Encabezado de sección #}
+    <header class="jaraba-stats-counter__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+    
+    {# Grid de estadísticas #}
+    {% if stats is not empty %}
+      <div class="jaraba-stats-counter__grid">
+        {% for stat in stats %}
+          <article class="jaraba-stat-card" data-stat-index="{{ loop.index0 }}">
+            {% if stat.icon %}
+              <div class="jaraba-stat-card__icon">
+                {{ jaraba_icon('ui', stat.icon, { variant: 'duotone', size: '40px', color: 'primary' }) }}
+              </div>
+            {% endif %}
+            
+            <div class="jaraba-stat-card__value" 
+                 data-counter-value="{{ stat.value }}"
+                 data-counter-prefix="{{ stat.prefix|default('') }}"
+                 data-counter-suffix="{{ stat.suffix|default('') }}">
+              <span class="jaraba-stat-card__prefix">{{ stat.prefix }}</span>
+              <span class="jaraba-stat-card__number">{{ stat.value }}</span>
+              <span class="jaraba-stat-card__suffix">{{ stat.suffix }}</span>
+            </div>
+            
+            <div class="jaraba-stat-card__label">{{ stat.label }}</div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

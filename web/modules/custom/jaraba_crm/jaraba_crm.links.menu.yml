@@ -1,0 +1,40 @@
+# Enlaces de menú - /admin/structure para Field UI.
+#
+# Cada entidad tiene su entrada en Structure para acceder a
+# "Administrar campos", "Administrar formularios", etc.
+
+jaraba_crm.structure.company:
+  title: 'CRM: Empresas'
+  description: 'Configurar campos y formularios de empresas.'
+  route_name: entity.crm_company.settings
+  parent: system.admin_structure
+  weight: 50
+
+jaraba_crm.structure.contact:
+  title: 'CRM: Contactos'
+  description: 'Configurar campos y formularios de contactos.'
+  route_name: entity.crm_contact.settings
+  parent: system.admin_structure
+  weight: 51
+
+jaraba_crm.structure.opportunity:
+  title: 'CRM: Oportunidades'
+  description: 'Configurar campos y formularios de oportunidades.'
+  route_name: entity.crm_opportunity.settings
+  parent: system.admin_structure
+  weight: 52
+
+jaraba_crm.structure.activity:
+  title: 'CRM: Actividades'
+  description: 'Configurar campos y formularios de actividades.'
+  route_name: entity.crm_activity.settings
+  parent: system.admin_structure
+  weight: 53
+
+# Configuración global en /admin/config
+jaraba_crm.admin_config:
+  title: 'CRM'
+  description: 'Configuración del sistema CRM.'
+  route_name: jaraba_crm.settings
+  parent: system.admin_config
+  weight: 90

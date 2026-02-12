@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * Template para el bloque Grid de Tarjetas.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set card_style = content.card_style|default('elevated') %}
+
+<section class="jaraba-cards-grid jaraba-cards-grid--{{ bg_class }} jaraba-block"
+         aria-labelledby="cards-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-cards-grid__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      {% if content.title %}
+        <h2 id="cards-title" class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid #}
+    {% if content.cards is not empty %}
+      <div class="jaraba-cards-grid__grid jaraba-cards-grid__grid--{{ columns }} {{ content.equal_height ? 'jaraba-cards-grid__grid--equal' : '' }}">
+        {% for card in content.cards %}
+          <article class="jaraba-card jaraba-card--{{ card_style }}">
+            {% if card.image %}
+              <div class="jaraba-card__image-wrapper">
+                <img src="{{ card.image }}" alt="{{ card.title }}" class="jaraba-card__image" loading="lazy">
+                {% if card.badge %}
+                  <span class="jaraba-card__badge">{{ card.badge }}</span>
+                {% endif %}
+              </div>
+            {% endif %}
+            <div class="jaraba-card__body">
+              <h3 class="jaraba-card__title">
+                {% if card.url %}
+                  <a href="{{ card.url }}">{{ card.title }}</a>
+                {% else %}
+                  {{ card.title }}
+                {% endif %}
+              </h3>
+              {% if card.description %}
+                <p class="jaraba-card__description">{{ card.description }}</p>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

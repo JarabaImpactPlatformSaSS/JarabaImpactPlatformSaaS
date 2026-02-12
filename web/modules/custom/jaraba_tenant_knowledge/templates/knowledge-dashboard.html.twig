@@ -1,0 +1,112 @@
+{#
+/**
+ * @file
+ * DASHBOARD DE KNOWLEDGE TRAINING
+ *
+ * PROPÓSITO:
+ * Vista principal del sistema de entrenamiento de conocimiento.
+ * Muestra progreso de completitud y acceso a secciones.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon() para iconografía (NO SVG inline)
+ * - Todos los textos con filtro |t para i18n
+ * - Clases CSS siguiendo patrón BEM
+ *
+ * VARIABLES:
+ * - config: TenantKnowledgeConfig entity
+ * - statistics: Array con completeness, faqs_count, etc.
+ * - sections: Array de secciones con título, icono, url, status
+ */
+#}
+
+{% set attrs = create_attribute() %}
+{% set attrs = attrs.addClass('knowledge-dashboard') %}
+
+<div{{ attrs }}>
+  {# === HERO HEADER === #}
+  <header class="knowledge-dashboard__header">
+    <div class="knowledge-dashboard__header-content">
+      <h1 class="knowledge-dashboard__title">
+        {{ 'Entrenar mi Copiloto'|t }}
+      </h1>
+      <p class="knowledge-dashboard__subtitle">
+        {{ 'Personaliza tu asistente IA con información de tu negocio'|t }}
+      </p>
+    </div>
+    
+    {# Progress Ring #}
+    <div class="knowledge-dashboard__progress">
+      <div class="progress-ring" data-progress="{{ statistics.completeness }}">
+        <svg viewBox="0 0 120 120" class="progress-ring__svg">
+          <circle class="progress-ring__bg" cx="60" cy="60" r="54"></circle>
+          <circle 
+            class="progress-ring__fill" 
+            cx="60" 
+            cy="60" 
+            r="54"
+            stroke-dasharray="339.292"
+            stroke-dashoffset="{{ 339.292 - (339.292 * statistics.completeness / 100) }}"
+          ></circle>
+        </svg>
+        <span class="progress-ring__value">{{ statistics.completeness }}%</span>
+      </div>
+      <span class="progress-ring__label">{{ 'Completitud'|t }}</span>
+    </div>
+  </header>
+
+  {# === SECTIONS GRID === #}
+  <div class="knowledge-dashboard__sections">
+    {% for section in sections %}
+      <a href="{{ section.url }}" class="knowledge-section knowledge-section--{{ section.status }}">
+        <div class="knowledge-section__icon">
+          {# Usar jaraba_icon() según directrices de iconografía #}
+          {% if section.icon == 'Building2' %}
+            {{ jaraba_icon('business', 'building', { color: 'innovation', size: '32px' }) }}
+          {% elseif section.icon == 'HelpCircle' %}
+            {{ jaraba_icon('ui', 'help', { color: 'innovation', size: '32px' }) }}
+          {% elseif section.icon == 'FileText' %}
+            {{ jaraba_icon('ui', 'document', { color: 'innovation', size: '32px' }) }}
+          {% elseif section.icon == 'FolderOpen' %}
+            {{ jaraba_icon('ui', 'folder', { color: 'innovation', size: '32px' }) }}
+          {% elseif section.icon == 'MessageSquare' %}
+            {{ jaraba_icon('ai', 'chat', { color: 'innovation', size: '32px' }) }}
+          {% else %}
+            {{ jaraba_icon('ui', 'info', { color: 'innovation', size: '32px' }) }}
+          {% endif %}
+        </div>
+        
+        <div class="knowledge-section__content">
+          <h3 class="knowledge-section__title">{{ section.title }}</h3>
+          <p class="knowledge-section__description">{{ section.description }}</p>
+          
+          {% if section.count is defined %}
+            <span class="knowledge-section__count">
+              {{ section.count }} {{ section.count == 1 ? 'elemento'|t : 'elementos'|t }}
+            </span>
+          {% endif %}
+          
+          {% if section.progress is defined %}
+            <div class="knowledge-section__progress-bar">
+              <div class="knowledge-section__progress-fill" style="width: {{ section.progress }}%"></div>
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="knowledge-section__arrow">
+          {{ jaraba_icon('ui', 'chevron-right', { color: 'neutral', size: '20px' }) }}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+
+  {# === TIPS SECTION === #}
+  <aside class="knowledge-dashboard__tips">
+    <h4>{{ '💡 Consejos para entrenar tu Copiloto'|t }}</h4>
+    <ul>
+      <li>{{ 'Completa primero la información básica del negocio'|t }}</li>
+      <li>{{ 'Añade las 10-15 preguntas más frecuentes de tus clientes'|t }}</li>
+      <li>{{ 'Define tus políticas de devolución y envío claramente'|t }}</li>
+      <li>{{ 'Prueba tu Copiloto regularmente con preguntas reales'|t }}</li>
+    </ul>
+  </aside>
+</div>

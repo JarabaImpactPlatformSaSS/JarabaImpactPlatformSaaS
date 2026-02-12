@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hero Dividido.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set media_position = content.media_position|default('right') %}
+
+<section class="jaraba-split-hero jaraba-split-hero--{{ bg_class }} jaraba-split-hero--media-{{ media_position }} jaraba-block"
+         data-block-type="split_hero">
+  <div class="jaraba-block__container">
+    <div class="jaraba-split-hero__wrapper">
+      
+      {# Contenido #}
+      <div class="jaraba-split-hero__content">
+        {% if content.eyebrow %}
+          <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+        {% endif %}
+        
+        <h1 class="jaraba-split-hero__title">{{ content.title }}</h1>
+        
+        {% if content.subtitle %}
+          <p class="jaraba-split-hero__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+        
+        {# Mini features #}
+        {% if content.features is not empty %}
+          <ul class="jaraba-split-hero__features">
+            {% for feature in content.features %}
+              <li class="jaraba-split-hero__feature">
+                {% if feature.icon %}
+                  {{ jaraba_icon('ui', feature.icon, { variant: 'duotone', size: '20px', color: 'success' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '20px', color: 'success' }) }}
+                {% endif %}
+                {{ feature.text }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        
+        {# CTAs #}
+        <div class="jaraba-split-hero__ctas">
+          {% if content.primary_cta.text %}
+            <a href="{{ content.primary_cta.url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+              {{ content.primary_cta.text }}
+            </a>
+          {% endif %}
+          {% if content.secondary_cta.text %}
+            <a href="{{ content.secondary_cta.url }}" class="jaraba-btn jaraba-btn--outline jaraba-btn--lg">
+              {{ content.secondary_cta.text }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      
+      {# Media #}
+      <div class="jaraba-split-hero__media">
+        {% if content.media_type == 'video' %}
+          <video autoplay muted loop playsinline class="jaraba-split-hero__video">
+            <source src="{{ content.media_url }}" type="video/mp4">
+          </video>
+        {% else %}
+          <img src="{{ content.media_url }}" 
+               alt="{{ content.title }}"
+               class="jaraba-split-hero__image"
+               loading="eager">
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</section>

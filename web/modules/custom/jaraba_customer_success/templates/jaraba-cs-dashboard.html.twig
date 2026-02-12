@@ -1,0 +1,160 @@
+{#
+/**
+ * @file
+ * jaraba-cs-dashboard.html.twig - Dashboard principal del CSM.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-dashboard / cs-dashboard__* / cs-dashboard--*
+ * - Variables CSS var(--ej-*) para colores y tipografía.
+ * - Responsive: grid adaptable con CSS Grid.
+ * - Parciales: {% include %} para health card, churn panel, timeline.
+ *
+ * VARIABLES:
+ * - stats: {total_tenants, healthy_pct, at_risk_pct, critical_count}
+ * - category_counts: {healthy, neutral, at_risk, critical}
+ * - recent_health: array de entidades CustomerHealth
+ * - at_risk_tenants: array de entidades ChurnPrediction
+ * - active_playbooks: array de entidades CsPlaybook
+ * - expansion_signals: array de entidades ExpansionSignal
+ */
+#}
+
+<div class="cs-dashboard">
+  {# Header del dashboard #}
+  <header class="cs-dashboard__header">
+    <div class="cs-dashboard__header-content">
+      <h1 class="cs-dashboard__title">{% trans %}Customer Success{% endtrans %}</h1>
+      <p class="cs-dashboard__subtitle">{% trans %}Proactive health monitoring, churn prevention and expansion pipeline.{% endtrans %}</p>
+    </div>
+    <nav class="cs-dashboard__nav">
+      <a href="{{ path('jaraba_customer_success.frontend.dashboard') }}" class="cs-dashboard__nav-link cs-dashboard__nav-link--active">{% trans %}Overview{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.frontend.playbooks') }}" class="cs-dashboard__nav-link">{% trans %}Playbooks{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.frontend.expansion') }}" class="cs-dashboard__nav-link">{% trans %}Expansion{% endtrans %}</a>
+    </nav>
+  </header>
+
+  {# Stats cards #}
+  <section class="cs-dashboard__stats">
+    <div class="cs-stat-card">
+      <div class="cs-stat-card__value">{{ stats.total_tenants|default(0) }}</div>
+      <div class="cs-stat-card__label">{% trans %}Total Tenants{% endtrans %}</div>
+    </div>
+    <div class="cs-stat-card cs-stat-card--healthy">
+      <div class="cs-stat-card__value">{{ stats.healthy_pct|default(0) }}%</div>
+      <div class="cs-stat-card__label">{% trans %}Healthy{% endtrans %}</div>
+    </div>
+    <div class="cs-stat-card cs-stat-card--warning">
+      <div class="cs-stat-card__value">{{ stats.at_risk_pct|default(0) }}%</div>
+      <div class="cs-stat-card__label">{% trans %}At Risk{% endtrans %}</div>
+    </div>
+    <div class="cs-stat-card cs-stat-card--critical">
+      <div class="cs-stat-card__value">{{ stats.critical_count|default(0) }}</div>
+      <div class="cs-stat-card__label">{% trans %}Critical{% endtrans %}</div>
+    </div>
+  </section>
+
+  {# Health Score Distribution #}
+  <section class="cs-dashboard__distribution">
+    <h2 class="cs-dashboard__section-title">{% trans %}Health Score Distribution{% endtrans %}</h2>
+    <div class="cs-distribution">
+      {% set total = category_counts.healthy + category_counts.neutral + category_counts.at_risk + category_counts.critical %}
+      {% if total > 0 %}
+        <div class="cs-distribution__bar">
+          <div class="cs-distribution__segment cs-distribution__segment--healthy" style="width: {{ (category_counts.healthy / total * 100)|round }}%;">
+            {{ category_counts.healthy }}
+          </div>
+          <div class="cs-distribution__segment cs-distribution__segment--neutral" style="width: {{ (category_counts.neutral / total * 100)|round }}%;">
+            {{ category_counts.neutral }}
+          </div>
+          <div class="cs-distribution__segment cs-distribution__segment--at-risk" style="width: {{ (category_counts.at_risk / total * 100)|round }}%;">
+            {{ category_counts.at_risk }}
+          </div>
+          <div class="cs-distribution__segment cs-distribution__segment--critical" style="width: {{ (category_counts.critical / total * 100)|round }}%;">
+            {{ category_counts.critical }}
+          </div>
+        </div>
+        <div class="cs-distribution__legend">
+          <span class="cs-distribution__legend-item cs-distribution__legend-item--healthy">{% trans %}Healthy{% endtrans %} ({{ category_counts.healthy }})</span>
+          <span class="cs-distribution__legend-item cs-distribution__legend-item--neutral">{% trans %}Neutral{% endtrans %} ({{ category_counts.neutral }})</span>
+          <span class="cs-distribution__legend-item cs-distribution__legend-item--at-risk">{% trans %}At Risk{% endtrans %} ({{ category_counts.at_risk }})</span>
+          <span class="cs-distribution__legend-item cs-distribution__legend-item--critical">{% trans %}Critical{% endtrans %} ({{ category_counts.critical }})</span>
+        </div>
+      {% else %}
+        {% include '@jaraba_customer_success/jaraba-cs-empty-state.html.twig' with {
+          title: 'No health scores yet'|t,
+          message: 'Health scores will be calculated on the next cron run.'|t,
+          action_url: '/admin/config/services/customer-success',
+          action_label: 'Configure'|t
+        } only %}
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="cs-dashboard__panels">
+    {# Churn Risk Panel #}
+    <section class="cs-dashboard__panel cs-dashboard__panel--churn">
+      <h2 class="cs-dashboard__section-title">{% trans %}Churn Risk{% endtrans %}</h2>
+      {% if at_risk_tenants|length > 0 %}
+        {% include '@jaraba_customer_success/jaraba-cs-churn-panel.html.twig' with {
+          predictions: at_risk_tenants
+        } only %}
+      {% else %}
+        <div class="cs-empty-inline">
+          <p>{% trans %}No high-risk tenants detected.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Recent Health Scores #}
+    <section class="cs-dashboard__panel cs-dashboard__panel--health">
+      <h2 class="cs-dashboard__section-title">{% trans %}Recent Health Scores{% endtrans %}</h2>
+      {% if recent_health|length > 0 %}
+        <div class="cs-health-list">
+          {% for health in recent_health %}
+            <div class="cs-health-list__item cs-health-list__item--{{ health.category.value|default('neutral') }}">
+              <div class="cs-health-list__score">{{ health.overall_score.value|default(0) }}</div>
+              <div class="cs-health-list__info">
+                <span class="cs-health-list__tenant">{{ health.tenant_id.entity.label|default('Unknown') }}</span>
+                <span class="cs-health-list__category">{{ health.category.value|default('neutral')|replace({'_': ' '})|capitalize }}</span>
+              </div>
+              <div class="cs-health-list__trend cs-health-list__trend--{{ health.trend.value|default('stable') }}">
+                {% if health.trend.value == 'improving' %}↑
+                {% elseif health.trend.value == 'declining' %}↓
+                {% else %}→
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="cs-empty-inline">
+          <p>{% trans %}No health scores calculated yet.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  {# Expansion Signals #}
+  {% if expansion_signals|length > 0 %}
+    <section class="cs-dashboard__expansion">
+      <h2 class="cs-dashboard__section-title">{% trans %}Expansion Signals{% endtrans %}</h2>
+      <div class="cs-expansion-list">
+        {% for signal in expansion_signals|slice(0, 5) %}
+          <div class="cs-expansion-list__item cs-expansion-list__item--{{ signal.status.value|default('new') }}">
+            <div class="cs-expansion-list__type">{{ signal.signal_type.value|default('')|replace({'_': ' '})|capitalize }}</div>
+            <div class="cs-expansion-list__tenant">{{ signal.tenant_id.entity.label|default('Unknown') }}</div>
+            <div class="cs-expansion-list__plan">
+              {{ signal.current_plan.value|default('—') }}
+              {% if signal.recommended_plan.value %}
+                → {{ signal.recommended_plan.value }}
+              {% endif %}
+            </div>
+            {% if signal.potential_arr.value > 0 %}
+              <div class="cs-expansion-list__arr">+€{{ signal.potential_arr.value|number_format(0, ',', '.') }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>

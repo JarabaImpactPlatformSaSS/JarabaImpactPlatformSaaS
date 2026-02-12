@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * Template para Features Grid.
+ *
+ * Variables disponibles:
+ * - content: Array con los datos configurados:
+ *   - section_title: Título de la sección
+ *   - section_subtitle: Subtítulo
+ *   - columns: Número de columnas (2, 3, 4)
+ *   - background_variant: Variante de fondo (light, dark, gradient, light-green)
+ *   - features: Array de características
+ *     - icon: Nombre del icono (ej: bolt, shield, brain)
+ *     - icon_category: Categoría del icono (ui, business, analytics, ai) - default: ui
+ *     - icon_color: Color corporativo (impulse, innovation, corporate, success)
+ *     - title: Título
+ *     - description: Descripción
+ *     - badge: Texto del badge (opcional)
+ *     - badge_variant: Variante del badge
+ */
+#}
+
+{% set bg_class = content.background_variant ? 'jaraba-features--' ~ content.background_variant : '' %}
+
+<section class="jaraba-features jaraba-features--grid {{ bg_class }}">
+  <div class="container">
+    {% if content.section_title %}
+      <header class="jaraba-features__header">
+        <h2 class="jaraba-features__title">{{ content.section_title }}</h2>
+        {% if content.section_subtitle %}
+          <p class="jaraba-features__subtitle">{{ content.section_subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    <div class="jaraba-features__grid jaraba-features__grid--{{ content.columns|default(3) }}-cols">
+      {% for feature in content.features %}
+        <article class="jaraba-feature-card">
+          {% if feature.icon %}
+            {% set icon_color_class = feature.icon_color ? 'jaraba-feature-card__icon--' ~ feature.icon_color : '' %}
+            {% set icon_category = feature.icon_category|default('ui') %}
+            <div class="jaraba-feature-card__icon {{ icon_color_class }}">
+              {{ jaraba_icon(icon_category, feature.icon, {'size': '28px', 'variant': 'duotone'}) }}
+            </div>
+          {% endif %}
+
+          <h3 class="jaraba-feature-card__title">{{ feature.title }}</h3>
+
+          {% if feature.description %}
+            <p class="jaraba-feature-card__description">{{ feature.description }}</p>
+          {% endif %}
+
+          {% if feature.badge %}
+            <span class="jaraba-feature-card__badge jaraba-feature-card__badge--{{ feature.badge_variant|default('primary') }}">
+              {{ feature.badge }}
+            </span>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

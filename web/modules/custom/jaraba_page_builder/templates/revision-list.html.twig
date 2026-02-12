@@ -1,0 +1,134 @@
+{#
+ # Template: Lista de Revisiones de Página - Premium Design
+ #
+ # Variables:
+ #   - page: PageContent entity
+ #   - revisions: Array de metadatos de revisiones [id, created, user, log, is_current]
+ #
+ # ARQUITECTURA:
+ # ✅ Header premium con partículas animadas (patrón pixel-stats-dashboard)
+ # ✅ Icono duotone grande
+ # ✅ Título/Subtítulo con sombra de texto
+ # ✅ Formulario de comparación responsive
+ # ✅ Variables CSS inyectables var(--ej-*)
+ # ✅ Textos traducibles con {% trans %}
+ #
+ # Gap G: Diff Visual de Revisiones
+ #}
+
+{{ attach_library('jaraba_page_builder/revision-diff') }}
+
+<div class="full-width-page revision-list" data-page-id="{{ page.id() }}">
+  {# Hero Header Premium (patrón analytics-dashboard/pixel-stats) #}
+  <header class="analytics-dashboard__hero revision-list__hero">
+    <canvas class="analytics-dashboard__particles" id="revision-particles"></canvas>
+    <div class="analytics-dashboard__hero-content">
+      <div class="analytics-dashboard__nav">
+        <a href="{{ path('jaraba_page_builder.canvas_editor', {page_content: page.id()}) }}" class="analytics-dashboard__back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          {% trans %}Volver al editor{% endtrans %}
+        </a>
+      </div>
+      <div class="analytics-dashboard__hero-info">
+        <div class="analytics-dashboard__hero-icon">
+          {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '56px', color: 'white' }) }}
+        </div>
+        <div class="analytics-dashboard__titles">
+          <h1 class="analytics-dashboard__title">{% trans %}Historial de Revisiones{% endtrans %}</h1>
+          <p class="analytics-dashboard__subtitle">{{ page.label() }}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  {# Contenido principal #}
+  <div class="revision-list__content">
+    {# Instrucciones #}
+    <div class="revision-list__instructions">
+      <p>
+        {{ jaraba_icon('ui', 'info', { color: 'innovation', size: '16px' }) }}
+        {% trans %}Selecciona dos revisiones para comparar los cambios. La revisión actual está marcada.{% endtrans %}
+      </p>
+    </div>
+    
+    {# Lista de revisiones #}
+    {% if revisions|length > 1 %}
+      <form class="revision-list__form" id="revision-compare-form" method="get">
+        <table class="revision-list__table data-table">
+          <thead>
+            <tr>
+              <th class="revision-list__th revision-list__th--check">
+                {% trans %}Antigua{% endtrans %}
+              </th>
+              <th class="revision-list__th revision-list__th--check">
+                {% trans %}Nueva{% endtrans %}
+              </th>
+              <th class="revision-list__th">{% trans %}Fecha{% endtrans %}</th>
+              <th class="revision-list__th">{% trans %}Usuario{% endtrans %}</th>
+              <th class="revision-list__th">{% trans %}Mensaje{% endtrans %}</th>
+              <th class="revision-list__th">{% trans %}Estado{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for revision in revisions %}
+              <tr class="revision-list__row{% if revision.is_current %} revision-list__row--current{% endif %}">
+                <td class="revision-list__cell revision-list__cell--radio">
+                  <input type="radio" 
+                         name="older" 
+                         value="{{ revision.id }}"
+                         id="older-{{ revision.id }}"
+                         {% if loop.index == 2 %}checked{% endif %}>
+                </td>
+                <td class="revision-list__cell revision-list__cell--radio">
+                  <input type="radio" 
+                         name="newer" 
+                         value="{{ revision.id }}"
+                         id="newer-{{ revision.id }}"
+                         {% if loop.first %}checked{% endif %}>
+                </td>
+                <td class="revision-list__cell revision-list__cell--date">
+                  {{ revision.created|date('d/m/Y H:i') }}
+                </td>
+                <td class="revision-list__cell revision-list__cell--user">
+                  {{ revision.user }}
+                </td>
+                <td class="revision-list__cell revision-list__cell--log">
+                  {% if revision.log %}
+                    {{ revision.log|length > 80 ? revision.log|slice(0, 80) ~ '...' : revision.log }}
+                  {% else %}
+                    <span class="text-muted">{% trans %}Sin mensaje{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td class="revision-list__cell revision-list__cell--status">
+                  {% if revision.is_current %}
+                    <span class="badge badge--success">
+                      {{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '14px' }) }}
+                      {% trans %}Actual{% endtrans %}
+                    </span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <div class="revision-list__actions">
+          <button type="submit" class="btn btn--primary" id="compare-btn">
+            {{ jaraba_icon('actions', 'git-compare', { color: 'neutral', size: '18px' }) }}
+            {% trans %}Comparar revisiones{% endtrans %}
+          </button>
+        </div>
+      </form>
+    {% else %}
+      <div class="revision-list__empty">
+        <div class="empty-state">
+          {{ jaraba_icon('ui', 'file-text', { color: 'neutral', variant: 'duotone', size: '48px' }) }}
+          <h3>{% trans %}Sin historial{% endtrans %}</h3>
+          <p>{% trans %}Esta página solo tiene una revisión. Edita la página para crear más versiones.{% endtrans %}</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

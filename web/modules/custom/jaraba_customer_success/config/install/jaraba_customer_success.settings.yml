@@ -1,0 +1,36 @@
+# Pesos de componentes del Health Score (total = 100).
+health_score_weights:
+  engagement: 30
+  adoption: 25
+  satisfaction: 20
+  support: 15
+  growth: 10
+
+# Umbrales de categorización de Health Score.
+health_score_thresholds:
+  healthy: 80
+  neutral: 60
+  at_risk: 40
+
+# Frecuencia de cálculo de health scores (en horas).
+calculation_interval: 24
+
+# Límite de lotes por ejecución cron.
+cron_batch_size: 50
+
+# Churn prediction: versión del modelo.
+churn_model_version: '1.0'
+
+# Playbook: máximo de reintentos por paso.
+playbook_max_retries: 3
+
+# NPS: días entre encuestas al mismo tenant.
+nps_survey_cooldown: 90
+
+# Expansion: umbral de uso para señal de upgrade (%).
+expansion_usage_threshold: 80
+
+# Alerting: canales habilitados para notificaciones CS.
+alert_channels:
+  - email
+  - slack
