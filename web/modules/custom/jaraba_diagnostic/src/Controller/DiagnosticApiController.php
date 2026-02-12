@@ -233,8 +233,31 @@ class DiagnosticApiController extends ControllerBase
             return new JsonResponse(['error' => 'Diagnostic not found'], 404);
         }
 
-        // TODO: Implementar cuando se guarden los scores por sección
+        // Query diagnostic_result entity to extract scores_by_section from JSON field.
         $sectionScores = [];
+        try {
+            $resultStorage = $this->entityTypeManager()->getStorage('diagnostic_result');
+            $resultIds = $resultStorage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('diagnostic_id', $diagnostic->id())
+                ->sort('created', 'DESC')
+                ->range(0, 1)
+                ->execute();
+
+            if (!empty($resultIds)) {
+                $result = $resultStorage->load(reset($resultIds));
+                if ($result && $result->hasField('scores_by_section')) {
+                    $scoresJson = $result->get('scores_by_section')->value ?? '{}';
+                    $decoded = json_decode($scoresJson, TRUE);
+                    if (is_array($decoded)) {
+                        $sectionScores = $decoded;
+                    }
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // If entity does not exist yet, continue with empty scores.
+        }
 
         $recommendationService = \Drupal::service('jaraba_diagnostic.recommendation');
         $recommendations = $recommendationService->generateRecommendations($diagnostic, $sectionScores);

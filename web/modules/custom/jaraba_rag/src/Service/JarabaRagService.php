@@ -162,9 +162,21 @@ class JarabaRagService
             // 10. Registrar uso en FinOps para tracking de costes.
             try {
                 $finopsTracker = \Drupal::service('ecosistema_jaraba_core.finops_tracking');
+                // Extract usage.total_tokens from the LLM response.
+                $tokensUsed = 0;
+                if (!empty($response['raw_response'])) {
+                    $rawOutput = $response['raw_response'];
+                    if (is_array($rawOutput) && isset($rawOutput['usage']['total_tokens'])) {
+                        $tokensUsed = (int) $rawOutput['usage']['total_tokens'];
+                    }
+                    elseif (is_object($rawOutput) && method_exists($rawOutput, 'getUsage')) {
+                        $usage = $rawOutput->getUsage();
+                        $tokensUsed = (int) ($usage['total_tokens'] ?? 0);
+                    }
+                }
                 $finopsTracker->trackRagQuery(
                     $tenantFilters['tenant_id'] ?? 'unknown',
-                    0 // tokens_used - @todo obtener del resultado LLM
+                    $tokensUsed
                 );
             } catch (\Exception $e) {
                 // Silent fail - no bloquear por tracking.

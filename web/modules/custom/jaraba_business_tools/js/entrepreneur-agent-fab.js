@@ -410,8 +410,19 @@
                         ? '<span class="rating-thanks">✅ ' + Drupal.t('¡Gracias!') + '</span>'
                         : '<span class="rating-thanks">📝 ' + Drupal.t('Anotado para mejorar') + '</span>';
 
-                    // TODO: Send rating to backend for AI learning
-                    console.log('Rating:', ratingValue);
+                    // Send rating to backend for AI learning.
+                    fetch('/api/v1/business-tools/agent-rating', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({
+                            rating: ratingValue,
+                            session_id: window.jarabaAgentSessionId || 'unknown',
+                            context: { agent: 'entrepreneur', timestamp: Date.now() },
+                        }),
+                    }).catch(function (err) { console.warn('Rating submit failed:', err); });
                 });
             });
             wrapper.appendChild(rating);

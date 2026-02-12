@@ -212,7 +212,24 @@ class ImpactCreditService
         $query->orderBy('total_credits', 'DESC');
         $query->range(0, $limit);
 
-        // TODO: Filtrar por tenant cuando esté integrado
+        // Filtrar por tenant: unir con group_relationship para obtener solo miembros del tenant.
+        if ($tenantId !== NULL) {
+            try {
+                $tenantStorage = $this->entityTypeManager->getStorage('tenant');
+                /** @var \Drupal\ecosistema_jaraba_core\Entity\TenantInterface|null $tenant */
+                $tenant = $tenantStorage->load($tenantId);
+                if ($tenant) {
+                    $group = $tenant->getGroup();
+                    if ($group) {
+                        $query->join('group_relationship_field_data', 'gr', 'b.user_id = gr.entity_id');
+                        $query->condition('gr.gid', $group->id());
+                        $query->condition('gr.plugin_id', 'group_membership');
+                    }
+                }
+            } catch (\Exception $e) {
+                // Si falla la resolución del tenant, devolver leaderboard sin filtro.
+            }
+        }
 
         $results = $query->execute()->fetchAll();
 

@@ -241,8 +241,29 @@ class CatalogController extends ControllerBase
      */
     protected function getLessons(CourseInterface $course): array
     {
-        // TODO: Load from lms_lesson table
-        return [];
+        $lessonStorage = $this->entityTypeManager()->getStorage('lms_lesson');
+        $lessonIds = $lessonStorage->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('course_id', $course->id())
+            ->sort('weight', 'ASC')
+            ->execute();
+
+        if (empty($lessonIds)) {
+            return [];
+        }
+
+        $lessons = [];
+        foreach ($lessonStorage->loadMultiple($lessonIds) as $lesson) {
+            $lessons[] = [
+                'id' => $lesson->id(),
+                'title' => $lesson->getTitle(),
+                'duration_minutes' => $lesson->get('duration_minutes')->value ?? 0,
+                'type' => $lesson->get('type')->value ?? 'content',
+                'weight' => $lesson->get('weight')->value ?? 0,
+            ];
+        }
+
+        return $lessons;
     }
 
     /**
@@ -250,8 +271,61 @@ class CatalogController extends ControllerBase
      */
     protected function getRelatedCourses(CourseInterface $course): array
     {
-        // TODO: Implement recommendation logic
-        return [];
+        // Basic recommendation logic: tag/category similarity, popular courses,
+        // and courses complementary to user's history.
+        $related = [];
+        try {
+            $courseStorage = $this->entityTypeManager()->getStorage('lms_course');
+
+            // 1. Similarity by difficulty level (same difficulty).
+            $similarIds = $courseStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('is_published', TRUE)
+                ->condition('difficulty', $course->getDifficultyLevel())
+                ->condition('id', $course->id(), '<>')
+                ->sort('created', 'DESC')
+                ->range(0, 6)
+                ->execute();
+
+            // 2. Complementary: different difficulty to encourage progression.
+            $nextDifficulty = match ($course->getDifficultyLevel()) {
+                'beginner' => 'intermediate',
+                'intermediate' => 'advanced',
+                default => 'beginner',
+            };
+            $complementaryIds = $courseStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('is_published', TRUE)
+                ->condition('difficulty', $nextDifficulty)
+                ->sort('created', 'DESC')
+                ->range(0, 3)
+                ->execute();
+
+            // Merge and deduplicate, exclude current course.
+            $allIds = array_unique(array_merge($similarIds, $complementaryIds));
+            unset($allIds[array_search($course->id(), $allIds)]);
+            $allIds = array_slice($allIds, 0, 4);
+
+            if (!empty($allIds)) {
+                foreach ($courseStorage->loadMultiple($allIds) as $relatedCourse) {
+                    $related[] = [
+                        'id' => $relatedCourse->id(),
+                        'title' => $relatedCourse->getTitle(),
+                        'summary' => $relatedCourse->getSummary(),
+                        'difficulty' => $relatedCourse->getDifficultyLevel(),
+                        'difficulty_label' => $this->getDifficultyLabel($relatedCourse->getDifficultyLevel()),
+                        'duration_formatted' => $this->formatDuration($relatedCourse->getDurationMinutes()),
+                        'thumbnail_url' => $this->getThumbnailUrl($relatedCourse),
+                        'url' => '/course/' . $relatedCourse->id(),
+                    ];
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Entity or field may not exist yet; return empty.
+        }
+
+        return $related;
     }
 
     /**

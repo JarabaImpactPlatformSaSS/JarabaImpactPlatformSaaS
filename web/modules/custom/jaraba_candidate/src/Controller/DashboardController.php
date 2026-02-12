@@ -195,7 +195,37 @@ class DashboardController extends ControllerBase
         if (empty($profile->getSummary())) {
             $missing[] = ['section' => 'summary', 'label' => $this->t('Professional summary')];
         }
-        // TODO: Check experience, education, skills
+        // Verificar completitud de skills.
+        try {
+            $skillCount = (int) $this->entityTypeManager()
+                ->getStorage('candidate_skill')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('user_id', $profile->getOwnerId())
+                ->count()
+                ->execute();
+            if ($skillCount === 0) {
+                $missing[] = ['section' => 'skills', 'label' => $this->t('Skills')];
+            }
+        } catch (\Exception $e) {
+            // Entidad puede no estar instalada.
+        }
+
+        // Verificar idiomas.
+        try {
+            $langCount = (int) $this->entityTypeManager()
+                ->getStorage('candidate_language')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('user_id', $profile->getOwnerId())
+                ->count()
+                ->execute();
+            if ($langCount === 0) {
+                $missing[] = ['section' => 'languages', 'label' => $this->t('Languages')];
+            }
+        } catch (\Exception $e) {
+            // Entidad puede no estar instalada.
+        }
 
         return $missing;
     }
@@ -320,12 +350,35 @@ class DashboardController extends ControllerBase
      */
     protected function getLearningStats(int $user_id): array
     {
-        // TODO: Integrate with ProgressTrackingService
-        return [
+        $stats = [
             'total_hours' => 0,
             'certificates' => 0,
             'courses_started' => 0,
         ];
+
+        try {
+            // Consultar enrollments del usuario.
+            $enrollmentStorage = $this->entityTypeManager()->getStorage('lms_enrollment');
+            $enrollments = $enrollmentStorage->loadByProperties(['user_id' => $user_id]);
+
+            $stats['courses_started'] = count($enrollments);
+
+            foreach ($enrollments as $enrollment) {
+                if ($enrollment->hasField('progress') && $enrollment->get('progress')->value == 100) {
+                    $stats['certificates']++;
+                }
+                if ($enrollment->hasField('time_spent')) {
+                    $stats['total_hours'] += (int) ($enrollment->get('time_spent')->value ?? 0);
+                }
+            }
+
+            // Convertir minutos a horas.
+            $stats['total_hours'] = round($stats['total_hours'] / 60, 1);
+        } catch (\Exception $e) {
+            // LMS puede no estar instalado.
+        }
+
+        return $stats;
     }
 
     /**
@@ -333,7 +386,22 @@ class DashboardController extends ControllerBase
      */
     protected function getProfileViews(int $user_id): int
     {
-        // TODO: Implement profile view tracking
+        // Consultar vistas al perfil desde el campo profile_views de CandidateProfile.
+        try {
+            $profiles = $this->entityTypeManager()
+                ->getStorage('candidate_profile')
+                ->loadByProperties(['user_id' => $user_id]);
+
+            if (!empty($profiles)) {
+                $profile = reset($profiles);
+                if ($profile->hasField('profile_views')) {
+                    return (int) ($profile->get('profile_views')->value ?? 0);
+                }
+            }
+        } catch (\Exception $e) {
+            // Campo puede no existir.
+        }
+
         return 0;
     }
 
@@ -342,8 +410,66 @@ class DashboardController extends ControllerBase
      */
     protected function getActivityTimeline(int $user_id): array
     {
-        // TODO: Aggregate activities from applications, learning, profile
-        return [];
+        $activities = [];
+
+        // 1. Actividades de solicitudes de empleo.
+        try {
+            $applications = $this->entityTypeManager()
+                ->getStorage('job_application')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('user_id', $user_id)
+                ->sort('created', 'DESC')
+                ->range(0, 5)
+                ->execute();
+
+            if (!empty($applications)) {
+                $appEntities = $this->entityTypeManager()
+                    ->getStorage('job_application')
+                    ->loadMultiple($applications);
+                foreach ($appEntities as $app) {
+                    $activities[] = [
+                        'type' => 'application',
+                        'label' => $this->t('Applied to a job'),
+                        'timestamp' => (int) $app->get('created')->value,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // job_application puede no estar instalado.
+        }
+
+        // 2. Actividades de cursos.
+        try {
+            $enrollments = $this->entityTypeManager()
+                ->getStorage('lms_enrollment')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('user_id', $user_id)
+                ->sort('created', 'DESC')
+                ->range(0, 5)
+                ->execute();
+
+            if (!empty($enrollments)) {
+                $enrollmentEntities = $this->entityTypeManager()
+                    ->getStorage('lms_enrollment')
+                    ->loadMultiple($enrollments);
+                foreach ($enrollmentEntities as $enrollment) {
+                    $activities[] = [
+                        'type' => 'learning',
+                        'label' => $this->t('Enrolled in a course'),
+                        'timestamp' => (int) $enrollment->get('created')->value,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // lms_enrollment puede no estar instalado.
+        }
+
+        // Ordenar por timestamp descendente.
+        usort($activities, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+
+        return array_slice($activities, 0, 10);
     }
 
     /**

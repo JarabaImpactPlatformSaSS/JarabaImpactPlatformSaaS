@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_crm\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_crm\Service\CompanyService;
 use Drupal\jaraba_crm\Service\ContactService;
 use Drupal\jaraba_crm\Service\OpportunityService;
@@ -25,6 +26,7 @@ class CrmDashboardController extends ControllerBase
         protected ContactService $contactService,
         protected OpportunityService $opportunityService,
         protected ActivityService $activityService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -38,6 +40,7 @@ class CrmDashboardController extends ControllerBase
             $container->get('jaraba_crm.contact'),
             $container->get('jaraba_crm.opportunity'),
             $container->get('jaraba_crm.activity'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -49,8 +52,7 @@ class CrmDashboardController extends ControllerBase
      */
     public function dashboard(): array
     {
-        // TODO: Obtener tenant_id del contexto actual.
-        $tenantId = NULL;
+        $tenantId = $this->tenantContext->getCurrentTenantId();
 
         return [
             '#theme' => 'crm_dashboard',
@@ -76,7 +78,7 @@ class CrmDashboardController extends ControllerBase
      */
     public function pipeline(): array
     {
-        $tenantId = NULL;
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $stageLabels = jaraba_crm_get_opportunity_stage_values();
         $pipelineData = $this->opportunityService->getByStage($tenantId);
 

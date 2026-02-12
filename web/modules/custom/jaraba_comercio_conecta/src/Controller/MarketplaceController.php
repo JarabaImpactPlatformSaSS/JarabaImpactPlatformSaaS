@@ -3,6 +3,7 @@
 namespace Drupal\jaraba_comercio_conecta\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_comercio_conecta\Service\MarketplaceService;
 use Drupal\jaraba_comercio_conecta\Service\ProductRetailService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,6 +35,7 @@ class MarketplaceController extends ControllerBase {
   public function __construct(
     protected MarketplaceService $marketplaceService,
     protected ProductRetailService $productRetailService,
+    protected TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -43,6 +45,7 @@ class MarketplaceController extends ControllerBase {
     return new static(
       $container->get('jaraba_comercio_conecta.marketplace'),
       $container->get('jaraba_comercio_conecta.product_retail'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -61,8 +64,6 @@ class MarketplaceController extends ControllerBase {
    *   Render array con #theme 'comercio_marketplace'.
    */
   public function marketplace(Request $request): array {
-    // Obtener tenant_id del contexto actual
-    // TODO: Obtener del TenantContextService cuando esté disponible
     $tenant_id = $this->getTenantId();
 
     // Recoger filtros de los query parameters
@@ -213,17 +214,8 @@ class MarketplaceController extends ControllerBase {
    *   ID del tenant actual.
    */
   protected function getTenantId(): int {
-    // Intentar obtener del TenantContextService
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
-      $tenant = $tenant_context->getCurrentTenant();
-      if ($tenant) {
-        return (int) $tenant->id();
-      }
-    }
-
-    // Fallback para desarrollo
-    return 1;
+    $tenantId = $this->tenantContext->getCurrentTenantId();
+    return $tenantId ?? 1;
   }
 
   /**

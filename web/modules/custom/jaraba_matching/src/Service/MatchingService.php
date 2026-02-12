@@ -561,9 +561,41 @@ class MatchingService
             $ruleResult = $this->calculateRuleScore($jobData, $candidateData);
 
             // Calcular boost factors
+            $candidateUserId = $candidate->get('user_id')->target_id ?? $candidate->get('user_id')->value ?? 0;
+
+            // Count completed courses from lms_enrollment.
+            $completedCourses = 0;
+            if ($candidateUserId) {
+                $completedCourseIds = $this->entityTypeManager->getStorage('lms_enrollment')
+                    ->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('user_id', $candidateUserId)
+                    ->condition('status', 'completed')
+                    ->execute();
+                $completedCourses = count($completedCourseIds);
+            }
+
+            // Count certifications from credential_stack.
+            $certifications = 0;
+            if ($candidateUserId) {
+                try {
+                    $credentialIds = $this->entityTypeManager->getStorage('credential_stack')
+                        ->getQuery()
+                        ->accessCheck(FALSE)
+                        ->condition('user_id', $candidateUserId)
+                        ->condition('type', 'certification')
+                        ->execute();
+                    $certifications = count($credentialIds);
+                } catch (\Exception $e) {
+                    // credential_stack entity type may not be installed yet.
+                    $this->logger->notice('credential_stack storage not available: @msg', ['@msg' => $e->getMessage()]);
+                }
+            }
+
             $boostFactors = [
                 'profile_complete' => ($candidate->get('completion_percent')->value ?? 0) >= 80,
-                // TODO: Añadir certifications y courses cuando estén implementados
+                'courses_completed' => $completedCourses,
+                'certifications' => $certifications,
             ];
 
             $hybridResult = $this->calculateHybridScore(

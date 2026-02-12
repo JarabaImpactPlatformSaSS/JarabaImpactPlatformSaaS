@@ -100,11 +100,44 @@ class ApiController extends ControllerBase
             '@id' => $data['object']['id'] ?? 'unknown',
         ]);
 
-        // TODO: Store xAPI statement in InteractiveResult entity.
-        // TODO: Process learning analytics.
+        // Store xAPI statement in InteractiveResult entity.
+        $resultId = NULL;
+        try {
+            $resultStorage = $this->entityTypeManager()->getStorage('interactive_result');
+            $resultEntity = $resultStorage->create([
+                'content_id' => $data['object']['id'] ?? NULL,
+                'user_id' => \Drupal::currentUser()->id(),
+                'verb' => $data['verb'] ?? 'unknown',
+                'score' => $data['result']['score']['raw'] ?? NULL,
+                'score_max' => $data['result']['score']['max'] ?? NULL,
+                'score_min' => $data['result']['score']['min'] ?? NULL,
+                'completion' => $data['result']['completion'] ?? FALSE,
+                'success' => $data['result']['success'] ?? NULL,
+                'duration' => $data['result']['duration'] ?? NULL,
+                'xapi_statement' => json_encode($data),
+            ]);
+            $resultEntity->save();
+            $resultId = $resultEntity->id();
+        }
+        catch (\Exception $e) {
+            \Drupal::logger('jaraba_interactive')->error('Failed to store InteractiveResult: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        // Dispatch learning analytics event.
+        try {
+            $dispatcher = \Drupal::service('event_dispatcher');
+            $event = new \Symfony\Contracts\EventDispatcher\Event();
+            $dispatcher->dispatch($event, 'jaraba_interactive.xapi_statement_received');
+        }
+        catch (\Exception $e) {
+            // Event dispatcher may not have the listener yet; fail silently.
+        }
 
         return new JsonResponse([
             'status' => 'received',
+            'result_id' => $resultId,
             'timestamp' => \Drupal::time()->getRequestTime(),
         ]);
     }

@@ -192,7 +192,7 @@ class TemplatePickerController extends ControllerBase
             '#template' => $page_template,
             '#preview_data' => $this->getPreviewData($page_template),
             '#usage_count' => $usage_count,
-            '#avg_engagement' => $usage_count > 0 ? rand(65, 95) : NULL, // TODO: Integrar analytics real.
+            '#avg_engagement' => $usage_count > 0 ? $this->calculateAvgEngagement($page_template->id()) : NULL,
             '#preview_iframe_url' => $preview_iframe_url,
             '#attached' => [
                 'library' => ['jaraba_page_builder/preview'],
@@ -548,6 +548,50 @@ HTML;
                 ->execute();
         } catch (\Exception $e) {
             return 0;
+        }
+    }
+
+    /**
+     * Calcula el engagement promedio de las páginas que usan una plantilla.
+     *
+     * Se basa en el campo 'engagement_score' de las entidades page_content
+     * que utilizan la plantilla. Si no hay datos, devuelve NULL.
+     *
+     * @param string $template_id
+     *   El ID de la plantilla.
+     *
+     * @return int|null
+     *   Porcentaje promedio de engagement o NULL si no hay datos.
+     */
+    protected function calculateAvgEngagement(string $template_id): ?int
+    {
+        try {
+            $storage = $this->entityTypeManager->getStorage('page_content');
+            $pageIds = $storage->getQuery()
+                ->condition('template_id', $template_id)
+                ->accessCheck(FALSE)
+                ->execute();
+
+            if (empty($pageIds)) {
+                return NULL;
+            }
+
+            $pages = $storage->loadMultiple($pageIds);
+            $scores = [];
+            foreach ($pages as $page) {
+                if ($page->hasField('engagement_score') && !$page->get('engagement_score')->isEmpty()) {
+                    $scores[] = (int) $page->get('engagement_score')->value;
+                }
+            }
+
+            if (empty($scores)) {
+                return NULL;
+            }
+
+            return (int) round(array_sum($scores) / count($scores));
+        }
+        catch (\Exception $e) {
+            return NULL;
         }
     }
 

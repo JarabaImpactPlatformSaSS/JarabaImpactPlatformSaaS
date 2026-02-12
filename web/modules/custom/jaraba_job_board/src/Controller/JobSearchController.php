@@ -326,14 +326,48 @@ class JobSearchController extends ControllerBase
      */
     protected function getEmployerInfo(JobPostingInterface $job): array
     {
-        // TODO: Load from employer_profile entity
+        // Cargar employer_profile por user_id del autor del JobPosting.
+        $employerUid = $job->getOwnerId();
+        try {
+            $profiles = $this->entityTypeManager()
+                ->getStorage('employer_profile')
+                ->loadByProperties(['user_id' => $employerUid]);
+
+            if (!empty($profiles)) {
+                $employer = reset($profiles);
+
+                // Obtener URL del logo.
+                $logoUrl = NULL;
+                if ($employer->hasField('logo') && !$employer->get('logo')->isEmpty()) {
+                    $file = $this->entityTypeManager()
+                        ->getStorage('file')
+                        ->load($employer->get('logo')->target_id);
+                    if ($file) {
+                        $logoUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+                    }
+                }
+
+                return [
+                    'name' => $employer->getCompanyName(),
+                    'logo_url' => $logoUrl,
+                    'description' => $employer->hasField('description') ? ($employer->get('description')->value ?? '') : '',
+                    'location' => $employer->hasField('city') ? ($employer->get('city')->value ?? $job->getLocationCity()) : $job->getLocationCity(),
+                    'employees' => $employer->hasField('company_size') ? ($employer->get('company_size')->value ?? '') : '',
+                    'industry' => '',
+                    'is_verified' => $employer->isVerified(),
+                ];
+            }
+        } catch (\Exception $e) {
+            // employer_profile puede no estar instalado.
+        }
+
         return [
-            'name' => 'Empresa Ejemplo S.L.',
+            'name' => '',
             'logo_url' => NULL,
-            'description' => 'Empresa líder en su sector.',
+            'description' => '',
             'location' => $job->getLocationCity(),
-            'employees' => '50-200',
-            'industry' => 'Tecnología',
+            'employees' => '',
+            'industry' => '',
         ];
     }
 
@@ -342,8 +376,65 @@ class JobSearchController extends ControllerBase
      */
     protected function getSimilarJobs(JobPostingInterface $job): array
     {
-        // TODO: Implement similar jobs logic
-        return [];
+        try {
+            $query = $this->entityTypeManager()
+                ->getStorage('job_posting')
+                ->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('status', 'published')
+                ->condition('id', $job->id(), '<>')
+                ->range(0, 4)
+                ->sort('published_at', 'DESC');
+
+            // Priorizar por mismo tipo de trabajo.
+            $jobType = $job->getJobType();
+            if ($jobType) {
+                $query->condition('job_type', $jobType);
+            }
+
+            $ids = $query->execute();
+
+            // Si no hay suficientes del mismo tipo, buscar por ubicación.
+            if (count($ids) < 4) {
+                $fallbackQuery = $this->entityTypeManager()
+                    ->getStorage('job_posting')
+                    ->getQuery()
+                    ->accessCheck(TRUE)
+                    ->condition('status', 'published')
+                    ->condition('id', array_merge([$job->id()], $ids ?: []), 'NOT IN')
+                    ->range(0, 4 - count($ids))
+                    ->sort('published_at', 'DESC');
+
+                $location = $job->getLocationCity();
+                if ($location) {
+                    $fallbackQuery->condition('location_city', '%' . $location . '%', 'LIKE');
+                }
+
+                $extraIds = $fallbackQuery->execute();
+                $ids = array_merge($ids, $extraIds);
+            }
+
+            if (empty($ids)) {
+                return [];
+            }
+
+            $jobs = $this->entityTypeManager()->getStorage('job_posting')->loadMultiple($ids);
+            $similar = [];
+            foreach ($jobs as $similarJob) {
+                $similar[] = [
+                    'id' => $similarJob->id(),
+                    'title' => $similarJob->getTitle(),
+                    'location' => $similarJob->getLocationCity(),
+                    'job_type' => $similarJob->getJobType(),
+                    'job_type_label' => $this->getJobTypeLabel($similarJob->getJobType()),
+                    'published_at' => $similarJob->get('published_at')->value,
+                    'url' => '/jobs/' . $similarJob->id(),
+                ];
+            }
+            return $similar;
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**

@@ -234,8 +234,30 @@ class CustomerDiscoveryGamificationService
             $stats['unique_methods'] = count($methods);
             $stats['validations'] = $validations;
 
-            // TODO: Calcular week_streak basado en fechas
-            $stats['week_streak'] = min(3, intval($stats['total_exits'] / 3));
+            // Calculate consecutive weeks of activity by querying timestamps.
+            $weekTimestamps = [];
+            foreach ($exits as $exit) {
+                $createdTs = $exit->get('created')->value ?? 0;
+                if ($createdTs) {
+                    // Get ISO week identifier (e.g. "2026-W07").
+                    $weekTimestamps[date('o-\WW', (int) $createdTs)] = TRUE;
+                }
+            }
+
+            // Count consecutive weeks backward from the current week.
+            $streak = 0;
+            $currentWeek = new \DateTime();
+            for ($i = 0; $i < 52; $i++) {
+                $weekKey = $currentWeek->format('o-\WW');
+                if (isset($weekTimestamps[$weekKey])) {
+                    $streak++;
+                    $currentWeek->modify('-1 week');
+                }
+                else {
+                    break;
+                }
+            }
+            $stats['week_streak'] = $streak;
         } catch (\Exception $e) {
             // Entity doesn't exist yet
         }
