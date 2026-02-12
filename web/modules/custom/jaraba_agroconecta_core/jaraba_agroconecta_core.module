@@ -378,6 +378,32 @@ function jaraba_agroconecta_core_cron(): void
             );
         }
     }
+
+    // === Detección de carritos abandonados (cada 1h) ===
+    $lastCartCheck = (int) $state->get('jaraba_agroconecta.last_cart_recovery_check', 0);
+
+    if (($time - $lastCartCheck) > 3600) {
+        $state->set('jaraba_agroconecta.last_cart_recovery_check', $time);
+
+        try {
+            /** @var \Drupal\jaraba_agroconecta_core\Service\CartRecoveryService $cartRecovery */
+            $cartRecovery = \Drupal::service('jaraba_agroconecta_core.cart_recovery');
+            $detected = $cartRecovery->detectAbandonedCarts();
+
+            if ($detected > 0) {
+                \Drupal::logger('jaraba_agroconecta_core')->info(
+                    'Cron: @count carritos abandonados detectados para recuperación.',
+                    ['@count' => $detected]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            \Drupal::logger('jaraba_agroconecta_core')->error(
+                'Cron: error en detección de carritos abandonados: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+    }
 }
 
 /**
@@ -414,6 +440,17 @@ function jaraba_agroconecta_core_mail(string $key, array &$message, array $param
                 '@product' => $params['product_name'] ?? '',
                 '@trend' => $params['trend'] ?? 'estable',
             ]);
+            break;
+
+        case 'cart_recovery':
+            $message['subject'] = t('¡No te olvides de tu carrito! @incentive', [
+                '@incentive' => !empty($params['discount_percent']) ? '— ' . $params['discount_percent'] . '% de descuento' : '',
+            ]);
+            $message['body'][] = t('Hola @name,', ['@name' => $params['customer_name'] ?? 'Cliente']);
+            $message['body'][] = $params['message'] ?? t('Tus productos artesanales favoritos siguen esperándote en tu carrito.');
+            if (!empty($params['discount_code'])) {
+                $message['body'][] = t('Usa el código @code para obtener tu descuento.', ['@code' => $params['discount_code']]);
+            }
             break;
     }
 }
