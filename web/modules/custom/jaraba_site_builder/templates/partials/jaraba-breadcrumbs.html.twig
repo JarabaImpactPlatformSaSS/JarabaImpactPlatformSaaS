@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Parcial: Breadcrumbs (migas de pan) con Schema.org.
+ *
+ * Variables:
+ *   - breadcrumbs: array de [{title, url, is_current}]
+ *   - current_title: título de la página actual
+ */
+#}
+
+{% if breadcrumbs|length > 0 %}
+  <nav class="jaraba-breadcrumbs" aria-label="{% trans %}Ruta de navegación{% endtrans %}">
+    <ol class="jaraba-breadcrumbs__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      {# Home siempre primero #}
+      <li class="jaraba-breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/" class="jaraba-breadcrumbs__link" itemprop="item">
+          <span itemprop="name">{% trans %}Inicio{% endtrans %}</span>
+        </a>
+        <meta itemprop="position" content="1">
+        <span class="jaraba-breadcrumbs__separator" aria-hidden="true">/</span>
+      </li>
+
+      {% for crumb in breadcrumbs %}
+        <li class="jaraba-breadcrumbs__item{% if crumb.is_current %} jaraba-breadcrumbs__item--current{% endif %}"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          {% if crumb.is_current %}
+            <span class="jaraba-breadcrumbs__current" itemprop="name" aria-current="page">{{ crumb.title }}</span>
+          {% else %}
+            <a href="{{ crumb.url }}" class="jaraba-breadcrumbs__link" itemprop="item">
+              <span itemprop="name">{{ crumb.title }}</span>
+            </a>
+            <span class="jaraba-breadcrumbs__separator" aria-hidden="true">/</span>
+          {% endif %}
+          <meta itemprop="position" content="{{ loop.index + 1 }}">
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+{% endif %}

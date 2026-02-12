@@ -242,7 +242,7 @@
         /**
          * Genera contenido usando la API de IA del Page Builder.
          *
-         * ENDPOINT: POST /api/page-builder/generate-content
+         * ENDPOINT: POST /api/v1/page-builder/generate-content
          * CONTROLLER: AiContentController::generateContent()
          *
          * El controller espera:
@@ -275,7 +275,7 @@
             };
             const fieldType = fieldTypeMap[context.blockType] || 'text';
 
-            const response = await fetch('/api/page-builder/generate-content', {
+            const response = await fetch('/api/v1/page-builder/generate-content', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -19,24 +19,40 @@ class FeatureAccessService {
    * Mapeo de features a códigos de add-on.
    */
   protected const FEATURE_ADDON_MAP = [
+    // CRM.
     'crm_pipeline' => 'jaraba_crm',
     'crm_contacts' => 'jaraba_crm',
     'lead_scoring' => 'jaraba_crm',
+    // Email Marketing.
     'email_campaigns' => 'jaraba_email',
     'email_sequences' => 'jaraba_email',
     'email_templates' => 'jaraba_email',
+    // Social Media.
     'social_calendar' => 'jaraba_social',
     'social_posts' => 'jaraba_social',
+    // Paid Ads.
     'ads_sync' => 'paid_ads_sync',
     'roas_tracking' => 'paid_ads_sync',
+    // Retargeting.
     'pixels_manager' => 'retargeting_pixels',
     'server_tracking' => 'retargeting_pixels',
+    // Events.
     'events_create' => 'events_webinars',
     'webinar_integration' => 'events_webinars',
+    // A/B Testing.
     'experiments' => 'ab_testing',
     'ab_variants' => 'ab_testing',
+    // Referral.
     'referral_codes' => 'referral_program',
     'rewards' => 'referral_program',
+    // Page Builder — P1-01.
+    'premium_blocks' => 'page_builder_premium',
+    'page_builder_seo' => 'page_builder_seo',
+    'page_builder_analytics' => 'page_builder_analytics',
+    'page_builder_schema_org' => 'page_builder_seo',
+    // Credentials — P1-02.
+    'credential_stacks' => 'credentials_advanced',
+    'credential_portability' => 'credentials_advanced',
   ];
 
   public function __construct(
@@ -142,6 +158,12 @@ class FeatureAccessService {
       'events_webinars' => 'Events & Webinars',
       'ab_testing' => 'A/B Testing',
       'referral_program' => 'Referral Program',
+      // P1-01: Page Builder add-ons.
+      'page_builder_premium' => 'Page Builder Premium Blocks',
+      'page_builder_seo' => 'Page Builder SEO Avanzado',
+      'page_builder_analytics' => 'Page Builder Analytics',
+      // P1-02: Credentials add-ons.
+      'credentials_advanced' => 'Credentials Avanzado (Stacks + Portabilidad)',
     ];
 
     $activeAddons = $this->getActiveAddons($tenantId);

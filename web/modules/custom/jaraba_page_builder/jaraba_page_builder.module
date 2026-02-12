@@ -276,6 +276,13 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   // El script se auto-desactiva si no está en un iframe.
   $attachments['#attached']['library'][] = 'jaraba_page_builder/canvas-preview-receiver';
 
+  // Accesibilidad: Cargar validador ARIA y contrast-checker en Canvas Editor.
+  // P0-02/P0-03 Cierre de Gaps 20260126.
+  if ($route_name === 'jaraba_page_builder.canvas_editor') {
+    $attachments['#attached']['library'][] = 'jaraba_page_builder/accessibility-validator';
+    $attachments['#attached']['library'][] = 'jaraba_page_builder/contrast-checker';
+  }
+
   // Solo continuar con lógica específica de page_content.
   if (!str_starts_with($route_name ?? '', 'entity.page_content.')) {
     return;
@@ -359,11 +366,255 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
     }
   }
   catch (\Exception $e) {
-    // Log error pero no romper la página.
     \Drupal::logger('jaraba_page_builder')->warning('Hreflang error: @message', [
       '@message' => $e->getMessage(),
     ]);
   }
+
+  // ============================================================
+  // OPEN GRAPH COMPLETO + META ROBOTS + SCHEMA.ORG - P2-02
+  // ============================================================
+  if ($page_content) {
+    _jaraba_page_builder_inject_seo_meta($attachments, $page_content);
+  }
+}
+
+/**
+ * Inyecta meta tags completos de Open Graph, meta robots y Schema.org.
+ *
+ * P2-02: Complementa los og:locale ya inyectados por HreflangService
+ * con el conjunto completo de meta tags necesarios para SEO y redes sociales.
+ *
+ * @param array &$attachments
+ *   Array de attachments de la pagina.
+ * @param \Drupal\Core\Entity\ContentEntityInterface $page
+ *   Entidad PageContent.
+ */
+function _jaraba_page_builder_inject_seo_meta(array &$attachments, $page): void {
+  try {
+    $request = \Drupal::request();
+    $baseUrl = $request->getSchemeAndHttpHost();
+    $siteName = \Drupal::config('system.site')->get('name') ?? 'Jaraba';
+
+    $title = $page->get('meta_title')->value ?? $page->get('title')->value ?? '';
+    $description = $page->get('meta_description')->value ?? '';
+    $pathAlias = $page->get('path_alias')->value ?? '/page/' . $page->id();
+    $pageUrl = $baseUrl . $pathAlias;
+    $templateId = $page->get('template_id')->value ?? '';
+    $isPublished = (bool) $page->get('status')->value;
+
+    // --- Meta Robots: noindex para borradores ---
+    if (!$isPublished) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'robots',
+            'content' => 'noindex, nofollow',
+          ],
+        ],
+        'meta_robots_noindex',
+      ];
+    }
+
+    // --- Open Graph tags ---
+    $ogTags = [
+      'og:title' => $title,
+      'og:description' => $description,
+      'og:url' => $pageUrl,
+      'og:type' => _jaraba_page_builder_get_og_type($templateId),
+      'og:site_name' => $siteName,
+    ];
+
+    // Extraer imagen para og:image desde content_data.
+    $contentData = json_decode($page->get('content_data')->value ?? '{}', TRUE) ?: [];
+    $ogImage = _jaraba_page_builder_extract_og_image($contentData, $baseUrl);
+    if ($ogImage) {
+      $ogTags['og:image'] = $ogImage;
+    }
+
+    foreach ($ogTags as $property => $content) {
+      if (!empty($content)) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          str_replace(':', '_', $property),
+        ];
+      }
+    }
+
+    // --- Twitter Card tags ---
+    $twitterTags = [
+      'twitter:card' => $ogImage ? 'summary_large_image' : 'summary',
+      'twitter:title' => $title,
+      'twitter:description' => $description,
+    ];
+    if ($ogImage) {
+      $twitterTags['twitter:image'] = $ogImage;
+    }
+
+    foreach ($twitterTags as $name => $content) {
+      if (!empty($content)) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    // --- Schema.org JSON-LD auto-injection ---
+    _jaraba_page_builder_inject_schema_org($attachments, $page, $baseUrl);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_page_builder')->warning('SEO meta injection error: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Inyecta Schema.org JSON-LD segun el tipo de template de la pagina.
+ *
+ * P2-02: Auto-detecta el tipo de pagina por su template y genera
+ * el JSON-LD correspondiente (JobPosting, Course, Product, FAQ, etc.).
+ * Siempre incluye BreadcrumbList.
+ *
+ * @param array &$attachments
+ *   Array de attachments de la pagina.
+ * @param \Drupal\Core\Entity\ContentEntityInterface $page
+ *   Entidad PageContent.
+ * @param string $baseUrl
+ *   URL base del sitio.
+ */
+function _jaraba_page_builder_inject_schema_org(array &$attachments, $page, string $baseUrl): void {
+  /** @var \Drupal\jaraba_page_builder\Service\SchemaOrgService $schemaOrg */
+  $schemaOrg = \Drupal::service('jaraba_page_builder.schema_org');
+
+  $title = $page->get('title')->value ?? '';
+  $templateId = $page->get('template_id')->value ?? '';
+  $contentData = json_decode($page->get('content_data')->value ?? '{}', TRUE) ?: [];
+
+  // Breadcrumb siempre presente.
+  $breadcrumbs = [
+    ['title' => 'Inicio', 'url' => $baseUrl],
+    ['title' => $title, 'url' => ''],
+  ];
+  $breadcrumbJson = $schemaOrg->generateBreadcrumbSchema($breadcrumbs);
+  if ($breadcrumbJson) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => $breadcrumbJson,
+      ],
+      'schema_breadcrumb',
+    ];
+  }
+
+  // Schema especifico por tipo de template.
+  $tenantData = ['name' => \Drupal::config('system.site')->get('name') ?? 'Jaraba'];
+  $specificJson = NULL;
+
+  if (str_contains($templateId, 'job')) {
+    $specificJson = $schemaOrg->generateJobPostingSchema($contentData, $tenantData);
+  }
+  elseif (str_contains($templateId, 'course')) {
+    $specificJson = $schemaOrg->generateCourseSchema($contentData, $tenantData);
+  }
+  elseif (str_contains($templateId, 'product') || str_contains($templateId, 'agro')) {
+    $specificJson = $schemaOrg->generateProductSchema($contentData, $tenantData);
+  }
+  elseif (str_contains($templateId, 'service') || str_contains($templateId, 'srv')) {
+    $specificJson = $schemaOrg->generateLocalBusinessSchema($contentData);
+  }
+  elseif (str_contains($templateId, 'faq')) {
+    $faqItems = $contentData['faqs'] ?? $contentData['items'] ?? [];
+    if (!empty($faqItems)) {
+      $specificJson = $schemaOrg->generateFAQSchema($faqItems);
+    }
+  }
+
+  if ($specificJson) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => $specificJson,
+      ],
+      'schema_specific_' . str_replace(['_', '-'], '', $templateId),
+    ];
+  }
+}
+
+/**
+ * Obtiene el tipo Open Graph basado en el template.
+ *
+ * @param string $templateId
+ *   ID del template.
+ *
+ * @return string
+ *   Tipo Open Graph (website, article, product).
+ */
+function _jaraba_page_builder_get_og_type(string $templateId): string {
+  if (str_contains($templateId, 'product') || str_contains($templateId, 'agro_product')) {
+    return 'product';
+  }
+  if (str_contains($templateId, 'blog') || str_contains($templateId, 'article')) {
+    return 'article';
+  }
+  return 'website';
+}
+
+/**
+ * Extrae la primera imagen valida del content_data para og:image.
+ *
+ * @param array $contentData
+ *   Datos decodificados del content_data JSON.
+ * @param string $baseUrl
+ *   URL base del sitio.
+ *
+ * @return string|null
+ *   URL absoluta de la imagen o NULL.
+ */
+function _jaraba_page_builder_extract_og_image(array $contentData, string $baseUrl): ?string {
+  $imageKeys = ['hero_image', 'og_image', 'image', 'background_image', 'thumbnail', 'photo'];
+
+  foreach ($imageKeys as $key) {
+    if (!empty($contentData[$key]) && is_string($contentData[$key])) {
+      $url = $contentData[$key];
+      if (str_starts_with($url, 'http')) {
+        return $url;
+      }
+      if (str_starts_with($url, '/')) {
+        return $baseUrl . $url;
+      }
+    }
+  }
+
+  // Buscar recursivamente en sub-arrays (sections, blocks).
+  foreach ($contentData as $value) {
+    if (is_array($value)) {
+      $found = _jaraba_page_builder_extract_og_image($value, $baseUrl);
+      if ($found) {
+        return $found;
+      }
+    }
+  }
+
+  return NULL;
 }
 
 /**
@@ -551,6 +802,7 @@ function jaraba_page_builder_preprocess_html(array &$variables) {
     $variables['attributes']['class'][] = 'canvas-editor-page';
     $variables['attributes']['class'][] = 'full-viewport-layout';
   }
+
 }
 
 /**
@@ -587,5 +839,18 @@ function jaraba_page_builder_entity_operation(\Drupal\Core\Entity\EntityInterfac
   ];
 
   return $operations;
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * P1-05: Procesa publicaciones programadas pendientes.
+ * Delega al servicio ScheduledPublishService que ejecuta las acciones
+ * de publish/unpublish sobre PageContent cuando llega la fecha.
+ */
+function jaraba_page_builder_cron(): void {
+  /** @var \Drupal\jaraba_page_builder\Service\ScheduledPublishService $scheduler */
+  $scheduler = \Drupal::service('jaraba_page_builder.scheduled_publish');
+  $scheduler->processScheduledPublishes();
 }
 

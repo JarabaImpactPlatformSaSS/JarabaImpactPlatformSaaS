@@ -1,0 +1,11 @@
+id: agroconecta_profesional_products
+label: 'AgroConecta Profesional: Productos'
+vertical: agroconecta
+plan: profesional
+feature_key: products
+limit_value: -1
+description: 'Productos ilimitados en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 2
+status: true

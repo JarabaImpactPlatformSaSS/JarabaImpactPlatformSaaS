@@ -20,11 +20,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * del Page Builder en modo multi-block.
  *
  * ENDPOINTS:
- * - GET    /api/pages/{id}/sections          - Lista secciones
- * - POST   /api/pages/{id}/sections          - Añade sección
- * - PUT    /api/pages/{id}/sections/{uuid}   - Actualiza sección
- * - DELETE /api/pages/{id}/sections/{uuid}   - Elimina sección
- * - PUT    /api/pages/{id}/sections/reorder  - Reordena secciones
+ * - GET    /api/v1/pages/{id}/sections          - Lista secciones
+ * - POST   /api/v1/pages/{id}/sections          - Añade sección
+ * - PUT    /api/v1/pages/{id}/sections/{uuid}   - Actualiza sección
+ * - DELETE /api/v1/pages/{id}/sections/{uuid}   - Elimina sección
+ * - PUT    /api/v1/pages/{id}/sections/reorder  - Reordena secciones
  *
  * @package Drupal\jaraba_page_builder\Controller
  */

@@ -1,0 +1,11 @@
+id: agroconecta_free_photos_per_product
+label: 'AgroConecta Free: Fotos/producto'
+vertical: agroconecta
+plan: free
+feature_key: photos_per_product
+limit_value: 1
+description: '1 foto por producto en plan gratuito AgroConecta.'
+upgrade_message: 'Solo puedes subir 1 foto por producto. Actualiza a Starter para hasta 5 fotos.'
+expected_conversion: 0.22
+weight: 30
+status: true

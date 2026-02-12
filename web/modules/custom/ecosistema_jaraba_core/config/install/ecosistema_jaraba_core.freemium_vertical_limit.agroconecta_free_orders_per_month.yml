@@ -1,0 +1,11 @@
+id: agroconecta_free_orders_per_month
+label: 'AgroConecta Free: Pedidos/mes'
+vertical: agroconecta
+plan: free
+feature_key: orders_per_month
+limit_value: 10
+description: 'Maximo 10 pedidos mensuales en plan gratuito AgroConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 pedidos este mes. Actualiza a Starter para pedidos ilimitados.'
+expected_conversion: 0.35
+weight: 10
+status: true

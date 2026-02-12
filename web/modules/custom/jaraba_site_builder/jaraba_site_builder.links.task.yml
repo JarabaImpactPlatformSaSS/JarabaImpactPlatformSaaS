@@ -23,3 +23,24 @@ jaraba_site_builder.sitemap:
   route_name: jaraba_site_builder.sitemap
   base_route: jaraba_site_builder.dashboard
   weight: 30
+
+# Fase 1 Doc 177: Tabs de entidades de navegación
+entity.site_menu.collection:
+  title: 'Listado'
+  route_name: entity.site_menu.collection
+  base_route: entity.site_menu.collection
+
+entity.site_menu_item.collection:
+  title: 'Listado'
+  route_name: entity.site_menu_item.collection
+  base_route: entity.site_menu_item.collection
+
+entity.site_header_config.collection:
+  title: 'Listado'
+  route_name: entity.site_header_config.collection
+  base_route: entity.site_header_config.collection
+
+entity.site_footer_config.collection:
+  title: 'Listado'
+  route_name: entity.site_footer_config.collection
+  base_route: entity.site_footer_config.collection

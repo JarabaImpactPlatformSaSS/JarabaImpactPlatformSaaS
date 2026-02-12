@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 /**
@@ -24,6 +25,248 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SitemapController extends ControllerBase
 {
+
+    /**
+     * Genera robots.txt dinamico por tenant.
+     *
+     * P2-02: Directivas de rastreo para motores de busqueda.
+     * - Permite paginas publicadas
+     * - Bloquea rutas de administracion
+     * - Referencia sitemaps del sitio
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The request object.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *   Text response con directivas robots.
+     */
+    public function robots(Request $request): Response
+    {
+        $baseUrl = $request->getSchemeAndHttpHost();
+
+        $lines = [
+            'User-agent: *',
+            'Allow: /',
+            '',
+            '# Admin routes',
+            'Disallow: /admin/',
+            'Disallow: /user/',
+            'Disallow: /node/',
+            'Disallow: /batch',
+            'Disallow: /search/',
+            '',
+            '# API endpoints',
+            'Disallow: /api/',
+            '',
+            '# Page Builder editor',
+            'Disallow: /page/*/editor',
+            'Disallow: /page-builder/',
+            '',
+            '# Drupal core',
+            'Disallow: /core/',
+            'Disallow: /modules/',
+            'Disallow: /themes/',
+            'Disallow: /profiles/',
+            '',
+            '# Sitemaps',
+            'Sitemap: ' . $baseUrl . '/sitemap.xml',
+            '',
+        ];
+
+        $content = implode("\n", $lines);
+
+        return new Response($content, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    /**
+     * Valida structured data de una pagina.
+     *
+     * P2-02: Devuelve el JSON-LD que se generaria para una pagina,
+     * permitiendo validar con Google Rich Results Test.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The request object.
+     * @param int $id
+     *   ID de la pagina a validar.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con schema.org data de la pagina.
+     */
+    public function validateStructuredData(Request $request, int $id): JsonResponse
+    {
+        try {
+            $page = $this->entityTypeManager()->getStorage('page_content')->load($id);
+            if (!$page) {
+                return new JsonResponse(['error' => 'Page not found'], 404);
+            }
+
+            /** @var \Drupal\jaraba_page_builder\Service\SchemaOrgService $schemaOrgService */
+            $schemaOrgService = \Drupal::service('jaraba_page_builder.schema_org');
+
+            $templateId = $page->get('template_id')->value ?? '';
+            $contentData = json_decode($page->get('content_data')->value ?? '{}', TRUE) ?: [];
+
+            $schemas = [];
+
+            // Breadcrumb siempre presente.
+            $breadcrumbs = [
+                ['title' => 'Inicio', 'url' => $request->getSchemeAndHttpHost()],
+                ['title' => $page->get('title')->value, 'url' => ''],
+            ];
+            $schemas[] = json_decode($schemaOrgService->generateBreadcrumbSchema($breadcrumbs), TRUE);
+
+            // Schema por tipo de template.
+            $tenantData = ['name' => $request->getHost()];
+            $schema = $this->getSchemaForTemplate($schemaOrgService, $templateId, $contentData, $tenantData);
+            if ($schema) {
+                $schemas[] = $schema;
+            }
+
+            return new JsonResponse([
+                'page_id' => $id,
+                'template' => $templateId,
+                'schemas' => $schemas,
+                'valid' => TRUE,
+            ]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+                'valid' => FALSE,
+            ], 500);
+        }
+    }
+
+    /**
+     * Genera preview de Open Graph para una pagina.
+     *
+     * P2-02: Devuelve como se veria la pagina al compartirla
+     * en redes sociales (titulo, descripcion, imagen).
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The request object.
+     * @param int $id
+     *   ID de la pagina.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con preview de Open Graph.
+     */
+    public function openGraphPreview(Request $request, int $id): JsonResponse
+    {
+        try {
+            $page = $this->entityTypeManager()->getStorage('page_content')->load($id);
+            if (!$page) {
+                return new JsonResponse(['error' => 'Page not found'], 404);
+            }
+
+            $baseUrl = $request->getSchemeAndHttpHost();
+            $pathAlias = $page->get('path_alias')->value ?? '/page/' . $page->id();
+            $contentData = json_decode($page->get('content_data')->value ?? '{}', TRUE) ?: [];
+
+            $title = $page->get('meta_title')->value ?? $page->get('title')->value;
+            $description = $page->get('meta_description')->value ?? '';
+
+            // Extraer primera imagen para og:image.
+            $images = $this->extractImages($page);
+            $ogImage = !empty($images) ? $images[0]['url'] : NULL;
+            if ($ogImage && !str_starts_with($ogImage, 'http')) {
+                $ogImage = $baseUrl . $ogImage;
+            }
+
+            $templateId = $page->get('template_id')->value ?? '';
+
+            return new JsonResponse([
+                'page_id' => $id,
+                'og' => [
+                    'title' => $title,
+                    'description' => $description,
+                    'image' => $ogImage,
+                    'url' => $baseUrl . $pathAlias,
+                    'type' => $this->getOgType($templateId),
+                    'site_name' => \Drupal::config('system.site')->get('name') ?? 'Jaraba',
+                ],
+                'twitter' => [
+                    'card' => $ogImage ? 'summary_large_image' : 'summary',
+                    'title' => $title,
+                    'description' => $description,
+                    'image' => $ogImage,
+                ],
+            ]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Obtiene el tipo OG basado en el template.
+     *
+     * @param string $templateId
+     *   ID del template.
+     *
+     * @return string
+     *   Tipo Open Graph.
+     */
+    protected function getOgType(string $templateId): string
+    {
+        $types = [
+            'product_detail' => 'product',
+            'agro_product_detail' => 'product',
+            'blog_post' => 'article',
+            'emp_blog_post' => 'article',
+            'course_detail' => 'article',
+        ];
+
+        return $types[$templateId] ?? 'website';
+    }
+
+    /**
+     * Genera el schema JSON-LD segun el tipo de template.
+     *
+     * @param \Drupal\jaraba_page_builder\Service\SchemaOrgService $service
+     *   Servicio Schema.org.
+     * @param string $templateId
+     *   ID del template.
+     * @param array $contentData
+     *   Datos del contenido.
+     * @param array $tenantData
+     *   Datos del tenant.
+     *
+     * @return array|null
+     *   Array decoded del JSON-LD o NULL si no aplica.
+     */
+    protected function getSchemaForTemplate($service, string $templateId, array $contentData, array $tenantData): ?array
+    {
+        $schemaJson = NULL;
+
+        if (str_contains($templateId, 'job')) {
+            $schemaJson = $service->generateJobPostingSchema($contentData, $tenantData);
+        }
+        elseif (str_contains($templateId, 'course')) {
+            $schemaJson = $service->generateCourseSchema($contentData, $tenantData);
+        }
+        elseif (str_contains($templateId, 'product') || str_contains($templateId, 'agro')) {
+            $schemaJson = $service->generateProductSchema($contentData, $tenantData);
+        }
+        elseif (str_contains($templateId, 'service') || str_contains($templateId, 'srv')) {
+            $schemaJson = $service->generateLocalBusinessSchema($contentData);
+        }
+        elseif (str_contains($templateId, 'faq')) {
+            $faqItems = $contentData['faqs'] ?? $contentData['items'] ?? [];
+            if (!empty($faqItems)) {
+                $schemaJson = $service->generateFAQSchema($faqItems);
+            }
+        }
+
+        if ($schemaJson) {
+            return json_decode($schemaJson, TRUE);
+        }
+
+        return NULL;
+    }
 
     /**
      * Genera sitemap index principal.

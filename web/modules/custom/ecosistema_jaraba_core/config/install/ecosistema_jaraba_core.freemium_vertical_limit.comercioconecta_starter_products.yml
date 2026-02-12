@@ -1,0 +1,11 @@
+id: comercioconecta_starter_products
+label: 'ComercioConecta Starter: Productos'
+vertical: comercioconecta
+plan: starter
+feature_key: products
+limit_value: -1
+description: 'Productos ilimitados en plan Starter ComercioConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 101
+status: true

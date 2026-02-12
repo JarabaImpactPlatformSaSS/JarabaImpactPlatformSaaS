@@ -1,0 +1,53 @@
+{#
+/**
+ * @file _landing-lead-magnet.html.twig
+ * Parcial reutilizable: Lead Magnet CTA banner (enlaza con F3).
+ *
+ * VARIABLES:
+ * - lead_magnet.title: Titulo del lead magnet
+ * - lead_magnet.description: Breve descripcion
+ * - lead_magnet.url: URL del lead magnet (F3)
+ * - lead_magnet.cta_text: Texto del boton
+ * - lead_magnet.icon: { category, name }
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set magnet = lead_magnet|default({}) %}
+
+{% if magnet.url is defined %}
+<section class="landing-lead-magnet landing-lead-magnet--{{ vertical_key|default('default') }}" aria-labelledby="lead-magnet-title">
+  <div class="landing-lead-magnet__container">
+    <div class="landing-lead-magnet__content">
+      {% if magnet.icon is defined %}
+        <span class="landing-lead-magnet__icon" aria-hidden="true">
+          {{ jaraba_icon(magnet.icon.category|default('ui'), magnet.icon.name|default('gift'), {
+            variant: 'duotone',
+            color: color|default('impulse'),
+            size: 48
+          }) }}
+        </span>
+      {% endif %}
+
+      <div class="landing-lead-magnet__text">
+        <h2 id="lead-magnet-title" class="landing-lead-magnet__title">
+          {{ magnet.title|default('Recurso gratuito'|t) }}
+        </h2>
+        {% if magnet.description is defined %}
+          <p class="landing-lead-magnet__description">{{ magnet.description }}</p>
+        {% endif %}
+      </div>
+
+      <a href="{{ magnet.url }}"
+         class="btn btn--primary btn--lg landing-lead-magnet__cta"
+         data-track-cta="lead_magnet_{{ vertical_key|default('') }}"
+         data-track-position="landing_lead_magnet">
+        {{ magnet.cta_text|default('Acceder gratis'|t) }}
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}

@@ -192,3 +192,22 @@ function jaraba_page_builder_update_9001(&$sandbox) {
 
   return t('No Canvas Editor fields needed to be installed.');
 }
+
+/**
+ * Install ScheduledPublish content entity type (P1-05).
+ *
+ * Crea la tabla 'scheduled_publish' para publicaciones programadas
+ * del Page Builder. Usa installEntityType() per Drupal 11 best practice.
+ */
+function jaraba_page_builder_update_9002(&$sandbox) {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+  // Instalar el entity type ScheduledPublish.
+  $entityType = \Drupal::entityTypeManager()->getDefinition('scheduled_publish');
+  if ($entityType) {
+    $updateManager->installEntityType($entityType);
+    return t('ScheduledPublish entity type installed.');
+  }
+
+  return t('ScheduledPublish entity type definition not found.');
+}

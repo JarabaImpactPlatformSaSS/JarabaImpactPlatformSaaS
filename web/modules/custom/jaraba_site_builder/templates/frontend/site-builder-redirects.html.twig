@@ -49,11 +49,18 @@
 
   <section class="dashboard-panel">
     <div class="site-builder-actions">
-      <a href="/admin/structure/site-builder/redirects/add" class="btn btn--primary">
+      <a href="/admin/structure/site-builder/redirects/add"
+         class="btn btn--primary"
+         data-slide-panel="large"
+         data-slide-panel-url="/admin/structure/site-builder/redirects/add"
+         data-slide-panel-title="{% trans %}Añadir Redirect{% endtrans %}">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
         </svg>
         {% trans %}Añadir Redirect{% endtrans %}
+      </a>
+      <a href="/api/v1/site/redirects/export" class="btn btn--secondary" download>
+        {% trans %}Exportar CSV{% endtrans %}
       </a>
     </div>
 

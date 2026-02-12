@@ -1278,3 +1278,46 @@ ecosistema_jaraba_core.api.push.test:
   requirements:
     _permission: 'administer tenants'
   methods: [POST]
+
+# =============================================================================
+# LEAD MAGNETS PUBLICOS POR VERTICAL (F3 Doc 178)
+# =============================================================================
+# Rutas publicas sin autenticacion para lead magnets de alto valor.
+# Cada vertical tiene un lead magnet especifico que genera valor inmediato
+# al visitante anonimo antes de pedir registro.
+
+# Lead Magnet: Calculadora de Madurez Digital (Emprendimiento)
+ecosistema_jaraba_core.lead_magnet.calculadora_madurez:
+  path: '/emprendimiento/calculadora-madurez'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::calculadoraMadurez'
+    _title: 'Calculadora de Madurez Digital'
+  requirements:
+    _access: 'TRUE'
+
+# Lead Magnet: Guia Vende Online sin Intermediarios (AgroConecta)
+ecosistema_jaraba_core.lead_magnet.guia_agroconecta:
+  path: '/agroconecta/guia-vende-online'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::guiaAgroconecta'
+    _title: 'Guia: Vende Online sin Intermediarios'
+  requirements:
+    _access: 'TRUE'
+
+# Lead Magnet: Auditoria SEO Local (ComercioConecta)
+ecosistema_jaraba_core.lead_magnet.auditoria_seo:
+  path: '/comercioconecta/auditoria-seo'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::auditoriaSeo'
+    _title: 'Auditoria SEO Local Gratuita'
+  requirements:
+    _access: 'TRUE'
+
+# Lead Magnet: Template Propuesta Profesional (ServiciosConecta)
+ecosistema_jaraba_core.lead_magnet.template_propuesta:
+  path: '/serviciosconecta/template-propuesta'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::templatePropuesta'
+    _title: 'Template: Propuesta Profesional'
+  requirements:
+    _access: 'TRUE'

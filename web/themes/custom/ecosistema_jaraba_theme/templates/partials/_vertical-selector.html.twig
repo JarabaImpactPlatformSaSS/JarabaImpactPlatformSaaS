@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * templates/partials/_vertical-selector.html.twig
+ *
+ * Selector visual de verticales para la homepage.
+ * Muestra 5 cards interactivas, una por vertical del ecosistema.
+ * Si AvatarDetectionService detecta la vertical del visitante,
+ * la card correspondiente se resalta con clase --highlighted.
+ *
+ * Se incluye en page--front.html.twig entre hero y features.
+ * i18n: Todos los textos con {% trans %}.
+ * Theming: Usa var(--ej-*) CSS Custom Properties.
+ *
+ * Variables esperadas:
+ * - verticals: Array de verticales con id, title, description, icon, color, url.
+ * - detected_vertical: (string|null) ID de la vertical detectada automaticamente.
+ *
+ * @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
+ */
+#}
+
+{% set default_verticals = [
+  {
+    id: 'empleabilidad',
+    title: 'Empleo'|t,
+    description: 'Encuentra tu trabajo ideal con IA'|t,
+    icon: 'empleabilidad',
+    icon_category: 'verticals',
+    color: 'azul-corporativo',
+    url: '/empleabilidad',
+    cta: 'Explorar'|t
+  },
+  {
+    id: 'emprendimiento',
+    title: 'Emprende'|t,
+    description: 'Lanza tu idea de negocio'|t,
+    icon: 'emprendimiento',
+    icon_category: 'verticals',
+    color: 'naranja-impulso',
+    url: '/emprendimiento',
+    cta: 'Explorar'|t
+  },
+  {
+    id: 'agroconecta',
+    title: 'AgroConecta'|t,
+    description: 'Vende online sin intermediarios'|t,
+    icon: 'agroconecta',
+    icon_category: 'verticals',
+    color: 'verde-agro',
+    url: '/agroconecta',
+    cta: 'Explorar'|t
+  },
+  {
+    id: 'comercioconecta',
+    title: 'Comercio'|t,
+    description: 'Digitaliza tu tienda local'|t,
+    icon: 'comercioconecta',
+    icon_category: 'verticals',
+    color: 'naranja-impulso',
+    url: '/comercioconecta',
+    cta: 'Explorar'|t
+  },
+  {
+    id: 'serviciosconecta',
+    title: 'Servicios'|t,
+    description: 'Gestiona citas y clientes'|t,
+    icon: 'serviciosconecta',
+    icon_category: 'verticals',
+    color: 'verde-innovacion',
+    url: '/serviciosconecta',
+    cta: 'Explorar'|t
+  }
+] %}
+
+{% set vertical_items = verticals|default([])|length > 0 ? verticals : default_verticals %}
+
+<section class="vertical-selector reveal-element reveal-fade-up" id="verticales" aria-labelledby="vertical-selector-title">
+  <div class="vertical-selector__container">
+    <h2 id="vertical-selector-title" class="vertical-selector__title">
+      {% trans %}Elige tu camino{% endtrans %}
+    </h2>
+    <p class="vertical-selector__subtitle">
+      {% trans %}Descubre la vertical que mejor se adapta a ti{% endtrans %}
+    </p>
+
+    <div class="vertical-selector__grid">
+      {% for vertical in vertical_items %}
+        <a href="{{ vertical.url }}"
+           class="vertical-card{% if detected_vertical and detected_vertical == vertical.id %} vertical-card--highlighted{% endif %}"
+           data-vertical="{{ vertical.id }}"
+           data-track-cta="vertical_{{ vertical.id }}"
+           data-track-position="homepage_selector"
+           aria-label="{{ vertical.title }} - {{ vertical.description }}">
+
+          <div class="vertical-card__icon vertical-card__icon--{{ vertical.color|default('naranja-impulso') }}">
+            {{ jaraba_icon(vertical.icon_category|default('verticals'), vertical.icon, {
+              variant: 'duotone',
+              color: vertical.color|default('naranja-impulso'),
+              size: '48px'
+            }) }}
+          </div>
+
+          <h3 class="vertical-card__title">{{ vertical.title }}</h3>
+          <p class="vertical-card__description">{{ vertical.description }}</p>
+
+          <span class="vertical-card__cta" aria-hidden="true">
+            {{ vertical.cta|default('Explorar'|t) }} →
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,88 +1,93 @@
 {#
 /**
- * @file
- * _vertical-landing-content.html.twig
- * 
- * Contenido de landing pages de verticales.
+ * @file vertical-landing-content.html.twig
+ * Orquestador de landing pages verticales — 9 secciones via parciales.
+ *
  * Se incluye desde page--vertical-landing.html.twig.
  *
- * VARIABLES:
- * - vertical_data: Array con configuración del vertical
- *   - key: Identificador (empleo, talento, emprender, comercio, instituciones)
- *   - title: Título principal
- *   - subtitle: Subtítulo descriptivo
- *   - icon_category: Categoría del icono (verticals, business, etc.)
- *   - icon_name: Nombre del icono
- *   - color: Variable CSS del color del vertical
- *   - benefits: Array de beneficios
- *   - cta_primary: CTA principal {text, url}
- *   - cta_secondary: CTA secundario {text, url}
+ * VARIABLES (todas bajo vertical_data):
+ * - key: Identificador del vertical (agroconecta, comercioconecta, etc.)
+ * - color: Color del vertical (CSS token)
+ * - hero: { headline, subtitle, icon, cta_primary, cta_secondary }
+ * - pain_points: Array de { icon, text }
+ * - steps: Array de { title, description }
+ * - features: Array de { icon, title, description }
+ * - social_proof: { testimonials: [], metrics: [] }
+ * - lead_magnet: { title, description, url, cta_text, icon }
+ * - pricing: { headline, from_price, currency, period, cta_text, cta_url, features_preview }
+ * - faq: Array de { question, answer }
+ * - final_cta: { headline, subheadline, cta }
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
  */
 #}
 
 {% set data = vertical_data|default({}) %}
 {% set key = data.key|default('default') %}
+{% set vertical_color = data.color|default('impulse') %}
 
 <div class="vertical-landing vertical-landing--{{ key }}">
-  
-  {# ===== HERO SECTION ===== #}
-  <section class="vertical-landing__hero hero-landing hero-landing--{{ key }}">
-    {# Animated Background con partículas #}
-    <div class="hero-landing__bg">
-      <div class="hero-landing__gradient"></div>
-      <div class="hero-landing__particles"></div>
-    </div>
 
-    <div class="vertical-landing__hero-content hero-landing__content">
-      <span class="vertical-landing__icon">
-        {{ jaraba_icon(data.icon_category|default('verticals'), data.icon_name|default('rocket'), {
-          variant: 'duotone',
-          color: data.color|default('impulse'),
-          size: '64px'
-        }) }}
-      </span>
-      <h1 class="vertical-landing__title hero-landing__title">{{ data.title }}</h1>
-      <p class="vertical-landing__subtitle hero-landing__subtitle">{{ data.subtitle }}</p>
-      <div class="vertical-landing__actions hero-landing__actions">
-        <a href="{{ data.cta_primary.url }}" class="btn-primary btn-primary--large">
-          {{ data.cta_primary.text }}
-        </a>
-        <a href="{{ data.cta_secondary.url }}" class="btn-secondary btn-secondary--large">
-          {{ data.cta_secondary.text }}
-        </a>
-      </div>
-    </div>
-  </section>
+  {# 1. Hero #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-hero.html.twig' with {
+    hero: data.hero|default({}),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
 
+  {# 2. Pain Points #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-pain-points.html.twig' with {
+    pain_points: data.pain_points|default([]),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
 
-  {# ===== BENEFITS SECTION ===== #}
-  <section class="vertical-landing__benefits">
-    <div class="vertical-landing__benefits-header">
-      <h2>{% trans %}¿Por qué elegirnos?{% endtrans %}</h2>
-    </div>
-    <div class="vertical-landing__benefits-grid">
-      {% for benefit in data.benefits %}
-        <div class="vertical-benefit">
-          <span class="vertical-benefit__icon">
-            {{ jaraba_icon(benefit.icon_category|default('business'), benefit.icon_name|default('target'), {
-              variant: 'duotone',
-              color: data.color|default('impulse'),
-              size: '32px'
-            }) }}
-          </span>
-          <h3 class="vertical-benefit__title">{{ benefit.title }}</h3>
-          <p class="vertical-benefit__description">{{ benefit.description }}</p>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
+  {# 3. Solution Steps #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-solution-steps.html.twig' with {
+    steps: data.steps|default([]),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
 
-  {# ===== BOTTOM CTA SECTION ===== #}
-  <section class="vertical-landing__bottom-cta">
-    <h2>{% trans %}¿Listo para empezar?{% endtrans %}</h2>
-    <a href="{{ data.cta_primary.url }}" class="vertical-landing__cta-primary">
-      {{ data.cta_primary.text }}
-    </a>
-  </section>
+  {# 4. Features Grid #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-features-grid.html.twig' with {
+    features: data.features|default([]),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
+
+  {# 5. Social Proof #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-social-proof.html.twig' with {
+    social_proof: data.social_proof|default({}),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
+
+  {# 6. Lead Magnet #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-lead-magnet.html.twig' with {
+    lead_magnet: data.lead_magnet|default({}),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
+
+  {# 7. Pricing Preview #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-pricing-preview.html.twig' with {
+    pricing: data.pricing|default({}),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
+
+  {# 8. FAQ + Schema.org #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-faq.html.twig' with {
+    faq: data.faq|default([]),
+    vertical_key: key,
+  } only %}
+
+  {# 9. Final CTA #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-final-cta.html.twig' with {
+    final_cta: data.final_cta|default({}),
+    color: vertical_color,
+    vertical_key: key,
+  } only %}
 
 </div>

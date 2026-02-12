@@ -1,0 +1,11 @@
+id: eca_mkt_003
+label: 'Onboarding Email Day 3'
+description: 'Email a las 72h del registro con resumen de progreso, features no exploradas, social proof de la vertical del usuario y CTA hacia segunda accion de valor.'
+domain: MKT
+trigger_event: 'hook_user_insert + 72h'
+module: jaraba_email
+hook_function: jaraba_email_onboarding_day3
+spec_reference: 145_AC
+implementation_status: pending
+weight: 32
+status: true

@@ -4,6 +4,7 @@ namespace Drupal\jaraba_heatmap\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\jaraba_heatmap\Service\HeatmapScreenshotService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,28 +18,36 @@ use Symfony\Component\HttpFoundation\Request;
  * - Obtener datos de scroll por página
  * - Obtener datos de movimiento por página
  * - Obtener resumen general de métricas
+ * - Obtener/capturar screenshots de páginas
  *
  * Ref: Doc Técnico #180 - Native Heatmaps System
+ * Ref: Spec 20260130a §6.1, §7.2
  */
 class HeatmapApiController extends ControllerBase
 {
 
     /**
      * Conexión a base de datos.
-     *
-     * @var \Drupal\Core\Database\Connection
      */
-    protected $database;
+    protected Connection $database;
+
+    /**
+     * Servicio de capturas de pantalla.
+     */
+    protected HeatmapScreenshotService $screenshotService;
 
     /**
      * Constructor.
      *
      * @param \Drupal\Core\Database\Connection $database
      *   Conexión a base de datos.
+     * @param \Drupal\jaraba_heatmap\Service\HeatmapScreenshotService $screenshot_service
+     *   Servicio de capturas de página.
      */
-    public function __construct(Connection $database)
+    public function __construct(Connection $database, HeatmapScreenshotService $screenshot_service)
     {
         $this->database = $database;
+        $this->screenshotService = $screenshot_service;
     }
 
     /**
@@ -47,7 +56,8 @@ class HeatmapApiController extends ControllerBase
     public static function create(ContainerInterface $container)
     {
         return new static(
-            $container->get('database')
+            $container->get('database'),
+            $container->get('jaraba_heatmap.screenshot'),
         );
     }
 
@@ -297,6 +307,80 @@ class HeatmapApiController extends ControllerBase
                     'from' => $from_date,
                     'to' => date('Y-m-d'),
                 ],
+            ],
+        ]);
+    }
+
+    /**
+     * Obtiene el screenshot de una página para overlay de heatmap.
+     *
+     * @param string $page_path
+     *   Path de la página (URL-encoded).
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con datos del screenshot o error 404.
+     */
+    public function getScreenshot(string $page_path): JsonResponse
+    {
+        $tenantId = $this->getTenantId();
+        $decodedPath = urldecode($page_path);
+
+        $screenshot = $this->screenshotService->getScreenshot($tenantId, $decodedPath);
+
+        if (!$screenshot) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('No screenshot available for this page.'),
+            ], 404);
+        }
+
+        $screenshotUrl = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($screenshot['screenshot_uri']);
+
+        return new JsonResponse([
+            'success' => TRUE,
+            'data' => [
+                'screenshot_url' => $screenshotUrl,
+                'page_height' => (int) $screenshot['page_height'],
+                'viewport_width' => (int) $screenshot['viewport_width'],
+                'captured_at' => (int) $screenshot['captured_at'],
+            ],
+        ]);
+    }
+
+    /**
+     * Captura (o recaptura) el screenshot de una página.
+     *
+     * @param string $page_path
+     *   Path de la página (URL-encoded).
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con datos del nuevo screenshot o error 500.
+     */
+    public function captureScreenshot(string $page_path): JsonResponse
+    {
+        $tenantId = $this->getTenantId();
+        $decodedPath = urldecode($page_path);
+
+        $screenshot = $this->screenshotService->getScreenshot($tenantId, $decodedPath, TRUE);
+
+        if (!$screenshot) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Failed to capture screenshot for this page.'),
+            ], 500);
+        }
+
+        $screenshotUrl = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($screenshot['screenshot_uri']);
+
+        return new JsonResponse([
+            'success' => TRUE,
+            'data' => [
+                'screenshot_url' => $screenshotUrl,
+                'page_height' => (int) $screenshot['page_height'],
+                'viewport_width' => (int) $screenshot['viewport_width'],
+                'captured_at' => (int) $screenshot['captured_at'],
             ],
         ]);
     }

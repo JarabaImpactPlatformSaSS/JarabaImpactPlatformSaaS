@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Parcial: Mega menú con grid de columnas.
+ *
+ * Variables:
+ *   - mega_items: array de items del mega menú (cada uno puede tener children)
+ */
+#}
+
+<div class="jaraba-mega-menu" role="menu">
+  <div class="jaraba-mega-menu__container">
+    <div class="jaraba-mega-menu__grid">
+      {% for item in mega_items %}
+        <div class="jaraba-mega-menu__column">
+          {% if item.item_type == 'heading' %}
+            <h4 class="jaraba-mega-menu__heading">
+              {% if item.icon %}
+                <span class="jaraba-mega-menu__icon">{{ item.icon }}</span>
+              {% endif %}
+              {{ item.title }}
+            </h4>
+          {% else %}
+            <a href="{{ item.url }}" class="jaraba-mega-menu__link"
+               {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              {% if item.icon %}
+                <span class="jaraba-mega-menu__icon">{{ item.icon }}</span>
+              {% endif %}
+              <span class="jaraba-mega-menu__title">{{ item.title }}</span>
+              {% if item.badge_text %}
+                <span class="jaraba-mega-menu__badge" style="background-color: {{ item.badge_color|default('#FF8C42') }}">{{ item.badge_text }}</span>
+              {% endif %}
+            </a>
+          {% endif %}
+
+          {% if item.children|length > 0 %}
+            <ul class="jaraba-mega-menu__sublist">
+              {% for child in item.children %}
+                <li class="jaraba-mega-menu__subitem">
+                  <a href="{{ child.url }}" class="jaraba-mega-menu__sublink">
+                    {{ child.title }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

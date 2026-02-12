@@ -224,3 +224,21 @@ administer compliance assessments:
 access partner portal:
   title: 'Acceder al Portal de Partner'
   description: 'Acceso al dashboard del portal de partner/reseller para ver tenants gestionados y comisiones'
+
+# ===========================================
+# ADMINISTRACION DE ECA FLOW DEFINITIONS
+# ===========================================
+
+administer eca flow definitions:
+  title: 'Administrar ECA Flow Registry'
+  description: 'Crear, editar y eliminar definiciones de flujos ECA del ecosistema'
+  restrict access: TRUE
+
+# ===========================================
+# ADMINISTRACION DE LIMITES FREEMIUM (Doc 183)
+# ===========================================
+
+administer freemium limits:
+  title: 'Administrar Limites Freemium'
+  description: 'Crear, editar y eliminar limites freemium por vertical, plan y feature del ecosistema SaaS'
+  restrict access: TRUE

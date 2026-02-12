@@ -1,0 +1,11 @@
+id: serviciosconecta_free_services
+label: 'ServiciosConecta Free: Servicios'
+vertical: serviciosconecta
+plan: free
+feature_key: services
+limit_value: 3
+description: 'Maximo 3 servicios en plan gratuito ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 3 servicios. Actualiza a Starter para servicios ilimitados.'
+expected_conversion: 0.35
+weight: 200
+status: true

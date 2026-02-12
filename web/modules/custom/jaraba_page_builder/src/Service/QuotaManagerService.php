@@ -4,6 +4,8 @@ namespace Drupal\jaraba_page_builder\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
+use Drupal\jaraba_billing\Service\PlanValidator;
 
 /**
  * Servicio para gestionar cuotas y límites por plan SaaS.
@@ -21,18 +23,31 @@ class QuotaManagerService
     use StringTranslationTrait;
 
     /**
-     * Servicio de resolución de tenant.
+     * Servicio de resolucion de tenant.
      *
      * @var \Drupal\jaraba_page_builder\Service\TenantResolverService
      */
     protected TenantResolverService $tenantResolver;
 
     /**
-     * Factoría de configuración.
+     * Factoria de configuracion.
      *
      * @var \Drupal\Core\Config\ConfigFactoryInterface
      */
     protected ConfigFactoryInterface $configFactory;
+
+    /**
+     * Validador central de limites de planes SaaS.
+     *
+     * PROPOSITO:
+     * Delega la validacion de limites al servicio centralizado de billing
+     * para mantener coherencia con el resto del ecosistema.
+     * Inyeccion opcional (@?) para evitar dependencia dura si billing
+     * no esta habilitado.
+     *
+     * @var \Drupal\jaraba_billing\Service\PlanValidator|null
+     */
+    protected ?PlanValidator $planValidator;
 
     /**
      * Constructor.
@@ -40,36 +55,76 @@ class QuotaManagerService
      * @param \Drupal\jaraba_page_builder\Service\TenantResolverService $tenant_resolver
      *   Resolver de tenant.
      * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-     *   Factoría de configuración.
+     *   Factoria de configuracion.
+     * @param \Drupal\jaraba_billing\Service\PlanValidator|null $plan_validator
+     *   Validador de planes (opcional, inyectado si jaraba_billing esta activo).
      */
     public function __construct(
         TenantResolverService $tenant_resolver,
-        ConfigFactoryInterface $config_factory
+        ConfigFactoryInterface $config_factory,
+        ?PlanValidator $plan_validator = NULL,
     ) {
         $this->tenantResolver = $tenant_resolver;
         $this->configFactory = $config_factory;
+        $this->planValidator = $plan_validator;
     }
 
     /**
-     * Verifica si el tenant actual puede crear una nueva página.
+     * Verifica si el tenant actual puede crear una nueva pagina.
+     *
+     * LOGICA:
+     * 1. Si PlanValidator esta disponible y el tenant implementa
+     *    TenantInterface, delega la validacion al servicio centralizado
+     *    de billing para mantener coherencia con el ecosistema.
+     * 2. Si no, usa la logica local basada en TenantResolverService
+     *    como fallback (para entornos donde billing no esta activo).
      *
      * @return array
-     *   Array con 'allowed' (bool) y 'message' (string si denegado).
+     *   Array con 'allowed' (bool), 'message' (string si denegado),
+     *   'remaining' (int paginas restantes si permitido).
      */
     public function checkCanCreatePage(): array
     {
         $current_count = $this->tenantResolver->getCurrentTenantPageCount();
+
+        // Delegacion a PlanValidator centralizado (P1-01).
+        if ($this->planValidator) {
+            $tenant = $this->tenantResolver->getCurrentTenant();
+            if ($tenant instanceof TenantInterface) {
+                $result = $this->planValidator->enforceLimit($tenant, 'create_page', [
+                    'current' => $current_count,
+                ]);
+
+                if (!$result['allowed']) {
+                    return [
+                        'allowed' => FALSE,
+                        'message' => $this->t('Has alcanzado el limite de @count paginas para tu plan. <a href="@upgrade">Mejora tu plan</a> para crear mas.', [
+                            '@count' => $result['usage']['limit'] ?? 0,
+                            '@upgrade' => '/upgrade-plan',
+                        ]),
+                    ];
+                }
+
+                $limit = $result['usage']['limit'] ?? -1;
+                return [
+                    'allowed' => TRUE,
+                    'message' => '',
+                    'remaining' => $limit === -1 ? -1 : $limit - $current_count,
+                ];
+            }
+        }
+
+        // Fallback: logica local via TenantResolverService.
         $limit = $this->tenantResolver->getPageLimit();
 
-        // Ilimitado.
         if ($limit === -1) {
-            return ['allowed' => TRUE, 'message' => ''];
+            return ['allowed' => TRUE, 'message' => '', 'remaining' => -1];
         }
 
         if ($current_count >= $limit) {
             return [
                 'allowed' => FALSE,
-                'message' => $this->t('Has alcanzado el límite de @count páginas para tu plan. <a href="@upgrade">Mejora tu plan</a> para crear más.', [
+                'message' => $this->t('Has alcanzado el limite de @count paginas para tu plan. <a href="@upgrade">Mejora tu plan</a> para crear mas.', [
                     '@count' => $limit,
                     '@upgrade' => '/upgrade-plan',
                 ]),
@@ -178,16 +233,31 @@ class QuotaManagerService
     }
 
     /**
-     * Verifica si una funcionalidad específica está disponible.
+     * Verifica si una funcionalidad especifica esta disponible.
+     *
+     * LOGICA:
+     * Si PlanValidator esta disponible, verifica contra el plan del tenant
+     * y sus add-ons activos (via enforceLimit con prefijo 'feature:').
+     * Como fallback, consulta las capacidades locales del plan.
      *
      * @param string $feature
-     *   Nombre de la funcionalidad.
+     *   Nombre de la funcionalidad (ej: 'seo_advanced', 'ab_testing',
+     *   'premium_blocks').
      *
      * @return bool
-     *   TRUE si está disponible.
+     *   TRUE si esta disponible en el plan actual o via add-on.
      */
     public function hasFeature(string $feature): bool
     {
+        // Delegacion a PlanValidator para verificacion plan + add-ons (P1-01).
+        if ($this->planValidator) {
+            $tenant = $this->tenantResolver->getCurrentTenant();
+            if ($tenant instanceof TenantInterface) {
+                return $this->planValidator->hasFeature($tenant, $feature);
+            }
+        }
+
+        // Fallback: capacidades locales hardcodeadas.
         $capabilities = $this->getPlanCapabilities();
         return !empty($capabilities[$feature]);
     }

@@ -1,0 +1,138 @@
+{#
+/**
+ * @file
+ * Parcial reutilizable: Footer global del sitio.
+ *
+ * Variables:
+ *   - footer_config: array con configuración del footer
+ *   - footer_menus: array de menús del footer [{menu, items}]
+ *   - site_config: array con configuración general del sitio
+ *   - social_links: array de redes sociales [{platform, url, icon}]
+ *
+ * Variantes: simple, columns, mega, minimal, cta
+ */
+#}
+
+{% set config = footer_config %}
+{% set type = config.footer_type|default('columns') %}
+
+<footer class="jaraba-footer jaraba-footer--{{ type }}"
+  style="--footer-bg: {{ config.bg_color|default('#1E293B') }}; --footer-text: {{ config.text_color|default('#94A3B8') }}; --footer-accent: {{ config.accent_color|default('#3B82F6') }};"
+  role="contentinfo">
+
+  {# CTA Section (variante cta) #}
+  {% if type == 'cta' and config.cta_title %}
+    <div class="jaraba-footer__cta-section">
+      <div class="jaraba-footer__container">
+        <h2 class="jaraba-footer__cta-title">{{ config.cta_title }}</h2>
+        {% if config.cta_subtitle %}
+          <p class="jaraba-footer__cta-subtitle">{{ config.cta_subtitle }}</p>
+        {% endif %}
+        {% if config.cta_button_text %}
+          <a href="{{ config.cta_button_url|default('#') }}" class="jaraba-footer__cta-btn">
+            {{ config.cta_button_text }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="jaraba-footer__container">
+
+    {# Social links en posición 'top' #}
+    {% if config.show_social and config.social_position == 'top' and social_links|length > 0 %}
+      <div class="jaraba-footer__social jaraba-footer__social--top">
+        {% for link in social_links %}
+          <a href="{{ link.url }}" class="jaraba-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ link.platform }}">
+            <span class="jaraba-footer__social-icon">{{ link.icon|default(link.platform) }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="jaraba-footer__main">
+
+      {# Logo y descripción #}
+      {% if config.show_logo or config.description %}
+        <div class="jaraba-footer__brand">
+          {% if config.show_logo %}
+            {% if config.logo_url %}
+              <img src="{{ config.logo_url }}" alt="{{ site_config.site_name|default('Logo') }}" class="jaraba-footer__logo" loading="lazy">
+            {% else %}
+              <span class="jaraba-footer__logo-text">{{ site_config.site_name|default('Jaraba') }}</span>
+            {% endif %}
+          {% endif %}
+          {% if config.description %}
+            <p class="jaraba-footer__description">{{ config.description }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {# Columnas de menús #}
+      {% if footer_menus|length > 0 and type != 'minimal' %}
+        <div class="jaraba-footer__columns">
+          {% for footer_menu in footer_menus %}
+            <div class="jaraba-footer__column">
+              <h3 class="jaraba-footer__column-title">{{ footer_menu.menu.label }}</h3>
+              <ul class="jaraba-footer__column-list">
+                {% for item in footer_menu.items %}
+                  <li class="jaraba-footer__column-item">
+                    <a href="{{ item.url }}" class="jaraba-footer__column-link"
+                       {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                      {{ item.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Newsletter #}
+      {% if config.show_newsletter %}
+        <div class="jaraba-footer__newsletter">
+          {% if config.newsletter_title %}
+            <h3 class="jaraba-footer__newsletter-title">{{ config.newsletter_title }}</h3>
+          {% endif %}
+          <form class="jaraba-footer__newsletter-form" data-newsletter-form>
+            <input type="email"
+                   class="jaraba-footer__newsletter-input"
+                   placeholder="{{ config.newsletter_placeholder|default('Tu email') }}"
+                   required
+                   aria-label="{% trans %}Email para newsletter{% endtrans %}">
+            <button type="submit" class="jaraba-footer__newsletter-btn">
+              {{ config.newsletter_cta|default('Suscribirme') }}
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+
+    {# Social links en posición 'bottom' #}
+    {% if config.show_social and config.social_position != 'top' and social_links|length > 0 %}
+      <div class="jaraba-footer__social jaraba-footer__social--bottom">
+        {% for link in social_links %}
+          <a href="{{ link.url }}" class="jaraba-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ link.platform }}">
+            <span class="jaraba-footer__social-icon">{{ link.icon|default(link.platform) }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Bottom bar: copyright + legal links #}
+    <div class="jaraba-footer__bottom">
+      <p class="jaraba-footer__copyright">{{ config.copyright_text }}</p>
+
+      {% if config.show_legal_links %}
+        <nav class="jaraba-footer__legal" aria-label="{% trans %}Enlaces legales{% endtrans %}">
+          <a href="/privacidad" class="jaraba-footer__legal-link">{% trans %}Privacidad{% endtrans %}</a>
+          <a href="/terminos" class="jaraba-footer__legal-link">{% trans %}Términos{% endtrans %}</a>
+          <a href="/cookies" class="jaraba-footer__legal-link">{% trans %}Cookies{% endtrans %}</a>
+        </nav>
+      {% endif %}
+    </div>
+
+  </div>
+</footer>

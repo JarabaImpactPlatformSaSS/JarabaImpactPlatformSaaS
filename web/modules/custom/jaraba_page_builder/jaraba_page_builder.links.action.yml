@@ -37,3 +37,10 @@ entity.intention_card.add_form:
   appears_on:
     - entity.intention_card.collection
 
+# P1-05: Publicacion Programada
+entity.scheduled_publish.add_form:
+  route_name: entity.scheduled_publish.add_form
+  title: 'Programar Publicacion'
+  appears_on:
+    - entity.scheduled_publish.collection
+

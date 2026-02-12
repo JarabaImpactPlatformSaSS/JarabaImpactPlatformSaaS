@@ -22,7 +22,7 @@
     Drupal.behaviors.aiContentGenerator = {
         attach: function (context, settings) {
             // Configuración del endpoint.
-            const API_ENDPOINT = '/api/page-builder/generate-content';
+            const API_ENDPOINT = '/api/v1/page-builder/generate-content';
 
             // Tipos de campos que soportan generación IA.
             const SUPPORTED_FIELDS = [

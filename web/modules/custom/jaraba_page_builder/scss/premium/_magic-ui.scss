@@ -1,0 +1,606 @@
+/**
+ * @file
+ * SCSS para bloques premium Magic UI del Page Builder.
+ *
+ * BLOQUES CUBIERTOS:
+ * - Animated Beam (lineas SVG animadas entre nodos)
+ * - Orbit Animation (elementos orbitales concentricos)
+ * - Marquee Logos (carrusel infinito horizontal)
+ * - Animated Background (fondos con gradiente animado)
+ * - Animated Counter (contadores con animacion numeral)
+ * - Bento Grid (layout asimetrico tipo bento box)
+ * - Text Gradient (texto con degradado animado)
+ * - Spotlight Grid (grid con efecto spotlight al hover)
+ * - Particle Hero (hero con particulas en canvas)
+ * - Typewriter Text (efecto maquina de escribir)
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - Dart Sass moderno con @use (no @import)
+ * - Colores exclusivamente via var(--ej-*) con fallback SCSS $ej-*
+ * - Paleta oficial Jaraba: #FF8C42 impulse, #00A9A5 innovation, #233D63 corporate
+ * - prefers-reduced-motion para TODAS las animaciones
+ * - Mobile-first responsive
+ * - WCAG 2.1 AA: focus-visible con --ej-focus-ring-*
+ *
+ * COMPILACION (desde contenedor Docker):
+ * lando ssh -c "cd /app/web/modules/custom/jaraba_page_builder && \
+ *   npx sass scss/premium/_magic-ui.scss:css/premium/magic-ui.css --style=compressed"
+ *
+ * @package jaraba_page_builder
+ * @see docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md
+ */
+
+@use 'sass:color';
+
+// ============================================================================
+// VARIABLES SCSS FALLBACK (paleta oficial Jaraba)
+// ============================================================================
+
+$_ej-color-primary: #FF8C42;
+$_ej-color-secondary: #00A9A5;
+$_ej-color-corporate: #233D63;
+$_ej-color-accent: #FF8C42;
+$_ej-color-accent-dark: color.adjust(#FF8C42, $lightness: -10%);
+$_ej-bg-surface: #FFFFFF;
+$_ej-bg-dark: #1A1A2E;
+$_ej-bg-darker: #16213E;
+$_ej-color-text: #334155;
+$_ej-color-text-inverse: #FFFFFF;
+$_ej-color-border: #E5E7EB;
+$_ej-border-radius: 12px;
+$_ej-focus-ring-color: rgba($_ej-color-primary, 0.4);
+$_ej-focus-ring-width: 3px;
+$_ej-focus-ring-offset: 2px;
+$_ej-transition-normal: 250ms ease;
+
+// ============================================================================
+// ANIMATED BEAM
+// Visualizacion de conexiones entre un nodo central y nodos perifericos
+// mediante lineas SVG animadas con efecto glowing.
+// ============================================================================
+
+.jaraba-animated-beam {
+  padding: 4rem 1rem;
+  min-height: 500px;
+  position: relative;
+
+  &--dark {
+    background: linear-gradient(
+      135deg,
+      var(--ej-bg-dark, #{$_ej-bg-dark}) 0%,
+      var(--ej-bg-darker, #{$_ej-bg-darker}) 100%
+    );
+    color: var(--ej-color-text-inverse, #{$_ej-color-text-inverse});
+  }
+
+  &--light {
+    background: var(--ej-bg-surface, #{$_ej-bg-surface});
+    color: var(--ej-color-text, #{$_ej-color-text});
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  &__visualization {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    margin: 0 auto;
+  }
+
+  &__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  &__center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+  }
+
+  &__center-inner {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      135deg,
+      var(--ej-color-primary, #{$_ej-color-accent}),
+      var(--ej-color-primary-dark, #{$_ej-color-accent-dark})
+    );
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(255, 140, 66, 0.5);
+  }
+
+  &__text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-text-inverse, #{$_ej-color-text-inverse});
+  }
+
+  &__center-label {
+    display: block;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+    font-size: 0.875rem;
+  }
+
+  &__elements {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+
+  &__element {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+
+    @for $i from 0 through 5 {
+      &[data-index="#{$i}"] {
+        transform: translate(-50%, -50%) rotate(#{$i * 60}deg) translateX(150px) rotate(#{$i * -60}deg);
+      }
+    }
+  }
+
+  &__element-inner {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  &__element-label {
+    display: block;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  &__line {
+    stroke-width: 2;
+    opacity: 0.6;
+
+    &--glowing {
+      animation: jaraba-beam-glow 2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes jaraba-beam-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+// ============================================================================
+// ORBIT ANIMATION
+// Elementos que orbitan concentricamente alrededor de un nodo central.
+// ============================================================================
+
+.jaraba-orbit {
+  padding: 4rem 1rem;
+  position: relative;
+
+  &--dark {
+    background: var(--ej-bg-dark, #{$_ej-bg-dark});
+    color: var(--ej-color-text-inverse, #{$_ej-color-text-inverse});
+  }
+
+  &__scene {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 500px;
+    margin: 0 auto;
+  }
+
+  &__center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ej-color-primary, #{$_ej-color-primary});
+    border-radius: 50%;
+  }
+
+  &__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: jaraba-orbit-rotate 20s linear infinite;
+
+    &--1 { width: 200px; height: 200px; margin: -100px 0 0 -100px; }
+    &--2 { width: 300px; height: 300px; margin: -150px 0 0 -150px; animation-duration: 30s; }
+    &--3 { width: 400px; height: 400px; margin: -200px 0 0 -200px; animation-duration: 40s; }
+    &--counter-clockwise { animation-direction: reverse; }
+    &--slow { animation-duration: 40s; }
+    &--fast { animation-duration: 12s; }
+  }
+
+  &__item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+
+  &__content {
+    text-align: center;
+    margin-top: 2rem;
+  }
+}
+
+@keyframes jaraba-orbit-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+// ============================================================================
+// MARQUEE LOGOS
+// Carrusel infinito horizontal de logos de partners/clientes.
+// El JS adapter duplica el contenido para crear loop seamless.
+// ============================================================================
+
+.jaraba-marquee {
+  overflow: hidden;
+  padding: 2rem 0;
+  position: relative;
+
+  &__track {
+    display: flex;
+    animation: jaraba-marquee-scroll 30s linear infinite;
+    width: max-content;
+  }
+
+  &--reverse &__track { animation-direction: reverse; }
+  &--slow &__track { animation-duration: 60s; }
+  &--fast &__track { animation-duration: 15s; }
+
+  &__item {
+    flex-shrink: 0;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__logo {
+    max-height: 48px;
+    width: auto;
+    opacity: 0.6;
+    filter: grayscale(100%);
+    transition: opacity $_ej-transition-normal, filter $_ej-transition-normal;
+
+    &:hover {
+      opacity: 1;
+      filter: grayscale(0%);
+    }
+  }
+
+  // Degradados laterales para efecto fade.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, var(--ej-bg-surface, #{$_ej-bg-surface}), transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, var(--ej-bg-surface, #{$_ej-bg-surface}), transparent);
+  }
+}
+
+@keyframes jaraba-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+// ============================================================================
+// ANIMATED BACKGROUND
+// Fondo con gradiente animado usando colores de la paleta.
+// ============================================================================
+
+.jaraba-animated-bg {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  &__gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      -45deg,
+      var(--ej-color-primary, #{$_ej-color-primary}),
+      var(--ej-color-secondary, #{$_ej-color-secondary}),
+      var(--ej-color-corporate, #{$_ej-color-corporate}),
+      var(--ej-color-primary, #{$_ej-color-primary})
+    );
+    background-size: 400% 400%;
+    animation: jaraba-gradient-shift 15s ease infinite;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    color: var(--ej-color-text-inverse, #{$_ej-color-text-inverse});
+    text-align: center;
+    width: 100%;
+    padding: 2rem 1rem;
+  }
+}
+
+@keyframes jaraba-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// ============================================================================
+// BENTO GRID
+// Layout asimetrico responsive inspirado en bento box japones.
+// ============================================================================
+
+.jaraba-bento-grid {
+  padding: 4rem 1rem;
+
+  &__container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 200px;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    // Mobile: columna unica.
+    @media (max-width: 767px) {
+      grid-template-columns: 1fr;
+      grid-auto-rows: auto;
+    }
+
+    // Tablet: 2 columnas.
+    @media (min-width: 768px) and (max-width: 1023px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__item {
+    background: var(--ej-bg-surface, #{$_ej-bg-surface});
+    border-radius: var(--ej-card-radius, #{$_ej-border-radius});
+    padding: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--ej-border-color, #{$_ej-color-border});
+    transition: box-shadow $_ej-transition-normal;
+
+    &:hover { box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
+
+    &:focus-visible {
+      outline: $_ej-focus-ring-width solid $_ej-focus-ring-color;
+      outline-offset: $_ej-focus-ring-offset;
+    }
+
+    &--wide { grid-column: span 2; }
+    &--tall { grid-row: span 2; }
+    &--featured { grid-column: span 2; grid-row: span 2; }
+
+    // Mobile: sin spans.
+    @media (max-width: 767px) {
+      &--wide,
+      &--tall,
+      &--featured {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TEXT GRADIENT
+// Texto con degradado animado usando colores de la paleta.
+// ============================================================================
+
+.jaraba-text-gradient {
+  padding: 4rem 1rem;
+  text-align: center;
+
+  &__text {
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(
+      135deg,
+      var(--ej-color-primary, #{$_ej-color-primary}),
+      var(--ej-color-secondary, #{$_ej-color-secondary}),
+      var(--ej-color-corporate, #{$_ej-color-corporate})
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: jaraba-text-gradient-shift 5s linear infinite;
+  }
+}
+
+@keyframes jaraba-text-gradient-shift {
+  from { background-position: 0% center; }
+  to { background-position: 200% center; }
+}
+
+// ============================================================================
+// SPOTLIGHT GRID
+// Grid de items con efecto spotlight al hacer hover.
+// ============================================================================
+
+.jaraba-spotlight-grid {
+  padding: 4rem 1rem;
+
+  &__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__item {
+    position: relative;
+    background: var(--ej-bg-surface, #{$_ej-bg-surface});
+    border-radius: var(--ej-card-radius, #{$_ej-border-radius});
+    padding: 2rem;
+    overflow: hidden;
+    border: 1px solid var(--ej-border-color, #{$_ej-color-border});
+    transition: border-color $_ej-transition-normal;
+
+    &:hover {
+      border-color: var(--ej-color-primary, #{$_ej-color-primary});
+    }
+
+    &:focus-visible {
+      outline: $_ej-focus-ring-width solid $_ej-focus-ring-color;
+      outline-offset: $_ej-focus-ring-offset;
+    }
+  }
+}
+
+// ============================================================================
+// PARTICLE HERO
+// Hero con particulas flotantes renderizadas en canvas por JS.
+// ============================================================================
+
+.jaraba-particle-hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ej-bg-dark, #{$_ej-bg-dark});
+  color: var(--ej-color-text-inverse, #{$_ej-color-text-inverse});
+  overflow: hidden;
+
+  &__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+}
+
+// ============================================================================
+// TYPEWRITER TEXT
+// Efecto maquina de escribir con cursor parpadeante.
+// ============================================================================
+
+.jaraba-typewriter {
+  padding: 4rem 1rem;
+
+  &--center { text-align: center; }
+  &--left { text-align: left; }
+
+  &__content {
+    &--large { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 700; }
+    &--hero { font-size: clamp(2rem, 6vw, 4.5rem); font-weight: 800; }
+    &--medium { font-size: clamp(1.25rem, 3vw, 2rem); font-weight: 600; }
+  }
+
+  &__prefix,
+  &__suffix {
+    opacity: 0.8;
+  }
+
+  &__cursor {
+    display: inline-block;
+    margin-left: 2px;
+
+    &--bar {
+      width: 3px;
+      height: 1em;
+      background: currentColor;
+      vertical-align: text-bottom;
+      animation: jaraba-cursor-blink 1s step-end infinite;
+    }
+
+    &--underscore::after {
+      content: '_';
+      animation: jaraba-cursor-blink 1s step-end infinite;
+    }
+  }
+}
+
+@keyframes jaraba-cursor-blink {
+  50% { opacity: 0; }
+}
+
+// ============================================================================
+// ACCESIBILIDAD: prefers-reduced-motion
+// ============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .jaraba-animated-beam__line--glowing,
+  .jaraba-orbit__ring,
+  .jaraba-orbit__item,
+  .jaraba-marquee__track,
+  .jaraba-animated-bg__gradient,
+  .jaraba-text-gradient__text,
+  .jaraba-typewriter__cursor--bar,
+  .jaraba-typewriter__cursor--underscore::after {
+    animation: none;
+  }
+
+  .jaraba-marquee__track {
+    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

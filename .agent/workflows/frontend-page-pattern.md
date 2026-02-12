@@ -207,3 +207,34 @@ La library global `slide-panel` maneja automáticamente la apertura/cierre.
 
 Ver: [slide-panel-modales.md](file:///z:/home/PED/JarabaImpactPlatformSaaS/.agent/workflows/slide-panel-modales.md)
 
+### 9. Canvas 2D Dashboard (HEATMAP-005)
+
+> Aprendizaje 2026-02-12 — Validado en jaraba_heatmap (Dashboard Analytics)
+
+Para dashboards con visualizaciones Canvas 2D (heatmaps, gráficas), seguir el patrón de 3 capas:
+
+1. **Controller** devuelve `#theme` con datos + `#attached` library
+2. **hook_preprocess_html** inyecta body classes (`page-heatmap-analytics`, `dashboard-page`)
+3. **Page template** Twig sin regiones Drupal (Zero Region)
+
+```javascript
+// JS usa Drupal.behaviors + once() + fetch() API para carga asíncrona
+(function (Drupal, once) {
+  Drupal.behaviors.heatmapDashboard = {
+    attach: function (context) {
+      once('heatmap-dashboard', '.heatmap-canvas', context).forEach(function (canvas) {
+        const ctx = canvas.getContext('2d');
+        // Renderizado con gradientes radiales de calor
+        fetch('/api/heatmap/data?' + new URLSearchParams({page: currentPage}))
+          .then(r => r.json())
+          .then(data => renderHeatmap(ctx, data));
+      });
+    }
+  };
+})(Drupal, once);
+```
+
+> [!IMPORTANT]
+> Se usa Canvas 2D vanilla (no React) para coherencia con el stack frontend Drupal behaviors del proyecto.
+> Ver: `docs/tecnicos/aprendizajes/2026-02-12_heatmaps_tracking_phases_1_5.md`
+

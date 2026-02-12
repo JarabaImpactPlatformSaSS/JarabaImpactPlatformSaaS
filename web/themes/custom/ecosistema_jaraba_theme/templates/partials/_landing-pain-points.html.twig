@@ -1,0 +1,40 @@
+{#
+/**
+ * @file _landing-pain-points.html.twig
+ * Parcial reutilizable: Pain Points section (3-4 problemas que resolvemos).
+ *
+ * VARIABLES:
+ * - pain_points: Array de { icon: { category, name }, text: string }
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set items = pain_points|default([]) %}
+
+{% if items|length > 0 %}
+<section class="landing-pain-points" aria-labelledby="pain-points-title">
+  <div class="landing-pain-points__container">
+    <h2 id="pain-points-title" class="landing-pain-points__title">
+      {% trans %}Te suena esto?{% endtrans %}
+    </h2>
+
+    <div class="landing-pain-points__grid">
+      {% for item in items %}
+        <div class="landing-pain-point">
+          <span class="landing-pain-point__icon" aria-hidden="true">
+            {{ jaraba_icon(item.icon.category|default('ui'), item.icon.name|default('alert-circle'), {
+              variant: 'duotone',
+              color: color|default('impulse'),
+              size: 32
+            }) }}
+          </span>
+          <p class="landing-pain-point__text">{{ item.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

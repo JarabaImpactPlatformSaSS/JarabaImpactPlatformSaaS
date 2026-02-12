@@ -1,0 +1,19 @@
+# Links de tareas (tabs) - /admin/content
+
+entity.blog_post.collection:
+  title: 'Blog Posts'
+  route_name: entity.blog_post.collection
+  base_route: system.admin_content
+  weight: 60
+
+entity.blog_category.collection:
+  title: 'Blog Categories'
+  route_name: entity.blog_category.collection
+  base_route: system.admin_content
+  weight: 61
+
+entity.blog_author.collection:
+  title: 'Blog Authors'
+  route_name: entity.blog_author.collection
+  base_route: system.admin_content
+  weight: 62

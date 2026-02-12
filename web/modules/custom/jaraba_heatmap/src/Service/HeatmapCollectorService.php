@@ -2,43 +2,51 @@
 
 namespace Drupal\jaraba_heatmap\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * Servicio para recolección y almacenamiento de eventos de heatmap.
  *
- * Procesa el payload del tracker JavaScript y realiza batch insert
- * en la tabla de eventos raw. Diseñado para alta throughput con
- * mínima latencia.
+ * Procesa el payload del tracker JavaScript y encola los eventos
+ * normalizados para procesamiento asíncrono por HeatmapEventProcessor
+ * QueueWorker. Opcionalmente, puede insertar directamente en BD
+ * cuando la cola está deshabilitada (configuración use_queue).
  *
  * Ref: Doc Técnico #180 - Native Heatmaps System
+ * Ref: Spec 20260130a §4.1
  */
 class HeatmapCollectorService
 {
 
     /**
      * Conexión a base de datos.
-     *
-     * @var \Drupal\Core\Database\Connection
      */
-    protected $database;
+    protected Connection $database;
 
     /**
      * Logger.
-     *
-     * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * State service.
-     *
-     * @var \Drupal\Core\State\StateInterface
      */
-    protected $state;
+    protected StateInterface $state;
+
+    /**
+     * Queue factory.
+     */
+    protected QueueFactory $queueFactory;
+
+    /**
+     * Config factory.
+     */
+    protected ConfigFactoryInterface $configFactory;
 
     /**
      * Constructor.
@@ -49,26 +57,38 @@ class HeatmapCollectorService
      *   Factory de canales de log.
      * @param \Drupal\Core\State\StateInterface $state
      *   Servicio de estado.
+     * @param \Drupal\Core\Queue\QueueFactory $queue_factory
+     *   Factory de colas para encolado asíncrono.
+     * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+     *   Factory de configuración.
      */
     public function __construct(
         Connection $database,
         LoggerChannelFactoryInterface $logger_factory,
-        StateInterface $state
+        StateInterface $state,
+        QueueFactory $queue_factory,
+        ConfigFactoryInterface $config_factory,
     ) {
         $this->database = $database;
         $this->logger = $logger_factory->get('jaraba_heatmap');
         $this->state = $state;
+        $this->queueFactory = $queue_factory;
+        $this->configFactory = $config_factory;
     }
 
     /**
      * Procesa un payload de eventos del tracker.
+     *
+     * Normaliza los eventos del payload y los encola para procesamiento
+     * asíncrono (por defecto) o los inserta directamente en BD si la
+     * configuración use_queue está deshabilitada.
      *
      * @param array $payload
      *   Payload con estructura:
      *   - tenant_id: ID del tenant
      *   - session_id: ID de sesión del visitante
      *   - page: Path de la página
-     *   - viewport: [width, height]
+     *   - viewport: [w, h]
      *   - device: 'desktop', 'tablet', 'mobile'
      *   - events: Array de eventos con campos t, x, y, etc.
      *
@@ -82,7 +102,44 @@ class HeatmapCollectorService
             return 0;
         }
 
-        // Extraer contexto común.
+        // Normalizar eventos del payload crudo.
+        $normalizedEvents = $this->normalizePayload($payload);
+        if (empty($normalizedEvents)) {
+            return 0;
+        }
+
+        $count = count($normalizedEvents);
+
+        // Encolar o insertar directamente según configuración.
+        if ($this->useQueue()) {
+            $queue = $this->queueFactory->get('jaraba_heatmap_events');
+            foreach ($normalizedEvents as $event) {
+                $queue->createItem($event);
+            }
+        }
+        else {
+            $this->insertEvents($normalizedEvents);
+        }
+
+        // Actualizar contador de estado.
+        $total = $this->state->get('jaraba_heatmap.total_events', 0);
+        $this->state->set('jaraba_heatmap.total_events', $total + $count);
+
+        return $count;
+    }
+
+    /**
+     * Normaliza el payload crudo en un array de eventos con campos completos.
+     *
+     * @param array $payload
+     *   Payload del tracker JavaScript.
+     *
+     * @return array
+     *   Array de eventos normalizados listos para inserción o encolado.
+     */
+    protected function normalizePayload(array $payload): array
+    {
+        $events = $payload['events'] ?? [];
         $tenant_id = (int) ($payload['tenant_id'] ?? 0);
         $session_id = $this->sanitizeString($payload['session_id'] ?? '', 64);
         $page_path = $this->sanitizeString($payload['page'] ?? '', 2048);
@@ -91,25 +148,7 @@ class HeatmapCollectorService
         $device_type = $this->normalizeDevice($payload['device'] ?? 'desktop');
         $timestamp = time();
 
-        // Preparar batch insert.
-        $insert_query = $this->database->insert('heatmap_events')
-            ->fields([
-                'tenant_id',
-                'session_id',
-                'page_path',
-                'event_type',
-                'x_percent',
-                'y_pixel',
-                'viewport_width',
-                'viewport_height',
-                'scroll_depth',
-                'element_selector',
-                'element_text',
-                'device_type',
-                'created_at',
-            ]);
-
-        $count = 0;
+        $normalized = [];
         foreach ($events as $event) {
             // Validar tipo de evento.
             $type = $event['t'] ?? '';
@@ -140,7 +179,7 @@ class HeatmapCollectorService
                 $element_text = $this->sanitizeString($event['txt'] ?? '', 100);
             }
 
-            $insert_query->values([
+            $normalized[] = [
                 'tenant_id' => $tenant_id,
                 'session_id' => $session_id,
                 'page_path' => $page_path,
@@ -154,28 +193,65 @@ class HeatmapCollectorService
                 'element_text' => $element_text,
                 'device_type' => $device_type,
                 'created_at' => $timestamp,
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Inserta eventos normalizados directamente en la BD (fallback).
+     *
+     * @param array $normalizedEvents
+     *   Array de eventos normalizados.
+     *
+     * @throws \Exception
+     *   Si falla la inserción en BD.
+     */
+    protected function insertEvents(array $normalizedEvents): void
+    {
+        $insert_query = $this->database->insert('heatmap_events')
+            ->fields([
+                'tenant_id',
+                'session_id',
+                'page_path',
+                'event_type',
+                'x_percent',
+                'y_pixel',
+                'viewport_width',
+                'viewport_height',
+                'scroll_depth',
+                'element_selector',
+                'element_text',
+                'device_type',
+                'created_at',
             ]);
 
-            $count++;
+        foreach ($normalizedEvents as $event) {
+            $insert_query->values($event);
         }
 
-        // Ejecutar batch insert.
-        if ($count > 0) {
-            try {
-                $insert_query->execute();
-
-                // Actualizar contador de estado.
-                $total = $this->state->get('jaraba_heatmap.total_events', 0);
-                $this->state->set('jaraba_heatmap.total_events', $total + $count);
-            } catch (\Exception $e) {
-                $this->logger->error('Error en batch insert de heatmap: @message', [
-                    '@message' => $e->getMessage(),
-                ]);
-                throw $e;
-            }
+        try {
+            $insert_query->execute();
         }
+        catch (\Exception $e) {
+            $this->logger->error('Error en batch insert de heatmap: @message', [
+                '@message' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
 
-        return $count;
+    /**
+     * Determina si se debe usar la cola para procesamiento asíncrono.
+     *
+     * @return bool
+     *   TRUE para encolar (por defecto), FALSE para inserción directa.
+     */
+    protected function useQueue(): bool
+    {
+        $value = $this->configFactory->get('jaraba_heatmap.settings')->get('use_queue');
+        return $value === NULL ? TRUE : (bool) $value;
     }
 
     /**

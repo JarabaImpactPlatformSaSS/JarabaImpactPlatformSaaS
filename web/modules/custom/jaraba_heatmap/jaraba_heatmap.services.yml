@@ -1,20 +1,43 @@
 # Servicios del módulo Jaraba Heatmap
 # Ref: Doc Técnico #180 - Native Heatmaps System
+# Ref: Spec 20260130a §4.1, §7.2
 
 services:
 
-  # Servicio de recolección de eventos del tracker
+  # Canal de log dedicado para el módulo.
+  logger.channel.jaraba_heatmap:
+    parent: logger.channel_base
+    arguments: ['jaraba_heatmap']
+
+  # Servicio de recolección de eventos del tracker.
+  # Normaliza y encola eventos para procesamiento asíncrono por
+  # HeatmapEventProcessor QueueWorker, o inserta directamente
+  # en BD cuando la cola está deshabilitada (config use_queue).
+  # Ref: Spec 20260130a §4.1
   jaraba_heatmap.collector:
     class: Drupal\jaraba_heatmap\Service\HeatmapCollectorService
     arguments:
       - '@database'
       - '@logger.factory'
       - '@state'
+      - '@queue'
+      - '@config.factory'
 
-  # Servicio de agregación diaria para dashboards
+  # Servicio de agregación diaria para dashboards.
   jaraba_heatmap.aggregator:
     class: Drupal\jaraba_heatmap\Service\HeatmapAggregatorService
     arguments:
       - '@database'
       - '@logger.factory'
       - '@config.factory'
+
+  # Servicio de capturas de página para overlay de heatmap.
+  # Captura screenshots con wkhtmltoimage y los almacena en
+  # public://heatmaps/tenant_{id}/ con registro en BD.
+  # Ref: Spec 20260130a §7.2
+  jaraba_heatmap.screenshot:
+    class: Drupal\jaraba_heatmap\Service\HeatmapScreenshotService
+    arguments:
+      - '@database'
+      - '@file_system'
+      - '@logger.channel.jaraba_heatmap'

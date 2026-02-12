@@ -1,0 +1,277 @@
+/**
+ * @file
+ * Estilos del header global.
+ *
+ * Variantes: standard, centered, minimal, mega, transparent.
+ * Funcionalidades: sticky, autohide, topbar.
+ *
+ * Cumple con directrices:
+ * - Variables CSS inyectables var(--ej-*)
+ * - Mobile-first
+ * - BEM naming
+ */
+
+.jaraba-header {
+  position: relative;
+  background: var(--header-bg, #FFFFFF);
+  color: var(--header-text, #1E293B);
+  height: var(--header-height-mobile, 64px);
+  z-index: var(--ej-z-header, 1000);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+  @media (min-width: 1024px) {
+    height: var(--header-height-desktop, 80px);
+  }
+
+  // Sticky behavior.
+  &--sticky {
+    position: sticky;
+    top: 0;
+  }
+
+  // Auto-hide on scroll down.
+  &--autohide {
+    &.is-hidden {
+      transform: translateY(-100%);
+    }
+  }
+
+  // Transparent variant (over hero).
+  &--transparent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    color: #FFFFFF;
+
+    &.is-scrolled {
+      position: sticky;
+      background: var(--header-bg, #FFFFFF);
+      color: var(--header-text, #1E293B);
+      box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    }
+  }
+
+  // Shadow variants.
+  &:not(.jaraba-header--transparent) {
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  }
+
+  // Container.
+  &__container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    max-width: var(--ej-container-max, 1280px);
+    margin: 0 auto;
+    padding: 0 var(--ej-spacing-md, 16px);
+
+    @media (min-width: 1024px) {
+      padding: 0 var(--ej-spacing-lg, 24px);
+    }
+  }
+
+  // Logo.
+  &__logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  &__logo-img {
+    height: auto;
+    object-fit: contain;
+
+    &--mobile {
+      display: block;
+
+      @media (min-width: 1024px) {
+        display: none;
+      }
+    }
+
+    &--desktop {
+      display: none;
+
+      @media (min-width: 1024px) {
+        display: block;
+      }
+    }
+  }
+
+  &__logo-text {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  // Actions container.
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 8px);
+    margin-left: auto;
+
+    @media (min-width: 1024px) {
+      margin-left: var(--ej-spacing-md, 16px);
+    }
+  }
+
+  &__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    border-radius: var(--ej-radius-md, 6px);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--ej-bg-hover, rgba(0, 0, 0, 0.04));
+    }
+  }
+
+  // CTA button.
+  &__cta {
+    display: none;
+    padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-lg, 20px);
+    border-radius: var(--ej-radius-md, 6px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    @media (min-width: 1024px) {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ej-spacing-xs, 4px);
+    }
+
+    &--primary {
+      background: var(--ej-color-primary, #233D63);
+      color: #FFFFFF;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    &--secondary {
+      background: var(--ej-color-secondary, #00A9A5);
+      color: #FFFFFF;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    &--outline {
+      border: 2px solid currentColor;
+      background: transparent;
+
+      &:hover {
+        background: var(--ej-bg-hover, rgba(0, 0, 0, 0.04));
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+
+      &:hover {
+        background: var(--ej-bg-hover, rgba(0, 0, 0, 0.04));
+      }
+    }
+  }
+
+  // Mobile toggle (hamburger).
+  &__mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+
+    @media (min-width: 1024px) {
+      display: none;
+    }
+  }
+
+  &__hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 22px;
+
+    span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      border-radius: 1px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .is-open & {
+      span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      span:nth-child(2) {
+        opacity: 0;
+      }
+      span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+      }
+    }
+  }
+
+  // --- Variantes de layout ---
+
+  // Centered: logo en centro, nav debajo.
+  &--centered {
+    .jaraba-header__container {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .jaraba-header__logo {
+      @media (min-width: 1024px) {
+        flex-basis: 100%;
+        justify-content: center;
+      }
+    }
+
+    .jaraba-nav {
+      @media (min-width: 1024px) {
+        margin: 0 auto;
+      }
+    }
+  }
+
+  // Minimal: solo logo + hamburger, nav siempre colapsada.
+  &--minimal {
+    .jaraba-nav {
+      display: none;
+    }
+
+    .jaraba-header__mobile-toggle {
+      display: flex;
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{#
+/**
+ * @file lead-magnet-calculadora-madurez.html.twig
+ * Lead Magnet: Calculadora de Madurez Digital (Emprendimiento).
+ *
+ * Formulario interactivo multi-paso que evalua la madurez digital
+ * del visitante y genera un score 0-100 con recomendaciones.
+ *
+ * VARIABLES:
+ * - magnet_data.vertical: 'emprendimiento'
+ * - magnet_data.magnet_type: 'calculadora_madurez'
+ * - magnet_data.title: Titulo principal
+ * - magnet_data.subtitle: Subtitulo descriptivo
+ * - magnet_data.icon: { category, name, variant, color }
+ * - magnet_data.questions: Array de preguntas con opciones y scores
+ * - magnet_data.cta_register: { text, url }
+ *
+ * TRACKING:
+ * - lead_magnet_start: Al cargar la pagina
+ * - lead_magnet_complete: Al completar el formulario
+ *
+ * @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
+ */
+#}
+
+{% set data = magnet_data %}
+
+<div class="lead-magnet lead-magnet--calculadora"
+     data-vertical="{{ data.vertical }}"
+     data-magnet-type="{{ data.magnet_type }}"
+     data-track-event="lead_magnet_start"
+     data-track-params='{"vertical":"{{ data.vertical }}","type":"{{ data.magnet_type }}"}'>
+
+  {# === HEADER === #}
+  <div class="lead-magnet__header">
+    <div class="lead-magnet__icon lead-magnet__icon--{{ data.icon.color }}">
+      {{ jaraba_icon(data.icon.category, data.icon.name, {
+        variant: data.icon.variant,
+        size: 48
+      }) }}
+    </div>
+    <h1 class="lead-magnet__title">{{ data.title }}</h1>
+    <p class="lead-magnet__subtitle">{{ data.subtitle }}</p>
+  </div>
+
+  {# === FORMULARIO MULTI-PASO === #}
+  <form class="lead-magnet__form calculadora-form" data-total-questions="{{ data.questions|length }}">
+
+    {# Progreso visual #}
+    <div class="calculadora-form__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ data.questions|length }}" aria-valuenow="0">
+      <div class="calculadora-form__progress-bar"></div>
+      <span class="calculadora-form__progress-text">
+        {% trans %}Pregunta 1 de {{ data.questions|length }}{% endtrans %}
+      </span>
+    </div>
+
+    {# Preguntas #}
+    {% for question in data.questions %}
+      <fieldset class="calculadora-form__step{% if loop.first %} calculadora-form__step--active{% endif %}"
+                data-step="{{ loop.index0 }}"
+                data-question-id="{{ question.id }}"
+                {% if not loop.first %}hidden{% endif %}>
+        <legend class="calculadora-form__question">{{ question.question }}</legend>
+        <div class="calculadora-form__options">
+          {% for option in question.options %}
+            <label class="calculadora-form__option" data-score="{{ option.score }}">
+              <input type="radio"
+                     name="{{ question.id }}"
+                     value="{{ option.score }}"
+                     class="visually-hidden"
+                     required>
+              <span class="calculadora-form__option-card">
+                <span class="calculadora-form__option-label">{{ option.label }}</span>
+                <span class="calculadora-form__option-check" aria-hidden="true"></span>
+              </span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% endfor %}
+
+    {# Pantalla de captura de email #}
+    <fieldset class="calculadora-form__step calculadora-form__step--email" data-step="email" hidden>
+      <legend class="calculadora-form__question">
+        {% trans %}Introduce tu email para ver tu resultado{% endtrans %}
+      </legend>
+      <div class="lead-magnet__email-capture">
+        <label for="lead-magnet-email" class="visually-hidden">{% trans %}Email{% endtrans %}</label>
+        <input type="email"
+               id="lead-magnet-email"
+               name="email"
+               class="lead-magnet__email-input"
+               placeholder="{{ 'tu@email.com'|t }}"
+               required
+               autocomplete="email">
+        <label for="lead-magnet-name" class="visually-hidden">{% trans %}Nombre{% endtrans %}</label>
+        <input type="text"
+               id="lead-magnet-name"
+               name="name"
+               class="lead-magnet__name-input"
+               placeholder="{{ 'Tu nombre (opcional)'|t }}"
+               autocomplete="given-name">
+        <button type="submit" class="lead-magnet__submit btn btn--primary">
+          {% trans %}Ver mi resultado{% endtrans %}
+        </button>
+      </div>
+      <p class="lead-magnet__privacy">
+        {% trans %}Sin spam. Solo tu resultado personalizado.{% endtrans %}
+      </p>
+    </fieldset>
+  </form>
+
+  {# === PANTALLA DE RESULTADO === #}
+  <div class="lead-magnet__result calculadora-result" hidden>
+
+    {# Score circular #}
+    <div class="calculadora-result__score-circle">
+      <svg viewBox="0 0 120 120" class="calculadora-result__svg">
+        <circle cx="60" cy="60" r="54" class="calculadora-result__track"/>
+        <circle cx="60" cy="60" r="54" class="calculadora-result__progress"
+                stroke-dasharray="339.29" stroke-dashoffset="339.29"/>
+      </svg>
+      <div class="calculadora-result__score-inner">
+        <span class="calculadora-result__score-value">0</span>
+        <span class="calculadora-result__score-label">/100</span>
+      </div>
+    </div>
+
+    {# Nivel #}
+    <h2 class="calculadora-result__level"></h2>
+    <p class="calculadora-result__description"></p>
+
+    {# Recomendaciones #}
+    <div class="calculadora-result__recommendations">
+      <h3>{% trans %}Tus proximos pasos{% endtrans %}</h3>
+      <ul class="calculadora-result__recommendations-list"></ul>
+    </div>
+
+    {# CTA Registro #}
+    <div class="lead-magnet__cta">
+      <a href="{{ data.cta_register.url }}" class="btn btn--primary btn--lg"
+         data-track-cta="register_{{ data.magnet_type }}"
+         data-track-position="lead_magnet_result">
+        {{ data.cta_register.text }}
+      </a>
+      <p class="lead-magnet__cta-hint">
+        {% trans %}Plan gratuito, sin tarjeta de credito{% endtrans %}
+      </p>
+    </div>
+  </div>
+</div>

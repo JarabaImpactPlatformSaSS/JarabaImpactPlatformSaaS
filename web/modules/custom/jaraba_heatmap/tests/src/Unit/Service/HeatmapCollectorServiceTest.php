@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_heatmap\Unit\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Insert;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Queue\QueueInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\jaraba_heatmap\Service\HeatmapCollectorService;
 use PHPUnit\Framework\TestCase;
@@ -22,36 +26,36 @@ class HeatmapCollectorServiceTest extends TestCase {
 
   /**
    * The service under test.
-   *
-   * @var \Drupal\jaraba_heatmap\Service\HeatmapCollectorService
    */
   protected HeatmapCollectorService $service;
 
   /**
    * Mocked database connection.
-   *
-   * @var \Drupal\Core\Database\Connection|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $database;
 
   /**
    * Mocked logger.
-   *
-   * @var \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $logger;
 
   /**
    * Mocked state service.
-   *
-   * @var \Drupal\Core\State\StateInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $state;
 
   /**
+   * Mocked queue factory.
+   */
+  protected $queueFactory;
+
+  /**
+   * Mocked config factory.
+   */
+  protected $configFactory;
+
+  /**
    * Mocked insert query.
-   *
-   * @var \Drupal\Core\Database\Query\Insert|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $insertQuery;
 
@@ -64,6 +68,8 @@ class HeatmapCollectorServiceTest extends TestCase {
     $this->database = $this->createMock(Connection::class);
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->state = $this->createMock(StateInterface::class);
+    $this->queueFactory = $this->createMock(QueueFactory::class);
+    $this->configFactory = $this->createMock(ConfigFactoryInterface::class);
 
     $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
     $loggerFactory->method('get')
@@ -80,10 +86,21 @@ class HeatmapCollectorServiceTest extends TestCase {
       ->with('heatmap_events')
       ->willReturn($this->insertQuery);
 
+    // Config mock: use_queue = FALSE para tests de inserción directa.
+    $config = $this->createMock(ImmutableConfig::class);
+    $config->method('get')
+      ->with('use_queue')
+      ->willReturn(FALSE);
+    $this->configFactory->method('get')
+      ->with('jaraba_heatmap.settings')
+      ->willReturn($config);
+
     $this->service = new HeatmapCollectorService(
       $this->database,
       $loggerFactory,
       $this->state,
+      $this->queueFactory,
+      $this->configFactory,
     );
   }
 
@@ -184,7 +201,16 @@ class HeatmapCollectorServiceTest extends TestCase {
     $state = $this->createMock(StateInterface::class);
     $state->method('get')->willReturn(0);
 
-    $service = new HeatmapCollectorService($database, $loggerFactory, $state);
+    // Config: use_queue = FALSE para inserción directa.
+    $config = $this->createMock(ImmutableConfig::class);
+    $config->method('get')->with('use_queue')->willReturn(FALSE);
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')->willReturn($config);
+
+    $service = new HeatmapCollectorService(
+      $database, $loggerFactory, $state,
+      $this->queueFactory, $configFactory,
+    );
 
     $payload = [
       'tenant_id' => 1,
@@ -231,7 +257,16 @@ class HeatmapCollectorServiceTest extends TestCase {
     $state = $this->createMock(StateInterface::class);
     $state->method('get')->willReturn(0);
 
-    $service = new HeatmapCollectorService($database, $loggerFactory, $state);
+    // Config: use_queue = FALSE para inserción directa.
+    $config = $this->createMock(ImmutableConfig::class);
+    $config->method('get')->with('use_queue')->willReturn(FALSE);
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')->willReturn($config);
+
+    $service = new HeatmapCollectorService(
+      $database, $loggerFactory, $state,
+      $this->queueFactory, $configFactory,
+    );
 
     $payload = [
       'tenant_id' => 1,
@@ -252,8 +287,6 @@ class HeatmapCollectorServiceTest extends TestCase {
 
   /**
    * Tests normalizeDevice returns 'desktop' for an unknown device.
-   *
-   * Uses reflection to access the protected method.
    *
    * @covers ::normalizeDevice
    */
@@ -281,8 +314,6 @@ class HeatmapCollectorServiceTest extends TestCase {
   /**
    * Tests sanitizeString truncates a string exceeding max_length.
    *
-   * Uses reflection to access the protected method.
-   *
    * @covers ::sanitizeString
    */
   public function testSanitizeStringTruncates(): void {
@@ -294,6 +325,98 @@ class HeatmapCollectorServiceTest extends TestCase {
 
     $this->assertSame(50, mb_strlen($result));
     $this->assertSame(str_repeat('a', 50), $result);
+  }
+
+  /**
+   * Tests that events are enqueued when use_queue is TRUE.
+   *
+   * @covers ::processEvents
+   */
+  public function testProcessEventsEnqueuesWhenConfigEnabled(): void {
+    // Config: use_queue = TRUE (default).
+    $config = $this->createMock(ImmutableConfig::class);
+    $config->method('get')->with('use_queue')->willReturn(TRUE);
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')->willReturn($config);
+
+    $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
+    $loggerFactory->method('get')->willReturn($this->logger);
+
+    $state = $this->createMock(StateInterface::class);
+    $state->method('get')->willReturn(0);
+
+    // Mock de la cola: verificar que createItem se llama 2 veces.
+    $queue = $this->createMock(QueueInterface::class);
+    $queue->expects($this->exactly(2))->method('createItem');
+
+    $queueFactory = $this->createMock(QueueFactory::class);
+    $queueFactory->method('get')
+      ->with('jaraba_heatmap_events')
+      ->willReturn($queue);
+
+    $service = new HeatmapCollectorService(
+      $this->database, $loggerFactory, $state,
+      $queueFactory, $configFactory,
+    );
+
+    $payload = [
+      'tenant_id' => 1,
+      'session_id' => 'abc123',
+      'page' => '/test',
+      'viewport' => ['w' => 1280, 'h' => 900],
+      'device' => 'desktop',
+      'events' => [
+        ['t' => 'click', 'x' => 100, 'y' => 200, 'el' => '.btn', 'txt' => 'OK'],
+        ['t' => 'scroll', 'x' => 0, 'y' => 0, 'd' => 50],
+      ],
+    ];
+
+    $result = $service->processEvents($payload);
+    $this->assertSame(2, $result);
+  }
+
+  /**
+   * Tests that useQueue defaults to TRUE when config key is missing.
+   *
+   * @covers ::useQueue
+   */
+  public function testUseQueueDefaultsToTrue(): void {
+    // Config: use_queue no definido (NULL).
+    $config = $this->createMock(ImmutableConfig::class);
+    $config->method('get')->with('use_queue')->willReturn(NULL);
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')->willReturn($config);
+
+    $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
+    $loggerFactory->method('get')->willReturn($this->logger);
+
+    $state = $this->createMock(StateInterface::class);
+    $state->method('get')->willReturn(0);
+
+    // La cola DEBE ser llamada (default = TRUE).
+    $queue = $this->createMock(QueueInterface::class);
+    $queue->expects($this->once())->method('createItem');
+
+    $queueFactory = $this->createMock(QueueFactory::class);
+    $queueFactory->method('get')->willReturn($queue);
+
+    $service = new HeatmapCollectorService(
+      $this->database, $loggerFactory, $state,
+      $queueFactory, $configFactory,
+    );
+
+    $payload = [
+      'tenant_id' => 1,
+      'session_id' => 's1',
+      'page' => '/test',
+      'viewport' => ['w' => 1280, 'h' => 900],
+      'device' => 'desktop',
+      'events' => [
+        ['t' => 'click', 'x' => 10, 'y' => 20, 'el' => 'a', 'txt' => 'x'],
+      ],
+    ];
+
+    $service->processEvents($payload);
   }
 
 }

@@ -87,9 +87,104 @@
                         case 'collapse-all':
                             this.collapseAll();
                             break;
+                        case 'bulk-publish':
+                            this.bulkUpdateStatus('published');
+                            break;
+                        case 'bulk-draft':
+                            this.bulkUpdateStatus('draft');
+                            break;
+                        case 'bulk-archive':
+                            this.bulkUpdateStatus('archived');
+                            break;
+                        case 'select-node':
+                            this.toggleNodeSelection(actionBtn);
+                            break;
                     }
                 }
             });
+
+            // Inicializar selección bulk.
+            this.selectedNodes = new Set();
+        }
+
+        /**
+         * Alterna la selección de un nodo para operaciones bulk.
+         */
+        toggleNodeSelection(button) {
+            const nodeId = button.dataset.nodeId;
+            const item = button.closest('.site-tree__item');
+
+            if (this.selectedNodes.has(nodeId)) {
+                this.selectedNodes.delete(nodeId);
+                item.classList.remove('is-selected');
+                button.setAttribute('aria-pressed', 'false');
+            } else {
+                this.selectedNodes.add(nodeId);
+                item.classList.add('is-selected');
+                button.setAttribute('aria-pressed', 'true');
+            }
+
+            this.updateBulkActionsVisibility();
+        }
+
+        /**
+         * Muestra/oculta los botones de acciones bulk.
+         */
+        updateBulkActionsVisibility() {
+            const bulkBar = this.element.querySelector('[data-bulk-actions]');
+            const countEl = this.element.querySelector('[data-bulk-count]');
+
+            if (bulkBar) {
+                bulkBar.hidden = this.selectedNodes.size === 0;
+            }
+            if (countEl) {
+                countEl.textContent = this.selectedNodes.size;
+            }
+        }
+
+        /**
+         * Actualiza el estado de los nodos seleccionados en bloque.
+         */
+        async bulkUpdateStatus(newStatus) {
+            if (this.selectedNodes.size === 0) {
+                return;
+            }
+
+            const statusLabels = {
+                'published': Drupal.t('publicar'),
+                'draft': Drupal.t('pasar a borrador'),
+                'archived': Drupal.t('archivar'),
+            };
+
+            const confirmMsg = Drupal.t('¿@action @count páginas seleccionadas?', {
+                '@action': statusLabels[newStatus] || newStatus,
+                '@count': this.selectedNodes.size,
+            });
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            this.setStatus('saving');
+
+            try {
+                const response = await this.apiCall('POST', '/pages/bulk-status', {
+                    node_ids: Array.from(this.selectedNodes).map(Number),
+                    status: newStatus,
+                });
+
+                if (response.success) {
+                    this.setStatus('saved');
+                    this.selectedNodes.clear();
+                    window.location.reload();
+                } else {
+                    this.setStatus('error');
+                    alert(response.error || Drupal.t('Error al actualizar'));
+                }
+            } catch (error) {
+                this.setStatus('error');
+                console.error('Bulk update error:', error);
+            }
         }
 
         /**
@@ -198,20 +293,20 @@
 
         /**
          * Abre el panel de edición para un nodo.
+         *
+         * Delegado al sistema global de slide-panel via data-slide-panel-url.
+         * Este método se mantiene como fallback para programmatic access.
          */
-        async editNode(nodeId) {
-            const panel = document.getElementById('page-edit-panel');
-            if (!panel) return;
+        editNode(nodeId) {
+            const editUrl = `/admin/structure/site-builder/tree/${nodeId}/edit-ajax`;
+            const title = Drupal.t('Editar nodo');
 
-            // TODO: Cargar formulario de edición vía AJAX
-            const content = panel.querySelector('[data-panel-content]');
-            content.innerHTML = `<p>${Drupal.t('Cargando...')}</p>`;
-
-            panel.hidden = false;
-            document.body.classList.add('slide-panel-open');
-
-            // Focus en el panel
-            panel.querySelector('.slide-panel__content').focus();
+            // Usar el sistema global de slide-panel si está disponible.
+            if (Drupal.behaviors.slidePanel && Drupal.behaviors.slidePanel.open) {
+                Drupal.behaviors.slidePanel.open(editUrl, title);
+            } else {
+                window.location.href = `/admin/structure/site-builder/tree/${nodeId}/edit`;
+            }
         }
 
         /**

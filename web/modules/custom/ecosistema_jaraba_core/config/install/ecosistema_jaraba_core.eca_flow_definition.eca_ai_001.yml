@@ -1,0 +1,11 @@
+id: eca_ai_001
+label: 'Quality Evaluation'
+description: 'Tras cada respuesta generada por un agente IA, se ejecuta evaluacion automatica LLM-as-Judge con 5 criterios (relevancia, precision, tono, completitud, seguridad) y se registra el score para observabilidad.'
+domain: AI
+trigger_event: 'post_ai_response'
+module: jaraba_ai_agents
+hook_function: jaraba_ai_agents_post_response_evaluate
+spec_reference: 160_AI_Agents
+implementation_status: implemented
+weight: 80
+status: true

@@ -71,3 +71,11 @@ entity.experiment_variant.settings:
   parent: system.admin_structure
   weight: 41
 
+# P1-05: Publicacion Programada - Double Navigation Pattern
+entity.scheduled_publish.settings:
+  title: 'Publicaciones Programadas'
+  description: 'Configurar campos de Publicaciones Programadas.'
+  route_name: entity.scheduled_publish.settings
+  parent: system.admin_structure
+  weight: 42
+

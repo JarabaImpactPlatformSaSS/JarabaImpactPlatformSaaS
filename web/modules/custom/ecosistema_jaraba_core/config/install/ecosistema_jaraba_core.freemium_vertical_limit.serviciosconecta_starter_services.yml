@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_services
+label: 'ServiciosConecta Starter: Servicios'
+vertical: serviciosconecta
+plan: starter
+feature_key: services
+limit_value: -1
+description: 'Servicios ilimitados en plan Starter ServiciosConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 201
+status: true

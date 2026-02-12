@@ -1,0 +1,170 @@
+/**
+ * @file
+ * Estilos para el visor de heatmaps.
+ *
+ * Refactorizado del CSS compilado original. Todos los colores
+ * usan tokens CSS inyectables (--ej-*) para coherencia con el
+ * sistema de diseño federado.
+ *
+ * @ingroup jaraba_heatmap
+ */
+
+// ============================================================================
+// Contenedor principal del visor
+// ============================================================================
+.heatmap-viewer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--ej-heatmap-bg, #f8f9fa);
+  border-radius: var(--ej-heatmap-radius, 8px);
+  border: 1px solid var(--ej-heatmap-border, #e9ecef);
+}
+
+// ============================================================================
+// Panel de controles (filtros)
+// ============================================================================
+.heatmap-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-heatmap-radius, 8px);
+  box-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.heatmap-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 150px;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-heatmap-text, #495057);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// ============================================================================
+// Select dropdown
+// ============================================================================
+.heatmap-select {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ej-heatmap-text, #495057);
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid var(--ej-heatmap-border, #e9ecef);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    border-color: var(--ej-heatmap-accent, #0d6efd);
+    outline: none;
+  }
+
+  // WCAG 2.1 AA: indicador de foco visible con teclado.
+  &:focus-visible {
+    outline: 2px solid var(--ej-heatmap-accent, #0d6efd);
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================================
+// Botón de acción
+// ============================================================================
+.heatmap-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-text-on-primary, #fff);
+  background: var(--ej-heatmap-accent, #0d6efd);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  // WCAG 2.1 AA: indicador de foco visible con teclado.
+  &:focus-visible {
+    outline: 2px solid var(--ej-heatmap-accent, #0d6efd);
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================================
+// Canvas wrapper
+// ============================================================================
+.heatmap-canvas-wrapper {
+  position: relative;
+  overflow: auto;
+  max-height: 600px;
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-heatmap-radius, 8px);
+  box-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.heatmap-canvas {
+  display: block;
+  max-width: 100%;
+}
+
+// ============================================================================
+// Estado vacío
+// ============================================================================
+.heatmap-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+  color: var(--ej-heatmap-text, #495057);
+  font-size: 1rem;
+  text-align: center;
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-heatmap-radius, 8px);
+  border: 2px dashed var(--ej-heatmap-border, #e9ecef);
+}
+
+// ============================================================================
+// Responsive: mobile-first
+// ============================================================================
+@media (max-width: 768px) {
+  .heatmap-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .heatmap-control-group {
+    min-width: 100%;
+  }
+
+  .heatmap-canvas-wrapper {
+    max-height: 400px;
+  }
+}
+
+// ============================================================================
+// Accesibilidad: prefers-reduced-motion (WCAG 2.1 AA)
+// ============================================================================
+@media (prefers-reduced-motion: reduce) {
+
+  .heatmap-select,
+  .heatmap-btn {
+    transition: none;
+  }
+}

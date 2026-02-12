@@ -1,0 +1,11 @@
+id: comercioconecta_free_flash_offers_active
+label: 'ComercioConecta Free: Ofertas flash activas'
+vertical: comercioconecta
+plan: free
+feature_key: flash_offers_active
+limit_value: 1
+description: '1 oferta flash activa en plan gratuito ComercioConecta.'
+upgrade_message: 'Solo puedes tener 1 oferta flash activa. Actualiza a Starter para hasta 10.'
+expected_conversion: 0.28
+weight: 120
+status: true

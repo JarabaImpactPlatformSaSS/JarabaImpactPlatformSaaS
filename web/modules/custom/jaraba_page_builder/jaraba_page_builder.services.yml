@@ -1,4 +1,8 @@
 services:
+  logger.channel.jaraba_page_builder:
+    parent: logger.channel_base
+    arguments: ['jaraba_page_builder']
+
   # Generador de formularios dinámicos desde JSON Schema.
   jaraba_page_builder.form_builder:
     class: Drupal\jaraba_page_builder\Service\FormBuilderService
@@ -10,12 +14,14 @@ services:
       - '@current_user'
       - '@?group.membership_loader'
 
-  # Gestor de límites y cuotas por plan.
+  # Gestor de limites y cuotas por plan.
+  # P1-01: Integrado con PlanValidator centralizado de billing.
   jaraba_page_builder.quota_manager:
     class: Drupal\jaraba_page_builder\Service\QuotaManagerService
     arguments:
       - '@jaraba_page_builder.tenant_resolver'
       - '@config.factory'
+      - '@?jaraba_billing.plan_validator'
 
   # Servicio para obtener datos de homepage.
   jaraba_page_builder.homepage_data:
@@ -101,3 +107,43 @@ services:
     class: Drupal\jaraba_page_builder\Service\AiTemplateGeneratorService
     arguments:
       - '@logger.factory'
+
+  # Validador de accesibilidad WCAG — P0-02 Cierre de Gaps 20260126.
+  # Valida HTML contra reglas ARIA y WCAG 2.1 AA.
+  # @see docs/implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260126_v1.md P0-02
+  jaraba_page_builder.accessibility_validator:
+    class: Drupal\jaraba_page_builder\Service\AccessibilityValidatorService
+    arguments:
+      - '@logger.channel.jaraba_page_builder'
+    calls:
+      - [setStringTranslation, ['@string_translation']]
+
+  # Redirect 301 de rutas API legacy (/api/*) al formato versionado (/api/v1/*).
+  # P1-03: Backward compatibility para clientes que aun usen rutas antiguas.
+  jaraba_page_builder.legacy_api_redirect:
+    class: Drupal\jaraba_page_builder\EventSubscriber\LegacyApiRedirectSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  # Subscriber de transiciones del workflow editorial i18n.
+  # P2-03: Notifica a revisores y autores en cambios de estado.
+  jaraba_page_builder.workflow_transition_subscriber:
+    class: Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_page_builder'
+      - '@queue'
+      - '@current_user'
+    tags:
+      - { name: event_subscriber }
+
+  # Procesador de publicaciones programadas del Page Builder.
+  # P1-05: Ejecuta acciones publish/unpublish cuando llega la fecha.
+  # Llamado desde hook_cron() del modulo.
+  jaraba_page_builder.scheduled_publish:
+    class: Drupal\jaraba_page_builder\Service\ScheduledPublishService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_page_builder'
+    calls:
+      - [setStringTranslation, ['@string_translation']]

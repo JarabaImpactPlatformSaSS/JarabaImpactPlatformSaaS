@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Install, update y uninstall del modulo Blog.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_blog_install(): void {
+  // Instalar entidades del blog.
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_types = ['blog_post', 'blog_category', 'blog_author'];
+
+  foreach ($entity_types as $entity_type_id) {
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+    if ($entity_type) {
+      $entity_definition_update_manager->installEntityType($entity_type);
+    }
+  }
+
+  \Drupal::messenger()->addStatus(t('Blog module installed. Three entity types created: blog_post, blog_category, blog_author.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_blog_uninstall(): void {
+  // Eliminar entidades del blog.
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_types = ['blog_post', 'blog_category', 'blog_author'];
+
+  foreach ($entity_types as $entity_type_id) {
+    $entity_type = $entity_definition_update_manager->getEntityType($entity_type_id);
+    if ($entity_type) {
+      $entity_definition_update_manager->uninstallEntityType($entity_type);
+    }
+  }
+}

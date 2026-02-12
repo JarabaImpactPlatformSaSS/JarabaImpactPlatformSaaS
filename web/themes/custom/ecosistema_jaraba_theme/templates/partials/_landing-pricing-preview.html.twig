@@ -1,0 +1,63 @@
+{#
+/**
+ * @file _landing-pricing-preview.html.twig
+ * Parcial reutilizable: Vista previa de precios.
+ *
+ * VARIABLES:
+ * - pricing.headline: Titulo de la seccion
+ * - pricing.from_price: Precio desde (ej. "9.99")
+ * - pricing.currency: Moneda (default: EUR)
+ * - pricing.period: Periodo (default: mes)
+ * - pricing.cta_text: Texto del CTA
+ * - pricing.cta_url: URL a pagina de planes
+ * - pricing.features_preview: Array de strings con features incluidas
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set price = pricing|default({}) %}
+
+{% if price.from_price is defined %}
+<section class="landing-pricing" aria-labelledby="pricing-title">
+  <div class="landing-pricing__container">
+    <h2 id="pricing-title" class="landing-pricing__title">
+      {{ price.headline|default('Planes adaptados a ti'|t) }}
+    </h2>
+
+    <div class="landing-pricing__card">
+      <div class="landing-pricing__price-block">
+        <span class="landing-pricing__from">{% trans %}Desde{% endtrans %}</span>
+        <span class="landing-pricing__amount">{{ price.from_price }}<span class="landing-pricing__currency">{{ price.currency|default('EUR') }}</span></span>
+        <span class="landing-pricing__period">/{{ price.period|default('mes'|t) }}</span>
+      </div>
+
+      {% if price.features_preview is defined and price.features_preview|length > 0 %}
+        <ul class="landing-pricing__features" role="list">
+          {% for feature in price.features_preview %}
+            <li>
+              <span aria-hidden="true">
+                {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: color|default('impulse'), size: 16 }) }}
+              </span>
+              {{ feature }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <p class="landing-pricing__free-note">
+        {% trans %}Plan gratuito disponible. Sin tarjeta de credito.{% endtrans %}
+      </p>
+
+      <a href="{{ price.cta_url|default('/planes') }}"
+         class="btn btn--primary btn--lg"
+         data-track-cta="pricing_{{ vertical_key|default('') }}"
+         data-track-position="landing_pricing">
+        {{ price.cta_text|default('Ver todos los planes'|t) }}
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}

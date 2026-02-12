@@ -1,0 +1,130 @@
+{#
+/**
+ * @file
+ * blog-detail.html.twig - Detalle de entrada del blog.
+ *
+ * Variables:
+ *   - post: Entidad BlogPost
+ *   - author: Entidad BlogAuthor
+ *   - category: Entidad BlogCategory
+ *   - related_posts: Array de posts relacionados
+ *   - prev_post: Post anterior
+ *   - next_post: Post siguiente
+ *   - seo: Datos SEO (json_ld, meta_tags, etc.)
+ */
+#}
+<article class="blog-detail" itemscope itemtype="https://schema.org/{{ post.get('schema_type').value|default('BlogPosting') }}">
+  {# Breadcrumbs #}
+  <nav class="blog-detail__breadcrumbs" aria-label="{% trans %}Breadcrumbs{% endtrans %}">
+    <ol class="breadcrumbs">
+      <li class="breadcrumbs__item">
+        <a href="/blog">{% trans %}Blog{% endtrans %}</a>
+      </li>
+      {% if category %}
+        <li class="breadcrumbs__item">
+          <a href="/blog/categoria/{{ category.getSlug() }}">{{ category.getName() }}</a>
+        </li>
+      {% endif %}
+      <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">
+        {{ post.getTitle() }}
+      </li>
+    </ol>
+  </nav>
+
+  {# Header del post #}
+  <header class="blog-detail__header">
+    {% if category %}
+      <a href="/blog/categoria/{{ category.getSlug() }}"
+         class="blog-detail__category badge"
+         style="background-color: {{ category.getColor() }}">
+        {{ category.getName() }}
+      </a>
+    {% endif %}
+
+    <h1 class="blog-detail__title" itemprop="headline">{{ post.getTitle() }}</h1>
+
+    <div class="blog-detail__meta">
+      {% if author %}
+        <span class="blog-detail__author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <span itemprop="name">{{ author.getDisplayName() }}</span>
+        </span>
+      {% endif %}
+
+      {% if post.get('published_at').value %}
+        <time class="blog-detail__date" itemprop="datePublished"
+              datetime="{{ post.get('published_at').value }}">
+          {{ post.get('published_at').value|date('d M Y') }}
+        </time>
+      {% endif %}
+
+      {% if post.getReadingTime() > 0 %}
+        <span class="blog-detail__reading-time">
+          {{ post.getReadingTime() }} min {% trans %}de lectura{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  {# Imagen destacada #}
+  {% if post.get('featured_image').entity %}
+    <figure class="blog-detail__featured-image">
+      <img src="{{ file_url(post.get('featured_image').entity.getFileUri()) }}"
+           alt="{{ post.get('featured_image_alt').value|default(post.getTitle()) }}"
+           loading="lazy"
+           itemprop="image" />
+    </figure>
+  {% endif %}
+
+  {# Contenido #}
+  <div class="blog-detail__body" itemprop="articleBody">
+    {{ post.get('body').value|raw }}
+  </div>
+
+  {# Tags #}
+  {% set tags = post.getTagsArray() %}
+  {% if tags|length > 0 %}
+    <footer class="blog-detail__tags">
+      <span class="blog-detail__tags-label">{% trans %}Etiquetas:{% endtrans %}</span>
+      {% for tag in tags %}
+        <span class="blog-detail__tag badge badge--outline">{{ tag }}</span>
+      {% endfor %}
+    </footer>
+  {% endif %}
+
+  {# Botones de compartir #}
+  {% include '@jaraba_blog/partials/blog-share-buttons.html.twig' with {
+    url: seo.canonical|default('/blog/' ~ post.getSlug()),
+    title: post.getTitle(),
+  } only %}
+
+  {# Bio del autor #}
+  {% if author %}
+    {% include '@jaraba_blog/partials/blog-author-bio.html.twig' with {
+      author: author,
+      posts_count: author.getPostsCount(),
+    } only %}
+  {% endif %}
+
+  {# Navegacion prev/next #}
+  <nav class="blog-detail__navigation" aria-label="{% trans %}Navegacion entre entradas{% endtrans %}">
+    {% if prev_post %}
+      <a href="/blog/{{ prev_post.getSlug() }}" class="blog-detail__nav-link blog-detail__nav-link--prev">
+        <span class="blog-detail__nav-label">{% trans %}Anterior{% endtrans %}</span>
+        <span class="blog-detail__nav-title">{{ prev_post.getTitle() }}</span>
+      </a>
+    {% endif %}
+    {% if next_post %}
+      <a href="/blog/{{ next_post.getSlug() }}" class="blog-detail__nav-link blog-detail__nav-link--next">
+        <span class="blog-detail__nav-label">{% trans %}Siguiente{% endtrans %}</span>
+        <span class="blog-detail__nav-title">{{ next_post.getTitle() }}</span>
+      </a>
+    {% endif %}
+  </nav>
+
+  {# Posts relacionados #}
+  {% if related_posts|length > 0 %}
+    {% include '@jaraba_blog/partials/blog-related-posts.html.twig' with {
+      posts: related_posts,
+    } only %}
+  {% endif %}
+</article>

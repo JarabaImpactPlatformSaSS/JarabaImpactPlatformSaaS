@@ -1,0 +1,61 @@
+{#
+/**
+ * @file _landing-social-proof.html.twig
+ * Parcial reutilizable: Social Proof (testimonios + metricas de impacto).
+ *
+ * VARIABLES:
+ * - social_proof.testimonials: Array de { quote, author, role, vertical }
+ * - social_proof.metrics: Array de { value, label } (ej. "500+", "Productores")
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set proof = social_proof|default({}) %}
+{% set testimonials = proof.testimonials|default([]) %}
+{% set metrics = proof.metrics|default([]) %}
+
+{% if testimonials|length > 0 or metrics|length > 0 %}
+<section class="landing-social-proof" aria-labelledby="social-proof-title">
+  <div class="landing-social-proof__container">
+
+    {# Metricas de impacto #}
+    {% if metrics|length > 0 %}
+      <div class="landing-social-proof__metrics">
+        {% for metric in metrics %}
+          <div class="landing-metric">
+            <span class="landing-metric__value">{{ metric.value }}</span>
+            <span class="landing-metric__label">{{ metric.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Testimonios #}
+    {% if testimonials|length > 0 %}
+      <h2 id="social-proof-title" class="landing-social-proof__title">
+        {% trans %}Lo que dicen nuestros usuarios{% endtrans %}
+      </h2>
+
+      <div class="landing-social-proof__testimonials">
+        {% for testimonial in testimonials %}
+          <blockquote class="landing-testimonial">
+            <p class="landing-testimonial__quote">{{ testimonial.quote }}</p>
+            <footer class="landing-testimonial__author">
+              <cite>
+                <strong>{{ testimonial.author }}</strong>
+                {% if testimonial.role is defined %}
+                  <span class="landing-testimonial__role">{{ testimonial.role }}</span>
+                {% endif %}
+              </cite>
+            </footer>
+          </blockquote>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endif %}

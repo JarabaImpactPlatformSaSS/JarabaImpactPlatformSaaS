@@ -1,0 +1,13 @@
+jaraba_heatmap.analytics_dashboard:
+  title: 'Heatmap Analytics'
+  description: 'Dashboard de análisis de heatmaps del tenant.'
+  route_name: jaraba_heatmap.analytics_dashboard
+  parent: system.admin_content
+  weight: 40
+
+jaraba_heatmap.settings:
+  title: 'Heatmap Settings'
+  description: 'Configuración del sistema de heatmaps.'
+  route_name: jaraba_heatmap.settings
+  parent: system.admin_structure
+  weight: 40

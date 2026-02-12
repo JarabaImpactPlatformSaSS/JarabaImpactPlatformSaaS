@@ -302,11 +302,71 @@
     }
 }
 
+// Checkbox de selección bulk en nodos
+.site-tree__select {
+    background: none;
+    border: none;
+    padding: var(--ej-spacing-2xs, 4px);
+    cursor: pointer;
+    color: var(--ej-text-muted, #6B7280);
+    flex-shrink: 0;
+
+    .site-tree__select-checked {
+        display: none;
+    }
+
+    &[aria-pressed="true"] {
+        color: var(--ej-color-primary, #4F46E5);
+
+        .site-tree__select-unchecked {
+            display: none;
+        }
+
+        .site-tree__select-checked {
+            display: block;
+        }
+    }
+
+    &:hover {
+        color: var(--ej-color-primary, #4F46E5);
+    }
+}
+
+// Nodo seleccionado
+.site-tree__item.is-selected {
+    > .site-tree__node {
+        background: var(--ej-bg-primary-subtle, #EEF2FF);
+        border-color: var(--ej-color-primary, #4F46E5);
+    }
+}
+
 // Acciones del site builder
 .site-builder-actions {
     display: flex;
     gap: var(--ej-spacing-sm, 12px);
     margin-bottom: var(--ej-spacing-lg, 24px);
+}
+
+// Barra de acciones bulk
+.site-builder-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 12px);
+    padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
+    background: var(--ej-bg-primary-subtle, #EEF2FF);
+    border: 1px solid var(--ej-color-primary-light, #C7D2FE);
+    border-radius: var(--ej-radius-md, 8px);
+    margin-bottom: var(--ej-spacing-md, 16px);
+
+    &__count {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-text-primary, #111827);
+        margin-right: auto;
+    }
+
+    &[hidden] {
+        display: none;
+    }
 }
 
 // Vista previa del sitemap

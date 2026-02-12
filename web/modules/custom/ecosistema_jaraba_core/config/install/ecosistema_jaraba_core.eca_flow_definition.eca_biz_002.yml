@@ -1,0 +1,11 @@
+id: eca_biz_002
+label: 'Experiment Completed'
+description: 'Al marcar un experimento como completado, se actualizan las metricas de validacion de la hipotesis asociada, se recalcula el BMC Score y se sugieren proximos pasos via IA.'
+domain: BIZ
+trigger_event: 'hook_entity_update(experiment):status_completed'
+module: jaraba_copilot_v2
+hook_function: jaraba_copilot_v2_experiment_update
+spec_reference: 40_Emprendimiento
+implementation_status: implemented
+weight: 71
+status: true

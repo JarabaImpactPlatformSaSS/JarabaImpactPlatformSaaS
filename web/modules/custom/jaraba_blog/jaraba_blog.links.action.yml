@@ -1,0 +1,19 @@
+# Links de acciones - Botones "Anadir" en collections
+
+entity.blog_post.add_form:
+  title: 'Anadir Entrada'
+  route_name: entity.blog_post.add_form
+  appears_on:
+    - entity.blog_post.collection
+
+entity.blog_category.add_form:
+  title: 'Anadir Categoria'
+  route_name: entity.blog_category.add_form
+  appears_on:
+    - entity.blog_category.collection
+
+entity.blog_author.add_form:
+  title: 'Anadir Autor'
+  route_name: entity.blog_author.add_form
+  appears_on:
+    - entity.blog_author.collection

@@ -208,7 +208,7 @@ entity.experiment_variant.settings:
 
 # API para generación de contenido con IA
 jaraba_page_builder.api.generate_content:
-  path: '/api/page-builder/generate-content'
+  path: '/api/v1/page-builder/generate-content'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::generateContent'
   methods: [POST]
@@ -272,6 +272,50 @@ jaraba_page_builder.api.generate_field:
 
 # ============================================================
 # SITEMAP XML DINÁMICO - Gap #1 (Doc 164)
+# ============================================================
+
+# ============================================================
+# ROBOTS.TXT + SEO VALIDATION API - P2-02
+# ============================================================
+
+jaraba_page_builder.robots_txt:
+  path: '/robots.txt'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::robots'
+    _title: 'Robots'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
+
+# Validacion de structured data (Schema.org) de una pagina.
+jaraba_page_builder.api.structured_data_validate:
+  path: '/api/v1/page-builder/seo/structured-data/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::validateStructuredData'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# Preview de Open Graph para compartir en redes sociales.
+jaraba_page_builder.api.og_preview:
+  path: '/api/v1/page-builder/seo/og-preview/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\SitemapController::openGraphPreview'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# ============================================================
+# SITEMAP XML DINAMICO - Gap #1 (Doc 164)
 # ============================================================
 
 jaraba_page_builder.sitemap_index:
@@ -432,7 +476,7 @@ jaraba_page_builder.experiments_create:
 
 # Lista secciones de una página
 jaraba_page_builder.api.sections.list:
-  path: '/api/pages/{page_content}/sections'
+  path: '/api/v1/pages/{page_content}/sections'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::list'
   methods: [GET]
@@ -445,7 +489,7 @@ jaraba_page_builder.api.sections.list:
 
 # Añade una sección
 jaraba_page_builder.api.sections.add:
-  path: '/api/pages/{page_content}/sections'
+  path: '/api/v1/pages/{page_content}/sections'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::add'
   methods: [POST]
@@ -458,7 +502,7 @@ jaraba_page_builder.api.sections.add:
 
 # Actualiza una sección
 jaraba_page_builder.api.sections.update:
-  path: '/api/pages/{page_content}/sections/{uuid}'
+  path: '/api/v1/pages/{page_content}/sections/{uuid}'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::update'
   methods: [PUT]
@@ -471,7 +515,7 @@ jaraba_page_builder.api.sections.update:
 
 # Elimina una sección
 jaraba_page_builder.api.sections.delete:
-  path: '/api/pages/{page_content}/sections/{uuid}'
+  path: '/api/v1/pages/{page_content}/sections/{uuid}'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::delete'
   methods: [DELETE]
@@ -484,7 +528,7 @@ jaraba_page_builder.api.sections.delete:
 
 # Reordena secciones
 jaraba_page_builder.api.sections.reorder:
-  path: '/api/pages/{page_content}/sections/reorder'
+  path: '/api/v1/pages/{page_content}/sections/reorder'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::reorder'
   methods: [PUT]
@@ -497,7 +541,7 @@ jaraba_page_builder.api.sections.reorder:
 
 # Lista templates disponibles para secciones
 jaraba_page_builder.api.sections.templates:
-  path: '/api/page-builder/section-templates'
+  path: '/api/v1/page-builder/section-templates'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::availableTemplates'
   methods: [GET]
@@ -752,6 +796,22 @@ jaraba_page_builder.api.onboarding_set:
 # API: Configuración de página desde el Canvas Editor (slide-panel ⚙ Página).
 # GET: Obtener metadatos (título, slug, SEO, estado, revisiones).
 # PATCH: Actualizar metadatos con nueva revisión.
+# ============================================================
+# ACCESSIBILITY VALIDATION API - P0-02 Cierre de Gaps 20260126
+# Validacion WCAG 2.1 AA para bloques del Page Builder.
+# ============================================================
+
+jaraba_page_builder.api.accessibility_validate:
+  path: '/api/v1/page-builder/accessibility/validate'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AccessibilityApiController::validate'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
 jaraba_page_builder.api.page_config:
   path: '/api/v1/pages/{id}/config'
   defaults:
@@ -764,4 +824,17 @@ jaraba_page_builder.api.page_config:
     _admin_route: FALSE
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
+
+# ============================================================
+# PUBLICACION PROGRAMADA - P1-05
+# Field UI settings route para ScheduledPublish entity.
+# ============================================================
+
+entity.scheduled_publish.settings:
+  path: '/admin/structure/scheduled-publish'
+  defaults:
+    _form: '\Drupal\jaraba_page_builder\Form\ScheduledPublishSettingsForm'
+    _title: 'Publicacion Programada - Configuracion'
+  requirements:
+    _permission: 'administer page builder'
 

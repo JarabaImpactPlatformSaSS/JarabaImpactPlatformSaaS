@@ -6,6 +6,7 @@ services:
       - '@database'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
+      - '@jaraba_site_builder.redirect'
 
   jaraba_site_builder.redirect:
     class: Drupal\jaraba_site_builder\Service\RedirectService
@@ -64,3 +65,20 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@renderer'
       - '@jaraba_site_builder.structure'
+
+  # Fase 1 Doc 177: Sistema de Navegación Global
+  jaraba_site_builder.menu:
+    class: Drupal\jaraba_site_builder\Service\MenuService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.navigation_render:
+    class: Drupal\jaraba_site_builder\Service\NavigationRenderService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_site_builder.menu'
+      - '@file_url_generator'

@@ -1,0 +1,11 @@
+id: comercioconecta_free_products
+label: 'ComercioConecta Free: Productos'
+vertical: comercioconecta
+plan: free
+feature_key: products
+limit_value: 10
+description: 'Maximo 10 productos en plan gratuito ComercioConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 productos. Actualiza a Starter para productos ilimitados.'
+expected_conversion: 0.35
+weight: 100
+status: true

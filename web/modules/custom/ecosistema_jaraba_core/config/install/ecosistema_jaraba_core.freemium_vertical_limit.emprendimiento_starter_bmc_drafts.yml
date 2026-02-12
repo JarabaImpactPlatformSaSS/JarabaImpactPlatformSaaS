@@ -1,0 +1,11 @@
+id: emprendimiento_starter_bmc_drafts
+label: 'Emprendimiento Starter: Borradores BMC'
+vertical: emprendimiento
+plan: starter
+feature_key: bmc_drafts
+limit_value: -1
+description: 'Borradores BMC ilimitados en plan Starter Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 401
+status: true

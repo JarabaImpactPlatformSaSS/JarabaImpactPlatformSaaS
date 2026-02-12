@@ -224,3 +224,4 @@ Ver workflow `/drupal-custom-modules` para detalles de implementación.
 - **Aprendizaje API Patterns**: `docs/tecnicos/aprendizajes/2026-02-12_copilot_v2_api_lifecycle_patterns.md`
 - **Aprendizaje Gaps Closure (BD/SSE/Metrics)**: `docs/tecnicos/aprendizajes/2026-02-12_copilot_v2_gaps_closure_db_streaming_metrics.md`
 - **Aprendizaje Self-Discovery Entities + Services**: `docs/tecnicos/aprendizajes/2026-02-12_self_discovery_content_entities_services.md`
+- **Aprendizaje Heatmaps + Tracking Fases 1-5**: `docs/tecnicos/aprendizajes/2026-02-12_heatmaps_tracking_phases_1_5.md`

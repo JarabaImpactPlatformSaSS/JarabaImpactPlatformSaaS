@@ -83,3 +83,19 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # ExperimentOrchestratorService: Orquestador automático de experimentos
+  # Responsabilidad: evaluar auto-winner, coordinar evaluaciones
+  #   periódicas, enviar notificaciones de resultados
+  # Relaciones: consume ResultCalculationService, StatisticalEngineService
+  # Ref: Spec 20260130b §8.4
+  # =====================================================================
+  jaraba_ab_testing.experiment_orchestrator:
+    class: Drupal\jaraba_ab_testing\Service\ExperimentOrchestratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ab_testing.result_calculation'
+      - '@jaraba_ab_testing.statistical_engine'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_ab_testing'

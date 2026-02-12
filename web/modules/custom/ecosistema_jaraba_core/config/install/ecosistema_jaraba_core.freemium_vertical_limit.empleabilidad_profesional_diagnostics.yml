@@ -1,0 +1,11 @@
+id: empleabilidad_profesional_diagnostics
+label: 'Empleabilidad Profesional: Diagnosticos'
+vertical: empleabilidad
+plan: profesional
+feature_key: diagnostics
+limit_value: -1
+description: 'Diagnosticos ilimitados en plan Profesional Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 302
+status: true

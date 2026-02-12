@@ -1,0 +1,11 @@
+id: eca_job_001
+label: 'Application Notification'
+description: 'Al crear una candidatura a oferta de empleo, se notifica al empleador via email y dashboard, se actualiza el contador de candidatos y se registra el evento en analytics.'
+domain: JOB
+trigger_event: 'hook_entity_insert(job_application)'
+module: jaraba_job_board
+hook_function: jaraba_job_board_application_insert
+spec_reference: 35_JobBoard
+implementation_status: implemented
+weight: 60
+status: true

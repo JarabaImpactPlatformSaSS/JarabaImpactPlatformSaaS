@@ -1,0 +1,21 @@
+/**
+ * @file
+ * Main SCSS - Estilos del módulo Jaraba Heatmap.
+ *
+ * COMPILACIÓN (desde Docker):
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_heatmap && npx sass scss/main.scss css/jaraba-heatmap.css --style=compressed"
+ *
+ * DIRECTRIZ: Usar variables CSS inyectables (var(--ej-*, $fallback))
+ * Ver: /.agent/workflows/scss-estilos.md
+ *
+ * @package jaraba_heatmap
+ */
+
+@use 'sass:color';
+
+// Viewer de heatmap (refactorizado del CSS existente).
+@use 'heatmap-viewer';
+
+// Dashboard de analytics (Fase 3).
+@use 'heatmap-dashboard';

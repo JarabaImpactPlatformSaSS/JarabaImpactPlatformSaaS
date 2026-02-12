@@ -1,0 +1,114 @@
+{#
+/**
+ * @file lead-magnet-template-propuesta.html.twig
+ * Lead Magnet: Template Propuesta Profesional (ServiciosConecta).
+ *
+ * Documento descargable tras captura de email.
+ * Muestra preview de las secciones incluidas en la plantilla.
+ *
+ * VARIABLES:
+ * - magnet_data.vertical: 'serviciosconecta'
+ * - magnet_data.magnet_type: 'template_propuesta'
+ * - magnet_data.title: Titulo principal
+ * - magnet_data.subtitle: Subtitulo descriptivo
+ * - magnet_data.icon: { category, name, variant, color }
+ * - magnet_data.includes: Array de contenidos incluidos en la plantilla
+ * - magnet_data.cta_register: { text, url }
+ *
+ * @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
+ */
+#}
+
+{% set data = magnet_data %}
+
+<div class="lead-magnet lead-magnet--template"
+     data-vertical="{{ data.vertical }}"
+     data-magnet-type="{{ data.magnet_type }}"
+     data-track-event="lead_magnet_start"
+     data-track-params='{"vertical":"{{ data.vertical }}","type":"{{ data.magnet_type }}"}'>
+
+  {# === LAYOUT 2 COLUMNAS (desktop) === #}
+  <div class="lead-magnet__grid">
+
+    {# Columna izquierda: Preview documento #}
+    <div class="lead-magnet__preview">
+      <div class="lead-magnet__preview-card lead-magnet__preview-card--document">
+        <div class="lead-magnet__icon lead-magnet__icon--{{ data.icon.color }}">
+          {{ jaraba_icon(data.icon.category, data.icon.name, {
+            variant: data.icon.variant,
+            size: 64
+          }) }}
+        </div>
+        <div class="lead-magnet__preview-badge">
+          {% trans %}Plantilla Editable{% endtrans %}
+        </div>
+        <div class="lead-magnet__preview-format">
+          {% trans %}Word + PDF{% endtrans %}
+        </div>
+      </div>
+    </div>
+
+    {# Columna derecha: Contenido + Formulario #}
+    <div class="lead-magnet__content">
+      <h1 class="lead-magnet__title">{{ data.title }}</h1>
+      <p class="lead-magnet__subtitle">{{ data.subtitle }}</p>
+
+      {# Que incluye #}
+      <h2 class="lead-magnet__includes-title">{% trans %}Que incluye{% endtrans %}</h2>
+      <ul class="lead-magnet__includes" role="list">
+        {% for item in data.includes %}
+          <li class="lead-magnet__include">
+            <span class="lead-magnet__include-icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'document', { variant: 'duotone', color: 'verde-innovacion', size: 20 }) }}
+            </span>
+            <span>{{ item }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {# Formulario de captura #}
+      <form class="lead-magnet__form lead-magnet__download-form">
+        <div class="lead-magnet__email-capture">
+          <label for="lead-magnet-email" class="visually-hidden">{% trans %}Email{% endtrans %}</label>
+          <input type="email"
+                 id="lead-magnet-email"
+                 name="email"
+                 class="lead-magnet__email-input"
+                 placeholder="{{ 'tu@email.com'|t }}"
+                 required
+                 autocomplete="email">
+          <label for="lead-magnet-name" class="visually-hidden">{% trans %}Nombre{% endtrans %}</label>
+          <input type="text"
+                 id="lead-magnet-name"
+                 name="name"
+                 class="lead-magnet__name-input"
+                 placeholder="{{ 'Tu nombre (opcional)'|t }}"
+                 autocomplete="given-name">
+          <button type="submit" class="lead-magnet__submit btn btn--primary">
+            {% trans %}Descargar plantilla gratis{% endtrans %}
+          </button>
+        </div>
+        <p class="lead-magnet__privacy">
+          {% trans %}Sin spam. Recibes la plantilla y nada mas.{% endtrans %}
+        </p>
+      </form>
+    </div>
+  </div>
+
+  {# === CONFIRMACION POST-DESCARGA === #}
+  <div class="lead-magnet__confirmation" hidden>
+    <div class="lead-magnet__confirmation-icon" aria-hidden="true">
+      {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: 48 }) }}
+    </div>
+    <h2>{% trans %}Plantilla enviada a tu email{% endtrans %}</h2>
+    <p>{% trans %}Revisa tu bandeja de entrada. Mientras tanto...{% endtrans %}</p>
+    <div class="lead-magnet__cta">
+      <a href="{{ data.cta_register.url }}" class="btn btn--primary btn--lg" data-track-cta="register_{{ data.magnet_type }}" data-track-position="lead_magnet_confirmation">
+        {{ data.cta_register.text }}
+      </a>
+      <p class="lead-magnet__cta-hint">
+        {% trans %}Plan gratuito, sin tarjeta de credito{% endtrans %}
+      </p>
+    </div>
+  </div>
+</div>

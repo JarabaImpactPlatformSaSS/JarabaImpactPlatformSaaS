@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_qr_codes
+label: 'ComercioConecta Profesional: Codigos QR'
+vertical: comercioconecta
+plan: profesional
+feature_key: qr_codes
+limit_value: -1
+description: 'Codigos QR ilimitados en plan Profesional ComercioConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 112
+status: true

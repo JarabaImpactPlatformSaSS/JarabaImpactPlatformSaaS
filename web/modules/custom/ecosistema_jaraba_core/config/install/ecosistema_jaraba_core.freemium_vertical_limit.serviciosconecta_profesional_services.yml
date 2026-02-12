@@ -1,0 +1,11 @@
+id: serviciosconecta_profesional_services
+label: 'ServiciosConecta Profesional: Servicios'
+vertical: serviciosconecta
+plan: profesional
+feature_key: services
+limit_value: -1
+description: 'Servicios ilimitados en plan Profesional ServiciosConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 202
+status: true

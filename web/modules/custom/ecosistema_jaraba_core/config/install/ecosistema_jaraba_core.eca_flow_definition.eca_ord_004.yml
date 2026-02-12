@@ -1,0 +1,11 @@
+id: eca_ord_004
+label: 'Stock Bajo'
+description: 'Al actualizarse una variacion de producto cuyo stock baja del umbral configurado, se notifica al productor via email y dashboard, y se sugiere reposicion via Copilot.'
+domain: ORD
+trigger_event: 'hook_entity_update(product_variation):stock_threshold'
+module: jaraba_agroconecta_core
+hook_function: jaraba_agroconecta_core_product_variation_update
+spec_reference: 48_Catalog
+implementation_status: pending
+weight: 43
+status: true

@@ -16,6 +16,14 @@
     data-depth="{{ depth }}">
   
   <div class="site-tree__node">
+    {# Checkbox para selección bulk #}
+    {% if can_edit %}
+    <button type="button" class="site-tree__select" data-action="select-node" data-node-id="{{ node.id }}" aria-pressed="false" aria-label="{{ 'Seleccionar'|t }}">
+      <svg class="site-tree__select-unchecked" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      <svg class="site-tree__select-checked" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 22 4"/></svg>
+    </button>
+    {% endif %}
+
     {# Handle para drag & drop #}
     {% if can_edit %}
     <span class="site-tree__handle" title="{{ 'Arrastrar para mover'|t }}">
@@ -86,11 +94,16 @@
     {# Acciones #}
     {% if can_edit %}
     <div class="site-tree__actions">
-      <button type="button" class="btn btn--icon btn--ghost" data-action="edit" data-node-id="{{ node.id }}" title="{{ 'Editar configuración'|t }}">
+      <a href="/admin/structure/site-builder/tree/{{ node.id }}/edit-ajax"
+         class="btn btn--icon btn--ghost"
+         data-slide-panel="large"
+         data-slide-panel-url="/admin/structure/site-builder/tree/{{ node.id }}/edit-ajax"
+         data-slide-panel-title="{{ 'Editar: @title'|t({'@title': node.nav_title}) }}"
+         title="{{ 'Editar configuración'|t }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
         </svg>
-      </button>
+      </a>
       <button type="button" class="btn btn--icon btn--ghost" data-action="add-child" data-node-id="{{ node.id }}" title="{{ 'Añadir subpágina'|t }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>

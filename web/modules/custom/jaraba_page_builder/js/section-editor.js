@@ -26,7 +26,7 @@
      * API Service para operaciones CRUD de secciones.
      */
     const SectionApi = {
-        baseUrl: '/api/pages',
+        baseUrl: '/api/v1/pages',
 
         /**
          * Lista las secciones de una página.
@@ -104,7 +104,7 @@
          * Obtiene templates disponibles.
          */
         async getTemplates() {
-            const response = await fetch('/api/page-builder/section-templates', {
+            const response = await fetch('/api/v1/page-builder/section-templates', {
                 method: 'GET',
                 credentials: 'same-origin',
                 headers: { 'Accept': 'application/json' }

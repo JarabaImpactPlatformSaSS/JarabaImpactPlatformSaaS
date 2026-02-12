@@ -129,6 +129,23 @@ jaraba_site_builder.redirect_edit:
       site_redirect:
         type: entity:site_redirect
 
+# Import/Export de redirects
+jaraba_site_builder.api.redirects_import:
+  path: '/api/v1/site/redirects/bulk-import'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::bulkImportRedirects'
+  methods: [POST]
+  requirements:
+    _permission: 'manage site redirects'
+
+jaraba_site_builder.api.redirects_export:
+  path: '/api/v1/site/redirects/export'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::exportRedirects'
+  methods: [GET]
+  requirements:
+    _permission: 'manage site redirects'
+
 # Tab: Sitemap visual
 jaraba_site_builder.sitemap:
   path: '/admin/structure/site-builder/sitemap'
@@ -235,6 +252,25 @@ jaraba_site_builder.api.pages_move:
     _permission: 'administer site structure'
     id: '\d+'
 
+# Formulario de edición de nodo del árbol via AJAX (slide-panel)
+jaraba_site_builder.tree_node_edit_ajax:
+  path: '/admin/structure/site-builder/tree/{id}/edit-ajax'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::editNodeAjax'
+    _title: 'Editar nodo del árbol'
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+# Operaciones bulk en el árbol
+jaraba_site_builder.api.pages_bulk_status:
+  path: '/api/v1/site/pages/bulk-status'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SiteStructureApiController::bulkUpdateStatus'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+
 # Obtener configuración global
 jaraba_site_builder.api.config:
   path: '/api/v1/site/config'
@@ -283,3 +319,161 @@ jaraba_site_builder.api.footer_variant:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
+
+# ========================================================================
+# Fase 1 Doc 177: Sistema de Navegación Global - API REST
+# ========================================================================
+
+# --- Header API ---
+
+jaraba_site_builder.api.header_get:
+  path: '/api/v1/site/header'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getHeader'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_site_builder.api.header_update:
+  path: '/api/v1/site/header'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::updateHeader'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit site config'
+
+jaraba_site_builder.api.header_logo_upload:
+  path: '/api/v1/site/header/logo'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::uploadHeaderLogo'
+  methods: [POST]
+  requirements:
+    _permission: 'edit site config'
+
+jaraba_site_builder.api.header_logo_delete:
+  path: '/api/v1/site/header/logo'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::deleteHeaderLogo'
+  methods: [DELETE]
+  requirements:
+    _permission: 'edit site config'
+
+# --- Footer API ---
+
+jaraba_site_builder.api.footer_get:
+  path: '/api/v1/site/footer'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getFooter'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_site_builder.api.footer_update:
+  path: '/api/v1/site/footer'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::updateFooter'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit site config'
+
+jaraba_site_builder.api.footer_logo_upload:
+  path: '/api/v1/site/footer/logo'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::uploadFooterLogo'
+  methods: [POST]
+  requirements:
+    _permission: 'edit site config'
+
+# --- Menus API ---
+
+jaraba_site_builder.api.menus_list:
+  path: '/api/v1/site/menus'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::listMenus'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_site_builder.api.menus_create:
+  path: '/api/v1/site/menus'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::createMenu'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+
+jaraba_site_builder.api.menus_get:
+  path: '/api/v1/site/menus/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getMenu'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    id: '\d+'
+
+jaraba_site_builder.api.menus_delete:
+  path: '/api/v1/site/menus/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::deleteMenu'
+  methods: [DELETE]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+jaraba_site_builder.api.menus_tree:
+  path: '/api/v1/site/menus/{id}/tree'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getMenuTree'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    id: '\d+'
+
+jaraba_site_builder.api.menus_add_item:
+  path: '/api/v1/site/menus/{id}/items'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::addMenuItem'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+jaraba_site_builder.api.menus_update_item:
+  path: '/api/v1/site/menus/{id}/items/{itemId}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::updateMenuItem'
+  methods: [PATCH]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+    itemId: '\d+'
+
+jaraba_site_builder.api.menus_delete_item:
+  path: '/api/v1/site/menus/{id}/items/{itemId}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::deleteMenuItem'
+  methods: [DELETE]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+    itemId: '\d+'
+
+jaraba_site_builder.api.menus_reorder:
+  path: '/api/v1/site/menus/{id}/reorder'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::reorderMenuItems'
+  methods: [POST]
+  requirements:
+    _permission: 'administer site structure'
+    id: '\d+'
+
+# --- Breadcrumbs API ---
+
+jaraba_site_builder.api.breadcrumbs:
+  path: '/api/v1/site/breadcrumbs/{pageTreeId}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getBreadcrumbs'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    pageTreeId: '\d+'

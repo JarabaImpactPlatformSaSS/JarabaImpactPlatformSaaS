@@ -18,8 +18,22 @@ viewer:
     js/heatmap-viewer.js: { minified: false }
   css:
     component:
-      css/heatmap-viewer.css: {}
+      css/jaraba-heatmap.css: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+# Dashboard de Heatmap Analytics (Fase 3)
+heatmap-dashboard:
+  version: 1.0.0
+  js:
+    js/heatmap-dashboard.js: {}
+  css:
+    component:
+      css/jaraba-heatmap.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_heatmap/viewer

@@ -59,6 +59,121 @@ function jaraba_ab_testing_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Implements hook_cron().
+ *
+ * Evalúa auto-winner cada 6 horas para experimentos activos
+ * con auto_complete = TRUE. Usa ResultCalculationService para
+ * verificar significancia estadística y declarar ganador.
+ *
+ * Ref: Spec 20260130b §8.4
+ */
+function jaraba_ab_testing_cron() {
+  $time = \Drupal::time()->getRequestTime();
+
+  _jaraba_ab_testing_cron_auto_winner($time);
+}
+
+/**
+ * Evaluates auto-winner for active experiments.
+ *
+ * Runs every 6 hours. Iterates over active experiments with
+ * auto_complete = TRUE, checks statistical significance,
+ * and declares winner if conditions are met.
+ *
+ * @param int $time
+ *   Current request timestamp.
+ */
+function _jaraba_ab_testing_cron_auto_winner(int $time): void {
+  $state = \Drupal::state();
+  $last_run = $state->get('jaraba_ab_testing.last_auto_winner_check', 0);
+  $six_hours = 21600;
+
+  if (($time - $last_run) <= $six_hours) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $etm */
+    $etm = \Drupal::entityTypeManager();
+
+    // Find active experiments with auto_complete enabled.
+    $experimentIds = $etm->getStorage('ab_experiment')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'active')
+      ->condition('auto_complete', TRUE)
+      ->execute();
+
+    if (empty($experimentIds)) {
+      $state->set('jaraba_ab_testing.last_auto_winner_check', $time);
+      return;
+    }
+
+    /** @var \Drupal\jaraba_ab_testing\Service\ResultCalculationService $resultCalc */
+    $resultCalc = \Drupal::service('jaraba_ab_testing.result_calculation');
+    $winnersFound = 0;
+
+    foreach ($experimentIds as $experimentId) {
+      try {
+        if ($resultCalc->checkAutoStop((int) $experimentId)) {
+          $winnersFound++;
+          \Drupal::logger('jaraba_ab_testing')->info('Auto-winner declared for experiment @id.', [
+            '@id' => $experimentId,
+          ]);
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_ab_testing')->error('Error evaluating experiment @id: @message', [
+          '@id' => $experimentId,
+          '@message' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    if ($winnersFound > 0) {
+      \Drupal::logger('jaraba_ab_testing')->info('Auto-winner evaluation completed: @count winners from @total experiments.', [
+        '@count' => $winnersFound,
+        '@total' => count($experimentIds),
+      ]);
+    }
+
+    $state->set('jaraba_ab_testing.last_auto_winner_check', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_ab_testing')->error('Error in auto-winner cron: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Prepares email templates for A/B testing notifications.
+ * Ref: Spec 20260130b §8.4
+ */
+function jaraba_ab_testing_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'experiment_winner':
+      $message['subject'] = t('A/B Test Winner: @name', [
+        '@name' => $params['experiment_name'] ?? 'Unknown',
+      ]);
+      $message['body'][] = t('An A/B test has reached statistical significance and a winner has been declared.');
+      $message['body'][] = '';
+      $message['body'][] = t('Experiment: @name (ID: @id)', [
+        '@name' => $params['experiment_name'] ?? 'Unknown',
+        '@id' => $params['experiment_id'] ?? 0,
+      ]);
+      $message['body'][] = t('Winner variant: @variant', [
+        '@variant' => $params['winner_variant'] ?? 'Unknown',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Log in to view the full results in the A/B Testing dashboard.');
+      break;
+  }
+}
+
+/**
  * Implements hook_preprocess_html().
  *
  * Añade body classes para las páginas del dashboard de A/B testing.

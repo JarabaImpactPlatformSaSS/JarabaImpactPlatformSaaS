@@ -3,6 +3,7 @@
 namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Psr\Log\LoggerInterface;
@@ -15,6 +16,8 @@ use Psr\Log\LoggerInterface;
  */
 class PlanValidator
 {
+
+    use StringTranslationTrait;
 
     /**
      * El entity type manager.
@@ -265,24 +268,40 @@ class PlanValidator
      * con FeatureAccessService.
      */
     protected const FEATURE_ADDON_MAP = [
+        // CRM.
         'crm_pipeline' => 'jaraba_crm',
         'crm_contacts' => 'jaraba_crm',
         'lead_scoring' => 'jaraba_crm',
+        // Email Marketing.
         'email_campaigns' => 'jaraba_email',
         'email_sequences' => 'jaraba_email',
         'email_templates' => 'jaraba_email',
+        // Social Media.
         'social_calendar' => 'jaraba_social',
         'social_posts' => 'jaraba_social',
+        // Paid Ads.
         'ads_sync' => 'paid_ads_sync',
         'roas_tracking' => 'paid_ads_sync',
+        // Retargeting.
         'pixels_manager' => 'retargeting_pixels',
         'server_tracking' => 'retargeting_pixels',
+        // Events.
         'events_create' => 'events_webinars',
         'webinar_integration' => 'events_webinars',
+        // A/B Testing.
         'experiments' => 'ab_testing',
         'ab_variants' => 'ab_testing',
+        // Referral.
         'referral_codes' => 'referral_program',
         'rewards' => 'referral_program',
+        // Page Builder — P1-01: Límites universales.
+        'premium_blocks' => 'page_builder_premium',
+        'page_builder_seo' => 'page_builder_seo',
+        'page_builder_analytics' => 'page_builder_analytics',
+        'page_builder_schema_org' => 'page_builder_seo',
+        // Credentials — P1-02: Límites de credenciales.
+        'credential_stacks' => 'credentials_advanced',
+        'credential_portability' => 'credentials_advanced',
     ];
 
     public function hasFeature(TenantInterface $tenant, string $feature): bool
@@ -413,6 +432,197 @@ class PlanValidator
         ];
     }
 
+    // =========================================================================
+    // P1-01: Límites universales Page Builder.
+    // =========================================================================
+
+    /**
+     * Verifica si un tenant puede crear una nueva pagina del Page Builder.
+     *
+     * LOGICA:
+     * Consulta el campo 'page_builder_pages' del SaasPlan del tenant.
+     * -1 = ilimitado, 0 = no incluido, >0 = limite maximo.
+     * El conteo actual se recibe como parametro porque la entidad
+     * page_content pertenece al modulo jaraba_page_builder (evita
+     * dependencia cruzada entre modulos).
+     *
+     * LIMITES POR DEFECTO:
+     * - Starter: 5 paginas
+     * - Professional: 25 paginas
+     * - Enterprise: ilimitado (-1)
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant a validar.
+     * @param int $current_page_count
+     *   Numero actual de paginas del tenant (proporcionado por QuotaManagerService).
+     *
+     * @return bool
+     *   TRUE si puede crear mas paginas.
+     */
+    public function canCreatePage(TenantInterface $tenant, int $current_page_count): bool
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return FALSE;
+        }
+
+        $limit = $plan->getLimit('page_builder_pages', 5);
+
+        if ($limit === -1) {
+            return TRUE;
+        }
+
+        return $current_page_count < $limit;
+    }
+
+    /**
+     * Verifica si un tenant puede usar bloques premium del Page Builder.
+     *
+     * LOGICA:
+     * Los bloques premium (Aceternity UI, Magic UI) solo estan disponibles
+     * en planes Professional y Enterprise. Se verifica via el campo
+     * 'page_builder_premium_blocks' del plan:
+     * - 0 = no disponible (Starter)
+     * - >0 = disponible (cantidad maxima de tipos accesibles)
+     * - -1 = todos los bloques premium disponibles
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant a validar.
+     *
+     * @return bool
+     *   TRUE si puede usar bloques premium.
+     */
+    public function canUsePremiumBlock(TenantInterface $tenant): bool
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return FALSE;
+        }
+
+        $limit = $plan->getLimit('page_builder_premium_blocks', 0);
+
+        return $limit !== 0;
+    }
+
+    /**
+     * Verifica si un tenant puede crear un nuevo experimento A/B.
+     *
+     * LOGICA:
+     * Los experimentos A/B tienen limite por plan:
+     * - -1 = ilimitado (Enterprise)
+     * - 0 = no incluido (Starter)
+     * - >0 = limite maximo activo (Professional: 3)
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant a validar.
+     * @param int $current_experiment_count
+     *   Numero actual de experimentos activos del tenant.
+     *
+     * @return bool
+     *   TRUE si puede crear mas experimentos.
+     */
+    public function canCreateExperiment(TenantInterface $tenant, int $current_experiment_count): bool
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return FALSE;
+        }
+
+        $limit = $plan->getLimit('page_builder_experiments', 0);
+
+        if ($limit === 0) {
+            return FALSE;
+        }
+
+        if ($limit === -1) {
+            return TRUE;
+        }
+
+        return $current_experiment_count < $limit;
+    }
+
+    // =========================================================================
+    // P1-02: Límites para Credentials.
+    // =========================================================================
+
+    /**
+     * Verifica si un tenant puede emitir una nueva credencial.
+     *
+     * LOGICA:
+     * El limite de credenciales se aplica mensualmente para controlar
+     * el volumen de emision por plan:
+     * - Starter: 10/mes (suficiente para micro-academias)
+     * - Professional: 100/mes (academias medianas, pymes formativas)
+     * - Enterprise: ilimitado (-1) (universidades, grandes organizaciones)
+     *
+     * El conteo actual lo proporciona el modulo jaraba_credentials
+     * para evitar dependencia cruzada.
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant a validar.
+     * @param int $current_monthly_count
+     *   Numero de credenciales emitidas este mes por el tenant.
+     *
+     * @return bool
+     *   TRUE si puede emitir mas credenciales.
+     */
+    public function canIssueCredential(TenantInterface $tenant, int $current_monthly_count): bool
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return FALSE;
+        }
+
+        $limit = $plan->getLimit('credentials_per_month', 10);
+
+        if ($limit === -1) {
+            return TRUE;
+        }
+
+        return $current_monthly_count < $limit;
+    }
+
+    /**
+     * Verifica si un tenant puede crear un nuevo stack de credenciales.
+     *
+     * LOGICA:
+     * Los stacks permiten agrupar credenciales en rutas formativas.
+     * - Starter: 0 stacks (feature no disponible)
+     * - Professional: -1 (ilimitado)
+     * - Enterprise: -1 (ilimitado)
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant a validar.
+     * @param int $current_stack_count
+     *   Numero actual de stacks del tenant.
+     *
+     * @return bool
+     *   TRUE si puede crear mas stacks.
+     */
+    public function canCreateStack(TenantInterface $tenant, int $current_stack_count): bool
+    {
+        $plan = $tenant->getSubscriptionPlan();
+        if (!$plan) {
+            return FALSE;
+        }
+
+        $limit = $plan->getLimit('credential_stacks', 0);
+
+        if ($limit === 0) {
+            return FALSE;
+        }
+
+        if ($limit === -1) {
+            return TRUE;
+        }
+
+        return $current_stack_count < $limit;
+    }
+
+    // =========================================================================
+    // ENFORCEMENT: Metodo universal de validacion de limites.
+    // =========================================================================
+
     /**
      * BIZ-01: Enforces plan limits for a given action.
      *
@@ -472,6 +682,41 @@ class PlanValidator
                     'usage' => ['current' => $current, 'limit' => $limit],
                 ];
 
+            // P1-01: Page Builder limits.
+            case 'create_page':
+                return $this->checkResourceLimit(
+                    $plan, 'page_builder_pages', $params['current'] ?? 0, 5,
+                    $this->t('Paginas')
+                );
+
+            case 'use_premium_block':
+                $limit = $plan->getLimit('page_builder_premium_blocks', 0);
+                $allowed = $limit !== 0;
+                return [
+                    'allowed' => $allowed,
+                    'reason' => $allowed ? NULL : (string) $this->t('Los bloques premium no estan incluidos en tu plan actual.'),
+                    'usage' => ['limit' => $limit],
+                ];
+
+            case 'create_experiment':
+                return $this->checkResourceLimit(
+                    $plan, 'page_builder_experiments', $params['current'] ?? 0, 0,
+                    $this->t('Experimentos A/B')
+                );
+
+            // P1-02: Credentials limits.
+            case 'issue_credential':
+                return $this->checkResourceLimit(
+                    $plan, 'credentials_per_month', $params['current'] ?? 0, 10,
+                    $this->t('Credenciales este mes')
+                );
+
+            case 'create_stack':
+                return $this->checkResourceLimit(
+                    $plan, 'credential_stacks', $params['current'] ?? 0, 0,
+                    $this->t('Stacks de credenciales')
+                );
+
             default:
                 // Feature-based check: 'feature:firma_digital'.
                 if (str_starts_with($action, 'feature:')) {
@@ -486,6 +731,73 @@ class PlanValidator
 
                 return ['allowed' => TRUE, 'reason' => NULL, 'usage' => []];
         }
+    }
+
+    /**
+     * Verifica un limite de recurso generico contra el plan del tenant.
+     *
+     * PROPOSITO:
+     * Metodo auxiliar que centraliza la logica de verificacion de limites
+     * para cualquier recurso medible (paginas, experimentos, credenciales).
+     * Utilizado internamente por enforceLimit() para los cases de P1-01/P1-02.
+     *
+     * SEMANTICA DE VALORES DEL LIMITE:
+     * - -1 = ilimitado (sin restriccion, plan Enterprise)
+     * -  0 = no incluido en el plan (bloqueado, requiere upgrade o add-on)
+     * - >0 = limite maximo permitido
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface $plan
+     *   El plan SaaS del tenant.
+     * @param string $limit_key
+     *   Clave del limite en el plan (ej: 'page_builder_pages').
+     * @param int $current_count
+     *   Uso actual del recurso (proporcionado por el modulo que llama).
+     * @param int $default_limit
+     *   Limite por defecto si la clave no existe en el plan.
+     * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string $label
+     *   Etiqueta legible del recurso para mensajes de error.
+     *
+     * @return array
+     *   Array estructurado con 'allowed', 'reason' y 'usage'.
+     */
+    protected function checkResourceLimit(
+        SaasPlanInterface $plan,
+        string $limit_key,
+        int $current_count,
+        int $default_limit,
+        $label
+    ): array {
+        $limit = $plan->getLimit($limit_key, $default_limit);
+
+        // Ilimitado.
+        if ($limit === -1) {
+            return [
+                'allowed' => TRUE,
+                'reason' => NULL,
+                'usage' => ['current' => $current_count, 'limit' => -1],
+            ];
+        }
+
+        // No incluido en el plan.
+        if ($limit === 0) {
+            return [
+                'allowed' => FALSE,
+                'reason' => (string) $this->t('@label no esta incluido en tu plan actual.', ['@label' => $label]),
+                'usage' => ['current' => $current_count, 'limit' => 0],
+            ];
+        }
+
+        // Verificar contra limite numerico.
+        $allowed = $current_count < $limit;
+        return [
+            'allowed' => $allowed,
+            'reason' => $allowed ? NULL : (string) $this->t('Limite de @label alcanzado (@current/@limit).', [
+                '@label' => $label,
+                '@current' => $current_count,
+                '@limit' => $limit,
+            ]),
+            'usage' => ['current' => $current_count, 'limit' => $limit],
+        ];
     }
 
     /**
@@ -508,7 +820,7 @@ class PlanValidator
         $new_limit = $new_plan->getLimit('productores', 0);
 
         if ($new_limit !== -1 && $current_producers > $new_limit) {
-            $errors[] = t('El plan @plan permite máximo @limit productores y tienes @current.', [
+            $errors[] = $this->t('El plan @plan permite maximo @limit productores y tienes @current.', [
                 '@plan' => $new_plan->getName(),
                 '@limit' => $new_limit,
                 '@current' => $current_producers,
@@ -520,7 +832,7 @@ class PlanValidator
         $new_storage_limit = $new_plan->getLimit('storage_gb', 0) * 1024 * 1024 * 1024;
 
         if ($new_plan->getLimit('storage_gb', 0) !== -1 && $current_storage > $new_storage_limit) {
-            $errors[] = t('El plan @plan permite máximo @limit GB y usas @current GB.', [
+            $errors[] = $this->t('El plan @plan permite maximo @limit GB y usas @current GB.', [
                 '@plan' => $new_plan->getName(),
                 '@limit' => $new_plan->getLimit('storage_gb', 0),
                 '@current' => round($current_storage / (1024 * 1024 * 1024), 2),

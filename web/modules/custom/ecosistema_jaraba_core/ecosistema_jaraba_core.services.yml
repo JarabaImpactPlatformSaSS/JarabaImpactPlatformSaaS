@@ -601,6 +601,20 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # UPGRADE TRIGGER SERVICE (F2 - Doc 183)
+  # ===========================================
+
+  # Servicio central de triggers de upgrade para el modelo freemium.
+  # Evalua limites por vertical, dispara triggers contextuales y
+  # registra eventos para analytics de conversion PLG.
+  ecosistema_jaraba_core.upgrade_trigger:
+    class: Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # GDPR DRUSH COMMANDS
   # ===========================================
 

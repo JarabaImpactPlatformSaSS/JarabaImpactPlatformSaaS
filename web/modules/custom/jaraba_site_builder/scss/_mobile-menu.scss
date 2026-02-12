@@ -1,0 +1,218 @@
+/**
+ * @file
+ * Estilos del menú móvil off-canvas.
+ *
+ * Panel deslizante desde la derecha con submenús accordion.
+ */
+
+.jaraba-mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--ej-z-modal, 1050);
+  pointer-events: none;
+  visibility: hidden;
+
+  &.is-open {
+    pointer-events: auto;
+    visibility: visible;
+
+    .jaraba-mobile-menu__overlay {
+      opacity: 1;
+    }
+
+    .jaraba-mobile-menu__panel {
+      transform: translateX(0);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+
+  &__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 85%;
+    max-width: 360px;
+    height: 100%;
+    background: var(--ej-bg-surface, #FFFFFF);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-spacing-md, 16px);
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    flex-shrink: 0;
+  }
+
+  &__logo {
+    max-height: 32px;
+    width: auto;
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--ej-text-primary, #1E293B);
+    cursor: pointer;
+    border-radius: var(--ej-radius-md, 6px);
+
+    &:hover {
+      background: var(--ej-bg-hover, #F1F5F9);
+    }
+  }
+
+  &__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ej-spacing-sm, 8px) 0;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    border-bottom: 1px solid var(--ej-border-color, #F1F5F9);
+  }
+
+  &__item-row {
+    display: flex;
+    align-items: center;
+  }
+
+  &__link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 8px);
+    padding: var(--ej-spacing-md, 14px) var(--ej-spacing-md, 16px);
+    color: var(--ej-text-primary, #1E293B);
+    text-decoration: none;
+    font-size: var(--ej-font-size-base, 1rem);
+    font-weight: 500;
+
+    &:active {
+      background: var(--ej-bg-hover, #F1F5F9);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--ej-text-secondary, #64748B);
+  }
+
+  &__badge {
+    display: inline-flex;
+    padding: 2px 8px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    border-radius: var(--ej-radius-full, 9999px);
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--ej-text-secondary, #64748B);
+    transition: transform 0.2s ease;
+
+    &[aria-expanded="true"] {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Submenu (accordion).
+  &__sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: var(--ej-bg-muted, #F8FAFC);
+
+    &[aria-hidden="false"] {
+      max-height: 500px;
+    }
+  }
+
+  &__subitem {
+    // Sub item.
+  }
+
+  &__sublink {
+    display: block;
+    padding: var(--ej-spacing-sm, 10px) var(--ej-spacing-md, 16px) var(--ej-spacing-sm, 10px) var(--ej-spacing-2xl, 48px);
+    color: var(--ej-text-secondary, #64748B);
+    text-decoration: none;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    &:active {
+      background: var(--ej-bg-hover, #E2E8F0);
+    }
+  }
+
+  // CTA in mobile menu.
+  &__cta {
+    padding: var(--ej-spacing-md, 16px);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+    flex-shrink: 0;
+  }
+
+  &__cta-btn {
+    display: block;
+    text-align: center;
+    padding: var(--ej-spacing-md, 12px);
+    background: var(--ej-color-primary, #233D63);
+    color: #FFFFFF;
+    border-radius: var(--ej-radius-md, 6px);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

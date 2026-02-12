@@ -45,3 +45,17 @@ jaraba_page_builder.variant_settings:
   base_route: entity.experiment_variant.settings
   weight: -10
 
+# P1-05: Publicaciones Programadas - Tab en /admin/content
+entity.scheduled_publish.collection:
+  title: 'Programadas'
+  route_name: entity.scheduled_publish.collection
+  base_route: system.admin_content
+  weight: 26
+
+# Field UI tabs para ScheduledPublish (/admin/structure/scheduled-publish)
+jaraba_page_builder.scheduled_publish_settings:
+  title: 'Configuracion'
+  route_name: entity.scheduled_publish.settings
+  base_route: entity.scheduled_publish.settings
+  weight: -10
+

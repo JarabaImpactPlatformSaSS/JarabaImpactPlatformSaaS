@@ -1,0 +1,11 @@
+id: emprendimiento_free_calculadora_uses
+label: 'Emprendimiento Free: Calculadora financiera'
+vertical: emprendimiento
+plan: free
+feature_key: calculadora_uses
+limit_value: 1
+description: '1 uso de la calculadora financiera en plan gratuito Emprendimiento.'
+upgrade_message: 'Ya has usado la calculadora financiera gratuita. Actualiza a Starter para usos ilimitados.'
+expected_conversion: 0.28
+weight: 410
+status: true

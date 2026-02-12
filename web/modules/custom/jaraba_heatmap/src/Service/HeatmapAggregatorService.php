@@ -290,17 +290,22 @@ class HeatmapAggregatorService
     }
 
     /**
-     * Purga eventos raw antiguos según configuración de retención.
+     * Purga eventos raw antiguos según retención.
+     *
+     * @param int|null $days
+     *   Días de retención. Si NULL, lee de config (default: 7).
      *
      * @return int
      *   Número de eventos eliminados.
      */
-    public function purgeOldEvents(): int
+    public function purgeOldEvents(?int $days = NULL): int
     {
-        $config = $this->configFactory->get('jaraba_heatmap.settings');
-        $retention_days = (int) $config->get('retention_raw_days') ?: 7;
+        if ($days === NULL) {
+            $config = $this->configFactory->get('jaraba_heatmap.settings');
+            $days = (int) ($config->get('retention_raw_days') ?: 7);
+        }
 
-        $cutoff = strtotime("-{$retention_days} days");
+        $cutoff = strtotime("-{$days} days");
 
         $deleted = $this->database->delete('heatmap_events')
             ->condition('created_at', $cutoff, '<')
@@ -309,7 +314,7 @@ class HeatmapAggregatorService
         if ($deleted > 0) {
             $this->logger->info('Purgados @count eventos raw anteriores a @days días', [
                 '@count' => $deleted,
-                '@days' => $retention_days,
+                '@days' => $days,
             ]);
         }
 
@@ -319,15 +324,20 @@ class HeatmapAggregatorService
     /**
      * Purga datos agregados antiguos.
      *
+     * @param int|null $days
+     *   Días de retención. Si NULL, lee de config (default: 90).
+     *
      * @return int
      *   Número de registros eliminados.
      */
-    public function purgeOldAggregated(): int
+    public function purgeOldAggregated(?int $days = NULL): int
     {
-        $config = $this->configFactory->get('jaraba_heatmap.settings');
-        $retention_days = (int) $config->get('retention_aggregated_days') ?: 90;
+        if ($days === NULL) {
+            $config = $this->configFactory->get('jaraba_heatmap.settings');
+            $days = (int) ($config->get('retention_aggregated_days') ?: 90);
+        }
 
-        $cutoff_date = date('Y-m-d', strtotime("-{$retention_days} days"));
+        $cutoff_date = date('Y-m-d', strtotime("-{$days} days"));
 
         $deleted_agg = $this->database->delete('heatmap_aggregated')
             ->condition('date', $cutoff_date, '<')
@@ -342,11 +352,114 @@ class HeatmapAggregatorService
         if ($total > 0) {
             $this->logger->info('Purgados @count registros agregados anteriores a @days días', [
                 '@count' => $total,
-                '@days' => $retention_days,
+                '@days' => $days,
             ]);
         }
 
         return $total;
+    }
+
+    /**
+     * Detecta anomalías comparando métricas del día anterior con la media de 7 días.
+     *
+     * Para cada página y tenant, compara el total de eventos del día anterior
+     * contra la media de los 7 días anteriores. Genera alerta si:
+     * - Caída > threshold_drop (default 50%)
+     * - Pico > threshold_spike (default 200%)
+     *
+     * Ref: Spec 20260130a §11.3
+     *
+     * @return array
+     *   Array de anomalías detectadas, cada una con:
+     *   - tenant_id, page_path, yesterday_count, avg_count, type ('drop'|'spike'), ratio
+     */
+    public function detectAnomalies(): array
+    {
+        $config = $this->configFactory->get('jaraba_heatmap.settings');
+        $threshold_drop = (float) ($config->get('threshold_drop') ?: 50) / 100;
+        $threshold_spike = (float) ($config->get('threshold_spike') ?: 200) / 100;
+
+        $yesterday = date('Y-m-d', strtotime('yesterday'));
+        $week_ago = date('Y-m-d', strtotime('-8 days'));
+        $two_days_ago = date('Y-m-d', strtotime('-2 days'));
+
+        // Obtener conteos del día anterior por tenant+página.
+        $yesterday_query = $this->database->select('heatmap_aggregated', 'ha');
+        $yesterday_query->fields('ha', ['tenant_id', 'page_path']);
+        $yesterday_query->addExpression('SUM(ha.event_count)', 'total_events');
+        $yesterday_query->condition('ha.date', $yesterday);
+        $yesterday_query->groupBy('ha.tenant_id');
+        $yesterday_query->groupBy('ha.page_path');
+
+        $yesterday_data = [];
+        foreach ($yesterday_query->execute()->fetchAll() as $row) {
+            $key = $row->tenant_id . '|' . $row->page_path;
+            $yesterday_data[$key] = [
+                'tenant_id' => (int) $row->tenant_id,
+                'page_path' => $row->page_path,
+                'count' => (int) $row->total_events,
+            ];
+        }
+
+        if (empty($yesterday_data)) {
+            return [];
+        }
+
+        // Obtener media de los 7 días previos (excluyendo ayer).
+        $avg_query = $this->database->select('heatmap_aggregated', 'ha');
+        $avg_query->fields('ha', ['tenant_id', 'page_path']);
+        $avg_query->addExpression('SUM(ha.event_count) / COUNT(DISTINCT ha.date)', 'avg_events');
+        $avg_query->condition('ha.date', $week_ago, '>=');
+        $avg_query->condition('ha.date', $two_days_ago, '<=');
+        $avg_query->groupBy('ha.tenant_id');
+        $avg_query->groupBy('ha.page_path');
+
+        $avg_data = [];
+        foreach ($avg_query->execute()->fetchAll() as $row) {
+            $key = $row->tenant_id . '|' . $row->page_path;
+            $avg_data[$key] = (float) $row->avg_events;
+        }
+
+        // Comparar y detectar anomalías.
+        $anomalies = [];
+        foreach ($yesterday_data as $key => $data) {
+            $avg = $avg_data[$key] ?? 0;
+            if ($avg <= 0) {
+                continue;
+            }
+
+            $ratio = $data['count'] / $avg;
+
+            if ($ratio < (1 - $threshold_drop)) {
+                $anomalies[] = [
+                    'tenant_id' => $data['tenant_id'],
+                    'page_path' => $data['page_path'],
+                    'yesterday_count' => $data['count'],
+                    'avg_count' => round($avg, 1),
+                    'type' => 'drop',
+                    'ratio' => round($ratio, 3),
+                ];
+            }
+            elseif ($ratio > $threshold_spike) {
+                $anomalies[] = [
+                    'tenant_id' => $data['tenant_id'],
+                    'page_path' => $data['page_path'],
+                    'yesterday_count' => $data['count'],
+                    'avg_count' => round($avg, 1),
+                    'type' => 'spike',
+                    'ratio' => round($ratio, 3),
+                ];
+            }
+        }
+
+        if (!empty($anomalies)) {
+            $this->logger->warning('Detectadas @count anomalías en heatmaps: @details', [
+                '@count' => count($anomalies),
+                '@details' => json_encode(array_map(fn($a) => $a['page_path'] . ' (' . $a['type'] . ' ' . ($a['ratio'] * 100) . '%)', $anomalies)),
+            ]);
+        }
+
+        return $anomalies;
     }
 
 }

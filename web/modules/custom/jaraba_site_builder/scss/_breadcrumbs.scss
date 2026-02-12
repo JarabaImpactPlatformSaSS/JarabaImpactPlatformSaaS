@@ -1,0 +1,45 @@
+/**
+ * @file
+ * Estilos de breadcrumbs con Schema.org.
+ */
+
+.jaraba-breadcrumbs {
+  padding: var(--ej-spacing-sm, 12px) 0;
+
+  &__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 4px);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 4px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__link {
+    color: var(--ej-text-secondary, #64748B);
+    text-decoration: none;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--ej-color-primary, #233D63);
+    }
+  }
+
+  &__current {
+    color: var(--ej-text-primary, #1E293B);
+    font-weight: 500;
+  }
+
+  &__separator {
+    color: var(--ej-text-tertiary, #CBD5E1);
+    font-size: 0.75rem;
+  }
+}

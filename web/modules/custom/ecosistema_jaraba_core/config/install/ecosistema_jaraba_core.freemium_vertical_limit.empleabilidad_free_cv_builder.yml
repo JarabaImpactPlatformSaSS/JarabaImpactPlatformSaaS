@@ -1,0 +1,11 @@
+id: empleabilidad_free_cv_builder
+label: 'Empleabilidad Free: Generador CV'
+vertical: empleabilidad
+plan: free
+feature_key: cv_builder
+limit_value: 1
+description: '1 CV generado con IA en plan gratuito Empleabilidad.'
+upgrade_message: 'Ya has generado tu CV gratuito con IA. Actualiza a Starter para hasta 5 versiones de CV.'
+expected_conversion: 0.28
+weight: 320
+status: true

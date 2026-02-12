@@ -1,0 +1,11 @@
+id: emprendimiento_free_bmc_drafts
+label: 'Emprendimiento Free: Borradores BMC'
+vertical: emprendimiento
+plan: free
+feature_key: bmc_drafts
+limit_value: 1
+description: '1 borrador de Business Model Canvas en plan gratuito Emprendimiento.'
+upgrade_message: 'Ya has creado tu borrador BMC gratuito. Actualiza a Starter para borradores ilimitados.'
+expected_conversion: 0.28
+weight: 400
+status: true

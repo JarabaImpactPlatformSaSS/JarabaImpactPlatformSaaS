@@ -1,0 +1,178 @@
+{#
+/**
+ * @file
+ * Template for the Heatmap Analytics Dashboard.
+ *
+ * Variables:
+ * - pages: Array of tracked pages with events/sessions/last_activity.
+ * - summary: Summary metrics (total_events, tracked_pages, unique_sessions, avg_scroll_depth).
+ * - tenant_id: Current tenant ID.
+ *
+ * Ref: Spec 20260130a §8, §9
+ */
+#}
+
+<div class="heatmap-dashboard" data-tenant-id="{{ tenant_id }}">
+
+  {# =============================================
+     HEADER - Title + Period Filters
+     ============================================= #}
+  <div class="heatmap-dashboard__header">
+    <h1 class="heatmap-dashboard__title">{% trans %}Heatmap Analytics{% endtrans %}</h1>
+    <div class="heatmap-dashboard__filters">
+      <select class="heatmap-dashboard__period-select" id="heatmap-period" aria-label="{{ 'Time period'|t }}">
+        <option value="7">{% trans %}Last 7 days{% endtrans %}</option>
+        <option value="14">{% trans %}Last 14 days{% endtrans %}</option>
+        <option value="30" selected>{% trans %}Last 30 days{% endtrans %}</option>
+        <option value="90">{% trans %}Last 90 days{% endtrans %}</option>
+      </select>
+      <div class="heatmap-dashboard__device-filter" role="group" aria-label="{{ 'Device filter'|t }}">
+        <button class="heatmap-dashboard__device-btn is-active" data-device="all" type="button">
+          {% trans %}All{% endtrans %}
+        </button>
+        <button class="heatmap-dashboard__device-btn" data-device="desktop" type="button">
+          {% trans %}Desktop{% endtrans %}
+        </button>
+        <button class="heatmap-dashboard__device-btn" data-device="tablet" type="button">
+          {% trans %}Tablet{% endtrans %}
+        </button>
+        <button class="heatmap-dashboard__device-btn" data-device="mobile" type="button">
+          {% trans %}Mobile{% endtrans %}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# =============================================
+     METRICS CARDS - Summary KPIs
+     ============================================= #}
+  <div class="heatmap-dashboard__metrics">
+    {% include '@jaraba_heatmap/heatmap-metric-card.html.twig' with {
+      title: 'Total Events'|t,
+      value: summary.total_events|default(0)|number_format(0, '.', ','),
+      icon: 'chart-bar',
+    } only %}
+    {% include '@jaraba_heatmap/heatmap-metric-card.html.twig' with {
+      title: 'Tracked Pages'|t,
+      value: summary.tracked_pages|default(0),
+      icon: 'document',
+    } only %}
+    {% include '@jaraba_heatmap/heatmap-metric-card.html.twig' with {
+      title: 'Unique Sessions'|t,
+      value: summary.unique_sessions|default(0)|number_format(0, '.', ','),
+      icon: 'users',
+    } only %}
+    {% include '@jaraba_heatmap/heatmap-metric-card.html.twig' with {
+      title: 'Avg. Scroll Depth'|t,
+      value: summary.avg_scroll_depth|default(0) ~ '%',
+      icon: 'arrow-down',
+    } only %}
+  </div>
+
+  {# =============================================
+     MAIN CONTENT - 2-column grid (viewer + sidebar)
+     ============================================= #}
+  <div class="heatmap-dashboard__content">
+
+    {# LEFT: Heatmap Viewer #}
+    <div class="heatmap-dashboard__viewer">
+      <div class="heatmap-dashboard__viewer-header">
+        <h2 class="heatmap-dashboard__section-title">{% trans %}Heatmap Viewer{% endtrans %}</h2>
+        <div class="heatmap-dashboard__event-filter" role="group" aria-label="{{ 'Event type filter'|t }}">
+          <button class="heatmap-dashboard__event-btn is-active" data-event-type="click" type="button">
+            {% trans %}Clicks{% endtrans %}
+          </button>
+          <button class="heatmap-dashboard__event-btn" data-event-type="move" type="button">
+            {% trans %}Movement{% endtrans %}
+          </button>
+          <button class="heatmap-dashboard__event-btn" data-event-type="scroll" type="button">
+            {% trans %}Scroll{% endtrans %}
+          </button>
+        </div>
+      </div>
+      <div class="heatmap-dashboard__canvas-container" id="heatmap-canvas-container"
+           role="img" aria-label="{{ 'Heatmap visualization'|t }}">
+        <div class="heatmap-dashboard__empty-state" id="heatmap-empty-state">
+          <p>{% trans %}Select a page from the sidebar to view its heatmap.{% endtrans %}</p>
+        </div>
+        <canvas id="heatmap-canvas" class="heatmap-dashboard__canvas" aria-hidden="true"></canvas>
+      </div>
+    </div>
+
+    {# RIGHT: Sidebar #}
+    <div class="heatmap-dashboard__sidebar">
+
+      {# Page Selector #}
+      <div class="heatmap-dashboard__page-selector">
+        <h3 class="heatmap-dashboard__section-title">{% trans %}Select Page{% endtrans %}</h3>
+        <input type="text" class="heatmap-dashboard__page-search"
+               id="heatmap-page-search"
+               placeholder="{{ 'Search pages...'|t }}"
+               aria-label="{{ 'Search pages'|t }}">
+        <ul class="heatmap-dashboard__page-list" id="heatmap-page-list" role="listbox"
+            aria-label="{{ 'Tracked pages'|t }}">
+          {% if pages is not empty %}
+            {% for page in pages %}
+              <li class="heatmap-dashboard__page-item" role="option"
+                  data-page-path="{{ page.path }}"
+                  aria-selected="false"
+                  tabindex="0">
+                <span class="heatmap-dashboard__page-path">{{ page.path }}</span>
+                <span class="heatmap-dashboard__page-events">{{ page.events|number_format(0, '.', ',') }}</span>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li class="heatmap-dashboard__page-item heatmap-dashboard__page-item--empty">
+              {% trans %}No tracked pages yet. Enable tracking and wait for data to appear.{% endtrans %}
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      {# Scroll Depth #}
+      <div class="heatmap-dashboard__scroll-section" id="heatmap-scroll-section" hidden>
+        <h3 class="heatmap-dashboard__section-title">{% trans %}Scroll Depth{% endtrans %}</h3>
+        <div class="heatmap-dashboard__scroll-bars">
+          <div class="heatmap-dashboard__scroll-bar" data-depth="25">
+            <span class="heatmap-dashboard__scroll-label">25%</span>
+            <div class="heatmap-dashboard__scroll-track">
+              <div class="heatmap-dashboard__scroll-fill" id="scroll-fill-25"></div>
+            </div>
+            <span class="heatmap-dashboard__scroll-value" id="scroll-value-25">-</span>
+          </div>
+          <div class="heatmap-dashboard__scroll-bar" data-depth="50">
+            <span class="heatmap-dashboard__scroll-label">50%</span>
+            <div class="heatmap-dashboard__scroll-track">
+              <div class="heatmap-dashboard__scroll-fill" id="scroll-fill-50"></div>
+            </div>
+            <span class="heatmap-dashboard__scroll-value" id="scroll-value-50">-</span>
+          </div>
+          <div class="heatmap-dashboard__scroll-bar" data-depth="75">
+            <span class="heatmap-dashboard__scroll-label">75%</span>
+            <div class="heatmap-dashboard__scroll-track">
+              <div class="heatmap-dashboard__scroll-fill" id="scroll-fill-75"></div>
+            </div>
+            <span class="heatmap-dashboard__scroll-value" id="scroll-value-75">-</span>
+          </div>
+          <div class="heatmap-dashboard__scroll-bar" data-depth="100">
+            <span class="heatmap-dashboard__scroll-label">100%</span>
+            <div class="heatmap-dashboard__scroll-track">
+              <div class="heatmap-dashboard__scroll-fill" id="scroll-fill-100"></div>
+            </div>
+            <span class="heatmap-dashboard__scroll-value" id="scroll-value-100">-</span>
+          </div>
+        </div>
+      </div>
+
+      {# Top Clicked Elements #}
+      <div class="heatmap-dashboard__top-elements" id="heatmap-top-elements" hidden>
+        <h3 class="heatmap-dashboard__section-title">{% trans %}Top Clicked Elements{% endtrans %}</h3>
+        <ul class="heatmap-dashboard__element-list" id="heatmap-element-list">
+          {# Populated by JavaScript #}
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>

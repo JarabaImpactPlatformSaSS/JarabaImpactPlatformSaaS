@@ -361,3 +361,37 @@ reseller-portal:
     - core/drupal
     - core/once
 
+# ---------------------------------------------------------------------------
+# LEAD MAGNETS (F3 Doc 178)
+# ---------------------------------------------------------------------------
+# Estilos y JavaScript para lead magnets publicos por vertical.
+# Incluye formulario de captura, calculadora interactiva, scoring client-side.
+
+# ---------------------------------------------------------------------------
+# VISITOR JOURNEY TRACKING (F3 Doc 178)
+# ---------------------------------------------------------------------------
+# Deteccion de vertical del visitante + tracking AIDA del funnel.
+# Se carga globalmente en todas las paginas frontend (no admin).
+
+visitor-journey:
+  version: 1.x
+  js:
+    js/visitor-vertical-detection.js: {}
+    js/aida-tracking.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+lead-magnet:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/lead-magnet.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+

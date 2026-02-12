@@ -1,0 +1,11 @@
+id: comercioconecta_free_qr_codes
+label: 'ComercioConecta Free: Codigos QR'
+vertical: comercioconecta
+plan: free
+feature_key: qr_codes
+limit_value: 1
+description: '1 codigo QR en plan gratuito ComercioConecta.'
+upgrade_message: 'Solo puedes generar 1 codigo QR. Actualiza a Starter para hasta 10.'
+expected_conversion: 0.28
+weight: 110
+status: true

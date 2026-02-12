@@ -1,0 +1,16 @@
+name: 'Jaraba Blog'
+type: module
+description: 'Blog nativo per-tenant con RSS, Schema.org, autores y compartir social.'
+package: 'Jaraba SaaS'
+core_version_requirement: ^10 || ^11
+php: 8.2
+dependencies:
+  - drupal:text
+  - drupal:file
+  - drupal:user
+  - drupal:datetime
+  - drupal:views
+  - drupal:field_ui
+  - drupal:options
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: entity.blog_post.settings

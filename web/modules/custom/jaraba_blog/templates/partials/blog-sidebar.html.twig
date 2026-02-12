@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * blog-sidebar.html.twig - Sidebar del blog.
+ *
+ * Variables:
+ *   - categories: Array de categorias activas
+ *   - popular_posts: Posts populares
+ *   - tags: Array de tags { tag_name: count }
+ */
+#}
+<div class="blog-sidebar">
+  {# Categorias #}
+  {% if categories|length > 0 %}
+    <section class="blog-sidebar__section">
+      <h3 class="blog-sidebar__title">{% trans %}Categorias{% endtrans %}</h3>
+      <ul class="blog-sidebar__categories">
+        {% for category in categories %}
+          <li class="blog-sidebar__category-item">
+            <a href="/blog/categoria/{{ category.getSlug() }}" class="blog-sidebar__category-link">
+              <span class="blog-sidebar__category-color" style="background-color: {{ category.getColor() }}"></span>
+              <span class="blog-sidebar__category-name">{{ category.getName() }}</span>
+              <span class="blog-sidebar__category-count">{{ category.getPostsCount() }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# Posts populares #}
+  {% if popular_posts|length > 0 %}
+    <section class="blog-sidebar__section">
+      <h3 class="blog-sidebar__title">{% trans %}Populares{% endtrans %}</h3>
+      <ul class="blog-sidebar__popular">
+        {% for post in popular_posts %}
+          <li class="blog-sidebar__popular-item">
+            <a href="/blog/{{ post.getSlug() }}" class="blog-sidebar__popular-link">
+              <span class="blog-sidebar__popular-title">{{ post.getTitle() }}</span>
+              <span class="blog-sidebar__popular-views">{{ post.getViewsCount() }} {% trans %}visitas{% endtrans %}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# RSS #}
+  <section class="blog-sidebar__section">
+    <a href="/blog/feed.xml" class="blog-sidebar__rss" target="_blank" rel="noopener">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.696-1.02A5.97 5.97 0 0 0 3 5.5a.5.5 0 0 1 1 0 4.97 4.97 0 0 1 4.33 4.482.5.5 0 1 1-.998.036h-.002zM11.5 11a.5.5 0 0 1-.498-.459 8.476 8.476 0 0 0-7.543-7.543.5.5 0 1 1 .082-.996A9.476 9.476 0 0 1 12 10.5a.5.5 0 0 1-.5.5z"/>
+      </svg>
+      {% trans %}Suscribirse via RSS{% endtrans %}
+    </a>
+  </section>
+</div>

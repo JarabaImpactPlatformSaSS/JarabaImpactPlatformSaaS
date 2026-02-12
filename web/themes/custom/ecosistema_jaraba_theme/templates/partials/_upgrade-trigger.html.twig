@@ -1,0 +1,132 @@
+{#
+/**
+ * @file
+ * templates/partials/_upgrade-trigger.html.twig
+ *
+ * Parcial para el modal slide-panel de upgrade trigger.
+ * Se muestra cuando un tenant alcanza un limite freemium, intenta
+ * acceder a una feature bloqueada, o cumple otro criterio de
+ * incentivo de upgrade (Doc 183 §4).
+ *
+ * Se invoca desde cualquier pagina con:
+ * {% if upgrade_trigger and upgrade_trigger.should_show %}
+ *   {% include '@ecosistema_jaraba_theme/partials/_upgrade-trigger.html.twig' with {
+ *     trigger: upgrade_trigger
+ *   } %}
+ * {% endif %}
+ *
+ * Variables esperadas:
+ * - trigger.should_show: (bool) Si debe mostrarse.
+ * - trigger.trigger_type: (string) Tipo de trigger.
+ * - trigger.title: (string) Titulo del trigger.
+ * - trigger.message: (string) Mensaje contextualizado.
+ * - trigger.icon: (array) Con category, name, variant, color.
+ * - trigger.current_plan: (array) Con id y name.
+ * - trigger.recommended_plan: (array) Con id y name.
+ * - trigger.cta_primary: (array) Con text y url.
+ * - trigger.cta_secondary: (array) Con text y action.
+ * - trigger.expected_conversion: (float) Tasa esperada.
+ *
+ * @see docs/implementacion/2026-02-12_F2_Freemium_Trial_Model_Doc183_Implementacion.md
+ */
+#}
+
+{% if trigger and trigger.should_show %}
+<div class="slide-panel slide-panel--medium upgrade-trigger upgrade-trigger--{{ trigger.trigger_type }}"
+     data-slide-panel="upgrade-trigger"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="upgrade-trigger-title">
+
+  {# Overlay #}
+  <div class="slide-panel__overlay" data-slide-panel-close></div>
+
+  {# Content #}
+  <div class="slide-panel__content">
+
+    {# Header #}
+    <div class="slide-panel__header upgrade-trigger__header">
+      <div class="upgrade-trigger__icon">
+        {% if trigger.icon %}
+          {{ jaraba_icon(trigger.icon.category, trigger.icon.name, {
+            variant: trigger.icon.variant|default('duotone'),
+            color: trigger.icon.color|default('naranja-impulso'),
+            size: '48px'
+          }) }}
+        {% endif %}
+      </div>
+      <h2 id="upgrade-trigger-title" class="upgrade-trigger__title">
+        {{ trigger.title }}
+      </h2>
+      <button class="slide-panel__close" data-slide-panel-close aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'close', { size: '24px' }) }}
+      </button>
+    </div>
+
+    {# Body #}
+    <div class="slide-panel__body upgrade-trigger__body">
+
+      {# Message #}
+      <p class="upgrade-trigger__message">
+        {{ trigger.message }}
+      </p>
+
+      {# Plan Comparison #}
+      {% if trigger.current_plan and trigger.recommended_plan %}
+      <div class="upgrade-trigger__comparison" role="table" aria-label="{% trans %}Comparativa de planes{% endtrans %}">
+
+        {# Current Plan #}
+        <div class="upgrade-trigger__plan upgrade-trigger__plan--current" role="row">
+          <div class="upgrade-trigger__plan-badge" role="cell">
+            {% trans %}Plan actual{% endtrans %}
+          </div>
+          <div class="upgrade-trigger__plan-name" role="cell">
+            {{ trigger.current_plan.name }}
+          </div>
+        </div>
+
+        {# Arrow #}
+        <div class="upgrade-trigger__arrow" aria-hidden="true">
+          {{ jaraba_icon('ui', 'arrow-right', { size: '24px', color: 'naranja-impulso' }) }}
+        </div>
+
+        {# Recommended Plan #}
+        <div class="upgrade-trigger__plan upgrade-trigger__plan--recommended" role="row">
+          <div class="upgrade-trigger__plan-badge upgrade-trigger__plan-badge--recommended" role="cell">
+            {% trans %}Recomendado{% endtrans %}
+          </div>
+          <div class="upgrade-trigger__plan-name" role="cell">
+            {{ trigger.recommended_plan.name }}
+          </div>
+        </div>
+
+      </div>
+      {% endif %}
+
+    </div>
+
+    {# Footer / CTAs #}
+    <div class="slide-panel__footer upgrade-trigger__footer">
+      {% if trigger.cta_primary %}
+        <a href="{{ trigger.cta_primary.url }}"
+           class="btn btn--primary btn--lg upgrade-trigger__cta-primary"
+           data-upgrade-trigger-action="upgrade"
+           data-trigger-type="{{ trigger.trigger_type }}">
+          {{ trigger.cta_primary.text }}
+        </a>
+      {% endif %}
+
+      {% if trigger.cta_secondary %}
+        <button type="button"
+                class="btn btn--ghost upgrade-trigger__cta-secondary"
+                data-slide-panel-close
+                data-upgrade-trigger-action="dismiss"
+                data-trigger-type="{{ trigger.trigger_type }}">
+          {{ trigger.cta_secondary.text }}
+        </button>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endif %}

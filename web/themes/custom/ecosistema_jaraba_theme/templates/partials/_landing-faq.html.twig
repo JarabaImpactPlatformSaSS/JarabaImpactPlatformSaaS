@@ -1,0 +1,60 @@
+{#
+/**
+ * @file _landing-faq.html.twig
+ * Parcial reutilizable: FAQ section con acordeon accesible + Schema.org JSON-LD.
+ *
+ * VARIABLES:
+ * - faq: Array de { question, answer }
+ * - vertical_key: ID del vertical
+ *
+ * Schema.org: Genera FAQPage JSON-LD automaticamente desde los datos.
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set items = faq|default([]) %}
+
+{% if items|length > 0 %}
+<section class="landing-faq" aria-labelledby="faq-title">
+  <div class="landing-faq__container">
+    <h2 id="faq-title" class="landing-faq__title">
+      {% trans %}Preguntas frecuentes{% endtrans %}
+    </h2>
+
+    <div class="landing-faq__list" role="list">
+      {% for item in items %}
+        <details class="landing-faq__item" role="listitem">
+          <summary class="landing-faq__question">
+            <span>{{ item.question }}</span>
+            <span class="landing-faq__toggle" aria-hidden="true"></span>
+          </summary>
+          <div class="landing-faq__answer">
+            <p>{{ item.answer }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Schema.org FAQPage JSON-LD #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in items %}
+    {
+      "@type": "Question",
+      "name": {{ item.question|json_encode|raw }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.answer|json_encode|raw }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}

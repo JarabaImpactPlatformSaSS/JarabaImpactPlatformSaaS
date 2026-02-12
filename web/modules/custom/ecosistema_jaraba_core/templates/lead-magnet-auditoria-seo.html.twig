@@ -1,0 +1,138 @@
+{#
+/**
+ * @file lead-magnet-auditoria-seo.html.twig
+ * Lead Magnet: Auditoria SEO Local Gratuita (ComercioConecta).
+ *
+ * Herramienta automatizada que analiza la presencia SEO del negocio.
+ * El visitante introduce su URL/negocio y recibe un informe instantaneo.
+ *
+ * VARIABLES:
+ * - magnet_data.vertical: 'comercioconecta'
+ * - magnet_data.magnet_type: 'auditoria_seo'
+ * - magnet_data.title: Titulo principal
+ * - magnet_data.subtitle: Subtitulo descriptivo
+ * - magnet_data.icon: { category, name, variant, color }
+ * - magnet_data.checks: Array de checks que realiza la auditoria
+ * - magnet_data.cta_register: { text, url }
+ *
+ * @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
+ */
+#}
+
+{% set data = magnet_data %}
+
+<div class="lead-magnet lead-magnet--auditoria"
+     data-vertical="{{ data.vertical }}"
+     data-magnet-type="{{ data.magnet_type }}"
+     data-track-event="lead_magnet_start"
+     data-track-params='{"vertical":"{{ data.vertical }}","type":"{{ data.magnet_type }}"}'>
+
+  {# === HEADER === #}
+  <div class="lead-magnet__header">
+    <div class="lead-magnet__icon lead-magnet__icon--{{ data.icon.color }}">
+      {{ jaraba_icon(data.icon.category, data.icon.name, {
+        variant: data.icon.variant,
+        size: 48
+      }) }}
+    </div>
+    <h1 class="lead-magnet__title">{{ data.title }}</h1>
+    <p class="lead-magnet__subtitle">{{ data.subtitle }}</p>
+  </div>
+
+  {# === QUE ANALIZAMOS === #}
+  <div class="lead-magnet__checks">
+    <h2 class="lead-magnet__checks-title">{% trans %}Que analizamos{% endtrans %}</h2>
+    <ul class="lead-magnet__checks-list" role="list">
+      {% for check in data.checks %}
+        <li class="lead-magnet__check">
+          <span class="lead-magnet__check-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'search', { variant: 'duotone', color: 'naranja-impulso', size: 20 }) }}
+          </span>
+          <span>{{ check }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {# === FORMULARIO DE AUDITORIA === #}
+  <form class="lead-magnet__form lead-magnet__audit-form">
+    <div class="lead-magnet__audit-inputs">
+      <label for="lead-magnet-business" class="visually-hidden">{% trans %}Nombre de tu negocio{% endtrans %}</label>
+      <input type="text"
+             id="lead-magnet-business"
+             name="business_name"
+             class="lead-magnet__business-input"
+             placeholder="{{ 'Nombre de tu negocio'|t }}"
+             required>
+      <label for="lead-magnet-city" class="visually-hidden">{% trans %}Ciudad{% endtrans %}</label>
+      <input type="text"
+             id="lead-magnet-city"
+             name="city"
+             class="lead-magnet__city-input"
+             placeholder="{{ 'Tu ciudad'|t }}"
+             required>
+    </div>
+    <div class="lead-magnet__email-capture">
+      <label for="lead-magnet-email" class="visually-hidden">{% trans %}Email{% endtrans %}</label>
+      <input type="email"
+             id="lead-magnet-email"
+             name="email"
+             class="lead-magnet__email-input"
+             placeholder="{{ 'tu@email.com'|t }}"
+             required
+             autocomplete="email">
+      <button type="submit" class="lead-magnet__submit btn btn--primary">
+        {% trans %}Analizar mi negocio gratis{% endtrans %}
+      </button>
+    </div>
+    <p class="lead-magnet__privacy">
+      {% trans %}Informe inmediato + detalle completo por email.{% endtrans %}
+    </p>
+  </form>
+
+  {# === PANTALLA DE ANALISIS EN CURSO === #}
+  <div class="lead-magnet__analyzing" hidden>
+    <div class="lead-magnet__analyzing-spinner"></div>
+    <p class="lead-magnet__analyzing-text">{% trans %}Analizando tu presencia online...{% endtrans %}</p>
+    <div class="lead-magnet__analyzing-checks">
+      {% for check in data.checks %}
+        <div class="lead-magnet__analyzing-check" data-check="{{ loop.index0 }}">
+          <span class="lead-magnet__analyzing-check-status" aria-hidden="true"></span>
+          <span>{{ check }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# === RESULTADO DE AUDITORIA === #}
+  <div class="lead-magnet__result auditoria-result" hidden>
+
+    {# Score general #}
+    <div class="auditoria-result__score">
+      <div class="auditoria-result__score-bar">
+        <div class="auditoria-result__score-fill"></div>
+      </div>
+      <div class="auditoria-result__score-labels">
+        <span>{% trans %}Bajo{% endtrans %}</span>
+        <span class="auditoria-result__score-value"></span>
+        <span>{% trans %}Excelente{% endtrans %}</span>
+      </div>
+    </div>
+
+    {# Desglose por area #}
+    <div class="auditoria-result__breakdown"></div>
+
+    {# CTA #}
+    <div class="lead-magnet__cta">
+      <p class="lead-magnet__cta-intro">
+        {% trans %}Mejora estos resultados con ComercioConecta{% endtrans %}
+      </p>
+      <a href="{{ data.cta_register.url }}" class="btn btn--primary btn--lg" data-track-cta="register_{{ data.magnet_type }}" data-track-position="lead_magnet_result">
+        {{ data.cta_register.text }}
+      </a>
+      <p class="lead-magnet__cta-hint">
+        {% trans %}Plan gratuito, sin tarjeta de credito{% endtrans %}
+      </p>
+    </div>
+  </div>
+</div>

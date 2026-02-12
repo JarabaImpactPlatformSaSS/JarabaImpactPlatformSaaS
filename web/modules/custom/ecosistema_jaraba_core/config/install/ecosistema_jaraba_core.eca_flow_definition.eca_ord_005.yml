@@ -1,0 +1,11 @@
+id: eca_ord_005
+label: 'Review Recibida'
+description: 'Al crear una resena de producto, se notifica al productor, se actualiza la puntuacion media del producto y se genera respuesta sugerida via IA si el productor tiene plan Pro.'
+domain: ORD
+trigger_event: 'hook_entity_insert(review)'
+module: jaraba_agroconecta_core
+hook_function: jaraba_agroconecta_core_review_insert
+spec_reference: 54_Reviews
+implementation_status: partial
+weight: 44
+status: true

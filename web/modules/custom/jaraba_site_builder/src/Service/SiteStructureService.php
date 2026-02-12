@@ -29,6 +29,7 @@ class SiteStructureService
         protected Connection $database,
         protected TenantContextService $tenantContext,
         protected LoggerInterface $logger,
+        protected RedirectService $redirectService,
     ) {
     }
 
@@ -185,6 +186,8 @@ class SiteStructureService
     /**
      * Mueve una página a un nuevo padre.
      *
+     * Crea auto-redirects 301 para la URL antigua y registra en SiteUrlHistory.
+     *
      * @param int $pageTreeId
      *   ID del nodo a mover.
      * @param int|null $newParentId
@@ -208,11 +211,15 @@ class SiteStructureService
             throw new \Exception('No se puede mover un nodo a uno de sus descendientes');
         }
 
+        // Capturar URLs anteriores del subárbol para crear redirects.
+        $oldUrls = $this->collectSubtreeUrls($entity);
+
+        $tenantId = (int) $entity->get('tenant_id')->target_id;
         $transaction = $this->database->startTransaction();
 
         try {
             // Actualizar peso de hermanos existentes para hacer hueco.
-            $this->shiftSiblingWeights($entity->get('tenant_id')->target_id, $newParentId, $position);
+            $this->shiftSiblingWeights($tenantId, $newParentId, $position);
 
             // Mover el nodo.
             $entity->set('parent_id', $newParentId);
@@ -222,6 +229,12 @@ class SiteStructureService
             // Regenerar paths de todo el subárbol.
             $this->regenerateSubtreePaths($entity);
 
+            // Regenerar path_alias jerárquico del nodo movido y sus descendientes.
+            $this->generateHierarchicalPathAlias($entity, TRUE);
+
+            // Crear auto-redirects para URLs que cambiaron.
+            $this->createMoveRedirects($entity, $oldUrls, $tenantId);
+
             $this->logger->info('Página @id movida a padre @parent.', [
                 '@id' => $pageTreeId,
                 '@parent' => $newParentId ?? 'raíz',
@@ -229,6 +242,200 @@ class SiteStructureService
         } catch (\Exception $e) {
             $transaction->rollBack();
             throw $e;
+        }
+    }
+
+    /**
+     * Recopila las URLs actuales de un nodo y sus descendientes.
+     *
+     * @return array
+     *   Map de page_id => url_actual.
+     */
+    protected function collectSubtreeUrls(object $entity): array
+    {
+        $urls = [];
+        $page = $entity->getPage();
+        if ($page && $page->hasField('path_alias')) {
+            $alias = $page->get('path_alias')->value;
+            if ($alias) {
+                $urls[(int) $entity->id()] = $alias;
+            }
+        }
+
+        foreach ($entity->getChildren() as $child) {
+            $urls += $this->collectSubtreeUrls($child);
+        }
+
+        return $urls;
+    }
+
+    /**
+     * Crea auto-redirects 301 después de mover un nodo.
+     */
+    protected function createMoveRedirects(object $entity, array $oldUrls, int $tenantId): void
+    {
+        // Recargar la entidad para obtener las URLs actualizadas.
+        $storage = $this->entityTypeManager->getStorage('site_page_tree');
+        $freshEntity = $storage->load($entity->id());
+        if (!$freshEntity) {
+            return;
+        }
+
+        $newUrls = $this->collectSubtreeUrls($freshEntity);
+
+        foreach ($oldUrls as $nodeId => $oldUrl) {
+            $newUrl = $newUrls[$nodeId] ?? null;
+            if ($newUrl && $oldUrl !== $newUrl) {
+                $this->redirectService->createAutoRedirect($oldUrl, $newUrl, $tenantId);
+
+                // Registrar en SiteUrlHistory si la entidad existe.
+                $this->recordUrlChange($nodeId, $oldUrl, $newUrl, $tenantId, 'parent_change');
+            }
+        }
+    }
+
+    /**
+     * Genera y actualiza el path_alias jerárquico de una página y sus descendientes.
+     *
+     * Construye la URL basada en la jerarquía del árbol:
+     *   /padre-slug/hijo-slug/nieto-slug
+     *
+     * @param object $entity
+     *   Entidad SitePageTree.
+     * @param bool $recursive
+     *   Si TRUE, regenera también los descendientes.
+     */
+    public function generateHierarchicalPathAlias(object $entity, bool $recursive = TRUE): void
+    {
+        $page = $entity->getPage();
+        if (!$page) {
+            return;
+        }
+
+        // Construir el path jerárquico desde los ancestros.
+        $segments = $this->buildPathSegments($entity);
+        $newAlias = '/' . implode('/', $segments);
+
+        // Solo actualizar si cambió.
+        $currentAlias = $page->get('path_alias')->value ?? '';
+        if ($currentAlias !== $newAlias) {
+            $page->set('path_alias', $newAlias);
+            $page->save();
+
+            $this->logger->info('Path alias generado: @alias para página @page.', [
+                '@alias' => $newAlias,
+                '@page' => $page->label(),
+            ]);
+        }
+
+        // Regenerar hijos.
+        if ($recursive) {
+            foreach ($entity->getChildren() as $child) {
+                $this->generateHierarchicalPathAlias($child, TRUE);
+            }
+        }
+    }
+
+    /**
+     * Construye los segmentos de URL desde la raíz hasta este nodo.
+     *
+     * @return array
+     *   Array de slugs: ['servicios', 'consultoria', 'precios'].
+     */
+    protected function buildPathSegments(object $entity): array
+    {
+        $segments = [];
+
+        // Recorrer ancestros desde la raíz.
+        $ancestors = $this->getAncestors($entity);
+        foreach ($ancestors as $ancestor) {
+            $segments[] = $this->slugify($ancestor->getNavTitle());
+        }
+
+        // Añadir el nodo actual.
+        $segments[] = $this->slugify($entity->getNavTitle());
+
+        return $segments;
+    }
+
+    /**
+     * Obtiene los ancestros de un nodo (desde la raíz hasta el padre directo).
+     *
+     * @return array
+     *   Lista de entidades SitePageTree ordenadas raíz → padre.
+     */
+    protected function getAncestors(object $entity): array
+    {
+        $ancestors = [];
+        $current = $entity->getParent();
+
+        while ($current !== NULL) {
+            array_unshift($ancestors, $current);
+            $current = $current->getParent();
+        }
+
+        return $ancestors;
+    }
+
+    /**
+     * Convierte un título a un slug URL-safe.
+     *
+     * @param string $text
+     *   Texto a convertir.
+     *
+     * @return string
+     *   Slug en minúsculas sin caracteres especiales.
+     */
+    protected function slugify(string $text): string
+    {
+        // Transliterar caracteres especiales.
+        $text = mb_strtolower($text);
+
+        // Reemplazar acentos y caracteres especiales comunes.
+        $replacements = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'ñ' => 'n', 'ü' => 'u', 'ç' => 'c',
+            'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+            'â' => 'a', 'ê' => 'e', 'î' => 'i', 'ô' => 'o', 'û' => 'u',
+            'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o',
+        ];
+        $text = strtr($text, $replacements);
+
+        // Reemplazar caracteres no alfanuméricos con guiones.
+        $text = preg_replace('/[^a-z0-9]+/', '-', $text);
+
+        // Eliminar guiones iniciales, finales y duplicados.
+        $text = trim($text, '-');
+        $text = preg_replace('/-+/', '-', $text);
+
+        return $text ?: 'pagina';
+    }
+
+    /**
+     * Registra un cambio de URL en SiteUrlHistory.
+     */
+    protected function recordUrlChange(int $nodeId, string $oldPath, string $newPath, int $tenantId, string $changeType): void
+    {
+        try {
+            $historyStorage = $this->entityTypeManager->getStorage('site_url_history');
+            $treeNode = $this->entityTypeManager->getStorage('site_page_tree')->load($nodeId);
+            $pageId = $treeNode ? (int) $treeNode->get('page_id')->target_id : 0;
+
+            $historyStorage->create([
+                'tenant_id' => $tenantId,
+                'page_id' => $pageId,
+                'old_path' => $oldPath,
+                'new_path' => $newPath,
+                'change_type' => $changeType,
+                'changed_by' => \Drupal::currentUser()->id(),
+                'changed_at' => \Drupal::time()->getRequestTime(),
+                'auto_redirect_created' => TRUE,
+            ])->save();
+        } catch (\Exception $e) {
+            // No bloquear la operación si falla el registro de historial.
+            $this->logger->warning('No se pudo registrar cambio de URL en SiteUrlHistory: @error', [
+                '@error' => $e->getMessage(),
+            ]);
         }
     }
 
@@ -350,6 +557,9 @@ class SiteStructureService
         $entity->set('path', $path . $entity->id() . '/');
         $entity->save();
 
+        // Generar path_alias jerárquico automáticamente.
+        $this->generateHierarchicalPathAlias($entity, FALSE);
+
         $this->logger->info('Página @page añadida al árbol.', [
             '@page' => $pageContentId,
         ]);
@@ -414,6 +624,45 @@ class SiteStructureService
         $entity->delete();
 
         $this->logger->info('Página @id eliminada del árbol.', ['@id' => $pageTreeId]);
+    }
+
+    /**
+     * Actualiza el estado de múltiples nodos en bloque.
+     *
+     * @param array $nodeIds
+     *   IDs de nodos SitePageTree.
+     * @param string $newStatus
+     *   Nuevo estado: 'published', 'draft', 'archived'.
+     *
+     * @return int
+     *   Número de nodos actualizados.
+     */
+    public function bulkUpdateStatus(array $nodeIds, string $newStatus): int
+    {
+        $allowedStatuses = ['published', 'draft', 'archived'];
+        if (!in_array($newStatus, $allowedStatuses)) {
+            throw new \InvalidArgumentException('Estado no válido: ' . $newStatus);
+        }
+
+        $storage = $this->entityTypeManager->getStorage('site_page_tree');
+        $entities = $storage->loadMultiple($nodeIds);
+        $updated = 0;
+
+        foreach ($entities as $entity) {
+            $entity->set('status', $newStatus);
+            if ($newStatus === 'published' && !$entity->get('published_at')->value) {
+                $entity->set('published_at', \Drupal::time()->getRequestTime());
+            }
+            $entity->save();
+            $updated++;
+        }
+
+        $this->logger->info('Bulk update: @count nodos cambiados a @status.', [
+            '@count' => $updated,
+            '@status' => $newStatus,
+        ]);
+
+        return $updated;
     }
 
     /**

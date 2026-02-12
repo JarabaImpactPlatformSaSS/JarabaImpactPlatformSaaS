@@ -232,6 +232,55 @@ function jaraba_site_builder_theme(): array {
       ],
       'template' => 'partials/jaraba-footer-split',
     ],
+    // =========================================================================
+    // Fase 1 Doc 177: Parciales de Navegación Global
+    // =========================================================================
+    'jaraba_header' => [
+      'variables' => [
+        'header_config' => [],
+        'main_menu_tree' => [],
+        'site_config' => [],
+      ],
+      'template' => 'partials/jaraba-header',
+    ],
+    'jaraba_footer' => [
+      'variables' => [
+        'footer_config' => [],
+        'footer_menus' => [],
+        'site_config' => [],
+        'social_links' => [],
+      ],
+      'template' => 'partials/jaraba-footer',
+    ],
+    'jaraba_mobile_menu' => [
+      'variables' => [
+        'main_menu_tree' => [],
+        'header_config' => [],
+      ],
+      'template' => 'partials/jaraba-mobile-menu',
+    ],
+    'jaraba_mega_menu' => [
+      'variables' => [
+        'mega_items' => [],
+        'columns' => [],
+      ],
+      'template' => 'partials/jaraba-mega-menu',
+    ],
+    'jaraba_topbar' => [
+      'variables' => [
+        'topbar_content' => '',
+        'bg_color' => '#1E3A5F',
+        'text_color' => '#FFFFFF',
+      ],
+      'template' => 'partials/jaraba-topbar',
+    ],
+    'jaraba_breadcrumbs' => [
+      'variables' => [
+        'breadcrumbs' => [],
+        'current_title' => '',
+      ],
+      'template' => 'partials/jaraba-breadcrumbs',
+    ],
   ];
 }
 
