@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Template para el dashboard del Journey Engine.
+ *
+ * Variables:
+ * - metrics: Render array con metricas globales.
+ * - verticals: Render array con tabla de verticales.
+ * - at_risk: Render array con usuarios en riesgo.
+ * - activity: Render array con actividad reciente.
+ */
+#}
+<div class="journey-dashboard">
+  <div class="journey-dashboard-header">
+    <h1>{{ 'Journey Engine Dashboard'|t }}</h1>
+    <p class="subtitle">{{ 'Navegación inteligente para 19 avatares en 7 verticales'|t }}</p>
+  </div>
+
+  {% if metrics %}
+    <div class="journey-metrics-grid">
+      {{ metrics }}
+    </div>
+  {% endif %}
+
+  {% if verticals %}
+    <div class="journey-verticals-section">
+      {{ verticals }}
+    </div>
+  {% endif %}
+
+  {% if at_risk %}
+    <div class="journey-at-risk-section">
+      {{ at_risk }}
+    </div>
+  {% endif %}
+
+  {% if activity %}
+    <div class="journey-activity-section">
+      {{ activity }}
+    </div>
+  {% endif %}
+</div>

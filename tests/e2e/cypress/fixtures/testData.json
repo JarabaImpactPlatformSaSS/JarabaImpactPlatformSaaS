@@ -1,0 +1,57 @@
+{
+    "admin": {
+        "username": "admin",
+        "password": "admin",
+        "email": "admin@jaraba-saas.local"
+    },
+    "testUser": {
+        "username": "testuser",
+        "password": "test123",
+        "email": "test@jaraba.com"
+    },
+    "candidate": {
+        "username": "candidato1",
+        "email": "candidato@test.com",
+        "nombre": "Juan",
+        "apellidos": "García López",
+        "dni": "12345678A"
+    },
+    "empresa": {
+        "nombre": "Empresa Test S.L.",
+        "cif": "B12345678",
+        "sector": "tecnologia",
+        "tamanio": "pyme"
+    },
+    "sepe": {
+        "centro": {
+            "nombre": "Centro Test SEPE",
+            "cif": "B87654321",
+            "codigo_centro": "CT001"
+        },
+        "accion": {
+            "id_sepe": "AF2026-001-TEST",
+            "nombre": "Curso de Desarrollo Web",
+            "horas": 200
+        },
+        "participante": {
+            "dni": "98765432B",
+            "nombre": "María",
+            "apellidos": "López Martínez"
+        }
+    },
+    "colors": {
+        "primary": "#FF8C42",
+        "secondary": "#00A9A5",
+        "corporate": "#233D63"
+    },
+    "presets": {
+        "agro_oliva": {
+            "primary": "#556B2F",
+            "label": "Olivar y Aceite"
+        },
+        "servicios_restaurante": {
+            "primary": "#B22222",
+            "label": "Restaurante"
+        }
+    }
+}
