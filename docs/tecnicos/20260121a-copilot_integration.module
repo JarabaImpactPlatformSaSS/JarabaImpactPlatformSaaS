@@ -1,0 +1,467 @@
+<?php
+
+/**
+ * @file
+ * Copilot Integration Module for Andalucía +ei
+ * 
+ * Provides integration between Drupal 11 and the Copilot AI system
+ * for entrepreneurship support and business model validation.
+ * 
+ * @package copilot_integration
+ * @version 2.0.0
+ */
+
+declare(strict_types=1);
+
+namespace Drupal\copilot_integration;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function copilot_integration_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.copilot_integration':
+      return '<p>' . t('Provides AI-powered entrepreneurship support through the Copilot system for Andalucía +ei program.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function copilot_integration_theme($existing, $type, $theme, $path) {
+  return [
+    'copilot_chat_widget' => [
+      'variables' => [
+        'entrepreneur_id' => NULL,
+        'entrepreneur_name' => NULL,
+        'carril' => 'IMPULSO',
+        'position' => 'bottom-right',
+      ],
+      'template' => 'copilot-chat-widget',
+    ],
+    'bmc_dashboard' => [
+      'variables' => [
+        'entrepreneur_id' => NULL,
+        'validation_data' => [],
+        'hypotheses' => [],
+      ],
+      'template' => 'bmc-dashboard',
+    ],
+    'experiment_card' => [
+      'variables' => [
+        'experiment' => NULL,
+        'mode' => 'test', // 'test' or 'learning'
+      ],
+      'template' => 'experiment-card',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function copilot_integration_page_attachments(array &$attachments) {
+  // Only attach on relevant pages
+  $route = \Drupal::routeMatch()->getRouteName();
+  $copilot_routes = [
+    'copilot_integration.dashboard',
+    'copilot_integration.chat',
+    'copilot_integration.experiments',
+    'entity.entrepreneur_profile.canonical',
+  ];
+  
+  if (in_array($route, $copilot_routes) || strpos($route, 'copilot') !== FALSE) {
+    $attachments['#attached']['library'][] = 'copilot_integration/copilot_chat';
+    $attachments['#attached']['library'][] = 'copilot_integration/bmc_dashboard';
+    
+    // Pass configuration to JavaScript
+    $config = \Drupal::config('copilot_integration.settings');
+    $attachments['#attached']['drupalSettings']['copilot'] = [
+      'apiEndpoint' => '/api/copilot/chat',
+      'bmcEndpoint' => '/api/bmc/validation',
+      'experimentsEndpoint' => '/api/experiments',
+      'streamingEnabled' => $config->get('streaming_enabled') ?? TRUE,
+      'maxTokens' => $config->get('max_tokens') ?? 2000,
+    ];
+  }
+}
+
+// =============================================================================
+// ENTITY HOOKS
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for entrepreneur_profile.
+ */
+function copilot_integration_entrepreneur_profile_insert(EntityInterface $entity) {
+  /** @var \Drupal\copilot_integration\Service\BMCValidationService $bmc_service */
+  $bmc_service = \Drupal::service('copilot_integration.bmc_validation');
+  
+  // Initialize BMC validation state for all 9 blocks
+  $bmc_service->initializeValidationState($entity->id());
+  
+  // Log the event
+  \Drupal::logger('copilot_integration')->info(
+    'Initialized BMC validation state for entrepreneur @id',
+    ['@id' => $entity->id()]
+  );
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for experiment.
+ */
+function copilot_integration_experiment_update(EntityInterface $entity) {
+  // Only process when status changes to COMPLETED
+  if ($entity->get('status')->value !== 'COMPLETED') {
+    return;
+  }
+  
+  $original = $entity->original ?? NULL;
+  if ($original && $original->get('status')->value === 'COMPLETED') {
+    return; // Already was completed
+  }
+  
+  /** @var \Drupal\copilot_integration\Service\ExperimentProcessor $processor */
+  $processor = \Drupal::service('copilot_integration.experiment_processor');
+  
+  try {
+    $processor->processCompletedExperiment($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('copilot_integration')->error(
+      'Error processing completed experiment @id: @message',
+      ['@id' => $entity->id(), '@message' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for hypothesis.
+ */
+function copilot_integration_hypothesis_presave(EntityInterface $entity) {
+  // Auto-calculate priority rank
+  if ($entity->isNew() || $entity->get('status')->value === 'PENDING') {
+    /** @var \Drupal\copilot_integration\Service\HypothesisPrioritizer $prioritizer */
+    $prioritizer = \Drupal::service('copilot_integration.hypothesis_prioritizer');
+    $priority = $prioritizer->calculatePriority($entity);
+    $entity->set('priority_rank', $priority);
+  }
+}
+
+// =============================================================================
+// FORM HOOKS
+// =============================================================================
+
+/**
+ * Implements hook_form_FORM_ID_alter() for DIME form.
+ */
+function copilot_integration_form_webform_submission_dime_diagnostic_add_form_alter(
+  &$form, 
+  FormStateInterface $form_state, 
+  $form_id
+) {
+  // Add custom submit handler for DIME processing
+  $form['actions']['submit']['#submit'][] = '_copilot_integration_dime_submit';
+}
+
+/**
+ * Custom submit handler for DIME diagnostic form.
+ */
+function _copilot_integration_dime_submit(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  $user = \Drupal::currentUser();
+  
+  /** @var \Drupal\copilot_integration\Service\DIMEProcessor $dime_processor */
+  $dime_processor = \Drupal::service('copilot_integration.dime_processor');
+  
+  try {
+    $result = $dime_processor->processResponses($user->id(), $values);
+    
+    \Drupal::messenger()->addStatus(t(
+      'Tu diagnóstico DIME ha sido procesado. Puntuación: @score/20. Carril asignado: @carril',
+      ['@score' => $result['score'], '@carril' => $result['carril']]
+    ));
+    
+    // Redirect to dashboard
+    $form_state->setRedirect('copilot_integration.dashboard');
+  }
+  catch (\Exception $e) {
+    \Drupal::messenger()->addError(t('Error procesando el diagnóstico. Por favor, inténtalo de nuevo.'));
+    \Drupal::logger('copilot_integration')->error($e->getMessage());
+  }
+}
+
+/**
+ * Implements hook_form_alter() for experiment forms.
+ */
+function copilot_integration_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add experiment library selector to Test Card forms
+  if (strpos($form_id, 'experiment') !== FALSE && strpos($form_id, 'add') !== FALSE) {
+    $form['experiment_type_id']['#ajax'] = [
+      'callback' => '_copilot_integration_experiment_type_callback',
+      'wrapper' => 'experiment-details-wrapper',
+      'event' => 'change',
+    ];
+    
+    $form['experiment_details'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'experiment-details-wrapper'],
+    ];
+  }
+}
+
+/**
+ * AJAX callback for experiment type selection.
+ */
+function _copilot_integration_experiment_type_callback(array &$form, FormStateInterface $form_state) {
+  $experiment_type_id = $form_state->getValue('experiment_type_id');
+  
+  if ($experiment_type_id) {
+    /** @var \Drupal\copilot_integration\Service\ExperimentLibrary $library */
+    $library = \Drupal::service('copilot_integration.experiment_library');
+    $experiment_type = $library->getExperiment((int) $experiment_type_id);
+    
+    if ($experiment_type) {
+      $form['experiment_details']['info'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['experiment-info-box', 'messages', 'messages--status']],
+        'description' => [
+          '#markup' => '<strong>' . $experiment_type['name_es'] . '</strong><br>' .
+                       '<p>' . $experiment_type['description'] . '</p>' .
+                       '<p><em>Cuándo usar:</em> ' . $experiment_type['when_to_use'] . '</p>',
+        ],
+      ];
+      
+      // Pre-fill success criteria template
+      if (!empty($experiment_type['success_criteria_template'])) {
+        $form['success_criteria']['#default_value'] = $experiment_type['success_criteria_template'];
+      }
+    }
+  }
+  
+  return $form['experiment_details'];
+}
+
+// =============================================================================
+// CRON HOOKS
+// =============================================================================
+
+/**
+ * Implements hook_cron().
+ */
+function copilot_integration_cron() {
+  // Recalculate hypothesis priorities for all active entrepreneurs
+  $last_run = \Drupal::state()->get('copilot_integration.priority_recalc_last', 0);
+  $interval = 86400; // Once per day
+  
+  if ((time() - $last_run) >= $interval) {
+    /** @var \Drupal\copilot_integration\Service\HypothesisPrioritizer $prioritizer */
+    $prioritizer = \Drupal::service('copilot_integration.hypothesis_prioritizer');
+    $prioritizer->recalculateAllPriorities();
+    
+    \Drupal::state()->set('copilot_integration.priority_recalc_last', time());
+    \Drupal::logger('copilot_integration')->info('Recalculated hypothesis priorities');
+  }
+  
+  // Clean up old conversation logs (older than 90 days)
+  $cleanup_last = \Drupal::state()->get('copilot_integration.cleanup_last', 0);
+  $cleanup_interval = 604800; // Weekly
+  
+  if ((time() - $cleanup_last) >= $cleanup_interval) {
+    $database = \Drupal::database();
+    $cutoff = strtotime('-90 days');
+    
+    $deleted = $database->delete('copilot_conversation')
+      ->condition('created_at', date('Y-m-d H:i:s', $cutoff), '<')
+      ->execute();
+    
+    \Drupal::state()->set('copilot_integration.cleanup_last', time());
+    \Drupal::logger('copilot_integration')->info(
+      'Cleaned up @count old conversation records',
+      ['@count' => $deleted]
+    );
+  }
+}
+
+// =============================================================================
+// API HOOKS
+// =============================================================================
+
+/**
+ * Implements hook_rest_resource_alter().
+ */
+function copilot_integration_rest_resource_alter(array &$definitions) {
+  // Ensure our REST resources have proper authentication
+  $copilot_resources = [
+    'copilot_chat',
+    'copilot_context',
+    'bmc_validation',
+    'hypothesis',
+    'experiment',
+  ];
+  
+  foreach ($copilot_resources as $resource_id) {
+    if (isset($definitions[$resource_id])) {
+      $definitions[$resource_id]['authentication'] = ['cookie', 'basic_auth', 'jwt_auth'];
+    }
+  }
+}
+
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Gets the current entrepreneur profile for the logged-in user.
+ *
+ * @return \Drupal\copilot_integration\Entity\EntrepreneurProfile|null
+ *   The entrepreneur profile entity or NULL if not found.
+ */
+function copilot_integration_get_current_entrepreneur() {
+  $user = \Drupal::currentUser();
+  if ($user->isAnonymous()) {
+    return NULL;
+  }
+  
+  $storage = \Drupal::entityTypeManager()->getStorage('entrepreneur_profile');
+  $profiles = $storage->loadByProperties(['drupal_user_id' => $user->id()]);
+  
+  return !empty($profiles) ? reset($profiles) : NULL;
+}
+
+/**
+ * Determines the appropriate carril based on DIME score.
+ *
+ * @param int $dime_score
+ *   The DIME diagnostic score (0-20).
+ *
+ * @return string
+ *   Either 'IMPULSO' or 'ACELERA'.
+ */
+function copilot_integration_determine_carril(int $dime_score): string {
+  return $dime_score <= 9 ? 'IMPULSO' : 'ACELERA';
+}
+
+/**
+ * Calculates impact points for a given action.
+ *
+ * @param string $action_type
+ *   The type of action (e.g., 'experiment_completed', 'hypothesis_validated').
+ * @param string $decision
+ *   The decision made (if applicable).
+ *
+ * @return int
+ *   The number of points to award.
+ */
+function copilot_integration_calculate_points(string $action_type, string $decision = ''): int {
+  $points_map = [
+    'experiment_started' => 10,
+    'experiment_completed' => [
+      'PERSEVERE' => 100,
+      'PIVOT' => 75,
+      'ZOOM_IN' => 75,
+      'ZOOM_OUT' => 75,
+      'KILL' => 50,
+      'default' => 25,
+    ],
+    'hypothesis_created' => 15,
+    'hypothesis_validated' => 50,
+    'first_sale' => 200,
+    'bmc_block_green' => 100,
+    'weekly_active' => 20,
+  ];
+  
+  if (!isset($points_map[$action_type])) {
+    return 0;
+  }
+  
+  $points = $points_map[$action_type];
+  
+  if (is_array($points)) {
+    return $points[$decision] ?? $points['default'] ?? 0;
+  }
+  
+  return $points;
+}
+
+/**
+ * Gets experiment suggestions for a hypothesis.
+ *
+ * @param string $hypothesis_id
+ *   The hypothesis ID.
+ *
+ * @return array
+ *   Array of suggested experiments.
+ */
+function copilot_integration_suggest_experiments(string $hypothesis_id): array {
+  /** @var \Drupal\copilot_integration\Service\ExperimentSuggester $suggester */
+  $suggester = \Drupal::service('copilot_integration.experiment_suggester');
+  
+  return $suggester->suggestForHypothesis($hypothesis_id);
+}
+
+/**
+ * Detects emotional triggers in user message.
+ *
+ * @param string $message
+ *   The user's message.
+ *
+ * @return string|null
+ *   The detected emotion type or NULL.
+ */
+function copilot_integration_detect_emotion(string $message): ?string {
+  $triggers = [
+    'impostor' => ['no soy suficiente', 'quién soy yo', 'no tengo derecho', 'hay mejores', 'no me lo merezco'],
+    'miedo_precio' => ['es caro', 'me da cosa cobrar', 'no puedo pedir tanto', 'mejor bajo precio', 'muy caro'],
+    'miedo_rechazo' => ['y si dicen no', 'no quiero molestar', 'me da vergüenza', 'qué van a pensar'],
+    'tecnofobia' => ['no sé usar', 'muy complicado', 'no entiendo', 'se me da mal', 'tecnología'],
+    'paralisis' => ['no sé por dónde empezar', 'hay tantas cosas', 'estoy bloqueado', 'todo me supera', 'agobiado'],
+  ];
+  
+  $message_lower = mb_strtolower($message);
+  
+  foreach ($triggers as $emotion => $keywords) {
+    foreach ($keywords as $keyword) {
+      if (strpos($message_lower, $keyword) !== FALSE) {
+        return $emotion;
+      }
+    }
+  }
+  
+  return NULL;
+}
+
+/**
+ * Detects the appropriate Copilot mode based on user message.
+ *
+ * @param string $message
+ *   The user's message.
+ *
+ * @return string
+ *   The detected mode.
+ */
+function copilot_integration_detect_mode(string $message): string {
+  $mode_triggers = [
+    'COACH_EMOCIONAL' => ['miedo', 'no puedo', 'agobio', 'ansiedad', 'bloqueo', 'dudo', 'imposible'],
+    'CONSULTOR_TACTICO' => ['cómo hago', 'qué herramienta', 'paso a paso', 'tutorial', 'explicar'],
+    'SPARRING_PARTNER' => ['qué te parece', 'validar', 'feedback', 'practica', 'simula'],
+    'CFO_SINTETICO' => ['precio', 'cobrar', 'cuánto', 'tarifa', 'margen', 'coste', 'euros'],
+    'ABOGADO_DIABLO' => ['estoy seguro', 'sin duda', 'todos quieren', 'éxito seguro', 'obvio'],
+  ];
+  
+  $message_lower = mb_strtolower($message);
+  
+  foreach ($mode_triggers as $mode => $triggers) {
+    foreach ($triggers as $trigger) {
+      if (strpos($message_lower, $trigger) !== FALSE) {
+        return $mode;
+      }
+    }
+  }
+  
+  return 'CONSULTOR_TACTICO'; // Default mode
+}

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Card - Ficha de Experimento | Andalucía +ei</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1F4E79 0%, #2E75B6 100%); }
+        .card-shadow { box-shadow: 0 10px 40px rgba(31, 78, 121, 0.15); }
+        .input-focus:focus { box-shadow: 0 0 0 3px rgba(46, 117, 182, 0.2); }
+        @media print {
+            .no-print { display: none !important; }
+            .print-break { page-break-after: always; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 no-print">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">🧪 Test Card</h1>
+                    <p class="text-blue-100 text-sm mt-1">Ficha de Experimento - Programa Andalucía +ei</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="guardarBorrador()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition">
+                        💾 Guardar borrador
+                    </button>
+                    <button onclick="window.print()" class="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <form id="testCardForm" class="space-y-6">
+            <!-- Información del Experimento -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">📋</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Información del Experimento</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Número de Experimento</label>
+                        <input type="text" id="experimentNumber" placeholder="Ej: EXP-001" 
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+                        <input type="date" id="experimentDate" 
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bloque del Canvas</label>
+                        <select id="bmcBlock" class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition bg-white">
+                            <option value="">Selecciona el bloque...</option>
+                            <option value="VP">🎯 Propuesta de Valor</option>
+                            <option value="CS">👥 Segmentos de Clientes</option>
+                            <option value="CH">📣 Canales</option>
+                            <option value="CR">💬 Relaciones con Clientes</option>
+                            <option value="RS">💰 Fuentes de Ingresos</option>
+                            <option value="KR">🔑 Recursos Clave</option>
+                            <option value="KA">⚙️ Actividades Clave</option>
+                            <option value="KP">🤝 Alianzas Clave</option>
+                            <option value="C$">📊 Estructura de Costes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Hipótesis</label>
+                        <select id="hypothesisType" class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition bg-white">
+                            <option value="">Selecciona el tipo...</option>
+                            <option value="DESIRABILITY">💚 Deseabilidad - ¿Lo quieren?</option>
+                            <option value="FEASIBILITY">🔵 Factibilidad - ¿Puedo hacerlo?</option>
+                            <option value="VIABILITY">🟡 Viabilidad - ¿Es rentable?</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hipótesis a Validar -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">💡</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Hipótesis a Validar</h2>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                    <p class="text-amber-800 text-sm">
+                        <strong>Formato:</strong> "Creo que [segmento de cliente] [hará acción específica] porque [razón/motivación]"
+                    </p>
+                </div>
+
+                <textarea id="hypothesis" rows="3" placeholder="Ej: Creo que las madres trabajadoras de 30-45 años comprarán un servicio de menú semanal personalizado porque no tienen tiempo para planificar las comidas de la semana."
+                          class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Importancia (si falla, ¿muere el negocio?)</label>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="setImportance(1)" data-importance="1" class="importance-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition text-sm">1 - Baja</button>
+                            <button type="button" onclick="setImportance(2)" data-importance="2" class="importance-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition text-sm">2</button>
+                            <button type="button" onclick="setImportance(3)" data-importance="3" class="importance-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition text-sm">3</button>
+                            <button type="button" onclick="setImportance(4)" data-importance="4" class="importance-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition text-sm">4</button>
+                            <button type="button" onclick="setImportance(5)" data-importance="5" class="importance-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition text-sm">5 - Crítica</button>
+                        </div>
+                        <input type="hidden" id="importanceScore" value="">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Evidencia actual</label>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="setEvidence(1)" data-evidence="1" class="evidence-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-green-500 transition text-sm">1 - Ninguna</button>
+                            <button type="button" onclick="setEvidence(2)" data-evidence="2" class="evidence-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-green-500 transition text-sm">2</button>
+                            <button type="button" onclick="setEvidence(3)" data-evidence="3" class="evidence-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-green-500 transition text-sm">3</button>
+                            <button type="button" onclick="setEvidence(4)" data-evidence="4" class="evidence-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-green-500 transition text-sm">4</button>
+                            <button type="button" onclick="setEvidence(5)" data-evidence="5" class="evidence-btn flex-1 py-2 border-2 border-gray-200 rounded-lg hover:border-green-500 transition text-sm">5 - Fuerte</button>
+                        </div>
+                        <input type="hidden" id="evidenceScore" value="">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tipo de Experimento -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">🔬</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Tipo de Experimento</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Experimento seleccionado</label>
+                        <select id="experimentType" onchange="updateExperimentInfo()" class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition bg-white">
+                            <option value="">Selecciona un experimento...</option>
+                            <optgroup label="🔍 DISCOVERY (Descubrimiento)">
+                                <option value="1">1. Entrevista de Descubrimiento</option>
+                                <option value="2">2. Observación Contextual</option>
+                                <option value="3">3. Análisis de Competencia</option>
+                                <option value="4">4. Un Día en la Vida</option>
+                                <option value="5">5. Encuesta Exploratoria</option>
+                                <option value="6">6. Personas Sintéticas (IA)</option>
+                                <option value="7">7. Análisis de Tendencias</option>
+                                <option value="8">8. Grupo Focal</option>
+                                <option value="9">9. Shadowing</option>
+                                <option value="10">10. Minería de Datos Públicos</option>
+                            </optgroup>
+                            <optgroup label="👀 INTEREST (Interés)">
+                                <option value="11">11. Landing Page Simple</option>
+                                <option value="12">12. Anuncio Simple (Smoke Test)</option>
+                                <option value="13">13. Video Explicativo</option>
+                                <option value="14">14. Folleto/Brochure Digital</option>
+                                <option value="15">15. Storyboard/Comic</option>
+                                <option value="16">16. Feature Fake Door</option>
+                                <option value="17">17. Mockup Interactivo</option>
+                                <option value="18">18. Paper Prototype</option>
+                                <option value="19">19. Entrevista de Solución</option>
+                                <option value="20">20. Producto en Caja</option>
+                                <option value="21">21. Hoja de Datos/Specs</option>
+                                <option value="22">22. Split Test de Mensajes</option>
+                            </optgroup>
+                            <optgroup label="❤️ PREFERENCE (Preferencia)">
+                                <option value="23">23. MVP Concierge</option>
+                                <option value="24">24. MVP Mago de Oz</option>
+                                <option value="25">25. MVP de Una Funcionalidad</option>
+                                <option value="26">26. Test de Usabilidad</option>
+                                <option value="27">27. Beta Privada</option>
+                                <option value="28">28. Test A/B de Precio</option>
+                                <option value="29">29. Producto Comparable</option>
+                                <option value="30">30. Configurador de Producto</option>
+                                <option value="31">31. Prototipo a Escala Real</option>
+                                <option value="32">32. Pop-up Store</option>
+                                <option value="33">33. Prototipo 3D Impreso</option>
+                                <option value="34">34. Simulación/Juego</option>
+                            </optgroup>
+                            <optgroup label="💰 COMMITMENT (Compromiso)">
+                                <option value="35">35. Preventa</option>
+                                <option value="36">36. Carta de Intención (LOI)</option>
+                                <option value="37">37. Crowdfunding</option>
+                                <option value="38">38. Señal/Depósito</option>
+                                <option value="39">39. Venta Real (Simple)</option>
+                                <option value="40">40. Piloto con Cliente</option>
+                                <option value="41">41. Prueba Gratuita a Pagada</option>
+                                <option value="42">42. Venta B2B Enterprise</option>
+                                <option value="43">43. Validación de Canal</option>
+                                <option value="44">44. Contrato Marco</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div id="experimentInfo" class="hidden">
+                        <div class="bg-gray-50 rounded-xl p-4 h-full">
+                            <div class="flex gap-2 mb-2">
+                                <span id="expTime" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"></span>
+                                <span id="expCost" class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full"></span>
+                                <span id="expStrength" class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full"></span>
+                            </div>
+                            <p id="expDescription" class="text-sm text-gray-600"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan del Experimento -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">📝</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Plan del Experimento</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Para verificar esta hipótesis, voy a...</label>
+                        <textarea id="testDescription" rows="3" placeholder="Describe exactamente qué vas a hacer. Sé específico: cuántas personas, qué les preguntarás, dónde, cuándo..."
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Y mediré...</label>
+                        <textarea id="metrics" rows="2" placeholder="¿Qué métricas específicas vas a registrar? Ej: número de clics, % de conversión, respuestas positivas..."
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha inicio prevista</label>
+                            <input type="date" id="startDate" 
+                                   class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha fin prevista</label>
+                            <input type="date" id="endDate" 
+                                   class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Criterio de Éxito -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">🎯</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Criterio de Éxito</h2>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+                    <p class="text-red-800 text-sm">
+                        <strong>⚠️ Importante:</strong> Define un umbral numérico ANTES de hacer el experimento. Esto evita el sesgo de confirmar lo que quieres creer.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tengo razón si...</label>
+                    <textarea id="successCriteria" rows="2" placeholder="Ej: Al menos 7 de 10 entrevistados mencionan 'falta de tiempo' como su principal frustración. O: La landing page consigue >5% de conversión en 7 días."
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estoy equivocado si...</label>
+                    <textarea id="failureCriteria" rows="2" placeholder="Ej: Menos de 3 de 10 mencionan el problema. O: La conversión es inferior al 2%."
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex gap-4 no-print">
+                <button type="button" onclick="guardarTestCard()" class="flex-1 gradient-bg text-white py-4 rounded-xl font-semibold hover:opacity-90 transition">
+                    ✅ Guardar Test Card
+                </button>
+                <button type="button" onclick="iniciarExperimento()" class="flex-1 bg-green-600 text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition">
+                    🚀 Iniciar Experimento
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 py-6 mt-12 no-print">
+        <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>Test Card basada en "Testing Business Ideas" de Strategyzer</p>
+            <p class="mt-1">Programa Andalucía +ei | Jaraba Impact Platform</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de experimentos (simplificado para el ejemplo)
+        const experimentData = {
+            1: { time: 'Horas', cost: 'Gratis', strength: 'Débil', desc: 'Conversaciones abiertas para entender problemas y frustraciones del cliente.' },
+            11: { time: 'Días', cost: 'Gratis', strength: 'Media', desc: 'Página web simple que captura emails de interesados.' },
+            23: { time: 'Días', cost: 'Gratis', strength: 'Fuerte', desc: 'Entregar el servicio manualmente como si fuera automático.' },
+            35: { time: 'Días', cost: 'Gratis', strength: 'Fuerte', desc: 'Cobrar antes de tener el producto listo.' },
+            // ... añadir más según necesidad
+        };
+
+        // Funciones de UI
+        function setImportance(value) {
+            document.getElementById('importanceScore').value = value;
+            document.querySelectorAll('.importance-btn').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                if (parseInt(btn.dataset.importance) === value) {
+                    btn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                }
+            });
+        }
+
+        function setEvidence(value) {
+            document.getElementById('evidenceScore').value = value;
+            document.querySelectorAll('.evidence-btn').forEach(btn => {
+                btn.classList.remove('border-green-500', 'bg-green-50', 'text-green-700');
+                if (parseInt(btn.dataset.evidence) === value) {
+                    btn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+                }
+            });
+        }
+
+        function updateExperimentInfo() {
+            const select = document.getElementById('experimentType');
+            const info = document.getElementById('experimentInfo');
+            const value = select.value;
+
+            if (value && experimentData[value]) {
+                const data = experimentData[value];
+                document.getElementById('expTime').textContent = '⏱️ ' + data.time;
+                document.getElementById('expCost').textContent = '💶 ' + data.cost;
+                document.getElementById('expStrength').textContent = '📊 ' + data.strength;
+                document.getElementById('expDescription').textContent = data.desc;
+                info.classList.remove('hidden');
+            } else {
+                info.classList.add('hidden');
+            }
+        }
+
+        function guardarBorrador() {
+            const formData = getFormData();
+            localStorage.setItem('testCardDraft', JSON.stringify(formData));
+            alert('✅ Borrador guardado localmente');
+        }
+
+        function getFormData() {
+            return {
+                experimentNumber: document.getElementById('experimentNumber').value,
+                experimentDate: document.getElementById('experimentDate').value,
+                bmcBlock: document.getElementById('bmcBlock').value,
+                hypothesisType: document.getElementById('hypothesisType').value,
+                hypothesis: document.getElementById('hypothesis').value,
+                importanceScore: document.getElementById('importanceScore').value,
+                evidenceScore: document.getElementById('evidenceScore').value,
+                experimentType: document.getElementById('experimentType').value,
+                testDescription: document.getElementById('testDescription').value,
+                metrics: document.getElementById('metrics').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                successCriteria: document.getElementById('successCriteria').value,
+                failureCriteria: document.getElementById('failureCriteria').value
+            };
+        }
+
+        function guardarTestCard() {
+            const data = getFormData();
+            // Aquí iría la llamada a la API para guardar
+            console.log('Guardando Test Card:', data);
+            alert('✅ Test Card guardada correctamente');
+        }
+
+        function iniciarExperimento() {
+            const data = getFormData();
+            if (!data.hypothesis || !data.successCriteria) {
+                alert('⚠️ Por favor, completa al menos la hipótesis y el criterio de éxito');
+                return;
+            }
+            // Aquí iría la lógica para cambiar estado a IN_PROGRESS
+            console.log('Iniciando experimento:', data);
+            alert('🚀 ¡Experimento iniciado! Ve a ejecutar tu plan.');
+        }
+
+        // Cargar borrador si existe
+        window.onload = function() {
+            const draft = localStorage.getItem('testCardDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+                // Restaurar campos del borrador
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data[key];
+                });
+                if (data.importanceScore) setImportance(parseInt(data.importanceScore));
+                if (data.evidenceScore) setEvidence(parseInt(data.evidenceScore));
+            }
+            // Set fecha de hoy por defecto
+            document.getElementById('experimentDate').valueAsDate = new Date();
+        };
+    </script>
+</body>
+</html>

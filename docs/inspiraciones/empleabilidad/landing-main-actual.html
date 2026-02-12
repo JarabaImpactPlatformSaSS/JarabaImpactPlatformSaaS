@@ -1,0 +1,336 @@
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  PLANTILLA DE INSPIRACIÓN - Page Builder Jaraba             ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Vertical:        Empleabilidad                              ║
+  ║  Template Target: emp_landing_main                           ║
+  ║  Bloques:         hero_fullscreen, features_grid,            ║
+  ║                   stats_counter, testimonials_slider,        ║
+  ║                   pricing_cards, cta_banner                  ║
+  ║  Fuente:          Diseño interno Jaraba (referencia actual)  ║
+  ║  Fecha:           2026-01-26                                 ║
+  ║  Autor:           EDI Google Antigravity                     ║
+  ╚══════════════════════════════════════════════════════════════╝
+  
+  NOTAS:
+  Este archivo documenta la estructura HTML actual de la homepage
+  de empleabilidad para migración al Page Builder. Los atributos
+  data-block-type y data-field marcan los elementos configurables.
+-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Empleabilidad - Inspiración Page Builder</title>
+</head>
+
+<body>
+
+    <!-- ============================================================
+     BLOQUE: Hero Fullscreen
+     Template: hero_fullscreen
+     Campos: eyebrow, title, subtitle, cta_primary, cta_secondary
+     ============================================================ -->
+    <section data-block-type="hero_fullscreen" class="hero-landing hero-landing--fullscreen">
+
+        <!-- Background con overlay configurable -->
+        <div class="hero-landing__bg">
+            <div class="hero-landing__gradient" data-field="background_gradient"></div>
+        </div>
+
+        <div class="hero-landing__content">
+            <!-- Eyebrow / Badge -->
+            <span class="hero-landing__eyebrow" data-field="eyebrow">
+                Plataforma SaaS para Ecosistemas de Impacto
+            </span>
+
+            <!-- Título Principal -->
+            <h1 class="hero-landing__title" data-field="title">
+                Impulsa tu ecosistema digital
+            </h1>
+
+            <!-- Subtítulo -->
+            <p class="hero-landing__subtitle" data-field="subtitle">
+                La plataforma que conecta talento, negocios y productores con inteligencia artificial
+            </p>
+        </div>
+
+        <!-- CTAs -->
+        <div class="hero-landing__actions">
+            <a href="/user/register" class="btn-primary btn-primary--large" data-field="cta_primary">
+                <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20">
+                    <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor" />
+                </svg>
+                <span>Empezar gratis</span>
+            </a>
+
+            <a href="/user/login" class="btn-secondary btn-secondary--large" data-field="cta_secondary">
+                <span>Ya tengo cuenta</span>
+                <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20">
+                    <path d="M8 4L14 10L8 16" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="hero-landing__scroll" data-field="scroll_indicator">
+            <span>Descubre más</span>
+            <div class="hero-landing__scroll-mouse"></div>
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
+     BLOQUE: Intentions Grid (Específico Empleabilidad)
+     Template: intentions_grid
+     Campos: intentions[] (array de cards)
+     ============================================================ -->
+    <nav data-block-type="intentions_grid" class="intentions-grid" aria-label="Selecciona tu objetivo">
+
+        <!-- Card: Buscar Empleo -->
+        <a href="/empleo" class="intention-card intention-card--empleo" data-field="intentions[0]">
+            <div class="intention-card__icon">
+                <!-- Icono SVG: person-search -->
+                <svg viewBox="0 0 40 40" class="icon-empleo">
+                    <circle cx="20" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M8 36c0-8 5.4-14 12-14s12 6 12 14" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M28 18l8-4v12l-8-4" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+            </div>
+            <h2 class="intention-card__title">Busco empleo</h2>
+            <p class="intention-card__description">Encuentra ofertas que encajan contigo</p>
+            <span class="intention-card__arrow">→</span>
+        </a>
+
+        <!-- Card: Buscar Talento -->
+        <a href="/talento" class="intention-card intention-card--talento" data-field="intentions[1]">
+            <div class="intention-card__icon">
+                <svg viewBox="0 0 40 40" class="icon-talento">
+                    <circle cx="14" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2" />
+                    <circle cx="26" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M4 32c0-6 4-10 10-10" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M36 32c0-6-4-10-10-10" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+            </div>
+            <h2 class="intention-card__title">Busco talento</h2>
+            <p class="intention-card__description">Conecta con candidatos cualificados</p>
+            <span class="intention-card__arrow">→</span>
+        </a>
+
+        <!-- Más cards... -->
+
+    </nav>
+
+
+    <!-- ============================================================
+     BLOQUE: Features Grid
+     Template: features_grid
+     Campos: section_title, features[] (icon, title, description, badge)
+     ============================================================ -->
+    <section data-block-type="features_grid" class="features-section" aria-labelledby="features-title">
+        <div class="features-section__container">
+
+            <h2 id="features-title" class="section-title" data-field="section_title">
+                ¿Por qué Jaraba Impact Platform?
+            </h2>
+
+            <div class="features-grid">
+
+                <!-- Feature Card 1 -->
+                <article class="feature-card" data-field="features[0]">
+                    <div class="feature-card__visual">
+                        <div class="feature-card__icon feature-card__icon--primary">
+                            <!-- Icono: reloj/configuración rápida -->
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2" />
+                                <path d="M32 18v14l10 6" fill="none" stroke="currentColor" stroke-width="3"
+                                    stroke-linecap="round" />
+                                <circle cx="32" cy="32" r="4" fill="currentColor" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-card__title">Configuración en minutos</h3>
+                    <p class="feature-card__description">Tu ecosistema digital funcionando desde el día uno, sin código
+                    </p>
+                    <span class="feature-card__badge">Rápido</span>
+                </article>
+
+                <!-- Feature Card 2 -->
+                <article class="feature-card" data-field="features[1]">
+                    <div class="feature-card__visual">
+                        <div class="feature-card__icon feature-card__icon--secondary">
+                            <!-- Icono: cerebro/IA -->
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <ellipse cx="32" cy="28" rx="18" ry="16" fill="none" stroke="currentColor"
+                                    stroke-width="2" />
+                                <circle cx="26" cy="30" r="3" fill="currentColor" />
+                                <circle cx="38" cy="30" r="3" fill="currentColor" />
+                                <path d="M28 38c2 2 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-card__title">IA integrada</h3>
+                    <p class="feature-card__description">Copiloto de carrera, matching inteligente, asistente de
+                        emprendimiento y recomendaciones personalizadas</p>
+                    <span class="feature-card__badge feature-card__badge--ai">Con IA</span>
+                </article>
+
+                <!-- Feature Card 3 -->
+                <article class="feature-card" data-field="features[2]">
+                    <div class="feature-card__visual">
+                        <div class="feature-card__icon feature-card__icon--corporate">
+                            <!-- Icono: cubo multi-vertical -->
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <path d="M32 8L56 20v24L32 56 8 44V20z" fill="none" stroke="currentColor"
+                                    stroke-width="2" />
+                                <path d="M32 32L8 20M32 32v24M32 32l24-12" fill="none" stroke="currentColor"
+                                    stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-card__title">Multi-vertical</h3>
+                    <p class="feature-card__description">Empleabilidad, emprendimiento, comercio y servicios
+                        profesionales y públicos</p>
+                    <span class="feature-card__badge feature-card__badge--multi">4 verticales</span>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+     BLOQUE: Stats Counter
+     Template: stats_counter
+     Campos: stats[] (value, suffix, label, animate)
+     ============================================================ -->
+    <section data-block-type="stats_counter" class="stats-section" aria-labelledby="stats-title">
+        <div class="stats-section__container">
+            <h2 id="stats-title" class="visually-hidden">Estadísticas</h2>
+
+            <div class="stats-grid">
+
+                <div class="stat-item" data-field="stats[0]">
+                    <span class="stat-item__number" data-count="1500">0</span>
+                    <span class="stat-item__label">Candidatos activos</span>
+                </div>
+
+                <div class="stat-item" data-field="stats[1]">
+                    <span class="stat-item__number" data-count="120">0</span>
+                    <span class="stat-item__label">Empresas</span>
+                </div>
+
+                <div class="stat-item" data-field="stats[2]">
+                    <span class="stat-item__number" data-count="85">0</span>
+                    <span class="stat-item__label">Emprendimientos</span>
+                </div>
+
+                <div class="stat-item" data-field="stats[3]">
+                    <span class="stat-item__number" data-count="98">0</span>
+                    <span class="stat-item__suffix">%</span>
+                    <span class="stat-item__label">Satisfacción</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+     BLOQUE: CTA Banner
+     Template: cta_banner
+     Campos: title, subtitle, cta_primary, cta_secondary
+     ============================================================ -->
+    <section data-block-type="cta_banner" class="cta-section">
+        <div class="cta-section__container">
+            <h2 class="cta-section__title" data-field="title">
+                ¿Listo para transformar tu ecosistema?
+            </h2>
+            <p class="cta-section__subtitle" data-field="subtitle">
+                Únete a cientos de organizaciones que ya confían en nosotros
+            </p>
+            <div class="cta-section__actions">
+                <a href="/demo" class="btn-primary btn-primary--large" data-field="cta_primary">
+                    Solicitar demo
+                </a>
+                <a href="/contact" class="btn-secondary" data-field="cta_secondary">
+                    Contactar ventas
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+     BLOQUE: Footer Columns
+     Template: footer_columns
+     Campos: logo, columns[], social_links[], copyright
+     ============================================================ -->
+    <footer data-block-type="footer_columns" class="landing-footer landing-footer--standard" role="contentinfo">
+        <div class="landing-footer__container">
+
+            <div class="landing-footer__grid">
+
+                <!-- Columna: Plataforma -->
+                <nav class="landing-footer__nav" data-field="columns[0]">
+                    <h3>Plataforma</h3>
+                    <ul>
+                        <li><a href="/empleo">Empleabilidad</a></li>
+                        <li><a href="/emprender">Emprendimiento</a></li>
+                        <li><a href="/productos">Comercio</a></li>
+                        <li><a href="/instituciones">Instituciones</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Columna: Empresa -->
+                <nav class="landing-footer__nav" data-field="columns[1]">
+                    <h3>Empresa</h3>
+                    <ul>
+                        <li><a href="/about">Sobre nosotros</a></li>
+                        <li><a href="/contact">Contacto</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Columna: Legal -->
+                <nav class="landing-footer__nav" data-field="columns[2]">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy">Privacidad</a></li>
+                        <li><a href="/terms">Términos</a></li>
+                        <li><a href="/cookies">Cookies</a></li>
+                    </ul>
+                </nav>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="landing-footer__bottom">
+                <div class="landing-footer__brand-inline">
+                    <img src="/logo.svg" alt="Jaraba Impact Platform" class="landing-footer__logo-small"
+                        data-field="logo" />
+                    <p class="landing-footer__copyright" data-field="copyright">
+                        © 2026 Jaraba Impact Platform. Todos los derechos reservados.
+                    </p>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="landing-footer__social" data-field="social_links">
+                    <a href="https://linkedin.com/company/jaraba" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><!-- LinkedIn icon --></svg>
+                    </a>
+                    <a href="https://twitter.com/jaraba_es" aria-label="X (Twitter)">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><!-- Twitter icon --></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+
+</html>

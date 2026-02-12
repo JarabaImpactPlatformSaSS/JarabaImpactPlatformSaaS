@@ -1,0 +1,47 @@
+name: 'Copilot Integration'
+type: module
+description: 'AI-powered entrepreneurship support system for Andalucía +ei program. Provides chat copilot, BMC validation dashboard, and experiment tracking.'
+package: 'Jaraba Impact Platform'
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - drupal:node
+  - drupal:rest
+  - drupal:serialization
+  - drupal:jsonapi
+  - group:group
+  - webform:webform
+
+configure: copilot_integration.settings
+
+# Libraries
+libraries:
+  - copilot_integration/copilot_chat
+  - copilot_integration/bmc_dashboard
+
+# Permissions
+permissions:
+  'administer copilot settings':
+    title: 'Administer Copilot settings'
+    description: 'Configure Copilot integration settings'
+    restrict access: true
+  'use copilot chat':
+    title: 'Use Copilot Chat'
+    description: 'Access and interact with the AI Copilot'
+  'view bmc dashboard':
+    title: 'View BMC Dashboard'
+    description: 'View Business Model Canvas validation dashboard'
+  'manage hypotheses':
+    title: 'Manage Hypotheses'
+    description: 'Create, edit, and delete business hypotheses'
+  'manage experiments':
+    title: 'Manage Experiments'
+    description: 'Create and record experiment results'
+  'view experiment library':
+    title: 'View Experiment Library'
+    description: 'Access the 44 experiment types catalog'
+  'export validation data':
+    title: 'Export Validation Data'
+    description: 'Export BMC validation and experiment data'

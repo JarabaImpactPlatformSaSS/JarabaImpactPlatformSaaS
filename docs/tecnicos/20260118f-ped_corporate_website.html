@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma de Ecosistemas Digitales S.L. | Infraestructura Digital para el Desarrollo Rural</title>
+  <meta name="description" content="Infraestructura digital para el desarrollo rural y la transformación de territorios. +30 años de experiencia, +100M€ en fondos europeos gestionados.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* ==================== CSS VARIABLES ==================== */
+    :root {
+      --primary: #1B4F72;
+      --primary-dark: #153d5a;
+      --secondary: #17A589;
+      --secondary-light: #1abc9c;
+      --accent: #E67E22;
+      --accent-hover: #d35400;
+      --dark: #1A1A2E;
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-600: #4B5563;
+      --gray-500: #6B7280;
+      --gray-400: #9CA3AF;
+      --gray-300: #D1D5DB;
+      --gray-200: #E5E7EB;
+      --gray-100: #F3F4F6;
+      --gray-50: #F9FAFB;
+      --white: #FFFFFF;
+      --gradient: linear-gradient(135deg, #1B4F72 0%, #17A589 100%);
+      --gradient-dark: linear-gradient(135deg, #153d5a 0%, #128c7e 100%);
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+    }
+
+    /* ==================== RESET & BASE ==================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--gray-700);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--gray-900);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    /* ==================== UTILITIES ==================== */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      padding: 96px 0;
+    }
+
+    .section-sm {
+      padding: 64px 0;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-primary {
+      color: var(--primary);
+    }
+
+    .text-secondary {
+      color: var(--secondary);
+    }
+
+    .text-accent {
+      color: var(--accent);
+    }
+
+    .text-gray {
+      color: var(--gray-600);
+    }
+
+    .text-white {
+      color: var(--white);
+    }
+
+    .bg-white {
+      background: var(--white);
+    }
+
+    .bg-gray {
+      background: var(--gray-50);
+    }
+
+    .bg-gradient {
+      background: var(--gradient);
+    }
+
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mb-12 { margin-bottom: 48px; }
+    .mb-16 { margin-bottom: 64px; }
+
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .section { padding: 64px 0; }
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: var(--radius-full);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--gray-200);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      background: var(--gray-50);
+    }
+
+    .btn-lg {
+      padding: 18px 36px;
+      font-size: 17px;
+    }
+
+    /* ==================== HEADER ==================== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px 0;
+      transition: all 0.3s ease;
+    }
+
+    .header.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+      padding: 12px 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 1.3;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      transition: color 0.3s ease;
+    }
+
+    .header.scrolled .logo-text {
+      color: var(--gray-900);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--white);
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .header.scrolled .nav-link {
+      color: var(--gray-600);
+    }
+
+    .header.scrolled .nav-link:hover,
+    .header.scrolled .nav-link.active {
+      color: var(--gray-900);
+    }
+
+    .header-cta {
+      background: var(--accent);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .header-cta:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      color: var(--white);
+    }
+
+    .header.scrolled .mobile-menu-btn {
+      color: var(--gray-900);
+    }
+
+    @media (max-width: 1024px) {
+      .nav, .header-cta {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+    }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      min-height: 100vh;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.1;
+    }
+
+    .hero-pattern .circle {
+      position: absolute;
+      border: 2px solid var(--white);
+      border-radius: 50%;
+    }
+
+    .hero-pattern .circle-1 {
+      width: 300px;
+      height: 300px;
+      top: 80px;
+      left: 40px;
+    }
+
+    .hero-pattern .circle-2 {
+      width: 400px;
+      height: 400px;
+      bottom: 80px;
+      right: 40px;
+      border-width: 1px;
+    }
+
+    .hero-pattern .circle-3 {
+      width: 250px;
+      height: 250px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-width: 1px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      padding: 120px 0 80px;
+      max-width: 800px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-full);
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 24px;
+      line-height: 1.1;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 40px;
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .scroll-indicator::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 32px;
+      background: rgba(255,255,255,0.3);
+      margin: 8px auto 0;
+    }
+
+    /* ==================== PAGE HERO ==================== */
+    .page-hero {
+      padding: 140px 0 80px;
+      background: var(--gradient);
+    }
+
+    .page-hero h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .page-hero p {
+      font-size: 20px;
+      color: rgba(255,255,255,0.8);
+      max-width: 600px;
+    }
+
+    /* ==================== STATS ==================== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+      background: var(--gray-50);
+      padding: 40px 32px;
+      border-radius: var(--radius-xl);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      color: var(--secondary);
+    }
+
+    .stat-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 15px;
+    }
+
+    /* ==================== TRIPLE MOTOR ==================== */
+    .motor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .motor-grid { grid-template-columns: 1fr; }
+    }
+
+    .motor-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s ease;
+    }
+
+    .motor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .motor-pct {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .motor-card:nth-child(1) .motor-pct { color: var(--primary); }
+    .motor-card:nth-child(2) .motor-pct { color: var(--secondary); }
+    .motor-card:nth-child(3) .motor-pct { color: var(--accent); }
+
+    .motor-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .motor-desc {
+      color: var(--gray-600);
+      font-size: 15px;
+    }
+
+    /* ==================== VERTICALS ==================== */
+    .verticals-box {
+      background: var(--white);
+      padding: 48px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .verticals-title {
+      text-align: center;
+      margin-bottom: 32px;
+      color: var(--primary);
+    }
+
+    .verticals-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .vertical-tag {
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    .vertical-tag:hover {
+      transform: scale(1.05);
+    }
+
+    .vertical-tag.empleabilidad { background: #3498DB; }
+    .vertical-tag.emprendimiento { background: #9B59B6; }
+    .vertical-tag.agro { background: #27AE60; }
+    .vertical-tag.comercio { background: #E67E22; }
+    .vertical-tag.servicios { background: #E74C3C; }
+
+    /* ==================== AUDIENCE CARDS ==================== */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .audience-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .audience-grid { grid-template-columns: 1fr; }
+    }
+
+    .audience-card {
+      padding: 40px 32px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      transition: all 0.3s ease;
+      text-align: left;
+      background: var(--white);
+    }
+
+    .audience-card:hover {
+      border-color: transparent;
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-4px);
+      background: var(--primary);
+    }
+
+    .audience-card:hover * {
+      color: var(--white) !important;
+    }
+
+    .audience-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .audience-card:hover .audience-icon {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .audience-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: var(--gray-900);
+    }
+
+    .audience-desc {
+      color: var(--gray-600);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    .audience-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* ==================== PARTNERS BAR ==================== */
+    .partners-bar {
+      background: var(--gray-100);
+      padding: 48px 0;
+    }
+
+    .partners-bar p {
+      text-align: center;
+      color: var(--gray-500);
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+
+    .partners-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 48px;
+    }
+
+    .partner-logo {
+      color: var(--gray-400);
+      font-weight: 700;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    .partner-logo:hover {
+      color: var(--gray-600);
+    }
+
+    /* ==================== SECTION HEADERS ==================== */
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .section-header p {
+      font-size: 18px;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-gray {
+      background: var(--gray-50);
+      box-shadow: none;
+    }
+
+    /* ==================== VALUES ==================== */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .values-grid { grid-template-columns: 1fr; }
+    }
+
+    .value-card {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+
+    .value-icon {
+      flex-shrink: 0;
+      color: var(--secondary);
+    }
+
+    .value-title {
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .value-desc {
+      color: var(--gray-600);
+      font-size: 15px;
+    }
+
+    /* ==================== DATA TABLE ==================== */
+    .data-table {
+      background: var(--gray-50);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .data-row:last-child {
+      border-bottom: none;
+    }
+
+    .data-label {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .data-value {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 14px;
+    }
+
+    /* ==================== TEAM ==================== */
+    .founder-card {
+      display: flex;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .founder-card { flex-direction: column; }
+    }
+
+    .founder-image {
+      width: 300px;
+      min-height: 300px;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .founder-image { width: 100%; min-height: 200px; }
+    }
+
+    .founder-avatar {
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .founder-info {
+      padding: 40px;
+      flex: 1;
+    }
+
+    .founder-role {
+      color: var(--secondary);
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .founder-name {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .founder-bio {
+      color: var(--gray-600);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .founder-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .founder-links a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+
+    .team-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--gray-100);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+    }
+
+    .team-name {
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .team-role {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    /* ==================== METRICS ==================== */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1024px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    .metric-card {
+      padding: 32px;
+      background: var(--gray-50);
+      border-radius: var(--radius-xl);
+      border-left: 4px solid;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .metric-card.blue { border-color: #3498DB; }
+    .metric-card.green { border-color: #27AE60; }
+    .metric-card.purple { border-color: #9B59B6; }
+    .metric-card.orange { border-color: #E67E22; }
+    .metric-card.red { border-color: #E74C3C; }
+    .metric-card.teal { border-color: #1ABC9C; }
+
+    .metric-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .metric-card.blue .metric-value { color: #3498DB; }
+    .metric-card.green .metric-value { color: #27AE60; }
+    .metric-card.purple .metric-value { color: #9B59B6; }
+    .metric-card.orange .metric-value { color: #E67E22; }
+    .metric-card.red .metric-value { color: #E74C3C; }
+    .metric-card.teal .metric-value { color: #1ABC9C; }
+
+    .metric-label {
+      color: var(--gray-600);
+      margin-bottom: 8px;
+    }
+
+    .metric-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+    }
+
+    .metric-card.blue .metric-trend { background: #3498DB20; color: #3498DB; }
+    .metric-card.green .metric-trend { background: #27AE6020; color: #27AE60; }
+    .metric-card.purple .metric-trend { background: #9B59B620; color: #9B59B6; }
+    .metric-card.orange .metric-trend { background: #E67E2220; color: #E67E22; }
+    .metric-card.red .metric-trend { background: #E74C3C20; color: #E74C3C; }
+    .metric-card.teal .metric-trend { background: #1ABC9C20; color: #1ABC9C; }
+
+    /* ==================== ODS ==================== */
+    .ods-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .ods-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-radius: var(--radius);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .ods-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    /* ==================== TESTIMONIALS ==================== */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+
+    .testimonial-card {
+      background: var(--gray-50);
+      padding: 32px;
+      border-radius: var(--radius-xl);
+    }
+
+    .testimonial-quote {
+      color: var(--secondary);
+      margin-bottom: 16px;
+    }
+
+    .testimonial-text {
+      color: var(--gray-700);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .testimonial-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .testimonial-name {
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .testimonial-location {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    /* ==================== PARTNERS PAGE ==================== */
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .partner-card {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      color: var(--gray-400);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .partner-card:hover {
+      border-color: var(--gray-300);
+      background: var(--gray-50);
+    }
+
+    .partner-card.filled {
+      border: none;
+      background: var(--gray-50);
+    }
+
+    .partner-card.filled:hover {
+      background: var(--gray-100);
+    }
+
+    /* ==================== CTA BOX ==================== */
+    .cta-box {
+      background: var(--gradient);
+      padding: 64px;
+      border-radius: var(--radius-xl);
+      text-align: center;
+    }
+
+    .cta-box h3 {
+      font-size: 32px;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .cta-box p {
+      color: rgba(255,255,255,0.8);
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+
+    /* ==================== PRESS PAGE ==================== */
+    .press-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    @media (max-width: 1024px) {
+      .press-layout { grid-template-columns: 1fr; }
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      width: 100%;
+      text-align: left;
+    }
+
+    .file-item:hover {
+      border-color: var(--gray-300);
+      background: var(--gray-50);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .file-icon {
+      color: var(--primary);
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .file-type {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .file-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .file-size {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .file-download {
+      color: var(--secondary);
+    }
+
+    .contact-box {
+      background: var(--gray-50);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .contact-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .contact-icon {
+      color: var(--primary);
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .news-item {
+      padding: 16px;
+      border-radius: var(--radius);
+      transition: background 0.3s ease;
+      width: 100%;
+      text-align: left;
+    }
+
+    .news-item:hover {
+      background: var(--gray-50);
+    }
+
+    .news-date {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+
+    .news-title {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    /* ==================== CAREERS PAGE ==================== */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+    }
+
+    .benefit-card {
+      background: var(--gray-50);
+      padding: 32px;
+      border-radius: var(--radius-xl);
+      text-align: center;
+    }
+
+    .benefit-icon {
+      color: var(--secondary);
+      margin-bottom: 16px;
+    }
+
+    .benefit-title {
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .benefit-desc {
+      color: var(--gray-600);
+      font-size: 14px;
+    }
+
+    .jobs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .job-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      width: 100%;
+      text-align: left;
+    }
+
+    .job-item:hover {
+      border-color: var(--gray-300);
+      box-shadow: var(--shadow-md);
+    }
+
+    .job-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .job-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    .job-arrow {
+      color: var(--primary);
+    }
+
+    .spontaneous-box {
+      background: var(--gray-50);
+      padding: 48px;
+      border-radius: var(--radius-xl);
+      text-align: center;
+    }
+
+    .spontaneous-box h3 {
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .spontaneous-box p {
+      color: var(--gray-600);
+      max-width: 500px;
+      margin: 0 auto 24px;
+    }
+
+    /* ==================== CONTACT PAGE ==================== */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    @media (max-width: 1024px) {
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 15px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      resize: none;
+      min-height: 150px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .form-checkbox input {
+      margin-top: 4px;
+    }
+
+    .form-checkbox label {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .contact-info-box {
+      background: var(--gray-50);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .contact-info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .contact-info-icon {
+      color: var(--secondary);
+      margin-top: 4px;
+    }
+
+    .contact-info-label {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .contact-info-value {
+      color: var(--gray-600);
+    }
+
+    .map-placeholder {
+      height: 250px;
+      background: var(--gray-100);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+      margin-bottom: 32px;
+    }
+
+    .sla-box {
+      padding: 24px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+    }
+
+    .sla-title {
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+    }
+
+    .sla-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .sla-label {
+      color: var(--gray-600);
+    }
+
+    .sla-value {
+      font-weight: 600;
+    }
+
+    /* ==================== FOOTER ==================== */
+    .footer {
+      background: var(--gray-900);
+      color: var(--white);
+      padding: 80px 0 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .footer-brand .logo-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 12px;
+    }
+
+    .footer-brand span {
+      font-weight: 700;
+    }
+
+    .footer-desc {
+      color: var(--gray-400);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-social a {
+      color: var(--gray-400);
+      transition: color 0.3s ease;
+    }
+
+    .footer-social a:hover {
+      color: var(--white);
+    }
+
+    .footer-title {
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-link {
+      color: var(--gray-400);
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--white);
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--gray-400);
+    }
+
+    .footer-contact-icon {
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--gray-800);
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    /* ==================== PAGE VISIBILITY ==================== */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo" onclick="showPage('home')">
+          <div class="logo-icon">ped</div>
+          <div class="logo-text">
+            PLATAFORMA DE<br>ECOSISTEMAS DIGITALES
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="#" class="nav-link active" data-page="home">Inicio</a>
+          <a href="#" class="nav-link" data-page="about">Sobre Nosotros</a>
+          <a href="#" class="nav-link" data-page="impact">Impacto</a>
+          <a href="#" class="nav-link" data-page="partners">Partners</a>
+          <a href="#" class="nav-link" data-page="press">Prensa</a>
+          <a href="#" class="nav-link" data-page="careers">Careers</a>
+        </nav>
+
+        <button class="header-cta" onclick="showPage('contact')">
+          <i data-lucide="mail" style="width:16px;height:16px;"></i>
+          Contacto
+        </button>
+
+        <button class="mobile-menu-btn">
+          <i data-lucide="menu" style="width:24px;height:24px;"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-pattern">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i data-lucide="zap" style="width:16px;height:16px;"></i>
+            Jaraba Impact Platform
+          </div>
+          <h1>
+            Infraestructura digital para el
+            <span>desarrollo rural</span>
+          </h1>
+          <p>
+            La comunidad donde empresas, profesionales e instituciones transforman 
+            juntos el futuro digital de los territorios.
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary btn-lg" onclick="showPage('impact')">
+              Conoce nuestro impacto
+              <i data-lucide="arrow-right" style="width:20px;height:20px;"></i>
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="showPage('about')">
+              Sobre nosotros
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">Scroll</div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section bg-white">
+      <div class="container">
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i data-lucide="clock" style="width:48px;height:48px;"></i>
+            </div>
+            <div class="stat-value">+30</div>
+            <div class="stat-label">Años de experiencia</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i data-lucide="bar-chart-3" style="width:48px;height:48px;"></i>
+            </div>
+            <div class="stat-value">+100M€</div>
+            <div class="stat-label">Fondos gestionados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i data-lucide="globe" style="width:48px;height:48px;"></i>
+            </div>
+            <div class="stat-value">5</div>
+            <div class="stat-label">Verticales SaaS</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i data-lucide="map-pin" style="width:48px;height:48px;"></i>
+            </div>
+            <div class="stat-value">+50</div>
+            <div class="stat-label">Municipios impactados</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Triple Motor -->
+    <section class="section bg-gray">
+      <div class="container">
+        <div class="section-header">
+          <h2>El Triple Motor Económico</h2>
+          <p>Un modelo de negocio sostenible y diversificado</p>
+        </div>
+
+        <div class="motor-grid">
+          <div class="motor-card">
+            <div class="motor-pct">30%</div>
+            <h3 class="motor-title">Motor Institucional</h3>
+            <p class="motor-desc">Fondos públicos, subvenciones, programas europeos</p>
+          </div>
+          <div class="motor-card">
+            <div class="motor-pct">40%</div>
+            <h3 class="motor-title">Mercado Privado</h3>
+            <p class="motor-desc">Kits digitales, cursos, membresías SaaS</p>
+          </div>
+          <div class="motor-card">
+            <div class="motor-pct">30%</div>
+            <h3 class="motor-title">Licencias</h3>
+            <p class="motor-desc">Franquicias, certificación Método Jaraba</p>
+          </div>
+        </div>
+
+        <div class="verticals-box">
+          <h3 class="verticals-title">5 Verticales SaaS</h3>
+          <div class="verticals-list">
+            <span class="vertical-tag empleabilidad">Empleabilidad</span>
+            <span class="vertical-tag emprendimiento">Emprendimiento</span>
+            <span class="vertical-tag agro">AgroConecta</span>
+            <span class="vertical-tag comercio">ComercioConecta</span>
+            <span class="vertical-tag servicios">ServiciosConecta</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audience -->
+    <section class="section bg-white">
+      <div class="container">
+        <div class="section-header">
+          <h2>¿Qué buscas?</h2>
+          <p>Encuentra la información relevante para ti</p>
+        </div>
+
+        <div class="audience-grid">
+          <button class="audience-card" onclick="showPage('transparency')">
+            <div class="audience-icon">
+              <i data-lucide="trending-up" style="width:28px;height:28px;"></i>
+            </div>
+            <h3 class="audience-title">Soy Inversor</h3>
+            <p class="audience-desc">Due diligence y métricas</p>
+            <div class="audience-link">
+              Ver más <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="audience-card" onclick="showPage('partners')">
+            <div class="audience-icon">
+              <i data-lucide="building-2" style="width:28px;height:28px;"></i>
+            </div>
+            <h3 class="audience-title">Soy Institución</h3>
+            <p class="audience-desc">Alianzas y convenios</p>
+            <div class="audience-link">
+              Ver más <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="audience-card" onclick="showPage('press')">
+            <div class="audience-icon">
+              <i data-lucide="newspaper" style="width:28px;height:28px;"></i>
+            </div>
+            <h3 class="audience-title">Soy Prensa</h3>
+            <p class="audience-desc">Sala de prensa y recursos</p>
+            <div class="audience-link">
+              Ver más <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="audience-card" onclick="showPage('careers')">
+            <div class="audience-icon">
+              <i data-lucide="briefcase" style="width:28px;height:28px;"></i>
+            </div>
+            <h3 class="audience-title">Quiero Trabajar Aquí</h3>
+            <p class="audience-desc">Ofertas y cultura</p>
+            <div class="audience-link">
+              Ver más <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners Bar -->
+    <section class="partners-bar">
+      <div class="container">
+        <p>Colaboramos con instituciones de referencia</p>
+        <div class="partners-logos">
+          <span class="partner-logo">Junta de Andalucía</span>
+          <span class="partner-logo">SEPE</span>
+          <span class="partner-logo">FUNDAE</span>
+          <span class="partner-logo">Google</span>
+          <span class="partner-logo">Stripe</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div class="page" id="page-about">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Sobre Nosotros</h1>
+        <p>
+          Plataforma de Ecosistemas Digitales S.L. es la sociedad que opera el 
+          Ecosistema Jaraba, transformando territorios a través de la tecnología.
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container" style="max-width:800px;">
+        <div class="mb-16">
+          <h2 class="text-primary mb-6">Nuestra Misión</h2>
+          <p style="font-size:18px;line-height:1.8;">
+            Democratizar el acceso a la transformación digital para personas, pymes 
+            y territorios rurales, eliminando las barreras tecnológicas, económicas 
+            y de conocimiento que frenan su desarrollo.
+          </p>
+        </div>
+
+        <div class="mb-16">
+          <h2 class="text-primary mb-6">Nuestra Visión</h2>
+          <p style="font-size:18px;line-height:1.8;">
+            Ser la infraestructura digital de referencia para el desarrollo rural 
+            sostenible en el mundo hispanohablante, donde cada persona y negocio 
+            tenga las herramientas para prosperar en la economía digital.
+          </p>
+        </div>
+
+        <div class="mb-16">
+          <h2 class="text-primary mb-8">Nuestros Valores</h2>
+          <div class="values-grid">
+            <div class="value-card">
+              <div class="value-icon">
+                <i data-lucide="zap" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <div class="value-title">Sin Humo</div>
+                <div class="value-desc">Realidad antes que teoría. Solo lo que funciona.</div>
+              </div>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">
+                <i data-lucide="bar-chart-3" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <div class="value-title">Impacto Medible</div>
+                <div class="value-desc">Si no se puede medir, no se puede mejorar.</div>
+              </div>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">
+                <i data-lucide="heart" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <div class="value-title">Accesibilidad</div>
+                <div class="value-desc">Tecnología comprensible para todos.</div>
+              </div>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">
+                <i data-lucide="users" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <div class="value-title">Comunidad</div>
+                <div class="value-desc">Crecemos juntos o no crecemos.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-table">
+          <h2 class="text-primary mb-6">Datos Societarios</h2>
+          <div class="data-row">
+            <span class="data-label">Razón Social</span>
+            <span class="data-value">Plataforma de Ecosistemas Digitales S.L.</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">CIF</span>
+            <span class="data-value">B-XXXXXXXX</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Domicilio Social</span>
+            <span class="data-value">Calle Ejemplo 123, 14005 Córdoba</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Fecha Constitución</span>
+            <span class="data-value">XXXX</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Representante Legal</span>
+            <span class="data-value">José Jaraba González</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Registro Mercantil</span>
+            <span class="data-value">Córdoba, Tomo XXX, Folio XXX</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section bg-gray">
+      <div class="container">
+        <h2 class="text-primary text-center mb-12">Nuestro Equipo</h2>
+
+        <div class="founder-card">
+          <div class="founder-image">
+            <div class="founder-avatar">
+              <i data-lucide="users" style="width:48px;height:48px;"></i>
+            </div>
+          </div>
+          <div class="founder-info">
+            <div class="founder-role">Fundador & CEO</div>
+            <h3 class="founder-name">Pepe Jaraba</h3>
+            <p class="founder-bio">
+              Más de 30 años de experiencia en transformación digital y gestión de 
+              fondos europeos. Ha gestionado más de 100 millones de euros en programas 
+              de desarrollo territorial y digitalización empresarial.
+            </p>
+            <div class="founder-links">
+              <a href="#">
+                <i data-lucide="linkedin" style="width:18px;height:18px;"></i>
+                LinkedIn
+              </a>
+              <a href="#">
+                <i data-lucide="external-link" style="width:18px;height:18px;"></i>
+                pepejaraba.com
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-avatar">
+              <i data-lucide="users" style="width:32px;height:32px;"></i>
+            </div>
+            <div class="team-name">Nombre Apellido</div>
+            <div class="team-role">CTO</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">
+              <i data-lucide="users" style="width:32px;height:32px;"></i>
+            </div>
+            <div class="team-name">Nombre Apellido</div>
+            <div class="team-role">COO</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">
+              <i data-lucide="users" style="width:32px;height:32px;"></i>
+            </div>
+            <div class="team-name">Nombre Apellido</div>
+            <div class="team-role">Head of Product</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">
+              <i data-lucide="users" style="width:32px;height:32px;"></i>
+            </div>
+            <div class="team-name">Nombre Apellido</div>
+            <div class="team-role">Head of Growth</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- IMPACT PAGE -->
+  <div class="page" id="page-impact">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Impacto</h1>
+        <p>
+          Métricas verificables de nuestro impacto social y económico en personas, 
+          negocios y territorios.
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container">
+        <div class="section-header">
+          <h2>Dashboard de Impacto</h2>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card blue">
+            <div class="metric-value">2.500+</div>
+            <div class="metric-label">Personas formadas</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              +23% vs año anterior
+            </div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-value">340</div>
+            <div class="metric-label">Empleos conseguidos</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              +15% vs año anterior
+            </div>
+          </div>
+          <div class="metric-card purple">
+            <div class="metric-value">180</div>
+            <div class="metric-label">Negocios digitalizados</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              +30% vs año anterior
+            </div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-value">52</div>
+            <div class="metric-label">Municipios impactados</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              Nuevo
+            </div>
+          </div>
+          <div class="metric-card red">
+            <div class="metric-value">4.2M€</div>
+            <div class="metric-label">Fondos canalizados</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              +40% vs año anterior
+            </div>
+          </div>
+          <div class="metric-card teal">
+            <div class="metric-value">87%</div>
+            <div class="metric-label">Satisfacción usuarios</div>
+            <div class="metric-trend">
+              <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+              +5% vs año anterior
+            </div>
+          </div>
+        </div>
+
+        <p class="text-center text-gray" style="font-size:14px;">
+          Datos actualizados a Diciembre 2025. Metodología de medición disponible en /transparency
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-gray">
+      <div class="container">
+        <div class="section-header">
+          <h2>Alineación con ODS</h2>
+          <p>Nuestras actividades contribuyen directamente a 5 Objetivos de Desarrollo Sostenible</p>
+        </div>
+
+        <div class="ods-list">
+          <div class="ods-tag" style="background:#C5192D;">
+            <span class="ods-num">4</span>
+            <span>Educación de Calidad</span>
+          </div>
+          <div class="ods-tag" style="background:#A21942;">
+            <span class="ods-num">8</span>
+            <span>Trabajo Decente</span>
+          </div>
+          <div class="ods-tag" style="background:#FD6925;">
+            <span class="ods-num">9</span>
+            <span>Industria e Innovación</span>
+          </div>
+          <div class="ods-tag" style="background:#DD1367;">
+            <span class="ods-num">10</span>
+            <span>Reducción Desigualdades</span>
+          </div>
+          <div class="ods-tag" style="background:#FD9D24;">
+            <span class="ods-num">11</span>
+            <span>Ciudades Sostenibles</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container">
+        <div class="section-header">
+          <h2>Casos de Éxito</h2>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i data-lucide="quote" style="width:32px;height:32px;"></i>
+            </div>
+            <p class="testimonial-text">
+              "De desempleada de larga duración a community manager en solo 4 meses. 
+              El programa cambió mi vida completamente."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">
+                <i data-lucide="user" style="width:20px;height:20px;"></i>
+              </div>
+              <div>
+                <div class="testimonial-name">María García</div>
+                <div class="testimonial-location">Jaén</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i data-lucide="quote" style="width:32px;height:32px;"></i>
+            </div>
+            <p class="testimonial-text">
+              "Digitalicé mi panadería familiar y aumenté las ventas un 40%. 
+              Ahora vendo online a toda la provincia."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">
+                <i data-lucide="user" style="width:20px;height:20px;"></i>
+              </div>
+              <div>
+                <div class="testimonial-name">Antonio López</div>
+                <div class="testimonial-location">Córdoba</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i data-lucide="quote" style="width:32px;height:32px;"></i>
+            </div>
+            <p class="testimonial-text">
+              "Lancé mi tienda online de artesanía desde cero. El acompañamiento 
+              fue clave para no rendirme."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">
+                <i data-lucide="user" style="width:20px;height:20px;"></i>
+              </div>
+              <div>
+                <div class="testimonial-name">Carmen Ruiz</div>
+                <div class="testimonial-location">Sevilla</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- PARTNERS PAGE -->
+  <div class="page" id="page-partners">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Partners</h1>
+        <p>
+          Colaboramos con instituciones públicas, empresas tecnológicas y 
+          organizaciones comprometidas con el desarrollo territorial.
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container">
+        <h2 class="text-primary mb-12">Partners Institucionales</h2>
+        <div class="partners-grid">
+          <div class="partner-card">Junta de Andalucía</div>
+          <div class="partner-card">SEPE</div>
+          <div class="partner-card">FUNDAE</div>
+          <div class="partner-card">Diputación de Córdoba</div>
+          <div class="partner-card">Universidad de Córdoba</div>
+          <div class="partner-card">Cámara de Comercio</div>
+          <div class="partner-card">CECO</div>
+          <div class="partner-card">Red CIDES</div>
+        </div>
+
+        <h2 class="text-primary mb-12">Partners Tecnológicos</h2>
+        <div class="partners-grid" style="margin-bottom:64px;">
+          <div class="partner-card filled">Google Cloud</div>
+          <div class="partner-card filled">Stripe</div>
+          <div class="partner-card filled">IONOS</div>
+          <div class="partner-card filled">Anthropic</div>
+          <div class="partner-card filled">OpenAI</div>
+          <div class="partner-card filled">Drupal</div>
+          <div class="partner-card filled">Make.com</div>
+          <div class="partner-card filled">Qdrant</div>
+        </div>
+
+        <div class="cta-box">
+          <h3>¿Quieres ser partner?</h3>
+          <p>
+            Únete a nuestra red de aliados y contribuye a la transformación digital 
+            del mundo rural.
+          </p>
+          <button class="btn btn-primary btn-lg" onclick="showPage('contact')">
+            Contactar para alianza
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- PRESS PAGE -->
+  <div class="page" id="page-press">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Sala de Prensa</h1>
+        <p>Recursos oficiales para medios de comunicación.</p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container">
+        <div class="press-layout">
+          <div>
+            <h2 class="text-primary mb-8">Press Kit</h2>
+            
+            <div class="file-list mb-6">
+              <button class="file-item">
+                <div class="file-info">
+                  <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+                  <div>
+                    <div class="file-name">Logos (PNG, SVG, AI)</div>
+                    <div class="file-type">ZIP</div>
+                  </div>
+                </div>
+                <div class="file-meta">
+                  <span class="file-size">2.4 MB</span>
+                  <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+                </div>
+              </button>
+              <button class="file-item">
+                <div class="file-info">
+                  <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+                  <div>
+                    <div class="file-name">Fotos oficiales equipo</div>
+                    <div class="file-type">ZIP</div>
+                  </div>
+                </div>
+                <div class="file-meta">
+                  <span class="file-size">15 MB</span>
+                  <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+                </div>
+              </button>
+              <button class="file-item">
+                <div class="file-info">
+                  <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+                  <div>
+                    <div class="file-name">Biografías ejecutivas</div>
+                    <div class="file-type">PDF</div>
+                  </div>
+                </div>
+                <div class="file-meta">
+                  <span class="file-size">120 KB</span>
+                  <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+                </div>
+              </button>
+              <button class="file-item">
+                <div class="file-info">
+                  <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+                  <div>
+                    <div class="file-name">Fact Sheet 2026</div>
+                    <div class="file-type">PDF</div>
+                  </div>
+                </div>
+                <div class="file-meta">
+                  <span class="file-size">340 KB</span>
+                  <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+                </div>
+              </button>
+              <button class="file-item">
+                <div class="file-info">
+                  <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+                  <div>
+                    <div class="file-name">Guía de estilo de marca</div>
+                    <div class="file-type">PDF</div>
+                  </div>
+                </div>
+                <div class="file-meta">
+                  <span class="file-size">1.8 MB</span>
+                  <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+                </div>
+              </button>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;">
+              <i data-lucide="download" style="width:20px;height:20px;"></i>
+              Descargar Press Kit Completo (ZIP)
+            </button>
+          </div>
+
+          <div>
+            <h2 class="text-primary mb-8">Contacto de Prensa</h2>
+            
+            <div class="contact-box">
+              <p class="text-gray mb-6">
+                Para consultas de medios, entrevistas o información adicional, 
+                contacte con nuestro equipo de comunicación.
+              </p>
+              <div class="contact-item">
+                <i data-lucide="mail" class="contact-icon" style="width:20px;height:20px;"></i>
+                <span style="font-weight:600;">prensa@plataformadeecosistemas.es</span>
+              </div>
+              <div class="contact-item">
+                <i data-lucide="phone" class="contact-icon" style="width:20px;height:20px;"></i>
+                <span style="font-weight:600;">+34 957 000 000</span>
+              </div>
+              <div class="contact-item">
+                <i data-lucide="clock" class="contact-icon" style="width:20px;height:20px;"></i>
+                <span class="text-gray">Respuesta en menos de 24h</span>
+              </div>
+            </div>
+
+            <h3 class="text-primary mb-6">Últimas Notas de Prensa</h3>
+            <div class="news-list">
+              <button class="news-item">
+                <div class="news-date">15 Ene 2026</div>
+                <div class="news-title">PED S.L. cierra ronda de financiación de 2M€</div>
+              </button>
+              <button class="news-item">
+                <div class="news-date">10 Dic 2025</div>
+                <div class="news-title">Lanzamiento de AgroConecta en Andalucía</div>
+              </button>
+              <button class="news-item">
+                <div class="news-date">28 Nov 2025</div>
+                <div class="news-title">Alianza estratégica con la Junta de Andalucía</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- CAREERS PAGE -->
+  <div class="page" id="page-careers">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Trabaja con Nosotros</h1>
+        <p>Únete al equipo que está transformando el futuro digital del mundo rural.</p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container">
+        <div class="section-header">
+          <h2>¿Por qué trabajar en PED?</h2>
+        </div>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <i data-lucide="heart" class="benefit-icon" style="width:40px;height:40px;"></i>
+            <div class="benefit-title">Impacto Real</div>
+            <div class="benefit-desc">Tu trabajo mejora la vida de personas y territorios</div>
+          </div>
+          <div class="benefit-card">
+            <i data-lucide="globe" class="benefit-icon" style="width:40px;height:40px;"></i>
+            <div class="benefit-title">Trabajo Remoto</div>
+            <div class="benefit-desc">100% flexible, trabaja desde donde quieras</div>
+          </div>
+          <div class="benefit-card">
+            <i data-lucide="trending-up" class="benefit-icon" style="width:40px;height:40px;"></i>
+            <div class="benefit-title">Crecimiento</div>
+            <div class="benefit-desc">Desarrollo profesional continuo y formación</div>
+          </div>
+          <div class="benefit-card">
+            <i data-lucide="users" class="benefit-icon" style="width:40px;height:40px;"></i>
+            <div class="benefit-title">Equipo Increíble</div>
+            <div class="benefit-desc">Personas apasionadas y comprometidas</div>
+          </div>
+        </div>
+
+        <h2 class="text-primary mb-8">Ofertas Actuales</h2>
+
+        <div class="jobs-list">
+          <button class="job-item">
+            <div>
+              <div class="job-title">Senior Drupal Developer</div>
+              <div class="job-meta">
+                <span>Tecnología</span>
+                <span>•</span>
+                <span>Remoto</span>
+                <span>•</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="job-arrow" style="width:24px;height:24px;"></i>
+          </button>
+          <button class="job-item">
+            <div>
+              <div class="job-title">Product Designer (UX/UI)</div>
+              <div class="job-meta">
+                <span>Producto</span>
+                <span>•</span>
+                <span>Remoto</span>
+                <span>•</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="job-arrow" style="width:24px;height:24px;"></i>
+          </button>
+          <button class="job-item">
+            <div>
+              <div class="job-title">Customer Success Manager</div>
+              <div class="job-meta">
+                <span>Operaciones</span>
+                <span>•</span>
+                <span>Híbrido - Córdoba</span>
+                <span>•</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="job-arrow" style="width:24px;height:24px;"></i>
+          </button>
+          <button class="job-item">
+            <div>
+              <div class="job-title">Content & SEO Specialist</div>
+              <div class="job-meta">
+                <span>Marketing</span>
+                <span>•</span>
+                <span>Remoto</span>
+                <span>•</span>
+                <span>Part-time</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="job-arrow" style="width:24px;height:24px;"></i>
+          </button>
+        </div>
+
+        <div class="spontaneous-box">
+          <h3>¿No encuentras tu puesto ideal?</h3>
+          <p>
+            Envíanos tu candidatura espontánea. Siempre estamos buscando talento 
+            excepcional que comparta nuestra visión.
+          </p>
+          <button class="btn btn-primary">
+            <i data-lucide="mail" style="width:20px;height:20px;"></i>
+            Enviar candidatura espontánea
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- CONTACT PAGE -->
+  <div class="page" id="page-contact">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Contacto</h1>
+        <p>
+          Estamos aquí para ayudarte. Selecciona el tipo de consulta para 
+          dirigirte al equipo adecuado.
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container" style="max-width:1100px;">
+        <div class="contact-layout">
+          <div>
+            <h2 class="text-primary mb-8">Envíanos un mensaje</h2>
+            
+            <form>
+              <div class="form-group">
+                <label class="form-label">Tipo de consulta *</label>
+                <select class="form-select">
+                  <option>Información general</option>
+                  <option>Prensa y medios</option>
+                  <option>Partners e instituciones</option>
+                  <option>Inversores</option>
+                  <option>Empleo</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nombre *</label>
+                  <input type="text" class="form-input" placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email *</label>
+                  <input type="email" class="form-input" placeholder="tu@email.com">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Organización</label>
+                <input type="text" class="form-input" placeholder="Nombre de tu empresa u organización">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Mensaje *</label>
+                <textarea class="form-textarea" placeholder="¿En qué podemos ayudarte?"></textarea>
+              </div>
+
+              <div class="form-checkbox">
+                <input type="checkbox" id="privacy">
+                <label for="privacy">
+                  Acepto la <a href="#" style="text-decoration:underline;">política de privacidad</a> y 
+                  el tratamiento de mis datos para gestionar esta consulta.
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                Enviar mensaje
+                <i data-lucide="arrow-right" style="width:20px;height:20px;"></i>
+              </button>
+            </form>
+          </div>
+
+          <div>
+            <h2 class="text-primary mb-8">Información de contacto</h2>
+            
+            <div class="contact-info-box">
+              <div class="contact-info-item">
+                <i data-lucide="map-pin" class="contact-info-icon" style="width:24px;height:24px;"></i>
+                <div>
+                  <div class="contact-info-label">Dirección</div>
+                  <div class="contact-info-value">Calle Ejemplo 123, 14005 Córdoba, España</div>
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <i data-lucide="phone" class="contact-info-icon" style="width:24px;height:24px;"></i>
+                <div>
+                  <div class="contact-info-label">Teléfono</div>
+                  <div class="contact-info-value">+34 957 000 000</div>
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <i data-lucide="mail" class="contact-info-icon" style="width:24px;height:24px;"></i>
+                <div>
+                  <div class="contact-info-label">Email general</div>
+                  <div class="contact-info-value">info@plataformadeecosistemas.es</div>
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <i data-lucide="clock" class="contact-info-icon" style="width:24px;height:24px;"></i>
+                <div>
+                  <div class="contact-info-label">Horario de atención</div>
+                  <div class="contact-info-value">Lunes a Viernes, 9:00 - 18:00</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="map-placeholder">
+              <i data-lucide="map-pin" style="width:48px;height:48px;opacity:0.5;margin-bottom:8px;"></i>
+              <span>Google Maps Embed</span>
+            </div>
+
+            <div class="sla-box">
+              <div class="sla-title">Tiempos de respuesta</div>
+              <div class="sla-row">
+                <span class="sla-label">Información general</span>
+                <span class="sla-value">48h</span>
+              </div>
+              <div class="sla-row">
+                <span class="sla-label">Prensa y medios</span>
+                <span class="sla-value">24h</span>
+              </div>
+              <div class="sla-row">
+                <span class="sla-label">Partners e instituciones</span>
+                <span class="sla-value">48h</span>
+              </div>
+              <div class="sla-row">
+                <span class="sla-label">Inversores</span>
+                <span class="sla-value">72h</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TRANSPARENCY PAGE -->
+  <div class="page" id="page-transparency">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Transparencia</h1>
+        <p>
+          Información para inversores, administraciones públicas y procesos 
+          de due diligence.
+        </p>
+      </div>
+    </section>
+
+    <section class="section bg-white">
+      <div class="container" style="max-width:800px;">
+        <h2 class="text-primary mb-8">Documentos Corporativos</h2>
+
+        <div class="file-list mb-16">
+          <button class="file-item">
+            <div class="file-info">
+              <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+              <div>
+                <div class="file-name">Dossier Corporativo 2026</div>
+                <div class="file-type">PDF</div>
+              </div>
+            </div>
+            <div class="file-meta">
+              <span class="file-size">2.4 MB</span>
+              <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="file-item">
+            <div class="file-info">
+              <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+              <div>
+                <div class="file-name">One-Pager para Inversores</div>
+                <div class="file-type">PDF</div>
+              </div>
+            </div>
+            <div class="file-meta">
+              <span class="file-size">890 KB</span>
+              <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="file-item">
+            <div class="file-info">
+              <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+              <div>
+                <div class="file-name">Fact Sheet Q4 2025</div>
+                <div class="file-type">PDF</div>
+              </div>
+            </div>
+            <div class="file-meta">
+              <span class="file-size">340 KB</span>
+              <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="file-item">
+            <div class="file-info">
+              <i data-lucide="external-link" class="file-icon" style="width:24px;height:24px;"></i>
+              <div>
+                <div class="file-name">Cuentas Anuales (Registro Mercantil)</div>
+                <div class="file-type">Enlace externo</div>
+              </div>
+            </div>
+            <div class="file-meta">
+              <i data-lucide="external-link" class="file-download" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+          <button class="file-item">
+            <div class="file-info">
+              <i data-lucide="file-text" class="file-icon" style="width:24px;height:24px;"></i>
+              <div>
+                <div class="file-name">Código Ético</div>
+                <div class="file-type">PDF</div>
+              </div>
+            </div>
+            <div class="file-meta">
+              <span class="file-size">120 KB</span>
+              <i data-lucide="download" class="file-download" style="width:18px;height:18px;"></i>
+            </div>
+          </button>
+        </div>
+
+        <h2 class="text-primary mb-8">Compliance</h2>
+
+        <div class="values-grid mb-16">
+          <div class="value-card">
+            <div class="value-icon">
+              <i data-lucide="shield" style="width:24px;height:24px;"></i>
+            </div>
+            <div>
+              <div class="value-title">RGPD Compliance</div>
+              <div class="value-desc">Cumplimiento total del Reglamento General de Protección de Datos</div>
+            </div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">
+              <i data-lucide="award" style="width:24px;height:24px;"></i>
+            </div>
+            <div>
+              <div class="value-title">WCAG 2.1 AA</div>
+              <div class="value-desc">Accesibilidad web certificada según estándares internacionales</div>
+            </div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">
+              <i data-lucide="file-text" style="width:24px;height:24px;"></i>
+            </div>
+            <div>
+              <div class="value-title">Ley 2/2023</div>
+              <div class="value-desc">Canal de denuncias implementado según normativa</div>
+            </div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">
+              <i data-lucide="check-circle" style="width:24px;height:24px;"></i>
+            </div>
+            <div>
+              <div class="value-title">Homologación SEPE</div>
+              <div class="value-desc">En proceso de certificación como plataforma de teleformación</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-primary mb-8">Modelo de Ingresos</h2>
+
+        <div class="data-table">
+          <div style="display:flex;justify-content:space-around;text-align:center;padding:24px 0;">
+            <div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:40px;font-weight:900;color:var(--primary);">30%</div>
+              <div class="text-gray">Institucional</div>
+            </div>
+            <div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:40px;font-weight:900;color:var(--secondary);">40%</div>
+              <div class="text-gray">Privado</div>
+            </div>
+            <div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:40px;font-weight:900;color:var(--accent);">30%</div>
+              <div class="text-gray">Licencias</div>
+            </div>
+          </div>
+          <p class="text-center text-gray" style="font-size:14px;padding-bottom:16px;">
+            Modelo Triple Motor: diversificación de ingresos para sostenibilidad a largo plazo.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <div class="logo-icon">ped</div>
+            <span>PED S.L.</span>
+          </div>
+          <p class="footer-desc">
+            Infraestructura digital para el desarrollo rural y la transformación de territorios.
+          </p>
+          <div class="footer-social">
+            <a href="#"><i data-lucide="linkedin" style="width:20px;height:20px;"></i></a>
+            <a href="#"><i data-lucide="twitter" style="width:20px;height:20px;"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-title">Empresa</div>
+          <div class="footer-links">
+            <a href="#" class="footer-link" onclick="showPage('about')">Sobre Nosotros</a>
+            <a href="#" class="footer-link" onclick="showPage('about')">Equipo</a>
+            <a href="#" class="footer-link" onclick="showPage('impact')">Impacto</a>
+            <a href="#" class="footer-link" onclick="showPage('careers')">Trabaja con Nosotros</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-title">Legal</div>
+          <div class="footer-links">
+            <a href="#" class="footer-link">Aviso Legal</a>
+            <a href="#" class="footer-link">Privacidad</a>
+            <a href="#" class="footer-link">Cookies</a>
+            <a href="#" class="footer-link" onclick="showPage('transparency')">Transparencia</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-title">Contacto</div>
+          <div class="footer-contact-item">
+            <i data-lucide="map-pin" class="footer-contact-icon" style="width:16px;height:16px;"></i>
+            <span>Calle Ejemplo 123, 14005 Córdoba, España</span>
+          </div>
+          <div class="footer-contact-item">
+            <i data-lucide="phone" class="footer-contact-icon" style="width:16px;height:16px;"></i>
+            <span>+34 957 000 000</span>
+          </div>
+          <div class="footer-contact-item">
+            <i data-lucide="mail" class="footer-contact-icon" style="width:16px;height:16px;"></i>
+            <span>info@plataformadeecosistemas.es</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          <strong>Plataforma de Ecosistemas Digitales S.L.</strong> | CIF: B-XXXXXXXX | 
+          Registro Mercantil de Córdoba, Tomo XXX, Folio XXX
+        </div>
+        <div>© 2026 PED S.L. Todos los derechos reservados.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Page navigation
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      // Show target page
+      const targetPage = document.getElementById('page-' + pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+      
+      // Update nav links
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.page === pageId) {
+          link.classList.add('active');
+        }
+      });
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Reinitialize icons for new page
+      setTimeout(() => lucide.createIcons(), 100);
+    }
+
+    // Nav link click handlers
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage(link.dataset.page);
+      });
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Logo click
+    document.querySelector('.logo').addEventListener('click', () => {
+      showPage('home');
+    });
+  </script>
+</body>
+</html>

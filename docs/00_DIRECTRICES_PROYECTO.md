@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-11 18:30
-**Versión:** 6.5.0 (G114-4 FAQ Bot Contextual — Centro de Ayuda Público)
+**Última actualización:** 2026-02-11 23:30
+**Versión:** 6.6.0 (Config Sync Git-Tracked — Deploy estándar Drupal)
 
 ---
 
@@ -46,7 +46,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Certificación Digital**: Firma electrónica con FNMT/AutoFirma
 - **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
 - **Theming**: Personalización visual por Tenant
-- **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorías, Template Registry SSoT v5.0, Feature Flags)
+- **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorías, Template Registry SSoT v5.0, Feature Flags, IA Asistente integrada, Template Marketplace, Multi-Page Editor, SEO Assistant, Responsive Preview 8 viewports)
 - **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 módulos, Sprint AC6-2 ✅):
   - `jaraba_agroconecta_core` ✅: 20 Content Entities, 6 Controllers, 7 Services, 15 Forms
     - Fases 1-3: Commerce Core + Orders + Producer/Customer Portal
@@ -1130,14 +1130,38 @@ lando start
 lando drush cr                    # Limpiar caché
 lando drush @agroconecta cr       # Alias específico
 
-# Exportar/importar config
-lando drush cex -y
-lando drush cim -y
+# Exportar/importar config (sync en config/sync/ — git-tracked)
+lando drush cex -y        # Exporta a config/sync/ (raíz del proyecto)
+lando drush cim -y        # Importa desde config/sync/
+lando drush config:status # Verificar diferencias config vs BD
 
 # Base de datos
 lando db-export backup.sql
 lando db-import backup.sql
 ```
+
+### 6.4 Config Sync (Git-Tracked)
+
+> **IMPORTANTE**: El config sync de Drupal vive en `config/sync/` en la raíz del proyecto (NO en `web/sites/default/files/`).
+
+| Propiedad | Valor |
+|-----------|-------|
+| **Directorio** | `config/sync/` (raíz del repositorio) |
+| **Override** | `$settings['config_sync_directory'] = '../config/sync'` en `settings.jaraba_rag.php` |
+| **Archivos** | 589 YML + traducciones `language/en/` y `language/es/` |
+| **Entidades Key** | `qdrant_api`, `openai_api`, `anthropic_api`, `google_gemini_api_key` |
+
+**Flujo estándar Drupal:**
+1. Cambiar config en local (admin UI o código)
+2. `lando drush cex -y` → exporta a `config/sync/`
+3. `git add config/sync/ && git commit` → trackear cambios
+4. `git push` → deploy automático a IONOS
+5. Pipeline ejecuta `drush config:import -y` → aplica cambios en producción
+
+**Reglas:**
+- **NUNCA** editar archivos YML en `config/sync/` manualmente. Siempre exportar con `drush cex`.
+- El pipeline incluye sincronización de UUID (`system.site.uuid`) como prerequisito de `config:import`.
+- Las entidades Key con `key_provider: config` contienen API keys reales. Aceptable en repo privado; migrar a `key_provider: env` como mejora futura.
 
 ---
 
@@ -1579,6 +1603,8 @@ El asistente IA debe:
 | 2026-02-02 | 4.9.0 | **Análisis Page Builder Rendering Bug:** Identificada causa raíz (themes dinámicos no registrados en hook_theme). Solución propuesta: registro dinámico de themes leyendo PageTemplate entities. Alternativa: inline_template. Plan 3 fases: arreglar bug (4-6h), onboarding meta-sitio (20-30h), SEO/GEO (15-20h). Documento multi-perspectiva (Negocio, Finanzas, Arquitectura, UX, SEO/GEO, IA) |
 | 2026-02-08 | **5.4.0** | **Elevación Page Builder Clase Mundial:** Diagnóstico exhaustivo cruzando 6 docs + 8 archivos código. 7 gaps identificados (Dual Architecture, Hot-Swap, Tests E2E, Traits Commerce). Plan 4 sprints (21h). Nuevo doc arquitectura + aprendizaje #47. Tareas pendientes actualizadas. Score objetivo 9.2→9.8/10 |
 | 2026-02-08 | **5.5.0** | **Auditoría GrapesJS changeProp + Model Defaults:** 14 componentes auditados. Regla GRAPEJS-001: todo trait `changeProp: true` DEBE tener propiedad model-level en `defaults`. Stats Counter corregido (13 model defaults + título `<h2>` + labels `display:block`). Timeline dots duplicados eliminados. Pricing Toggle ↔ Table desconexión documentada. Aprendizaje `2026-02-08_grapesjs_changeprop_model_defaults_audit.md` |
+| 2026-02-11 | **6.7.0** | **Config Sync Git-Tracked:** Migración de config sync de `web/sites/default/files/config_HASH/sync/` (gitignored) a `config/sync/` (git-tracked). 589 archivos YML + traducciones en/es. Override `config_sync_directory` en `settings.jaraba_rag.php`. Step UUID sync en deploy.yml. Entidades Key (qdrant_api, openai_api, anthropic_api, google_gemini_api_key) ahora llegan a producción via `config:import`. Elimina workaround JWT directo en settings.local.php. 4 reglas: DEPLOY-001 a DEPLOY-004. Aprendizaje #60 |
+| 2026-02-11 | **6.6.0** | **Sprint C4: IA Asistente Integrada — Plan v3.1 100% COMPLETADO:** 10/10 sprints implementados (A1-A3, B1-B2, C1-C4). C4.1: SeoSuggestionService + endpoint + botón toolbar + panel SEO. C4.2: AiTemplateGeneratorService + endpoint. C4.3: Selectores Vertical/Tono en modal IA + Brand Voice backend. C4.4: Prompt-to-Page con mode toggle + section checkboxes. 2 servicios nuevos (~840 LOC), 3 rutas API, controller +3 endpoints, grapesjs-jaraba-ai.js v2 (+240 LOC), toolbar botón 🤖. Aprendizaje #59 |
 | 2026-02-11 | **6.5.0** | **G114-4 FAQ Bot Contextual:** Widget chat público en `/ayuda` para clientes finales del tenant. FaqBotService (embedding → Qdrant search → LLM grounded → escalación 3-tier). FaqBotApiController (POST /api/v1/help/chat + feedback). Rate limiting 10 req/min/IP. Frontend FAB widget (faq-bot.js, _faq-bot.scss, faq-bot-widget.html.twig). Diferenciación explícita vs jaraba_copilot_v2. HelpCenterController integrado. Sección §2.3.3 documentada. Aprendizaje #58 |
 | 2026-02-11 | **6.4.0** | **PHPUnit 11 Remediación Testing:** 199 tests pasan (186 Unit + 13 Kernel). `EcosistemaJarabaCoreServiceProvider` creado para registrar servicios condicionalmente (stripe_connect, unified_prompt_builder). Fixes: `text` module missing, entity_reference a contrib (group/domain) no bootstrappable en Kernel, getMonthlyPrice()→getPriceMonthly(), isPublished()→get('status'). phpunit.xml con SQLite para Lando. 4 reglas: KERNEL-001, TEST-001, ENV-001, DI-001. Aprendizaje #57 documentado |
 | 2026-02-11 | **6.3.0** | **Auditoría Coherencia 9 Roles:** Cross-referencia specs 20260118 vs codebase real desde 9 perspectivas senior. Corrección crítica: Stripe Billing no es 0% sino ~35-40% (JarabaStripeConnect, TenantSubscriptionService, TenantMeteringService, WebhookService en core + StripeConnectService, SaasMetricsService, FinancialTransaction en FOC). 10 incoherencias detectadas: duplicación Stripe Connect, 0 PHPUnit tests, 14 modules con package.json (no 8). Nota billing añadida a §2.4 FOC. Estadísticas SCSS corregidas. Aprendizaje #56 documentado |

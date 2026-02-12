@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Homepage - PepeJaraba.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --jaraba-blue: #233D63;
+      --jaraba-orange: #FF8C42;
+      --jaraba-teal: #00A9A5;
+      --text-dark: #2D3748;
+      --text-light: #666666;
+      --bg-light: #F7FAFC;
+      --white: #FFFFFF;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3, h4 {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--white);
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--jaraba-blue) 50%, transparent 50%);
+      border-radius: 8px;
+      position: relative;
+    }
+    
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 5px;
+      width: 20px;
+      height: 25px;
+      background: linear-gradient(to top, var(--jaraba-orange), var(--jaraba-teal));
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      transform: rotate(180deg);
+    }
+    
+    .logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--jaraba-blue);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--jaraba-teal);
+    }
+    
+    .nav-cta {
+      background: var(--jaraba-orange);
+      color: white !important;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+    }
+    
+    .nav-cta:hover {
+      background: #e67a35 !important;
+      color: white !important;
+    }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 5% 60px;
+      background: linear-gradient(135deg, var(--bg-light) 0%, var(--white) 100%);
+    }
+    
+    .hero-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    
+    .hero-content h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--jaraba-blue);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero-content h1 span {
+      color: var(--jaraba-teal);
+    }
+    
+    .hero-content p {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin-bottom: 2rem;
+      max-width: 540px;
+    }
+    
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-primary {
+      background: var(--jaraba-orange);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary:hover {
+      background: #e67a35;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255,140,66,0.4);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: var(--jaraba-blue);
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      border: 2px solid var(--jaraba-blue);
+      transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--jaraba-blue);
+      color: white;
+    }
+    
+    .hero-image {
+      position: relative;
+    }
+    
+    .hero-image img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(35,61,99,0.2);
+    }
+    
+    .hero-badge {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      background: var(--jaraba-teal);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      box-shadow: 0 10px 30px rgba(0,169,165,0.3);
+    }
+    
+    .hero-badge span {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+    
+    /* Social Proof */
+    .social-proof {
+      padding: 4rem 5%;
+      background: var(--white);
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .social-proof-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .social-proof p {
+      color: var(--text-light);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .logos-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      opacity: 0.7;
+    }
+    
+    .logo-placeholder {
+      width: 120px;
+      height: 50px;
+      background: #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #888;
+    }
+    
+    /* Avatars Section */
+    .avatars {
+      padding: 6rem 5%;
+      background: var(--bg-light);
+    }
+    
+    .avatars-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .section-header h2 {
+      font-size: 2.5rem;
+      color: var(--jaraba-blue);
+      margin-bottom: 1rem;
+    }
+    
+    .section-header p {
+      color: var(--text-light);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .avatars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    
+    .avatar-card {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      border-top: 4px solid transparent;
+    }
+    
+    .avatar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+    }
+    
+    .avatar-card:nth-child(1) { border-top-color: var(--jaraba-teal); }
+    .avatar-card:nth-child(2) { border-top-color: var(--jaraba-orange); }
+    .avatar-card:nth-child(3) { border-top-color: var(--jaraba-blue); }
+    
+    .avatar-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .avatar-card:nth-child(1) .avatar-icon { background: rgba(0,169,165,0.1); }
+    .avatar-card:nth-child(2) .avatar-icon { background: rgba(255,140,66,0.1); }
+    .avatar-card:nth-child(3) .avatar-icon { background: rgba(35,61,99,0.1); }
+    
+    .avatar-card h3 {
+      font-size: 1.3rem;
+      color: var(--jaraba-blue);
+      margin-bottom: 1rem;
+    }
+    
+    .avatar-card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    .avatar-card .tag {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .avatar-card:nth-child(1) .tag { background: rgba(0,169,165,0.1); color: var(--jaraba-teal); }
+    .avatar-card:nth-child(2) .tag { background: rgba(255,140,66,0.1); color: var(--jaraba-orange); }
+    .avatar-card:nth-child(3) .tag { background: rgba(35,61,99,0.1); color: var(--jaraba-blue); }
+    
+    /* Method CTA */
+    .method-cta {
+      padding: 5rem 5%;
+      background: var(--jaraba-blue);
+      text-align: center;
+    }
+    
+    .method-cta h2 {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .method-cta p {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    
+    .method-cta .btn-primary {
+      background: var(--jaraba-orange);
+    }
+    
+    /* Ecosystem Section */
+    .ecosystem {
+      padding: 6rem 5%;
+      background: var(--white);
+    }
+    
+    .ecosystem-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .ecosystem-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    
+    .ecosystem-card {
+      background: var(--bg-light);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .ecosystem-card:hover {
+      background: var(--jaraba-blue);
+      color: white;
+      transform: scale(1.05);
+    }
+    
+    .ecosystem-card:hover h4 {
+      color: white;
+    }
+    
+    .ecosystem-card .icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .ecosystem-card h4 {
+      font-size: 0.95rem;
+      color: var(--jaraba-blue);
+      margin-bottom: 0.5rem;
+    }
+    
+    .ecosystem-card p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    .ecosystem-card:hover p {
+      color: rgba(255,255,255,0.8);
+    }
+    
+    /* Testimonials */
+    .testimonials {
+      padding: 6rem 5%;
+      background: var(--bg-light);
+    }
+    
+    .testimonials-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .testimonial-card {
+      background: var(--white);
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    
+    .testimonial-card blockquote {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--text-dark);
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .testimonial-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--jaraba-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    
+    .testimonial-author-info h4 {
+      color: var(--jaraba-blue);
+      font-size: 1rem;
+    }
+    
+    .testimonial-author-info p {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    /* Blog Preview */
+    .blog-preview {
+      padding: 6rem 5%;
+      background: var(--white);
+    }
+    
+    .blog-preview-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .blog-card {
+      background: var(--bg-light);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .blog-card:hover {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transform: translateY(-5px);
+    }
+    
+    .blog-card-image {
+      height: 180px;
+      background: linear-gradient(135deg, var(--jaraba-blue), var(--jaraba-teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+    }
+    
+    .blog-card-content {
+      padding: 1.5rem;
+    }
+    
+    .blog-card-tag {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: rgba(0,169,165,0.1);
+      color: var(--jaraba-teal);
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+    
+    .blog-card h4 {
+      color: var(--jaraba-blue);
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+    
+    .blog-card p {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    /* Lead Magnet */
+    .lead-magnet {
+      padding: 5rem 5%;
+      background: linear-gradient(135deg, var(--jaraba-teal) 0%, #008F8B 100%);
+    }
+    
+    .lead-magnet-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      color: white;
+    }
+    
+    .lead-magnet h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .lead-magnet p {
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    
+    .lead-magnet-form {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .lead-magnet-form input {
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      width: 300px;
+    }
+    
+    .lead-magnet-form button {
+      background: var(--jaraba-orange);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .lead-magnet-form button:hover {
+      background: #e67a35;
+      transform: scale(1.05);
+    }
+    
+    /* Footer */
+    .footer {
+      background: var(--jaraba-blue);
+      color: white;
+      padding: 4rem 5% 2rem;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    
+    .footer-brand p {
+      opacity: 0.8;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    .footer-column h4 {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: var(--jaraba-orange);
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-column a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: color 0.3s;
+      font-size: 0.95rem;
+    }
+    
+    .footer-column a:hover {
+      color: var(--jaraba-teal);
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .footer-social a:hover {
+      background: var(--jaraba-orange);
+    }
+    
+    /* Responsive */
+    @media (max-width: 968px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .hero-content h1 {
+        font-size: 2.2rem;
+      }
+      
+      .hero-image {
+        order: -1;
+      }
+      
+      .avatars-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .ecosystem-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+    }
+    
+    /* Annotation styles for wireframe */
+    .annotation {
+      position: absolute;
+      background: #FFE066;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">Pepe Jaraba</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#sobre">Sobre Mí</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#ecosistema">Ecosistema</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#contacto" class="nav-cta">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1>¿Desempleado, emprendedor o con un pequeño negocio? <span>Te ayudo a dar el salto digital.</span></h1>
+        <p>Soy Pepe Jaraba. +30 años impulsando proyectos reales en agroalimentario, comercio local y servicios profesionales. Sin humo, sin tecnicismos. Solo resultados.</p>
+        <div class="hero-ctas">
+          <a href="#contacto" class="btn-primary">Agenda tu consultoría gratuita →</a>
+          <a href="#metodo" class="btn-secondary">Descubre el Método Jaraba™</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://pepejaraba.com/wp-content/uploads/2025/09/JJM-201508_circular.png" alt="Pepe Jaraba">
+        <div class="hero-badge">
+          <span>+100M€</span>
+          en fondos gestionados
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="social-proof">
+    <div class="social-proof-container">
+      <p>Han confiado en mi trabajo</p>
+      <div class="logos-grid">
+        <div class="logo-placeholder">Junta Andalucía</div>
+        <div class="logo-placeholder">SEPE</div>
+        <div class="logo-placeholder">FUNDAE</div>
+        <div class="logo-placeholder">Diputación</div>
+        <div class="logo-placeholder">UE</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Avatars Section -->
+  <section class="avatars" id="sobre">
+    <div class="avatars-container">
+      <div class="section-header">
+        <h2>¿Te Suena Familiar?</h2>
+        <p>He acompañado a cientos de personas en situaciones como la tuya. Si alguna te resuena, estás en el lugar correcto.</p>
+      </div>
+      <div class="avatars-grid">
+        <div class="avatar-card">
+          <div class="avatar-icon">🏪</div>
+          <h3>Para el Negocio que no Tiene Tiempo</h3>
+          <p>¿Sientes que tu negocio de toda la vida se está quedando atrás? Ves cómo otros venden online mientras tú apagas fuegos en el día a día.</p>
+          <span class="tag">Agroalimentario · Comercio · Servicios</span>
+        </div>
+        <div class="avatar-card">
+          <div class="avatar-icon">💡</div>
+          <h3>Para la Idea que Necesita un Impulso</h3>
+          <p>¿Tienes una idea brillante pero te sientes solo y perdido? Te frena la falta de capital, de conocimientos técnicos y de una hoja de ruta clara.</p>
+          <span class="tag">Emprendimiento</span>
+        </div>
+        <div class="avatar-card">
+          <div class="avatar-icon">👤</div>
+          <h3>Para el Talento que se Siente Invisible</h3>
+          <p>¿Sientes que tu experiencia ya no cuenta? Envías tu CV sin respuesta y te preocupa que la tecnología o tu edad te dejen fuera.</p>
+          <span class="tag">Empleabilidad</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method CTA -->
+  <section class="method-cta" id="metodo">
+    <h2>Hay un camino más sencillo y honesto</h2>
+    <p>El Método Jaraba™ convierte la complejidad en un plan de acción claro y práctico.</p>
+    <a href="#" class="btn-primary">Descubre el Método Jaraba™ →</a>
+  </section>
+
+  <!-- Ecosystem Section -->
+  <section class="ecosystem" id="ecosistema">
+    <div class="ecosystem-container">
+      <div class="section-header">
+        <h2>El Ecosistema Jaraba</h2>
+        <p>Soluciones especializadas para cada necesidad, todas conectadas bajo el mismo método "sin humo".</p>
+      </div>
+      <div class="ecosystem-grid">
+        <div class="ecosystem-card">
+          <div class="icon">📚</div>
+          <h4>Empleabilidad</h4>
+          <p>Formación y orientación laboral</p>
+        </div>
+        <div class="ecosystem-card">
+          <div class="icon">🚀</div>
+          <h4>Emprendimiento</h4>
+          <p>De la idea al negocio viable</p>
+        </div>
+        <div class="ecosystem-card">
+          <div class="icon">🌾</div>
+          <h4>AgroConecta</h4>
+          <p>Marketplace agroalimentario</p>
+        </div>
+        <div class="ecosystem-card">
+          <div class="icon">🏪</div>
+          <h4>ComercioConecta</h4>
+          <p>Digitaliza tu comercio local</p>
+        </div>
+        <div class="ecosystem-card">
+          <div class="icon">💼</div>
+          <h4>ServiciosConecta</h4>
+          <p>Gestión profesional digital</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="testimonials-container">
+      <div class="section-header">
+        <h2>Lo que dicen quienes ya dieron el salto</h2>
+      </div>
+      <div class="testimonial-card">
+        <blockquote>
+          "Pepe me ayudó a entender que no necesitaba una web carísima ni tecnología compleja. Con herramientas simples y un plan claro, mi tienda ahora factura un 30% más."
+        </blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MT</div>
+          <div class="testimonial-author-info">
+            <h4>Marta Torres</h4>
+            <p>Propietaria de comercio local, Málaga</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Preview -->
+  <section class="blog-preview" id="blog">
+    <div class="blog-preview-container">
+      <div class="section-header">
+        <h2>Ideas y Estrategias "Sin Humo"</h2>
+        <p>Reflexiones, guías prácticas y casos de éxito para navegar la transformación digital.</p>
+      </div>
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-card-image">📖</div>
+          <div class="blog-card-content">
+            <span class="blog-card-tag">Empleabilidad</span>
+            <h4>Reinvención Profesional a los 45+: Competencias que Realmente Piden</h4>
+            <p>Las habilidades digitales que marcan la diferencia...</p>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-image">💡</div>
+          <div class="blog-card-content">
+            <span class="blog-card-tag">Emprendimiento</span>
+            <h4>Cómo Validar tu Idea de Negocio en 7 Días sin Gastar un Euro</h4>
+            <p>El método paso a paso para emprendedores...</p>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-image">🏪</div>
+          <div class="blog-card-content">
+            <span class="blog-card-tag">Casos de Éxito</span>
+            <h4>Cómo una Tienda de Barrio Aumentó su Facturación un 30%</h4>
+            <p>La historia real de Marta con WhatsApp y Google Maps...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead Magnet -->
+  <section class="lead-magnet">
+    <div class="lead-magnet-container">
+      <h2>🎁 Descarga tu Kit de Impulso Digital Gratuito</h2>
+      <p>Una guía práctica con herramientas, plantillas y el primer paso de tu hoja de ruta personalizada.</p>
+      <div class="lead-magnet-form">
+        <input type="email" placeholder="Tu email profesional">
+        <button type="submit">Quiero mi Kit →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contacto">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon"></div>
+            <span class="logo-text" style="color: white;">Pepe Jaraba</span>
+          </div>
+          <p>Acompañando a pymes, profesionales y emprendedores en su transformación digital. Sin humo, sin tecnicismos. Solo resultados reales.</p>
+        </div>
+        <div class="footer-column">
+          <h4>Explora</h4>
+          <ul>
+            <li><a href="#">Manifiesto</a></li>
+            <li><a href="#">Método Jaraba™</a></li>
+            <li><a href="#">Casos de Éxito</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Ecosistema</h4>
+          <ul>
+            <li><a href="#">Empleabilidad</a></li>
+            <li><a href="#">Emprendimiento</a></li>
+            <li><a href="#">AgroConecta</a></li>
+            <li><a href="#">ComercioConecta</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="#">📞 +34 623 174 304</a></li>
+            <li><a href="#">📍 Santaella, Córdoba</a></li>
+            <li><a href="#">📧 hola@pepejaraba.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Pepe Jaraba | Plataforma de Ecosistemas Digitales S.L.</p>
+        <div class="footer-social">
+          <a href="#">in</a>
+          <a href="#">yt</a>
+          <a href="#">ig</a>
+          <a href="#">wa</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

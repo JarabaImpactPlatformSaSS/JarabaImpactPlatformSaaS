@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComercioConecta - Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-com { background: linear-gradient(135deg, #1B5E4F 0%, #E67E22 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-com text-white">
+    <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">🏪</span>
+        </div>
+        <span class="text-xl font-bold">ComercioConecta</span>
+      </div>
+      <div class="hidden md:flex space-x-6">
+        <a href="#comercios" class="hover:text-orange-200">Comercios</a>
+        <a href="#ofertas" class="hover:text-orange-200">Ofertas flash</a>
+        <a href="#funciones" class="hover:text-orange-200">Funciones</a>
+      </div>
+      <div class="flex space-x-3">
+        <button class="px-4 py-2 rounded-lg border border-white hover:bg-white hover:text-orange-700 transition">Entrar</button>
+        <button class="px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-medium hover:bg-yellow-400 transition">Unir mi comercio</button>
+      </div>
+    </nav>
+    
+    <!-- Hero -->
+    <div class="max-w-7xl mx-auto px-4 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="bg-white/20 px-4 py-1 rounded-full text-sm">Comercio local + Digital</span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 mb-6">El marketplace de tu barrio, en tu móvil</h1>
+        <p class="text-xl text-orange-100 mb-8">Descubre ofertas flash, escanea QR en tienda y compra online con recogida en local. Apoya al comercio de proximidad.</p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button class="px-6 py-3 bg-yellow-500 text-gray-900 rounded-xl font-semibold text-lg hover:bg-yellow-400 transition">
+            📍 Ver comercios cerca
+          </button>
+          <button class="px-6 py-3 bg-white/20 backdrop-blur rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+            ⚡ Ofertas flash
+          </button>
+        </div>
+        <div class="mt-8 flex items-center space-x-6 text-orange-100">
+          <div class="flex items-center"><span class="text-2xl mr-2">🏃</span> Recogida en 1h</div>
+          <div class="flex items-center"><span class="text-2xl mr-2">💳</span> Pago seguro</div>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold animate-pulse">🔥 OFERTA FLASH</span>
+            <span class="text-gray-400 text-sm">Termina en 2:34:12</span>
+          </div>
+          <div class="aspect-video bg-gradient-to-br from-orange-100 to-yellow-100 rounded-xl mb-4 flex items-center justify-center">
+            <span class="text-7xl">👟</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">Zapatillas Running Pro</h3>
+          <p class="text-gray-500 mb-2">Deportes García • C/ Mayor, 15</p>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <span class="text-gray-400 line-through text-lg">89,90€</span>
+              <span class="text-3xl font-bold text-orange-600 ml-2">49,90€</span>
+            </div>
+            <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg font-bold">-44%</span>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 py-3 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition">
+              Comprar ahora
+            </button>
+            <button class="px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">
+              ❤️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <section class="py-12 bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-3xl font-bold text-orange-600">+450</div>
+        <div class="text-gray-500">Comercios activos</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-orange-600">+8.500</div>
+        <div class="text-gray-500">Productos</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-orange-600">-45%</div>
+        <div class="text-gray-500">Dto. medio ofertas flash</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-orange-600">1h</div>
+        <div class="text-gray-500">Recogida express</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías -->
+  <section id="comercios" class="py-16 max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">Explora comercios por categoría</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">👗</span>
+        <span class="font-medium text-gray-700">Moda</span>
+        <span class="text-sm text-gray-400 block">78 tiendas</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">🏠</span>
+        <span class="font-medium text-gray-700">Hogar</span>
+        <span class="text-sm text-gray-400 block">45 tiendas</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">📱</span>
+        <span class="font-medium text-gray-700">Electrónica</span>
+        <span class="text-sm text-gray-400 block">32 tiendas</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">🍰</span>
+        <span class="font-medium text-gray-700">Alimentación</span>
+        <span class="text-sm text-gray-400 block">95 tiendas</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">💊</span>
+        <span class="font-medium text-gray-700">Salud</span>
+        <span class="text-sm text-gray-400 block">28 tiendas</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-orange-500">
+        <span class="text-4xl mb-3 block">🎁</span>
+        <span class="font-medium text-gray-700">Regalos</span>
+        <span class="text-sm text-gray-400 block">56 tiendas</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ofertas Flash -->
+  <section id="ofertas" class="py-16 bg-orange-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-800">⚡ Ofertas Flash</h2>
+          <p class="text-gray-600">Descuentos por tiempo limitado en comercios locales</p>
+        </div>
+        <a href="#" class="text-orange-600 hover:text-orange-700 font-medium">Ver todas →</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Oferta 1 -->
+        <div class="card-hover bg-white rounded-xl overflow-hidden border">
+          <div class="relative">
+            <div class="aspect-square bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
+              <span class="text-6xl">👜</span>
+            </div>
+            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">-50%</span>
+            <span class="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full">⏰ 1:45:22</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-800">Bolso Piel Premium</h3>
+            <p class="text-sm text-gray-500 mb-2">Marroquinería López</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-400 line-through text-sm">120€</span>
+                <span class="text-xl font-bold text-orange-600 ml-1">60€</span>
+              </div>
+              <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200">🛒</button>
+            </div>
+          </div>
+        </div>
+        <!-- Oferta 2 -->
+        <div class="card-hover bg-white rounded-xl overflow-hidden border">
+          <div class="relative">
+            <div class="aspect-square bg-gradient-to-br from-blue-50 to-cyan-100 flex items-center justify-center">
+              <span class="text-6xl">🧴</span>
+            </div>
+            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">-35%</span>
+            <span class="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full">⏰ 3:12:45</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-800">Pack Cosmética Natural</h3>
+            <p class="text-sm text-gray-500 mb-2">Farmacia Central</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-400 line-through text-sm">45€</span>
+                <span class="text-xl font-bold text-orange-600 ml-1">29€</span>
+              </div>
+              <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200">🛒</button>
+            </div>
+          </div>
+        </div>
+        <!-- Oferta 3 -->
+        <div class="card-hover bg-white rounded-xl overflow-hidden border">
+          <div class="relative">
+            <div class="aspect-square bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center">
+              <span class="text-6xl">🎸</span>
+            </div>
+            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">-40%</span>
+            <span class="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full">⏰ 5:30:00</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-800">Guitarra Acústica</h3>
+            <p class="text-sm text-gray-500 mb-2">Música Total</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-400 line-through text-sm">199€</span>
+                <span class="text-xl font-bold text-orange-600 ml-1">119€</span>
+              </div>
+              <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200">🛒</button>
+            </div>
+          </div>
+        </div>
+        <!-- Oferta 4 -->
+        <div class="card-hover bg-white rounded-xl overflow-hidden border">
+          <div class="relative">
+            <div class="aspect-square bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+              <span class="text-6xl">🪴</span>
+            </div>
+            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">-30%</span>
+            <span class="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full">⏰ 8:15:33</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-800">Kit Jardín Interior</h3>
+            <p class="text-sm text-gray-500 mb-2">Floristería El Jardín</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-400 line-through text-sm">65€</span>
+                <span class="text-xl font-bold text-orange-600 ml-1">45€</span>
+              </div>
+              <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200">🛒</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QR Feature -->
+  <section id="funciones" class="py-16 max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-sm font-medium">Innovación</span>
+        <h2 class="text-3xl font-bold text-gray-800 mt-4 mb-6">Escanea, compara y compra</h2>
+        <p class="text-gray-600 mb-6">Usa tu móvil para escanear el QR de cualquier producto en tienda. Verás precio, stock, ofertas y podrás pagar desde el móvil.</p>
+        <ul class="space-y-4">
+          <li class="flex items-start">
+            <span class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3 mt-1 text-xl">📱</span>
+            <div><strong>Sin colas</strong> - Paga desde tu móvil y recoge en caja rápida</div>
+          </li>
+          <li class="flex items-start">
+            <span class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3 mt-1 text-xl">💰</span>
+            <div><strong>Ofertas exclusivas</strong> - Descuentos especiales por usar la app</div>
+          </li>
+          <li class="flex items-start">
+            <span class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3 mt-1 text-xl">⭐</span>
+            <div><strong>Puntos de fidelidad</strong> - Acumula y canjea en todos los comercios</div>
+          </li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-lg border">
+        <div class="text-center mb-6">
+          <div class="w-40 h-40 mx-auto bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-28 h-28 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm-3 0h1v1h-1v-1zm1 1h1v1h-1v-1zm1 1h1v1h-1v-1zm1 1h1v1h-1v-1zm-3 1h1v1h-1v-1zm1 1h1v1h-1v-1zm-2 0h1v1h-1v-1zm4-4h1v1h-1v-1zm1 1h1v1h-1v-1zm1-1h1v1h-1v-1z"/>
+            </svg>
+          </div>
+          <p class="text-gray-500 text-sm">Escanea un producto en tienda</p>
+        </div>
+        <div class="border-t pt-6 space-y-3">
+          <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <span class="text-gray-600">Stock disponible</span>
+            <span class="font-medium text-green-600">✓ 5 unidades</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+            <span class="text-gray-600">Oferta app</span>
+            <span class="font-medium text-orange-600">-10% extra</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <span class="text-gray-600">Tus puntos</span>
+            <span class="font-medium text-blue-600">+25 puntos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Comercios -->
+  <section class="py-16 gradient-com text-white">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold mb-4">¿Tienes un comercio local?</h2>
+      <p class="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">Únete a ComercioConecta y vende online manteniendo tu esencia local. Sin complicaciones técnicas.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="px-8 py-4 bg-yellow-500 text-gray-900 rounded-xl font-semibold text-lg hover:bg-yellow-400 transition">
+          Registrar mi comercio
+        </button>
+        <button class="px-8 py-4 bg-white/20 backdrop-blur rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+          Ver demo
+        </button>
+      </div>
+      <div class="mt-12 grid md:grid-cols-3 gap-8">
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="text-3xl mb-3">📊</div>
+          <h3 class="font-semibold mb-2">Panel de ventas</h3>
+          <p class="text-orange-100 text-sm">Controla tu inventario, pedidos y clientes desde un solo lugar.</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="text-3xl mb-3">⚡</div>
+          <h3 class="font-semibold mb-2">Ofertas flash</h3>
+          <p class="text-orange-100 text-sm">Crea ofertas por tiempo limitado y atrae clientes a tu tienda.</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="text-3xl mb-3">🔍</div>
+          <h3 class="font-semibold mb-2">SEO Local</h3>
+          <p class="text-orange-100 text-sm">Aparece en búsquedas locales de Google y Google Maps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <div class="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+            <span class="text-lg">🏪</span>
+          </div>
+          <span class="text-white font-bold">ComercioConecta</span>
+        </div>
+        <p class="text-sm">El marketplace del comercio local. Parte del ecosistema Jaraba Impact Platform.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Comprar</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Categorías</a></li>
+          <li><a href="#" class="hover:text-white">Ofertas flash</a></li>
+          <li><a href="#" class="hover:text-white">Cerca de mí</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Comercios</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Registrarse</a></li>
+          <li><a href="#" class="hover:text-white">Tarifas</a></li>
+          <li><a href="#" class="hover:text-white">Casos de éxito</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Ayuda</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">FAQ</a></li>
+          <li><a href="#" class="hover:text-white">Contacto</a></li>
+          <li><a href="#" class="hover:text-white">App móvil</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+      © 2026 Jaraba Impact S.L. Todos los derechos reservados.
+    </div>
+  </footer>
+</body>
+</html>

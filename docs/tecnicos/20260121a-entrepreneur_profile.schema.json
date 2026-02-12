@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://jaraba.io/schemas/entrepreneur_profile.json",
+  "title": "Entrepreneur Profile",
+  "description": "Perfil completo del emprendedor para el Copiloto v2.0 - Andalucía +ei",
+  "type": "object",
+  "required": ["id", "drupal_user_id", "nombre", "carril", "dime_score", "fase_actual", "nivel_tecnico"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único del emprendedor"
+    },
+    "drupal_user_id": {
+      "type": "integer",
+      "description": "Foreign key a la entidad User de Drupal"
+    },
+    "nombre": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Nombre para personalización de respuestas del Copiloto"
+    },
+    "carril": {
+      "type": "string",
+      "enum": ["IMPULSO", "ACELERA"],
+      "description": "Carril asignado según diagnóstico DIME. IMPULSO: necesita simplicidad. ACELERA: puede manejar complejidad."
+    },
+    "dime_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Puntuación total del Diagnóstico de Madurez Emprendedora (DIME)"
+    },
+    "dime_responses": {
+      "type": "object",
+      "description": "Respuestas completas del cuestionario DIME",
+      "properties": {
+        "q1_idea_claridad": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No tengo idea clara, 1=Tengo varias ideas, 2=Tengo una idea definida"
+        },
+        "q2_cliente_conocimiento": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No sé quién es mi cliente, 1=Tengo una idea general, 2=Puedo describirlo en detalle"
+        },
+        "q3_validacion_mercado": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No he hablado con nadie, 1=He hablado con amigos/familia, 2=He hablado con clientes potenciales reales"
+        },
+        "q4_competencia": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No conozco a mi competencia, 1=Sé que existen alternativas, 2=Puedo nombrar 3+ competidores y sus diferencias"
+        },
+        "q5_propuesta_valor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No sé qué me diferencia, 1=Creo que me diferencia algo, 2=Puedo explicar en 30 segundos por qué elegirme"
+        },
+        "q6_nivel_tecnico": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=Me cuesta usar tecnología básica, 1=Me manejo con herramientas comunes, 2=Puedo aprender herramientas nuevas rápido"
+        },
+        "q7_experiencia_ventas": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=Nunca he vendido nada, 1=He vendido pero no sistemáticamente, 2=Tengo experiencia vendiendo"
+        },
+        "q8_disponibilidad_tiempo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=Menos de 5h/semana, 1=Entre 5-15h/semana, 2=Más de 15h/semana"
+        },
+        "q9_tolerancia_riesgo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=Me paraliza la incertidumbre, 1=Puedo tolerar algo de riesgo, 2=Estoy cómodo con la incertidumbre"
+        },
+        "q10_red_contactos": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=No tengo red profesional, 1=Tengo algunos contactos, 2=Tengo una red activa que puedo activar"
+        }
+      }
+    },
+    "sector": {
+      "type": ["string", "null"],
+      "maxLength": 100,
+      "description": "Sector o industria del proyecto emprendedor"
+    },
+    "idea_descripcion": {
+      "type": ["string", "null"],
+      "description": "Descripción de la idea de negocio en palabras del emprendedor"
+    },
+    "fase_actual": {
+      "type": "string",
+      "enum": ["INVENTARIO", "VALIDACION", "MVP", "TRACCION"],
+      "description": "Fase actual del emprendedor en el programa. INVENTARIO: identificando recursos. VALIDACION: probando hipótesis. MVP: construyendo primera versión. TRACCION: buscando clientes reales."
+    },
+    "bloqueos_detectados": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["impostor", "miedo_precio", "miedo_rechazo", "tecnofobia", "paralisis", "frustracion", "perfeccionismo", "aislamiento"]
+      },
+      "description": "Bloqueos emocionales detectados durante las interacciones"
+    },
+    "nivel_tecnico": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Nivel técnico derivado del DIME. 1=Novato total, 2=Básico, 3=Intermedio, 4=Avanzado, 5=Experto"
+    },
+    "puntos_impacto": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Puntos de Impacto (Pi) acumulados en el sistema de gamificación"
+    },
+    "hitos_completados": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hito_id": { "type": "string" },
+          "nombre": { "type": "string" },
+          "fecha": { "type": "string", "format": "date-time" },
+          "puntos_otorgados": { "type": "integer" }
+        }
+      },
+      "description": "Lista de hitos completados por el emprendedor"
+    },
+    "preferencias_comunicacion": {
+      "type": "object",
+      "properties": {
+        "tono_preferido": {
+          "type": "string",
+          "enum": ["formal", "casual", "directo"],
+          "default": "directo"
+        },
+        "longitud_respuestas": {
+          "type": "string",
+          "enum": ["cortas", "medias", "detalladas"],
+          "default": "medias"
+        },
+        "ejemplos_preferidos": {
+          "type": "string",
+          "enum": ["tecnologia", "servicios", "productos_fisicos", "mixto"],
+          "default": "mixto"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de alta en el programa"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de última actualización del perfil"
+    }
+  },
+  "additionalProperties": false
+}

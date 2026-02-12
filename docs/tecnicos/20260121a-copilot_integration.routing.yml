@@ -1,0 +1,225 @@
+# =============================================================================
+# COPILOT INTEGRATION ROUTES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# DASHBOARD & UI ROUTES
+# -----------------------------------------------------------------------------
+
+copilot_integration.dashboard:
+  path: '/copilot/dashboard'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\DashboardController::index'
+    _title: 'Mi Panel de Validación'
+  requirements:
+    _permission: 'view bmc dashboard'
+
+copilot_integration.chat:
+  path: '/copilot/chat'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ChatController::index'
+    _title: 'Chat con Copiloto'
+  requirements:
+    _permission: 'use copilot chat'
+
+copilot_integration.experiments:
+  path: '/copilot/experiments'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentsController::index'
+    _title: 'Mis Experimentos'
+  requirements:
+    _permission: 'manage experiments'
+
+copilot_integration.experiment_library:
+  path: '/copilot/library'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentLibraryController::index'
+    _title: 'Biblioteca de Experimentos'
+  requirements:
+    _permission: 'view experiment library'
+
+copilot_integration.hypotheses:
+  path: '/copilot/hypotheses'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\HypothesesController::index'
+    _title: 'Mis Hipótesis'
+  requirements:
+    _permission: 'manage hypotheses'
+
+# -----------------------------------------------------------------------------
+# ADMIN ROUTES
+# -----------------------------------------------------------------------------
+
+copilot_integration.settings:
+  path: '/admin/config/copilot'
+  defaults:
+    _form: '\Drupal\copilot_integration\Form\CopilotSettingsForm'
+    _title: 'Configuración del Copiloto'
+  requirements:
+    _permission: 'administer copilot settings'
+
+copilot_integration.admin_dashboard:
+  path: '/admin/copilot/dashboard'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\AdminController::dashboard'
+    _title: 'Panel de Administración Copiloto'
+  requirements:
+    _permission: 'administer copilot settings'
+
+# -----------------------------------------------------------------------------
+# API ROUTES
+# -----------------------------------------------------------------------------
+
+copilot_integration.api.chat:
+  path: '/api/copilot/chat'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ApiController::chat'
+  methods: [POST]
+  requirements:
+    _permission: 'use copilot chat'
+    _format: 'json'
+
+copilot_integration.api.chat_stream:
+  path: '/api/copilot/chat/stream'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ApiController::chatStream'
+  methods: [POST]
+  requirements:
+    _permission: 'use copilot chat'
+
+copilot_integration.api.context:
+  path: '/api/copilot/context/{user_id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ApiController::getContext'
+  methods: [GET]
+  requirements:
+    _permission: 'use copilot chat'
+    user_id: '[a-f0-9\-]+'
+
+copilot_integration.api.history:
+  path: '/api/copilot/history/{session_id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ApiController::getHistory'
+  methods: [GET]
+  requirements:
+    _permission: 'use copilot chat'
+
+# BMC Validation API
+copilot_integration.api.bmc_validation:
+  path: '/api/bmc/validation/{user_id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\BMCApiController::getValidation'
+  methods: [GET]
+  requirements:
+    _permission: 'view bmc dashboard'
+    user_id: '[a-f0-9\-]+'
+
+copilot_integration.api.bmc_pivot_log:
+  path: '/api/bmc/pivot-log/{user_id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\BMCApiController::getPivotLog'
+  methods: [GET]
+  requirements:
+    _permission: 'view bmc dashboard'
+    user_id: '[a-f0-9\-]+'
+
+# Hypotheses API
+copilot_integration.api.hypotheses:
+  path: '/api/hypotheses'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\HypothesisApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'manage hypotheses'
+
+copilot_integration.api.hypothesis_create:
+  path: '/api/hypotheses'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\HypothesisApiController::create'
+  methods: [POST]
+  requirements:
+    _permission: 'manage hypotheses'
+    _format: 'json'
+
+copilot_integration.api.hypothesis_update:
+  path: '/api/hypotheses/{id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\HypothesisApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage hypotheses'
+    id: '[a-f0-9\-]+'
+    _format: 'json'
+
+copilot_integration.api.hypotheses_prioritize:
+  path: '/api/hypotheses/prioritize'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\HypothesisApiController::prioritize'
+  methods: [POST]
+  requirements:
+    _permission: 'manage hypotheses'
+    _format: 'json'
+
+# Experiments API
+copilot_integration.api.experiments:
+  path: '/api/experiments'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'manage experiments'
+
+copilot_integration.api.experiment_create:
+  path: '/api/experiments'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentApiController::create'
+  methods: [POST]
+  requirements:
+    _permission: 'manage experiments'
+    _format: 'json'
+
+copilot_integration.api.experiment_start:
+  path: '/api/experiments/{id}/start'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentApiController::start'
+  methods: [POST]
+  requirements:
+    _permission: 'manage experiments'
+    id: '[a-f0-9\-]+'
+
+copilot_integration.api.experiment_result:
+  path: '/api/experiments/{id}/result'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentApiController::recordResult'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage experiments'
+    id: '[a-f0-9\-]+'
+    _format: 'json'
+
+copilot_integration.api.experiment_suggest:
+  path: '/api/experiments/suggest'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentApiController::suggest'
+  methods: [POST]
+  requirements:
+    _permission: 'manage experiments'
+    _format: 'json'
+
+# Experiment Library API
+copilot_integration.api.experiment_library:
+  path: '/api/experiments/library'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentLibraryApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view experiment library'
+
+copilot_integration.api.experiment_library_item:
+  path: '/api/experiments/library/{id}'
+  defaults:
+    _controller: '\Drupal\copilot_integration\Controller\ExperimentLibraryApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'view experiment library'
+    id: '\d+'

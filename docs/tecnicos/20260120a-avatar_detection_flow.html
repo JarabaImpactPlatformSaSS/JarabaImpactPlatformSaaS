@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Avatar - Ecosistema Jaraba</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .flow-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 2s ease-in-out forwards;
+        }
+        
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .node {
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+        
+        .connector {
+            position: relative;
+        }
+        
+        .connector::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -20px;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #f97316, #8b5cf6);
+        }
+        
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #8b5cf6;
+            margin: 0 auto;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #f97316 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .phase-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">J</span>
+                </div>
+                <span class="font-semibold text-slate-700">Ecosistema Jaraba</span>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Flujo de Detección de Avatar</h1>
+            <p class="text-slate-500">Cómo el SaaS identifica y asigna el tipo de usuario</p>
+        </div>
+
+        <!-- Main Flow -->
+        <div class="space-y-6">
+            
+            <!-- FASE 0: Punto de Entrada -->
+            <div class="node bg-white rounded-2xl shadow-lg border-2 border-orange-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="phase-badge bg-white/20 text-white">FASE 0</span>
+                        <h2 class="text-white font-semibold text-lg">🌐 Punto de Entrada (Pre-registro)</h2>
+                    </div>
+                    <span class="text-orange-100 text-sm">Señales implícitas</span>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">🔗</span>
+                                <span class="font-semibold text-orange-800">Dominio</span>
+                            </div>
+                            <p class="text-sm text-orange-700 mb-3">Domain Access detecta origen</p>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">agroconecta.es</code>
+                                    <span class="text-slate-500">→ Productor</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">impulsoempleo.es</code>
+                                    <span class="text-slate-500">→ Job Seeker</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">pepejaraba.com</code>
+                                    <span class="text-slate-500">→ Emprendedor</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">📍</span>
+                                <span class="font-semibold text-orange-800">Path/Subdominio</span>
+                            </div>
+                            <p class="text-sm text-orange-700 mb-3">URL indica vertical</p>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">/emprendimiento/*</code>
+                                    <span class="text-slate-500">→ Javier</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">/empleabilidad/*</code>
+                                    <span class="text-slate-500">→ Lucía</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">/comercio/*</code>
+                                    <span class="text-slate-500">→ Marta</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">🎯</span>
+                                <span class="font-semibold text-orange-800">UTM/Campaña</span>
+                            </div>
+                            <p class="text-sm text-orange-700 mb-3">Tracking de origen</p>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">utm=kitdigital</code>
+                                    <span class="text-slate-500">→ PYME</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">utm=andalucia_ei</code>
+                                    <span class="text-slate-500">→ Joven 18-29</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <code class="text-orange-600">utm=piil</code>
+                                    <span class="text-slate-500">→ Vulnerable</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">📄</span>
+                                <span class="font-semibold text-orange-800">Landing Page</span>
+                            </div>
+                            <p class="text-sm text-orange-700 mb-3">Herramienta TTV usada</p>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <span class="text-orange-600">Calc. Madurez</span>
+                                    <span class="text-slate-500">→ Emprendedor</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <span class="text-orange-600">Diag. Express</span>
+                                    <span class="text-slate-500">→ Job Seeker</span>
+                                </div>
+                                <div class="flex justify-between bg-white rounded px-2 py-1">
+                                    <span class="text-orange-600">Demo Tienda</span>
+                                    <span class="text-slate-500">→ Merchant</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-slate-50 rounded-lg p-3 border">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-slate-400">💡</span>
+                            <span class="text-slate-600"><strong>Output:</strong> <code class="bg-slate-200 px-2 py-0.5 rounded text-xs">vertical_inferido</code> + <code class="bg-slate-200 px-2 py-0.5 rounded text-xs">programa_origen</code></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arrow -->
+            <div class="flex justify-center">
+                <div class="flex flex-col items-center">
+                    <div class="w-0.5 h-8 bg-gradient-to-b from-orange-500 to-amber-500"></div>
+                    <div class="w-3 h-3 border-r-2 border-b-2 border-amber-500 transform rotate-45 -mt-1.5"></div>
+                </div>
+            </div>
+
+            <!-- FASE 1: Registro -->
+            <div class="node bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="phase-badge bg-white/20 text-white">FASE 1</span>
+                        <h2 class="text-white font-semibold text-lg">📝 Registro (Onboarding)</h2>
+                    </div>
+                    <span class="text-amber-100 text-sm">ECA-USR-001</span>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <span class="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-xs font-bold">1</span>
+                                Trigger: Usuario se registra
+                            </h3>
+                            <div class="bg-slate-800 rounded-lg p-4 text-sm font-mono overflow-x-auto">
+                                <pre class="text-green-400"><span class="text-slate-500"># ECA Onboarding</span>
+<span class="text-purple-400">entity_create:</span>
+  <span class="text-cyan-400">type:</span> <span class="text-amber-300">'user_profile_extended'</span>
+  <span class="text-cyan-400">values:</span>
+    <span class="text-cyan-400">avatar_type:</span> <span class="text-amber-300">'pending'</span> <span class="text-slate-500"># ← Aún no confirmado</span>
+    <span class="text-cyan-400">health_score:</span> <span class="text-amber-300">50</span>
+    <span class="text-cyan-400">impact_credits:</span> <span class="text-amber-300">0</span></pre>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <span class="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-xs font-bold">2</span>
+                                Acciones ejecutadas
+                            </h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 bg-amber-50 rounded-lg p-3 border border-amber-100">
+                                    <span class="text-lg">👤</span>
+                                    <div>
+                                        <p class="font-medium text-amber-800 text-sm">Crear perfil extendido</p>
+                                        <p class="text-xs text-amber-600">user_profile_extended con avatar_type: pending</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 bg-amber-50 rounded-lg p-3 border border-amber-100">
+                                    <span class="text-lg">🏢</span>
+                                    <div>
+                                        <p class="font-medium text-amber-800 text-sm">Asignar a tenant por defecto</p>
+                                        <p class="text-xs text-amber-600">Group membership según punto de entrada</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 bg-amber-50 rounded-lg p-3 border border-amber-100">
+                                    <span class="text-lg">📧</span>
+                                    <div>
+                                        <p class="font-medium text-amber-800 text-sm">Webhook a ActiveCampaign</p>
+                                        <p class="text-xs text-amber-600">Contacto creado con tags iniciales</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-amber-50 rounded-lg p-3 border border-amber-200">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-2xl">⏳</span>
+                            <span class="text-amber-800"><strong>Estado:</strong> Usuario registrado pero avatar <code class="bg-amber-200 px-2 py-0.5 rounded text-xs">PENDING</code> - Necesita confirmación vía diagnóstico</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arrow -->
+            <div class="flex justify-center">
+                <div class="flex flex-col items-center">
+                    <div class="w-0.5 h-8 bg-gradient-to-b from-amber-500 to-emerald-500"></div>
+                    <div class="w-3 h-3 border-r-2 border-b-2 border-emerald-500 transform rotate-45 -mt-1.5"></div>
+                </div>
+            </div>
+
+            <!-- FASE 2: Diagnóstico -->
+            <div class="node bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="phase-badge bg-white/20 text-white">FASE 2</span>
+                        <h2 class="text-white font-semibold text-lg">🎯 Diagnóstico Express (Confirmación)</h2>
+                    </div>
+                    <span class="text-emerald-100 text-sm">ECA-USR-002 • MOMENTO CLAVE</span>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Input del diagnóstico -->
+                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+                            <h3 class="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                                <span class="text-lg">📋</span> Datos capturados
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="bg-white rounded-lg p-2 border">
+                                    <span class="text-emerald-600 font-medium">diagnostic_type</span>
+                                    <p class="text-xs text-slate-500">empleabilidad | emprendimiento | comercio</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-2 border">
+                                    <span class="text-emerald-600 font-medium">business_phase</span>
+                                    <p class="text-xs text-slate-500">idea | validación | crecimiento | escalado</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-2 border">
+                                    <span class="text-emerald-600 font-medium">sector</span>
+                                    <p class="text-xs text-slate-500">comercio | servicios | agro | hostelería</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-2 border">
+                                    <span class="text-emerald-600 font-medium">score + primary_gap</span>
+                                    <p class="text-xs text-slate-500">Puntuación 0-100 y debilidad principal</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lógica de decisión -->
+                        <div class="bg-slate-800 rounded-xl p-4 text-sm font-mono">
+                            <h3 class="text-emerald-400 mb-3 flex items-center gap-2">
+                                <span>⚡</span> Lógica ECA Switch
+                            </h3>
+                            <pre class="text-xs overflow-x-auto"><span class="text-purple-400">switch:</span> <span class="text-cyan-400">[diagnostic:type]</span>
+
+<span class="text-slate-500"># Si es emprendimiento</span>
+<span class="text-amber-300">case 'emprendimiento':</span>
+  → <span class="text-green-400">role: 'entrepreneur'</span>
+  → <span class="text-green-400">avatar: 'Javier'</span>
+
+<span class="text-slate-500"># Si es empleabilidad</span>
+<span class="text-amber-300">case 'empleabilidad':</span>
+  → <span class="text-green-400">role: 'job_seeker'</span>
+  → <span class="text-green-400">avatar: 'Lucía'</span>
+
+<span class="text-slate-500"># Si es comercio/agro</span>
+<span class="text-amber-300">case 'comercio':</span>
+  → <span class="text-green-400">role: 'merchant'</span>
+  → <span class="text-green-400">avatar: 'Marta'</span></pre>
+                        </div>
+                        
+                        <!-- Acciones post-confirmación -->
+                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+                            <h3 class="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                                <span class="text-lg">✅</span> Acciones ejecutadas
+                            </h3>
+                            <div class="space-y-2">
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-emerald-500 mt-0.5">●</span>
+                                    <span class="text-slate-700">Rol Drupal asignado definitivamente</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-emerald-500 mt-0.5">●</span>
+                                    <span class="text-slate-700">Tags en ActiveCampaign actualizados</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-emerald-500 mt-0.5">●</span>
+                                    <span class="text-slate-700">Contenido desbloqueado según gap</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-emerald-500 mt-0.5">●</span>
+                                    <span class="text-slate-700">+50 créditos de impacto</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-emerald-500 mt-0.5">●</span>
+                                    <span class="text-slate-700">Itinerario personalizado generado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-emerald-100 rounded-lg p-3 border border-emerald-300">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-2xl">🎉</span>
+                            <span class="text-emerald-800"><strong>Estado:</strong> Avatar <code class="bg-emerald-200 px-2 py-0.5 rounded text-xs font-bold">CONFIRMADO</code> - Sistema conoce exactamente quién es el usuario</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arrow -->
+            <div class="flex justify-center">
+                <div class="flex flex-col items-center">
+                    <div class="w-0.5 h-8 bg-gradient-to-b from-emerald-500 to-purple-500"></div>
+                    <div class="w-3 h-3 border-r-2 border-b-2 border-purple-500 transform rotate-45 -mt-1.5"></div>
+                </div>
+            </div>
+
+            <!-- FASE 3: Runtime -->
+            <div class="node bg-white rounded-2xl shadow-lg border-2 border-purple-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="phase-badge bg-white/20 text-white">FASE 3</span>
+                        <h2 class="text-white font-semibold text-lg">🚀 Detección en Runtime (Cada sesión)</h2>
+                    </div>
+                    <span class="text-purple-100 text-sm">Prioridad de contexto</span>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-slate-700 mb-3">Cascada de detección (orden de prioridad)</h3>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <div class="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium text-sm border border-purple-200">
+                                1️⃣ Domain Access
+                            </div>
+                            <span class="text-purple-300">→</span>
+                            <div class="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium text-sm border border-purple-200">
+                                2️⃣ Subdominio/Path
+                            </div>
+                            <span class="text-purple-300">→</span>
+                            <div class="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium text-sm border border-purple-200">
+                                3️⃣ Group Membership
+                            </div>
+                            <span class="text-purple-300">→</span>
+                            <div class="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium text-sm border border-purple-200">
+                                4️⃣ Rol del Usuario
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-semibold text-slate-700 mb-3">Experiencia aplicada por avatar</h3>
+                    <div class="grid md:grid-cols-5 gap-3">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 text-center">
+                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">👩</div>
+                            <h4 class="font-semibold text-blue-800">Lucía</h4>
+                            <p class="text-xs text-blue-600 mb-2">Empleabilidad</p>
+                            <div class="bg-white rounded px-2 py-1 text-xs">
+                                <code class="text-blue-600">job_seeker</code>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">JobSeeker Dashboard</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border-2 border-purple-300 text-center ring-2 ring-purple-400 ring-offset-2">
+                            <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">👨</div>
+                            <h4 class="font-semibold text-purple-800">Javier</h4>
+                            <p class="text-xs text-purple-600 mb-2">Emprendimiento</p>
+                            <div class="bg-white rounded px-2 py-1 text-xs">
+                                <code class="text-purple-600">entrepreneur</code>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Entrepreneur Dashboard</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200 text-center">
+                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">👩‍🌾</div>
+                            <h4 class="font-semibold text-green-800">Marta</h4>
+                            <p class="text-xs text-green-600 mb-2">Comercio/Agro</p>
+                            <div class="bg-white rounded px-2 py-1 text-xs">
+                                <code class="text-green-600">merchant</code>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Merchant Dashboard</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200 text-center">
+                            <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">👨‍💼</div>
+                            <h4 class="font-semibold text-amber-800">David</h4>
+                            <p class="text-xs text-amber-600 mb-2">Consultoría</p>
+                            <div class="bg-white rounded px-2 py-1 text-xs">
+                                <code class="text-amber-600">consultant</code>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Consultant Dashboard</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-4 border border-rose-200 text-center">
+                            <div class="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">👩‍💻</div>
+                            <h4 class="font-semibold text-rose-800">Elena</h4>
+                            <p class="text-xs text-rose-600 mb-2">Institucional</p>
+                            <div class="bg-white rounded px-2 py-1 text-xs">
+                                <code class="text-rose-600">entity_admin</code>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Entity Admin Dashboard</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Casos especiales -->
+            <div class="mt-8 bg-slate-100 rounded-2xl p-6 border border-slate-200">
+                <h3 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <span class="text-xl">⚠️</span> Casos Especiales
+                </h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-xl p-4 border">
+                        <h4 class="font-medium text-slate-800 mb-2 flex items-center gap-2">
+                            <span class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xs">🔄</span>
+                            Multi-Avatar
+                        </h4>
+                        <p class="text-sm text-slate-600">Un usuario puede tener múltiples roles si participa en varios programas. El sistema usa el <strong>contexto activo</strong> (Group actual) para determinar qué experiencia mostrar.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border">
+                        <h4 class="font-medium text-slate-800 mb-2 flex items-center gap-2">
+                            <span class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 text-xs">↗️</span>
+                            Cambio de Avatar
+                        </h4>
+                        <p class="text-sm text-slate-600">Si un emprendedor contrata a alguien, puede añadir el rol <code class="bg-slate-100 px-1 rounded text-xs">employer</code> sin perder <code class="bg-slate-100 px-1 rounded text-xs">entrepreneur</code>.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border">
+                        <h4 class="font-medium text-slate-800 mb-2 flex items-center gap-2">
+                            <span class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xs">🏛️</span>
+                            Programas Institucionales
+                        </h4>
+                        <p class="text-sm text-slate-600">En Andalucía +ei o PIIL, el avatar se <strong>pre-asigna</strong> desde el programa. El diagnóstico confirma pero no puede cambiar el vertical.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-slate-400">
+            <p>Ecosistema Jaraba • Documentación Técnica • Enero 2026</p>
+        </div>
+    </div>
+</body>
+</html>
