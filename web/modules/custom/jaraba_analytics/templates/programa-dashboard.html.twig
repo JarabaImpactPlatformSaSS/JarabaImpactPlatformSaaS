@@ -126,6 +126,16 @@
     </div>
   </div>
 
+  {# ===== GRANT TIMELINE ===== #}
+  <div class="programa-dashboard__timeline">
+    <h2 class="programa-dashboard__section-title">
+      {% trans %}Evolucion Temporal: Esperado vs Ejecutado{% endtrans %}
+    </h2>
+    <div class="programa-timeline-card">
+      <canvas id="grant-timeline-chart" width="800" height="280"></canvas>
+    </div>
+  </div>
+
   {# ===== BUDGET LINES ===== #}
   {% if grant_summary.budget_lines is not empty %}
     <div class="programa-dashboard__budget">

@@ -55,6 +55,11 @@ services:
       - '@current_user'
       - '@logger.channel.jaraba_onboarding'
 
+  # Validacion de NIF/NIE/CIF espanoles
+  jaraba_onboarding.nif_validation:
+    class: Drupal\jaraba_onboarding\Service\NIFValidationService
+    arguments: []
+
   # Extractor de paleta de colores de logo (GD/IA)
   jaraba_onboarding.logo_color_extractor:
     class: Drupal\jaraba_onboarding\Service\LogoColorExtractorService

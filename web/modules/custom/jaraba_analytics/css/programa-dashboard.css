@@ -209,6 +209,27 @@
 }
 
 /* ============================================================================
+   Grant Timeline Chart
+   ============================================================================ */
+
+.programa-dashboard__timeline {
+  background: #fff;
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.programa-timeline-card {
+  padding: 0.5rem;
+}
+
+.programa-timeline-card canvas {
+  width: 100% !important;
+  max-height: 280px;
+}
+
+/* ============================================================================
    Budget Table
    ============================================================================ */
 
@@ -449,5 +470,79 @@
   .programa-report-card__btn,
   .programa-budget-bar__fill {
     transition: none;
+  }
+}
+
+/* ============================================================================
+   Print Styles — Print-Ready Dashboard
+   ============================================================================ */
+
+@media print {
+  .programa-dashboard {
+    padding: 0;
+    max-width: 100%;
+    font-size: 11pt;
+    color: #000;
+  }
+
+  .programa-dashboard__header-actions,
+  .programa-report-card__btn,
+  #refresh-grant {
+    display: none !important;
+  }
+
+  .programa-dashboard__header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .programa-dashboard__title {
+    font-size: 18pt;
+    color: #000;
+  }
+
+  .programa-dashboard__kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .programa-kpi {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .programa-dashboard__grant,
+  .programa-dashboard__budget,
+  .programa-dashboard__timeline,
+  .programa-dashboard__cohorts,
+  .programa-dashboard__reports {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .programa-dashboard__body {
+    grid-template-columns: 1fr;
+  }
+
+  .programa-dashboard__grant-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .programa-budget-bar__fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .programa-budget-table__row--alert {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .programa-dashboard__alert-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

@@ -69,10 +69,11 @@ class InstitutionalReportService {
       $pdf->SetCreator('Ecosistema Jaraba');
       $pdf->SetAuthor($programName);
       $pdf->SetTitle(self::REPORT_TYPES[$type] . ' — ' . $period);
-      $pdf->SetMargins(20, 15, 20);
+      $pdf->SetMargins(20, 20, 20);
       $pdf->SetAutoPageBreak(TRUE, 25);
       $pdf->SetPrintHeader(FALSE);
-      $pdf->SetPrintFooter(FALSE);
+      // Enable footer for page numbers + generation date.
+      $pdf->SetPrintFooter(TRUE);
 
       match ($type) {
         'monthly_tracking' => $this->buildMonthlyTracking($pdf, $data),
@@ -150,7 +151,7 @@ class InstitutionalReportService {
   }
 
   /**
-   * Crea instancia TCPDF.
+   * Crea instancia TCPDF con footer de paginacion y fecha.
    */
   protected function createPdfInstance(): \TCPDF {
     if (!class_exists('TCPDF')) {
@@ -161,7 +162,29 @@ class InstitutionalReportService {
       }
     }
 
-    $pdf = new \TCPDF('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE);
+    $pdf = new class('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE) extends \TCPDF {
+
+      /**
+       * {@inheritdoc}
+       */
+      public function Footer(): void {
+        $this->SetY(-15);
+        $this->SetFont('helvetica', '', 8);
+        $this->SetTextColor(150, 150, 150);
+
+        // Left: generation date.
+        $this->Cell(0, 10,
+          'Generado: ' . date('d/m/Y H:i') . ' | Ecosistema Jaraba',
+          0, 0, 'L');
+
+        // Right: page number.
+        $this->Cell(0, 10,
+          'Pagina ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages(),
+          0, 0, 'R');
+      }
+
+    };
+
     return $pdf;
   }
 

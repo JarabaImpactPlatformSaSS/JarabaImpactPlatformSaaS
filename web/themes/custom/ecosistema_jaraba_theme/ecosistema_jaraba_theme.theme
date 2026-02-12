@@ -917,26 +917,31 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'title' => 'AgroConecta - Vende sin intermediarios | Ecosistema Jaraba',
       'description' => 'Tu tienda online en 10 minutos. Cobra directamente. Sin comisiones ocultas. Plataforma para productores rurales.',
       'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-agroconecta.jpg',
     ],
     'ecosistema_jaraba_core.landing.comercioconecta' => [
       'title' => 'ComercioConecta - Digitaliza tu comercio | Ecosistema Jaraba',
       'description' => 'Ofertas flash, click & collect, pedidos online. Todo integrado con tu TPV. Comercio local digitalizado.',
       'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-comercioconecta.jpg',
     ],
     'ecosistema_jaraba_core.landing.serviciosconecta' => [
       'title' => 'ServiciosConecta - Tu consulta digitalizada | Ecosistema Jaraba',
       'description' => 'Agenda online, videollamadas, cobro automático, firma digital. Todo en un solo lugar para profesionales.',
       'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-serviciosconecta.jpg',
     ],
     'ecosistema_jaraba_core.landing.empleabilidad' => [
       'title' => 'Empleabilidad - Reinvéntate profesionalmente | Ecosistema Jaraba',
       'description' => 'Formación práctica, CV que destaca, ofertas que encajan contigo. Con ayuda de IA y mentores reales.',
       'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-empleabilidad.jpg',
     ],
     'ecosistema_jaraba_core.landing.emprendimiento' => [
       'title' => 'Emprendimiento - De idea a negocio rentable | Ecosistema Jaraba',
       'description' => 'Metodología validada + herramientas digitales + mentoría experta. Todo para emprender con garantías.',
       'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-emprendimiento.jpg',
     ],
   ];
   if (isset($landing_meta[$route])) {
@@ -947,15 +952,22 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
 
     $variables['head_title']['title'] = $meta['title'];
 
+    // Build absolute og:image URL from relative path.
+    $og_image_url = $base_url . ($meta['og_image'] ?? '/themes/custom/ecosistema_jaraba_theme/images/og/og-default.jpg');
+
     $meta_tags = [
       ['name' => 'description', 'content' => $meta['description']],
       ['property' => 'og:title', 'content' => $meta['title']],
       ['property' => 'og:description', 'content' => $meta['description']],
       ['property' => 'og:type', 'content' => $meta['og_type']],
       ['property' => 'og:url', 'content' => $current_url],
+      ['property' => 'og:image', 'content' => $og_image_url],
+      ['property' => 'og:image:width', 'content' => '1200'],
+      ['property' => 'og:image:height', 'content' => '630'],
       ['name' => 'twitter:card', 'content' => 'summary_large_image'],
       ['name' => 'twitter:title', 'content' => $meta['title']],
       ['name' => 'twitter:description', 'content' => $meta['description']],
+      ['name' => 'twitter:image', 'content' => $og_image_url],
     ];
     foreach ($meta_tags as $i => $tag) {
       $key = $tag['name'] ?? $tag['property'];

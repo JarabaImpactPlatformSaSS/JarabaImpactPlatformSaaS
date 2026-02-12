@@ -106,24 +106,89 @@ class GrantTrackingService {
    *   - budget_lines: (array) Partidas presupuestarias.
    *
    * @return array
-   *   Resumen con burn rate, partidas y alertas.
+   *   Resumen con burn rate, partidas, timeline y alertas.
    */
   public function getGrantSummary(array $grantConfig): array {
-    $burnRate = $this->calculateBurnRate(
-      (int) ($grantConfig['total'] ?? 0),
-      (int) ($grantConfig['spent'] ?? 0),
-      $grantConfig['start_date'] ?? date('Y-01-01'),
-      $grantConfig['end_date'] ?? date('Y-12-31'),
-    );
+    $total = (int) ($grantConfig['total'] ?? 0);
+    $spent = (int) ($grantConfig['spent'] ?? 0);
+    $startDate = $grantConfig['start_date'] ?? date('Y-01-01');
+    $endDate = $grantConfig['end_date'] ?? date('Y-12-31');
 
+    $burnRate = $this->calculateBurnRate($total, $spent, $startDate, $endDate);
     $budgetLines = $this->calculateBudgetLines($grantConfig['budget_lines'] ?? []);
+    $timeline = $this->buildTimeline($total, $spent, $startDate, $endDate);
 
     return [
       'burn_rate' => $burnRate,
       'budget_lines' => $budgetLines,
-      'total' => $grantConfig['total'] ?? 0,
-      'spent' => $grantConfig['spent'] ?? 0,
-      'remaining' => ($grantConfig['total'] ?? 0) - ($grantConfig['spent'] ?? 0),
+      'timeline' => $timeline,
+      'total' => $total,
+      'spent' => $spent,
+      'remaining' => $total - $spent,
+    ];
+  }
+
+  /**
+   * Genera datos de timeline mensual para grafico de lineas.
+   *
+   * Calcula puntos de datos mensuales: consumo esperado (lineal) vs
+   * consumo real acumulado. Util para Chart.js line chart.
+   *
+   * @param int $total
+   *   Total del grant en euros.
+   * @param int $spent
+   *   Cantidad gastada hasta la fecha.
+   * @param string $startDate
+   *   Fecha inicio ISO 8601.
+   * @param string $endDate
+   *   Fecha fin ISO 8601.
+   *
+   * @return array{labels: string[], expected: int[], actual: int[]}
+   */
+  protected function buildTimeline(int $total, int $spent, string $startDate, string $endDate): array {
+    $start = new \DateTime($startDate);
+    $end = new \DateTime($endDate);
+    $now = new \DateTime();
+
+    $totalMonths = max(1, (int) $start->diff($end)->format('%m') + ((int) $start->diff($end)->format('%y') * 12));
+    $elapsedMonths = max(0, (int) $start->diff($now)->format('%m') + ((int) $start->diff($now)->format('%y') * 12));
+
+    $labels = [];
+    $expected = [];
+    $actual = [];
+
+    $monthNames = [
+      1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr',
+      5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Ago',
+      9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic',
+    ];
+
+    $cursor = clone $start;
+    $monthlyExpected = $totalMonths > 0 ? $total / $totalMonths : 0;
+    $monthlyActual = $elapsedMonths > 0 ? $spent / $elapsedMonths : 0;
+
+    for ($i = 0; $i < $totalMonths; $i++) {
+      $monthNum = (int) $cursor->format('n');
+      $labels[] = $monthNames[$monthNum] ?? $cursor->format('M');
+      $expected[] = (int) round($monthlyExpected * ($i + 1));
+
+      // Actual data only up to current month.
+      if ($i < $elapsedMonths) {
+        $actual[] = (int) round($monthlyActual * ($i + 1));
+      }
+
+      $cursor->modify('+1 month');
+    }
+
+    // Ensure the last actual data point matches exactly.
+    if (!empty($actual)) {
+      $actual[count($actual) - 1] = $spent;
+    }
+
+    return [
+      'labels' => $labels,
+      'expected' => $expected,
+      'actual' => $actual,
     ];
   }
 
