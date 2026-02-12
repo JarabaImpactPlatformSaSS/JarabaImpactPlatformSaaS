@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Template for a rendered legal query response.
+ *
+ * Variables:
+ * - query: The user's query text.
+ * - response: The AI-generated answer text.
+ * - citations: Array of citation render arrays.
+ * - confidence: Confidence score (0-1).
+ *
+ * @see jaraba_legal_knowledge_theme()
+ */
+#}
+<article class="legal-response">
+  {# Confidence indicator #}
+  {% if confidence is defined and confidence > 0 %}
+    <div class="legal-response__confidence">
+      <span class="legal-response__confidence-label">{{ 'Confianza'|t }}:</span>
+      <span class="legal-response__confidence-value legal-response__confidence-value--{{ confidence >= 0.7 ? 'high' : (confidence >= 0.4 ? 'medium' : 'low') }}">
+        {{ (confidence * 100)|number_format(0) }}%
+      </span>
+    </div>
+  {% endif %}
+
+  {# Answer text #}
+  <div class="legal-response__answer">
+    {{ response|raw }}
+  </div>
+
+  {# Citations #}
+  {% if citations is not empty %}
+    <div class="legal-response__citations">
+      <h3 class="legal-response__citations-title">{{ 'Fuentes normativas'|t }}</h3>
+      <ul class="legal-response__citations-list">
+        {% for citation in citations %}
+          <li class="legal-response__citation-item">
+            {{ citation }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {# Legal disclaimer #}
+  <div class="legal-response__disclaimer" role="alert">
+    <strong>{{ 'Aviso legal'|t }}:</strong>
+    {{ 'Esta informacion tiene caracter orientativo y no constituye asesoramiento juridico profesional. Consulte siempre con un abogado o asesor fiscal cualificado antes de tomar decisiones legales.'|t }}
+  </div>
+</article>

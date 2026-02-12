@@ -1,0 +1,162 @@
+{#
+/**
+ * @file
+ * Tax calculator UI partial with IRPF and IVA calculator forms.
+ *
+ * Form fields match the API parameters for /api/v1/legal/calculators/irpf
+ * and /api/v1/legal/calculators/iva endpoints.
+ */
+#}
+<div class="tax-calculator">
+
+  {# IRPF Calculator #}
+  <section class="tax-calculator__section" id="irpf-calculator">
+    <h2 class="tax-calculator__section-title">{{ 'Calculadora IRPF'|t }}</h2>
+    <p class="tax-calculator__description">
+      {{ 'Calculo orientativo de la cuota del Impuesto sobre la Renta de las Personas Fisicas.'|t }}
+    </p>
+
+    <form class="tax-calculator__form" id="irpf-form" method="post" action="#">
+      <div class="tax-calculator__fields">
+        <div class="tax-calculator__field">
+          <label for="irpf-gross-income" class="tax-calculator__label">{{ 'Ingresos brutos anuales'|t }} (&euro;)</label>
+          <input type="number" id="irpf-gross-income" name="gross_income" class="tax-calculator__input"
+                 min="0" step="0.01" placeholder="35000" required>
+        </div>
+
+        <div class="tax-calculator__field">
+          <label for="irpf-deductions" class="tax-calculator__label">{{ 'Deducciones aplicables'|t }} (&euro;)</label>
+          <input type="number" id="irpf-deductions" name="deductions" class="tax-calculator__input"
+                 min="0" step="0.01" placeholder="0" value="0">
+        </div>
+
+        <div class="tax-calculator__field">
+          <label for="irpf-autonomous-community" class="tax-calculator__label">{{ 'Comunidad Autonoma'|t }}</label>
+          <select id="irpf-autonomous-community" name="autonomous_community" class="tax-calculator__select">
+            <option value="general">{{ 'General (Estatal)'|t }}</option>
+            <option value="andalucia">Andalucia</option>
+            <option value="aragon">Aragon</option>
+            <option value="asturias">Asturias</option>
+            <option value="baleares">Islas Baleares</option>
+            <option value="canarias">Canarias</option>
+            <option value="cantabria">Cantabria</option>
+            <option value="castilla_la_mancha">Castilla-La Mancha</option>
+            <option value="castilla_y_leon">Castilla y Leon</option>
+            <option value="cataluna">Cataluna</option>
+            <option value="extremadura">Extremadura</option>
+            <option value="galicia">Galicia</option>
+            <option value="madrid">Madrid</option>
+            <option value="murcia">Murcia</option>
+            <option value="navarra">Navarra</option>
+            <option value="pais_vasco">Pais Vasco</option>
+            <option value="la_rioja">La Rioja</option>
+            <option value="comunidad_valenciana">Comunidad Valenciana</option>
+          </select>
+        </div>
+
+        <div class="tax-calculator__field">
+          <label for="irpf-year" class="tax-calculator__label">{{ 'Ejercicio fiscal'|t }}</label>
+          <select id="irpf-year" name="year" class="tax-calculator__select">
+            <option value="2025" selected>2025</option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="tax-calculator__submit">{{ 'Calcular IRPF'|t }}</button>
+    </form>
+
+    <div class="tax-calculator__result" id="irpf-result" style="display: none;">
+      <h3 class="tax-calculator__result-title">{{ 'Resultado IRPF'|t }}</h3>
+      <div class="tax-calculator__result-grid">
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Base imponible'|t }}</span>
+          <span class="tax-calculator__result-value" id="irpf-taxable-base">—</span>
+        </div>
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Cuota integra'|t }}</span>
+          <span class="tax-calculator__result-value" id="irpf-gross-tax">—</span>
+        </div>
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Tipo efectivo'|t }}</span>
+          <span class="tax-calculator__result-value" id="irpf-effective-rate">—</span>
+        </div>
+        <div class="tax-calculator__result-item tax-calculator__result-item--highlight">
+          <span class="tax-calculator__result-label">{{ 'Cuota liquida'|t }}</span>
+          <span class="tax-calculator__result-value" id="irpf-net-tax">—</span>
+        </div>
+      </div>
+      <div class="tax-calculator__result-brackets" id="irpf-brackets"></div>
+    </div>
+  </section>
+
+  {# IVA Calculator #}
+  <section class="tax-calculator__section" id="iva-calculator">
+    <h2 class="tax-calculator__section-title">{{ 'Calculadora IVA'|t }}</h2>
+    <p class="tax-calculator__description">
+      {{ 'Calculo del Impuesto sobre el Valor Anadido segun el tipo aplicable.'|t }}
+    </p>
+
+    <form class="tax-calculator__form" id="iva-form" method="post" action="#">
+      <div class="tax-calculator__fields">
+        <div class="tax-calculator__field">
+          <label for="iva-base-amount" class="tax-calculator__label">{{ 'Importe base'|t }} (&euro;)</label>
+          <input type="number" id="iva-base-amount" name="base_amount" class="tax-calculator__input"
+                 min="0" step="0.01" placeholder="1000" required>
+        </div>
+
+        <div class="tax-calculator__field">
+          <label for="iva-rate-type" class="tax-calculator__label">{{ 'Tipo de IVA'|t }}</label>
+          <select id="iva-rate-type" name="rate_type" class="tax-calculator__select">
+            <option value="general">{{ 'General (21%)'|t }}</option>
+            <option value="reducido">{{ 'Reducido (10%)'|t }}</option>
+            <option value="superreducido">{{ 'Superreducido (4%)'|t }}</option>
+            <option value="exento">{{ 'Exento (0%)'|t }}</option>
+          </select>
+        </div>
+
+        <div class="tax-calculator__field">
+          <label for="iva-recargo" class="tax-calculator__label">{{ 'Recargo de equivalencia'|t }}</label>
+          <select id="iva-recargo" name="recargo_equivalencia" class="tax-calculator__select">
+            <option value="0">{{ 'No aplicar'|t }}</option>
+            <option value="1">{{ 'Aplicar'|t }}</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="tax-calculator__submit">{{ 'Calcular IVA'|t }}</button>
+    </form>
+
+    <div class="tax-calculator__result" id="iva-result" style="display: none;">
+      <h3 class="tax-calculator__result-title">{{ 'Resultado IVA'|t }}</h3>
+      <div class="tax-calculator__result-grid">
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Base imponible'|t }}</span>
+          <span class="tax-calculator__result-value" id="iva-base">—</span>
+        </div>
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Tipo aplicado'|t }}</span>
+          <span class="tax-calculator__result-value" id="iva-rate">—</span>
+        </div>
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Cuota IVA'|t }}</span>
+          <span class="tax-calculator__result-value" id="iva-amount">—</span>
+        </div>
+        <div class="tax-calculator__result-item">
+          <span class="tax-calculator__result-label">{{ 'Recargo equivalencia'|t }}</span>
+          <span class="tax-calculator__result-value" id="iva-recargo-amount">—</span>
+        </div>
+        <div class="tax-calculator__result-item tax-calculator__result-item--highlight">
+          <span class="tax-calculator__result-label">{{ 'Total con IVA'|t }}</span>
+          <span class="tax-calculator__result-value" id="iva-total">—</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# Legal disclaimer #}
+  <div class="tax-calculator__disclaimer" role="alert">
+    <strong>{{ 'Aviso'|t }}:</strong>
+    {{ 'Los calculos son orientativos. Consulte con un asesor fiscal para su caso concreto.'|t }}
+  </div>
+</div>

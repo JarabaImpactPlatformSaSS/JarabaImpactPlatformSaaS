@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Results panel partial for legal queries.
+ *
+ * Shows the query response or an empty state placeholder.
+ */
+#}
+<div class="legal-results" id="legal-results-panel">
+  {# Loading indicator (hidden by default) #}
+  <div class="legal-results__loading" id="legal-results-loading" style="display: none;">
+    <div class="legal-results__spinner"></div>
+    <p class="legal-results__loading-text">{{ 'Analizando normativa aplicable...'|t }}</p>
+  </div>
+
+  {# Results container (populated via AJAX) #}
+  <div class="legal-results__content" id="legal-results-content">
+    {# Empty state #}
+    <div class="legal-results__empty" id="legal-results-empty">
+      <div class="legal-results__empty-icon" aria-hidden="true">&#9878;</div>
+      <h3 class="legal-results__empty-title">{{ 'Realice una consulta legal'|t }}</h3>
+      <p class="legal-results__empty-description">
+        {{ 'Escriba su pregunta sobre normativa espanola y nuestro sistema de IA analizara las leyes, decretos y resoluciones aplicables.'|t }}
+      </p>
+    </div>
+  </div>
+
+  {# Error message (hidden by default) #}
+  <div class="legal-results__error" id="legal-results-error" style="display: none;" role="alert">
+    <p class="legal-results__error-text"></p>
+  </div>
+</div>

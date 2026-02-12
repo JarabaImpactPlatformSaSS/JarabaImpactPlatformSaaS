@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template for the Legal Knowledge query page.
+ *
+ * Zero-region frontend page for legal queries, calculators and alerts.
+ *
+ * Variables:
+ * - page: The page render array from the controller.
+ *
+ * @see jaraba_legal_knowledge_theme()
+ */
+#}
+{% extends "@claro/layout/page.html.twig" %}
+
+{% block content %}
+  <div class="ej-legal">
+    {# Header #}
+    <div class="ej-legal__header">
+      <h1 class="ej-legal__title">{{ 'Consultas Legales'|t }}</h1>
+    </div>
+
+    {# Tabs #}
+    <nav class="ej-legal__tabs" role="tablist">
+      <button class="ej-legal__tab ej-legal__tab--active" data-tab="queries" role="tab" aria-selected="true">
+        {{ 'Consultas'|t }}
+      </button>
+      <button class="ej-legal__tab" data-tab="calculators" role="tab" aria-selected="false">
+        {{ 'Calculadoras'|t }}
+      </button>
+      <button class="ej-legal__tab" data-tab="alerts" role="tab" aria-selected="false">
+        {{ 'Alertas'|t }}
+      </button>
+    </nav>
+
+    {# Panels #}
+    <div class="legal-panel legal-panel--queries" style="display: block;" role="tabpanel">
+      {% include '@jaraba_legal_knowledge/partials/_legal-search.html.twig' %}
+      {% include '@jaraba_legal_knowledge/partials/_legal-results.html.twig' %}
+    </div>
+
+    <div class="legal-panel legal-panel--calculators" style="display: none;" role="tabpanel">
+      {% include '@jaraba_legal_knowledge/partials/_tax-calculator.html.twig' %}
+    </div>
+
+    <div class="legal-panel legal-panel--alerts" style="display: none;" role="tabpanel">
+      {% include '@jaraba_legal_knowledge/partials/_legal-alerts-panel.html.twig' %}
+    </div>
+
+    {{ page.content }}
+  </div>
+{% endblock %}

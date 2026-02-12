@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Template for a single legal citation item.
+ *
+ * Variables:
+ * - norm: The LegalNorm entity (or render data).
+ * - article: Article number/identifier referenced.
+ * - excerpt: Relevant excerpt from the norm.
+ *
+ * @see jaraba_legal_knowledge_theme()
+ */
+#}
+<div class="legal-citation">
+  <span class="legal-citation__title">
+    {% if norm.boe_url is defined and norm.boe_url %}
+      <a href="{{ norm.boe_url }}" target="_blank" rel="noopener noreferrer" class="legal-citation__link">
+        {{ norm.title }}
+      </a>
+    {% else %}
+      {{ norm.title }}
+    {% endif %}
+  </span>
+
+  {% if article %}
+    <span class="legal-citation__article">{{ 'Art.'|t }} {{ article }}</span>
+  {% endif %}
+
+  {% if norm.publication_date is defined and norm.publication_date %}
+    <span class="legal-citation__date">
+      ({{ norm.publication_date|date('d/m/Y') }})
+    </span>
+  {% endif %}
+
+  {% if excerpt %}
+    <p class="legal-citation__excerpt">{{ excerpt }}</p>
+  {% endif %}
+</div>

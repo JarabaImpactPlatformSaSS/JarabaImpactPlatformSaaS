@@ -1,0 +1,20 @@
+administer legal knowledge:
+  title: 'Administer Legal Knowledge'
+  description: 'Full access to legal knowledge configuration and data.'
+  restrict access: true
+
+view legal queries:
+  title: 'View Legal Queries'
+  description: 'Access the legal knowledge query interface.'
+
+use legal calculators:
+  title: 'Use Legal Calculators'
+  description: 'Access the tax calculators (IRPF, IVA).'
+
+manage legal norms:
+  title: 'Manage Legal Norms'
+  description: 'Add, edit and delete legal norm entries.'
+
+view legal alerts:
+  title: 'View Legal Alerts'
+  description: 'View norm change alerts for own tenant.'

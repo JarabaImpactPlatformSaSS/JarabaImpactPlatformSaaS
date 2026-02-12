@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Legal Knowledge module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_legal_knowledge_install(): void {
+  \Drupal::messenger()->addStatus(t('Legal Knowledge module installed. Configure at /admin/config/services/legal-knowledge'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_legal_knowledge_uninstall(): void {
+  \Drupal::state()->deleteMultiple([
+    'jaraba_legal_knowledge.boe_last_sync',
+  ]);
+}
