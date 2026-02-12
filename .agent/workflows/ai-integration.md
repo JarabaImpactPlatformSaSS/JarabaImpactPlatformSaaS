@@ -27,6 +27,10 @@ Las claves API van en `/admin/config/system/keys`, NUNCA hardcodeadas en código
 https://jaraba-saas.lndo.site/admin/config/system/keys/add
 ```
 
+> **Config Sync (2026-02-11):** Las entidades Key se exportan a `config/sync/` (git-tracked) y llegan a producción via `drush config:import`. Con `key_provider: config`, los valores quedan en el YML. Esto es aceptable en el repo privado. Mejora futura: migrar a `key_provider: env`.
+>
+> Entidades Key actuales: `qdrant_api`, `openai_api`, `anthropic_api`, `google_gemini_api_key`.
+
 ### 3. Usar Siempre @ai.provider
 
 ```yaml

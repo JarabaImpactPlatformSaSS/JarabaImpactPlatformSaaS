@@ -19,14 +19,32 @@ config:
   config:
     php: php.ini
 
+# Variables de entorno para el appserver
+env_file:
+  - .env
+
 # =============================================================================
 # SERVICIOS
 # =============================================================================
 
 services:
+  # ─────────────────────────────────────────────────────
+  # APPSERVER - Override para variables de entorno Redis
+  # ─────────────────────────────────────────────────────
+  appserver:
+    overrides:
+      environment:
+        LANDO: 'ON'
+        REDIS_HOST: redis
+        REDIS_PORT: '6379'
+        QDRANT_HOST: qdrant
+        QDRANT_PORT: '6333'
+        QDRANT_DEV_API_KEY: ${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}
+
   database:
     type: mariadb:10.11
-    portforward: 3310
+    # LOW-12: Using 3306 (standard) instead of 3310 to match tooling defaults.
+    portforward: 3306
     creds:
       user: drupal
       password: drupal
@@ -36,6 +54,21 @@ services:
     type: phpmyadmin
     hosts:
       - database
+
+  # ─────────────────────────────────────────────────────
+  # REDIS - Cache Backend para Drupal
+  # ─────────────────────────────────────────────────────
+  # Mejora rendimiento y reduce costes de IA (cache de respuestas)
+  # CLI: lando redis-cli
+  # ─────────────────────────────────────────────────────
+  redis:
+    type: redis:7
+    portforward: 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ─────────────────────────────────────────────────────
   # QDRANT - Base de Datos Vectorial para RAG (KB AI-Nativa)
@@ -56,6 +89,7 @@ services:
         - "6334:6334"
       environment:
         QDRANT__SERVICE__GRPC_PORT: "6334"
+        QDRANT__SERVICE__API_KEY: ${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}
       # Healthcheck añadido tras Game Day #1 (2026-01-11)
       healthcheck:
         test: ["CMD", "wget", "-q", "--spider", "http://localhost:6333/"]
@@ -63,6 +97,32 @@ services:
         timeout: 10s
         retries: 3
         start_period: 10s
+
+  # ─────────────────────────────────────────────────────
+  # TIKA - Procesamiento de Documentos para RAG
+  # ─────────────────────────────────────────────────────
+  # Extrae texto de PDF, Word, etc. para indexación en Qdrant
+  # Endpoint: http://tika:9998
+  # ─────────────────────────────────────────────────────
+  tika:
+    type: compose
+    services:
+      image: apache/tika
+      command: java -jar /tika-server-standard.jar -h 0.0.0.0
+      ports:
+        - '9998:9998'
+
+  # ─────────────────────────────────────────────────────
+  # MAILHOG - Testing de Email
+  # ─────────────────────────────────────────────────────
+  # UI: http://mail.jaraba-saas.lndo.site
+  # SMTP: mailhog:1025
+  # ─────────────────────────────────────────────────────
+  mailhog:
+    type: mailhog
+    portforward: 8025
+    hogfrom:
+      - appserver
 
   # ─────────────────────────────────────────────────────
   # PROMETHEUS & GRAFANA - DESACTIVADOS TEMPORALMENTE
@@ -94,6 +154,8 @@ proxy:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:
     - qdrant.jaraba-saas.lndo.site:6333
+  mailhog:
+    - mail.jaraba-saas.lndo.site
 
 # =============================================================================
 # TOOLING
@@ -106,6 +168,66 @@ tooling:
     service: appserver
   drush:
     service: appserver
+  
+  # Redis CLI
+  redis-cli:
+    service: redis
+    description: Ejecutar comandos Redis
+    cmd: redis-cli
+
+  # Redis Status
+  redis-status:
+    service: appserver
+    description: Verificar estado de Redis
+    cmd: |
+      echo "=== Redis Connection Test ==="
+      php -r "
+        \$redis = new Redis();
+        \$redis->connect('redis', 6379);
+        echo 'PING: ' . \$redis->ping() . PHP_EOL;
+        echo 'Memory Used: ' . \$redis->info('memory')['used_memory_human'] . PHP_EOL;
+        echo 'Keys: ' . \$redis->dbSize() . PHP_EOL;
+      "
+
+  # Qdrant Status
+  qdrant-status:
+    service: appserver
+    description: Ver colecciones de Qdrant
+    cmd: curl -s -H "Api-Key:${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}" http://qdrant:6333/collections | jq
+
+  # Qdrant Health
+  qdrant-health:
+    service: appserver
+    description: Health check de Qdrant
+    cmd: curl -s -H "Api-Key:${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}" http://qdrant:6333/healthz
+
+  # Tika Test
+  tika-test:
+    service: appserver
+    description: Verificar Apache Tika
+    cmd: |
+      echo "Testing Tika connection..."
+      curl -s http://tika:9998/tika | head -20
+
+  # AI Stack Health Check
+  ai-health:
+    service: appserver
+    description: Verificar todo el stack de IA
+    cmd: |
+      echo "═══════════════════════════════════════"
+      echo "       AI STACK HEALTH CHECK"
+      echo "═══════════════════════════════════════"
+      echo ""
+      echo "1. Redis..."
+      php -r "\$r = new Redis(); \$r->connect('redis', 6379); echo \$r->ping() . PHP_EOL;" 2>/dev/null || echo "FAILED"
+      echo ""
+      echo "2. Qdrant..."
+      curl -s -H "Api-Key:${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}" http://qdrant:6333/healthz && echo " OK" || echo " FAILED"
+      echo ""
+      echo "3. Tika..."
+      curl -s -o /dev/null -w "%{http_code}" http://tika:9998/tika && echo " OK" || echo " FAILED"
+      echo ""
+      echo "═══════════════════════════════════════"
 
   # Instalar Drupal
   install-drupal:
@@ -135,6 +257,12 @@ tooling:
     service: appserver
     cmd: drush cim -y
 
+  # Cache Clear rápido
+  cr:
+    service: appserver
+    description: Limpiar cache Drupal
+    cmd: drush cr
+
   # ─────────────────────────────────────────────────────
   # SELF-HEALING - Comandos de auto-recuperación
   # Basado en Game Day #1 (2026-01-11)
@@ -159,3 +287,4 @@ tooling:
     service: appserver
     description: Check y recovery de cache
     cmd: /app/scripts/self-healing/cache-recovery.sh
+
