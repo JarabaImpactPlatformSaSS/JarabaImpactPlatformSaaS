@@ -70,3 +70,16 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_analytics'
 
+  # F7 — Grant Tracking (Doc 182)
+  jaraba_analytics.grant_tracking:
+    class: Drupal\jaraba_analytics\Service\GrantTrackingService
+    arguments:
+      - '@logger.channel.jaraba_analytics'
+
+  # F7 — Institutional Reports (Doc 182)
+  jaraba_analytics.institutional_report:
+    class: Drupal\jaraba_analytics\Service\InstitutionalReportService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_analytics'
+

@@ -298,8 +298,8 @@
         }
 
         &--secondary {
-            background: var(--ej-secondary-light, #f3e8ff);
-            color: var(--ej-secondary, #7c3aed);
+            background: var(--ej-accent-light, #e0f7f7);
+            color: var(--ej-color-accent, #00A9A5);
         }
 
         &--corporate {
@@ -308,8 +308,8 @@
         }
 
         &--success {
-            background: #dcfce7;
-            color: #16a34a;
+            background: color-mix(in srgb, var(--ej-color-success, #10B981) 12%, white);
+            color: var(--ej-color-success, #10B981);
         }
     }
 }
@@ -321,7 +321,7 @@
 
     // Fallback para iconos que no se renderizan.
     &:empty::after {
-        content: '✨';
+        content: '\2726';
         font-size: 1.5rem;
     }
 }

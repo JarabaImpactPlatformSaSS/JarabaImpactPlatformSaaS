@@ -50,7 +50,7 @@ services:
 
   # Servicio de Analytics integrado - Gap #4 (Doc 167).
   jaraba_page_builder.analytics:
-    class: Drupal\jaraba_page_builder\Service\AnalyticsService
+    class: Drupal\jaraba_page_builder\Service\PageBuilderTrackingService
     arguments:
       - '@entity_type.manager'
       - '@current_route_match'
@@ -125,17 +125,35 @@ services:
     tags:
       - { name: event_subscriber }
 
-  # Subscriber de transiciones del workflow editorial i18n.
+  # Integracion con plataformas analytics externas (GA4, Search Console).
+  # P2-04: Envia eventos a GA4 via Measurement Protocol y consulta Search Console.
+  jaraba_page_builder.external_analytics:
+    class: Drupal\jaraba_page_builder\Service\ExternalAnalyticsService
+    arguments:
+      - '@logger.factory'
+      - '@config.factory'
+      - '@http_client'
+
+  # Sugerencias de imagen con IA para bloques del Page Builder.
+  # P2-05: Genera keywords con LLM y busca imagenes en Unsplash.
+  jaraba_page_builder.ai_image_suggestion:
+    class: Drupal\jaraba_page_builder\Service\AiImageSuggestionService
+    arguments:
+      - '@logger.factory'
+      - '@http_client'
+
+  # Servicio de transiciones del workflow editorial i18n.
   # P2-03: Notifica a revisores y autores en cambios de estado.
-  jaraba_page_builder.workflow_transition_subscriber:
+  # Invocado desde hook_entity_update() al detectar cambio en moderation_state.
+  jaraba_page_builder.workflow_transition:
     class: Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_page_builder'
       - '@queue'
       - '@current_user'
-    tags:
-      - { name: event_subscriber }
+    calls:
+      - [setStringTranslation, ['@string_translation']]
 
   # Procesador de publicaciones programadas del Page Builder.
   # P1-05: Ejecuta acciones publish/unpublish cuando llega la fecha.

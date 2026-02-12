@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * Errors panel partial for the Insights Hub dashboard.
+ *
+ * Variables:
+ * - errors: Array of recent error log entries.
+ * - stats: Array with error statistics.
+ *   - total_open: Number of open errors.
+ *   - total_today: Number of errors today.
+ *   - by_type: Array keyed by error type with counts.
+ *   - by_severity: Array keyed by severity with counts.
+ */
+#}
+<div class="insights-panel insights-panel--errors">
+  <h2 class="insights-panel__title">{{ 'Error Tracking'|t }}</h2>
+
+  <div class="insights-panel__kpis">
+    <div class="kpi-card kpi-card--alert">
+      <span class="kpi-card__value">{{ stats.total_open|default(0) }}</span>
+      <span class="kpi-card__label">{{ 'Errores Abiertos'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ stats.total_today|default(0) }}</span>
+      <span class="kpi-card__label">{{ 'Errores Hoy'|t }}</span>
+    </div>
+    {% if stats.by_type is not empty %}
+      {% for type, count in stats.by_type %}
+        <div class="kpi-card">
+          <span class="kpi-card__value">{{ count }}</span>
+          <span class="kpi-card__label">{{ type|upper }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {% if errors is not empty %}
+    <div class="insights-panel__table">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'Tipo'|t }}</th>
+            <th>{{ 'Severidad'|t }}</th>
+            <th>{{ 'Mensaje'|t }}</th>
+            <th>{{ 'Ocurrencias'|t }}</th>
+            <th>{{ 'Ultima vez'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for error in errors %}
+            <tr class="error-row error-row--{{ error.severity }}">
+              <td>{{ error.error_type }}</td>
+              <td>{{ error.severity }}</td>
+              <td>{{ error.message|length > 80 ? error.message|slice(0, 80) ~ '...' : error.message }}</td>
+              <td>{{ error.occurrences|number_format }}</td>
+              <td>{{ error.last_seen_at }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="insights-panel__empty">{{ 'No hay errores registrados.'|t }}</p>
+  {% endif %}
+</div>

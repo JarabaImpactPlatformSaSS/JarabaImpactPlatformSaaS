@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Header partial for the Insights Hub dashboard.
+ *
+ * Variables:
+ * - date_range: Selected date range filter (e.g., '7d', '30d', '90d').
+ * - tenant: The current tenant entity or NULL.
+ */
+#}
+<div class="insights-header">
+  <div class="insights-header__title">
+    <h1>{{ 'Insights Hub'|t }}</h1>
+    {% if tenant %}
+      <span class="insights-header__tenant">{{ tenant.label }}</span>
+    {% endif %}
+  </div>
+  <div class="insights-header__filters">
+    <div class="insights-header__date-range">
+      <button class="btn btn--date-range{% if date_range == '7d' %} is-active{% endif %}" data-range="7d">{{ '7 dias'|t }}</button>
+      <button class="btn btn--date-range{% if date_range == '30d' %} is-active{% endif %}" data-range="30d">{{ '30 dias'|t }}</button>
+      <button class="btn btn--date-range{% if date_range == '90d' %} is-active{% endif %}" data-range="90d">{{ '90 dias'|t }}</button>
+    </div>
+  </div>
+</div>

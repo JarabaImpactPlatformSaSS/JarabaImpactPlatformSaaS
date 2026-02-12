@@ -249,7 +249,7 @@ class SelfDiscoveryApiController extends ControllerBase
             $riasec = $context['riasec'] ?? [];
 
             if (!empty($riasec['code'])) {
-                $response['message'] = $this->t('📊 <strong>Tu perfil RIASEC: @code</strong><br><br>@description', [
+                $response['message'] = $this->t('<strong>Tu perfil RIASEC: @code</strong><br><br>@description', [
                     '@code' => $riasec['code'],
                     '@description' => $riasec['description'] ?? 'Perfil único',
                 ]);
@@ -257,7 +257,7 @@ class SelfDiscoveryApiController extends ControllerBase
                 // Añadir carreras sugeridas.
                 $careers = $riasec['suggested_careers'] ?? [];
                 if (!empty($careers)) {
-                    $response['tips'][] = $this->t('🎯 <strong>Carreras recomendadas:</strong>');
+                    $response['tips'][] = $this->t('<strong>Carreras recomendadas:</strong>');
                     foreach (array_slice($careers, 0, 3) as $career) {
                         $response['tips'][] = '• ' . $career;
                     }
@@ -267,20 +267,20 @@ class SelfDiscoveryApiController extends ControllerBase
                 $strengths = $context['strengths'] ?? [];
                 if (!empty($strengths['top5'])) {
                     $strengthNames = array_map(fn($s) => $s['name'], array_slice($strengths['top5'], 0, 3));
-                    $response['tips'][] = $this->t('💪 <strong>Tus fortalezas:</strong> @strengths', [
+                    $response['tips'][] = $this->t('<strong>Tus fortalezas:</strong> @strengths', [
                         '@strengths' => implode(', ', $strengthNames),
                     ]);
                 }
 
                 $response['actions'] = [
-                    ['label' => $this->t('Ver ofertas compatibles'), 'url' => '/jobs', 'icon' => '💼'],
-                    ['label' => $this->t('Explorar cursos'), 'url' => '/courses', 'icon' => '📚'],
+                    ['label' => $this->t('Ver ofertas compatibles'), 'url' => '/jobs', 'icon' => 'briefcase'],
+                    ['label' => $this->t('Explorar cursos'), 'url' => '/courses', 'icon' => 'book'],
                 ];
                 $response['followUp'] = $this->t('¿Quieres que te ayude a preparar tu CV para estas carreras?');
             } else {
                 $response['message'] = $this->t('Aún no has completado el test RIASEC. Te recomiendo hacerlo para descubrir tus intereses profesionales.');
                 $response['actions'] = [
-                    ['label' => $this->t('Hacer test RIASEC'), 'url' => '/my-profile/self-discovery/interests', 'icon' => '🎯'],
+                    ['label' => $this->t('Hacer test RIASEC'), 'url' => '/my-profile/self-discovery/interests', 'icon' => 'target'],
                 ];
             }
         }
@@ -293,7 +293,7 @@ class SelfDiscoveryApiController extends ControllerBase
             $strengths = $context['strengths'] ?? [];
 
             if (!empty($strengths['top5'])) {
-                $response['message'] = $this->t('💪 <strong>Tus 5 fortalezas principales:</strong>');
+                $response['message'] = $this->t('<strong>Tus 5 fortalezas principales:</strong>');
                 $response['tips'] = array_map(
                     fn($s, $i) => ($i + 1) . '. ' . $s['name'] . ' - ' . $s['desc'],
                     array_values($strengths['top5']),
@@ -303,7 +303,7 @@ class SelfDiscoveryApiController extends ControllerBase
             } else {
                 $response['message'] = $this->t('Descubre tus fortalezas principales con nuestro test.');
                 $response['actions'] = [
-                    ['label' => $this->t('Hacer test de Fortalezas'), 'url' => '/my-profile/self-discovery/strengths', 'icon' => '⭐'],
+                    ['label' => $this->t('Hacer test de Fortalezas'), 'url' => '/my-profile/self-discovery/strengths', 'icon' => 'star'],
                 ];
             }
         }
@@ -319,9 +319,9 @@ class SelfDiscoveryApiController extends ControllerBase
             if (!empty($lifeWheel['scores'])) {
                 $lowAreas = $lifeWheel['low_areas'] ?? [];
                 if (!empty($lowAreas)) {
-                    $response['message'] = $this->t('📊 <strong>Áreas de mejora según tu Rueda de la Vida:</strong>');
+                    $response['message'] = $this->t('<strong>Areas de mejora segun tu Rueda de la Vida:</strong>');
                     foreach ($lowAreas as $area) {
-                        $response['tips'][] = $this->t('⚠️ @area: @score/10 - prioridad de mejora', [
+                        $response['tips'][] = $this->t('@area: @score/10 - prioridad de mejora', [
                             '@area' => ucfirst($area['name']),
                             '@score' => $area['score'],
                         ]);
@@ -333,7 +333,7 @@ class SelfDiscoveryApiController extends ControllerBase
             } else {
                 $response['message'] = $this->t('Evalúa tu equilibrio vital con la Rueda de la Vida.');
                 $response['actions'] = [
-                    ['label' => $this->t('Hacer Rueda de la Vida'), 'url' => '/my-profile/self-discovery/life-wheel', 'icon' => '🎡'],
+                    ['label' => $this->t('Hacer Rueda de la Vida'), 'url' => '/my-profile/self-discovery/life-wheel', 'icon' => 'pie-chart'],
                 ];
             }
         }
@@ -344,15 +344,15 @@ class SelfDiscoveryApiController extends ControllerBase
             if ($hasData) {
                 $response['message'] = $this->t('Basándome en tu perfil, puedo ayudarte con:');
                 $response['tips'] = [
-                    $this->t('🎯 Carreras compatibles con tu perfil RIASEC'),
-                    $this->t('💪 Cómo usar tus fortalezas en entrevistas'),
-                    $this->t('📊 Áreas de mejora según tu Rueda de la Vida'),
+                    $this->t('Carreras compatibles con tu perfil RIASEC'),
+                    $this->t('Como usar tus fortalezas en entrevistas'),
+                    $this->t('Areas de mejora segun tu Rueda de la Vida'),
                 ];
                 $response['followUp'] = $this->t('¿Sobre qué tema te gustaría profundizar?');
             } else {
                 $response['message'] = $this->t('Para darte recomendaciones personalizadas, te sugiero completar las herramientas de autodescubrimiento.');
                 $response['actions'] = [
-                    ['label' => $this->t('Ir a Self-Discovery'), 'url' => '/my-profile/self-discovery', 'icon' => '🔍'],
+                    ['label' => $this->t('Ir a Self-Discovery'), 'url' => '/my-profile/self-discovery', 'icon' => 'search'],
                 ];
             }
         }

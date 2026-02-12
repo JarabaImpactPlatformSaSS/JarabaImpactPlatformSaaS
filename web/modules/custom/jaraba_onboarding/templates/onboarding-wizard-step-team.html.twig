@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Paso 5: Tu Equipo — Invitar colaboradores (saltable).
+ *
+ * Variables:
+ *  - vertical: string
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~1min.
+ */
+#}
+<div class="wizard-step wizard-step--team">
+  <h2 class="wizard-step__title">
+    {% trans %}Invita a tu equipo{% endtrans %}
+  </h2>
+  <p class="wizard-step__subtitle">
+    {% trans %}Agrega colaboradores para que te ayuden a gestionar tu espacio. Puedes hacerlo despues si lo prefieres.{% endtrans %}
+  </p>
+
+  <div class="wizard-step__team-form">
+    <div class="wizard-step__team-invites" data-team-invites>
+      {# Invite row template #}
+      <div class="wizard-step__team-row" data-team-row>
+        <div class="wizard-step__field">
+          <input type="email" class="wizard-step__input" data-field="team_email_1" placeholder="{{ 'correo@ejemplo.com'|t }}" />
+        </div>
+        <div class="wizard-step__field">
+          <select class="wizard-step__select" data-field="team_role_1">
+            <option value="editor">{% trans %}Editor{% endtrans %}</option>
+            <option value="viewer">{% trans %}Solo lectura{% endtrans %}</option>
+            <option value="admin">{% trans %}Administrador{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="wizard-step__add-row" data-add-team-row>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      {% trans %}Agregar otro colaborador{% endtrans %}
+    </button>
+  </div>
+
+  <div class="wizard-step__skip-hint">
+    <p>
+      {% trans %}Puedes invitar a tu equipo mas tarde desde el panel de administracion.{% endtrans %}
+    </p>
+  </div>
+</div>

@@ -127,3 +127,17 @@ scheduled-reports:
     - core/drupalSettings
     - core/once
 
+# Program Dashboard Elena (F7 Doc 182).
+programa-dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/programa-dashboard.css: {}
+  js:
+    js/programa-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_analytics/chartjs
+

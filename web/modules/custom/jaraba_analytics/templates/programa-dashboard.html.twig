@@ -1,0 +1,226 @@
+{#
+/**
+ * @file
+ * Program Dashboard — Elena avatar (entity admin).
+ *
+ * Variables:
+ *   - grant_summary: Grant burn rate data
+ *     - burn_rate: {burn_rate, expected_rate, deviation, alert, forecast_end, runway_days}
+ *     - budget_lines: Array of budget line items
+ *     - total, spent, remaining: Grant totals
+ *   - report_types: Array of available institutional report types
+ *     Each with: label, description, icon
+ *   - cohort_stats: Cohort statistics
+ *     {total_cohorts, active_cohorts, total_students, avg_retention}
+ *   - program_kpis: Program KPIs
+ *     Each with: value, label, icon, format?
+ *
+ * BEM structure:
+ *   .programa-dashboard
+ *     .programa-dashboard__header
+ *     .programa-dashboard__kpis
+ *     .programa-dashboard__grant
+ *     .programa-dashboard__budget
+ *     .programa-dashboard__cohorts
+ *     .programa-dashboard__reports
+ *
+ * F7 — Doc 182.
+ */
+#}
+
+<div class="programa-dashboard">
+
+  {# ===== HEADER ===== #}
+  <div class="programa-dashboard__header">
+    <div class="programa-dashboard__header-content">
+      <h1 class="programa-dashboard__title">
+        {% trans %}Dashboard de Programa{% endtrans %}
+      </h1>
+      <p class="programa-dashboard__subtitle">
+        {% trans %}Gestion institucional: fondos, cohortes e informes.{% endtrans %}
+      </p>
+    </div>
+    <div class="programa-dashboard__header-actions">
+      <button type="button" class="programa-dashboard__btn programa-dashboard__btn--primary" id="refresh-grant">
+        {% trans %}Actualizar Datos{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# ===== PROGRAM KPIs ===== #}
+  <div class="programa-dashboard__kpis">
+    {% for key, kpi in program_kpis %}
+      <div class="programa-kpi programa-kpi--{{ key }}">
+        <span class="programa-kpi__icon">
+          {% if kpi.icon == 'users' %}👥
+          {% elseif kpi.icon == 'check-circle' %}✅
+          {% elseif kpi.icon == 'briefcase' %}💼
+          {% elseif kpi.icon == 'star' %}⭐
+          {% else %}📊
+          {% endif %}
+        </span>
+        <div class="programa-kpi__content">
+          <span class="programa-kpi__value">
+            {% if kpi.format is defined and kpi.format == 'percent' %}
+              {{ kpi.value }}%
+            {% elseif kpi.format is defined and kpi.format == 'score' %}
+              {{ kpi.value }}/10
+            {% else %}
+              {{ kpi.value }}
+            {% endif %}
+          </span>
+          <span class="programa-kpi__label">{{ kpi.label }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ===== GRANT BURN RATE ===== #}
+  <div class="programa-dashboard__grant">
+    <div class="programa-dashboard__section-header">
+      <h2 class="programa-dashboard__section-title">
+        {% trans %}Grant Burn Rate{% endtrans %}
+      </h2>
+      {% if grant_summary.burn_rate.alert %}
+        <span class="programa-dashboard__alert-badge">
+          {% trans %}Alerta: Desviacion{% endtrans %} {{ grant_summary.burn_rate.deviation }}%
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="programa-dashboard__grant-grid">
+      {# Burn Rate Visual #}
+      <div class="programa-grant-card programa-grant-card--chart">
+        <canvas id="grant-burn-chart" width="400" height="220"></canvas>
+      </div>
+
+      {# Grant Stats #}
+      <div class="programa-grant-card programa-grant-card--stats">
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Total Grant{% endtrans %}</span>
+          <span class="programa-grant-stat__value">{{ grant_summary.total|number_format(0, ',', '.') }} €</span>
+        </div>
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Ejecutado{% endtrans %}</span>
+          <span class="programa-grant-stat__value programa-grant-stat__value--spent">{{ grant_summary.spent|number_format(0, ',', '.') }} €</span>
+        </div>
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Disponible{% endtrans %}</span>
+          <span class="programa-grant-stat__value programa-grant-stat__value--remaining">{{ grant_summary.remaining|number_format(0, ',', '.') }} €</span>
+        </div>
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Burn Rate{% endtrans %}</span>
+          <span class="programa-grant-stat__value {{ grant_summary.burn_rate.alert ? 'programa-grant-stat__value--alert' : '' }}">
+            {{ grant_summary.burn_rate.burn_rate }}%
+          </span>
+        </div>
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Esperado{% endtrans %}</span>
+          <span class="programa-grant-stat__value">{{ grant_summary.burn_rate.expected_rate }}%</span>
+        </div>
+        <div class="programa-grant-stat">
+          <span class="programa-grant-stat__label">{% trans %}Forecast Fin{% endtrans %}</span>
+          <span class="programa-grant-stat__value">{{ grant_summary.burn_rate.forecast_end }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ===== BUDGET LINES ===== #}
+  {% if grant_summary.budget_lines is not empty %}
+    <div class="programa-dashboard__budget">
+      <h2 class="programa-dashboard__section-title">
+        {% trans %}Partidas Presupuestarias{% endtrans %}
+      </h2>
+      <div class="programa-budget-table">
+        <table class="programa-budget-table__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Partida{% endtrans %}</th>
+              <th>{% trans %}Presupuesto{% endtrans %}</th>
+              <th>{% trans %}Ejecutado{% endtrans %}</th>
+              <th>{% trans %}Disponible{% endtrans %}</th>
+              <th>{% trans %}Progreso{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for line in grant_summary.budget_lines %}
+              <tr class="{{ line.alert ? 'programa-budget-table__row--alert' : '' }}">
+                <td class="programa-budget-table__name">{{ line.name }}</td>
+                <td>{{ line.budget|number_format(0, ',', '.') }} €</td>
+                <td>{{ line.spent|number_format(0, ',', '.') }} €</td>
+                <td>{{ line.remaining|number_format(0, ',', '.') }} €</td>
+                <td>
+                  <div class="programa-budget-bar">
+                    <div class="programa-budget-bar__fill {{ line.alert ? 'programa-budget-bar__fill--alert' : '' }}"
+                         style="width: {{ line.percentage }}%"></div>
+                    <span class="programa-budget-bar__label">{{ line.percentage }}%</span>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ===== COHORT OVERVIEW ===== #}
+  <div class="programa-dashboard__body">
+    <div class="programa-dashboard__cohorts">
+      <h2 class="programa-dashboard__section-title">
+        {% trans %}Cohortes{% endtrans %}
+      </h2>
+      <div class="programa-cohort-stats">
+        <div class="programa-cohort-stat">
+          <span class="programa-cohort-stat__value">{{ cohort_stats.total_cohorts }}</span>
+          <span class="programa-cohort-stat__label">{% trans %}Total{% endtrans %}</span>
+        </div>
+        <div class="programa-cohort-stat">
+          <span class="programa-cohort-stat__value">{{ cohort_stats.active_cohorts }}</span>
+          <span class="programa-cohort-stat__label">{% trans %}Activas{% endtrans %}</span>
+        </div>
+        <div class="programa-cohort-stat">
+          <span class="programa-cohort-stat__value">{{ cohort_stats.total_students }}</span>
+          <span class="programa-cohort-stat__label">{% trans %}Estudiantes{% endtrans %}</span>
+        </div>
+        <div class="programa-cohort-stat">
+          <span class="programa-cohort-stat__value">{{ cohort_stats.avg_retention }}%</span>
+          <span class="programa-cohort-stat__label">{% trans %}Retencion{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+
+    {# ===== REPORT GENERATION ===== #}
+    <div class="programa-dashboard__reports">
+      <h2 class="programa-dashboard__section-title">
+        {% trans %}Informes Institucionales{% endtrans %}
+      </h2>
+      <div class="programa-report-list">
+        {% for key, report in report_types %}
+          <div class="programa-report-card" data-report-type="{{ key }}">
+            <span class="programa-report-card__icon">
+              {% if report.icon == 'calendar' %}📅
+              {% elseif report.icon == 'dollar-sign' %}💰
+              {% elseif report.icon == 'trending-up' %}📈
+              {% elseif report.icon == 'file-text' %}📄
+              {% elseif report.icon == 'award' %}🏅
+              {% else %}📋
+              {% endif %}
+            </span>
+            <div class="programa-report-card__content">
+              <h3 class="programa-report-card__title">{{ report.label }}</h3>
+              <p class="programa-report-card__description">{{ report.description }}</p>
+            </div>
+            <button type="button"
+                    class="programa-report-card__btn"
+                    data-generate-report="{{ key }}">
+              {% trans %}Generar PDF{% endtrans %}
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>

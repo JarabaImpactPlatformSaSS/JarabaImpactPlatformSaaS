@@ -1,0 +1,16 @@
+administer insights hub:
+  title: 'Administer Insights Hub'
+  description: 'Full access to Insights Hub configuration and data.'
+  restrict access: true
+
+view insights dashboard:
+  title: 'View Insights Dashboard'
+  description: 'Access the Insights Hub dashboard.'
+
+view own insights:
+  title: 'View own Insights'
+  description: 'View insights data for own tenant.'
+
+manage uptime checks:
+  title: 'Manage Uptime Checks'
+  description: 'Configure and manage uptime monitoring endpoints.'

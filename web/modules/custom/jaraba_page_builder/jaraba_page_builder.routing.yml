@@ -257,6 +257,56 @@ jaraba_page_builder.api.ai_generate_page:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
 
+# API para datos de Search Console — P2-04
+# Devuelve metricas de busqueda organica para una pagina del Page Builder.
+jaraba_page_builder.api.search_console_metrics:
+  path: '/api/v1/page-builder/analytics/search-console/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AnalyticsDashboardController::searchConsoleMetrics'
+  methods: [GET]
+  requirements:
+    _permission: 'access page builder'
+    page_id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+
+# API para verificar credenciales GA4 — P2-04
+jaraba_page_builder.api.ga4_verify:
+  path: '/api/v1/page-builder/analytics/ga4/verify'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AnalyticsDashboardController::verifyGA4'
+  methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+
+# API para sugerencias de imagen con IA — P2-05
+# Genera keywords con LLM y busca imagenes curadas en Unsplash.
+jaraba_page_builder.api.ai_suggest_images:
+  path: '/api/v1/page-builder/ai/suggest-images'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::suggestImages'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+# API para tracking de descargas Unsplash — P2-05
+# Requerido por TOS de Unsplash al usar una imagen sugerida.
+jaraba_page_builder.api.ai_track_image_download:
+  path: '/api/v1/page-builder/ai/track-image-download'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\AiContentController::trackImageDownload'
+  methods: [POST]
+  requirements:
+    _permission: 'access page builder'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
 # API v1 para generación de campos con IA - Gap 1 Clase Mundial
 jaraba_page_builder.api.generate_field:
   path: '/api/v1/page-builder/generate-field'
@@ -436,6 +486,18 @@ jaraba_page_builder.api.experiments_declare_winner:
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::declareWinner'
   methods: [POST]
+  requirements:
+    _permission: 'administer page builder'
+    id: '\d+'
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+
+jaraba_page_builder.api.experiments_multivariate:
+  path: '/api/v1/experiments/{id}/multivariate'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\ExperimentApiController::getMultivariateResults'
+  methods: [GET]
   requirements:
     _permission: 'administer page builder'
     id: '\d+'

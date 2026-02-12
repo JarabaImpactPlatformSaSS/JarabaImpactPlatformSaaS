@@ -82,23 +82,23 @@
     }
 
     &--unique::before {
-        background: var(--ej-color-info, #2563eb);
+        background: var(--ej-color-info, #233D63);
     }
 
     &--conversions::before {
-        background: var(--ej-color-success, #059669);
+        background: var(--ej-color-success, #10B981);
     }
 
     &--leads::before {
-        background: var(--ej-color-warning, #d97706);
+        background: var(--ej-color-warning, #F59E0B);
     }
 
     &--qrcodes::before {
-        background: var(--ej-color-accent, #7c3aed);
+        background: var(--ej-color-accent, #00A9A5);
     }
 
     &--rate::before {
-        background: var(--ej-color-error, #dc2626);
+        background: var(--ej-color-error, #EF4444);
     }
 
     &__icon {
@@ -152,7 +152,7 @@
 
         &--down {
             background: var(--ej-color-error-light, #fef2f2);
-            color: var(--ej-color-error-dark, #991b1b);
+            color: var(--ej-color-error-dark, color-mix(in srgb, #EF4444 55%, black));
         }
     }
 }
@@ -266,7 +266,7 @@
         font-weight: 600;
 
         &--active {
-            color: var(--ej-color-success, #059669);
+            color: var(--ej-color-success, #10B981);
 
             &::before {
                 content: '';
@@ -400,17 +400,17 @@
 
         &--mobile {
             background: var(--ej-color-info-light, #dbeafe);
-            color: var(--ej-color-info, #2563eb);
+            color: var(--ej-color-info, #233D63);
         }
 
         &--tablet {
             background: var(--ej-color-accent-light, #ede9fe);
-            color: var(--ej-color-accent, #7c3aed);
+            color: var(--ej-color-accent, #00A9A5);
         }
 
         &--desktop {
             background: var(--ej-color-success-light, #d1fae5);
-            color: var(--ej-color-success, #059669);
+            color: var(--ej-color-success, #10B981);
         }
     }
 
@@ -587,7 +587,7 @@
         &--error {
             display: block;
             background: var(--ej-color-error-light, #fef2f2);
-            color: var(--ej-color-error-dark, #991b1b);
+            color: var(--ej-color-error-dark, color-mix(in srgb, #EF4444 55%, black));
         }
     }
 

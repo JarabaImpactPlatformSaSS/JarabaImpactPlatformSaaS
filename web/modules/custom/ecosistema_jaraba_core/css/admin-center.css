@@ -1,0 +1,501 @@
+/**
+ * @file
+ * Admin Center Dashboard (F6 Doc 181).
+ *
+ * BEM structure using var(--ej-*) design tokens.
+ */
+
+/* ============================================================================
+   Dashboard Container
+   ============================================================================ */
+
+.admin-center {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.admin-center__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+}
+
+.admin-center__header-content {
+  flex: 1;
+}
+
+.admin-center__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-color-corporate, #233D63);
+}
+
+.admin-center__subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.95rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.admin-center__kbd {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+  border-radius: 4px;
+  background: var(--ej-gray-100, #F5F5F5);
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.admin-center__header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.admin-center__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.admin-center__btn--primary {
+  background: var(--ej-color-corporate, #233D63);
+  color: #fff;
+}
+
+.admin-center__btn--primary:hover {
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, #000);
+  box-shadow: 0 2px 8px rgba(35, 61, 99, 0.25);
+}
+
+.admin-center__btn--secondary {
+  background: var(--ej-gray-100, #F5F5F5);
+  color: var(--ej-text-primary, #212121);
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+}
+
+.admin-center__btn--secondary:hover {
+  background: var(--ej-gray-200, #EEEEEE);
+}
+
+/* ============================================================================
+   KPI Cards
+   ============================================================================ */
+
+.admin-center__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-center-kpi {
+  background: #fff;
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.admin-center-kpi:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.admin-center-kpi__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-center-kpi__format-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--ej-gray-100, #F5F5F5);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.admin-center-kpi__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.admin-center-kpi__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #212121);
+  line-height: 1.2;
+}
+
+.admin-center-kpi__trend {
+  margin-top: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.admin-center-kpi__trend--up {
+  color: var(--ej-color-success, #22c55e);
+}
+
+.admin-center-kpi__trend--down {
+  color: var(--ej-color-danger, #ef4444);
+}
+
+/* KPI accent borders */
+.admin-center-kpi--mrr {
+  border-top: 3px solid var(--ej-color-impulse, #FF8C42);
+}
+
+.admin-center-kpi--arr {
+  border-top: 3px solid var(--ej-color-corporate, #233D63);
+}
+
+.admin-center-kpi--tenants {
+  border-top: 3px solid var(--ej-color-innovation, #00A9A5);
+}
+
+.admin-center-kpi--mau {
+  border-top: 3px solid var(--ej-color-success, #22c55e);
+}
+
+.admin-center-kpi--churn {
+  border-top: 3px solid var(--ej-color-danger, #ef4444);
+}
+
+.admin-center-kpi--health_avg {
+  border-top: 3px solid var(--ej-color-agro, #556B2F);
+}
+
+/* ============================================================================
+   Body Layout: Main + Sidebar
+   ============================================================================ */
+
+.admin-center__body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+}
+
+.admin-center__main {
+  min-width: 0;
+}
+
+/* ============================================================================
+   Sections
+   ============================================================================ */
+
+.admin-center__section {
+  background: #fff;
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-center__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.admin-center__section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.admin-center__section-header .admin-center__section-title {
+  margin-bottom: 0;
+}
+
+.admin-center__section-link {
+  font-size: 0.85rem;
+  color: var(--ej-color-corporate, #233D63);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.admin-center__section-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================================
+   Tenant Stats
+   ============================================================================ */
+
+.admin-center__tenant-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.admin-center-stat {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.admin-center-stat__value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-center-stat__label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 0.25rem;
+}
+
+.admin-center-stat--total .admin-center-stat__value {
+  color: var(--ej-color-corporate, #233D63);
+}
+
+.admin-center-stat--active .admin-center-stat__value {
+  color: var(--ej-color-success, #22c55e);
+}
+
+.admin-center-stat--trial .admin-center-stat__value {
+  color: var(--ej-color-impulse, #FF8C42);
+}
+
+.admin-center-stat--suspended .admin-center-stat__value {
+  color: var(--ej-color-danger, #ef4444);
+}
+
+/* ============================================================================
+   Alerts List
+   ============================================================================ */
+
+.admin-center__empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.admin-center__empty p {
+  margin: 0;
+}
+
+.admin-center__alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-center-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--ej-gray-50, #FAFAFA);
+  transition: background-color 0.15s ease;
+}
+
+.admin-center-alert:hover {
+  background: var(--ej-gray-100, #F5F5F5);
+}
+
+.admin-center-alert__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.admin-center-alert__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-center-alert__label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.admin-center-alert__metric {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.admin-center-alert__channel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: var(--ej-gray-200, #EEEEEE);
+  color: var(--ej-text-secondary, #757575);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   Sidebar
+   ============================================================================ */
+
+.admin-center__sidebar {
+  position: sticky;
+  top: 2rem;
+  align-self: start;
+}
+
+.admin-center__quick-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-center-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ej-text-primary, #212121);
+  transition: background-color 0.15s ease;
+}
+
+.admin-center-link:hover {
+  background: var(--ej-gray-100, #F5F5F5);
+}
+
+.admin-center-link__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.admin-center-link__label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.admin-center-link__shortcut {
+  font-family: monospace;
+  font-size: 0.7rem;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+  border-radius: 4px;
+  background: var(--ej-gray-100, #F5F5F5);
+  color: var(--ej-text-secondary, #757575);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   Daily Workflow
+   ============================================================================ */
+
+.admin-center__workflow {
+  background: var(--ej-gray-50, #FAFAFA);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.admin-center__workflow-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--ej-color-corporate, #233D63);
+}
+
+.admin-center__workflow-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--ej-text-secondary, #757575);
+  line-height: 1.8;
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+  .admin-center__body {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-center__sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-center {
+    padding: 1rem;
+  }
+
+  .admin-center__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-center__kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-center__tenant-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-center__kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-center__tenant-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-center-kpi {
+    transition: none;
+  }
+
+  .admin-center-alert,
+  .admin-center-link,
+  .admin-center__btn {
+    transition: none;
+  }
+}

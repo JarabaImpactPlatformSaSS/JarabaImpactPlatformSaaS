@@ -57,6 +57,13 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
     protected $aiTemplateGenerator;
 
     /**
+     * Servicio de sugerencias de imagen con IA (P2-05).
+     *
+     * @var \Drupal\jaraba_page_builder\Service\AiImageSuggestionService|null
+     */
+    protected $aiImageSuggestion;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container)
@@ -78,6 +85,9 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
         }
         if ($container->has('jaraba_page_builder.ai_template_generator')) {
             $instance->aiTemplateGenerator = $container->get('jaraba_page_builder.ai_template_generator');
+        }
+        if ($container->has('jaraba_page_builder.ai_image_suggestion')) {
+            $instance->aiImageSuggestion = $container->get('jaraba_page_builder.ai_image_suggestion');
         }
 
         return $instance;
@@ -496,6 +506,102 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
                 'error' => $this->t('Error al generar página con IA.'),
             ], 500);
         }
+    }
+
+    /**
+     * Sugiere imagenes relevantes con IA para un bloque (P2-05).
+     *
+     * ENDPOINT: POST /api/v1/page-builder/ai/suggest-images
+     *
+     * Genera keywords de busqueda con IA segun el contexto del bloque
+     * y busca imagenes curadas en Unsplash.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Request con JSON: {block_type, content_context?, vertical?, page_title?, count?}.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Imagenes sugeridas con metadatos.
+     */
+    public function suggestImages(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['block_type'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Se requiere el tipo de bloque (block_type).'),
+            ], 400);
+        }
+
+        try {
+            if (!$this->aiImageSuggestion) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('Servicio de sugerencias de imagen no disponible.'),
+                ], 503);
+            }
+
+            $result = $this->aiImageSuggestion->suggestImages(
+                $data['block_type'],
+                $data['content_context'] ?? '',
+                $data['vertical'] ?? '',
+                $data['page_title'] ?? '',
+                (int) ($data['count'] ?? 8),
+            );
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'images' => $result['images'],
+                'keywords' => $result['keywords'],
+                'source' => $result['source'],
+                'total' => count($result['images']),
+            ]);
+        } catch (\Exception $e) {
+            $this->getLogger('jaraba_page_builder')->error(
+                'AI image suggestion failed: @message',
+                ['@message' => $e->getMessage()]
+            );
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Error al sugerir imagenes.'),
+            ], 500);
+        }
+    }
+
+    /**
+     * Notifica a Unsplash que se descargo una imagen (P2-05).
+     *
+     * ENDPOINT: POST /api/v1/page-builder/ai/track-image-download
+     *
+     * Requerido por los TOS de Unsplash para tracking de descargas.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Request con JSON: {download_url}.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Confirmacion.
+     */
+    public function trackImageDownload(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['download_url'])) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Se requiere la URL de descarga.'),
+            ], 400);
+        }
+
+        if (!$this->aiImageSuggestion) {
+            return new JsonResponse(['success' => FALSE], 503);
+        }
+
+        $tracked = $this->aiImageSuggestion->trackDownload($data['download_url']);
+
+        return new JsonResponse([
+            'success' => $tracked,
+        ]);
     }
 
 }

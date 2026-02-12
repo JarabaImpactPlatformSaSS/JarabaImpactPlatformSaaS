@@ -20,7 +20,7 @@
 // Estas variables pueden ser personalizadas por cada tenant vía admin
 
 // Colores principales del tenant (inyectables)
-$product-primary: var(--tenant-primary, #2563EB) !default;
+$product-primary: var(--tenant-primary, #233D63) !default;
 $product-secondary: var(--tenant-secondary, #1E40AF) !default;
 $product-accent: var(--tenant-accent, #10B981) !default;
 
@@ -34,8 +34,8 @@ $product-text-muted: #6B7280;
 $product-bg: #FFFFFF;
 $product-bg-secondary: #F9FAFB;
 $product-border: #E5E7EB;
-$product-success: #059669;
-$product-warning: #D97706;
+$product-success: var(--ej-color-success, #10B981);
+$product-warning: var(--ej-color-warning, #F59E0B);
 
 // Espaciado
 $product-spacing-sm: 0.5rem;
@@ -183,12 +183,12 @@ $product-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
     font-weight: 600;
 
     &--in-stock {
-        background: rgba($product-success, 0.1);
+        background: color-mix(in srgb, $product-success 10%, transparent);
         color: $product-success;
     }
 
     &--out-of-stock {
-        background: rgba($product-warning, 0.1);
+        background: color-mix(in srgb, $product-warning 10%, transparent);
         color: $product-warning;
     }
 }

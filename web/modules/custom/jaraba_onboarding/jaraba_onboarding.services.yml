@@ -42,3 +42,22 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_onboarding'
+
+  # ===========================================
+  # F5 — Tenant Onboarding Wizard (Doc 179)
+  # ===========================================
+
+  # Wizard de 7 pasos para configuracion inicial del tenant
+  jaraba_onboarding.wizard:
+    class: Drupal\jaraba_onboarding\Service\TenantOnboardingWizardService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_onboarding'
+
+  # Extractor de paleta de colores de logo (GD/IA)
+  jaraba_onboarding.logo_color_extractor:
+    class: Drupal\jaraba_onboarding\Service\LogoColorExtractorService
+    arguments:
+      - '@file_system'
+      - '@logger.channel.jaraba_onboarding'

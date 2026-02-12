@@ -76,6 +76,18 @@ function jaraba_analytics_theme() {
       ],
       'template' => 'analytics-report-wizard',
     ],
+
+    // F7 — Dashboard de Programa Elena (Doc 182)
+    // Ruta: /programa/dashboard
+    'programa_dashboard' => [
+      'variables' => [
+        'grant_summary' => [],
+        'report_types' => [],
+        'cohort_stats' => [],
+        'program_kpis' => [],
+      ],
+      'template' => 'programa-dashboard',
+    ],
   ];
 }
 

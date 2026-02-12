@@ -156,19 +156,19 @@ class CopilotSettingsForm extends ConfigFormBase
         ];
 
         $modes = [
-            'coach' => ['label' => 'Coach Emocional', 'icon' => '🧠', 'default_week' => 0],
-            'consultor' => ['label' => 'Consultor Táctico', 'icon' => '🔧', 'default_week' => 0],
-            'sparring' => ['label' => 'Sparring Partner', 'icon' => '🥊', 'default_week' => 4],
-            'cfo' => ['label' => 'CFO Sintético', 'icon' => '💰', 'default_week' => 6],
-            'fiscal' => ['label' => 'Experto Tributario', 'icon' => '🏛️', 'default_week' => 8],
-            'laboral' => ['label' => 'Experto Seg. Social', 'icon' => '🛡️', 'default_week' => 8],
-            'devil' => ['label' => 'Abogado del Diablo', 'icon' => '😈', 'default_week' => 10],
+            'coach' => ['label' => 'Coach Emocional', 'default_week' => 0],
+            'consultor' => ['label' => 'Consultor Tactico', 'default_week' => 0],
+            'sparring' => ['label' => 'Sparring Partner', 'default_week' => 4],
+            'cfo' => ['label' => 'CFO Sintetico', 'default_week' => 6],
+            'fiscal' => ['label' => 'Experto Tributario', 'default_week' => 8],
+            'laboral' => ['label' => 'Experto Seg. Social', 'default_week' => 8],
+            'devil' => ['label' => 'Abogado del Diablo', 'default_week' => 10],
         ];
 
         foreach ($modes as $key => $mode) {
             $form['modes']["mode_{$key}"] = [
                 '#type' => 'checkbox',
-                '#title' => $this->t('@icon @label', ['@icon' => $mode['icon'], '@label' => $mode['label']]),
+                '#title' => $this->t('@label', ['@label' => $mode['label']]),
                 '#default_value' => $config->get("modes.{$key}.enabled") ?? TRUE,
             ];
         }
@@ -184,13 +184,13 @@ class CopilotSettingsForm extends ConfigFormBase
 
         // Check API key status
         $apiKeyId = $config->get('claude_api_key');
-        $apiKeyStatus = $this->t('❌ No configurada');
+        $apiKeyStatus = $this->t('No configurada');
         if ($apiKeyId) {
             $key = $this->keyRepository->getKey($apiKeyId);
             if ($key && $key->getKeyValue()) {
-                $apiKeyStatus = $this->t('✅ Configurada (@key)', ['@key' => $apiKeyId]);
+                $apiKeyStatus = $this->t('Configurada (@key)', ['@key' => $apiKeyId]);
             } else {
-                $apiKeyStatus = $this->t('⚠️ Clave seleccionada pero vacía');
+                $apiKeyStatus = $this->t('Clave seleccionada pero vacia');
             }
         }
 
@@ -221,9 +221,9 @@ class CopilotSettingsForm extends ConfigFormBase
                 ->execute()
                 ->fetchField();
 
-            return (string) $this->t('✅ @count registros cargados', ['@count' => $count]);
+            return (string) $this->t('@count registros cargados', ['@count' => $count]);
         } catch (\Exception $e) {
-            return (string) $this->t('❌ Tabla no encontrada');
+            return (string) $this->t('Tabla no encontrada');
         }
     }
 

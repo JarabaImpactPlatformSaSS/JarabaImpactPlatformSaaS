@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Paso 1: Bienvenida — Confirmar vertical detectada.
+ *
+ * Variables:
+ *  - vertical: string
+ *  - vertical_label: string
+ *  - vertical_color: string
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~30s.
+ */
+#}
+<div class="wizard-step wizard-step--welcome">
+  <div class="wizard-step__hero">
+    <div class="wizard-step__icon wizard-step__icon--{{ vertical_color }}">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M7 11v-1a5 5 0 0 1 10 0v1"></path>
+        <path d="M3 18a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1H3v-1z"></path>
+        <circle cx="12" cy="6" r="3"></circle>
+      </svg>
+    </div>
+    <h1 class="wizard-step__title">
+      {% trans %}Bienvenido a {{ vertical_label }}{% endtrans %}
+    </h1>
+    <p class="wizard-step__subtitle">
+      {% trans %}Vamos a configurar tu espacio en menos de 10 minutos. Solo necesitamos unos datos basicos para personalizar tu experiencia.{% endtrans %}
+    </p>
+  </div>
+
+  <div class="wizard-step__vertical-confirm">
+    <h3 class="wizard-step__section-title">
+      {% trans %}Tu vertical{% endtrans %}
+    </h3>
+    <div class="wizard-step__vertical-card wizard-step__vertical-card--{{ vertical }}">
+      <span class="wizard-step__vertical-name">{{ vertical_label }}</span>
+      <span class="wizard-step__vertical-check">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </span>
+    </div>
+    <p class="wizard-step__hint">
+      {% trans %}Si no es correcta, puedes cambiarla seleccionando otra opcion.{% endtrans %}
+    </p>
+
+    <div class="wizard-step__vertical-options" data-vertical-selector>
+      {% set verticals = {
+        agroconecta: 'AgroConecta',
+        comercioconecta: 'ComercioConecta',
+        serviciosconecta: 'ServiciosConecta',
+        empleabilidad: 'Empleabilidad',
+        emprendimiento: 'Emprendimiento'
+      } %}
+      {% for key, label in verticals %}
+        {% if key != vertical %}
+          <button type="button" class="wizard-step__vertical-option" data-vertical="{{ key }}">
+            {{ label }}
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="wizard-step__timeline">
+    <h3 class="wizard-step__section-title">
+      {% trans %}Lo que haremos{% endtrans %}
+    </h3>
+    <ol class="wizard-step__timeline-list">
+      <li>{% trans %}Personalizaremos tu marca{% endtrans %} <span class="wizard-step__time">2 min</span></li>
+      <li>{% trans %}Configuraremos tu perfil{% endtrans %} <span class="wizard-step__time">2 min</span></li>
+      <li>{% trans %}Crearemos tu primer contenido{% endtrans %} <span class="wizard-step__time">3 min</span></li>
+      <li>{% trans %}Lanzaremos tu espacio{% endtrans %} <span class="wizard-step__time">30s</span></li>
+    </ol>
+    <p class="wizard-step__total-time">
+      {% trans %}Tiempo total estimado: ~10 minutos{% endtrans %}
+    </p>
+  </div>
+</div>

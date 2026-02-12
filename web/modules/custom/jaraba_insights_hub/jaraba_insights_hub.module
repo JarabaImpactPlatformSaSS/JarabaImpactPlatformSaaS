@@ -1,0 +1,175 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Insights Hub module — Dashboard unificado de metricas tecnicas.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_insights_hub_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_insights_hub') {
+    return '<p>' . t('Provides a unified dashboard for Search Console, Core Web Vitals, error tracking and uptime monitoring.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_insights_hub_cron(): void {
+  $time = \Drupal::time()->getRequestTime();
+  _jaraba_insights_hub_uptime_check($time);
+  _jaraba_insights_hub_search_console_sync($time);
+  _jaraba_insights_hub_web_vitals_aggregate($time);
+}
+
+/**
+ * Runs uptime checks (rate limited to configured interval via State API).
+ */
+function _jaraba_insights_hub_uptime_check(int $time): void {
+  $state = \Drupal::state();
+  $config = \Drupal::config('jaraba_insights_hub.settings');
+  $interval = (int) ($config->get('uptime_check_interval') ?? 300);
+  $lastRun = (int) ($state->get('jaraba_insights_hub.uptime_last_run') ?? 0);
+
+  if (($time - $lastRun) < $interval) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_insights_hub\Service\UptimeMonitorService $monitor */
+    $monitor = \Drupal::service('jaraba_insights_hub.uptime_monitor');
+    $monitor->runChecks();
+    $state->set('jaraba_insights_hub.uptime_last_run', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_insights_hub')->error('Uptime check failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Syncs Search Console data daily at ~04:00 UTC.
+ */
+function _jaraba_insights_hub_search_console_sync(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_insights_hub.search_console_last_sync') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun < 24) {
+    return;
+  }
+
+  $currentHour = (int) date('G', $time);
+  if ($currentHour < 3 || $currentHour > 5) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_insights_hub\Service\SearchConsoleService $service */
+    $service = \Drupal::service('jaraba_insights_hub.search_console');
+    $service->syncAll();
+    $state->set('jaraba_insights_hub.search_console_last_sync', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_insights_hub')->error('Search Console sync failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Aggregates Web Vitals data daily at ~02:00 UTC.
+ */
+function _jaraba_insights_hub_web_vitals_aggregate(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_insights_hub.web_vitals_last_aggregate') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun < 24) {
+    return;
+  }
+
+  $currentHour = (int) date('G', $time);
+  if ($currentHour < 1 || $currentHour > 3) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_insights_hub\Service\WebVitalsAggregatorService $aggregator */
+    $aggregator = \Drupal::service('jaraba_insights_hub.web_vitals_aggregator');
+    $aggregator->aggregateDaily();
+    $state->set('jaraba_insights_hub.web_vitals_last_aggregate', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_insights_hub')->error('Web Vitals aggregation failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_insights_hub_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'uptime_alert':
+      $message['subject'] = $params['subject'] ?? t('Alerta de Uptime - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
+    case 'error_alert':
+      $message['subject'] = $params['subject'] ?? t('Alerta de Errores Criticos - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
+    case 'cwv_degraded':
+      $message['subject'] = $params['subject'] ?? t('Core Web Vitals Degradados - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function jaraba_insights_hub_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === 'jaraba_insights_hub.dashboard') {
+    $variables['attributes']['class'][] = 'page-insights';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_insights_hub_theme(): array {
+  return [
+    'page__insights' => [
+      'template' => 'page--insights',
+      'base hook' => 'page',
+    ],
+    'insights_header' => [
+      'template' => 'partials/_insights-header',
+      'variables' => ['date_range' => '7d', 'tenant' => NULL],
+    ],
+    'insights_seo_panel' => [
+      'template' => 'partials/_insights-seo-panel',
+      'variables' => ['data' => []],
+    ],
+    'insights_performance_panel' => [
+      'template' => 'partials/_insights-performance-panel',
+      'variables' => ['metrics' => []],
+    ],
+    'insights_errors_panel' => [
+      'template' => 'partials/_insights-errors-panel',
+      'variables' => ['errors' => [], 'stats' => []],
+    ],
+    'insights_uptime_panel' => [
+      'template' => 'partials/_insights-uptime-panel',
+      'variables' => ['checks' => [], 'incidents' => []],
+    ],
+  ];
+}

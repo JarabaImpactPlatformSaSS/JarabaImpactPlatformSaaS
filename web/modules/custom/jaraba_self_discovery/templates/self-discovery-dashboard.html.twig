@@ -42,7 +42,7 @@
           {% endif %}
         </span>
         {% if assessments.life_wheel.status == 'completed' %}
-          <span class="sd-tool-card__badge sd-tool-card__badge--completed">✓</span>
+          <span class="sd-tool-card__badge sd-tool-card__badge--completed" aria-label="{{ 'Completado'|t }}">{{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}</span>
         {% endif %}
       </a>
       

@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Template for the Insights Hub dashboard page.
+ *
+ * Variables:
+ * - page: The page render array from the controller.
+ *
+ * @see jaraba_insights_hub_theme()
+ */
+#}
+{% extends "@claro/layout/page.html.twig" %}
+
+{% block content %}
+  <div class="insights-dashboard">
+    {{ page.content }}
+  </div>
+{% endblock %}

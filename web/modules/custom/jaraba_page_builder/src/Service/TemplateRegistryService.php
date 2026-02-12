@@ -107,6 +107,32 @@ class TemplateRegistryService
             'icon' => 'lightning-bolt',
             'weight' => 110,
         ],
+        // Categorias verticales — P2-01: 55 templates verticales.
+        'agroconecta' => [
+            'label' => 'AgroConecta',
+            'icon' => 'agriculture',
+            'weight' => 200,
+        ],
+        'comercioconecta' => [
+            'label' => 'ComercioConecta',
+            'icon' => 'shopping-bag',
+            'weight' => 210,
+        ],
+        'serviciosconecta' => [
+            'label' => 'ServiciosConecta',
+            'icon' => 'briefcase',
+            'weight' => 220,
+        ],
+        'empleabilidad' => [
+            'label' => 'Empleabilidad',
+            'icon' => 'user-group',
+            'weight' => 230,
+        ],
+        'emprendimiento' => [
+            'label' => 'Emprendimiento',
+            'icon' => 'rocket',
+            'weight' => 240,
+        ],
     ];
 
     /**

@@ -133,10 +133,10 @@
 .cs-distribution__segment {
   transition: flex-basis 0.3s ease;
 
-  &--healthy { background: #16a34a; }
-  &--neutral { background: #f59e0b; }
-  &--at-risk { background: #f97316; }
-  &--critical { background: #dc2626; }
+  &--healthy { background: var(--ej-color-success, #10B981); }
+  &--neutral { background: var(--ej-color-warning, #F59E0B); }
+  &--at-risk { background: var(--ej-color-impulse, #FF8C42); }
+  &--critical { background: var(--ej-color-danger, #EF4444); }
 }
 
 .cs-distribution__legend {
@@ -159,10 +159,10 @@
     border-radius: 50%;
   }
 
-  &--healthy::before { background: #16a34a; }
-  &--neutral::before { background: #f59e0b; }
-  &--at-risk::before { background: #f97316; }
-  &--critical::before { background: #dc2626; }
+  &--healthy::before { background: var(--ej-color-success, #10B981); }
+  &--neutral::before { background: var(--ej-color-warning, #F59E0B); }
+  &--at-risk::before { background: var(--ej-color-impulse, #FF8C42); }
+  &--critical::before { background: var(--ej-color-danger, #EF4444); }
 }
 
 // ── Panels ────────────────────────────────────────────────────
@@ -212,11 +212,11 @@
   flex-shrink: 0;
 }
 
-.cs-health-list__item--healthy .cs-health-list__score { background: rgba(22,163,74,0.1); color: #15803d; }
-.cs-health-list__item--neutral .cs-health-list__score { background: rgba(245,158,11,0.1); color: #b45309; }
+.cs-health-list__item--healthy .cs-health-list__score { background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent); color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black); }
+.cs-health-list__item--neutral .cs-health-list__score { background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent); color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 65%, black); }
 .cs-health-list__item--at-risk .cs-health-list__score,
-.cs-health-list__item--at_risk .cs-health-list__score { background: rgba(249,115,22,0.1); color: #c2410c; }
-.cs-health-list__item--critical .cs-health-list__score { background: rgba(220,38,38,0.1); color: #b91c1c; }
+.cs-health-list__item--at_risk .cs-health-list__score { background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent); color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 70%, black); }
+.cs-health-list__item--critical .cs-health-list__score { background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent); color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black); }
 
 .cs-health-list__info { flex: 1; min-width: 0; }
 .cs-health-list__tenant { font-weight: 600; font-size: 0.9rem; }
@@ -226,9 +226,9 @@
   font-size: 0.8rem;
   font-weight: 500;
 
-  &--improving { color: #16a34a; }
-  &--stable { color: #64748b; }
-  &--declining { color: #dc2626; }
+  &--improving { color: var(--ej-color-success, #10B981); }
+  &--stable { color: var(--ej-color-corporate, #233D63); }
+  &--declining { color: var(--ej-color-danger, #EF4444); }
 }
 
 // ── Churn Panel ───────────────────────────────────────────────
@@ -252,9 +252,9 @@
   text-transform: uppercase;
   flex-shrink: 0;
 
-  &--low { background: rgba(22,163,74,0.1); color: #15803d; }
-  &--medium { background: rgba(245,158,11,0.1); color: #b45309; }
-  &--high { background: rgba(220,38,38,0.1); color: #b91c1c; }
+  &--low { background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent); color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black); }
+  &--medium { background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent); color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 65%, black); }
+  &--high { background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent); color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black); }
 }
 
 .cs-churn-panel__info { flex: 1; min-width: 0; }
@@ -306,10 +306,10 @@
   align-items: center;
   margin-bottom: 1.5rem;
 
-  &--healthy { .cs-health-card__score-circle { border-color: #16a34a; } }
-  &--neutral { .cs-health-card__score-circle { border-color: #f59e0b; } }
-  &--at-risk { .cs-health-card__score-circle { border-color: #f97316; } }
-  &--critical { .cs-health-card__score-circle { border-color: #dc2626; } }
+  &--healthy { .cs-health-card__score-circle { border-color: var(--ej-color-success, #10B981); } }
+  &--neutral { .cs-health-card__score-circle { border-color: var(--ej-color-warning, #F59E0B); } }
+  &--at-risk { .cs-health-card__score-circle { border-color: var(--ej-color-impulse, #FF8C42); } }
+  &--critical { .cs-health-card__score-circle { border-color: var(--ej-color-danger, #EF4444); } }
 }
 
 .cs-health-card__score-circle {
@@ -347,10 +347,10 @@
   font-weight: 600;
   text-transform: capitalize;
 
-  &--healthy { background: rgba(22,163,74,0.1); color: #15803d; }
-  &--neutral { background: rgba(245,158,11,0.1); color: #b45309; }
-  &--at-risk { background: rgba(249,115,22,0.1); color: #c2410c; }
-  &--critical { background: rgba(220,38,38,0.1); color: #b91c1c; }
+  &--healthy { background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent); color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black); }
+  &--neutral { background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent); color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 65%, black); }
+  &--at-risk { background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent); color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 70%, black); }
+  &--critical { background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent); color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black); }
 }
 
 .cs-health-card__trend {
@@ -358,9 +358,9 @@
   font-size: 0.85rem;
   margin-top: 0.5rem;
 
-  &--improving { color: #16a34a; }
-  &--stable { color: #64748b; }
-  &--declining { color: #dc2626; }
+  &--improving { color: var(--ej-color-success, #10B981); }
+  &--stable { color: var(--ej-color-corporate, #233D63); }
+  &--declining { color: var(--ej-color-danger, #EF4444); }
 }
 
 .cs-health-card__breakdown { margin-top: 1.5rem; }
@@ -485,9 +485,9 @@
   font-weight: 600;
   text-transform: uppercase;
 
-  &--running { background: rgba(37,99,235,0.1); color: #1d4ed8; }
-  &--completed { background: rgba(22,163,74,0.1); color: #15803d; }
-  &--failed { background: rgba(220,38,38,0.1); color: #b91c1c; }
+  &--running { background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent); color: var(--ej-color-corporate, #233D63); }
+  &--completed { background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent); color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black); }
+  &--failed { background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent); color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black); }
 }
 
 .cs-playbook-timeline__execution-details {

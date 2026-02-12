@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Performance panel partial for the Insights Hub dashboard.
+ *
+ * Variables:
+ * - metrics: Array with Core Web Vitals aggregated data.
+ *   - lcp: Object with p75, rating, trend.
+ *   - inp: Object with p75, rating, trend.
+ *   - cls: Object with p75, rating, trend.
+ *   - fcp: Object with p75, rating, trend.
+ *   - ttfb: Object with p75, rating, trend.
+ */
+#}
+<div class="insights-panel insights-panel--performance">
+  <h2 class="insights-panel__title">{{ 'Core Web Vitals'|t }}</h2>
+
+  <div class="insights-panel__vitals">
+    {% for name, metric in metrics %}
+      <div class="vital-card vital-card--{{ metric.rating|default('unknown') }}">
+        <span class="vital-card__name">{{ name|upper }}</span>
+        <span class="vital-card__value">{{ metric.p75|default('-') }}</span>
+        <span class="vital-card__rating">{{ metric.rating|default('N/A') }}</span>
+        {% if metric.trend is defined %}
+          <span class="vital-card__trend vital-card__trend--{{ metric.trend > 0 ? 'up' : 'down' }}">
+            {{ metric.trend > 0 ? '+' : '' }}{{ metric.trend|number_format(1) }}%
+          </span>
+        {% endif %}
+      </div>
+    {% else %}
+      <p class="insights-panel__empty">{{ 'No hay datos de Core Web Vitals disponibles.'|t }}</p>
+    {% endfor %}
+  </div>
+</div>

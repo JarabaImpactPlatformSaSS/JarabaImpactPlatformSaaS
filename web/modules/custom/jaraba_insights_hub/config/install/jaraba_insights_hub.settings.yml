@@ -1,0 +1,6 @@
+search_console_client_id: ''
+search_console_client_secret: ''
+uptime_check_interval: 300
+uptime_alert_threshold: 3
+error_retention_days: 90
+web_vitals_aggregation_interval: daily
