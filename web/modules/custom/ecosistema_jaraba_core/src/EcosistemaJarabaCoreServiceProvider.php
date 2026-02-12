@@ -36,6 +36,26 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
             $container->setAlias('ecosistema_jaraba_core.stripe_connect', 'jaraba_foc.stripe_connect');
         }
 
+        // TD-003: Aliases backward-compatible para servicios extraídos a jaraba_billing.
+        // Solo se registran cuando jaraba_billing está instalado, evitando errores
+        // de compilación del contenedor en Kernel tests o instalaciones mínimas.
+        if (isset($modules['jaraba_billing'])) {
+            $container->setAlias('ecosistema_jaraba_core.plan_validator', 'jaraba_billing.plan_validator');
+            $container->setAlias('ecosistema_jaraba_core.tenant_subscription', 'jaraba_billing.tenant_subscription');
+            $container->setAlias('ecosistema_jaraba_core.tenant_metering', 'jaraba_billing.tenant_metering');
+            $container->setAlias('ecosistema_jaraba_core.pricing_engine', 'jaraba_billing.pricing_engine');
+            $container->setAlias('ecosistema_jaraba_core.reverse_trial', 'jaraba_billing.reverse_trial');
+            $container->setAlias('ecosistema_jaraba_core.expansion_revenue', 'jaraba_billing.expansion_revenue');
+            $container->setAlias('ecosistema_jaraba_core.impact_credit', 'jaraba_billing.impact_credit');
+
+            // Inject billing services into TenantManager (replaces ~ NULL placeholders).
+            $tenantManager = $container->getDefinition('ecosistema_jaraba_core.tenant_manager');
+            $args = $tenantManager->getArguments();
+            $args[2] = new Reference('ecosistema_jaraba_core.plan_validator');
+            $args[4] = new Reference('ecosistema_jaraba_core.tenant_subscription');
+            $tenantManager->setArguments($args);
+        }
+
         // UnifiedPromptBuilder: Combina Skills + Knowledge + Corrections + RAG.
         // Depende de jaraba_skills y jaraba_tenant_knowledge.
         // Solo se registra cuando ambos módulos están instalados.
