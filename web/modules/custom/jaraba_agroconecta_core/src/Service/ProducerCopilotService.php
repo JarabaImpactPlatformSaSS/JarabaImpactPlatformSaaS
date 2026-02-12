@@ -317,7 +317,7 @@ class ProducerCopilotService
         $message = mb_strtolower($message);
         $intents = [
             'description' => ['descripción', 'describir', 'copy', 'texto', 'presentación'],
-            'pricing' => ['precio', 'tarifa', 'coste', 'competencia', 'cara', 'barato'],
+            'pricing' => ['precio', 'tarifa', 'coste', 'competencia', 'cara', 'barato', 'cobrar'],
             'review_response' => ['reseña', 'valoración', 'comentario', 'responder'],
             'seo' => ['seo', 'posicionamiento', 'google', 'visibilidad', 'keywords'],
         ];

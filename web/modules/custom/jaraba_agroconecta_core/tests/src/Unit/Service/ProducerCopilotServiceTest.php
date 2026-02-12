@@ -211,7 +211,7 @@ class ProducerCopilotServiceTest extends TestCase {
     $product = $this->createEntityMock(
       fields: [
         'price' => 12.50,
-        'category' => ['value' => 'frutas', 'entity' => (object) ['label' => fn() => 'Frutas']],
+        'category' => ['value' => 'frutas', 'entity' => $this->createEntityMock(label: 'Frutas')],
       ],
       label: 'Aceite de Oliva Virgen Extra',
       id: 42,
@@ -384,7 +384,7 @@ class ProducerCopilotServiceTest extends TestCase {
       $this->assertArrayHasKey('conversation_id', $result);
       $this->assertSame(55, $result['conversation_id']);
     }
-    catch (\Error $e) {
+    catch (\Error|\RuntimeException $e) {
       // Static Drupal::currentUser() call is expected to fail in pure unit test.
       $this->assertStringContainsString('Drupal', $e->getMessage());
     }
