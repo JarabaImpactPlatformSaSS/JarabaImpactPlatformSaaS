@@ -23,3 +23,10 @@ entity.site_footer_config.add_form:
   route_name: entity.site_footer_config.add_form
   appears_on:
     - entity.site_footer_config.collection
+
+# Fase 4 Doc 179: SEO/GEO Avanzado
+entity.seo_page_config.add_form:
+  title: 'Añadir Configuración SEO'
+  route_name: entity.seo_page_config.add_form
+  appears_on:
+    - entity.seo_page_config.collection

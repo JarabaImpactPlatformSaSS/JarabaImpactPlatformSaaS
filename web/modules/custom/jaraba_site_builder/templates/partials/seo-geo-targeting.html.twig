@@ -1,0 +1,65 @@
+{#
+ * SEO Geo-Targeting Configuration
+ *
+ * Interfaz de configuración de geo-targeting.
+ *
+ * Variables:
+ *   - geo_region: string código ISO 3166-2
+ *   - geo_position: string "lat;lon"
+ *   - local_business: array de datos LocalBusiness
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-geo-targeting">
+  <div class="seo-geo-targeting__header">
+    <h4 class="seo-geo-targeting__title">{% trans %}Geo-Targeting{% endtrans %}</h4>
+    <p class="seo-geo-targeting__description">
+      {% trans %}Configura la segmentación geográfica para mejorar el SEO local.{% endtrans %}
+    </p>
+  </div>
+
+  <div class="seo-geo-targeting__fields">
+    {# Región #}
+    <div class="seo-geo-targeting__field">
+      <label class="seo-geo-targeting__label">{% trans %}Región{% endtrans %}</label>
+      <div class="seo-geo-targeting__value">
+        {% if geo_region %}
+          <code>{{ geo_region }}</code>
+        {% else %}
+          <span class="seo-geo-targeting__empty">{% trans %}No configurada{% endtrans %}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Coordenadas #}
+    <div class="seo-geo-targeting__field">
+      <label class="seo-geo-targeting__label">{% trans %}Coordenadas{% endtrans %}</label>
+      <div class="seo-geo-targeting__value">
+        {% if geo_position %}
+          <code>{{ geo_position }}</code>
+        {% else %}
+          <span class="seo-geo-targeting__empty">{% trans %}No configuradas{% endtrans %}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# LocalBusiness Schema #}
+  {% if local_business is not empty %}
+    <div class="seo-geo-targeting__business">
+      <h5 class="seo-geo-targeting__subtitle">{% trans %}Schema LocalBusiness{% endtrans %}</h5>
+      <div class="seo-geo-targeting__business-info">
+        {% if local_business.name %}
+          <p><strong>{% trans %}Nombre{% endtrans %}:</strong> {{ local_business.name }}</p>
+        {% endif %}
+        {% if local_business.address %}
+          <p><strong>{% trans %}Dirección{% endtrans %}:</strong> {{ local_business.address }}</p>
+        {% endif %}
+        {% if local_business.phone %}
+          <p><strong>{% trans %}Teléfono{% endtrans %}:</strong> {{ local_business.phone }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>

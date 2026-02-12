@@ -82,3 +82,45 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@jaraba_site_builder.menu'
       - '@file_url_generator'
+
+  # =========================================================================
+  # Fase 4 Doc 179: SEO/GEO Avanzado - 5 servicios
+  # =========================================================================
+
+  jaraba_site_builder.seo_manager:
+    class: Drupal\jaraba_site_builder\Service\SeoManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_site_builder.seo_auditor'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.schema_generator:
+    class: Drupal\jaraba_site_builder\Service\SchemaGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.hreflang_manager:
+    class: Drupal\jaraba_site_builder\Service\HreflangManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@language_manager'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.geo_targeting:
+    class: Drupal\jaraba_site_builder\Service\GeoTargetingService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.seo_ai_assistant:
+    class: Drupal\jaraba_site_builder\Service\SeoAiAssistantService
+    arguments:
+      - '@ai.provider'
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_site_builder'

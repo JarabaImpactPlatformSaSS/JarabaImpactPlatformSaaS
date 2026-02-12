@@ -1,0 +1,148 @@
+// Fase 4 Doc 179: Schema.org Preview & Hreflang Config Styles
+
+// ---------------------------------------------------------------------------
+// Schema.org JSON-LD Preview
+// ---------------------------------------------------------------------------
+
+.seo-schema-preview {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-md, 1rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0;
+  }
+
+  &__type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-sm, 4px);
+    background: var(--ej-primary, #233D63);
+    color: #fff;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-medium, 500);
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-sm, 4px);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-medium, 500);
+    margin-left: auto;
+
+    &--valid {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 15%, transparent);
+      color: var(--ej-color-success-dark, #047857);
+    }
+
+    &--invalid {
+      background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 15%, transparent);
+      color: var(--ej-color-danger, #EF4444);
+    }
+  }
+
+  &__code {
+    background: var(--ej-surface-dark, #1a1a2e);
+    border-radius: var(--ej-radius-md, 8px);
+    padding: var(--ej-spacing-md, 1rem);
+    overflow-x: auto;
+
+    pre {
+      margin: 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: var(--ej-font-size-xs, 0.75rem);
+      color: #e5e7eb;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hreflang Configuration
+// ---------------------------------------------------------------------------
+
+.seo-hreflang-config {
+  &__header {
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__description {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-secondary, #6b7280);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__language-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 0.25rem);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &__language {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--ej-radius-sm, 4px);
+    background: var(--ej-surface-alt, #f3f4f6);
+    color: var(--ej-text-secondary, #6b7280);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+
+    &--default {
+      background: var(--ej-primary, #233D63);
+      color: #fff;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    th {
+      text-align: left;
+      padding: var(--ej-spacing-sm, 0.5rem);
+      border-bottom: 2px solid var(--ej-border, #e5e7eb);
+      color: var(--ej-text-secondary, #6b7280);
+      font-weight: var(--ej-font-weight-semibold, 600);
+    }
+
+    td {
+      padding: var(--ej-spacing-sm, 0.5rem);
+      border-bottom: 1px solid var(--ej-border-light, #f3f4f6);
+      color: var(--ej-text-primary, #1a1a2e);
+    }
+  }
+
+  &__empty {
+    padding: var(--ej-spacing-lg, 1.5rem);
+    text-align: center;
+    color: var(--ej-text-muted, #9ca3af);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+}

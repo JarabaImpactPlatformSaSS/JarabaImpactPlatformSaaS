@@ -1,0 +1,72 @@
+{#
+ * SEO AI Suggestions Panel
+ *
+ * Muestra sugerencias SEO generadas por IA.
+ *
+ * Variables:
+ *   - suggestions: array con meta_title, meta_description, keywords, improvements
+ *   - provider: string nombre del proveedor IA usado
+ *   - page_title: string título actual de la página
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-ai-suggestions">
+  <div class="seo-ai-suggestions__header">
+    <h4 class="seo-ai-suggestions__title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      {% trans %}Sugerencias IA{% endtrans %}
+    </h4>
+    {% if provider %}
+      <span class="seo-ai-suggestions__provider">{{ provider }}</span>
+    {% endif %}
+  </div>
+
+  {# Meta Title Sugerido #}
+  {% if suggestions.meta_title %}
+    <div class="seo-ai-suggestions__suggestion">
+      <label class="seo-ai-suggestions__label">{% trans %}Meta título sugerido{% endtrans %}</label>
+      <div class="seo-ai-suggestions__value seo-ai-suggestions__value--copyable" data-copy-value="{{ suggestions.meta_title }}">
+        {{ suggestions.meta_title }}
+        <span class="seo-ai-suggestions__char-count">({{ suggestions.meta_title|length }} {% trans %}chars{% endtrans %})</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Meta Description Sugerida #}
+  {% if suggestions.meta_description %}
+    <div class="seo-ai-suggestions__suggestion">
+      <label class="seo-ai-suggestions__label">{% trans %}Meta descripción sugerida{% endtrans %}</label>
+      <div class="seo-ai-suggestions__value seo-ai-suggestions__value--copyable" data-copy-value="{{ suggestions.meta_description }}">
+        {{ suggestions.meta_description }}
+        <span class="seo-ai-suggestions__char-count">({{ suggestions.meta_description|length }} {% trans %}chars{% endtrans %})</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Keywords Sugeridas #}
+  {% if suggestions.keywords is not empty %}
+    <div class="seo-ai-suggestions__suggestion">
+      <label class="seo-ai-suggestions__label">{% trans %}Keywords sugeridas{% endtrans %}</label>
+      <div class="seo-ai-suggestions__tags">
+        {% for keyword in suggestions.keywords %}
+          <span class="seo-ai-suggestions__tag">{{ keyword }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Mejoras #}
+  {% if suggestions.improvements is not empty %}
+    <div class="seo-ai-suggestions__improvements">
+      <label class="seo-ai-suggestions__label">{% trans %}Mejoras recomendadas{% endtrans %}</label>
+      {% for improvement in suggestions.improvements %}
+        <div class="seo-ai-suggestions__improvement seo-ai-suggestions__improvement--{{ improvement.priority }}">
+          <span class="seo-ai-suggestions__priority">{{ improvement.priority }}</span>
+          <span class="seo-ai-suggestions__category">{{ improvement.category }}</span>
+          <p class="seo-ai-suggestions__text">{{ improvement.suggestion }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
