@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_referral\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_foc\Service\StripeConnectService;
 use Drupal\jaraba_referral\Service\RewardProcessingService;
 use Drupal\Tests\UnitTestCase;
@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Tests para RewardProcessingService.
  *
- * Verifica la creación, aprobación, rechazo y procesamiento de pagos
+ * Verifica la creacion, aprobacion, rechazo y procesamiento de pagos
  * de recompensas del programa de referidos.
  *
  * @covers \Drupal\jaraba_referral\Service\RewardProcessingService
@@ -53,10 +53,9 @@ class RewardProcessingServiceTest extends UnitTestCase {
    * Tests que createReward crea una recompensa correctamente.
    */
   public function testCreateRewardSuccess(): void {
-    // Simular código de referido existente.
-    $codeEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
-    $tenantField = $this->createMock(FieldItemListInterface::class);
-    $tenantField->target_id = 1;
+    // Simular codigo de referido existente.
+    $codeEntity = $this->createMock(ContentEntityInterface::class);
+    $tenantField = (object) ['target_id' => 1];
     $codeEntity->method('get')
       ->with('tenant_id')
       ->willReturn($tenantField);
@@ -66,8 +65,8 @@ class RewardProcessingServiceTest extends UnitTestCase {
       ->with(10)
       ->willReturn($codeEntity);
 
-    // Simular creación de recompensa.
-    $rewardEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    // Simular creacion de recompensa.
+    $rewardEntity = $this->createMock(ContentEntityInterface::class);
     $rewardEntity->method('id')->willReturn(42);
     $rewardEntity->method('save')->willReturn(1);
 
@@ -87,7 +86,7 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que createReward falla con código inexistente.
+   * Tests que createReward falla con codigo inexistente.
    */
   public function testCreateRewardCodeNotFound(): void {
     $codeStorage = $this->createMock(EntityStorageInterface::class);
@@ -108,10 +107,9 @@ class RewardProcessingServiceTest extends UnitTestCase {
    * Tests que approveReward aprueba una recompensa pendiente.
    */
   public function testApproveRewardSuccess(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'pending';
+    $statusField = (object) ['value' => 'pending'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->with('status')
       ->willReturn($statusField);
@@ -131,13 +129,12 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que approveReward falla si la recompensa no está pendiente.
+   * Tests que approveReward falla si la recompensa no esta pendiente.
    */
   public function testApproveRewardNotPending(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'paid';
+    $statusField = (object) ['value' => 'paid'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->with('status')
       ->willReturn($statusField);
@@ -170,10 +167,9 @@ class RewardProcessingServiceTest extends UnitTestCase {
    * Tests que rejectReward rechaza con motivo.
    */
   public function testRejectRewardSuccess(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'pending';
+    $statusField = (object) ['value' => 'pending'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->with('status')
       ->willReturn($statusField);
@@ -196,13 +192,12 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que rejectReward falla si no está pendiente.
+   * Tests que rejectReward falla si no esta pendiente.
    */
   public function testRejectRewardNotPending(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'approved';
+    $statusField = (object) ['value' => 'approved'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->with('status')
       ->willReturn($statusField);
@@ -221,14 +216,11 @@ class RewardProcessingServiceTest extends UnitTestCase {
    * Tests que processStripePayout procesa el pago correctamente.
    */
   public function testProcessStripePayoutSuccess(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'approved';
-    $rewardValueField = new \stdClass();
-    $rewardValueField->value = '25.00';
-    $currencyField = new \stdClass();
-    $currencyField->value = 'EUR';
+    $statusField = (object) ['value' => 'approved'];
+    $rewardValueField = (object) ['value' => '25.00'];
+    $currencyField = (object) ['value' => 'EUR'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->willReturnMap([
         ['status', $statusField],
@@ -253,13 +245,12 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que processStripePayout falla si no está aprobada.
+   * Tests que processStripePayout falla si no esta aprobada.
    */
   public function testProcessStripePayoutNotApproved(): void {
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'pending';
+    $statusField = (object) ['value' => 'pending'];
 
-    $reward = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $reward = $this->createMock(ContentEntityInterface::class);
     $reward->method('get')
       ->with('status')
       ->willReturn($statusField);
@@ -278,7 +269,7 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que getPendingRewards devuelve array vacío si no hay resultados.
+   * Tests que getPendingRewards devuelve array vacio si no hay resultados.
    */
   public function testGetPendingRewardsEmpty(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -301,7 +292,7 @@ class RewardProcessingServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que getRewardsForUser devuelve array vacío si no hay resultados.
+   * Tests que getRewardsForUser devuelve array vacio si no hay resultados.
    */
   public function testGetRewardsForUserEmpty(): void {
     $query = $this->createMock(QueryInterface::class);

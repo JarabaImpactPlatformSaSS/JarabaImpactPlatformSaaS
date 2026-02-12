@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_email\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\jaraba_email\Entity\EmailCampaign;
 use Drupal\jaraba_email\Service\CampaignService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -43,7 +43,7 @@ class CampaignServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests enviar campaña inexistente retorna error.
+   * Tests enviar campana inexistente retorna error.
    */
   public function testSendCampaignNotFound(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -60,10 +60,10 @@ class CampaignServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests enviar campaña que no puede enviarse en su estado actual.
+   * Tests enviar campana que no puede enviarse en su estado actual.
    */
   public function testSendCampaignCannotSend(): void {
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(EmailCampaign::class);
     $campaign->method('canSend')->willReturn(FALSE);
 
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -80,7 +80,7 @@ class CampaignServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests programar campaña inexistente retorna FALSE.
+   * Tests programar campana inexistente retorna FALSE.
    */
   public function testScheduleCampaignNotFound(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -96,10 +96,10 @@ class CampaignServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests programar campaña exitosamente.
+   * Tests programar campana exitosamente.
    */
   public function testScheduleCampaignSuccess(): void {
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(EmailCampaign::class);
     $campaign->method('canSend')->willReturn(TRUE);
     $campaign->method('getName')->willReturn('Campaña Test');
     $campaign->expects($this->atLeastOnce())->method('set');
@@ -118,7 +118,7 @@ class CampaignServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests envío de prueba con campaña inexistente retorna FALSE.
+   * Tests envio de prueba con campana inexistente retorna FALSE.
    */
   public function testSendTestCampaignNotFound(): void {
     $storage = $this->createMock(EntityStorageInterface::class);

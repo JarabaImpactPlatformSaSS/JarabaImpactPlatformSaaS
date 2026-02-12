@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_events\Entity\MarketingEvent;
 use Drupal\jaraba_events\Service\EventLandingService;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -69,6 +70,21 @@ class EventLandingServiceTest extends UnitTestCase {
           default => $this->createMock(EntityStorageInterface::class),
         };
       });
+
+    // Set up mock Drupal container for static calls in EventLandingService.
+    // Line 219: \Drupal::request()->getSchemeAndHttpHost()
+    // Line 343: \Drupal::service('file_url_generator')
+    $request = $this->getMockBuilder(\Symfony\Component\HttpFoundation\Request::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $request->method('getSchemeAndHttpHost')->willReturn('https://example.com');
+
+    $requestStack = $this->createMock(\Symfony\Component\HttpFoundation\RequestStack::class);
+    $requestStack->method('getCurrentRequest')->willReturn($request);
+
+    $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+    $container->set('request_stack', $requestStack);
+    \Drupal::setContainer($container);
 
     $this->service = new EventLandingService(
       $this->entityTypeManager,
@@ -308,11 +324,11 @@ class EventLandingServiceTest extends UnitTestCase {
    * @param array $fields
    *   Mapa de campo => valor para el mock.
    *
-   * @return \PHPUnit\Framework\MockObject\MockObject
+   * @return \Drupal\jaraba_events\Entity\MarketingEvent&\PHPUnit\Framework\MockObject\MockObject
    *   Mock de la entidad de evento.
    */
-  protected function createMockEvent(array $fields): MockObject {
-    $event = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+  protected function createMockEvent(array $fields): MarketingEvent&MockObject {
+    $event = $this->createMock(MarketingEvent::class);
 
     $event->method('get')
       ->willReturnCallback(function (string $field_name) use ($fields) {

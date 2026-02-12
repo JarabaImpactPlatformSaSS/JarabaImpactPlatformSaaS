@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_referral\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_referral\Entity\Referral;
 use Drupal\jaraba_referral\Service\ReferralManagerService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -53,15 +53,24 @@ class ReferralManagerServiceTest extends UnitTestCase {
    * Tests que generateCode crea un codigo de referido exitosamente.
    */
   public function testGenerateCodeSuccess(): void {
-    $referralEntity = $this->createMock(ContentEntityInterface::class);
+    $referralEntity = $this->createMock(Referral::class);
     $referralEntity->method('id')->willReturn(42);
     $referralEntity->method('save')->willReturn(1);
 
+    // Query mock for checking existing codes (returns empty = no existing code).
+    $existingQuery = $this->createMock(QueryInterface::class);
+    $existingQuery->method('accessCheck')->willReturnSelf();
+    $existingQuery->method('condition')->willReturnSelf();
+    $existingQuery->method('range')->willReturnSelf();
+    $existingQuery->method('count')->willReturnSelf();
+    $existingQuery->method('execute')->willReturn(0);
+
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('create')->willReturn($referralEntity);
+    $storage->method('getQuery')->willReturn($existingQuery);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('referral_code')
+      ->with('referral')
       ->willReturn($storage);
 
     $result = $this->service->generateCode(5);
@@ -70,21 +79,25 @@ class ReferralManagerServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que processReferral devuelve NULL con codigo inexistente.
+   * Tests que processReferral throws exception with invalid code.
    */
   public function testProcessReferralCodeNotFound(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')
-      ->with(['code' => 'INVALID1'])
+      ->with([
+        'referral_code' => 'INVALID1',
+        'status' => 'pending',
+      ])
       ->willReturn([]);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('referral_code')
+      ->with('referral')
       ->willReturn($storage);
 
-    $result = $this->service->processReferral('INVALID1', 42);
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Código de referido no válido o ya utilizado.');
 
-    $this->assertNull($result);
+    $this->service->processReferral('INVALID1', 42);
   }
 
   /**
@@ -101,7 +114,7 @@ class ReferralManagerServiceTest extends UnitTestCase {
     $storage->method('getQuery')->willReturn($query);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('referral_code')
+      ->with('referral')
       ->willReturn($storage);
 
     $result = $this->service->getMyReferrals(5);
@@ -123,43 +136,58 @@ class ReferralManagerServiceTest extends UnitTestCase {
     $storage->method('getQuery')->willReturn($query);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('referral_code')
+      ->with('referral')
       ->willReturn($storage);
 
     $stats = $this->service->getReferralStats(1);
 
     $this->assertIsArray($stats);
+    $this->assertArrayHasKey('total_codes', $stats);
+    $this->assertArrayHasKey('total_confirmed', $stats);
+    $this->assertArrayHasKey('total_rewarded', $stats);
+    $this->assertArrayHasKey('total_expired', $stats);
+    $this->assertArrayHasKey('conversion_rate', $stats);
+    $this->assertArrayHasKey('total_reward_value', $stats);
+    $this->assertEquals(0, $stats['total_codes']);
   }
 
   /**
    * Tests que processReferral procesa correctamente un codigo valido.
    */
   public function testProcessReferralSuccessWithValidCode(): void {
-    $isActiveField = new \stdClass();
-    $isActiveField->value = TRUE;
+    $referrerUidField = new \stdClass();
+    $referrerUidField->target_id = 10;
 
-    $expiresAtField = new \stdClass();
-    $expiresAtField->value = NULL;
-
-    $codeEntity = $this->createMock(ContentEntityInterface::class);
+    $codeEntity = $this->createMock(Referral::class);
     $codeEntity->method('id')->willReturn(10);
     $codeEntity->method('get')
       ->willReturnMap([
-        ['is_active', $isActiveField],
-        ['expires_at', $expiresAtField],
+        ['referrer_uid', $referrerUidField],
       ]);
     $codeEntity->method('set')->willReturnSelf();
     $codeEntity->method('save')->willReturn(1);
 
+    // Query for checking if user was already referred (returns 0).
+    $alreadyReferredQuery = $this->createMock(QueryInterface::class);
+    $alreadyReferredQuery->method('accessCheck')->willReturnSelf();
+    $alreadyReferredQuery->method('condition')->willReturnSelf();
+    $alreadyReferredQuery->method('count')->willReturnSelf();
+    $alreadyReferredQuery->method('execute')->willReturn(0);
+
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')
-      ->with(['code' => 'VALID001'])
+      ->with([
+        'referral_code' => 'VALID001',
+        'status' => 'pending',
+      ])
       ->willReturn([1 => $codeEntity]);
+    $storage->method('getQuery')->willReturn($alreadyReferredQuery);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('referral_code')
+      ->with('referral')
       ->willReturn($storage);
 
+    // referred_uid=42 is different from referrer_uid=10, so no self-referral.
     $result = $this->service->processReferral('VALID001', 42);
 
     $this->assertNotNull($result);

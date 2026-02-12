@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_usage_billing\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_usage_billing\Entity\PricingRule;
 use Drupal\jaraba_usage_billing\Service\UsagePricingService;
 use Drupal\Tests\UnitTestCase;
@@ -205,20 +204,26 @@ class UsagePricingServiceTest extends UnitTestCase {
   protected function createPricingRuleMock(string $model, string $unitPrice, ?string $tiersConfig): PricingRule {
     $rule = $this->createMock(PricingRule::class);
 
-    $modelField = $this->createMock(FieldItemListInterface::class);
+    // Use stdClass for field objects so ->value property works reliably
+    // across all PHP versions (FieldItemListInterface mocks may not
+    // support dynamic properties in PHP 8.2+).
+    $modelField = new \stdClass();
     $modelField->value = $model;
 
-    $priceField = $this->createMock(FieldItemListInterface::class);
+    $priceField = new \stdClass();
     $priceField->value = $unitPrice;
 
-    $tiersField = $this->createMock(FieldItemListInterface::class);
+    $tiersField = new \stdClass();
     $tiersField->value = $tiersConfig;
 
-    $rule->method('get')->willReturnMap([
-      ['pricing_model', $modelField],
-      ['unit_price', $priceField],
-      ['tiers_config', $tiersField],
-    ]);
+    $rule->method('get')->willReturnCallback(function (string $fieldName) use ($modelField, $priceField, $tiersField) {
+      return match ($fieldName) {
+        'pricing_model' => $modelField,
+        'unit_price' => $priceField,
+        'tiers_config' => $tiersField,
+        default => new \stdClass(),
+      };
+    });
 
     $decodedTiers = $tiersConfig ? json_decode($tiersConfig, TRUE) : [];
     $rule->method('getDecodedTiers')->willReturn(is_array($decodedTiers) ? $decodedTiers : []);

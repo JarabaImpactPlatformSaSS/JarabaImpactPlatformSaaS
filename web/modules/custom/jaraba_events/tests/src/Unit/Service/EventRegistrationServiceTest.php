@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_events\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_email\Service\SequenceManagerService;
+use Drupal\jaraba_events\Entity\EventRegistration;
+use Drupal\jaraba_events\Entity\MarketingEvent;
 use Drupal\jaraba_events\Service\EventRegistrationService;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -195,7 +196,7 @@ class EventRegistrationServiceTest extends UnitTestCase {
    * @covers ::confirmByToken
    */
   public function testConfirmByTokenConfirmsPendingRegistration(): void {
-    $registration = $this->createMock(ContentEntityInterface::class);
+    $registration = $this->createMock(EventRegistration::class);
 
     $statusField = new \stdClass();
     $statusField->value = 'pending';
@@ -318,11 +319,11 @@ class EventRegistrationServiceTest extends UnitTestCase {
    * @param int $current_attendees
    *   Asistentes actuales.
    *
-   * @return \PHPUnit\Framework\MockObject\MockObject
+   * @return \Drupal\jaraba_events\Entity\MarketingEvent&\PHPUnit\Framework\MockObject\MockObject
    *   Mock de la entidad de evento.
    */
-  protected function createMockEvent(string $status, bool $is_free, int $max_attendees, int $current_attendees): MockObject {
-    $event = $this->createMock(ContentEntityInterface::class);
+  protected function createMockEvent(string $status, bool $is_free, int $max_attendees, int $current_attendees): MarketingEvent&MockObject {
+    $event = $this->createMock(MarketingEvent::class);
 
     $fields = [
       'status_event' => $status,
@@ -366,11 +367,11 @@ class EventRegistrationServiceTest extends UnitTestCase {
    * @param int $rating
    *   Valoracion del asistente.
    *
-   * @return \PHPUnit\Framework\MockObject\MockObject
+   * @return \Drupal\jaraba_events\Entity\EventRegistration&\PHPUnit\Framework\MockObject\MockObject
    *   Mock de la entidad de registro.
    */
-  protected function createMockRegistration(string $status, string $payment_status, float $amount_paid, int $rating): MockObject {
-    $registration = $this->createMock(ContentEntityInterface::class);
+  protected function createMockRegistration(string $status, string $payment_status, float $amount_paid, int $rating): EventRegistration&MockObject {
+    $registration = $this->createMock(EventRegistration::class);
 
     $fields = [
       'registration_status' => $status,

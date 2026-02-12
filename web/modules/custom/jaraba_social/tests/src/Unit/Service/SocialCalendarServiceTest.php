@@ -146,26 +146,8 @@ class SocialCalendarServiceTest extends UnitTestCase {
       ->method('getQuery')
       ->willReturn($query);
 
-    $post = $this->createMockPost(5, 'Post programado', '2026-03-15T10:00:00', 'scheduled');
-
-    // Agregar campo content al mock.
-    $post->method('get')
-      ->willReturnCallback(function (string $field) {
-        $obj = new \stdClass();
-        if ($field === 'scheduled_at') {
-          $obj->value = '2026-03-15T10:00:00';
-        }
-        elseif ($field === 'content') {
-          $obj->value = 'Contenido del post programado';
-        }
-        elseif ($field === 'status') {
-          $obj->value = 'scheduled';
-        }
-        else {
-          $obj->value = NULL;
-        }
-        return $obj;
-      });
+    // Create the mock with content included via createMockPost.
+    $post = $this->createMockPost(5, 'Post programado', '2026-03-15T10:00:00', 'scheduled', 'Contenido del post programado');
 
     $this->postStorage
       ->method('loadMultiple')
@@ -268,11 +250,13 @@ class SocialCalendarServiceTest extends UnitTestCase {
    *   Fecha programada ISO.
    * @param string $status
    *   Estado del post.
+   * @param string $content
+   *   Contenido del post.
    *
    * @return \PHPUnit\Framework\MockObject\MockObject
    *   Mock de la entidad SocialPost.
    */
-  protected function createMockPost(int $id, string $title, string $scheduled_at, string $status): MockObject {
+  protected function createMockPost(int $id, string $title, string $scheduled_at, string $status, string $content = ''): MockObject {
     $post = $this->createMock(ContentEntityInterface::class);
     $post->method('id')->willReturn($id);
     $post->method('label')->willReturn($title);
@@ -280,7 +264,7 @@ class SocialCalendarServiceTest extends UnitTestCase {
     $fields = [
       'scheduled_at' => $scheduled_at,
       'status' => $status,
-      'content' => '',
+      'content' => $content,
     ];
 
     $post->method('get')

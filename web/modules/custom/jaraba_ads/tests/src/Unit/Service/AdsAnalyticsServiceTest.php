@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ads\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_ads\Entity\AdCampaign;
 use Drupal\jaraba_ads\Service\AdsAnalyticsService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -98,17 +98,34 @@ class AdsAnalyticsServiceTest extends UnitTestCase {
     $conversionsField->value = 50;
     $spendField = new \stdClass();
     $spendField->value = 250.00;
+    $budgetTotalField = new \stdClass();
+    $budgetTotalField->value = 1000.00;
     $platformField = new \stdClass();
     $platformField->value = 'meta';
+    $statusField = new \stdClass();
+    $statusField->value = 'active';
+    $ctrField = new \stdClass();
+    $ctrField->value = 5.0;
+    $cpcField = new \stdClass();
+    $cpcField->value = 0.50;
+    $roasField = new \stdClass();
+    $roasField->value = 3.5;
 
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(AdCampaign::class);
     $campaign->method('id')->willReturn(1);
+    $campaign->method('label')->willReturn('Test Campaign');
+    $campaign->method('getBudgetUtilization')->willReturn(25.0);
     $campaign->method('get')->willReturnMap([
       ['impressions', $impressionsField],
       ['clicks', $clicksField],
       ['conversions', $conversionsField],
-      ['spend', $spendField],
+      ['spend_to_date', $spendField],
+      ['budget_total', $budgetTotalField],
       ['platform', $platformField],
+      ['status', $statusField],
+      ['ctr', $ctrField],
+      ['cpc', $cpcField],
+      ['roas', $roasField],
     ]);
 
     $storage = $this->createMock(EntityStorageInterface::class);

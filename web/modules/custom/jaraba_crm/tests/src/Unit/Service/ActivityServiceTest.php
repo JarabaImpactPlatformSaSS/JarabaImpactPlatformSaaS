@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_crm\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_crm\Entity\Activity;
 use Drupal\jaraba_crm\Service\ActivityService;
 use Drupal\Tests\UnitTestCase;
 
@@ -63,7 +63,7 @@ class ActivityServiceTest extends UnitTestCase {
       'tenant_id' => 1,
     ];
 
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Activity::class);
     $entity->expects($this->once())
       ->method('save');
 
@@ -85,7 +85,7 @@ class ActivityServiceTest extends UnitTestCase {
    * Tests load() devuelve la entidad cuando existe.
    */
   public function testLoadReturnsEntityWhenFound(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Activity::class);
 
     $this->storage->expects($this->once())
       ->method('load')
@@ -115,9 +115,9 @@ class ActivityServiceTest extends UnitTestCase {
    * Tests getContactTimeline() devuelve actividades de un contacto.
    */
   public function testGetContactTimelineReturnsActivities(): void {
-    $entity1 = $this->createMock(ContentEntityInterface::class);
-    $entity2 = $this->createMock(ContentEntityInterface::class);
-    $entity3 = $this->createMock(ContentEntityInterface::class);
+    $entity1 = $this->createMock(Activity::class);
+    $entity2 = $this->createMock(Activity::class);
+    $entity3 = $this->createMock(Activity::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();
@@ -150,9 +150,6 @@ class ActivityServiceTest extends UnitTestCase {
 
     $this->storage->method('getQuery')
       ->willReturn($query);
-    $this->storage->method('loadMultiple')
-      ->with([])
-      ->willReturn([]);
 
     $result = $this->service->getContactTimeline(999);
 
@@ -163,7 +160,7 @@ class ActivityServiceTest extends UnitTestCase {
    * Tests logCall() crea una actividad de tipo llamada.
    */
   public function testLogCallCreatesCallActivity(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Activity::class);
     $entity->expects($this->once())
       ->method('save');
 
@@ -174,7 +171,7 @@ class ActivityServiceTest extends UnitTestCase {
           && $v['contact_id'] === 15
           && $v['subject'] === 'Llamada comercial'
           && $v['duration'] === 300
-          && $v['notes'] === 'Cliente interesado';
+          && $v['notes'] === ['value' => 'Cliente interesado', 'format' => 'basic_html'];
       }))
       ->willReturn($entity);
 
@@ -187,7 +184,7 @@ class ActivityServiceTest extends UnitTestCase {
    * Tests logEmail() crea una actividad de tipo email.
    */
   public function testLogEmailCreatesEmailActivity(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Activity::class);
     $entity->expects($this->once())
       ->method('save');
 
