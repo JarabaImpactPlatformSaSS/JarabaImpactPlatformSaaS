@@ -10,20 +10,20 @@
 
 @use 'sass:color';
 
-// Importar parciales
-@import 'marketplace';
-@import 'producer-portal';
-@import 'checkout';
-@import 'customer-portal';
-@import 'reviews';
-@import 'notifications';
-@import 'search';
-@import 'shipping';
-@import 'promotions';
-@import 'traceability';
-@import 'analytics';
-@import 'admin';
-@import 'copilot';
-@import 'sales-chat';
-@import 'qr-dashboard';
-@import 'partner-hub';
+// Parciales del modulo (Dart Sass moderno: @use en lugar de @import).
+@use 'marketplace';
+@use 'producer-portal';
+@use 'checkout';
+@use 'customer-portal';
+@use 'reviews';
+@use 'notifications';
+@use 'search';
+@use 'shipping';
+@use 'promotions';
+@use 'traceability';
+@use 'analytics';
+@use 'admin';
+@use 'copilot';
+@use 'sales-chat';
+@use 'qr-dashboard';
+@use 'partner-hub';

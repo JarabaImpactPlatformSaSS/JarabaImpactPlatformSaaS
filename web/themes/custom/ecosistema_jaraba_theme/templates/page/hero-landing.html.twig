@@ -41,7 +41,7 @@
     {# Subtitle #}
     <p class="hero-landing__subtitle">
       {% if subtitle %}
-        {{ subtitle|striptags|raw }}
+        {{ subtitle }}
       {% else %}
         {% trans %}La plataforma que conecta talento, negocios y productores con inteligencia artificial{% endtrans %}
       {% endif %}

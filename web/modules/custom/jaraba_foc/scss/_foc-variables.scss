@@ -63,8 +63,8 @@ $foc-glass-border: 1px solid rgba(255, 255, 255, 0.1) !default;
 $foc-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3) !default;
 $foc-shadow-card-hover: 0 6px 30px rgba(0, 0, 0, 0.4) !default;
 
-// Extra large border radius para contenedores principales
-$ej-border-radius-xl: 1.5rem !default;
+// Extra large border radius para contenedores principales (namespace FOC).
+$foc-border-radius-xl: 1.5rem !default;
 
 // ---------------------------------------------------------------------------
 // ESPACIADO

@@ -18,46 +18,47 @@
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CONFIGURACIÓN CON FALLBACKS (Paleta Jaraba Oficial)
+// FALLBACKS LOCALES (prefijo $_fb- privado, NO usar $ej-* en satelites)
+// Los tokens oficiales se consumen via var(--ej-*, #{$_fb-*}).
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Colores corporativos con fallbacks
-$ej-color-corporate: #233D63;
-$ej-color-impulse: #FF8C42;
-$ej-color-innovation: #00A9A5;
+// Colores corporativos — fallbacks locales.
+$_fb-color-corporate: #233D63;
+$_fb-color-impulse: #FF8C42;
+$_fb-color-innovation: #00A9A5;
 
-// UI
-$ej-color-success: #10B981;
-$ej-color-warning: #F59E0B;
-$ej-color-danger: #EF4444;
-$ej-color-muted: #64748B;
+// UI.
+$_fb-color-success: #10B981;
+$_fb-color-warning: #F59E0B;
+$_fb-color-danger: #EF4444;
+$_fb-color-muted: #64748B;
 
-// Fondos
-$ej-bg-body: #F8FAFC;
-$ej-bg-surface: #FFFFFF;
-$ej-bg-dark: #1A1A2E;
+// Fondos.
+$_fb-bg-body: #F8FAFC;
+$_fb-bg-surface: #FFFFFF;
+$_fb-bg-dark: #1A1A2E;
 
-// Texto
-$ej-color-headings: #1A1A2E;
-$ej-color-body: #334155;
+// Texto.
+$_fb-color-headings: #1A1A2E;
+$_fb-color-body: #334155;
 
-// Spacing
-$ej-spacing-xs: 0.25rem;
-$ej-spacing-sm: 0.5rem;
-$ej-spacing-md: 1rem;
-$ej-spacing-lg: 1.5rem;
-$ej-spacing-xl: 2rem;
-$ej-spacing-2xl: 3rem;
+// Spacing.
+$_fb-spacing-xs: 0.25rem;
+$_fb-spacing-sm: 0.5rem;
+$_fb-spacing-md: 1rem;
+$_fb-spacing-lg: 1.5rem;
+$_fb-spacing-xl: 2rem;
+$_fb-spacing-2xl: 3rem;
 
-// Bordes
-$ej-border-radius: 12px;
-$ej-btn-radius: 8px;
-$ej-border-color: #E5E7EB;
+// Bordes.
+$_fb-border-radius: 12px;
+$_fb-btn-radius: 8px;
+$_fb-border-color: #E5E7EB;
 
-// Sombras
-$ej-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-$ej-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-$ej-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+// Sombras.
+$_fb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$_fb-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$_fb-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 
 // Layout
 $canvas-sidebar-width: 340px;
@@ -107,9 +108,9 @@ body.canvas-editor-page {
         flex-shrink: 0 !important;
         justify-content: space-between;
         align-items: center;
-        padding: $ej-spacing-sm $ej-spacing-lg;
-        background: var(--ej-bg-surface, #{$ej-bg-surface});
-        border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+        padding: $_fb-spacing-sm $_fb-spacing-lg;
+        background: var(--ej-bg-surface, #{$_fb-bg-surface});
+        border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
         min-height: $canvas-header-height;
     }
 
@@ -122,7 +123,7 @@ body.canvas-editor-page {
         height: auto !important;
         overflow: visible !important;
         align-items: center;
-        gap: $ej-spacing-sm;
+        gap: $_fb-spacing-sm;
     }
 
     // NOTE: El header/footer del tenant NO se oculta
@@ -197,10 +198,10 @@ body.canvas-editor-page {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 80px);
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    border-radius: var(--ej-border-radius, #{$ej-border-radius});
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    border-radius: var(--ej-border-radius, #{$_fb-border-radius});
     overflow: hidden;
-    box-shadow: $ej-shadow-lg;
+    box-shadow: $_fb-shadow-lg;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -211,10 +212,10 @@ body.canvas-editor-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $ej-spacing-sm $ej-spacing-lg;
+    padding: $_fb-spacing-sm $_fb-spacing-lg;
     // Gradiente premium azul corporativo
     background: linear-gradient(135deg,
-        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
+        var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
         #1a2d4a 100%);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     min-height: 40px;
@@ -228,7 +229,7 @@ body.canvas-editor-page {
 .canvas-editor__saas-branding {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 }
 
 .canvas-editor__saas-logo {
@@ -253,12 +254,12 @@ body.canvas-editor-page {
 .canvas-editor__saas-badge {
     display: inline-flex;
     align-items: center;
-    gap: $ej-spacing-xs;
-    padding: $ej-spacing-xs $ej-spacing-sm;
+    gap: $_fb-spacing-xs;
+    padding: $_fb-spacing-xs $_fb-spacing-sm;
     background: rgba(255, 255, 255, 0.15);
     color: rgba(255, 255, 255, 0.9);
     font-size: 0.75rem;
-    border-radius: $ej-btn-radius;
+    border-radius: $_fb-btn-radius;
     backdrop-filter: blur(4px);
 
     svg {
@@ -275,45 +276,45 @@ body.canvas-editor-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $ej-spacing-sm $ej-spacing-lg;
-    background: var(--ej-bg-surface, #{$ej-bg-surface});
-    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    padding: $_fb-spacing-sm $_fb-spacing-lg;
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
+    border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
     min-height: $canvas-header-height;
 }
 
 .canvas-editor__header-left {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 }
 
 .canvas-editor__title {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
     margin: 0;
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--ej-color-headings, #{$ej-color-headings});
+    color: var(--ej-color-headings, #{$_fb-color-headings});
 
     svg {
-        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        color: var(--ej-color-corporate, #{$_fb-color-corporate});
     }
 }
 
 .canvas-editor__count {
     font-size: 0.875rem;
-    color: var(--ej-text-muted, #{$ej-color-muted});
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    padding: $ej-spacing-xs $ej-spacing-sm;
+    color: var(--ej-text-muted, #{$_fb-color-muted});
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    padding: $_fb-spacing-xs $_fb-spacing-sm;
     border-radius: 20px;
 }
 
 .canvas-editor__header-actions {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -323,19 +324,19 @@ body.canvas-editor-page {
 .canvas-editor__toolbar-left {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-md;
+    gap: $_fb-spacing-md;
 }
 
 .canvas-editor__toolbar-center {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-lg;
+    gap: $_fb-spacing-lg;
 }
 
 .canvas-editor__toolbar-right {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -345,18 +346,18 @@ body.canvas-editor-page {
 .canvas-editor__back {
     display: inline-flex;
     align-items: center;
-    gap: $ej-spacing-xs;
-    padding: $ej-spacing-xs $ej-spacing-sm;
+    gap: $_fb-spacing-xs;
+    padding: $_fb-spacing-xs $_fb-spacing-sm;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
     text-decoration: none;
-    border-radius: $ej-btn-radius;
+    border-radius: $_fb-btn-radius;
     transition: all 0.2s ease;
 
     &:hover {
-        color: var(--ej-color-corporate, #{$ej-color-corporate});
-        background: rgba($ej-color-corporate, 0.06);
+        color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        background: rgba($_fb-color-corporate, 0.06);
     }
 
     svg {
@@ -373,7 +374,7 @@ body.canvas-editor-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: $ej-spacing-xs;
+    gap: $_fb-spacing-xs;
     padding: 10px 16px;
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 0.875rem;
@@ -381,7 +382,7 @@ body.canvas-editor-page {
     line-height: 1;
     text-decoration: none;
     border: none;
-    border-radius: $ej-btn-radius;
+    border-radius: $_fb-btn-radius;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
@@ -393,21 +394,21 @@ body.canvas-editor-page {
     }
 
     &:focus-visible {
-        outline: 2px solid var(--ej-color-impulse, #{$ej-color-impulse});
+        outline: 2px solid var(--ej-color-impulse, #{$_fb-color-impulse});
         outline-offset: 2px;
     }
 
     // Secondary Button (Vista previa)
     &--secondary {
-        color: var(--ej-text-body, #{$ej-color-body});
-        background: var(--ej-bg-body, #{$ej-bg-body});
-        border: 1px solid var(--ej-border-color, #{$ej-border-color});
-        box-shadow: $ej-shadow-sm;
+        color: var(--ej-text-body, #{$_fb-color-body});
+        background: var(--ej-bg-body, #{$_fb-bg-body});
+        border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+        box-shadow: $_fb-shadow-sm;
 
         &:hover {
-            background: var(--ej-bg-surface, #{$ej-bg-surface});
-            border-color: color.adjust($ej-border-color, $lightness: -10%);
-            box-shadow: $ej-shadow-md;
+            background: var(--ej-bg-surface, #{$_fb-bg-surface});
+            border-color: color.adjust($_fb-border-color, $lightness: -10%);
+            box-shadow: $_fb-shadow-md;
         }
 
         &:active {
@@ -419,9 +420,9 @@ body.canvas-editor-page {
     &--primary {
         color: #fff;
         background: linear-gradient(135deg,
-            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
-            color.adjust($ej-color-corporate, $lightness: -8%) 100%);
-        box-shadow: 0 2px 8px rgba($ej-color-corporate, 0.25), $ej-shadow-sm;
+            var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
+            color.adjust($_fb-color-corporate, $lightness: -8%) 100%);
+        box-shadow: 0 2px 8px rgba($_fb-color-corporate, 0.25), $_fb-shadow-sm;
 
         svg {
             color: #fff;
@@ -429,9 +430,9 @@ body.canvas-editor-page {
 
         &:hover {
             background: linear-gradient(135deg,
-                color.adjust($ej-color-corporate, $lightness: 5%) 0%,
-                var(--ej-color-corporate, #{$ej-color-corporate}) 100%);
-            box-shadow: 0 4px 12px rgba($ej-color-corporate, 0.35), $ej-shadow-md;
+                color.adjust($_fb-color-corporate, $lightness: 5%) 0%,
+                var(--ej-color-corporate, #{$_fb-color-corporate}) 100%);
+            box-shadow: 0 4px 12px rgba($_fb-color-corporate, 0.35), $_fb-shadow-md;
             transform: translateY(-1px);
         }
 
@@ -444,15 +445,15 @@ body.canvas-editor-page {
     &--success {
         color: #fff;
         background: linear-gradient(135deg,
-            var(--ej-color-impulse, #{$ej-color-impulse}) 0%,
-            color.adjust($ej-color-impulse, $lightness: -10%) 100%);
-        box-shadow: 0 2px 8px rgba($ej-color-impulse, 0.3), $ej-shadow-sm;
+            var(--ej-color-impulse, #{$_fb-color-impulse}) 0%,
+            color.adjust($_fb-color-impulse, $lightness: -10%) 100%);
+        box-shadow: 0 2px 8px rgba($_fb-color-impulse, 0.3), $_fb-shadow-sm;
 
         &:hover {
             background: linear-gradient(135deg,
-                color.adjust($ej-color-impulse, $lightness: 5%) 0%,
-                var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
-            box-shadow: 0 4px 14px rgba($ej-color-impulse, 0.45), $ej-shadow-md;
+                color.adjust($_fb-color-impulse, $lightness: 5%) 0%,
+                var(--ej-color-impulse, #{$_fb-color-impulse}) 100%);
+            box-shadow: 0 4px 14px rgba($_fb-color-impulse, 0.45), $_fb-shadow-md;
             transform: translateY(-1px);
         }
 
@@ -469,15 +470,15 @@ body.canvas-editor-page {
 .canvas-editor__seo-toggle {
     display: inline-flex !important;
     align-items: center;
-    gap: $ej-spacing-xs;
-    padding: $ej-spacing-xs $ej-spacing-sm;
+    gap: $_fb-spacing-xs;
+    padding: $_fb-spacing-xs $_fb-spacing-sm;
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--ej-color-muted, #{$ej-color-muted});
+    color: var(--ej-color-muted, #{$_fb-color-muted});
     background: transparent;
     border: 1px solid transparent;
-    border-radius: $ej-btn-radius;
+    border-radius: $_fb-btn-radius;
     cursor: pointer;
     transition: all 0.2s ease;
 
@@ -492,22 +493,22 @@ body.canvas-editor-page {
         display: inline-block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        color: var(--ej-color-muted, #{$ej-color-muted}) !important;
+        color: var(--ej-color-muted, #{$_fb-color-muted}) !important;
     }
 
     &:hover {
-        color: var(--ej-color-innovation, #{$ej-color-innovation});
-        background: rgba($ej-color-innovation, 0.08);
-        border-color: rgba($ej-color-innovation, 0.2);
+        color: var(--ej-color-innovation, #{$_fb-color-innovation});
+        background: rgba($_fb-color-innovation, 0.08);
+        border-color: rgba($_fb-color-innovation, 0.2);
     }
 
     &.is-active,
     &[aria-pressed="true"] {
         color: #fff;
         background: linear-gradient(135deg,
-            var(--ej-color-innovation, #{$ej-color-innovation}) 0%,
-            color.adjust($ej-color-innovation, $lightness: -10%) 100%);
-        box-shadow: 0 2px 6px rgba($ej-color-innovation, 0.3);
+            var(--ej-color-innovation, #{$_fb-color-innovation}) 0%,
+            color.adjust($_fb-color-innovation, $lightness: -10%) 100%);
+        box-shadow: 0 2px 6px rgba($_fb-color-innovation, 0.3);
 
         svg {
             color: #fff;
@@ -524,9 +525,9 @@ body.canvas-editor-page {
     align-items: center;
     gap: 2px;
     padding: 2px;
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    border-radius: $ej-btn-radius;
-    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    border-radius: $_fb-btn-radius;
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
 }
 
 .canvas-editor__viewport-btn {
@@ -540,7 +541,7 @@ body.canvas-editor-page {
     background: transparent;
     border-radius: 6px;
     cursor: pointer;
-    color: var(--ej-color-muted, #{$ej-color-muted});
+    color: var(--ej-color-muted, #{$_fb-color-muted});
     transition: all 0.2s ease;
 
     svg {
@@ -556,14 +557,14 @@ body.canvas-editor-page {
     }
 
     &:hover:not(.is-active) {
-        color: var(--ej-color-corporate, #{$ej-color-corporate});
-        background: rgba($ej-color-corporate, 0.08);
+        color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        background: rgba($_fb-color-corporate, 0.08);
     }
 
     &.is-active {
         color: #fff !important;
-        background: var(--ej-color-corporate, #{$ej-color-corporate}) !important;
-        box-shadow: 0 2px 4px rgba($ej-color-corporate, 0.3);
+        background: var(--ej-color-corporate, #{$_fb-color-corporate}) !important;
+        box-shadow: 0 2px 4px rgba($_fb-color-corporate, 0.3);
 
         svg {
             color: #fff !important;
@@ -587,9 +588,9 @@ body.canvas-editor-page {
     flex-shrink: 0;
     gap: 4px;
     padding: 4px;
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    border-radius: $ej-btn-radius;
-    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    border-radius: $_fb-btn-radius;
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
 }
 
 .canvas-editor__history-btn {
@@ -604,7 +605,7 @@ body.canvas-editor-page {
     background: transparent;
     border-radius: 6px;
     cursor: pointer;
-    color: var(--ej-color-muted, #{$ej-color-muted});
+    color: var(--ej-color-muted, #{$_fb-color-muted});
     transition: all 0.2s ease;
 
     svg {
@@ -613,8 +614,8 @@ body.canvas-editor-page {
     }
 
     &:hover:not(:disabled) {
-        color: var(--ej-color-corporate, #{$ej-color-corporate});
-        background: rgba($ej-color-corporate, 0.1);
+        color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        background: rgba($_fb-color-corporate, 0.1);
     }
 
     &:active:not(:disabled) {
@@ -627,13 +628,13 @@ body.canvas-editor-page {
         cursor: not-allowed;
 
         svg {
-            color: var(--ej-color-muted, #{$ej-color-muted});
+            color: var(--ej-color-muted, #{$_fb-color-muted});
         }
     }
 
     // Estado activo (cuando hay acciones disponibles)
     &.has-actions {
-        color: var(--ej-color-body, #{$ej-color-body});
+        color: var(--ej-color-body, #{$_fb-color-body});
     }
 }
 
@@ -644,7 +645,7 @@ body.canvas-editor-page {
 .canvas-editor__branding {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 }
 
 .canvas-editor__tenant-logo {
@@ -665,23 +666,23 @@ body.canvas-editor-page {
     height: 24px;
     background: linear-gradient(180deg,
         transparent 0%,
-        var(--ej-border-color, #{$ej-border-color}) 50%,
+        var(--ej-border-color, #{$_fb-border-color}) 50%,
         transparent 100%);
-    margin: 0 $ej-spacing-sm;
+    margin: 0 $_fb-spacing-sm;
 }
 
 .canvas-editor__tenant-name {
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 1.125rem; // 18px - más grande y legible
     font-weight: 700; // Más bold
-    color: var(--ej-color-corporate, #{$ej-color-corporate}); // Azul corporativo oscuro
+    color: var(--ej-color-corporate, #{$_fb-color-corporate}); // Azul corporativo oscuro
     letter-spacing: 0.01em;
-    padding: $ej-spacing-xs $ej-spacing-md;
+    padding: $_fb-spacing-xs $_fb-spacing-md;
     background: linear-gradient(135deg,
-            rgba($ej-color-corporate, 0.08) 0%,
-            rgba($ej-color-impulse, 0.05) 100%);
-    border-radius: $ej-btn-radius;
-    border-left: 3px solid var(--ej-color-impulse, #{$ej-color-impulse});
+            rgba($_fb-color-corporate, 0.08) 0%,
+            rgba($_fb-color-impulse, 0.05) 100%);
+    border-radius: $_fb-btn-radius;
+    border-left: 3px solid var(--ej-color-impulse, #{$_fb-color-impulse});
     white-space: nowrap;
 }
 
@@ -691,39 +692,39 @@ body.canvas-editor-page {
 
 .canvas-editor__mode-toggle {
     display: flex;
-    gap: $ej-spacing-xs;
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    padding: $ej-spacing-xs;
-    border-radius: $ej-btn-radius;
-    margin-right: $ej-spacing-md;
+    gap: $_fb-spacing-xs;
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    padding: $_fb-spacing-xs;
+    border-radius: $_fb-btn-radius;
+    margin-right: $_fb-spacing-md;
 }
 
 .canvas-editor__mode-btn {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-xs;
-    padding: $ej-spacing-sm $ej-spacing-md;
+    gap: $_fb-spacing-xs;
+    padding: $_fb-spacing-sm $_fb-spacing-md;
     border: none;
     background: transparent;
     border-radius: 6px;
     cursor: pointer;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
     text-decoration: none;
     font-size: 0.8125rem;
     font-weight: 500;
     transition: all 0.2s ease;
 
     &:hover {
-        background: var(--ej-border-color, #{$ej-border-color});
-        color: var(--ej-color-body, #{$ej-color-body});
+        background: var(--ej-border-color, #{$_fb-border-color});
+        color: var(--ej-color-body, #{$_fb-color-body});
     }
 
     &.is-active {
         background: linear-gradient(135deg,
-            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
-            color.adjust($ej-color-corporate, $lightness: -8%) 100%);
+            var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
+            color.adjust($_fb-color-corporate, $lightness: -8%) 100%);
         color: white;
-        box-shadow: 0 2px 6px rgba($ej-color-corporate, 0.35);
+        box-shadow: 0 2px 6px rgba($_fb-color-corporate, 0.35);
 
         svg {
             color: #fff;
@@ -758,8 +759,8 @@ body.canvas-editor-page {
 .canvas-editor__sidebar {
     display: flex;
     flex-direction: column;
-    background: var(--ej-bg-surface, #{$ej-bg-surface});
-    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
+    border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
     overflow: hidden;
     max-height: 40vh;
 
@@ -768,7 +769,7 @@ body.canvas-editor-page {
         width: 280px;
         min-width: 280px;
         border-bottom: none;
-        border-right: 1px solid var(--ej-border-color, #{$ej-border-color});
+        border-right: 1px solid var(--ej-border-color, #{$_fb-border-color});
     }
 
     @media (min-width: 1024px) {
@@ -782,28 +783,28 @@ body.canvas-editor-page {
 // ─────────────────────────────────────────────────────────────────────────────
 
 .canvas-editor__partials {
-    padding: $ej-spacing-md;
-    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    padding: $_fb-spacing-md;
+    border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
     background: linear-gradient(180deg,
-        var(--ej-bg-surface, #{$ej-bg-surface}) 0%,
-        var(--ej-bg-body, #{$ej-bg-body}) 100%);
+        var(--ej-bg-surface, #{$_fb-bg-surface}) 0%,
+        var(--ej-bg-body, #{$_fb-bg-body}) 100%);
 }
 
 .canvas-editor__partials-header {
-    margin-bottom: $ej-spacing-md;
+    margin-bottom: $_fb-spacing-md;
 
     h2 {
         margin: 0;
         font-size: 0.75rem;
         font-weight: 600;
-        color: var(--ej-text-muted, #{$ej-color-muted});
+        color: var(--ej-text-muted, #{$_fb-color-muted});
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
 }
 
 .canvas-editor__partial-group {
-    margin-bottom: $ej-spacing-sm;
+    margin-bottom: $_fb-spacing-sm;
 
     &:last-child {
         margin-bottom: 0;
@@ -813,49 +814,49 @@ body.canvas-editor-page {
 .canvas-editor__partial-label {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-xs;
-    margin-bottom: $ej-spacing-xs;
+    gap: $_fb-spacing-xs;
+    margin-bottom: $_fb-spacing-xs;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--ej-color-body, #{$ej-color-body});
+    color: var(--ej-color-body, #{$_fb-color-body});
 
     svg {
-        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        color: var(--ej-color-corporate, #{$_fb-color-corporate});
     }
 }
 
 .canvas-editor__partial-select {
     width: 100%;
-    padding: $ej-spacing-sm $ej-spacing-md;
-    border: 1px solid var(--ej-border-color, #{$ej-border-color});
-    border-radius: $ej-btn-radius;
-    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    padding: $_fb-spacing-sm $_fb-spacing-md;
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    border-radius: $_fb-btn-radius;
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
     font-size: 0.875rem;
     font-family: var(--ej-font-body, "Inter", sans-serif);
-    color: var(--ej-color-body, #{$ej-color-body});
+    color: var(--ej-color-body, #{$_fb-color-body});
     cursor: pointer;
     transition: all 0.2s ease;
     appearance: none;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right $ej-spacing-sm center;
+    background-position: right $_fb-spacing-sm center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
     padding-right: 2.5rem;
 
     &:hover {
-        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
     }
 
     &:focus {
         outline: none;
-        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
-        box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        box-shadow: 0 0 0 3px rgba($_fb-color-corporate, 0.1);
     }
 }
 
 .canvas-editor__sidebar-divider {
     height: 1px;
-    background: var(--ej-border-color, #{$ej-border-color});
+    background: var(--ej-border-color, #{$_fb-border-color});
     margin: 0;
 }
 
@@ -863,15 +864,15 @@ body.canvas-editor-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $ej-spacing-sm $ej-spacing-md;
-    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+    padding: $_fb-spacing-sm $_fb-spacing-md;
+    border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
 }
 
 .canvas-editor__sidebar-title {
     margin: 0;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -880,10 +881,10 @@ body.canvas-editor-page {
 .canvas-editor__blocks {
     flex: 1;
     overflow-y: auto;
-    padding: $ej-spacing-sm;
+    padding: $_fb-spacing-sm;
     display: flex;
     flex-direction: column;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 
     &::-webkit-scrollbar {
         width: 6px;
@@ -894,7 +895,7 @@ body.canvas-editor-page {
     }
 
     &::-webkit-scrollbar-thumb {
-        background: var(--ej-border-color, #{$ej-border-color});
+        background: var(--ej-border-color, #{$_fb-border-color});
         border-radius: 3px;
     }
 }
@@ -903,16 +904,16 @@ body.canvas-editor-page {
 .canvas-editor__block {
     display: flex;
     align-items: center;
-    gap: $ej-spacing-sm;
-    padding: $ej-spacing-sm $ej-spacing-md;
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    border: 1px solid var(--ej-border-color, #{$ej-border-color});
-    border-radius: $ej-btn-radius;
+    gap: $_fb-spacing-sm;
+    padding: $_fb-spacing-sm $_fb-spacing-md;
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    border-radius: $_fb-btn-radius;
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
-        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
         transform: translateX(2px);
 
         .canvas-editor__block-actions {
@@ -921,9 +922,9 @@ body.canvas-editor-page {
     }
 
     &--selected {
-        background: rgba($ej-color-corporate, 0.08);
-        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
-        box-shadow: 0 0 0 2px rgba($ej-color-corporate, 0.2);
+        background: rgba($_fb-color-corporate, 0.08);
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        box-shadow: 0 0 0 2px rgba($_fb-color-corporate, 0.2);
     }
 
     &--hidden {
@@ -936,11 +937,11 @@ body.canvas-editor-page {
 
     &--ghost {
         opacity: 0.4;
-        background: var(--ej-border-color, #{$ej-border-color});
+        background: var(--ej-border-color, #{$_fb-border-color});
     }
 
     &--chosen {
-        box-shadow: $ej-shadow-lg;
+        box-shadow: $_fb-shadow-lg;
         transform: scale(1.02);
     }
 }
@@ -952,7 +953,7 @@ body.canvas-editor-page {
     width: 24px;
     height: 24px;
     cursor: grab;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
 
     &:active {
         cursor: grabbing;
@@ -968,7 +969,7 @@ body.canvas-editor-page {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--ej-color-body, #{$ej-color-body});
+    color: var(--ej-color-body, #{$_fb-color-body});
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -976,7 +977,7 @@ body.canvas-editor-page {
 
 .canvas-editor__block-meta {
     display: flex;
-    gap: $ej-spacing-xs;
+    gap: $_fb-spacing-xs;
     margin-top: 2px;
 }
 
@@ -987,14 +988,14 @@ body.canvas-editor-page {
     font-weight: 500;
 
     &--hidden {
-        background: rgba($ej-color-warning, 0.15);
-        color: $ej-color-warning;
+        background: rgba($_fb-color-warning, 0.15);
+        color: $_fb-color-warning;
     }
 }
 
 .canvas-editor__block-actions {
     display: flex;
-    gap: $ej-spacing-xs;
+    gap: $_fb-spacing-xs;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
@@ -1009,17 +1010,17 @@ body.canvas-editor-page {
     background: transparent;
     border-radius: 6px;
     cursor: pointer;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
     transition: all 0.15s ease;
 
     &:hover {
-        background: var(--ej-border-color, #{$ej-border-color});
-        color: var(--ej-color-body, #{$ej-color-body});
+        background: var(--ej-border-color, #{$_fb-border-color});
+        color: var(--ej-color-body, #{$_fb-color-body});
     }
 
     &--delete:hover {
-        background: rgba($ej-color-danger, 0.1);
-        color: $ej-color-danger;
+        background: rgba($_fb-color-danger, 0.1);
+        color: $_fb-color-danger;
     }
 }
 
@@ -1029,17 +1030,17 @@ body.canvas-editor-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: $ej-spacing-2xl $ej-spacing-lg;
+    padding: $_fb-spacing-2xl $_fb-spacing-lg;
     text-align: center;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
 
     svg {
-        margin-bottom: $ej-spacing-sm;
+        margin-bottom: $_fb-spacing-sm;
         opacity: 0.5;
     }
 
     p {
-        margin: 0 0 $ej-spacing-md;
+        margin: 0 0 $_fb-spacing-md;
         font-size: 0.875rem;
     }
 }
@@ -1053,8 +1054,8 @@ body.canvas-editor-page {
     flex: 1;
     align-items: center;
     justify-content: center;
-    background: var(--ej-bg-body, #{$ej-bg-body});
-    padding: $ej-spacing-md;
+    background: var(--ej-bg-body, #{$_fb-bg-body});
+    padding: $_fb-spacing-md;
     overflow: auto;
     position: relative;
 
@@ -1067,9 +1068,9 @@ body.canvas-editor-page {
     width: 100%;
     height: 100%;
     max-width: 100%;
-    background: var(--ej-bg-surface, #{$ej-bg-surface});
-    border-radius: $ej-btn-radius;
-    box-shadow: $ej-shadow-lg;
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
+    border-radius: $_fb-btn-radius;
+    box-shadow: $_fb-shadow-lg;
     overflow: hidden;
     transition: max-width 0.3s ease, margin 0.3s ease;
 
@@ -1086,8 +1087,8 @@ body.canvas-editor-page {
         max-width: 375px;
         margin: 0 auto;
         border-radius: 24px;
-        box-shadow: $ej-shadow-lg,
-        inset 0 0 0 3px var(--ej-color-headings, #{$ej-color-headings});
+        box-shadow: $_fb-shadow-lg,
+        inset 0 0 0 3px var(--ej-color-headings, #{$_fb-color-headings});
     }
 }
 
@@ -1104,11 +1105,11 @@ body.canvas-editor-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba($ej-bg-body, 0.9);
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    background: rgba($_fb-bg-body, 0.9);
+    color: var(--ej-text-muted, #{$_fb-color-muted});
 
     p {
-        margin: $ej-spacing-sm 0 0;
+        margin: $_fb-spacing-sm 0 0;
         font-size: 0.875rem;
     }
 }
@@ -1122,11 +1123,11 @@ body.canvas-editor-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: $ej-spacing-2xl;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    padding: $_fb-spacing-2xl;
+    color: var(--ej-text-muted, #{$_fb-color-muted});
 
     p {
-        margin: $ej-spacing-sm 0 0;
+        margin: $_fb-spacing-sm 0 0;
         font-size: 0.875rem;
     }
 }
@@ -1134,8 +1135,8 @@ body.canvas-editor-page {
 .canvas-editor__spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid var(--ej-border-color, #{$ej-border-color});
-    border-top-color: var(--ej-color-corporate, #{$ej-color-corporate});
+    border: 3px solid var(--ej-border-color, #{$_fb-border-color});
+    border-top-color: var(--ej-color-corporate, #{$_fb-color-corporate});
     border-radius: 50%;
     animation: canvas-spin 0.8s linear infinite;
 }
@@ -1161,19 +1162,19 @@ body.canvas-editor-page {
 // ═══════════════════════════════════════════════════════════════════════════
 
 .canvas-editor__search {
-    margin-bottom: $ej-spacing-md;
+    margin-bottom: $_fb-spacing-md;
 
     .jaraba-input {
         width: 100%;
-        padding: $ej-spacing-sm $ej-spacing-md;
-        border: 1px solid var(--ej-border-color, #{$ej-border-color});
-        border-radius: $ej-btn-radius;
+        padding: $_fb-spacing-sm $_fb-spacing-md;
+        border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+        border-radius: $_fb-btn-radius;
         font-size: 0.875rem;
 
         &:focus {
             outline: none;
-            border-color: var(--ej-color-corporate, #{$ej-color-corporate});
-            box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+            border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+            box-shadow: 0 0 0 3px rgba($_fb-color-corporate, 0.1);
         }
     }
 }
@@ -1181,7 +1182,7 @@ body.canvas-editor-page {
 .canvas-editor__template-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: $ej-spacing-sm;
+    gap: $_fb-spacing-sm;
 
     @media (min-width: 480px) {
         grid-template-columns: repeat(2, 1fr);
@@ -1192,9 +1193,9 @@ body.canvas-editor-page {
     display: flex;
     flex-direction: column;
     padding: 0;
-    border: 1px solid var(--ej-border-color, #{$ej-border-color});
-    border-radius: $ej-border-radius;
-    background: var(--ej-bg-surface, #{$ej-bg-surface});
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    border-radius: $_fb-border-radius;
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
     cursor: pointer;
     transition: all 0.2s ease;
     overflow: hidden;
@@ -1202,8 +1203,8 @@ body.canvas-editor-page {
     text-align: left;
 
     &:hover {
-        border-color: var(--ej-color-corporate, #{$ej-color-corporate});
-        box-shadow: 0 4px 12px rgba($ej-color-corporate, 0.15);
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        box-shadow: 0 4px 12px rgba($_fb-color-corporate, 0.15);
         transform: translateY(-2px);
     }
 
@@ -1217,35 +1218,35 @@ body.canvas-editor-page {
     width: 100%;
     height: 100px;
     object-fit: cover;
-    background: var(--ej-bg-body, #{$ej-bg-body});
+    background: var(--ej-bg-body, #{$_fb-bg-body});
 }
 
 .canvas-editor__template-info {
-    padding: $ej-spacing-sm $ej-spacing-md;
+    padding: $_fb-spacing-sm $_fb-spacing-md;
 }
 
 .canvas-editor__template-name {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--ej-color-headings, #{$ej-color-headings});
+    color: var(--ej-color-headings, #{$_fb-color-headings});
     margin-bottom: 2px;
 }
 
 .canvas-editor__template-category {
     display: block;
     font-size: 0.75rem;
-    color: var(--ej-text-muted, #{$ej-color-muted});
+    color: var(--ej-text-muted, #{$_fb-color-muted});
 }
 
 .canvas-editor__template-badge {
     position: absolute;
-    top: $ej-spacing-sm;
-    right: $ej-spacing-sm;
+    top: $_fb-spacing-sm;
+    right: $_fb-spacing-sm;
     padding: 3px 8px;
     background: linear-gradient(135deg,
-        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
-        var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
+        var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
+        var(--ej-color-impulse, #{$_fb-color-impulse}) 100%);
     color: white;
     font-size: 0.625rem;
     font-weight: 700;
@@ -1258,21 +1259,21 @@ body.canvas-editor-page {
 // ═══════════════════════════════════════════════════════════════════════════
 
 .canvas-editor__form-group {
-    margin-bottom: $ej-spacing-md;
+    margin-bottom: $_fb-spacing-md;
 
     label {
         display: block;
         font-size: 0.875rem;
         font-weight: 500;
-        color: var(--ej-color-body, #{$ej-color-body});
-        margin-bottom: $ej-spacing-xs;
+        color: var(--ej-color-body, #{$_fb-color-body});
+        margin-bottom: $_fb-spacing-xs;
     }
 
     .jaraba-textarea {
         width: 100%;
-        padding: $ej-spacing-md;
-        border: 1px solid var(--ej-border-color, #{$ej-border-color});
-        border-radius: $ej-btn-radius;
+        padding: $_fb-spacing-md;
+        border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+        border-radius: $_fb-btn-radius;
         font-family: "Monaco", "Menlo", monospace;
         font-size: 0.8125rem;
         line-height: 1.5;
@@ -1280,8 +1281,8 @@ body.canvas-editor-page {
 
         &:focus {
             outline: none;
-            border-color: var(--ej-color-corporate, #{$ej-color-corporate});
-            box-shadow: 0 0 0 3px rgba($ej-color-corporate, 0.1);
+            border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+            box-shadow: 0 0 0 3px rgba($_fb-color-corporate, 0.1);
         }
     }
 }
@@ -1294,10 +1295,10 @@ body.canvas-editor-page {
 body.canvas-editor-page .jaraba-grapesjs-panel__tabs {
     display: flex !important;
     gap: 4px;
-    padding: $ej-spacing-sm;
+    padding: $_fb-spacing-sm;
     background: linear-gradient(135deg,
-        var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
-        color.adjust($ej-color-corporate, $lightness: -10%) 100%) !important;
+        var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
+        color.adjust($_fb-color-corporate, $lightness: -10%) 100%) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1305,7 +1306,7 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: $ej-spacing-sm $ej-spacing-md;
+    padding: $_fb-spacing-sm $_fb-spacing-md;
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 0.8125rem;
     font-weight: 500;
@@ -1524,8 +1525,8 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
         text-transform: uppercase;
         color: #fff;
         background: linear-gradient(135deg,
-            var(--ej-color-corporate, #{$ej-color-corporate}) 0%,
-            var(--ej-color-impulse, #{$ej-color-impulse}) 100%);
+            var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
+            var(--ej-color-impulse, #{$_fb-color-impulse}) 100%);
         border-radius: 3px;
         vertical-align: middle;
     }

@@ -34,7 +34,7 @@
     .foc-main-container {
         background: $foc-bg-card;
         backdrop-filter: $foc-glass-blur;
-        border-radius: $ej-border-radius-xl;
+        border-radius: $foc-border-radius-xl;
         border: $foc-glass-border;
         padding: $foc-spacing-xl;
         box-shadow: $foc-shadow-card;
@@ -435,7 +435,7 @@
 .foc-page-container {
     background: $foc-bg-card;
     backdrop-filter: $foc-glass-blur;
-    border-radius: $ej-border-radius-xl;
+    border-radius: $foc-border-radius-xl;
     border: $foc-glass-border;
     padding: $foc-spacing-xl;
     box-shadow: $foc-shadow-card;
