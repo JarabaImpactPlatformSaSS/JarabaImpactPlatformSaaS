@@ -113,6 +113,24 @@ services:
       - '@entity_type.manager'
       - '@jaraba_ai_agents.producer_copilot_agent'
 
+  # Fase 9: Demand Forecaster (Doc 67 §4.4)
+
+  jaraba_agroconecta.demand_forecaster:
+    class: Drupal\jaraba_agroconecta_core\Service\DemandForecasterService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
+  # Fase 9: Market Intelligence (Doc 67 §4.4)
+
+  jaraba_agroconecta.market_spy:
+    class: Drupal\jaraba_agroconecta_core\Service\MarketSpyService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
   # Fase 10: Sales Agent
 
   jaraba_agroconecta_core.sales_agent:

@@ -10,3 +10,7 @@ use ai agents:
 manage tenant brand voice:
   title: 'Manage Tenant Brand Voice'
   description: 'Configure brand voice settings for tenant AI responses.'
+
+manage prompt experiments:
+  title: 'Manage Prompt Experiments'
+  description: 'Create and manage A/B testing experiments for AI prompts.'

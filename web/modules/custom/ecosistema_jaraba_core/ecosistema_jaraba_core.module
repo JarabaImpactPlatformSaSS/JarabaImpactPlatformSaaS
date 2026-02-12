@@ -768,6 +768,50 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       break;
 
     // =========================================================================
+    // LEAD MAGNET EMAILS (F3 Doc 178)
+    // =========================================================================
+
+    // Email con resultados de la Calculadora de Madurez Digital
+    case 'lead_magnet_calculadora':
+      $message['subject'] = $params['subject'] ?? t('Tu resultado de Madurez Digital');
+      if (!empty($params['body']) && is_array($params['body'])) {
+        foreach ($params['body'] as $line) {
+          $message['body'][] = $line;
+        }
+      }
+      break;
+
+    // Email con Guia "Vende Online sin Intermediarios"
+    case 'lead_magnet_guia':
+      $message['subject'] = $params['subject'] ?? t('Tu Guia para Vender Online');
+      if (!empty($params['body']) && is_array($params['body'])) {
+        foreach ($params['body'] as $line) {
+          $message['body'][] = $line;
+        }
+      }
+      break;
+
+    // Email con resultados de Auditoria SEO Local
+    case 'lead_magnet_auditoria':
+      $message['subject'] = $params['subject'] ?? t('Resultados de tu Auditoria SEO Local');
+      if (!empty($params['body']) && is_array($params['body'])) {
+        foreach ($params['body'] as $line) {
+          $message['body'][] = $line;
+        }
+      }
+      break;
+
+    // Email con Template Propuesta Profesional
+    case 'lead_magnet_propuesta':
+      $message['subject'] = $params['subject'] ?? t('Tu Template de Propuesta Profesional');
+      if (!empty($params['body']) && is_array($params['body'])) {
+        foreach ($params['body'] as $line) {
+          $message['body'][] = $line;
+        }
+      }
+      break;
+
+    // =========================================================================
     // HEALTH ALERTS (Fase 2 Hardening)
     // =========================================================================
     case 'health_alert':

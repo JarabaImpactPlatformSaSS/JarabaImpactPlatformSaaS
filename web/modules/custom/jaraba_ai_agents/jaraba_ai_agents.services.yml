@@ -204,3 +204,32 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_ai_agents'
 
+  # ========================================
+  # F11 — Elevación IA Clase Mundial
+  # ========================================
+
+  # Brand Voice Trainer — Pipeline Qdrant + feedback loop
+  jaraba_ai_agents.brand_voice_trainer:
+    class: Drupal\jaraba_ai_agents\Service\BrandVoiceTrainerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ai.provider'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # Prompt Experiment — A/B testing de prompts
+  jaraba_ai_agents.prompt_experiment:
+    class: Drupal\jaraba_ai_agents\Service\PromptExperimentService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.quality_evaluator'
+      - '@jaraba_ai_agents.observability'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # MultiModal Bridge — Preparacion voz + imagen
+  jaraba_ai_agents.multimodal_bridge:
+    class: Drupal\jaraba_ai_agents\Service\MultiModalBridgeService
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+

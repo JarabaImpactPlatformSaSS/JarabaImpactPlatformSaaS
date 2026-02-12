@@ -6,6 +6,8 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\jaraba_agroconecta_core\Service\DemandForecasterService;
+use Drupal\jaraba_agroconecta_core\Service\MarketSpyService;
 use Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +29,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
 
     public function __construct(
         protected ProducerCopilotService $copilotService,
+        protected DemandForecasterService $demandForecaster,
+        protected MarketSpyService $marketSpy,
     ) {
     }
 
@@ -34,6 +38,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
     {
         return new static(
             $container->get('jaraba_agroconecta.copilot_service'),
+            $container->get('jaraba_agroconecta.demand_forecaster'),
+            $container->get('jaraba_agroconecta.market_spy'),
         );
     }
 
@@ -155,5 +161,65 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             'messages' => $messages,
             'total' => count($messages),
         ]);
+    }
+
+    /**
+     * Predicción de demanda para un producto.
+     */
+    public function forecastDemand(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+        $productId = (int) ($data['product_id'] ?? 0);
+        $daysAhead = (int) ($data['days_ahead'] ?? 30);
+
+        if (!$productId) {
+            return new JsonResponse(['error' => 'product_id es requerido'], 400);
+        }
+
+        $daysAhead = min(max($daysAhead, 7), 90);
+
+        try {
+            $result = $this->demandForecaster->forecast($productId, $daysAhead);
+            return new JsonResponse(['success' => TRUE, 'data' => $result]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Productos tendencia del marketplace.
+     */
+    public function trendingProducts(Request $request): JsonResponse
+    {
+        $limit = min((int) $request->query->get('limit', 10), 50);
+
+        try {
+            $result = $this->marketSpy->getTrendingProducts($limit);
+            return new JsonResponse(['success' => TRUE, 'data' => $result, 'total' => count($result)]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Posición competitiva de un productor.
+     */
+    public function competitivePosition(Request $request): JsonResponse
+    {
+        $producerId = (int) $request->query->get('producer_id', 0);
+
+        if (!$producerId) {
+            return new JsonResponse(['error' => 'producer_id es requerido'], 400);
+        }
+
+        try {
+            $result = $this->marketSpy->getCompetitivePosition($producerId);
+            return new JsonResponse(['success' => TRUE, 'data' => $result]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
     }
 }

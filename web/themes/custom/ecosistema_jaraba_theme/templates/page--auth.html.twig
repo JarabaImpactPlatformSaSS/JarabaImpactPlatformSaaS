@@ -206,7 +206,14 @@
       
       {# Formulario LIMPIO - Solo el form, sin bloques #}
       {{ auth_form }}
-      
+
+      {# Botones de OAuth Social Auth (login y registro) #}
+      {% if auth_form_type in ['login', 'register'] %}
+        {% include '@ecosistema_jaraba_theme/partials/_auth-social-buttons.html.twig' with {
+          auth_type: auth_form_type,
+        } only %}
+      {% endif %}
+
       {# Enlaces secundarios - Traducibles #}
       <div class="auth-links">
         {% if auth_form_type == 'login' %}

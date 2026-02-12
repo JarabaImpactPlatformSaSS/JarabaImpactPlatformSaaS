@@ -907,6 +907,8 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   if (in_array($route, $vertical_routes)) {
     $variables['attributes']['class'][] = 'landing-page';
     $variables['attributes']['class'][] = 'page-vertical-landing';
+    // F12 — Lenis smooth scroll para landing pages verticales.
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
   }
 
   // F4 Doc 180 — Meta SEO tags para landing pages verticales.

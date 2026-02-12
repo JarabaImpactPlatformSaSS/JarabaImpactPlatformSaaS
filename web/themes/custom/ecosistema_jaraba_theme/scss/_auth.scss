@@ -812,3 +812,72 @@
     color: var(--ej-color-primary, $ej-color-primary);
   }
 }
+
+// =============================================================================
+// Social Auth Buttons (OAuth Google / LinkedIn)
+// =============================================================================
+
+.auth-social {
+  margin-block: 1.5rem;
+}
+
+.auth-social__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ej-color-border, #e2e8f0);
+  }
+}
+
+.auth-social__divider-text {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-muted, #94a3b8);
+  white-space: nowrap;
+}
+
+.auth-social__buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.auth-social__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--ej-color-border, #e2e8f0);
+  border-radius: var(--ej-border-radius, 0.5rem);
+  background: var(--ej-color-surface, #fff);
+  color: var(--ej-color-text, #1e293b);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: var(--ej-color-text-muted, #94a3b8);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: var(--ej-color-surface-hover, #f8fafc);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-color-primary, #ff8c42);
+    outline-offset: 2px;
+  }
+}
+
+.auth-social__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}

@@ -619,6 +619,45 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # LEAD MAGNET EMAIL SERVICE (F3 Doc 178)
+  # ===========================================
+
+  # Servicio de envio de emails para lead magnets publicos.
+  # Genera cuerpo HTML personalizado por tipo de lead magnet y envia via MailManager.
+  ecosistema_jaraba_core.lead_magnet_email:
+    class: Drupal\ecosistema_jaraba_core\Service\LeadMagnetEmailService
+    arguments:
+      - '@plugin.manager.mail'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@config.factory'
+
+  # ===========================================
+  # LEAD MAGNET PDF SERVICE (F3 Doc 178)
+  # ===========================================
+
+  # Servicio de generacion de HTML print-ready para descarga como PDF.
+  # Genera documentos profesionales para Guia AgroConecta y Template
+  # Propuesta ServiciosConecta con CSS @media print optimizado.
+  ecosistema_jaraba_core.lead_magnet_pdf:
+    class: Drupal\ecosistema_jaraba_core\Service\LeadMagnetPdfService
+    arguments:
+      - '@renderer'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # SEO AUDIT SERVICE (F3 Doc 178 - ComercioConecta)
+  # ===========================================
+
+  # Servicio de auditoria SEO basica para el lead magnet de ComercioConecta.
+  # Analiza URLs publicas evaluando titulo, meta description, H1, imagenes,
+  # HTTPS, viewport, Open Graph, canonical y Schema.org. Score 0-100.
+  ecosistema_jaraba_core.seo_audit:
+    class: Drupal\ecosistema_jaraba_core\Service\SeoAuditService
+    arguments:
+      - '@http_client'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # GDPR DRUSH COMMANDS
   # ===========================================
 

@@ -1853,6 +1853,50 @@ jaraba_agroconecta.api.copilot.messages:
   requirements:
     _permission: 'use agro copilot'
 
+# API Copilot — Forecast & Market Intelligence
+
+jaraba_agroconecta.api.copilot.forecast_demand:
+  path: '/api/v1/producer/copilot/forecast/demand'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::forecastDemand'
+  methods: [POST]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.trending:
+  path: '/api/v1/producer/copilot/market/trending'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::trendingProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.competitive_position:
+  path: '/api/v1/producer/copilot/market/position'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::competitivePosition'
+  methods: [GET]
+  requirements:
+    _permission: 'use agro copilot'
+
+# Admin CRUD — Contenido Generado IA
+
+entity.copilot_generated_content_agro.collection:
+  path: '/admin/content/agro-generated-content'
+  defaults:
+    _entity_list: 'copilot_generated_content_agro'
+    _title: 'Contenido Generado IA'
+  requirements:
+    _permission: 'manage agro copilot'
+
+entity.copilot_generated_content_agro.canonical:
+  path: '/admin/content/agro-generated-content/{copilot_generated_content_agro}'
+  defaults:
+    _entity_view: 'copilot_generated_content_agro'
+    _title: 'Contenido Generado'
+  requirements:
+    _permission: 'use agro copilot'
+
 # ============================================
 # SALES AGENT (Sprint AC5-17/18)
 # ============================================
