@@ -1,0 +1,14 @@
+uuid: 590dae91-3130-4661-b6f9-9cee401a6446
+langcode: es
+status: true
+dependencies:
+  config:
+    - group.type.tenant
+id: tenant-member
+label: Miembro
+weight: 103
+admin: false
+scope: individual
+global_role: null
+group_type: tenant
+permissions: {  }

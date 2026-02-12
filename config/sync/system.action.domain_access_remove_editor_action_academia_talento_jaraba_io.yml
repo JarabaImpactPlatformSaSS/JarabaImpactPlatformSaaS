@@ -1,0 +1,15 @@
+uuid: 9e0213c9-799c-4aad-97e3-86fc0f3040d5
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.academia_talento_jaraba_io
+  module:
+    - domain_access
+id: domain_access_remove_editor_action_academia_talento_jaraba_io
+label: 'Quitar editores del dominio Academia Talento Digital'
+type: user
+plugin: domain_access_remove_editor_action
+configuration:
+  domain_id:
+    - academia_talento_jaraba_io

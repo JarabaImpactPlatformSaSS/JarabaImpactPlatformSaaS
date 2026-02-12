@@ -1,0 +1,15 @@
+uuid: c0a24620-2ec5-4db4-82cf-0ad814613dfc
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_remove_editor_action_jaraba_saas_lndo_site
+label: 'Remove editors from the Plataforma Principal domain'
+type: user
+plugin: domain_access_remove_editor_action
+configuration:
+  domain_id:
+    - jaraba_saas_lndo_site

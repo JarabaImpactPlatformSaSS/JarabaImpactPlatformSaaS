@@ -1,0 +1,86 @@
+uuid: c923c2ad-4bcc-4c85-b282-7c6caeaf70fe
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_lms
+id: recommended_courses
+label: 'Cursos Recomendados'
+description: 'Muestra cursos seleccionados del catálogo LMS con estilo premium.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/recommended-courses.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título de la sección'
+      default: 'Cursos que te pueden interesar'
+    subtitle:
+      type: string
+      title: Subtítulo
+    course_ids:
+      type: array
+      title: 'Cursos del catálogo'
+      description: 'Selecciona los cursos a mostrar (máx. 6)'
+      items:
+        type: integer
+        format: entity_reference
+        entity_type: lms_course
+    layout:
+      type: string
+      title: Diseño
+      enum:
+        - carousel
+        - grid
+      default: carousel
+    columns:
+      type: integer
+      title: 'Columnas (solo grid)'
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    show_price:
+      type: boolean
+      title: 'Mostrar precio'
+      default: true
+    show_duration:
+      type: boolean
+      title: 'Mostrar duración'
+      default: true
+    show_rating:
+      type: boolean
+      title: 'Mostrar valoración'
+      default: true
+    show_instructor:
+      type: boolean
+      title: 'Mostrar instructor'
+      default: true
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+        - gradient
+      default: light
+  required:
+    - course_ids
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/recommended-courses.png
+preview_data:
+  title: 'Courses You Might Like'
+  subtitle: 'Personalized recommendations based on your interests'
+  layout: carousel
+  columns: 3
+  show_price: true
+  show_duration: true
+  show_rating: true
+  show_instructor: true
+  background: light
+weight: 0

@@ -1,0 +1,89 @@
+uuid: a7b94679-3f65-45ba-860b-a242bb1cb955
+langcode: es
+status: true
+dependencies: {  }
+id: testimonials_3d
+label: 'Testimonios 3D Carousel'
+description: 'Carrusel de testimonios con efecto de profundidad 3D.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/testimonials-3d.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      default: 'Lo que dicen nuestros clientes'
+    testimonials:
+      type: array
+      title: Testimonios
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+          author:
+            type: string
+          role:
+            type: string
+          company:
+            type: string
+          avatar:
+            type: string
+            format: image
+          rating:
+            type: integer
+            minimum: 1
+            maximum: 5
+    autoplay:
+      type: boolean
+      default: true
+    autoplay_speed:
+      type: number
+      default: 5000
+    effect:
+      type: string
+      enum:
+        - coverflow
+        - cards
+        - flip
+      default: coverflow
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: light
+  required:
+    - testimonials
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  title: 'What Our Clients Say'
+  testimonials:
+    -
+      quote: "This platform revolutionized how we work. We've seen a 300% increase in productivity."
+      author: 'Sarah Johnson'
+      role: CEO
+      company: TechVentures
+      rating: 5
+    -
+      quote: "The best investment we've made for our team. Customer support is exceptional."
+      author: 'Michael Chen'
+      role: CTO
+      company: InnovateCo
+      rating: 5
+    -
+      quote: 'Finally, a tool that actually delivers on its promises. Highly recommended!'
+      author: 'Emily Rodriguez'
+      role: 'VP of Operations'
+      company: GrowthFirst
+      rating: 5
+  autoplay: true
+  autoplay_speed: 5000
+  effect: coverflow
+  background: gradient
+weight: 0

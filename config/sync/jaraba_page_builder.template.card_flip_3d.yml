@@ -1,0 +1,90 @@
+uuid: 7c96c1cb-8803-4733-a2bc-8932f7965be4
+langcode: es
+status: true
+dependencies: {  }
+id: card_flip_3d
+label: 'Tarjetas 3D Flip'
+description: 'Tarjetas con efecto de volteo 3D al hover.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/card-flip-3d.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    cards:
+      type: array
+      title: Tarjetas
+      items:
+        type: object
+        properties:
+          front_image:
+            type: string
+            format: image
+          front_title:
+            type: string
+          back_title:
+            type: string
+          back_description:
+            type: string
+          back_cta_text:
+            type: string
+          back_cta_url:
+            type: string
+    columns:
+      type: integer
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    flip_direction:
+      type: string
+      enum:
+        - horizontal
+        - vertical
+      default: horizontal
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - cards
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  title: 'Our Services'
+  subtitle: 'Hover to flip and learn more'
+  cards:
+    -
+      front_image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&q=80'
+      front_title: Strategy
+      back_title: 'Business Strategy'
+      back_description: 'Transform your vision into actionable plans with our expert consulting'
+      back_cta_text: 'Learn More'
+      back_cta_url: '#'
+    -
+      front_image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80'
+      front_title: Development
+      back_title: 'Custom Development'
+      back_description: 'Build scalable solutions tailored to your unique requirements'
+      back_cta_text: 'View Projects'
+      back_cta_url: '#'
+    -
+      front_image: 'https://images.unsplash.com/photo-1553484771-047a44eee27b?w=600&q=80'
+      front_title: Design
+      back_title: 'UX/UI Design'
+      back_description: 'Create stunning interfaces that users love to interact with'
+      back_cta_text: 'See Portfolio'
+      back_cta_url: '#'
+  columns: 3
+  flip_direction: horizontal
+  background: light
+weight: 0

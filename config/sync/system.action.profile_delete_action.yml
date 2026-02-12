@@ -1,0 +1,16 @@
+uuid: 5ab977cf-90b7-4cfb-8d60-9ade757665c2
+langcode: es
+status: true
+dependencies:
+  module:
+    - profile
+  enforced:
+    module:
+      - profile
+_core:
+  default_config_hash: eoobeznDDPWSXzEXh6a3AT21rMluXtseCPjsguEgHKs
+id: profile_delete_action
+label: 'Eliminar perfil seleccionado'
+type: profile
+plugin: 'entity:delete_action:profile'
+configuration: {  }

@@ -1,0 +1,20 @@
+uuid: 5a9d4b8c-b89e-4249-9106-a388c36ae97b
+langcode: es
+status: true
+dependencies: {  }
+id: agro_organic
+label: 'Natural & Ecológico'
+description: 'Para granjas ecológicas, cestas km0, huertos urbanos, productos bio certificados. Naturaleza, sostenibilidad, salud.'
+vertical: agroconecta
+sector: organic
+mood: '["natural", "sustainable", "healthy", "eco"]'
+target_audience: 'Granjas ecológicas, cestas km0, huertos urbanos, productos bio certificados'
+color_tokens: '{"primary":"#2D5016","secondary":"#8B4513","accent":"#F4A460","surface":"#F5F5DC","surface-dark":"#1A2E0A","text-primary":"#2D3B1A","text-secondary":"#5C6B4A","text-muted":"#8A9B78","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Bitter, serif","family-body":"Source Sans Pro, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"8px","shadow-md":"0 4px 16px rgba(45,80,22,0.08)","shadow-lg":"0 8px 32px rgba(45,80,22,0.12)"}'
+effect_tokens: '{"glass-bg":"rgba(245,245,220,0.85)","glass-blur":"blur(12px)","glass-border":"1px solid rgba(45,80,22,0.10)","gradient-primary":"linear-gradient(135deg, #2D5016, #8B4513)"}'
+component_variants: '{"header":"sticky","hero":"centered","cards":"product-friendly","footer":"simple"}'
+animation_config: '{"type":"organic","speed":"600ms","reveal":"fade-up"}'
+content_guidelines: '{"photography":"Luz natural abundante, fondos de naturaleza, productos con tierra/hojas","copywriting":"Tono cercano, vocabulario de sostenibilidad (km0, temporada, orgánico)","iconography":"Orgánico, líneas suaves, naturaleza"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;700&family=Source+Sans+Pro:wght@400;600&display=swap"]'
+weight: 1

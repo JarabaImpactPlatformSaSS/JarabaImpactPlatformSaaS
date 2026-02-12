@@ -1,0 +1,59 @@
+uuid: c6164ee0-1443-401b-8cb8-9d049fc25420
+langcode: es
+status: true
+dependencies:
+  config:
+    - filter.format.basic_html
+  module:
+    - comment
+    - commerce_checkout
+    - commerce_order
+    - commerce_payment
+    - commerce_product
+    - file
+    - filter
+    - jaraba_candidate
+    - jaraba_job_board
+    - jaraba_lms
+    - jaraba_self_discovery
+    - media
+    - shortcut
+    - system
+_core:
+  default_config_hash: hcfESiA8tr3D1muRk2KF7tbcun16ZJlG1R5SzKGed6g
+id: authenticated
+label: 'Usuario autenticado'
+weight: 1
+is_admin: false
+permissions:
+  - 'access checkout'
+  - 'access comments'
+  - 'access content'
+  - 'access jobseeker dashboard'
+  - 'access self discovery tools'
+  - 'access shortcuts'
+  - 'apply to jobs'
+  - 'build own cv'
+  - 'create job alerts'
+  - 'delete own files'
+  - 'edit own profile'
+  - 'enroll in free courses'
+  - 'manage own commerce_payment_method'
+  - 'manage own experience'
+  - 'manage own skills'
+  - 'post comments'
+  - 'save jobs'
+  - 'skip comment approval'
+  - 'track own progress'
+  - 'use text format basic_html'
+  - 'view commerce_product'
+  - 'view learning paths'
+  - 'view media'
+  - 'view own applications'
+  - 'view own certificates'
+  - 'view own commerce_order'
+  - 'view own enrollments'
+  - 'view own profile'
+  - 'view own self discovery results'
+  - 'view published courses'
+  - 'view published jobs'

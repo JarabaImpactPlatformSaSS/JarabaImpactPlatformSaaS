@@ -1,0 +1,20 @@
+uuid: d3a00a08-ab58-4454-b20b-806415f4c338
+langcode: es
+status: true
+dependencies: {  }
+id: comercio_gastro
+label: 'Foodie & Gourmet'
+description: 'Para delicatessen, panaderías artesanas, cafés especiales, tiendas gourmet. Sabor, artesanía, experiencia sensorial.'
+vertical: comercioconecta
+sector: gastro
+mood: '["artisan", "sensorial", "warm", "foodie"]'
+target_audience: 'Delicatessen, panaderías artesanas, cafés especiales, tiendas gourmet'
+color_tokens: '{"primary":"#78350F","secondary":"#C2410C","accent":"#FCD34D","surface":"#FFFBEB","surface-dark":"#1C1008","text-primary":"#451A03","text-secondary":"#78350F","text-muted":"#A16207","text-inverse":"#FFFBEB"}'
+typography_tokens: '{"family-heading":"DM Serif Display, serif","family-body":"DM Sans, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"10px","shadow-md":"0 4px 16px rgba(120,53,15,0.08)","shadow-lg":"0 8px 32px rgba(120,53,15,0.12)"}'
+effect_tokens: '{"glass-bg":"rgba(255,251,235,0.90)","glass-blur":"blur(12px)","glass-border":"1px solid rgba(194,65,12,0.10)","gradient-primary":"linear-gradient(135deg, #78350F, #C2410C)"}'
+component_variants: '{"header":"sticky","hero":"split","cards":"product-detailed","footer":"warm"}'
+animation_config: '{"type":"organic","speed":"500ms","reveal":"fade-up"}'
+content_guidelines: '{"photography":"Close-ups de textura, masa madre, vapor, granos de café, iluminación cálida","copywriting":"Tono sensorial, vocabulario gastronómico (aroma, textura, crujiente, artesano)","iconography":"Cálido, orgánico, detallado"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap"]'
+weight: 12

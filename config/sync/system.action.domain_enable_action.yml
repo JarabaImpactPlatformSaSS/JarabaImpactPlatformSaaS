@@ -1,0 +1,13 @@
+uuid: 103f3735-0bb9-4f38-b105-cf6b85590549
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain
+_core:
+  default_config_hash: dHl27Ind2610Z4RQ5fCivdUGZ9NP8mQu3_TbNXTZmiY
+id: domain_enable_action
+label: 'Habilitar registro de dominio'
+type: domain
+plugin: domain_enable_action
+configuration: {  }

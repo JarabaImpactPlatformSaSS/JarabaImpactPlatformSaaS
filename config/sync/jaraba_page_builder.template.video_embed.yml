@@ -1,0 +1,69 @@
+uuid: 0a367aee-f87a-4cc1-83c0-a0ebef67054d
+langcode: es
+status: true
+dependencies: {  }
+id: video_embed
+label: 'Video Embebido'
+description: 'Sección con video de YouTube/Vimeo con poster y descripción.'
+category: media
+twig_template: '@jaraba_page_builder/blocks/media/video-embed.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+    description:
+      type: string
+      title: Descripción
+    video_url:
+      type: string
+      title: 'URL del video'
+    poster_image:
+      type: string
+      title: 'Imagen de poster'
+      format: image
+    aspect_ratio:
+      type: string
+      title: Ratio
+      enum:
+        - '16:9'
+        - '4:3'
+        - '1:1'
+      default: '16:9'
+    autoplay:
+      type: boolean
+      title: Autoplay
+      default: false
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - full
+        - centered
+        - split
+      default: centered
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - video_url
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'See Our Platform in Action'
+  description: 'Watch how our tools can transform your workflow in just 2 minutes.'
+  video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  poster_image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'
+  aspect_ratio: '16:9'
+  autoplay: false
+  layout: centered
+  background: light
+weight: 0

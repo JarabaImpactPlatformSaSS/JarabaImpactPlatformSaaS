@@ -1,0 +1,25 @@
+uuid: 7c61b9e0-dd84-48f8-a738-f56b1f5488e3
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_candidate
+    - system
+  theme:
+    - olivero
+id: olivero_dashboarddecarreracandidato
+theme: olivero
+region: content
+weight: 0
+provider: null
+plugin: career_dashboard
+settings:
+  id: career_dashboard
+  label: 'Dashboard de Carrera Candidato'
+  label_display: visible
+  provider: jaraba_candidate
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/user\r\n/user/*"

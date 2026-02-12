@@ -1,0 +1,20 @@
+uuid: aa325d3d-06e3-456e-9ba1-461f6060968a
+langcode: es
+status: true
+dependencies: {  }
+id: servicios_legal
+label: 'Legal & Jurídico'
+description: 'Para abogados, notarías, gestorías, asesorías fiscales. Confianza, seriedad, competencia, tradición profesional.'
+vertical: serviciosconecta
+sector: legal
+mood: '["professional", "serious", "trustworthy", "traditional"]'
+target_audience: 'Abogados, notarías, gestorías, asesorías fiscales'
+color_tokens: '{"primary":"#1E3A5F","secondary":"#8B7355","accent":"#B8860B","surface":"#F8F9FA","surface-dark":"#0F1B2D","text-primary":"#1E293B","text-secondary":"#475569","text-muted":"#94A3B8","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Libre Baskerville, serif","family-body":"Source Sans Pro, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"4px","shadow-md":"0 4px 16px rgba(30,58,95,0.06)","shadow-lg":"0 8px 32px rgba(30,58,95,0.10)"}'
+effect_tokens: '{"glass-bg":"rgba(248,249,250,0.92)","glass-blur":"blur(10px)","glass-border":"1px solid rgba(30,58,95,0.08)","gradient-primary":"linear-gradient(135deg, #1E3A5F, #8B7355)"}'
+component_variants: '{"header":"classic","hero":"split","cards":"profile-formal","footer":"corporate"}'
+animation_config: '{"type":"elegant","speed":"600ms","reveal":"fade-in"}'
+content_guidelines: '{"photography":"Retratos profesionales, despacho con libros, iluminación sobria pero cálida","copywriting":"Tono formal pero accesible, vocabulario jurídico preciso (asesoramiento, derecho, garantía)","iconography":"Lineal, formal, escala balanceada"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap"]'
+weight: 20

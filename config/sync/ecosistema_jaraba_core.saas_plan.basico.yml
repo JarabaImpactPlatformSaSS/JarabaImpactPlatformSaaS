@@ -1,0 +1,12 @@
+langcode: es
+status: true
+name: Básico
+price_monthly: '29.00'
+price_yearly: '290.00'
+features:
+  - trazabilidad_basica
+  - soporte_email
+  - analiticas_basicas
+limits: '{"productores": 10, "storage_gb": 5, "ai_queries": 0, "webhooks": 0}'
+stripe_price_id: ''
+weight: 0

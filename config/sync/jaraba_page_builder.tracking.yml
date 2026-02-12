@@ -1,0 +1,11 @@
+enable_tracking: true
+track_page_views: true
+track_cta_clicks: true
+track_scroll_depth: true
+track_time_on_page: true
+enable_heatmaps: false
+heatmap_sample_rate: 100
+heatmap_retention_days: 30
+respect_dnt: true
+anonymize_ip: true
+cookie_consent_required: false

@@ -1,0 +1,24 @@
+uuid: ccaa7e99-f560-4e37-b819-4d9179da9005
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.group_relationship.tenant-group_membership.group_roles
+    - group.relationship_type.tenant-group_membership
+id: group_relationship.tenant-group_membership.default
+targetEntityType: group_relationship
+bundle: tenant-group_membership
+mode: default
+content:
+  group_roles:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: -4
+    region: content
+hidden:
+  entity_id: true
+  langcode: true
+  uid: true

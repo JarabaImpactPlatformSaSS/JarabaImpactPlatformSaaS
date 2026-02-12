@@ -1,0 +1,11 @@
+uuid: 6ddab328-f29a-493e-884f-7f522a720ca4
+langcode: es
+status: true
+dependencies: {  }
+id: jaraba_saas_lndo_site
+domain_id: 15522322
+hostname: jaraba-saas.lndo.site
+name: 'Plataforma Principal'
+scheme: https
+weight: 1
+is_default: true

@@ -1,0 +1,11 @@
+uuid: d85dfcd0-6b9f-45d5-bbfe-e1d6873367ac
+langcode: es
+status: true
+dependencies: {  }
+id: tenant
+label: Tenant
+description: 'Grupo que representa un inquilino/organización de la plataforma SaaS'
+new_revision: true
+creator_membership: true
+creator_wizard: true
+creator_roles: {  }

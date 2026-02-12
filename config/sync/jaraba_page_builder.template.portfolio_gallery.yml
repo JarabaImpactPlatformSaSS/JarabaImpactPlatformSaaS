@@ -1,0 +1,127 @@
+uuid: b13488d0-6481-4e07-ba6c-72a0ac1499c5
+langcode: es
+status: true
+dependencies: {  }
+id: portfolio_gallery
+label: 'Galería de Portfolio'
+description: 'Muestra trabajos o proyectos con filtros por categoría y vista detalle.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/portfolio-gallery.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+      default: 'Nuestro Portfolio'
+    subtitle:
+      type: string
+      title: Subtítulo
+    show_filters:
+      type: boolean
+      title: 'Mostrar filtros'
+      default: true
+    projects:
+      type: array
+      title: Proyectos
+      items:
+        type: object
+        properties:
+          image:
+            type: string
+            title: Imagen
+            format: image
+          title:
+            type: string
+            title: Título
+          category:
+            type: string
+            title: Categoría
+          client:
+            type: string
+            title: Cliente
+          description:
+            type: string
+            title: 'Descripción breve'
+          url:
+            type: string
+            title: 'URL detalle'
+          tags:
+            type: array
+            title: Tags
+            items:
+              type: string
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - grid
+        - masonry
+      default: grid
+    show_overlay:
+      type: boolean
+      title: 'Mostrar overlay con info'
+      default: true
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - projects
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'OUR WORK'
+  title: 'Featured Projects'
+  subtitle: 'Browse our recent work and success stories'
+  show_filters: true
+  projects:
+    -
+      image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&q=80'
+      title: 'E-commerce Redesign'
+      category: 'Web Design'
+      client: 'TechCorp Inc.'
+      description: 'Complete e-commerce platform overhaul with 40% conversion increase'
+      tags:
+        - 'UX Design'
+        - Development
+    -
+      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&q=80'
+      title: 'Brand Identity'
+      category: Branding
+      client: StartupX
+      description: 'Full brand identity system from logo to guidelines'
+      tags:
+        - Branding
+        - 'Logo Design'
+    -
+      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80'
+      title: 'Mobile Banking App'
+      category: Mobile
+      client: FinanceFirst
+      description: 'Award-winning mobile banking experience'
+      tags:
+        - Mobile
+        - UI/UX
+  columns: 3
+  layout: grid
+  show_overlay: true
+  background: light
+weight: 0

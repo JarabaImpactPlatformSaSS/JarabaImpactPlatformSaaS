@@ -1,0 +1,15 @@
+uuid: c0496e35-da26-4c51-bdc1-de9f0107d265
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: yaHZPVGZtW3BUvzzdMgc4ed5l4GCiFjcgYlLZmupcqA
+id: default_hreflang
+label: 'Hreflang predeterminado'
+description: 'El tipo de mapa de sitio hreflang predeterminado. La mayoría de los motores de búsqueda modernos entienden un mapa de sitio de este tipo.'
+sitemap_generator: default
+url_generators:
+  - custom
+  - entity
+  - entity_menu_link_content
+  - arbitrary

@@ -1,0 +1,13 @@
+uuid: fc746008-1f9e-485e-8f0a-08cd2014fad7
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain
+_core:
+  default_config_hash: '-lXBfSljb21UO_YyDLm2I4Lg8Wo0o2nc70TGC1fMiMk'
+id: domain_delete_action
+label: 'Eliminar registro de dominio'
+type: domain
+plugin: domain_delete_action
+configuration: {  }

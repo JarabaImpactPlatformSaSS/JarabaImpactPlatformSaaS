@@ -1,0 +1,163 @@
+uuid: b5895769-be3b-4d5f-930f-92a2c7bd3db5
+langcode: es
+status: true
+dependencies: {  }
+id: services_grid
+label: 'Grid de Servicios'
+description: 'Muestra servicios con iconos, descripciones y enlaces opcionales.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/features/services-grid.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+      default: 'Nuestros Servicios'
+    subtitle:
+      type: string
+      title: Subtítulo
+    services:
+      type: array
+      title: Servicios
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            title: Icono
+          icon_color:
+            type: string
+            title: 'Color del icono'
+            enum:
+              - azul-corporativo
+              - naranja-impulso
+              - verde-innovacion
+            default: azul-corporativo
+          title:
+            type: string
+            title: Título
+          description:
+            type: string
+            title: Descripción
+          features:
+            type: array
+            title: Características
+            items:
+              type: string
+          cta_text:
+            type: string
+            title: 'Texto del enlace'
+          cta_url:
+            type: string
+            title: 'URL del enlace'
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    card_style:
+      type: string
+      title: Estilo
+      enum:
+        - minimal
+        - bordered
+        - elevated
+      default: elevated
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - title
+    - services
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'WHAT WE DO'
+  title: 'OUR SERVICES'
+  subtitle: 'Create modern corporate or portfolio layout with a grid style'
+  services:
+    -
+      icon: star
+      icon_color: naranja-impulso
+      title: 'Digital Strategy'
+      description: 'Comprehensive digital transformation planning and execution.'
+      features:
+        - 'Market Analysis'
+        - 'Roadmap Planning'
+        - 'KPI Definition'
+      cta_text: 'Learn More'
+      cta_url: '#'
+    -
+      icon: cog
+      icon_color: azul-corporativo
+      title: 'Software Development'
+      description: 'Custom solutions tailored to your unique business needs.'
+      features:
+        - 'Agile Development'
+        - 'Quality Assurance'
+        - 'Continuous Integration'
+      cta_text: 'Learn More'
+      cta_url: '#'
+    -
+      icon: layout-grid
+      icon_color: verde-innovacion
+      title: 'Cloud Solutions'
+      description: 'Scalable infrastructure for modern applications.'
+      features:
+        - 'AWS & Azure'
+        - DevOps
+        - Auto-scaling
+      cta_text: 'Learn More'
+      cta_url: '#'
+    -
+      icon: bolt
+      icon_color: naranja-impulso
+      title: Consulting
+      description: 'Expert guidance for your technology decisions.'
+      features:
+        - 'Technical Audits'
+        - 'Architecture Review'
+        - 'Best Practices'
+      cta_text: 'Learn More'
+      cta_url: '#'
+    -
+      icon: info
+      icon_color: azul-corporativo
+      title: 'Data Analytics'
+      description: 'Transform data into actionable business insights.'
+      features:
+        - 'BI Dashboards'
+        - 'Predictive Analytics'
+        - 'Data Visualization'
+      cta_text: 'Learn More'
+      cta_url: '#'
+    -
+      icon: leaf
+      icon_color: verde-innovacion
+      title: Cybersecurity
+      description: 'Protect your digital assets from threats.'
+      features:
+        - 'Penetration Testing'
+        - 'Security Audits'
+        - Compliance
+      cta_text: 'Learn More'
+      cta_url: '#'
+  columns: 3
+  card_style: elevated
+  background: light
+weight: 0

@@ -1,0 +1,10 @@
+uuid: ce695fbc-beef-49fe-9bec-09aa5f961fea
+langcode: es
+status: true
+dependencies: {  }
+id: feature_de_prueba
+label: 'Feature de Prueba'
+description: ''
+category: general
+icon: ''
+weight: 0

@@ -1,0 +1,11 @@
+uuid: ef56f156-478c-4a56-b4cf-e75d85d8c9bd
+langcode: es
+status: true
+dependencies: {  }
+id: aceitesdelsur_jaraba_saas_lndo_site
+domain_id: 10632833
+hostname: aceitesdelsur.jaraba-saas.lndo.site
+name: 'Cooperativa Aceites del Sur'
+scheme: https
+weight: 2
+is_default: false

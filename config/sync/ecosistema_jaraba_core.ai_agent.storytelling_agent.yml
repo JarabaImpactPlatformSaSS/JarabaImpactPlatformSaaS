@@ -1,0 +1,15 @@
+uuid: d9b453f5-dd32-46dc-a48a-f1b50a2ec45f
+langcode: es
+status: true
+dependencies: {  }
+id: storytelling_agent
+label: 'Storytelling Agent'
+description: 'Creación de narrativas para productos, productores y contenido de marca.'
+service_id: ecosistema_jaraba_core.storytelling_agent
+icon: book-open
+color: '#9c27b0'
+weight: 2
+autonomy_level: 1
+requires_approval: true
+max_daily_auto_actions: 10
+allowed_actions: ''

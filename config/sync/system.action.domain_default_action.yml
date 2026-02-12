@@ -1,0 +1,13 @@
+uuid: 8faaffdd-00c8-44c9-997c-8fd0b7233d6e
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain
+_core:
+  default_config_hash: U77VcyTo3hScOYROyvcFDVkljoviYgj0XG_yZlxUQ8U
+id: domain_default_action
+label: 'Establecer registro de dominio predeterminado'
+type: domain
+plugin: domain_default_action
+configuration: {  }

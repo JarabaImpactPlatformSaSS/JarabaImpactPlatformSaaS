@@ -1,0 +1,3 @@
+upsell_delay_days: 7
+certification_expiry_months: 12
+default_royalty_percent: 10

@@ -1,0 +1,22 @@
+uuid: 64392712-b606-4293-b038-32698481d105
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_domain_all_affiliates
+  module:
+    - user
+id: user.user.field_domain_all_affiliates
+field_name: field_domain_all_affiliates
+entity_type: user
+bundle: user
+label: 'Editor for all affiliates'
+description: 'Make this user an editor on all domains.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: Abierto(a)
+  off_label: Cerrado(a)
+field_type: boolean

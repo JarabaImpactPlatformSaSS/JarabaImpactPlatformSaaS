@@ -1,0 +1,15 @@
+uuid: d83e2ccf-2d92-4535-b0bd-540ffa7ff525
+langcode: es
+status: true
+dependencies: {  }
+id: marketing_agent
+label: 'Marketing Agent'
+description: 'Generación de contenido de marketing: posts, emails, descripciones SEO.'
+service_id: ecosistema_jaraba_core.marketing_agent
+icon: bullhorn
+color: '#e91e63'
+weight: 1
+autonomy_level: 1
+requires_approval: true
+max_daily_auto_actions: 10
+allowed_actions: ''

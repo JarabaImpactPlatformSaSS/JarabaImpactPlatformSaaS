@@ -1,0 +1,93 @@
+uuid: 74c32c83-f99c-489c-9c89-af84703d9d01
+langcode: es
+status: true
+dependencies: {  }
+id: newsletter_signup
+label: 'Formulario de Newsletter'
+description: 'Sección de suscripción a newsletter con campo email y beneficios.'
+category: forms
+twig_template: '@jaraba_page_builder/blocks/forms/newsletter-signup.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+      default: 'Mantente al día'
+    subtitle:
+      type: string
+      title: Subtítulo
+      default: 'Recibe las últimas novedades en tu correo'
+    placeholder:
+      type: string
+      title: 'Placeholder del campo'
+      default: 'Tu email'
+    button_text:
+      type: string
+      title: 'Texto del botón'
+      default: Suscribirme
+    success_message:
+      type: string
+      title: 'Mensaje de éxito'
+      default: '¡Gracias por suscribirte!'
+    benefits:
+      type: array
+      title: Beneficios
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            title: Icono
+          text:
+            type: string
+            title: Texto
+    privacy_text:
+      type: string
+      title: 'Texto de Privacidad'
+      default: 'Respetamos tu privacidad. Puedes darte de baja en cualquier momento.'
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - inline
+        - stacked
+        - card
+      default: card
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+        - gradient
+      default: gradient
+  required:
+    - title
+    - button_text
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'Stay Updated'
+  subtitle: 'Get the latest news and exclusive content delivered to your inbox'
+  placeholder: 'Enter your email address'
+  button_text: 'Subscribe Now'
+  success_message: 'Thanks for subscribing!'
+  benefits:
+    -
+      icon: mail
+      text: 'Weekly insights & tips'
+    -
+      icon: star
+      text: 'Exclusive offers'
+    -
+      icon: lock
+      text: 'No spam, ever'
+  privacy_text: 'We respect your privacy. Unsubscribe anytime.'
+  layout: card
+  background: gradient
+weight: 0

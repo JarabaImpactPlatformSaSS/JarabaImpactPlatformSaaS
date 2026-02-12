@@ -1,0 +1,18 @@
+uuid: 01e832f7-70cd-4d26-9015-f7ecbff8b05b
+langcode: es
+status: true
+dependencies:
+  config:
+    - group.type.tenant
+id: group.tenant.label
+field_name: label
+entity_type: group
+bundle: tenant
+label: Título
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

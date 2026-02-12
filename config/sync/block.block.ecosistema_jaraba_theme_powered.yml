@@ -1,0 +1,22 @@
+uuid: 97aaa18e-c559-40ef-a389-04bf7b9b6b04
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - ecosistema_jaraba_theme
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: ecosistema_jaraba_theme_powered
+theme: ecosistema_jaraba_theme
+region: footer_bottom
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Desarrollado por Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }

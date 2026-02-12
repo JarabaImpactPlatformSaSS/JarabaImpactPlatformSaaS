@@ -1,0 +1,13 @@
+uuid: 8ae3e891-daf8-4798-9405-8fe867314b72
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain_access
+_core:
+  default_config_hash: xySFUYYaxq0BLj0-eAesthacXbTWPDJhR-SnqNhvhSg
+id: domain_access_none_action
+label: 'Eliminar contenido de todos los afiliados'
+type: node
+plugin: domain_access_none_action
+configuration: {  }

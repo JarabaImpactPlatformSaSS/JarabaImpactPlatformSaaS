@@ -1,0 +1,22 @@
+uuid: af906d90-8c45-46eb-9c4d-a670d5f7e4f9
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - claro
+_core:
+  default_config_hash: NjcxOBrPOiK5-38t56DwFBDVY4yer7YSlbRWXFuHe7A
+id: claro_breadcrumbs
+theme: claro
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: ' Ruta de Navegación'
+  label_display: '0'
+  provider: system
+visibility: {  }

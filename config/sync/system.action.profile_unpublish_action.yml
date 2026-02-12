@@ -1,0 +1,16 @@
+uuid: 0a89849e-1fce-43a6-a077-deccf6f2fa1b
+langcode: es
+status: true
+dependencies:
+  module:
+    - profile
+  enforced:
+    module:
+      - profile
+_core:
+  default_config_hash: i6SUyw-h9LthgtmTiKGbqFIh-JXnBtXLG2NCV7CkI3M
+id: profile_unpublish_action
+label: 'Cancelar la publicación del perfil seleccionado'
+type: profile
+plugin: 'entity:unpublish_action:profile'
+configuration: {  }
