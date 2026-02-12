@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Legal Knowledge module — Base de conocimiento normativo con RAG pipeline.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_legal_knowledge_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_legal_knowledge') {
+    return '<p>' . t('Provides a legal knowledge base with RAG pipeline, legislative change alerts and tax calculators (IRPF, IVA).') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_legal_knowledge_cron(): void {
+  $time = \Drupal::time()->getRequestTime();
+  _jaraba_legal_knowledge_boe_sync($time);
+}
+
+/**
+ * Syncs BOE data daily (rate limited via State API, 24h interval, 04:00-06:00 UTC).
+ */
+function _jaraba_legal_knowledge_boe_sync(int $time): void {
+  $state = \Drupal::state();
+  $config = \Drupal::config('jaraba_legal_knowledge.settings');
+  $intervalHours = (int) ($config->get('sync_interval_hours') ?? 24);
+  $lastRun = (int) ($state->get('jaraba_legal_knowledge.boe_last_sync') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun < $intervalHours) {
+    return;
+  }
+
+  $currentHour = (int) date('G', $time);
+  if ($currentHour < 4 || $currentHour > 5) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_legal_knowledge\Service\BoeNormSyncService $sync */
+    $sync = \Drupal::service('jaraba_legal_knowledge.boe_norm_sync');
+    $sync->syncDaily();
+    $state->set('jaraba_legal_knowledge.boe_last_sync', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_knowledge')->error('BOE sync failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_legal_knowledge_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'norm_change_alert':
+      $message['subject'] = $params['subject'] ?? t('Alerta de Cambio Normativo - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function jaraba_legal_knowledge_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === 'jaraba_legal_knowledge.query_page') {
+    $variables['attributes']['class'][] = 'page-legal';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_legal_knowledge_theme(): array {
+  return [
+    'page__legal' => [
+      'template' => 'page--legal',
+      'base hook' => 'page',
+    ],
+    'legal_query_response' => [
+      'template' => 'legal-query-response',
+      'variables' => ['query' => '', 'response' => '', 'citations' => [], 'confidence' => 0],
+    ],
+    'legal_citation' => [
+      'template' => 'legal-citation',
+      'variables' => ['norm' => NULL, 'article' => '', 'excerpt' => ''],
+    ],
+    'legal_header' => [
+      'template' => 'partials/_legal-header',
+      'variables' => ['tenant' => NULL],
+    ],
+    'legal_query_panel' => [
+      'template' => 'partials/_legal-query-panel',
+      'variables' => ['recent_queries' => []],
+    ],
+    'legal_alerts_panel' => [
+      'template' => 'partials/_legal-alerts-panel',
+      'variables' => ['alerts' => []],
+    ],
+    'legal_calculator_panel' => [
+      'template' => 'partials/_legal-calculator-panel',
+      'variables' => ['calculator_type' => 'irpf', 'data' => []],
+    ],
+  ];
+}

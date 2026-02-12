@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Search form partial for legal queries.
+ *
+ * Text input for the query and filter dropdowns for scope and subject areas.
+ */
+#}
+<div class="legal-search">
+  <form class="legal-search__form" id="legal-query-form" method="post" action="#">
+    <div class="legal-search__input-wrapper">
+      <label for="legal-query-input" class="visually-hidden">{{ 'Consulta legal'|t }}</label>
+      <textarea
+        id="legal-query-input"
+        class="legal-search__input"
+        name="query"
+        placeholder="{{ 'Escriba su consulta legal... Ej: Plazos para recurrir una sancion administrativa'|t }}"
+        rows="3"
+        required
+      ></textarea>
+      <button type="submit" class="legal-search__submit">
+        {{ 'Consultar'|t }}
+      </button>
+    </div>
+
+    <div class="legal-search__filters">
+      <div class="legal-search__filter">
+        <label for="legal-filter-scope" class="legal-search__filter-label">{{ 'Ambito'|t }}</label>
+        <select id="legal-filter-scope" name="scope" class="legal-search__filter-select">
+          <option value="">{{ 'Todos'|t }}</option>
+          <option value="nacional">{{ 'Nacional'|t }}</option>
+          <option value="autonomico">{{ 'Autonomico'|t }}</option>
+          <option value="local">{{ 'Local'|t }}</option>
+          <option value="europeo">{{ 'Europeo'|t }}</option>
+        </select>
+      </div>
+
+      <div class="legal-search__filter">
+        <label for="legal-filter-subject" class="legal-search__filter-label">{{ 'Area tematica'|t }}</label>
+        <select id="legal-filter-subject" name="subject_areas" class="legal-search__filter-select">
+          <option value="">{{ 'Todas'|t }}</option>
+          <option value="fiscal">{{ 'Fiscal'|t }}</option>
+          <option value="laboral">{{ 'Laboral'|t }}</option>
+          <option value="mercantil">{{ 'Mercantil'|t }}</option>
+          <option value="administrativo">{{ 'Administrativo'|t }}</option>
+          <option value="proteccion_datos">{{ 'Proteccion de Datos'|t }}</option>
+          <option value="medio_ambiente">{{ 'Medio Ambiente'|t }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</div>

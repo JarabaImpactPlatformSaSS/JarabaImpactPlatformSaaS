@@ -1,0 +1,27 @@
+# Librerias del modulo Legal Knowledge
+
+# Dashboard principal de consultas legales
+legal-dashboard:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-legal-knowledge.css: {}
+  js:
+    js/legal-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Calculadoras fiscales (IRPF, IVA)
+tax-calculator:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-legal-knowledge.css: {}
+  js:
+    js/tax-calculator.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

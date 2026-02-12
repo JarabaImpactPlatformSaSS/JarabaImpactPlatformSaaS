@@ -1,0 +1,9 @@
+name: 'Jaraba Legal Knowledge'
+type: module
+description: 'Base de conocimiento normativo con RAG pipeline, alertas de cambios legislativos y calculadoras fiscales para el Ecosistema Jaraba.'
+package: Jaraba
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:system
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: jaraba_legal_knowledge.settings

@@ -1,0 +1,12 @@
+# Enlaces de pestana (tabs) del modulo Legal Knowledge
+
+jaraba_legal_knowledge.settings:
+  title: 'Settings'
+  route_name: jaraba_legal_knowledge.settings
+  base_route: jaraba_legal_knowledge.settings
+
+jaraba_legal_knowledge.sync:
+  title: 'Sincronizar BOE'
+  route_name: jaraba_legal_knowledge.sync
+  base_route: jaraba_legal_knowledge.settings
+  weight: 5

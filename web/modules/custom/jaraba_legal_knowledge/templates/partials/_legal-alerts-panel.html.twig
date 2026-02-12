@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Alerts panel partial for recent norm change alerts.
+ *
+ * Variables:
+ * - alerts: Array of alert data (populated via controller or AJAX).
+ */
+#}
+<div class="legal-alerts" id="legal-alerts-panel">
+  <div class="legal-alerts__header">
+    <h2 class="legal-alerts__title">{{ 'Alertas Normativas Recientes'|t }}</h2>
+  </div>
+
+  <div class="legal-alerts__table-wrapper">
+    <table class="legal-alerts__table">
+      <thead>
+        <tr>
+          <th>{{ 'Severidad'|t }}</th>
+          <th>{{ 'Norma Afectada'|t }}</th>
+          <th>{{ 'Tipo de Cambio'|t }}</th>
+          <th>{{ 'Fecha'|t }}</th>
+          <th>{{ 'Descripcion'|t }}</th>
+        </tr>
+      </thead>
+      <tbody id="legal-alerts-body">
+        {% if alerts is defined and alerts is not empty %}
+          {% for alert in alerts %}
+            <tr class="legal-alerts__row legal-alerts__row--{{ alert.severity|default('info') }}">
+              <td>
+                <span class="legal-alerts__badge legal-alerts__badge--{{ alert.severity|default('info') }}">
+                  {{ alert.severity|default('info')|capitalize }}
+                </span>
+              </td>
+              <td>{{ alert.norm_title|default('—') }}</td>
+              <td>{{ alert.change_type|default('—') }}</td>
+              <td>{{ alert.created|default('—') }}</td>
+              <td>{{ alert.description|default('—') }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="legal-alerts__empty">
+              {{ 'No hay alertas normativas recientes.'|t }}
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+services:
+  logger.channel.jaraba_legal_knowledge:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_knowledge']
+
+  jaraba_legal_knowledge.boe_client:
+    class: Drupal\jaraba_legal_knowledge\Service\BoeApiClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.jaraba_legal_knowledge']
+
+  jaraba_legal_knowledge.chunking:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalChunkingService
+    arguments: ['@logger.channel.jaraba_legal_knowledge']
+
+  jaraba_legal_knowledge.embedding:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalEmbeddingService
+    arguments: ['@ai.provider', '@config.factory', '@logger.channel.jaraba_legal_knowledge']
+
+  jaraba_legal_knowledge.ingestion:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalIngestionService
+    arguments:
+      - '@jaraba_legal_knowledge.boe_client'
+      - '@jaraba_legal_knowledge.chunking'
+      - '@jaraba_legal_knowledge.embedding'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_legal_knowledge'
+
+  jaraba_legal_knowledge.citation:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalCitationService
+    arguments: ['@entity_type.manager', '@logger.channel.jaraba_legal_knowledge']
+
+  jaraba_legal_knowledge.disclaimer:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalDisclaimerService
+    arguments: ['@config.factory']
+    calls:
+      - [setStringTranslation, ['@string_translation']]
+
+  jaraba_legal_knowledge.rag:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalRagService
+    arguments:
+      - '@jaraba_legal_knowledge.embedding'
+      - '@jaraba_legal_knowledge.citation'
+      - '@jaraba_legal_knowledge.disclaimer'
+      - '@ai.provider'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_knowledge'
+
+  jaraba_legal_knowledge.query:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalQueryService
+    arguments:
+      - '@jaraba_legal_knowledge.rag'
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_knowledge'
+
+  jaraba_legal_knowledge.alert:
+    class: Drupal\jaraba_legal_knowledge\Service\LegalAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_legal_knowledge'
+
+  jaraba_legal_knowledge.tax_calculator:
+    class: Drupal\jaraba_legal_knowledge\Service\TaxCalculatorService
+    arguments: ['@logger.channel.jaraba_legal_knowledge']

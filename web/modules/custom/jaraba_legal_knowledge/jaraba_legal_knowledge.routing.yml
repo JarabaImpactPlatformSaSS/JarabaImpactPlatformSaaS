@@ -1,0 +1,94 @@
+# Rutas del modulo Legal Knowledge
+
+# Frontend query page (NOT admin)
+jaraba_legal_knowledge.query_page:
+  path: '/legal'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\LegalQueryController::queryPage'
+    _title: 'Consultas Legales'
+  requirements:
+    _permission: 'view legal queries'
+  options:
+    _admin_route: FALSE
+
+# Frontend calculators page (NOT admin)
+jaraba_legal_knowledge.calculators:
+  path: '/legal/calculadoras'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\TaxCalculatorController::page'
+    _title: 'Calculadoras Fiscales'
+  requirements:
+    _permission: 'use legal calculators'
+  options:
+    _admin_route: FALSE
+
+# Admin norms overview
+jaraba_legal_knowledge.admin_norms:
+  path: '/admin/content/legal-norms'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\LegalAdminController::overview'
+    _title: 'Normas Legales'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+# Admin alerts
+jaraba_legal_knowledge.admin_alerts:
+  path: '/admin/content/legal-alerts'
+  defaults:
+    _entity_list: 'norm_change_alert'
+    _title: 'Alertas Normativas'
+  requirements:
+    _permission: 'view legal alerts'
+
+# Settings form
+jaraba_legal_knowledge.settings:
+  path: '/admin/config/services/legal-knowledge'
+  defaults:
+    _form: '\Drupal\jaraba_legal_knowledge\Form\LegalSettingsForm'
+    _title: 'Legal Knowledge Settings'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+# Sync form
+jaraba_legal_knowledge.sync:
+  path: '/admin/config/services/legal-knowledge/sync'
+  defaults:
+    _form: '\Drupal\jaraba_legal_knowledge\Form\LegalSyncForm'
+    _title: 'Sincronizar BOE'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+# ============================================
+# API: LEGAL QUERY
+# ============================================
+
+# API: Legal query
+jaraba_legal_knowledge.api.query:
+  path: '/api/v1/legal/query'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\LegalQueryController::apiQuery'
+  requirements:
+    _permission: 'view legal queries'
+  methods: [POST]
+
+# ============================================
+# API: TAX CALCULATORS
+# ============================================
+
+# API: IRPF calculator
+jaraba_legal_knowledge.api.irpf:
+  path: '/api/v1/legal/calculators/irpf'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\TaxCalculatorController::irpf'
+  requirements:
+    _permission: 'use legal calculators'
+  methods: [POST]
+
+# API: IVA calculator
+jaraba_legal_knowledge.api.iva:
+  path: '/api/v1/legal/calculators/iva'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_knowledge\Controller\TaxCalculatorController::iva'
+  requirements:
+    _permission: 'use legal calculators'
+  methods: [POST]
