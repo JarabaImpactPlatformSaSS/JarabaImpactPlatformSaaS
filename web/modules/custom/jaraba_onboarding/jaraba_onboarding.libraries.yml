@@ -40,6 +40,7 @@ tours:
     - core/once
 
 # F5 — Wizard de 7 pasos (Doc 179).
+# SCSS source: scss/wizard.scss -> compiles to css/onboarding-wizard.css
 wizard:
   version: 1.0
   css:

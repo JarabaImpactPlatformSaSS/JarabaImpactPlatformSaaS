@@ -28,6 +28,7 @@
     this.reportGenerateUrl = config.reportGenerateUrl || '/api/v1/programa/reports/generate';
 
     this.initBurnRateChart(config.grantSummary || {});
+    this.initTimelineChart(config.grantSummary || {});
     this.bindRefresh();
     this.bindReportButtons();
   }
@@ -116,6 +117,141 @@
   };
 
   /**
+   * Initialize burn rate timeline chart (expected vs actual over months).
+   *
+   * Uses server-side timeline data from GrantTrackingService::buildTimeline()
+   * when available. Falls back to client-side generation.
+   */
+  ProgramaDashboard.prototype.initTimelineChart = function (grantSummary) {
+    var canvas = this.el.querySelector('#grant-timeline-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    var burnRate = grantSummary.burn_rate || {};
+    var totalGrant = grantSummary.total || 0;
+    var spentAmount = grantSummary.spent || 0;
+    var timeline = grantSummary.timeline || {};
+
+    var months;
+    var expectedData;
+    var actualData;
+
+    if (timeline.labels && timeline.labels.length > 0) {
+      // Use server-side computed timeline data.
+      months = timeline.labels;
+      expectedData = timeline.expected || [];
+      actualData = timeline.actual || [];
+    } else {
+      // Fallback: client-side generation.
+      months = [
+        Drupal.t('Ene'), Drupal.t('Feb'), Drupal.t('Mar'), Drupal.t('Abr'),
+        Drupal.t('May'), Drupal.t('Jun'), Drupal.t('Jul'), Drupal.t('Ago'),
+        Drupal.t('Sep'), Drupal.t('Oct'), Drupal.t('Nov'), Drupal.t('Dic')
+      ];
+
+      var currentMonth = new Date().getMonth();
+
+      expectedData = [];
+      for (var i = 0; i < 12; i++) {
+        expectedData.push(Math.round((totalGrant / 12) * (i + 1)));
+      }
+
+      actualData = [];
+      var monthlyAvg = spentAmount > 0 && currentMonth >= 0
+        ? spentAmount / (currentMonth + 1) : 0;
+      for (var j = 0; j <= currentMonth; j++) {
+        actualData.push(Math.round(monthlyAvg * (j + 1)));
+      }
+      if (actualData.length > 0) {
+        actualData[actualData.length - 1] = spentAmount;
+      }
+    }
+
+    var ctx = canvas.getContext('2d');
+
+    this.timelineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: Drupal.t('Esperado'),
+            data: expectedData,
+            borderColor: '#94a3b8',
+            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+            borderDash: [6, 4],
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            tension: 0.1
+          },
+          {
+            label: Drupal.t('Ejecutado'),
+            data: actualData,
+            borderColor: burnRate.alert ? '#ef4444' : '#233D63',
+            backgroundColor: burnRate.alert ? 'rgba(239, 68, 68, 0.1)' : 'rgba(35, 61, 99, 0.1)',
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointBackgroundColor: burnRate.alert ? '#ef4444' : '#233D63',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              padding: 16,
+              usePointStyle: true,
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                var value = context.parsed.y || 0;
+                return context.dataset.label + ': ' + value.toLocaleString('es-ES') + ' EUR';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                if (value >= 1000) {
+                  return (value / 1000).toLocaleString('es-ES') + 'k';
+                }
+                return value.toLocaleString('es-ES');
+              },
+              font: { size: 11 }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.06)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 11 }
+            },
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  };
+
+  /**
    * Bind refresh button.
    */
   ProgramaDashboard.prototype.bindRefresh = function () {
@@ -147,15 +283,45 @@
   };
 
   /**
-   * Update grant display with new data.
+   * Update grant display with new data from API refresh.
    */
   ProgramaDashboard.prototype.updateGrantDisplay = function (data) {
+    // Update doughnut chart.
     if (this.chart && data.burn_rate) {
       var actual = data.burn_rate.burn_rate || 0;
       var remaining = Math.max(0, 100 - actual);
       this.chart.data.datasets[0].data = [actual, remaining];
       this.chart.data.datasets[0].backgroundColor[0] = data.burn_rate.alert ? '#ef4444' : '#233D63';
       this.chart.update();
+    }
+
+    // Update timeline chart if server-side data available.
+    if (this.timelineChart && data.timeline) {
+      var timeline = data.timeline;
+      if (timeline.labels && timeline.labels.length > 0) {
+        this.timelineChart.data.labels = timeline.labels;
+        this.timelineChart.data.datasets[0].data = timeline.expected || [];
+        this.timelineChart.data.datasets[1].data = timeline.actual || [];
+
+        var alertColor = (data.burn_rate && data.burn_rate.alert) ? '#ef4444' : '#233D63';
+        this.timelineChart.data.datasets[1].borderColor = alertColor;
+        this.timelineChart.data.datasets[1].pointBackgroundColor = alertColor;
+        this.timelineChart.data.datasets[1].backgroundColor = (data.burn_rate && data.burn_rate.alert)
+          ? 'rgba(239, 68, 68, 0.1)' : 'rgba(35, 61, 99, 0.1)';
+
+        this.timelineChart.update();
+      }
+    }
+
+    // Update KPI stats text in the grant stats card.
+    var burnRateEl = this.el.querySelector('.programa-grant-stat__value--alert, .programa-grant-card--stats .programa-grant-stat:nth-child(4) .programa-grant-stat__value');
+    if (burnRateEl && data.burn_rate) {
+      burnRateEl.textContent = data.burn_rate.burn_rate + '%';
+      if (data.burn_rate.alert) {
+        burnRateEl.classList.add('programa-grant-stat__value--alert');
+      } else {
+        burnRateEl.classList.remove('programa-grant-stat__value--alert');
+      }
     }
   };
 

@@ -1,0 +1,616 @@
+/**
+ * @file wizard.scss
+ * Onboarding Wizard — 7-step tenant configuration wizard.
+ *
+ * SCSS source for the onboarding wizard UI.
+ * Compiles to css/onboarding-wizard.css.
+ *
+ * Design tokens: var(--ej-color-impulse), var(--ej-color-talent), var(--ej-radius-lg)
+ * BEM naming convention: .wizard-* prefix.
+ *
+ * Fase 5 — Doc 179.
+ */
+
+// =============================================================================
+// Variables & Mixins
+// =============================================================================
+
+$wizard-max-width: 780px;
+$wizard-step-max-width: 640px;
+$wizard-breakpoint-mobile: 768px;
+$wizard-breakpoint-small: 640px;
+$wizard-dot-size: 32px;
+$wizard-dot-size-mobile: 28px;
+$wizard-line-height: 4px;
+$wizard-transition-speed: 0.3s;
+$wizard-total-steps: 7;
+
+@mixin mobile {
+  @media (max-width: #{$wizard-breakpoint-mobile}) {
+    @content;
+  }
+}
+
+@mixin small {
+  @media (max-width: #{$wizard-breakpoint-small}) {
+    @content;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// =============================================================================
+// Wizard Container
+// =============================================================================
+
+.wizard {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: $wizard-max-width;
+  margin: 0 auto;
+  padding: 1.5rem;
+  color: var(--ej-text-primary, #212121);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  @include small {
+    padding: 1rem;
+  }
+}
+
+// =============================================================================
+// Progress Bar — 7 Steps (Dots + Connecting Lines)
+// =============================================================================
+
+.wizard__progress {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+
+  // Background track line.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $wizard-line-height;
+    background: var(--ej-bg-tertiary, #e0e0e0);
+    border-radius: calc(#{$wizard-line-height} / 2);
+  }
+}
+
+.wizard__progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: $wizard-line-height;
+  background: var(--ej-color-impulse, #FF8C42);
+  border-radius: calc(#{$wizard-line-height} / 2);
+  transition: width 0.5s ease;
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.wizard__progress-steps {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.25rem;
+  gap: 0.25rem;
+
+  @include mobile {
+    // Vertical progress bar on mobile.
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 0;
+    padding-left: 2.5rem;
+    position: relative;
+
+    // Vertical track line on left side.
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(#{$wizard-dot-size-mobile} / 2);
+      bottom: 0;
+      width: $wizard-line-height;
+      background: var(--ej-bg-tertiary, #e0e0e0);
+      border-radius: calc(#{$wizard-line-height} / 2);
+    }
+  }
+
+  @include small {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}
+
+// Individual step indicator (dot + label).
+.wizard__step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+
+  @include mobile {
+    flex-direction: row;
+    text-align: left;
+    gap: 0.75rem;
+    flex: none;
+    position: relative;
+  }
+}
+
+// Step dot/number circle.
+.wizard__step-number {
+  width: $wizard-dot-size;
+  height: $wizard-dot-size;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 2px solid var(--ej-bg-tertiary, #e0e0e0);
+  background: var(--ej-bg-primary, #fff);
+  color: var(--ej-text-secondary, #757575);
+  transition: all $wizard-transition-speed ease;
+  flex-shrink: 0;
+  z-index: 1;
+
+  @include mobile {
+    width: $wizard-dot-size-mobile;
+    height: $wizard-dot-size-mobile;
+    position: absolute;
+    left: calc(-2.5rem + (#{$wizard-dot-size-mobile} / 2) - (#{$wizard-dot-size-mobile} / 2));
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Active step state.
+.wizard__step-indicator--active {
+  .wizard__step-number {
+    border-color: var(--ej-color-impulse, #FF8C42);
+    background: var(--ej-color-impulse, #FF8C42);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.2);
+  }
+
+  .wizard__step-label {
+    color: var(--ej-color-impulse, #FF8C42);
+    font-weight: 600;
+  }
+}
+
+// Completed step state.
+.wizard__step-indicator--completed {
+  .wizard__step-number {
+    border-color: var(--ej-color-success, #22c55e);
+    background: var(--ej-color-success, #22c55e);
+    color: #fff;
+  }
+
+  .wizard__step-label {
+    color: var(--ej-color-success, #22c55e);
+  }
+}
+
+// Pending step state (default — no extra modifier needed, but explicit for clarity).
+.wizard__step-indicator--pending {
+  .wizard__step-number {
+    border-color: var(--ej-bg-tertiary, #e0e0e0);
+    background: var(--ej-bg-primary, #fff);
+    color: var(--ej-text-secondary, #757575);
+  }
+}
+
+// Skipped step state.
+.wizard__step-indicator--skipped {
+  .wizard__step-number {
+    border-color: var(--ej-text-tertiary, #bdbdbd);
+    background: var(--ej-bg-secondary, #f5f5f5);
+    color: var(--ej-text-tertiary, #bdbdbd);
+  }
+}
+
+// Step label text.
+.wizard__step-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ej-text-secondary, #757575);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+
+  @include small {
+    display: none;
+  }
+
+  @include mobile {
+    display: block;
+    font-size: 0.8125rem;
+    white-space: normal;
+  }
+}
+
+// Step estimated duration.
+.wizard__step-duration {
+  font-size: 0.625rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+
+  @include small {
+    display: none;
+  }
+}
+
+// =============================================================================
+// Wizard Content Area (Card Layout)
+// =============================================================================
+
+.wizard__content {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.wizard-step {
+  max-width: $wizard-step-max-width;
+  margin: 0 auto;
+}
+
+.wizard-step__card {
+  background: var(--ej-bg-primary, #fff);
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  border-radius: var(--ej-radius-lg, 16px);
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  @include small {
+    padding: 1.25rem;
+    border-radius: var(--ej-radius-lg, 12px);
+  }
+}
+
+.wizard-step__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #212121);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+
+  @include small {
+    font-size: 1.375rem;
+  }
+}
+
+.wizard-step__subtitle {
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0 0 2rem;
+  line-height: 1.5;
+
+  &--large {
+    font-size: 1.125rem;
+  }
+}
+
+.wizard-step__section-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// =============================================================================
+// Form Elements
+// =============================================================================
+
+.wizard-step__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+
+  @include small {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wizard-step__field--full {
+  grid-column: 1 / -1;
+}
+
+.wizard-step__label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+  margin-bottom: 0.375rem;
+}
+
+.wizard-step__input,
+.wizard-step__select,
+.wizard-step__textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--ej-text-primary, #212121);
+  background: var(--ej-bg-primary, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--ej-color-impulse, #FF8C42);
+    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+  }
+
+  &::placeholder {
+    color: var(--ej-text-tertiary, #bdbdbd);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.wizard-step__textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.wizard-step__field-hint {
+  font-size: 0.75rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+  margin-top: 0.25rem;
+}
+
+.wizard-step__field-error {
+  font-size: 0.75rem;
+  color: var(--ej-color-danger, #ef4444);
+  margin-top: 0.25rem;
+}
+
+// Input group (input + suffix like ".ecosistemajaraba.es").
+.wizard-step__input-group {
+  display: flex;
+  align-items: center;
+
+  .wizard-step__input {
+    border-radius: 8px 0 0 8px;
+  }
+}
+
+.wizard-step__input-suffix {
+  padding: 0.625rem 0.75rem;
+  background: var(--ej-bg-secondary, #f5f5f5);
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+}
+
+// =============================================================================
+// Wizard Footer (Navigation)
+// =============================================================================
+
+.wizard__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--ej-border-light, #e0e0e0);
+  margin-top: auto;
+  gap: 1rem;
+
+  @include small {
+    flex-wrap: wrap;
+  }
+}
+
+.wizard__footer-left,
+.wizard__footer-right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.wizard__footer-center {
+  flex: 1;
+  text-align: center;
+
+  @include small {
+    order: -1;
+    flex-basis: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.wizard__step-counter {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+// =============================================================================
+// Wizard Buttons
+// =============================================================================
+
+.wizard__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+
+  &--next,
+  &--launch {
+    background: var(--ej-color-impulse, #FF8C42);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: var(--ej-color-impulse-hover, #e67a30);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+    }
+  }
+
+  &--back {
+    background: transparent;
+    color: var(--ej-text-secondary, #757575);
+    border: 1px solid var(--ej-border-light, #e0e0e0);
+
+    &:hover:not(:disabled) {
+      background: var(--ej-bg-secondary, #f5f5f5);
+    }
+  }
+
+  &--skip {
+    background: transparent;
+    color: var(--ej-text-tertiary, #bdbdbd);
+    padding: 0.75rem 1rem;
+
+    &:hover:not(:disabled) {
+      color: var(--ej-text-secondary, #757575);
+    }
+  }
+
+  &--stripe {
+    background: #635bff;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: #5046e5;
+    }
+  }
+}
+
+// =============================================================================
+// Vertical Color Overrides
+// =============================================================================
+
+.wizard--agroconecta {
+  .wizard__progress-bar,
+  .wizard__btn--next,
+  .wizard__btn--launch {
+    background: var(--ej-color-agro, #556B2F);
+  }
+
+  .wizard__btn--next:hover:not(:disabled),
+  .wizard__btn--launch:hover:not(:disabled) {
+    background: #445622;
+    box-shadow: 0 4px 12px rgba(85, 107, 47, 0.3);
+  }
+
+  .wizard__step-indicator--active .wizard__step-number {
+    border-color: var(--ej-color-agro, #556B2F);
+    background: var(--ej-color-agro, #556B2F);
+    box-shadow: 0 0 0 4px rgba(85, 107, 47, 0.2);
+  }
+}
+
+.wizard--comercioconecta {
+  .wizard__progress-bar,
+  .wizard__btn--next,
+  .wizard__btn--launch {
+    background: var(--ej-color-success, #22c55e);
+  }
+
+  .wizard__btn--next:hover:not(:disabled),
+  .wizard__btn--launch:hover:not(:disabled) {
+    background: #16a34a;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  .wizard__step-indicator--active .wizard__step-number {
+    border-color: var(--ej-color-success, #22c55e);
+    background: var(--ej-color-success, #22c55e);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  }
+}
+
+.wizard--serviciosconecta,
+.wizard--empleabilidad {
+  .wizard__progress-bar,
+  .wizard__btn--next,
+  .wizard__btn--launch {
+    background: var(--ej-color-talent, var(--ej-color-innovation, #00A9A5));
+  }
+
+  .wizard__btn--next:hover:not(:disabled),
+  .wizard__btn--launch:hover:not(:disabled) {
+    background: #008f8b;
+    box-shadow: 0 4px 12px rgba(0, 169, 165, 0.3);
+  }
+
+  .wizard__step-indicator--active .wizard__step-number {
+    border-color: var(--ej-color-talent, var(--ej-color-innovation, #00A9A5));
+    background: var(--ej-color-talent, var(--ej-color-innovation, #00A9A5));
+    box-shadow: 0 0 0 4px rgba(0, 169, 165, 0.2);
+  }
+}
+
+// =============================================================================
+// Responsive — Mobile Vertical Progress Bar
+// =============================================================================
+
+@media (max-width: #{$wizard-breakpoint-mobile}) {
+  .wizard__progress {
+    &::before {
+      // Hide horizontal track on mobile.
+      display: none;
+    }
+  }
+
+  .wizard__progress-bar {
+    // Hide horizontal progress bar on mobile — vertical handled via step states.
+    display: none;
+  }
+}
+
+// =============================================================================
+// Reduced Motion
+// =============================================================================
+
+@include reduced-motion {
+  .wizard__progress-bar,
+  .wizard__btn,
+  .wizard__step-number,
+  .wizard-step__input,
+  .wizard-step__select,
+  .wizard-step__textarea {
+    transition: none;
+  }
+}
