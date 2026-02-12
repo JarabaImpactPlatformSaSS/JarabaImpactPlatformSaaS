@@ -11,6 +11,8 @@ namespace Drupal\jaraba_journey\JourneyDefinition;
  * - Job Seeker: Tasa inserción >40%, Time to Employment <90 días
  * - Employer: Time to Hire <30 días
  * - Orientador: Candidatos activos/día
+ *
+ * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  */
 class EmpleabilidadJourneyDefinition
 {
@@ -29,6 +31,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'create_profile',
                         'label' => 'Crear perfil / subir CV',
                         'ia_intervention' => 'Parser CV automático, extraer skills',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['cv_analysis'],
@@ -40,11 +43,13 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'complete_skills_assessment',
                         'label' => 'Completar evaluación de skills',
                         'ia_intervention' => 'Tests adaptativos, identificar gaps',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'receive_job_recommendations',
                         'label' => 'Recibir recomendaciones de ofertas',
                         'ia_intervention' => 'Matching Score visible',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['skills_gaps_detected', 'high_match_alert'],
@@ -56,16 +61,19 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'apply_to_jobs',
                         'label' => 'Aplicar a ofertas',
                         'ia_intervention' => 'One-click apply, carta personalizada',
+                        'video_url' => '',
                     ],
                     5 => [
                         'action' => 'complete_training',
                         'label' => 'Completar formación recomendada',
                         'ia_intervention' => 'Learning path según objetivo',
+                        'video_url' => '',
                     ],
                     6 => [
                         'action' => 'prepare_interview',
                         'label' => 'Preparar entrevista',
                         'ia_intervention' => 'Simulador de entrevista IA',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['application_assistance', 'interview_prep'],
@@ -77,6 +85,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'get_job',
                         'label' => 'Conseguir empleo',
                         'ia_intervention' => 'Celebración + encuesta cierre',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['job_offer_celebration'],
@@ -105,6 +114,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'publish_job_offer',
                         'label' => 'Publicar oferta de empleo',
                         'ia_intervention' => 'Templates por sector, optimizar redacción',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['job_posting_optimization'],
@@ -116,11 +126,13 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'receive_applications',
                         'label' => 'Recibir candidaturas',
                         'ia_intervention' => 'Ranking automático por fit',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'review_candidates',
                         'label' => 'Revisar candidatos preseleccionados',
                         'ia_intervention' => 'Perfiles enriquecidos, fortalezas/riesgos',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['candidate_ranking', 'profile_insights'],
@@ -132,11 +144,13 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'schedule_interviews',
                         'label' => 'Agendar entrevistas',
                         'ia_intervention' => 'Calendario integrado',
+                        'video_url' => '',
                     ],
                     5 => [
                         'action' => 'conduct_interviews',
                         'label' => 'Realizar entrevistas',
                         'ia_intervention' => 'Guía por competencias, scorecard',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['interview_scheduling', 'scorecard_generation'],
@@ -148,6 +162,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'make_offer_and_hire',
                         'label' => 'Hacer oferta y contratar',
                         'ia_intervention' => 'Sugerir salario competitivo',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['salary_benchmark'],
@@ -170,6 +185,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'receive_case_assignment',
                         'label' => 'Recibir asignación de caso',
                         'ia_intervention' => 'Resumen ejecutivo automático',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['case_summary_generation'],
@@ -181,11 +197,13 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'first_session',
                         'label' => 'Primera sesión con candidato',
                         'ia_intervention' => 'Preparar contexto de la sesión',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'track_progress',
                         'label' => 'Seguimiento de progreso',
                         'ia_intervention' => 'Alertas de estancamiento',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['candidate_stalled_alert', 'opportunity_match'],
@@ -197,6 +215,7 @@ class EmpleabilidadJourneyDefinition
                         'action' => 'candidate_placed',
                         'label' => 'Candidato colocado',
                         'ia_intervention' => 'Generar informe de cierre',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['case_closure_report'],

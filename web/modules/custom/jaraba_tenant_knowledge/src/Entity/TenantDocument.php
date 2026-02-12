@@ -28,6 +28,11 @@ use Drupal\file\FileInterface;
  * Los documentos largos se dividen en chunks para mejor retrieval.
  * Cada chunk mantiene referencia al documento padre.
  *
+ * MULTILINGÜE (G114-3):
+ * Campos de contenido traducibles (title, description, extracted_text).
+ * Campos de organización (category, processing_status, file, timestamps) no traducibles.
+ * Integración con content_translation para UI de traducción estándar.
+ *
  * @ContentEntityType(
  *   id = "tenant_document",
  *   label = @Translation("Documento del Tenant"),
@@ -47,11 +52,14 @@ use Drupal\file\FileInterface;
  *     "access" = "Drupal\jaraba_tenant_knowledge\TenantKnowledgeAccessControlHandler",
  *   },
  *   base_table = "tenant_document",
+ *   data_table = "tenant_document_field_data",
+ *   translatable = TRUE,
  *   admin_permission = "administer tenant knowledge",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
  *     "label" = "title",
+ *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "add-form" = "/knowledge/documents/add",
@@ -114,6 +122,7 @@ class TenantDocument extends ContentEntityBase implements EntityChangedInterface
             ->setLabel(t('Título'))
             ->setDescription(t('Nombre descriptivo del documento.'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setSetting('max_length', 255)
             ->setDisplayOptions('view', [
                 'label' => 'hidden',
@@ -132,6 +141,7 @@ class TenantDocument extends ContentEntityBase implements EntityChangedInterface
         $fields['description'] = BaseFieldDefinition::create('string_long')
             ->setLabel(t('Descripción'))
             ->setDescription(t('Breve descripción del contenido del documento.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'string_textarea',
                 'weight' => 2,
@@ -180,7 +190,8 @@ class TenantDocument extends ContentEntityBase implements EntityChangedInterface
         // Texto extraído (almacenado para referencia).
         $fields['extracted_text'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Texto Extraído'))
-            ->setDescription(t('Texto completo extraído del documento.'));
+            ->setDescription(t('Texto completo extraído del documento.'))
+            ->setTranslatable(TRUE);
 
         // Número de chunks generados.
         $fields['chunk_count'] = BaseFieldDefinition::create('integer')

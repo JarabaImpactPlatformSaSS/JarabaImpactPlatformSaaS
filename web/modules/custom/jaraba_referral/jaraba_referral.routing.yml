@@ -77,3 +77,95 @@ jaraba_referral.api.referrals.stats:
   methods: [GET]
   requirements:
     _permission: 'manage referral rewards'
+
+# --- Settings Routes para nuevas entidades (Field UI) ---
+
+jaraba_referral.referral_program.settings:
+  path: '/admin/structure/referral-programs'
+  defaults:
+    _form: '\Drupal\jaraba_referral\Form\ReferralProgramSettingsForm'
+    _title: 'Configuración Programas de Referidos'
+  requirements:
+    _permission: 'administer referral settings'
+
+jaraba_referral.referral_code.settings:
+  path: '/admin/structure/referral-codes'
+  defaults:
+    _form: '\Drupal\jaraba_referral\Form\ReferralCodeSettingsForm'
+    _title: 'Configuración Códigos de Referido'
+  requirements:
+    _permission: 'administer referral settings'
+
+jaraba_referral.referral_reward.settings:
+  path: '/admin/structure/referral-rewards'
+  defaults:
+    _form: '\Drupal\jaraba_referral\Form\ReferralRewardSettingsForm'
+    _title: 'Configuración Recompensas de Referidos'
+  requirements:
+    _permission: 'administer referral settings'
+
+# --- API REST v2: Programas, Códigos, Leaderboard, Recompensas, Tracking ---
+
+jaraba_referral.api.programs:
+  path: '/api/v1/referral/programs'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listPrograms'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.codes:
+  path: '/api/v1/referral/codes'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listCodes'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.codes.generate:
+  path: '/api/v1/referral/codes'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::generateCode'
+  methods: [POST]
+  requirements:
+    _permission: 'create referral codes'
+
+jaraba_referral.api.leaderboard:
+  path: '/api/v1/referral/leaderboard'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::getLeaderboard'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.rewards:
+  path: '/api/v1/referral/rewards'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listRewards'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_referral.api.track.click:
+  path: '/api/v1/referral/track/click'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::trackClick'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_referral.api.track.signup:
+  path: '/api/v1/referral/track/signup'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::trackSignup'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_referral.api.track.conversion:
+  path: '/api/v1/referral/track/conversion'
+  defaults:
+    _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::trackConversion'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'

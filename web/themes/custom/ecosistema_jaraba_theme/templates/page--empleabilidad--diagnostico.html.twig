@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Page template for employability diagnostic.
+ *
+ * Zero-region, full-width layout without page.content or inherited blocks.
+ * Includes existing header and footer partials.
+ *
+ * SPEC: 20260120b S3 - Zero region layout for diagnostic wizard.
+ */
+#}
+
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' %}
+
+<main class="ej-page ej-page--employability-diagnostic" role="main">
+  <div class="ej-page__content">
+    {{ page.content }}
+  </div>
+</main>
+
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}

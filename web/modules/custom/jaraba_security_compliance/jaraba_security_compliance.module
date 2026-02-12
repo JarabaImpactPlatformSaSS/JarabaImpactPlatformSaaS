@@ -1,0 +1,110 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Security Compliance.
+ *
+ * Sistema centralizado de seguridad y compliance para la plataforma
+ * Ecosistema Jaraba SaaS. Proporciona auditoría de eventos, gestión
+ * de políticas de seguridad, tracking de compliance (SOC2, ISO27001,
+ * ENS, GDPR) y retención de datos conforme a normativa.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_security_compliance_help(string $route_name, RouteMatchInterface $route_match): string|array {
+  switch ($route_name) {
+    case 'help.page.jaraba_security_compliance':
+      $output = '<h3>' . t('Acerca de') . '</h3>';
+      $output .= '<p>' . t('Módulo de seguridad y compliance para el Ecosistema Jaraba SaaS.') . '</p>';
+      $output .= '<h4>' . t('Características') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Registro de auditoría de seguridad inmutable') . '</li>';
+      $output .= '<li>' . t('Gestión de políticas de seguridad por tenant') . '</li>';
+      $output .= '<li>' . t('Evaluación de compliance SOC2, ISO 27001, ENS y GDPR') . '</li>';
+      $output .= '<li>' . t('Retención de datos y anonimización conforme a normativa') . '</li>';
+      $output .= '<li>' . t('Dashboard de seguridad con métricas en tiempo real') . '</li>';
+      $output .= '<li>' . t('Exportación de logs de auditoría en CSV') . '</li>';
+      $output .= '</ul>';
+      return $output;
+
+    default:
+      return '';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_security_compliance_theme(): array {
+  return [
+    'jaraba_security_dashboard' => [
+      'variables' => [
+        'compliance_score' => 0,
+        'frameworks' => [],
+        'recent_events' => [],
+        'active_policies' => [],
+        'stats' => [],
+      ],
+      'template' => 'jaraba-security-dashboard',
+    ],
+    'jaraba_audit_trail' => [
+      'variables' => [
+        'events' => [],
+        'filters' => [],
+        'total_count' => 0,
+        'pager' => NULL,
+      ],
+      'template' => 'jaraba-audit-trail',
+    ],
+    'jaraba_soc2_readiness' => [
+      'variables' => [
+        'trust_criteria' => [],
+        'controls' => [],
+        'evidence' => [],
+        'readiness_score' => 0,
+      ],
+      'template' => 'jaraba-soc2-readiness',
+    ],
+    'jaraba_compliance_report' => [
+      'variables' => [
+        'framework' => '',
+        'tenant' => NULL,
+        'assessments' => [],
+        'summary' => [],
+        'generated_at' => '',
+      ],
+      'template' => 'jaraba-compliance-report',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds security compliance related body classes for theming.
+ */
+function jaraba_security_compliance_preprocess_html(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if ($route_name && str_starts_with($route_name, 'jaraba_security_compliance.')) {
+    $variables['attributes']['class'][] = 'page--security-compliance';
+
+    // Add specific class for each section.
+    $section_map = [
+      'jaraba_security_compliance.dashboard' => 'page--security-dashboard',
+      'jaraba_security_compliance.audit_trail' => 'page--audit-trail',
+      'jaraba_security_compliance.soc2_readiness' => 'page--soc2-readiness',
+    ];
+
+    if (isset($section_map[$route_name])) {
+      $variables['attributes']['class'][] = $section_map[$route_name];
+    }
+  }
+}

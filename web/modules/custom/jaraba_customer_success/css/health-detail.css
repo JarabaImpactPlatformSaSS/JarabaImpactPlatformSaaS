@@ -1,0 +1,335 @@
+/* Health Detail View Styles — BEM: cs-health-detail */
+
+/* Layout */
+.cs-health-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: var(--ej-font-family-body, "Inter", sans-serif);
+  color: var(--ej-color-text, #1e293b);
+}
+
+/* Header */
+.cs-health-detail__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cs-health-detail__back {
+  font-size: 0.85rem;
+  color: var(--ej-color-primary, #2563eb);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+.cs-health-detail__back:hover { text-decoration: underline; }
+.cs-health-detail__title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+.cs-health-detail__meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.cs-health-detail__badge {
+  padding: 0.2rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.cs-health-detail__badge--healthy { background: rgba(22, 163, 74, 0.1); color: #15803d; }
+.cs-health-detail__badge--neutral { background: rgba(245, 158, 11, 0.1); color: #b45309; }
+.cs-health-detail__badge--at_risk,
+.cs-health-detail__badge--at-risk { background: rgba(249, 115, 22, 0.1); color: #c2410c; }
+.cs-health-detail__badge--critical { background: rgba(220, 38, 38, 0.1); color: #b91c1c; }
+.cs-health-detail__trend {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.cs-health-detail__trend--improving { color: var(--ej-color-success, #16a34a); }
+.cs-health-detail__trend--stable { color: var(--ej-color-text-muted, #64748b); }
+.cs-health-detail__trend--declining { color: var(--ej-color-error, #dc2626); }
+
+/* Score Overview */
+.cs-health-detail__score-overview {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.cs-health-detail__score-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid #e2e8f0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.cs-health-detail__score-circle--healthy { border-color: var(--ej-color-success, #16a34a); }
+.cs-health-detail__score-circle--neutral { border-color: var(--ej-color-warning, #f59e0b); }
+.cs-health-detail__score-circle--at_risk,
+.cs-health-detail__score-circle--at-risk { border-color: #f97316; }
+.cs-health-detail__score-circle--critical { border-color: var(--ej-color-error, #dc2626); }
+.cs-health-detail__score-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  line-height: 1;
+}
+.cs-health-detail__score-max {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+}
+.cs-health-detail__score-title {
+  font-size: 0.9rem;
+  color: var(--ej-color-text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* Section Titles */
+.cs-health-detail__section-title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+/* History Chart */
+.cs-health-detail__history {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.cs-health-detail__chart-container {
+  max-height: 400px;
+}
+.cs-health-detail__chart { width: 100%; }
+
+/* Panels Grid */
+.cs-health-detail__panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.cs-health-detail__panel {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Engagement Metrics */
+.cs-health-detail__metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.cs-health-detail__metric {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cs-health-detail__metric:last-child { border-bottom: none; }
+.cs-health-detail__metric-label {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-muted, #64748b);
+  flex: 1;
+}
+.cs-health-detail__metric-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.cs-health-detail__metric-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+.cs-health-detail__metric-change--positive { background: rgba(22, 163, 74, 0.1); color: #15803d; }
+.cs-health-detail__metric-change--negative { background: rgba(220, 38, 38, 0.1); color: #b91c1c; }
+
+/* Feature Adoption */
+.cs-health-detail__adoption-chart-container {
+  max-height: 250px;
+  margin-bottom: 1rem;
+}
+.cs-health-detail__adoption-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cs-health-detail__adoption-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+}
+.cs-health-detail__adoption-name {
+  font-size: 0.8rem;
+  min-width: 100px;
+  color: var(--ej-color-text-muted, #64748b);
+}
+.cs-health-detail__adoption-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.cs-health-detail__adoption-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.cs-health-detail__adoption-fill--high { background: var(--ej-color-success, #16a34a); }
+.cs-health-detail__adoption-fill--medium { background: var(--ej-color-warning, #f59e0b); }
+.cs-health-detail__adoption-fill--low { background: var(--ej-color-error, #dc2626); }
+.cs-health-detail__adoption-pct {
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+
+/* Risk Factors */
+.cs-health-detail__risks {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.cs-health-detail__risk-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cs-health-detail__risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cs-health-detail__risk-item:last-child { border-bottom: none; }
+.cs-health-detail__risk-item--high { border-left: 3px solid var(--ej-color-error, #dc2626); padding-left: 0.75rem; }
+.cs-health-detail__risk-item--medium { border-left: 3px solid var(--ej-color-warning, #f59e0b); padding-left: 0.75rem; }
+.cs-health-detail__risk-item--low { border-left: 3px solid var(--ej-color-success, #16a34a); padding-left: 0.75rem; }
+.cs-health-detail__risk-icon {
+  color: var(--ej-color-warning, #f59e0b);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.cs-health-detail__risk-content { flex: 1; min-width: 0; }
+.cs-health-detail__risk-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+}
+.cs-health-detail__risk-description {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-muted, #64748b);
+  display: block;
+  margin-top: 0.15rem;
+}
+.cs-health-detail__risk-severity {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* Recommended Actions */
+.cs-health-detail__actions {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.cs-health-detail__action-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cs-health-detail__action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cs-health-detail__action-item:last-child { border-bottom: none; }
+.cs-health-detail__action-priority {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+}
+.cs-health-detail__action-item--high .cs-health-detail__action-priority {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+}
+.cs-health-detail__action-item--medium .cs-health-detail__action-priority {
+  background: rgba(245, 158, 11, 0.1);
+  color: #b45309;
+}
+.cs-health-detail__action-item--low .cs-health-detail__action-priority {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+.cs-health-detail__action-content { flex: 1; min-width: 0; }
+.cs-health-detail__action-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+}
+.cs-health-detail__action-description {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-muted, #64748b);
+  display: block;
+  margin-top: 0.15rem;
+}
+
+/* Empty States */
+.cs-health-detail__empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--ej-color-text-muted, #64748b);
+  font-style: italic;
+}
+.cs-health-detail__empty--positive {
+  color: var(--ej-color-success, #16a34a);
+  font-style: normal;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cs-health-detail__panels {
+    grid-template-columns: 1fr;
+  }
+  .cs-health-detail__risk-item,
+  .cs-health-detail__action-item {
+    flex-wrap: wrap;
+  }
+}

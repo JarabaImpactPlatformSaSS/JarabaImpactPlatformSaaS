@@ -90,6 +90,74 @@ jaraba_analytics.api.traffic_sources:
     _permission: 'access jaraba analytics'
 
 # ==========================================================================
+# FUNNEL TRACKING API (G116-2)
+# ==========================================================================
+
+# API: Listar funnels.
+jaraba_analytics.api.funnels.list:
+  path: '/api/v1/analytics/funnels'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\FunnelApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Crear funnel.
+jaraba_analytics.api.funnels.create:
+  path: '/api/v1/analytics/funnels'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\FunnelApiController::createFunnel'
+  methods: [POST]
+  requirements:
+    _permission: 'administer jaraba analytics'
+  options:
+    no_cache: TRUE
+
+# API: Calcular funnel.
+jaraba_analytics.api.funnels.calculate:
+  path: '/api/v1/analytics/funnels/{funnel_id}/calculate'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\FunnelApiController::calculate'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+    funnel_id: \d+
+
+# ==========================================================================
+# COHORT ANALYSIS API (G116-1)
+# ==========================================================================
+
+# API: Listar cohortes.
+jaraba_analytics.api.cohorts.list:
+  path: '/api/v1/analytics/cohorts'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\CohortApiController::listCohorts'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Crear cohorte.
+jaraba_analytics.api.cohorts.create:
+  path: '/api/v1/analytics/cohorts'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\CohortApiController::createCohort'
+  methods: [POST]
+  requirements:
+    _permission: 'administer jaraba analytics'
+  options:
+    no_cache: TRUE
+
+# API: Curva de retención de cohorte.
+jaraba_analytics.api.cohorts.retention:
+  path: '/api/v1/analytics/cohorts/{cohort_id}/retention'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\CohortApiController::getRetentionCurve'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+    cohort_id: \d+
+
+# ==========================================================================
 # CONSENT MANAGEMENT API (GDPR/RGPD)
 # ==========================================================================
 
@@ -125,4 +193,167 @@ jaraba_analytics.api.consent.revoke:
     _access: 'TRUE'
   options:
     no_cache: TRUE
+
+# ==========================================================================
+# DATA EXPORT API (G116-5)
+# ==========================================================================
+
+# API: Exportar analytics como CSV.
+jaraba_analytics.export.csv:
+  path: '/api/v1/analytics/export/csv'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsExportController::exportCsv'
+  methods: [GET]
+  requirements:
+    _permission: 'export analytics data'
+
+# API: Exportar analytics como Excel.
+jaraba_analytics.export.excel:
+  path: '/api/v1/analytics/export/excel'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsExportController::exportExcel'
+  methods: [GET]
+  requirements:
+    _permission: 'export analytics data'
+
+# ==========================================================================
+# REPORT BUILDER API (G116-3)
+# ==========================================================================
+
+# API: Listar informes personalizados.
+jaraba_analytics.api.reports.list:
+  path: '/api/v1/analytics/reports'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ReportApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Ejecutar informe personalizado.
+jaraba_analytics.api.reports.execute:
+  path: '/api/v1/analytics/reports/{report_id}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ReportApiController::execute'
+  methods: [POST]
+  requirements:
+    _permission: 'administer jaraba analytics'
+    report_id: \d+
+  options:
+    no_cache: TRUE
+
+# ==========================================================================
+# BI DASHBOARD BUILDER (G116-6)
+# ==========================================================================
+
+# Dashboard list page.
+jaraba_analytics.dashboards.list:
+  path: '/analytics/dashboards'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardBuilderController::listDashboards'
+    _title: 'Analytics Dashboards'
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# View a specific dashboard.
+jaraba_analytics.dashboards.view:
+  path: '/analytics/dashboards/{dashboardId}'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardBuilderController::viewDashboard'
+    _title: 'View Dashboard'
+  requirements:
+    _permission: 'access jaraba analytics'
+    dashboardId: \d+
+
+# Dashboard builder (edit mode).
+jaraba_analytics.dashboards.builder:
+  path: '/analytics/dashboards/{dashboardId}/builder'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardBuilderController::builderPage'
+    _title: 'Dashboard Builder'
+  requirements:
+    _permission: 'manage analytics dashboards'
+    dashboardId: \d+
+
+# ==========================================================================
+# DASHBOARD WIDGET API (G116-6)
+# ==========================================================================
+
+# API: List widgets for a dashboard.
+jaraba_analytics.api.widgets.list:
+  path: '/api/v1/analytics/dashboards/{dashboardId}/widgets'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardWidgetApiController::listWidgets'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+    dashboardId: \d+
+
+# API: Create widget for a dashboard.
+jaraba_analytics.api.widgets.create:
+  path: '/api/v1/analytics/dashboards/{dashboardId}/widgets'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardWidgetApiController::createWidget'
+  methods: [POST]
+  requirements:
+    _permission: 'manage analytics dashboards'
+    dashboardId: \d+
+  options:
+    no_cache: TRUE
+
+# API: Update a widget.
+jaraba_analytics.api.widgets.update:
+  path: '/api/v1/analytics/widgets/{widgetId}'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardWidgetApiController::updateWidget'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage analytics dashboards'
+    widgetId: \d+
+  options:
+    no_cache: TRUE
+
+# API: Delete a widget.
+jaraba_analytics.api.widgets.delete:
+  path: '/api/v1/analytics/widgets/{widgetId}'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardWidgetApiController::deleteWidget'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage analytics dashboards'
+    widgetId: \d+
+  options:
+    no_cache: TRUE
+
+# API: Get widget data.
+jaraba_analytics.api.widgets.data:
+  path: '/api/v1/analytics/widgets/{widgetId}/data'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\DashboardWidgetApiController::getWidgetData'
+  methods: [GET]
+  requirements:
+    _permission: 'access jaraba analytics'
+    widgetId: \d+
+
+# ==========================================================================
+# SCHEDULED REPORTS (G116-7)
+# ==========================================================================
+
+# Scheduled reports list page.
+jaraba_analytics.scheduled_reports.list:
+  path: '/analytics/reports'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ScheduledReportController::listReports'
+    _title: 'Scheduled Reports'
+  requirements:
+    _permission: 'access jaraba analytics'
+
+# API: Preview a scheduled report.
+jaraba_analytics.api.scheduled_reports.preview:
+  path: '/api/v1/analytics/scheduled-reports/{reportId}/preview'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ScheduledReportController::previewReport'
+  methods: [GET]
+  requirements:
+    _permission: 'manage scheduled reports'
+    reportId: \d+
 

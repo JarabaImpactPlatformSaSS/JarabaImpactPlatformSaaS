@@ -1,0 +1,130 @@
+{#
+/**
+ * @file
+ * Template for Onboarding Dashboard.
+ *
+ * Variables:
+ * - user: Array with id, name of the current user.
+ * - progress: Array of progress entries with id, template_id, progress_percentage, etc.
+ * - checklist: Array of checklist items with id, label, description, completed.
+ * - achievements: Array of achievements with step_id, label, points.
+ *
+ * Conventions:
+ * - BEM naming (.onboarding-dashboard, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_onboarding\Controller\OnboardingDashboardController
+ */
+#}
+
+<div class="onboarding-dashboard"
+     data-user-id="{{ user.id }}"
+     data-api-base="/api/v1/onboarding">
+
+  {# ===== Header ===== #}
+  <header class="onboarding-dashboard__header">
+    <div class="onboarding-dashboard__header-content">
+      <h1 class="onboarding-dashboard__title">
+        {% trans %}Welcome, {{ user.name }}!{% endtrans %}
+      </h1>
+      <p class="onboarding-dashboard__subtitle">
+        {% trans %}Complete the steps below to get the most out of the platform.{% endtrans %}
+      </p>
+    </div>
+  </header>
+
+  {# ===== Progress Bar ===== #}
+  <section class="onboarding-dashboard__progress"
+           aria-label="{% trans %}Onboarding progress{% endtrans %}">
+    {% set pct = progress[0].progress_percentage|default(0) %}
+    <div class="onboarding-dashboard__progress-header">
+      <span class="onboarding-dashboard__progress-label">
+        {% trans %}Your progress{% endtrans %}
+      </span>
+      <span class="onboarding-dashboard__progress-value">{{ pct }}%</span>
+    </div>
+    <div class="onboarding-dashboard__progress-bar" role="progressbar"
+         aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="onboarding-dashboard__progress-fill" style="width: {{ pct }}%"></div>
+    </div>
+    {% if pct == 100 %}
+      <p class="onboarding-dashboard__progress-complete">
+        {% trans %}Congratulations! You have completed your onboarding.{% endtrans %}
+      </p>
+    {% endif %}
+  </section>
+
+  {# ===== Checklist ===== #}
+  <section class="onboarding-dashboard__checklist"
+           aria-label="{% trans %}Onboarding checklist{% endtrans %}">
+    <h2 class="onboarding-dashboard__section-title">
+      {% trans %}Setup Checklist{% endtrans %}
+    </h2>
+    {% if checklist is not empty %}
+      <ul class="onboarding-dashboard__checklist-list">
+        {% for item in checklist %}
+          <li class="onboarding-dashboard__checklist-item {{ item.completed ? 'onboarding-dashboard__checklist-item--completed' : '' }}"
+              data-step-id="{{ item.id }}">
+            <span class="onboarding-dashboard__checklist-icon"
+                  aria-hidden="true">
+              {{ item.completed ? '&#10003;' : '&#9675;' }}
+            </span>
+            <div class="onboarding-dashboard__checklist-content">
+              <strong class="onboarding-dashboard__checklist-label">
+                {{ item.label }}
+              </strong>
+              {% if item.description %}
+                <p class="onboarding-dashboard__checklist-description">
+                  {{ item.description }}
+                </p>
+              {% endif %}
+            </div>
+            {% if not item.completed %}
+              <button type="button"
+                      class="onboarding-dashboard__checklist-action"
+                      data-step-id="{{ item.id }}"
+                      aria-label="{% trans %}Complete step{% endtrans %}: {{ item.label }}">
+                {% trans %}Complete{% endtrans %}
+              </button>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="onboarding-dashboard__empty">
+        {% trans %}No checklist items available. Your onboarding has not been assigned yet.{% endtrans %}
+      </p>
+    {% endif %}
+  </section>
+
+  {# ===== Achievements ===== #}
+  <section class="onboarding-dashboard__achievements"
+           aria-label="{% trans %}Achievements{% endtrans %}">
+    <h2 class="onboarding-dashboard__section-title">
+      {% trans %}Achievements{% endtrans %}
+    </h2>
+    {% if achievements is not empty %}
+      <div class="onboarding-dashboard__achievements-grid">
+        {% for achievement in achievements %}
+          <div class="onboarding-dashboard__achievement-card">
+            <span class="onboarding-dashboard__achievement-icon" aria-hidden="true">
+              &#9733;
+            </span>
+            <strong class="onboarding-dashboard__achievement-label">
+              {{ achievement.label }}
+            </strong>
+            <span class="onboarding-dashboard__achievement-points">
+              +{{ achievement.points }} {% trans %}pts{% endtrans %}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="onboarding-dashboard__empty">
+        {% trans %}Complete steps to earn achievements.{% endtrans %}
+      </p>
+    {% endif %}
+  </section>
+
+</div>

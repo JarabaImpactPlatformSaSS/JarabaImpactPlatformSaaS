@@ -1,0 +1,11 @@
+jaraba_security_compliance.add_policy:
+  route_name: entity.security_policy_v2.add_form
+  title: 'Añadir política de seguridad'
+  appears_on:
+    - entity.security_policy_v2.collection
+
+jaraba_security_compliance.add_assessment:
+  route_name: entity.compliance_assessment_v2.add_form
+  title: 'Añadir evaluación de compliance'
+  appears_on:
+    - entity.compliance_assessment_v2.collection

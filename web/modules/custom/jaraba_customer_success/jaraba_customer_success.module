@@ -68,6 +68,56 @@ function jaraba_customer_success_theme(): array {
       ],
       'template' => 'jaraba-cs-empty-state',
     ],
+    'jaraba_cs_nps_survey' => [
+      'variables' => [
+        'survey_title' => '',
+        'survey_description' => '',
+        'submit_url' => '',
+      ],
+      'template' => 'jaraba-cs-nps-survey',
+    ],
+    'jaraba_cs_nps_results' => [
+      'variables' => [
+        'nps_score' => 0,
+        'total_responses' => 0,
+        'promoters' => 0,
+        'passives' => 0,
+        'detractors' => 0,
+        'trend_data' => [],
+        'recent_responses' => [],
+      ],
+      'template' => 'jaraba-cs-nps-results',
+    ],
+    'jaraba_cs_health_detail' => [
+      'variables' => [
+        'tenant_name' => '',
+        'tenant_id' => '',
+        'health_score' => 0,
+        'category' => 'neutral',
+        'trend' => 'stable',
+        'engagement_metrics' => [],
+        'feature_adoption' => [],
+        'risk_factors' => [],
+        'recommended_actions' => [],
+        'score_history' => [],
+      ],
+      'template' => 'jaraba-cs-health-detail',
+    ],
+    'jaraba_cs_expansion_pipeline' => [
+      'variables' => [
+        'pipeline' => [],
+        'total_expansion_value' => 0,
+        'stage_counts' => [],
+      ],
+      'template' => 'jaraba-cs-expansion-pipeline',
+    ],
+    'jaraba_cs_health_timeline' => [
+      'variables' => [
+        'events' => [],
+        'tenant_name' => '',
+      ],
+      'template' => 'jaraba-cs-health-timeline',
+    ],
   ];
 }
 

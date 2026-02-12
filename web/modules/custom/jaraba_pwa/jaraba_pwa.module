@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * @file
+ * Archivo principal del modulo Jaraba PWA.
+ *
+ * Proporciona capacidades Progressive Web App para la plataforma:
+ * - Notificaciones push (Web Push API / RFC 8030)
+ * - Soporte offline con Service Worker
+ * - Background sync para acciones pendientes
+ * - Manifiesto dinamico por tenant
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_pwa_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_pwa':
+      $output = '<h3>' . t('About Jaraba PWA') . '</h3>';
+      $output .= '<p>' . t('This module provides Progressive Web App capabilities for the Jaraba Impact Platform, including:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Push notifications via Web Push API (RFC 8030) with VAPID authentication') . '</li>';
+      $output .= '<li>' . t('Offline support with intelligent caching strategies') . '</li>';
+      $output .= '<li>' . t('Background sync for queued actions when connectivity resumes') . '</li>';
+      $output .= '<li>' . t('Dynamic manifest generation per tenant with theme integration') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registers Twig templates for PWA components.
+ */
+function jaraba_pwa_theme($existing, $type, $theme, $path) {
+  return [
+    // Admin settings page for PWA configuration.
+    'jaraba_pwa_settings' => [
+      'variables' => [
+        'vapid_public_key' => NULL,
+        'push_enabled' => FALSE,
+        'offline_enabled' => FALSE,
+        'sync_enabled' => FALSE,
+        'subscription_count' => 0,
+        'pending_sync_count' => 0,
+        'cache_strategies' => [],
+      ],
+      'template' => 'jaraba-pwa-settings',
+      'path' => $path . '/templates',
+    ],
+
+    // Offline indicator bar shown when user loses connectivity.
+    'jaraba_pwa_offline_indicator' => [
+      'variables' => [
+        'message_offline' => NULL,
+        'message_online' => NULL,
+      ],
+      'template' => 'jaraba-pwa-offline-indicator',
+      'path' => $path . '/templates',
+    ],
+
+    // Push notification opt-in dialog for user consent.
+    'jaraba_pwa_push_optin' => [
+      'variables' => [
+        'title' => NULL,
+        'description' => NULL,
+        'accept_label' => NULL,
+        'dismiss_label' => NULL,
+        'vapid_public_key' => NULL,
+      ],
+      'template' => 'jaraba-pwa-push-optin',
+      'path' => $path . '/templates',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds PWA-specific body classes and meta tags for manifest,
+ * theme-color, and Apple mobile web app support.
+ */
+function jaraba_pwa_preprocess_html(array &$variables) {
+  // Add PWA body class for styling hooks.
+  $variables['attributes']['class'][] = 'jaraba-pwa-enabled';
+
+  // Add manifest link tag.
+  $manifest_link = [
+    '#tag' => 'link',
+    '#attributes' => [
+      'rel' => 'manifest',
+      'href' => '/api/v1/pwa/manifest',
+      'crossorigin' => 'use-credentials',
+    ],
+  ];
+  $variables['page']['#attached']['html_head'][] = [$manifest_link, 'pwa_manifest'];
+
+  // Add theme-color meta tag (defaults to platform primary color).
+  $theme_color = [
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'theme-color',
+      'content' => '#1a73e8',
+    ],
+  ];
+  $variables['page']['#attached']['html_head'][] = [$theme_color, 'pwa_theme_color'];
+
+  // Apple mobile web app meta tags.
+  $apple_capable = [
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'apple-mobile-web-app-capable',
+      'content' => 'yes',
+    ],
+  ];
+  $variables['page']['#attached']['html_head'][] = [$apple_capable, 'pwa_apple_capable'];
+
+  $apple_status_bar = [
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'apple-mobile-web-app-status-bar-style',
+      'content' => 'black-translucent',
+    ],
+  ];
+  $variables['page']['#attached']['html_head'][] = [$apple_status_bar, 'pwa_apple_status_bar'];
+
+  // Attach the offline indicator library globally.
+  $variables['page']['#attached']['library'][] = 'jaraba_pwa/offline-indicator';
+}

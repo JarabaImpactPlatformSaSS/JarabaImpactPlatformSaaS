@@ -1,0 +1,67 @@
+# Admin routes.
+jaraba_security_compliance.admin:
+  path: '/admin/structure/security-compliance'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\SecurityDashboardController::adminOverview'
+    _title: 'Seguridad y Compliance'
+  requirements:
+    _permission: 'administer security compliance'
+
+# Frontend routes.
+jaraba_security_compliance.dashboard:
+  path: '/seguridad/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\SecurityDashboardController::dashboard'
+    _title: 'Dashboard de Seguridad'
+  requirements:
+    _permission: 'view compliance status'
+
+jaraba_security_compliance.audit_trail:
+  path: '/seguridad/auditoria'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\SecurityDashboardController::auditTrail'
+    _title: 'Auditoría de Seguridad'
+  requirements:
+    _permission: 'view audit log'
+
+jaraba_security_compliance.soc2_readiness:
+  path: '/seguridad/soc2'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\SecurityDashboardController::soc2Readiness'
+    _title: 'SOC2 Readiness'
+  requirements:
+    _permission: 'view compliance status'
+
+# API routes.
+jaraba_security_compliance.api.audit_export:
+  path: '/api/v1/security/audit/export'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\AuditExportController::export'
+  requirements:
+    _permission: 'export audit log'
+  methods: [GET]
+
+jaraba_security_compliance.api.compliance_status:
+  path: '/api/v1/security/compliance/status'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getStatus'
+  requirements:
+    _permission: 'view compliance status'
+  methods: [GET]
+
+jaraba_security_compliance.api.policies:
+  path: '/api/v1/security/policies'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getPolicies'
+  requirements:
+    _permission: 'manage security policies'
+  methods: [GET]
+
+# Settings form.
+jaraba_security_compliance.settings:
+  path: '/admin/config/security/compliance-settings'
+  defaults:
+    _form: '\Drupal\jaraba_security_compliance\Form\SecurityComplianceSettingsForm'
+    _title: 'Configuración de Security Compliance'
+  requirements:
+    _permission: 'administer security compliance'

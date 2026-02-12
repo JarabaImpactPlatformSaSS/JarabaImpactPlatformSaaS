@@ -1,0 +1,9 @@
+jaraba_usage_billing.admin.settings:
+  title: 'Configuración'
+  route_name: jaraba_usage_billing.admin
+  base_route: jaraba_usage_billing.admin
+
+jaraba_usage_billing.pricing_rule.settings:
+  title: 'Configuración'
+  route_name: jaraba_usage_billing.pricing_rule.settings
+  base_route: jaraba_usage_billing.pricing_rule.settings

@@ -1,0 +1,403 @@
+/**
+ * @file
+ * Dashboard Builder styles.
+ *
+ * Layout with sidebar palette, grid canvas, and widget config panel.
+ * Uses CSS Grid for the builder workspace and BEM naming.
+ * Design tokens via var(--ej-*, $fallback).
+ */
+
+/* ===== Builder Root ===== */
+
+.analytics-builder {
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+  font-family: var(--ej-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+/* ===== Header ===== */
+
+.analytics-builder__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ej-spacing-md, 16px) var(--ej-spacing-lg, 24px);
+  border-bottom: 1px solid var(--ej-border-color, #dee2e6);
+  background: var(--ej-bg-surface, #fff);
+}
+
+.analytics-builder__title {
+  margin: 0;
+  font-size: var(--ej-font-size-lg, 1.25rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #212529);
+}
+
+.analytics-builder__header-actions {
+  display: flex;
+  gap: var(--ej-spacing-sm, 8px);
+}
+
+.analytics-builder__save-btn,
+.analytics-builder__preview-btn,
+.analytics-builder__back-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-md, 16px);
+  border: 1px solid var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 6px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.analytics-builder__save-btn {
+  background: var(--ej-primary, #0d6efd);
+  color: #fff;
+  border-color: var(--ej-primary, #0d6efd);
+}
+
+.analytics-builder__save-btn:hover {
+  background: var(--ej-primary-hover, #0b5ed7);
+}
+
+.analytics-builder__preview-btn {
+  background: var(--ej-bg-surface, #fff);
+  color: var(--ej-text-primary, #212529);
+}
+
+.analytics-builder__back-btn {
+  background: transparent;
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+/* ===== Workspace ===== */
+
+.analytics-builder__workspace {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== Widget Palette ===== */
+
+.analytics-builder__palette {
+  padding: var(--ej-spacing-md, 16px);
+  border-right: 1px solid var(--ej-border-color, #dee2e6);
+  background: var(--ej-bg-subtle, #f8f9fa);
+  overflow-y: auto;
+}
+
+.analytics-builder__palette-title {
+  margin: 0 0 var(--ej-spacing-xs, 4px) 0;
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #212529);
+}
+
+.analytics-builder__palette-hint {
+  margin: 0 0 var(--ej-spacing-md, 16px) 0;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.analytics-builder__palette-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 8px);
+}
+
+.analytics-builder__palette-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 8px);
+  padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+  border: 1px solid var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 6px);
+  background: var(--ej-bg-surface, #fff);
+  cursor: grab;
+  transition: box-shadow 0.2s, transform 0.1s;
+  user-select: none;
+}
+
+.analytics-builder__palette-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.analytics-builder__palette-item--dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.analytics-builder__palette-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--ej-primary, #0d6efd);
+}
+
+.analytics-builder__palette-icon--bar_chart { background: var(--ej-success, #198754); }
+.analytics-builder__palette-icon--pie_chart { background: var(--ej-purple, #6f42c1); }
+.analytics-builder__palette-icon--number_card { background: var(--ej-warning, #ffc107); }
+.analytics-builder__palette-icon--table { background: var(--ej-info, #0dcaf0); }
+.analytics-builder__palette-icon--funnel { background: var(--ej-danger, #dc3545); }
+.analytics-builder__palette-icon--cohort_heatmap { background: var(--ej-orange, #fd7e14); }
+
+.analytics-builder__palette-label {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-primary, #212529);
+}
+
+/* ===== Grid Canvas ===== */
+
+.analytics-builder__canvas {
+  padding: var(--ej-spacing-md, 16px);
+  overflow: auto;
+  background: var(--ej-bg-canvas, #e9ecef);
+}
+
+.analytics-builder__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 80px;
+  gap: var(--ej-spacing-sm, 8px);
+  min-height: 400px;
+  position: relative;
+}
+
+/* ===== Widgets on Canvas ===== */
+
+.analytics-builder__widget {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 6px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.analytics-builder__widget:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.analytics-builder__widget--dragging {
+  opacity: 0.4;
+  box-shadow: 0 0 0 2px var(--ej-primary, #0d6efd);
+}
+
+.analytics-builder__widget-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 4px);
+  padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-sm, 8px);
+  border-bottom: 1px solid var(--ej-border-color, #dee2e6);
+  background: var(--ej-bg-subtle, #f8f9fa);
+}
+
+.analytics-builder__widget-drag-handle {
+  cursor: grab;
+  color: var(--ej-text-secondary, #6c757d);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.analytics-builder__widget-name {
+  flex: 1;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--ej-text-primary, #212529);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analytics-builder__widget-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.analytics-builder__widget-config-btn,
+.analytics-builder__widget-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 3px;
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.analytics-builder__widget-config-btn:hover {
+  background: var(--ej-bg-hover, #e2e6ea);
+}
+
+.analytics-builder__widget-remove-btn:hover {
+  background: var(--ej-danger, #dc3545);
+  color: #fff;
+}
+
+.analytics-builder__widget-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ej-spacing-sm, 8px);
+}
+
+.analytics-builder__widget-type-label {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-secondary, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analytics-builder__widget-resize-handle {
+  height: 8px;
+  cursor: se-resize;
+  background: linear-gradient(135deg, transparent 50%, var(--ej-border-color, #dee2e6) 50%);
+  background-size: 6px 6px;
+  background-position: bottom right;
+  background-repeat: no-repeat;
+}
+
+/* ===== Drop Zone ===== */
+
+.analytics-builder__drop-zone {
+  display: none;
+  grid-column: 1 / -1;
+  grid-row: auto;
+  border: 2px dashed var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 6px);
+  min-height: 80px;
+  align-items: center;
+  justify-content: center;
+}
+
+.analytics-builder__drop-zone--active {
+  display: flex;
+  border-color: var(--ej-primary, #0d6efd);
+  background: rgba(13, 110, 253, 0.05);
+}
+
+.analytics-builder__drop-zone-text {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-primary, #0d6efd);
+}
+
+/* ===== Config Panel ===== */
+
+.analytics-builder__config-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: var(--ej-bg-surface, #fff);
+  border-left: 1px solid var(--ej-border-color, #dee2e6);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.analytics-builder__config-panel--hidden {
+  transform: translateX(100%);
+}
+
+.analytics-builder__config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ej-spacing-md, 16px);
+  border-bottom: 1px solid var(--ej-border-color, #dee2e6);
+}
+
+.analytics-builder__config-title {
+  margin: 0;
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 600;
+}
+
+.analytics-builder__config-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.analytics-builder__config-form {
+  padding: var(--ej-spacing-md, 16px);
+}
+
+.analytics-builder__config-field {
+  margin-bottom: var(--ej-spacing-md, 16px);
+}
+
+.analytics-builder__config-label {
+  display: block;
+  margin-bottom: var(--ej-spacing-xs, 4px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--ej-text-primary, #212529);
+}
+
+.analytics-builder__config-input,
+.analytics-builder__config-select {
+  width: 100%;
+  padding: var(--ej-spacing-sm, 8px);
+  border: 1px solid var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 6px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  background: var(--ej-bg-surface, #fff);
+  box-sizing: border-box;
+}
+
+.analytics-builder__config-actions {
+  padding-top: var(--ej-spacing-md, 16px);
+}
+
+.analytics-builder__config-save-btn {
+  width: 100%;
+  padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+  background: var(--ej-primary, #0d6efd);
+  color: #fff;
+  border: none;
+  border-radius: var(--ej-border-radius, 6px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.analytics-builder__config-save-btn:hover {
+  background: var(--ej-primary-hover, #0b5ed7);
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 768px) {
+  .analytics-builder__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-builder__palette {
+    border-right: none;
+    border-bottom: 1px solid var(--ej-border-color, #dee2e6);
+  }
+
+  .analytics-builder__palette-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .analytics-builder__config-panel {
+    width: 100%;
+  }
+}

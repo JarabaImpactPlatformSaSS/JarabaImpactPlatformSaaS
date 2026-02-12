@@ -45,3 +45,41 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@jaraba_ab_testing.statistical_engine'
       - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # OnboardingExperimentService: Experimentación A/B para onboarding
+  # Responsabilidad: gestionar experimentos específicos del flujo de
+  #   onboarding, asignar variantes a usuarios nuevos, trackear
+  #   conversiones de registro/plan/primer login
+  # Relaciones: consume ABExperiment, ABVariant, VariantAssignmentService
+  # =====================================================================
+  jaraba_ab_testing.onboarding_experiment:
+    class: Drupal\jaraba_ab_testing\Service\OnboardingExperimentService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ab_testing.variant_assignment'
+      - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # ExposureTrackingService: Tracking de exposiciones y conversiones
+  # Responsabilidad: registrar exposiciones de visitantes a variantes,
+  #   marcar conversiones, obtener exposiciones por experimento
+  # Relaciones: consume ExperimentExposure entity
+  # =====================================================================
+  jaraba_ab_testing.exposure_tracking:
+    class: Drupal\jaraba_ab_testing\Service\ExposureTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ab_testing'
+
+  # =====================================================================
+  # ResultCalculationService: Cálculo de resultados estadísticos
+  # Responsabilidad: calcular métricas por variante, evaluar
+  #   significancia estadística, auto-parada, declarar ganador
+  # Relaciones: consume ExperimentExposure, ExperimentResult, ABExperiment
+  # =====================================================================
+  jaraba_ab_testing.result_calculation:
+    class: Drupal\jaraba_ab_testing\Service\ResultCalculationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ab_testing'

@@ -27,14 +27,118 @@ function jaraba_diagnostic_entity_presave(EntityInterface $entity): void {
  * Acciones post-creación de diagnóstico.
  */
 function jaraba_diagnostic_entity_insert(EntityInterface $entity): void {
-  if ($entity->getEntityTypeId() !== 'business_diagnostic') {
+  // Diagnostico Empresarial (Emprendimiento).
+  if ($entity->getEntityTypeId() === 'business_diagnostic') {
+    \Drupal::logger('jaraba_diagnostic')->info('Nuevo diagnostico empresarial creado: @name (ID: @id)', [
+      '@name' => $entity->label(),
+      '@id' => $entity->id(),
+    ]);
     return;
   }
 
-  // Log de nuevo diagnóstico
-  \Drupal::logger('jaraba_diagnostic')->info('Nuevo diagnóstico creado: @name (ID: @id)', [
-    '@name' => $entity->label(),
-    '@id' => $entity->id(),
+  // USR-002: Diagnostico de Empleabilidad completado (Spec 20260120a Fase 2).
+  if ($entity->getEntityTypeId() === 'employability_diagnostic') {
+    jaraba_diagnostic_on_employability_completed($entity);
+  }
+}
+
+/**
+ * Callback cuando un diagnostico de empleabilidad se crea.
+ *
+ * USR-002: Automatizacion post-diagnostico de empleabilidad.
+ * 1. Asignar rol 'candidate' al usuario
+ * 2. Actualizar JourneyState (avatar=job_seeker, state=activation)
+ * 3. Invocar DiagnosticEnrollmentService para inscripcion LMS
+ * 4. Otorgar +50 creditos via ImpactCreditService
+ *
+ * SPEC: 20260120a Fase 2
+ */
+function jaraba_diagnostic_on_employability_completed(EntityInterface $diagnostic): void {
+  /** @var \Drupal\jaraba_diagnostic\Entity\EmployabilityDiagnostic $diagnostic */
+  $logger = \Drupal::logger('jaraba_diagnostic');
+  $ownerId = $diagnostic->getOwnerId();
+
+  // Solo procesar si el diagnostico tiene propietario autenticado.
+  if (!$ownerId || $ownerId === 0) {
+    $logger->info('Diagnostico empleabilidad @id creado sin usuario (anonimo).', [
+      '@id' => $diagnostic->id(),
+    ]);
+    return;
+  }
+
+  // 1. Asignar rol 'candidate' al usuario si no lo tiene.
+  try {
+    $user = \Drupal::entityTypeManager()->getStorage('user')->load($ownerId);
+    if ($user && !$user->hasRole('candidate')) {
+      $user->addRole('candidate');
+      $user->save();
+      $logger->info('Rol candidate asignado a usuario @uid', ['@uid' => $ownerId]);
+    }
+  }
+  catch (\Exception $e) {
+    $logger->warning('Error asignando rol candidate: @error', ['@error' => $e->getMessage()]);
+  }
+
+  // 2. Actualizar JourneyState.
+  if (\Drupal::moduleHandler()->moduleExists('jaraba_journey')) {
+    try {
+      $journeyStates = \Drupal::entityTypeManager()
+        ->getStorage('journey_state')
+        ->loadByProperties(['user_id' => $ownerId]);
+
+      if (!empty($journeyStates)) {
+        $journeyState = reset($journeyStates);
+        $journeyState->set('avatar', 'jobseeker');
+        $journeyState->set('state', 'activation');
+        $journeyState->save();
+      }
+    }
+    catch (\Exception $e) {
+      $logger->warning('Error actualizando JourneyState: @error', ['@error' => $e->getMessage()]);
+    }
+  }
+
+  // 3. Inscripcion LMS automatica segun perfil.
+  if (\Drupal::hasService('jaraba_lms.diagnostic_enrollment')) {
+    try {
+      $profileType = $diagnostic->getProfileType();
+      $primaryGap = $diagnostic->getPrimaryGap();
+
+      \Drupal::service('jaraba_lms.diagnostic_enrollment')
+        ->enrollByDiagnosticResult(
+          $ownerId,
+          $profileType,
+          $primaryGap,
+          [
+            'score' => $diagnostic->getScore(),
+            'diagnostic_id' => $diagnostic->id(),
+          ]
+        );
+    }
+    catch (\Exception $e) {
+      $logger->warning('Error en inscripcion LMS: @error', ['@error' => $e->getMessage()]);
+    }
+  }
+
+  // 4. Otorgar creditos de impacto.
+  if (\Drupal::hasService('ecosistema_jaraba_core.impact_credit')) {
+    try {
+      \Drupal::service('ecosistema_jaraba_core.impact_credit')
+        ->awardCredits($ownerId, 'complete_diagnostic', NULL, [
+          'diagnostic_type' => 'employability',
+          'profile_type' => $diagnostic->getProfileType(),
+        ]);
+    }
+    catch (\Exception $e) {
+      // No bloquear por errores de creditos.
+    }
+  }
+
+  $logger->info('USR-002: Diagnostico empleabilidad completado. User: @uid, Score: @score, Perfil: @profile, Gap: @gap', [
+    '@uid' => $ownerId,
+    '@score' => $diagnostic->getScore(),
+    '@profile' => $diagnostic->getProfileType(),
+    '@gap' => $diagnostic->getPrimaryGap(),
   ]);
 }
 
@@ -98,6 +202,29 @@ function jaraba_diagnostic_on_diagnostic_completed(EntityInterface $diagnostic):
  */
 function jaraba_diagnostic_theme(): array {
   return [
+    // Diagnostico Express de Empleabilidad (Spec 20260120b S3).
+    'employability_diagnostic_landing' => [
+      'variables' => [
+        'questions' => [],
+        'estimated_time' => '2 minutos',
+      ],
+      'template' => 'employability-diagnostic-landing',
+    ],
+    'employability_diagnostic_results' => [
+      'variables' => [
+        'diagnostic' => NULL,
+        'score' => 0,
+        'profile_type' => 'invisible',
+        'profile_label' => 'Invisible',
+        'profile_description' => '',
+        'primary_gap' => '',
+        'dimension_scores' => [],
+        'recommendations' => [],
+      ],
+      'template' => 'employability-diagnostic-results',
+    ],
+
+    // Diagnostico Empresarial (Emprendimiento).
     'diagnostic_wizard_start' => [
       'variables' => [
         'sections' => [],

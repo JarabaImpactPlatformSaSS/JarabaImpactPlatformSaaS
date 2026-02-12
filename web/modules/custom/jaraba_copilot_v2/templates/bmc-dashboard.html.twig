@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Template para el dashboard de validacion del Business Model Canvas.
+ *
+ * Variables:
+ * - blocks: Array de 9 bloques BMC con semaforos.
+ * - overall: Estado general de validacion.
+ * - profile: Perfil del emprendedor.
+ * - impact_points: Puntos de impacto acumulados.
+ */
+#}
+
+<div class="bmc-dashboard">
+  <div class="bmc-dashboard__header">
+    <h1 class="bmc-dashboard__title">{{ 'Business Model Canvas - Validacion'|t }}</h1>
+    {% if overall %}
+      <div class="bmc-dashboard__overall">
+        <span class="bmc-dashboard__overall-label">{{ 'Validacion global'|t }}:</span>
+        <span class="bmc-dashboard__overall-value bmc-dashboard__overall-value--{{ overall.semaphore|lower }}">
+          {{ overall.percentage }}%
+        </span>
+        <span class="bmc-dashboard__overall-count">
+          ({{ overall.validated_hypotheses }}/{{ overall.total_hypotheses }} {{ 'hipotesis validadas'|t }})
+        </span>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if impact_points is defined %}
+    {% include '@jaraba_copilot_v2/partials/_impact-points-bar.html.twig' with {
+      'points': impact_points,
+    } only %}
+  {% endif %}
+
+  <div class="bmc-dashboard__grid">
+    {# Row 1: KP, KA, VP, CR, CS #}
+    {% for code in ['KP', 'KA', 'VP', 'CR', 'CS'] %}
+      {% if blocks[code] is defined %}
+        {% include '@jaraba_copilot_v2/partials/_bmc-block.html.twig' with {
+          'block': blocks[code],
+        } only %}
+      {% endif %}
+    {% endfor %}
+
+    {# Row 2: (empty), KR, (VP continues), CH, (CS continues) #}
+    {% for code in ['KR', 'CH'] %}
+      {% if blocks[code] is defined %}
+        {% include '@jaraba_copilot_v2/partials/_bmc-block.html.twig' with {
+          'block': blocks[code],
+        } only %}
+      {% endif %}
+    {% endfor %}
+
+    {# Row 3: C$, RS #}
+    {% for code in ['C$', 'RS'] %}
+      {% if blocks[code] is defined %}
+        {% include '@jaraba_copilot_v2/partials/_bmc-block.html.twig' with {
+          'block': blocks[code],
+        } only %}
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="bmc-dashboard__actions">
+    <a href="{{ path('entity.hypothesis.add_form') }}"
+       class="use-ajax btn btn--primary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Crear hipotesis'|t }}
+    </a>
+  </div>
+</div>

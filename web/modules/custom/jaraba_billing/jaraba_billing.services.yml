@@ -70,3 +70,54 @@ services:
       - '@http_client'
       - '@config.factory'
       - '@logger.factory'
+
+  # ===========================================
+  # STRIPE INTEGRATION — Servicios de integración real
+  # ===========================================
+
+  # Gestión de clientes Stripe
+  jaraba_billing.stripe_customer:
+    class: Drupal\jaraba_billing\Service\StripeCustomerService
+    arguments:
+      - '@jaraba_foc.stripe_connect'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # Gestión de suscripciones Stripe
+  jaraba_billing.stripe_subscription:
+    class: Drupal\jaraba_billing\Service\StripeSubscriptionService
+    arguments:
+      - '@jaraba_foc.stripe_connect'
+      - '@jaraba_billing.tenant_subscription'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # Sincronización de facturas Stripe
+  jaraba_billing.stripe_invoice:
+    class: Drupal\jaraba_billing\Service\StripeInvoiceService
+    arguments:
+      - '@jaraba_foc.stripe_connect'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # ===========================================
+  # DUNNING + FEATURE ACCESS — Servicios de clase mundial
+  # ===========================================
+
+  # Gestión del proceso de dunning (cobro) — spec 134 §6
+  jaraba_billing.dunning:
+    class: Drupal\jaraba_billing\Service\DunningService
+    arguments:
+      - '@jaraba_billing.tenant_subscription'
+      - '@entity_type.manager'
+      - '@database'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_billing'
+
+  # Verificación de acceso a features por plan + add-ons — spec 158 §6.1
+  jaraba_billing.feature_access:
+    class: Drupal\jaraba_billing\Service\FeatureAccessService
+    arguments:
+      - '@jaraba_billing.plan_validator'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'

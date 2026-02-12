@@ -1,0 +1,160 @@
+{#
+/**
+ * @file
+ * Plantilla HTML de factura con marca del tenant (G117-3).
+ *
+ * Disponible para renderizado Twig-to-PDF o envio por email.
+ * Los estilos estan inline para maxima compatibilidad con clientes
+ * de correo y generadores de PDF basados en HTML.
+ *
+ * Variables:
+ *   - invoice_number: (string) Numero de factura.
+ *   - date: (string) Fecha de emision.
+ *   - client_name: (string) Nombre del cliente.
+ *   - client_address: (string) Direccion del cliente.
+ *   - items: (array) Lineas de factura, cada una con:
+ *     - name: (string) Descripcion del concepto.
+ *     - quantity: (int|float) Cantidad.
+ *     - unit_price: (float) Precio unitario.
+ *     - total: (float) Total de la linea.
+ *   - subtotal: (float) Subtotal antes de impuestos.
+ *   - tax_rate: (float) Porcentaje de impuesto.
+ *   - tax_amount: (float) Importe de impuesto.
+ *   - total: (float) Total con impuestos incluidos.
+ *   - notes: (string) Notas adicionales (opcional).
+ *   - brand: (array) Configuracion de marca del tenant:
+ *     - color_primary: (string) Color principal hex.
+ *     - color_secondary: (string) Color secundario hex.
+ *     - color_accent: (string) Color de acento hex.
+ *     - logo_url: (string|null) URL del logo.
+ *     - font_heading: (string) Fuente para titulos.
+ *     - font_body: (string) Fuente para cuerpo.
+ *
+ * BEM structure:
+ *   .branded-invoice
+ *     .branded-invoice__header
+ *     .branded-invoice__client
+ *     .branded-invoice__items
+ *     .branded-invoice__totals
+ *     .branded-invoice__notes
+ *     .branded-invoice__footer
+ */
+#}
+
+{% set primary = brand.color_primary|default('#FF8C42') %}
+{% set secondary = brand.color_secondary|default('#00A9A5') %}
+{% set accent = brand.color_accent|default('#233D63') %}
+{% set font_heading = brand.font_heading|default('Outfit') %}
+{% set font_body = brand.font_body|default('Inter') %}
+
+<div class="branded-invoice" style="max-width: 800px; margin: 0 auto; font-family: '{{ font_body }}', 'Helvetica Neue', Arial, sans-serif; color: #333; line-height: 1.5;">
+
+  {# ===== BARRA SUPERIOR DE COLOR ===== #}
+  <div class="branded-invoice__bar" style="height: 6px; background: {{ primary }};"></div>
+
+  {# ===== CABECERA ===== #}
+  <div class="branded-invoice__header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 32px 16px;">
+    <div class="branded-invoice__header-logo">
+      {% if brand.logo_url %}
+        <img src="{{ brand.logo_url }}" alt="{{ 'Logo'|t }}" style="max-height: 50px; max-width: 180px;" />
+      {% endif %}
+    </div>
+    <div class="branded-invoice__header-title" style="text-align: right;">
+      <h1 style="margin: 0; font-family: '{{ font_heading }}', sans-serif; font-size: 28px; color: {{ primary }}; font-weight: 700;">
+        {{ 'FACTURA'|t }}
+      </h1>
+    </div>
+  </div>
+
+  {# ===== INFORMACION DE FACTURA ===== #}
+  <div class="branded-invoice__meta" style="padding: 0 32px 16px; display: flex; justify-content: space-between;">
+    <div>
+      <p style="margin: 4px 0; font-size: 14px;">
+        <strong style="color: {{ accent }};">{{ 'Factura N.:'|t }}</strong> {{ invoice_number }}
+      </p>
+      <p style="margin: 4px 0; font-size: 14px;">
+        <strong style="color: {{ accent }};">{{ 'Fecha:'|t }}</strong> {{ date }}
+      </p>
+    </div>
+  </div>
+
+  {# ===== DATOS DEL CLIENTE ===== #}
+  <div class="branded-invoice__client" style="padding: 12px 32px; margin: 0 32px 20px; background: #f8f9fa; border-left: 4px solid {{ secondary }}; border-radius: 0 4px 4px 0;">
+    <p style="margin: 0 0 4px; font-weight: 600; color: {{ accent }}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+      {{ 'Facturar a'|t }}
+    </p>
+    <p style="margin: 2px 0; font-size: 15px; font-weight: 600;">{{ client_name }}</p>
+    {% if client_address %}
+      <p style="margin: 2px 0; font-size: 13px; color: #666;">{{ client_address }}</p>
+    {% endif %}
+  </div>
+
+  {# ===== TABLA DE ITEMS ===== #}
+  <div class="branded-invoice__items" style="padding: 0 32px;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr style="background: {{ primary }}; color: #fff;">
+          <th style="padding: 10px 12px; text-align: left; font-weight: 600; border-radius: 4px 0 0 0;">
+            {{ 'Concepto'|t }}
+          </th>
+          <th style="padding: 10px 12px; text-align: center; font-weight: 600;">
+            {{ 'Cantidad'|t }}
+          </th>
+          <th style="padding: 10px 12px; text-align: right; font-weight: 600;">
+            {{ 'Precio Ud.'|t }}
+          </th>
+          <th style="padding: 10px 12px; text-align: right; font-weight: 600; border-radius: 0 4px 0 0;">
+            {{ 'Total'|t }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr style="border-bottom: 1px solid #eee; {{ loop.index is odd ? 'background: #fafafa;' : '' }}">
+            <td style="padding: 10px 12px;">{{ item.name }}</td>
+            <td style="padding: 10px 12px; text-align: center;">{{ item.quantity }}</td>
+            <td style="padding: 10px 12px; text-align: right;">{{ item.unit_price|number_format(2, ',', '.') }} EUR</td>
+            <td style="padding: 10px 12px; text-align: right; font-weight: 500;">{{ item.total|number_format(2, ',', '.') }} EUR</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# ===== TOTALES ===== #}
+  <div class="branded-invoice__totals" style="padding: 16px 32px; margin-top: 8px;">
+    <table style="width: 260px; margin-left: auto; font-size: 14px;">
+      <tr>
+        <td style="padding: 4px 12px; color: #666;">{{ 'Subtotal'|t }}</td>
+        <td style="padding: 4px 12px; text-align: right;">{{ subtotal|number_format(2, ',', '.') }} EUR</td>
+      </tr>
+      <tr>
+        <td style="padding: 4px 12px; color: #666;">{{ 'IVA'|t }} ({{ tax_rate }}%)</td>
+        <td style="padding: 4px 12px; text-align: right;">{{ tax_amount|number_format(2, ',', '.') }} EUR</td>
+      </tr>
+      <tr style="border-top: 2px solid {{ primary }};">
+        <td style="padding: 10px 12px; font-weight: 700; color: {{ primary }}; font-size: 16px;">{{ 'TOTAL'|t }}</td>
+        <td style="padding: 10px 12px; text-align: right; font-weight: 700; color: {{ primary }}; font-size: 16px;">
+          {{ total|number_format(2, ',', '.') }} EUR
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  {# ===== NOTAS ===== #}
+  {% if notes %}
+    <div class="branded-invoice__notes" style="padding: 12px 32px; margin: 12px 32px 0; background: #fffdf5; border: 1px solid #fde68a; border-radius: 4px;">
+      <p style="margin: 0; font-size: 12px; color: #92400e;">
+        <strong>{{ 'Notas:'|t }}</strong> {{ notes }}
+      </p>
+    </div>
+  {% endif %}
+
+  {# ===== PIE DE PAGINA ===== #}
+  <div class="branded-invoice__footer" style="margin-top: 32px; padding: 16px 32px; border-top: 1px solid {{ primary }}; text-align: center;">
+    <p style="margin: 0; font-size: 11px; color: #999;">
+      {{ 'Ecosistema Jaraba'|t }} &copy; {{ 'now'|date('Y') }} &mdash; {{ 'Documento generado automaticamente'|t }}
+    </p>
+  </div>
+
+</div>

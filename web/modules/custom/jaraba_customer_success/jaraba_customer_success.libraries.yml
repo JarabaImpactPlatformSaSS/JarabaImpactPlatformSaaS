@@ -9,3 +9,51 @@ dashboard:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+nps-survey:
+  version: 1.0
+  css:
+    theme:
+      css/nps-survey.css: {}
+  js:
+    js/nps-survey.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+nps-results:
+  version: 1.0
+  css:
+    theme:
+      css/nps-results.css: {}
+  js:
+    js/nps-results-chart.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+health-detail:
+  version: 1.0
+  css:
+    theme:
+      css/health-detail.css: {}
+  js:
+    js/health-detail-chart.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+expansion-pipeline:
+  version: 1.0
+  css:
+    theme:
+      css/expansion-pipeline.css: {}
+  js:
+    js/expansion-pipeline.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

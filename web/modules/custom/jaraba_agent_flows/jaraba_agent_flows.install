@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_agent_flows.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_agent_flows_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Agent Flows instalado. Las tablas de entidades (agent_flow, agent_flow_execution, agent_flow_step_log) se han creado automaticamente.'));
+
+  // Establecer configuracion por defecto.
+  \Drupal::configFactory()->getEditable('jaraba_agent_flows.settings')
+    ->set('default_timeout', 300)
+    ->set('max_concurrent', 5)
+    ->set('max_retries', 3)
+    ->set('retry_delay', 5)
+    ->set('log_retention_days', 90)
+    ->set('enable_step_logging', TRUE)
+    ->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_agent_flows_uninstall(): void {
+  // Eliminar configuracion del modulo.
+  \Drupal::configFactory()->getEditable('jaraba_agent_flows.settings')->delete();
+
+  // Limpiar estado.
+  \Drupal::state()->deleteMultiple([
+    'jaraba_agent_flows.last_cron_run',
+    'jaraba_agent_flows.schema_version',
+  ]);
+
+  \Drupal::messenger()->addStatus(t('Jaraba Agent Flows desinstalado. Las tablas de entidades se han eliminado.'));
+}

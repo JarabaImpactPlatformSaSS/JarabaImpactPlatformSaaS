@@ -1,0 +1,176 @@
+{#
+/**
+ * @file
+ * jaraba-cs-health-detail.html.twig - Vista detallada de salud de un tenant.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-health-detail / cs-health-detail__* / cs-health-detail--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Chart.js para historial de health score y radar de adopcion.
+ *
+ * VARIABLES:
+ * - tenant_name: string nombre del tenant.
+ * - tenant_id: string ID del tenant.
+ * - health_score: int puntuacion actual (0-100).
+ * - category: string (healthy|neutral|at_risk|critical).
+ * - trend: string (improving|stable|declining).
+ * - engagement_metrics: array de metricas de engagement.
+ * - feature_adoption: array [{name, adopted, percentage}, ...].
+ * - risk_factors: array de factores de riesgo.
+ * - recommended_actions: array de acciones recomendadas.
+ * - score_history: array [{date, score}, ...].
+ */
+#}
+
+<div class="cs-health-detail" data-tenant-id="{{ tenant_id }}">
+  {# Header #}
+  <header class="cs-health-detail__header">
+    <div class="cs-health-detail__header-content">
+      <a href="{{ path('jaraba_customer_success.frontend.dashboard') }}" class="cs-health-detail__back">
+        &larr; {% trans %}Back to Dashboard{% endtrans %}
+      </a>
+      <h1 class="cs-health-detail__title">{{ tenant_name|default('Tenant') }}</h1>
+      <div class="cs-health-detail__meta">
+        <span class="cs-health-detail__badge cs-health-detail__badge--{{ category|default('neutral') }}">
+          {{ category|default('neutral')|replace({'_': ' '})|capitalize }}
+        </span>
+        <span class="cs-health-detail__trend cs-health-detail__trend--{{ trend|default('stable') }}">
+          {% if trend == 'improving' %}
+            &#9650; {% trans %}Improving{% endtrans %}
+          {% elseif trend == 'declining' %}
+            &#9660; {% trans %}Declining{% endtrans %}
+          {% else %}
+            &#9654; {% trans %}Stable{% endtrans %}
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </header>
+
+  {# Score Overview #}
+  <section class="cs-health-detail__score-overview">
+    <div class="cs-health-detail__score-circle cs-health-detail__score-circle--{{ category|default('neutral') }}">
+      <span class="cs-health-detail__score-value">{{ health_score|default(0) }}</span>
+      <span class="cs-health-detail__score-max">/100</span>
+    </div>
+    <h2 class="cs-health-detail__score-title">{% trans %}Health Score{% endtrans %}</h2>
+  </section>
+
+  {# Health Score History Chart #}
+  <section class="cs-health-detail__history">
+    <h2 class="cs-health-detail__section-title">{% trans %}Score History{% endtrans %}</h2>
+    <div class="cs-health-detail__chart-container">
+      <canvas id="health-history-chart" class="cs-health-detail__chart" width="600" height="300"></canvas>
+    </div>
+    {% if score_history is empty %}
+      <div class="cs-health-detail__empty">
+        <p>{% trans %}Score history will appear after multiple calculation periods.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <div class="cs-health-detail__panels">
+    {# Engagement Metrics #}
+    <section class="cs-health-detail__panel cs-health-detail__panel--engagement">
+      <h2 class="cs-health-detail__section-title">{% trans %}Engagement Metrics{% endtrans %}</h2>
+      {% if engagement_metrics|length > 0 %}
+        <div class="cs-health-detail__metrics">
+          {% for metric in engagement_metrics %}
+            <div class="cs-health-detail__metric">
+              <span class="cs-health-detail__metric-label">{{ metric.label }}</span>
+              <span class="cs-health-detail__metric-value">{{ metric.value }}</span>
+              {% if metric.change is defined %}
+                <span class="cs-health-detail__metric-change
+                  {% if metric.change > 0 %} cs-health-detail__metric-change--positive
+                  {% elseif metric.change < 0 %} cs-health-detail__metric-change--negative
+                  {% endif %}">
+                  {% if metric.change > 0 %}+{% endif %}{{ metric.change }}%
+                </span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="cs-health-detail__empty">
+          <p>{% trans %}No engagement metrics available yet.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Feature Adoption #}
+    <section class="cs-health-detail__panel cs-health-detail__panel--adoption">
+      <h2 class="cs-health-detail__section-title">{% trans %}Feature Adoption{% endtrans %}</h2>
+      <div class="cs-health-detail__adoption-chart-container">
+        <canvas id="feature-adoption-chart" class="cs-health-detail__adoption-chart" width="300" height="300"></canvas>
+      </div>
+      {% if feature_adoption|length > 0 %}
+        <ul class="cs-health-detail__adoption-list">
+          {% for feature in feature_adoption %}
+            <li class="cs-health-detail__adoption-item">
+              <span class="cs-health-detail__adoption-name">{{ feature.name }}</span>
+              <div class="cs-health-detail__adoption-bar">
+                <div class="cs-health-detail__adoption-fill
+                  {% if feature.percentage >= 75 %} cs-health-detail__adoption-fill--high
+                  {% elseif feature.percentage >= 40 %} cs-health-detail__adoption-fill--medium
+                  {% else %} cs-health-detail__adoption-fill--low
+                  {% endif %}"
+                  style="width: {{ feature.percentage }}%;">
+                </div>
+              </div>
+              <span class="cs-health-detail__adoption-pct">{{ feature.percentage }}%</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="cs-health-detail__empty">
+          <p>{% trans %}No feature adoption data available yet.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  {# Risk Factors #}
+  <section class="cs-health-detail__risks">
+    <h2 class="cs-health-detail__section-title">{% trans %}Risk Factors{% endtrans %}</h2>
+    {% if risk_factors|length > 0 %}
+      <ul class="cs-health-detail__risk-list">
+        {% for factor in risk_factors %}
+          <li class="cs-health-detail__risk-item cs-health-detail__risk-item--{{ factor.severity|default('medium') }}">
+            <span class="cs-health-detail__risk-icon">&#9888;</span>
+            <div class="cs-health-detail__risk-content">
+              <span class="cs-health-detail__risk-title">{{ factor.title }}</span>
+              <span class="cs-health-detail__risk-description">{{ factor.description }}</span>
+            </div>
+            <span class="cs-health-detail__risk-severity">{{ factor.severity|default('medium')|capitalize }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="cs-health-detail__empty cs-health-detail__empty--positive">
+        <p>{% trans %}No active risk factors detected. This tenant is in good health.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# Recommended Actions #}
+  <section class="cs-health-detail__actions">
+    <h2 class="cs-health-detail__section-title">{% trans %}Recommended Actions{% endtrans %}</h2>
+    {% if recommended_actions|length > 0 %}
+      <ul class="cs-health-detail__action-list">
+        {% for action in recommended_actions %}
+          <li class="cs-health-detail__action-item cs-health-detail__action-item--{{ action.priority|default('medium') }}">
+            <span class="cs-health-detail__action-priority">{{ action.priority|default('medium')|capitalize }}</span>
+            <div class="cs-health-detail__action-content">
+              <span class="cs-health-detail__action-title">{{ action.title }}</span>
+              <span class="cs-health-detail__action-description">{{ action.description }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="cs-health-detail__empty">
+        <p>{% trans %}No specific actions recommended at this time.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+</div>

@@ -49,6 +49,28 @@ view event analytics:
   title: 'Ver analítica de eventos'
   description: 'Acceder al dashboard de analítica y estadísticas de eventos.'
 
+# --- Permisos genéricos de eventos (usados por API y landing pages) ---
+administer events:
+  title: 'Administrar eventos'
+  description: 'Acceso completo de administración a todas las entidades de eventos.'
+  restrict access: true
+
+view events:
+  title: 'Ver eventos'
+  description: 'Ver eventos y landing pages de eventos publicados.'
+
+create events:
+  title: 'Crear eventos'
+  description: 'Crear nuevos eventos de marketing y landing pages.'
+
+edit events:
+  title: 'Editar eventos'
+  description: 'Editar eventos de marketing y landing pages existentes.'
+
+delete events:
+  title: 'Eliminar eventos'
+  description: 'Eliminar eventos de marketing y landing pages.'
+
 # --- Administración ---
 administer events settings:
   title: 'Administrar configuración de eventos'

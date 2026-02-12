@@ -12,3 +12,13 @@ jaraba_billing.payment_method.settings:
   title: 'Configuración'
   route_name: jaraba_billing.billing_payment_method.settings
   base_route: jaraba_billing.billing_payment_method.settings
+
+jaraba_billing.billing_customer.settings:
+  title: 'Configuración'
+  route_name: jaraba_billing.billing_customer.settings
+  base_route: jaraba_billing.billing_customer.settings
+
+jaraba_billing.tenant_addon.settings:
+  title: 'Configuración'
+  route_name: jaraba_billing.tenant_addon.settings
+  base_route: jaraba_billing.tenant_addon.settings

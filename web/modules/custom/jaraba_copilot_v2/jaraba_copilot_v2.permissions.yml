@@ -66,3 +66,11 @@ create field exits:
 view own field exits:
   title: 'Ver propias salidas de campo'
   description: 'Permite ver los registros de Customer Discovery del usuario.'
+
+view own hypotheses:
+  title: 'Ver propias hipotesis'
+  description: 'Permite ver las hipotesis creadas por el usuario.'
+
+view own experiments:
+  title: 'Ver propios experimentos'
+  description: 'Permite ver los experimentos creados por el usuario.'

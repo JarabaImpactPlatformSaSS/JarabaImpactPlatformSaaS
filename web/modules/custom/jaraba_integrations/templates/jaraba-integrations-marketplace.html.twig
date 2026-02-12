@@ -1,0 +1,136 @@
+{#
+/**
+ * @file
+ * Marketplace publico de integraciones y conectores.
+ *
+ * Variables:
+ *   - connectors: Array de conectores aprobados.
+ *   - categories: Array de categorias unicas.
+ *   - featured: Array de conectores destacados.
+ *   - stats: Estadisticas del marketplace (total_connectors, total_installations).
+ *
+ * BEM structure:
+ *   .integrations-marketplace
+ *     .integrations-marketplace__header
+ *     .integrations-marketplace__search
+ *     .integrations-marketplace__categories
+ *     .integrations-marketplace__featured
+ *     .integrations-marketplace__grid
+ */
+#}
+
+<div class="integrations-marketplace">
+
+  {# ===== HEADER ===== #}
+  <div class="integrations-marketplace__header">
+    <h1 class="integrations-marketplace__title">
+      {% trans %}Marketplace de Integraciones{% endtrans %}
+    </h1>
+    <p class="integrations-marketplace__subtitle">
+      {% trans %}Conecta tu plataforma con las herramientas que ya usas{% endtrans %}
+    </p>
+
+    <div class="integrations-marketplace__stats">
+      <span class="integrations-marketplace__stat">
+        <strong>{{ stats.total_connectors }}</strong> {% trans %}conectores{% endtrans %}
+      </span>
+      <span class="integrations-marketplace__stat">
+        <strong>{{ stats.total_installations }}</strong> {% trans %}instalaciones{% endtrans %}
+      </span>
+    </div>
+  </div>
+
+  {# ===== BUSQUEDA ===== #}
+  <div class="integrations-marketplace__search">
+    <label for="marketplace-search" class="visually-hidden">{% trans %}Buscar conectores{% endtrans %}</label>
+    <input type="search"
+           id="marketplace-search"
+           class="integrations-marketplace__search-input"
+           placeholder="{{ 'Buscar conectores...'|t }}"
+           autocomplete="off" />
+    <div class="integrations-marketplace__search-results" id="marketplace-search-results" hidden></div>
+  </div>
+
+  {# ===== CATEGORIAS ===== #}
+  {% if categories is not empty %}
+    <div class="integrations-marketplace__categories">
+      <button class="integrations-marketplace__category-btn integrations-marketplace__category-btn--active"
+              data-category="all" type="button">
+        {% trans %}Todas{% endtrans %}
+      </button>
+      {% for category in categories %}
+        <button class="integrations-marketplace__category-btn"
+                data-category="{{ category }}" type="button">
+          {{ category }}
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# ===== DESTACADOS ===== #}
+  {% if featured is not empty %}
+    <div class="integrations-marketplace__featured">
+      <h2 class="integrations-marketplace__section-title">
+        {% trans %}Conectores Destacados{% endtrans %}
+      </h2>
+      <div class="integrations-marketplace__featured-grid">
+        {% for connector in featured %}
+          <div class="integrations-connector-card integrations-connector-card--featured"
+               data-category="{{ connector.category }}"
+               data-connector-id="{{ connector.id }}">
+            <div class="integrations-connector-card__icon">
+              {% if connector.icon %}
+                <img src="{{ connector.icon }}" alt="{{ connector.name }}" loading="lazy" />
+              {% endif %}
+            </div>
+            <div class="integrations-connector-card__body">
+              <h3 class="integrations-connector-card__name">{{ connector.name }}</h3>
+              <p class="integrations-connector-card__description">{{ connector.description|length > 100 ? connector.description|slice(0, 100) ~ '...' : connector.description }}</p>
+            </div>
+            <div class="integrations-connector-card__footer">
+              <span class="integrations-connector-card__category">{{ connector.category }}</span>
+              <span class="integrations-connector-card__installs">{{ connector.installs }} {% trans %}instalaciones{% endtrans %}</span>
+            </div>
+            <a href="/integraciones/{{ connector.id }}" class="integrations-connector-card__link">
+              {% trans %}Ver detalle{% endtrans %}
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ===== GRID COMPLETO ===== #}
+  <div class="integrations-marketplace__grid" id="marketplace-grid">
+    {% if connectors is empty %}
+      <div class="integrations-marketplace__empty">
+        <p>{% trans %}No hay conectores disponibles en este momento.{% endtrans %}</p>
+      </div>
+    {% else %}
+      {% for connector in connectors %}
+        <div class="integrations-connector-card"
+             data-category="{{ connector.category }}"
+             data-connector-id="{{ connector.id }}"
+             data-name="{{ connector.name|lower }}">
+          <div class="integrations-connector-card__icon">
+            {% if connector.icon %}
+              <img src="{{ connector.icon }}" alt="{{ connector.name }}" loading="lazy" />
+            {% endif %}
+          </div>
+          <div class="integrations-connector-card__body">
+            <h3 class="integrations-connector-card__name">{{ connector.name }}</h3>
+            <p class="integrations-connector-card__description">{{ connector.description|length > 80 ? connector.description|slice(0, 80) ~ '...' : connector.description }}</p>
+          </div>
+          <div class="integrations-connector-card__footer">
+            <span class="integrations-connector-card__category">{{ connector.category }}</span>
+            <span class="integrations-connector-card__version">v{{ connector.version }}</span>
+          </div>
+          <a href="/integraciones/{{ connector.id }}" class="integrations-connector-card__link">
+            {% trans %}Instalar{% endtrans %}
+          </a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+</div>

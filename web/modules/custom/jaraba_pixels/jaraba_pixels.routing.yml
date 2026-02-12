@@ -110,3 +110,34 @@ jaraba_pixels.api.chart_data:
     _permission: 'administer pixels'
   options:
     no_cache: TRUE
+
+# =============================================================================
+# Rutas de configuración de entidades (Field UI)
+# =============================================================================
+
+# Configuración de la entidad TrackingPixel
+entity.tracking_pixel.settings:
+  path: '/admin/structure/tracking-pixel/settings'
+  defaults:
+    _form: '\Drupal\system\Form\EntityDisplayModeFormBase'
+    _title: 'Configuración de Pixel de Seguimiento'
+  requirements:
+    _permission: 'administer pixels'
+
+# Configuración de la entidad TrackingEvent
+entity.tracking_event.settings:
+  path: '/admin/structure/tracking-event/settings'
+  defaults:
+    _form: '\Drupal\system\Form\EntityDisplayModeFormBase'
+    _title: 'Configuración de Evento de Seguimiento'
+  requirements:
+    _permission: 'administer pixels'
+
+# Configuración de la entidad ConsentRecord
+entity.consent_record.settings:
+  path: '/admin/structure/consent-record/settings'
+  defaults:
+    _form: '\Drupal\system\Form\EntityDisplayModeFormBase'
+    _title: 'Configuración de Registro de Consentimiento'
+  requirements:
+    _permission: 'administer pixels'

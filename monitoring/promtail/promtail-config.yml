@@ -1,0 +1,70 @@
+# Promtail configuration for Jaraba Impact Platform
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Drupal application logs
+  - job_name: drupal
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: drupal
+          app: jaraba-platform
+          __path__: /var/log/drupal/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2})\s+\[(?P<level>\w+)\]\s+(?P<channel>[\w\.]+):\s+(?P<message>.*)$'
+      - labels:
+          level:
+          channel:
+      - timestamp:
+          source: timestamp
+          format: "2006-01-02T15:04:05-07:00"
+
+  # PHP-FPM logs
+  - job_name: php-fpm
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: php-fpm
+          app: jaraba-platform
+          __path__: /var/log/php*.log
+    pipeline_stages:
+      - regex:
+          expression: '^\[(?P<timestamp>\d{2}-\w{3}-\d{4}\s+\d{2}:\d{2}:\d{2})\s+\w+\]\s+(?P<level>\w+):\s+(?P<message>.*)$'
+      - labels:
+          level:
+
+  # Apache/Nginx access logs
+  - job_name: webserver
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: webserver
+          app: jaraba-platform
+          __path__: /var/log/apache2/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<remote_addr>[\d\.]+)\s+-\s+(?P<remote_user>\S+)\s+\[(?P<timestamp>[^\]]+)\]\s+"(?P<method>\w+)\s+(?P<path>[^\s]+)\s+[^"]*"\s+(?P<status>\d+)\s+(?P<bytes>\d+)'
+      - labels:
+          method:
+          status:
+
+  # System logs
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: system
+          __path__: /var/log/syslog

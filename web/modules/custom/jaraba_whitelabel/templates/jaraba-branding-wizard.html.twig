@@ -1,0 +1,166 @@
+{#
+/**
+ * @file
+ * Template for the branding wizard page.
+ *
+ * Available variables:
+ * - config: Whitelabel configuration array (or null).
+ * - tenant_id: The current tenant ID.
+ * - steps: Array of wizard step definitions (key, label).
+ * - current_step: Index of the active step.
+ */
+#}
+
+<div class="branding-wizard" data-tenant-id="{{ tenant_id }}" data-current-step="{{ current_step }}">
+
+  {# --- Step navigation --- #}
+  <nav class="branding-wizard__nav" aria-label="{% trans %}Wizard steps{% endtrans %}">
+    <ol class="branding-wizard__steps">
+      {% for index, step in steps %}
+        <li class="branding-wizard__step{% if index == current_step %} branding-wizard__step--active{% elseif index < current_step %} branding-wizard__step--completed{% endif %}"
+            data-step="{{ index }}">
+          <span class="branding-wizard__step-number">{{ index + 1 }}</span>
+          <span class="branding-wizard__step-label">{{ step.label }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {# --- Progress bar --- #}
+  <div class="branding-wizard__progress">
+    <div class="branding-wizard__progress-bar"
+         style="width: {{ steps|length > 1 ? (current_step / (steps|length - 1) * 100) : 0 }}%"
+         role="progressbar"
+         aria-valuenow="{{ current_step }}"
+         aria-valuemin="0"
+         aria-valuemax="{{ steps|length - 1 }}">
+    </div>
+  </div>
+
+  {# --- Step panels --- #}
+  <div class="branding-wizard__panels">
+
+    {# Step 0: Logo & Favicon #}
+    <div class="branding-wizard__panel{% if current_step == 0 %} branding-wizard__panel--active{% endif %}" data-panel="0">
+      <h2 class="branding-wizard__panel-title">{% trans %}Logo & Favicon{% endtrans %}</h2>
+      <p class="branding-wizard__panel-description">{% trans %}Upload your company logo and favicon to brand the platform.{% endtrans %}</p>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-logo-url">{% trans %}Logo URL{% endtrans %}</label>
+        <input class="branding-wizard__input" type="url" id="branding-logo-url" name="logo_url"
+               value="{{ config.logo_url|default('') }}"
+               placeholder="https://example.com/logo.png" />
+      </div>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-favicon-url">{% trans %}Favicon URL{% endtrans %}</label>
+        <input class="branding-wizard__input" type="url" id="branding-favicon-url" name="favicon_url"
+               value="{{ config.favicon_url|default('') }}"
+               placeholder="https://example.com/favicon.ico" />
+      </div>
+      <div class="branding-wizard__preview-thumb">
+        {% if config.logo_url %}
+          <img src="{{ config.logo_url }}" alt="{% trans %}Current logo{% endtrans %}" class="branding-wizard__logo-preview" />
+        {% else %}
+          <div class="branding-wizard__no-logo">{% trans %}No logo configured{% endtrans %}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Step 1: Brand Colours #}
+    <div class="branding-wizard__panel{% if current_step == 1 %} branding-wizard__panel--active{% endif %}" data-panel="1">
+      <h2 class="branding-wizard__panel-title">{% trans %}Brand Colours{% endtrans %}</h2>
+      <p class="branding-wizard__panel-description">{% trans %}Set the primary and secondary colours for your brand.{% endtrans %}</p>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-primary-color">{% trans %}Primary Colour{% endtrans %}</label>
+        <div class="branding-wizard__color-group">
+          <input class="branding-wizard__color-input" type="color" id="branding-primary-color" name="primary_color"
+                 value="{{ config.primary_color|default('#FF8C42') }}" />
+          <input class="branding-wizard__color-text" type="text" name="primary_color_text"
+                 value="{{ config.primary_color|default('#FF8C42') }}"
+                 pattern="^#[0-9A-Fa-f]{6}$" maxlength="7" />
+        </div>
+      </div>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-secondary-color">{% trans %}Secondary Colour{% endtrans %}</label>
+        <div class="branding-wizard__color-group">
+          <input class="branding-wizard__color-input" type="color" id="branding-secondary-color" name="secondary_color"
+                 value="{{ config.secondary_color|default('#2D6A4F') }}" />
+          <input class="branding-wizard__color-text" type="text" name="secondary_color_text"
+                 value="{{ config.secondary_color|default('#2D6A4F') }}"
+                 pattern="^#[0-9A-Fa-f]{6}$" maxlength="7" />
+        </div>
+      </div>
+      <div class="branding-wizard__swatch-preview">
+        <div class="branding-wizard__swatch branding-wizard__swatch--primary"
+             style="background-color: {{ config.primary_color|default('#FF8C42') }};">
+          {% trans %}Primary{% endtrans %}
+        </div>
+        <div class="branding-wizard__swatch branding-wizard__swatch--secondary"
+             style="background-color: {{ config.secondary_color|default('#2D6A4F') }};">
+          {% trans %}Secondary{% endtrans %}
+        </div>
+      </div>
+    </div>
+
+    {# Step 2: Custom CSS #}
+    <div class="branding-wizard__panel{% if current_step == 2 %} branding-wizard__panel--active{% endif %}" data-panel="2">
+      <h2 class="branding-wizard__panel-title">{% trans %}Custom CSS{% endtrans %}</h2>
+      <p class="branding-wizard__panel-description">{% trans %}Add custom CSS rules to further customise the appearance.{% endtrans %}</p>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-custom-css">{% trans %}CSS Rules{% endtrans %}</label>
+        <textarea class="branding-wizard__textarea" id="branding-custom-css" name="custom_css"
+                  rows="12" placeholder="/* {% trans %}Your custom CSS here{% endtrans %} */">{{ config.custom_css|default('') }}</textarea>
+      </div>
+    </div>
+
+    {# Step 3: Footer HTML #}
+    <div class="branding-wizard__panel{% if current_step == 3 %} branding-wizard__panel--active{% endif %}" data-panel="3">
+      <h2 class="branding-wizard__panel-title">{% trans %}Footer HTML{% endtrans %}</h2>
+      <p class="branding-wizard__panel-description">{% trans %}Define custom HTML for the footer area.{% endtrans %}</p>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__label" for="branding-footer-html">{% trans %}Footer HTML{% endtrans %}</label>
+        <textarea class="branding-wizard__textarea" id="branding-footer-html" name="custom_footer_html"
+                  rows="6">{{ config.custom_footer_html|default('') }}</textarea>
+      </div>
+      <div class="branding-wizard__field">
+        <label class="branding-wizard__checkbox-label">
+          <input type="checkbox" name="hide_powered_by"
+                 {% if config.hide_powered_by %}checked{% endif %} />
+          {% trans %}Hide "Powered by Jaraba" branding{% endtrans %}
+        </label>
+      </div>
+    </div>
+
+    {# Step 4: Preview #}
+    <div class="branding-wizard__panel{% if current_step == 4 %} branding-wizard__panel--active{% endif %}" data-panel="4">
+      <h2 class="branding-wizard__panel-title">{% trans %}Preview{% endtrans %}</h2>
+      <p class="branding-wizard__panel-description">{% trans %}Review your branding before saving.{% endtrans %}</p>
+      <div class="branding-wizard__preview-frame">
+        <iframe class="branding-wizard__iframe" title="{% trans %}Branding preview{% endtrans %}" sandbox="allow-same-origin"></iframe>
+      </div>
+      <div class="branding-wizard__preview-summary">
+        <dl class="branding-wizard__summary-list">
+          <dt>{% trans %}Company{% endtrans %}</dt>
+          <dd>{{ config.company_name|default('—') }}</dd>
+          <dt>{% trans %}Primary{% endtrans %}</dt>
+          <dd>{{ config.primary_color|default('—') }}</dd>
+          <dt>{% trans %}Secondary{% endtrans %}</dt>
+          <dd>{{ config.secondary_color|default('—') }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  {# --- Navigation buttons --- #}
+  <div class="branding-wizard__actions">
+    <button type="button" class="branding-wizard__btn branding-wizard__btn--prev" disabled>
+      {% trans %}Previous{% endtrans %}
+    </button>
+    <button type="button" class="branding-wizard__btn branding-wizard__btn--next">
+      {% trans %}Next{% endtrans %}
+    </button>
+    <button type="button" class="branding-wizard__btn branding-wizard__btn--save" style="display: none;">
+      {% trans %}Save Branding{% endtrans %}
+    </button>
+  </div>
+
+</div>

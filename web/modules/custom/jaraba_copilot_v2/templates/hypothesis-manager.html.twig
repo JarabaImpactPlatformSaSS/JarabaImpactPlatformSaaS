@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Template para la gestion de hipotesis con filtros y acciones modales.
+ *
+ * Variables:
+ * - hypotheses: Array de hipotesis.
+ * - filters: Filtros activos (type, status, bmc_block).
+ * - bmc_blocks: Lista de bloques BMC disponibles.
+ * - types: Lista de tipos de hipotesis.
+ * - statuses: Lista de estados de validacion.
+ */
+#}
+
+<div class="hypothesis-manager">
+  <div class="hypothesis-manager__header">
+    <h1 class="hypothesis-manager__title">{{ 'Gestion de Hipotesis'|t }}</h1>
+    <a href="{{ path('entity.hypothesis.add_form') }}"
+       class="use-ajax btn btn--primary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Nueva Hipotesis'|t }}
+    </a>
+  </div>
+
+  <div class="hypothesis-manager__filters">
+    <div class="hypothesis-manager__filter-group">
+      <label for="filter-type">{{ 'Tipo'|t }}</label>
+      <select id="filter-type" class="hypothesis-manager__filter" data-filter="type">
+        <option value="">{{ 'Todos'|t }}</option>
+        <option value="DESIRABILITY">{{ 'Deseabilidad'|t }}</option>
+        <option value="FEASIBILITY">{{ 'Viabilidad tecnica'|t }}</option>
+        <option value="VIABILITY">{{ 'Viabilidad economica'|t }}</option>
+      </select>
+    </div>
+    <div class="hypothesis-manager__filter-group">
+      <label for="filter-status">{{ 'Estado'|t }}</label>
+      <select id="filter-status" class="hypothesis-manager__filter" data-filter="status">
+        <option value="">{{ 'Todos'|t }}</option>
+        <option value="PENDING">{{ 'Pendiente'|t }}</option>
+        <option value="IN_PROGRESS">{{ 'En progreso'|t }}</option>
+        <option value="VALIDATED">{{ 'Validada'|t }}</option>
+        <option value="INVALIDATED">{{ 'Invalidada'|t }}</option>
+        <option value="INCONCLUSIVE">{{ 'Inconclusa'|t }}</option>
+      </select>
+    </div>
+    <div class="hypothesis-manager__filter-group">
+      <label for="filter-bmc">{{ 'Bloque BMC'|t }}</label>
+      <select id="filter-bmc" class="hypothesis-manager__filter" data-filter="bmc_block">
+        <option value="">{{ 'Todos'|t }}</option>
+        <option value="CS">{{ 'Customer Segments'|t }}</option>
+        <option value="VP">{{ 'Value Propositions'|t }}</option>
+        <option value="CH">{{ 'Channels'|t }}</option>
+        <option value="CR">{{ 'Customer Relationships'|t }}</option>
+        <option value="RS">{{ 'Revenue Streams'|t }}</option>
+        <option value="KR">{{ 'Key Resources'|t }}</option>
+        <option value="KA">{{ 'Key Activities'|t }}</option>
+        <option value="KP">{{ 'Key Partnerships'|t }}</option>
+        <option value="C$">{{ 'Cost Structure'|t }}</option>
+      </select>
+    </div>
+    <button class="btn btn--secondary hypothesis-manager__prioritize-btn" data-action="prioritize">
+      {{ 'Priorizar (ICE)'|t }}
+    </button>
+  </div>
+
+  <div class="hypothesis-manager__list" id="hypothesis-list">
+    {% if hypotheses is not empty %}
+      {% for hypothesis in hypotheses %}
+        {% include '@jaraba_copilot_v2/partials/_hypothesis-card.html.twig' with {
+          'hypothesis': hypothesis,
+        } only %}
+      {% endfor %}
+    {% else %}
+      <div class="hypothesis-manager__empty">
+        <p>{{ 'No tienes hipotesis aun. Crea tu primera hipotesis para empezar a validar tu modelo de negocio.'|t }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

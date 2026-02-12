@@ -1,0 +1,55 @@
+# Field UI settings routes for onboarding entities.
+
+jaraba_onboarding.settings:
+  path: '/admin/config/jaraba/onboarding'
+  defaults:
+    _form: '\Drupal\jaraba_onboarding\Form\OnboardingSettingsForm'
+    _title: 'Configuracion de Onboarding'
+  requirements:
+    _permission: 'administer onboarding'
+
+jaraba_onboarding.onboarding_template.settings:
+  path: '/admin/config/jaraba/onboarding/templates'
+  defaults:
+    _form: '\Drupal\jaraba_onboarding\Form\OnboardingSettingsForm'
+    _title: 'Configuracion de Templates de Onboarding'
+  requirements:
+    _permission: 'administer onboarding'
+
+# Frontend dashboard.
+jaraba_onboarding.dashboard:
+  path: '/onboarding'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\OnboardingDashboardController::dashboard'
+    _title: 'Mi Onboarding'
+  requirements:
+    _permission: 'view onboarding progress'
+
+# =============================================
+# REST API — Onboarding
+# =============================================
+
+jaraba_onboarding.api.progress.get:
+  path: '/api/v1/onboarding/progress'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\OnboardingApiController::getProgress'
+  requirements:
+    _permission: 'view onboarding progress'
+  methods: [GET]
+
+jaraba_onboarding.api.step.complete:
+  path: '/api/v1/onboarding/progress/{progress_id}/step'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\OnboardingApiController::completeStep'
+  requirements:
+    _permission: 'view onboarding progress'
+    progress_id: '\d+'
+  methods: [POST]
+
+jaraba_onboarding.api.checklist.get:
+  path: '/api/v1/onboarding/checklist'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\OnboardingApiController::getChecklist'
+  requirements:
+    _permission: 'view onboarding progress'
+  methods: [GET]

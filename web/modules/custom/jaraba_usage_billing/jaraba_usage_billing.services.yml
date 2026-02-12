@@ -1,0 +1,49 @@
+services:
+  # ===========================================
+  # JARABA USAGE BILLING — Servicios de facturación basada en uso
+  # ===========================================
+
+  # Logger channel dedicado.
+  logger.channel.jaraba_usage_billing:
+    parent: logger.channel_base
+    arguments: ['jaraba_usage_billing']
+
+  # Pipeline de ingesta de eventos de uso.
+  jaraba_usage_billing.ingestion:
+    class: Drupal\jaraba_usage_billing\Service\UsageIngestionService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_usage_billing'
+
+  # Agregación temporal de eventos (hourly/daily/monthly).
+  jaraba_usage_billing.aggregator:
+    class: Drupal\jaraba_usage_billing\Service\UsageAggregatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_usage_billing'
+
+  # Motor de cálculo de precios por uso.
+  jaraba_usage_billing.pricing:
+    class: Drupal\jaraba_usage_billing\Service\UsagePricingService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_billing.pricing_engine'
+      - '@logger.channel.jaraba_usage_billing'
+
+  # Sincronización de uso con Stripe Metered Billing.
+  jaraba_usage_billing.stripe_sync:
+    class: Drupal\jaraba_usage_billing\Service\UsageStripeSyncService
+    arguments:
+      - '@jaraba_billing.stripe_subscription'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_usage_billing'
+
+  # Sistema de alertas de uso (umbrales, notificaciones).
+  jaraba_usage_billing.alert:
+    class: Drupal\jaraba_usage_billing\Service\UsageAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_usage_billing'

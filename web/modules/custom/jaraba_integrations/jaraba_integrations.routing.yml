@@ -189,3 +189,63 @@ jaraba_integrations.webhook.receive:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+# =============================================================================
+# RUTAS MARKETPLACE PUBLICO Y DEVELOPER PORTAL (f-112 v3)
+# =============================================================================
+
+jaraba_integrations.marketplace:
+  path: '/integraciones/marketplace'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\MarketplaceController::marketplace'
+    _title: 'Marketplace de Integraciones'
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.marketplace_search:
+  path: '/api/v1/integrations/marketplace/search'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\MarketplaceController::search'
+  methods: [GET]
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.developer_portal:
+  path: '/integraciones/developer'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\DeveloperPortalController::dashboard'
+    _title: 'Portal de Desarrolladores'
+  requirements:
+    _permission: 'manage connectors'
+
+jaraba_integrations.developer_docs:
+  path: '/integraciones/developer/docs'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\DeveloperPortalController::documentation'
+    _title: 'Documentacion SDK'
+  requirements:
+    _permission: 'manage connectors'
+
+jaraba_integrations.connector_wizard:
+  path: '/integraciones/{connector}/wizard'
+  defaults:
+    _form: '\Drupal\jaraba_integrations\Form\ConnectorInstallWizardForm'
+    _title: 'Instalar Conector'
+  requirements:
+    _permission: 'install connectors'
+  options:
+    parameters:
+      connector:
+        type: entity:connector
+
+jaraba_integrations.app_submission:
+  path: '/integraciones/{connector}/submit'
+  defaults:
+    _form: '\Drupal\jaraba_integrations\Form\AppSubmissionForm'
+    _title: 'Enviar a Revision'
+  requirements:
+    _permission: 'manage connectors'
+  options:
+    parameters:
+      connector:
+        type: entity:connector

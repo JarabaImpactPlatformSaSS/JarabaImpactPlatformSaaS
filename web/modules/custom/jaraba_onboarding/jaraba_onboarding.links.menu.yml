@@ -1,0 +1,20 @@
+jaraba_onboarding.templates:
+  title: 'Templates de Onboarding'
+  description: 'Gestion de templates de onboarding por vertical.'
+  route_name: entity.onboarding_template.collection
+  parent: system.admin_content
+  weight: 30
+
+jaraba_onboarding.progress:
+  title: 'Progreso de Onboarding'
+  description: 'Ver el progreso de onboarding de todos los usuarios.'
+  route_name: entity.user_onboarding_progress.collection
+  parent: system.admin_content
+  weight: 31
+
+jaraba_onboarding.settings:
+  title: 'Configuracion de Onboarding'
+  description: 'Ajustes generales del sistema de onboarding.'
+  route_name: jaraba_onboarding.settings
+  parent: system.admin_config_system
+  weight: 50

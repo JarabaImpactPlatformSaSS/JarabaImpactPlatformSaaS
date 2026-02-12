@@ -1,0 +1,130 @@
+{#
+/**
+ * @file
+ * Template for the Audit Trail page.
+ *
+ * Available variables:
+ * - events: Array of audit events.
+ * - filters: Available filter options.
+ * - total_count: Total number of events.
+ * - pager: Pager render array.
+ */
+#}
+<div class="audit-trail">
+
+  {# Header with controls #}
+  <div class="audit-trail__header">
+    <h2 class="audit-trail__title">{% trans %}Registro de Auditoría de Seguridad{% endtrans %}</h2>
+    <div class="audit-trail__controls">
+      <span class="audit-trail__count">
+        {% trans %}Total: {{ total_count }} eventos{% endtrans %}
+      </span>
+      <button class="audit-trail__export-btn" data-action="export-csv" type="button">
+        {% trans %}Exportar CSV{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# Filters #}
+  <div class="audit-trail__filters">
+    <div class="audit-trail__filter-group">
+      <label class="audit-trail__filter-label" for="audit-severity-filter">
+        {% trans %}Severidad{% endtrans %}
+      </label>
+      <select class="audit-trail__filter-select" id="audit-severity-filter" data-filter="severity">
+        <option value="">{% trans %}Todas{% endtrans %}</option>
+        {% for severity in filters.severities %}
+          <option value="{{ severity }}">{{ severity|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="audit-trail__filter-group">
+      <label class="audit-trail__filter-label" for="audit-date-start">
+        {% trans %}Desde{% endtrans %}
+      </label>
+      <input class="audit-trail__filter-input" type="date" id="audit-date-start"
+             data-filter="date-start" value="{{ filters.date_range.start }}" />
+    </div>
+
+    <div class="audit-trail__filter-group">
+      <label class="audit-trail__filter-label" for="audit-date-end">
+        {% trans %}Hasta{% endtrans %}
+      </label>
+      <input class="audit-trail__filter-input" type="date" id="audit-date-end"
+             data-filter="date-end" value="{{ filters.date_range.end }}" />
+    </div>
+
+    <div class="audit-trail__filter-group">
+      <label class="audit-trail__filter-label" for="audit-search">
+        {% trans %}Buscar{% endtrans %}
+      </label>
+      <input class="audit-trail__filter-input" type="text" id="audit-search"
+             data-filter="search" placeholder="{{ 'Buscar por evento o actor...'|t }}" />
+    </div>
+  </div>
+
+  {# Events Timeline / Table #}
+  {% if events %}
+    <div class="audit-trail__timeline">
+      <table class="audit-trail__table">
+        <thead>
+          <tr>
+            <th class="audit-trail__th">{% trans %}Fecha{% endtrans %}</th>
+            <th class="audit-trail__th">{% trans %}Evento{% endtrans %}</th>
+            <th class="audit-trail__th">{% trans %}Severidad{% endtrans %}</th>
+            <th class="audit-trail__th">{% trans %}Actor{% endtrans %}</th>
+            <th class="audit-trail__th">{% trans %}IP{% endtrans %}</th>
+            <th class="audit-trail__th">{% trans %}Objetivo{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in events %}
+            <tr class="audit-trail__row audit-trail__row--{{ event.severity }}"
+                data-severity="{{ event.severity }}"
+                data-timestamp="{{ event.timestamp }}"
+                data-event-type="{{ event.event_type }}"
+                data-actor="{{ event.actor }}">
+              <td class="audit-trail__cell audit-trail__cell--date">
+                {{ event.timestamp_formatted }}
+              </td>
+              <td class="audit-trail__cell audit-trail__cell--event">
+                <code class="audit-trail__event-code">{{ event.event_type }}</code>
+              </td>
+              <td class="audit-trail__cell audit-trail__cell--severity">
+                <span class="audit-trail__badge audit-trail__badge--{{ event.severity }}">
+                  {{ event.severity }}
+                </span>
+              </td>
+              <td class="audit-trail__cell audit-trail__cell--actor">
+                {{ event.actor }}
+              </td>
+              <td class="audit-trail__cell audit-trail__cell--ip">
+                <code>{{ event.ip_address }}</code>
+              </td>
+              <td class="audit-trail__cell audit-trail__cell--target">
+                {% if event.target_type %}
+                  {{ event.target_type }}{% if event.target_id %}:{{ event.target_id }}{% endif %}
+                {% else %}
+                  <span class="audit-trail__na">-</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="audit-trail__empty">
+      <p>{% trans %}No se encontraron eventos de auditoría para los filtros seleccionados.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+  {# Pager #}
+  {% if pager %}
+    <div class="audit-trail__pager">
+      {{ pager }}
+    </div>
+  {% endif %}
+
+</div>

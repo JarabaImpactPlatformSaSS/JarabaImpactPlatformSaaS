@@ -23,3 +23,251 @@ jaraba_billing.billing_payment_method.settings:
     _title: 'Configuración de Métodos de Pago'
   requirements:
     _permission: 'administer billing'
+
+jaraba_billing.billing_customer.settings:
+  path: '/admin/config/billing/customer'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\BillingCustomerSettingsForm'
+    _title: 'Configuración de Clientes de Billing'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_billing.tenant_addon.settings:
+  path: '/admin/config/billing/tenant-addon'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\TenantAddonSettingsForm'
+    _title: 'Configuración de Add-ons de Tenant'
+  requirements:
+    _permission: 'administer billing'
+
+# Webhook endpoint for Stripe billing events.
+jaraba_billing.stripe_webhook:
+  path: '/api/billing/stripe-webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingWebhookController::handle'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# =============================================
+# REST API — Billing (spec 134 §9)
+# =============================================
+
+jaraba_billing.api.subscription.get:
+  path: '/api/v1/billing/subscription'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::getSubscription'
+  requirements:
+    _permission: 'view own invoices'
+  methods: [GET]
+
+jaraba_billing.api.subscription.create:
+  path: '/api/v1/billing/subscription'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::createSubscription'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [POST]
+
+jaraba_billing.api.subscription.change_plan:
+  path: '/api/v1/billing/subscription/plan'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::changePlan'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [PUT]
+
+jaraba_billing.api.subscription.cancel:
+  path: '/api/v1/billing/subscription'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::cancelSubscription'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [DELETE]
+
+jaraba_billing.api.subscription.reactivate:
+  path: '/api/v1/billing/subscription/reactivate'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::reactivateSubscription'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [POST]
+
+jaraba_billing.api.invoices.list:
+  path: '/api/v1/billing/invoices'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::listInvoices'
+  requirements:
+    _permission: 'view own invoices'
+  methods: [GET]
+
+jaraba_billing.api.invoices.pdf:
+  path: '/api/v1/billing/invoices/{id}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::getInvoicePdf'
+  requirements:
+    _permission: 'view own invoices'
+    id: '\d+'
+  methods: [GET]
+
+jaraba_billing.api.usage:
+  path: '/api/v1/billing/usage'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::getUsage'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+jaraba_billing.api.portal_session:
+  path: '/api/v1/billing/portal-session'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::createPortalSession'
+  requirements:
+    _permission: 'manage payment methods'
+  methods: [POST]
+
+jaraba_billing.api.payment_methods.list:
+  path: '/api/v1/billing/payment-methods'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::listPaymentMethods'
+  requirements:
+    _permission: 'manage payment methods'
+  methods: [GET]
+
+jaraba_billing.api.payment_methods.add:
+  path: '/api/v1/billing/payment-methods'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::addPaymentMethod'
+  requirements:
+    _permission: 'manage payment methods'
+  methods: [POST]
+
+jaraba_billing.api.payment_methods.delete:
+  path: '/api/v1/billing/payment-methods/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::deletePaymentMethod'
+  requirements:
+    _permission: 'manage payment methods'
+    id: '.+'
+  methods: [DELETE]
+
+jaraba_billing.api.customer.update:
+  path: '/api/v1/billing/customer'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::updateCustomer'
+  requirements:
+    _permission: 'manage billing customers'
+  methods: [PUT]
+
+# =============================================
+# REST API — Usage Billing (spec 111 §5)
+# =============================================
+
+jaraba_billing.api.usage.record:
+  path: '/api/v1/usage/record'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::recordUsage'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [POST]
+
+jaraba_billing.api.usage.current:
+  path: '/api/v1/usage/current'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::getCurrentUsage'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+jaraba_billing.api.usage.history:
+  path: '/api/v1/usage/history'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::getUsageHistory'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+jaraba_billing.api.usage.breakdown:
+  path: '/api/v1/usage/breakdown'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::getUsageBreakdown'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+jaraba_billing.api.usage.forecast:
+  path: '/api/v1/usage/forecast'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::getUsageForecast'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+jaraba_billing.api.pricing.my_plan:
+  path: '/api/v1/pricing/my-plan'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::getMyPlan'
+  requirements:
+    _permission: 'view own invoices'
+  methods: [GET]
+
+jaraba_billing.api.pricing.estimate:
+  path: '/api/v1/pricing/estimate'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::estimateCost'
+  requirements:
+    _permission: 'view billing usage'
+  methods: [GET]
+
+# =============================================
+# REST API — Add-ons (spec 158 §5.4)
+# =============================================
+
+jaraba_billing.api.addon.subscription:
+  path: '/api/v1/subscription'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::getSubscription'
+  requirements:
+    _permission: 'view own invoices'
+  methods: [GET]
+
+jaraba_billing.api.addon.available:
+  path: '/api/v1/subscription/addons/available'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::getAvailableAddons'
+  requirements:
+    _permission: 'manage tenant addons'
+  methods: [GET]
+
+jaraba_billing.api.addon.activate:
+  path: '/api/v1/subscription/addons'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::activateAddon'
+  requirements:
+    _permission: 'manage tenant addons'
+  methods: [POST]
+
+jaraba_billing.api.addon.cancel:
+  path: '/api/v1/subscription/addons/{code}'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::cancelAddon'
+  requirements:
+    _permission: 'manage tenant addons'
+    code: '[a-z_]+'
+  methods: [DELETE]
+
+jaraba_billing.api.addon.upgrade:
+  path: '/api/v1/subscription/upgrade'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::upgradePlan'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [POST]
+
+jaraba_billing.api.addon.upcoming_invoice:
+  path: '/api/v1/subscription/invoice/upcoming'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::getUpcomingInvoice'
+  requirements:
+    _permission: 'view own invoices'
+  methods: [GET]

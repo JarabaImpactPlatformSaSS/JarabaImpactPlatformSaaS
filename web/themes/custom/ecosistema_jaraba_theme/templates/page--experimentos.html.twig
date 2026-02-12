@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * page--experimentos.html.twig - Dashboard de Experimentos A/B Testing
+ *
+ * ARQUITECTURA LIMPIA (mismo patrón que page--crm.html.twig):
+ * - Sin {{ page.* }} = Sin bloques de Drupal (excepto page.content)
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Full-width layout premium
+ *
+ * PROPÓSITO: Dashboard de gestión de experimentos A/B (variantes, resultados, significancia).
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_ab_testing/dashboard') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-experimentos', 'ab-testing-page', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable con menú móvil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN CONTENT - Full-width experiments layout #}
+  <main id="main-content" class="dashboard-main experiments-main">
+    <div class="dashboard-wrapper experiments-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

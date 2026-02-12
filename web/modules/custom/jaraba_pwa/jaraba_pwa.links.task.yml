@@ -1,0 +1,4 @@
+jaraba_pwa.settings:
+  title: 'Settings'
+  route_name: jaraba_pwa.settings
+  base_route: jaraba_pwa.settings

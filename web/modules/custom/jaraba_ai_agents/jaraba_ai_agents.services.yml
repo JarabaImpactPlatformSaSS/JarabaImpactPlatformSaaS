@@ -173,3 +173,10 @@ services:
       - '@current_user'
       - '@logger.channel.jaraba_ai_agents'
 
+  # AgentCollaborationService - Colaboración multi-agente (G108-2)
+  jaraba_ai_agents.agent_collaboration:
+    class: Drupal\jaraba_ai_agents\Service\AgentCollaborationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+

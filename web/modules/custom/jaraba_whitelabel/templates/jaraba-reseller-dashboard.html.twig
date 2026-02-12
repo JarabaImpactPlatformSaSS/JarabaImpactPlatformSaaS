@@ -1,0 +1,136 @@
+{#
+/**
+ * @file
+ * Template for the reseller/partner portal dashboard.
+ *
+ * Available variables:
+ * - reseller: Reseller data array (or null).
+ * - managed_tenants: Array of managed tenant data arrays.
+ * - commissions: Commission summary array.
+ * - metrics: Dashboard metrics array (total_tenants, total_revenue, etc.).
+ */
+#}
+
+<div class="reseller-dashboard">
+
+  {% if reseller %}
+
+    {# --- Reseller header --- #}
+    <header class="reseller-dashboard__header">
+      <h2 class="reseller-dashboard__title">
+        {% trans %}Welcome back,{% endtrans %} {{ reseller.name }}
+      </h2>
+      <p class="reseller-dashboard__company">{{ reseller.company_name }}</p>
+      <span class="reseller-dashboard__status reseller-dashboard__status--{{ reseller.reseller_status }}">
+        {{ reseller.reseller_status }}
+      </span>
+    </header>
+
+    {# --- Metrics cards --- #}
+    <section class="reseller-dashboard__metrics" aria-label="{% trans %}Key metrics{% endtrans %}">
+      <div class="reseller-dashboard__card">
+        <span class="reseller-dashboard__card-label">{% trans %}Managed Tenants{% endtrans %}</span>
+        <span class="reseller-dashboard__card-value">{{ metrics.total_tenants }}</span>
+      </div>
+      <div class="reseller-dashboard__card">
+        <span class="reseller-dashboard__card-label">{% trans %}Total Revenue{% endtrans %}</span>
+        <span class="reseller-dashboard__card-value">&euro;{{ metrics.total_revenue|number_format(2, '.', ',') }}</span>
+      </div>
+      <div class="reseller-dashboard__card">
+        <span class="reseller-dashboard__card-label">{% trans %}Commission Earned{% endtrans %}</span>
+        <span class="reseller-dashboard__card-value">&euro;{{ metrics.commission_earned|number_format(2, '.', ',') }}</span>
+      </div>
+      <div class="reseller-dashboard__card">
+        <span class="reseller-dashboard__card-label">{% trans %}Pending Payout{% endtrans %}</span>
+        <span class="reseller-dashboard__card-value">&euro;{{ metrics.pending_payout|number_format(2, '.', ',') }}</span>
+      </div>
+    </section>
+
+    {# --- Managed tenants table --- #}
+    <section class="reseller-dashboard__tenants">
+      <div class="reseller-dashboard__tenants-header">
+        <h3 class="reseller-dashboard__section-title">{% trans %}Managed Tenants{% endtrans %}</h3>
+        <div class="reseller-dashboard__search">
+          <input type="text"
+                 class="reseller-dashboard__search-input"
+                 id="tenant-search-input"
+                 placeholder="{% trans %}Search tenants...{% endtrans %}"
+                 aria-label="{% trans %}Search tenants{% endtrans %}" />
+        </div>
+      </div>
+
+      {% if managed_tenants|length > 0 %}
+        <div class="reseller-dashboard__table-wrapper">
+          <table class="reseller-dashboard__table">
+            <thead class="reseller-dashboard__thead">
+              <tr>
+                <th class="reseller-dashboard__th">{% trans %}Name{% endtrans %}</th>
+                <th class="reseller-dashboard__th">{% trans %}Plan{% endtrans %}</th>
+                <th class="reseller-dashboard__th">{% trans %}Status{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody class="reseller-dashboard__tbody" id="tenants-table-body">
+              {% for tenant in managed_tenants %}
+                <tr class="reseller-dashboard__row">
+                  <td class="reseller-dashboard__td">{{ tenant.name }}</td>
+                  <td class="reseller-dashboard__td">{{ tenant.plan|default('—') }}</td>
+                  <td class="reseller-dashboard__td">
+                    <span class="reseller-dashboard__badge reseller-dashboard__badge--{{ tenant.status }}">
+                      {{ tenant.status }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="reseller-dashboard__empty-tenants">
+          <p>{% trans %}No managed tenants yet.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </section>
+
+    {# --- Commission history --- #}
+    <section class="reseller-dashboard__commissions">
+      <div class="reseller-dashboard__commissions-header">
+        <h3 class="reseller-dashboard__section-title">{% trans %}Commission History{% endtrans %}</h3>
+        <div class="reseller-dashboard__period-selector">
+          <label class="reseller-dashboard__label" for="commission-period">{% trans %}Period{% endtrans %}</label>
+          <select class="reseller-dashboard__select" id="commission-period">
+            <option value="current">{% trans %}Current Month{% endtrans %}</option>
+            <option value="last">{% trans %}Last Month{% endtrans %}</option>
+            <option value="quarter">{% trans %}This Quarter{% endtrans %}</option>
+            <option value="year">{% trans %}This Year{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="reseller-dashboard__commission-summary">
+        <dl class="reseller-dashboard__summary-list">
+          <dt>{% trans %}Revenue Share Model{% endtrans %}</dt>
+          <dd>{{ reseller.revenue_share_model|default('percentage') }}</dd>
+          <dt>{% trans %}Commission Rate{% endtrans %}</dt>
+          <dd>{{ reseller.commission_rate|default(0) }}%</dd>
+        </dl>
+      </div>
+
+      <div class="reseller-dashboard__chart-area" id="commission-chart-area">
+        <p class="reseller-dashboard__chart-placeholder">{% trans %}Commission chart will load here.{% endtrans %}</p>
+      </div>
+    </section>
+
+  {% else %}
+
+    {# --- No reseller found --- #}
+    <div class="reseller-dashboard__not-found">
+      <h2 class="reseller-dashboard__title">{% trans %}Partner Portal{% endtrans %}</h2>
+      <p>{% trans %}No partner account found for your email. Please contact support or start the onboarding process.{% endtrans %}</p>
+      <a href="/partner-portal/onboarding" class="reseller-dashboard__btn reseller-dashboard__btn--onboard">
+        {% trans %}Start Onboarding{% endtrans %}
+      </a>
+    </div>
+
+  {% endif %}
+
+</div>

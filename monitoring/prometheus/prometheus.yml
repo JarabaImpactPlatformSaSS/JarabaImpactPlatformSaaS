@@ -1,16 +1,19 @@
-# Prometheus Configuration for Jaraba Impact Platform
-# ===================================================
-
+# Prometheus configuration for Jaraba Impact Platform
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  scrape_timeout: 10s
 
-# Alerting configuration
+# Alertmanager configuration
 alerting:
-  alertmanagers: []
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
 
-# Rule files (for alerting)
-rule_files: []
+# Rule files
+rule_files:
+  - /etc/prometheus/rules/*.yml
 
 # Scrape configurations
 scrape_configs:
@@ -18,43 +21,41 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
-        labels:
-          service: 'prometheus'
 
-  # Drupal application metrics (via custom endpoint)
+  # Drupal application metrics
   - job_name: 'drupal'
     metrics_path: /metrics
+    scrape_interval: 30s
     static_configs:
-      - targets: ['appserver:80']
+      - targets: ['host.docker.internal:8080']
         labels:
-          service: 'drupal'
-          environment: 'development'
-    # Skip if endpoint doesn't exist
-    scrape_timeout: 5s
+          app: 'jaraba-platform'
+          environment: 'production'
 
-  # Qdrant vector database
+  # MariaDB/MySQL metrics (via mysqld_exporter)
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['host.docker.internal:9104']
+        labels:
+          service: 'database'
+
+  # Qdrant vector DB metrics
   - job_name: 'qdrant'
     metrics_path: /metrics
+    scrape_interval: 30s
     static_configs:
-      - targets: ['qdrant:6333']
+      - targets: ['host.docker.internal:6333']
         labels:
           service: 'qdrant'
-          environment: 'development'
-    scrape_timeout: 5s
 
-  # Blackbox probe for site availability
-  - job_name: 'site_availability'
-    metrics_path: /probe
-    params:
-      module: [http_2xx]
+  # Node exporter (system metrics)
+  - job_name: 'node'
     static_configs:
-      - targets:
-          - https://jaraba-saas.lndo.site
+      - targets: ['host.docker.internal:9100']
         labels:
-          service: 'site'
-          environment: 'development'
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
+          service: 'system'
+
+  # Loki metrics
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']

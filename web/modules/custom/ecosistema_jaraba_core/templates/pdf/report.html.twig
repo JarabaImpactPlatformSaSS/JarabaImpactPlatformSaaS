@@ -1,0 +1,116 @@
+{#
+/**
+ * @file
+ * Plantilla HTML de informe con marca del tenant (G117-3).
+ *
+ * Diseno profesional con cabecera de marca, secciones numeradas y
+ * pie de pagina consistente. Disponible para renderizado Twig-to-PDF
+ * o envio por email.
+ *
+ * Variables:
+ *   - title: (string) Titulo del informe.
+ *   - sections: (array) Secciones del informe, cada una con:
+ *     - title: (string) Titulo de la seccion.
+ *     - content: (string) Contenido textual de la seccion.
+ *   - date: (string) Fecha del informe.
+ *   - author: (string) Nombre del autor.
+ *   - brand: (array) Configuracion de marca del tenant:
+ *     - color_primary: (string) Color principal hex.
+ *     - color_secondary: (string) Color secundario hex.
+ *     - color_accent: (string) Color de acento hex.
+ *     - logo_url: (string|null) URL del logo.
+ *     - font_heading: (string) Fuente para titulos.
+ *     - font_body: (string) Fuente para cuerpo.
+ *
+ * BEM structure:
+ *   .branded-report
+ *     .branded-report__header
+ *     .branded-report__meta
+ *     .branded-report__body
+ *     .branded-report__section
+ *     .branded-report__footer
+ */
+#}
+
+{% set primary = brand.color_primary|default('#FF8C42') %}
+{% set secondary = brand.color_secondary|default('#00A9A5') %}
+{% set accent = brand.color_accent|default('#233D63') %}
+{% set font_heading = brand.font_heading|default('Outfit') %}
+{% set font_body = brand.font_body|default('Inter') %}
+
+<div class="branded-report" style="max-width: 800px; margin: 0 auto; font-family: '{{ font_body }}', 'Helvetica Neue', Arial, sans-serif; color: #333; line-height: 1.6;">
+
+  {# ===== BARRA SUPERIOR DE COLOR ===== #}
+  <div class="branded-report__bar" style="height: 6px; background: linear-gradient(90deg, {{ primary }}, {{ secondary }});"></div>
+
+  {# ===== CABECERA ===== #}
+  <div class="branded-report__header" style="padding: 24px 32px 16px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      {% if brand.logo_url %}
+        <img src="{{ brand.logo_url }}" alt="{{ 'Logo'|t }}" style="max-height: 45px; max-width: 160px;" />
+      {% endif %}
+    </div>
+    <div style="text-align: right;">
+      <h1 style="margin: 0; font-family: '{{ font_heading }}', sans-serif; font-size: 24px; color: {{ primary }}; font-weight: 700;">
+        {{ title|default('INFORME'|t) }}
+      </h1>
+    </div>
+  </div>
+
+  {# ===== METADATOS ===== #}
+  <div class="branded-report__meta" style="padding: 0 32px 20px; display: flex; gap: 24px; font-size: 13px; color: #888; border-bottom: 1px solid #eee;">
+    {% if author %}
+      <span>
+        <strong style="color: {{ accent }};">{{ 'Autor:'|t }}</strong> {{ author }}
+      </span>
+    {% endif %}
+    <span>
+      <strong style="color: {{ accent }};">{{ 'Fecha:'|t }}</strong> {{ date|default('now'|date('d/m/Y')) }}
+    </span>
+  </div>
+
+  {# ===== INDICE (si hay mas de 2 secciones) ===== #}
+  {% if sections|length > 2 %}
+    <div class="branded-report__toc" style="padding: 20px 32px; background: #f8f9fa; margin: 0 0 8px;">
+      <h3 style="margin: 0 0 10px; font-family: '{{ font_heading }}', sans-serif; font-size: 14px; color: {{ accent }}; text-transform: uppercase; letter-spacing: 1px;">
+        {{ 'Contenido'|t }}
+      </h3>
+      <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #555;">
+        {% for section in sections %}
+          <li style="margin: 4px 0;">{{ section.title }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  {% endif %}
+
+  {# ===== CUERPO DEL INFORME ===== #}
+  <div class="branded-report__body" style="padding: 24px 32px;">
+    {% for section in sections %}
+      <div class="branded-report__section" style="margin-bottom: 28px;">
+        {# Titulo de seccion #}
+        <h2 style="margin: 0 0 8px; font-family: '{{ font_heading }}', sans-serif; font-size: 18px; color: {{ primary }}; font-weight: 600;">
+          {{ loop.index }}. {{ section.title }}
+        </h2>
+
+        {# Linea de acento bajo el titulo #}
+        <div style="width: 40px; height: 3px; background: {{ secondary }}; margin-bottom: 12px; border-radius: 2px;"></div>
+
+        {# Contenido #}
+        <div style="font-size: 14px; color: #444; text-align: justify;">
+          {{ section.content|nl2br }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ===== PIE DE PAGINA ===== #}
+  <div class="branded-report__footer" style="padding: 16px 32px; border-top: 2px solid {{ primary }}; display: flex; justify-content: space-between; align-items: center;">
+    <p style="margin: 0; font-size: 11px; color: #999;">
+      {{ 'Ecosistema Jaraba'|t }} &copy; {{ 'now'|date('Y') }} &mdash; {{ 'Documento generado automaticamente'|t }}
+    </p>
+    <p style="margin: 0; font-size: 10px; color: #bbb;">
+      {{ title }}
+    </p>
+  </div>
+
+</div>

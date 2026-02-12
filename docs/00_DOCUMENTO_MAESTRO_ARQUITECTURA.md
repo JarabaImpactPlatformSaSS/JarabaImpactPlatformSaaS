@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-02-11  
-**Versión:** 6.7.0 (Config Sync Git-Tracked — Deploy estándar Drupal)  
-**Estado:** Producción (IONOS)  
+**Fecha:** 2026-02-12
+**Versión:** 9.0.0 (Avatar Detection + Empleabilidad UI)
+**Estado:** Producción (IONOS)
 **Nivel de Madurez:** 5.0 / 5.0
 
 ---
@@ -548,6 +548,87 @@
 │   ├── Alertas: Sistema ECA con Playbooks automatizados                  │
 │   └── Estado: ✅ Producción                                             │
 │                                                                         │
+│   📦 jaraba_billing (Clase Mundial v7.0.0)                               │
+│   ├── Ciclo completo de billing SaaS — 15 gaps cerrados                │
+│   ├── Entidades: BillingInvoice (+6 campos fiscales),                  │
+│   │   BillingUsageRecord (+5 campos sync), BillingPaymentMethod,       │
+│   │   BillingCustomer (tenant↔Stripe), TenantAddon (add-ons activos)  │
+│   ├── Servicios locales: PlanValidator (+soporte add-ons),             │
+│   │   TenantSubscriptionService, TenantMeteringService,               │
+│   │   PricingRuleEngine, ReverseTrialService,                          │
+│   │   ExpansionRevenueService, ImpactCreditService, SyntheticCfoService│
+│   ├── Servicios nuevos: DunningService (6 pasos cobro),               │
+│   │   FeatureAccessService (plan+addons verificacion)                  │
+│   ├── Stripe API: StripeCustomerService (+sync BillingCustomer),       │
+│   │   StripeSubscriptionService, StripeInvoiceService                  │
+│   │   (+campos fiscales, +flushUsageToStripe)                          │
+│   │   (via jaraba_foc StripeConnectService)                            │
+│   ├── API REST: BillingApiController (13 endpoints),                   │
+│   │   UsageBillingApiController (7 endpoints),                         │
+│   │   AddonApiController (6 endpoints) = 26 endpoints total            │
+│   ├── Webhook: BillingWebhookController (10 eventos Stripe)            │
+│   ├── Permisos: administer billing, view invoices,                     │
+│   │   manage payment methods, manage billing customers,                │
+│   │   manage tenant addons, view billing dunning, view billing usage   │
+│   ├── Tests: 88 tests, 304 assertions (Unit)                          │
+│   ├── Catálogo Stripe: 5 productos × 4 tiers × 2 intervalos = 40 precios│
+│   │   └── Lookup keys, comisiones marketplace (agroconecta 8%...)       │
+│   └── Estado: ✅ Clase Mundial                                          │
+│                                                                         │
+│   📦 ecosistema_jaraba_core — Security & Compliance (G115-1) ✅         │
+│   ├── AuditLog Entity: Inmutable, campos severity/event_type/actor/IP  │
+│   ├── AuditLogService: Logging centralizado de eventos de seguridad    │
+│   ├── ComplianceDashboardController: /admin/seguridad                  │
+│   │   ├── 25+ controles evaluados en tiempo real                       │
+│   │   ├── SOC 2 Type II + ISO 27001:2022 + ENS RD 311/2022 + GDPR     │
+│   │   └── Security headers, audit events, stats agregados              │
+│   ├── GDPR Drush Commands: gdpr:export, gdpr:anonymize, gdpr:report   │
+│   ├── Frontend: compliance-dashboard.css/js + Twig template            │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
+│   📦 jaraba_analytics — Advanced Analytics (Cohort + Funnel) ✅         │
+│   ├── CohortDefinition Entity: Cohortes por fecha, compra, vertical    │
+│   ├── FunnelDefinition Entity: Embudos configurables con pasos JSON    │
+│   ├── CohortAnalysisService: Curva retención semanal, comparaciones    │
+│   ├── FunnelTrackingService: Conversión por pasos, ventana temporal    │
+│   ├── API REST: /api/v1/analytics/cohorts/*, /api/v1/analytics/funnels/*│
+│   ├── Frontend: heatmap retención, visualización funnel, export CSV    │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
+│   📦 ecosistema_jaraba_core — Avatar Detection Service ✅               │
+│   ├── AvatarDetectionService: Cascada 4 niveles                        │
+│   │   ├── Nivel 1: Domain (3 dominios mapeados)                        │
+│   │   ├── Nivel 2: Path/UTM (5 paths + 3 campañas)                    │
+│   │   ├── Nivel 3: Group (membresía de grupo del usuario)              │
+│   │   └── Nivel 4: Rol (ROLE_TO_AVATAR del usuario autenticado)        │
+│   ├── ValueObject: AvatarDetectionResult (inmutable)                   │
+│   │   └── avatarType, vertical, detectionSource, programaOrigen, confidence │
+│   ├── DashboardRedirectController: /dashboard → redirect por avatar    │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
+│   📦 jaraba_diagnostic ✅ (Diagnóstico Express Empleabilidad)            │
+│   ├── EmployabilityDiagnostic Entity: 14 campos                       │
+│   │   ├── q_linkedin, q_cv_ats, q_estrategia, score, profile_type     │
+│   │   ├── primary_gap, anonymous_token, email_remarketing              │
+│   │   └── avatar_confirmed, EntityOwnerInterface, EntityChangedInterface │
+│   ├── EmployabilityScoringService: Pesos LinkedIn 40%/CV 35%/Estrategia 25% │
+│   │   └── 5 perfiles: Invisible (<2), Desconectado (<4), En Construcción (<6), │
+│   │       Competitivo (<8), Magnético (≥8)                             │
+│   ├── EmployabilityDiagnosticController: 3 rutas /empleabilidad/diagnostico │
+│   ├── Frontend: Wizard 3 pasos (JS) + Score Ring (SVG) + CSS compilado │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
+│   📦 jaraba_candidate ✅ (Copilot Empleabilidad)                         │
+│   ├── EmployabilityCopilotAgent: 6 modos especializados               │
+│   │   ├── Profile Coach, Job Advisor, Interview Prep                   │
+│   │   ├── Learning Guide, Application Helper, FAQ                      │
+│   │   └── Detección automática modo por keywords                       │
+│   ├── CopilotApiController: POST /api/v1/copilot/employability/chat    │
+│   │   └── GET /suggestions (chips contextuales por página)             │
+│   ├── DI: @ai.provider, @config.factory, @jaraba_ai_agents.tenant_brand_voice │
+│   │   └── @jaraba_ai_agents.observability, @ecosistema_jaraba_core.unified_prompt_builder │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
 │   📦 jaraba_business_tools (Vertical Emprendimiento)                     │
 │   ├── Entidades: BusinessModelCanvas (9 bloques)                        │
 │   ├── CanvasAiService: Sugerencias IA por sector (7 sectores)           │
@@ -616,27 +697,100 @@
 │   ├── API REST: /api/v1/agents/*, /api/v1/tools/*                        │
 │   └── Estado: ✅ Producción (v1.0 - Tool Use nativo)                     │
 │                                                                         │
-│   📦 jaraba_social ✅ (AI Social Manager - Marketing A.4)                 │
-│   ├── Entidades: SocialAccount, SocialPost                               │
+│   📦 jaraba_social ✅ (AI Social Manager - Marketing AI Stack)             │
+│   ├── Entidades: SocialAccount, SocialPost, SocialPostVariant            │
 │   ├── SocialPostService: Generación IA + scheduling + publish            │
 │   │   └── Plataformas: Facebook, Instagram, LinkedIn, Twitter, TikTok   │
+│   ├── SocialAccountService: OAuth + token refresh por plataforma         │
+│   ├── SocialCalendarService: Vista calendario + scheduling               │
+│   ├── SocialAnalyticsService: Métricas cross-platform                    │
+│   ├── MakeComIntegrationService: Publicación via Make.com                │
 │   ├── Dashboard: /social con estadísticas y calendario                   │
 │   ├── API REST: /api/v1/social/generate, /api/v1/social/schedule         │
-│   └── Estado: ✅ Producción (v1.0)                                       │
+│   ├── Tests: 3 unit test files (SocialPost, SocialAccount, Calendar)    │
+│   └── Estado: ✅ Producción (v2.0 - Marketing AI Stack 100%)             │
 │                                                                         │
-│   📦 jaraba_crm ✅ (CRM Pipeline + Kanban)                                │
-│   ├── Entidades: Company, Contact, Opportunity, Activity                 │
+│   📦 jaraba_crm ✅ (CRM Pipeline + Kanban + Forecasting)                  │
+│   ├── Entidades: Company, Contact, Opportunity, Activity, PipelineStage  │
 │   ├── PipelineKanbanController: Vista Kanban drag & drop                 │
 │   │   └── Ruta: /crm/kanban con JS vanilla + SCSS premium                │
 │   ├── CrmDashboardController: Dashboard unificado /crm                   │
-│   └── Estado: ✅ Producción (v2.0 - Kanban añadido)                      │
+│   ├── CrmApiController: 22 endpoints REST (CRUD + forecast + stages)    │
+│   ├── CrmForecastingService: Forecast, win rate, avg deal size          │
+│   ├── PipelineStageService: Stages por tenant, reordenamiento           │
+│   ├── Tests: 10 unit test files (Company, Contact, Opportunity, etc.)    │
+│   └── Estado: ✅ Producción (v3.0 - Marketing AI Stack 100%)             │
 │                                                                         │
-│   📦 jaraba_email ✅ (Email Marketing + AI)                               │
-│   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate  │
+│   📦 jaraba_email ✅ (Email Marketing + AI + 24 MJML Templates)            │
+│   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate, │
+│   │   EmailSequenceStep                                                  │
 │   ├── EmailAIService: Generación de subjects y copy con IA               │
 │   │   └── generateSubjectLines(), generateEmailCopy(), A/B variants      │
-│   ├── MJML Compiler: Templates responsive                                │
-│   └── Estado: ✅ Producción (v2.0 - AI Integration)                      │
+│   ├── EmailApiController: 17 endpoints REST (listas, subs, campaigns)   │
+│   ├── EmailWebhookController: POST /api/v1/webhooks/sendgrid (HMAC)    │
+│   ├── SendGridClientService: sendEmail, sendBatch, processWebhook       │
+│   ├── SequenceManagerService: enrollSubscriber, executeNextStep         │
+│   ├── MJML Templates: 24 transaccionales + base.mjml                    │
+│   │   ├── auth/ (5): verify, welcome, password_reset/changed, new_login  │
+│   │   ├── billing/ (7): invoice, payment_failed, subscription...         │
+│   │   ├── marketplace/ (6): order_confirmed, shipped, delivered...       │
+│   │   └── empleabilidad/ (5): job_match, application, shortlisted...    │
+│   ├── TemplateLoaderService: template_id → MJML → compilación           │
+│   ├── MjmlCompilerService: MJML → HTML responsive                       │
+│   ├── Tests: 12 unit test files (Newsletter, MJML, Subscriber, etc.)    │
+│   └── Estado: ✅ Producción (v4.0 - Marketing AI Stack 100%)             │
+│                                                                         │
+│   📦 jaraba_ab_testing ✅ (A/B Testing Engine)                            │
+│   ├── Entidades: Experiment, ExperimentVariant, ExperimentExposure,     │
+│   │   ExperimentResult                                                   │
+│   ├── ABTestingApiController: Deploy winner, exposure, conversion       │
+│   ├── StatisticalEngineService: p-value, confidence, lift               │
+│   ├── VariantAssignmentService: Deterministic variant assignment        │
+│   ├── ExperimentAggregatorService: Metrics aggregation                  │
+│   ├── OnboardingExperimentService: Onboarding flow experiments          │
+│   ├── Tests: 8 unit test files                                          │
+│   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
+│                                                                         │
+│   📦 jaraba_pixels ✅ (Pixel Manager CAPI v2)                             │
+│   ├── Entidades: TrackingPixel, TrackingEvent, ConsentRecord,           │
+│   │   PixelCredential                                                    │
+│   ├── PixelDispatcherService: Meta CAPI + Google MP + LinkedIn + TikTok │
+│   ├── ConsentManagementService: GDPR consent record + revocation        │
+│   ├── CredentialManagerService: Platform credentials                    │
+│   ├── RedisQueueService: Redis-backed event queue + batch               │
+│   ├── Tests: 5 unit test files                                          │
+│   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
+│                                                                         │
+│   📦 jaraba_events ✅ (Marketing Events Manager)                          │
+│   ├── Entidades: MarketingEvent (30+ campos), EventRegistration,        │
+│   │   EventLandingPage                                                   │
+│   ├── EventApiController: CRUD eventos + registros + check-in + stats   │
+│   ├── EventRegistrationService: Registro, check-in, waitlist            │
+│   ├── EventAnalyticsService: Tasas asistencia, engagement, conversión   │
+│   ├── EventCertificateService: Generación certificados PDF              │
+│   ├── Tests: 3 unit test files                                          │
+│   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
+│                                                                         │
+│   📦 jaraba_referral ✅ (Programa de Referidos)                           │
+│   ├── Entidades: ReferralProgram, ReferralCode, ReferralReward          │
+│   ├── ReferralApiController: 9 endpoints REST                           │
+│   ├── RewardProcessingService: Creación, validación, Stripe payouts     │
+│   ├── LeaderboardService: Ranking, niveles embajador, gamificación      │
+│   ├── ReferralTrackingService: Clicks, signups, conversiones            │
+│   ├── Tests: 3 unit test files                                          │
+│   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
+│                                                                         │
+│   📦 jaraba_ads ✅ (Ads Multi-Platform Manager)                           │
+│   ├── Entidades: AdsAccount, AdsCampaignSync, AdsMetricsDaily,         │
+│   │   AdsAudienceSync, AdsConversionEvent                               │
+│   ├── AdsOAuthController: OAuth flows Meta + Google                     │
+│   ├── MetaAdsClientService: Meta Marketing API v18                      │
+│   ├── GoogleAdsClientService: Google Ads API v16                        │
+│   ├── AdsAudienceSyncService: Sync CRM → plataformas ads               │
+│   ├── ConversionTrackingService: Conversiones offline                   │
+│   ├── AdsSyncService: Orquestación de sincronización                    │
+│   ├── Tests: 6 unit test files                                          │
+│   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
 │                                                                         │
 │   📦 ecosistema_jaraba_core Admin Center D ✅                            │
 │   ├── Impersonation System: Login como usuario de tenant                │
@@ -754,6 +908,28 @@
 │   │ • Descrip.  │       │ • Email     │       │ • Support   │          │
 │   └─────────────┘       └─────────────┘       └─────────────┘          │
 │                                                                         │
+│   AI SKILLS VERTICALES (30 predefinidas):                               │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  empleabilidad (7): cv_optimization, interview_preparation...  │  │
+│   │  emprendimiento (7): canvas_coaching, pitch_deck_review...     │  │
+│   │  agroconecta (6): product_listing_agro, seasonal_marketing...  │  │
+│   │  comercioconecta (5): flash_offer_design, local_seo_content... │  │
+│   │  serviciosconecta (5): case_summarization, client_comms...     │  │
+│   │  Seed: scripts/seed_vertical_skills.php (1,647 LOC)           │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   COPILOT EMPLEABILIDAD (6 modos):                                     │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  EmployabilityCopilotAgent (extiende BaseAgent)                 │  │
+│   │  profile_coach: Optimización LinkedIn + personal branding       │  │
+│   │  job_advisor: Estrategia búsqueda + matching personalizado      │  │
+│   │  interview_prep: Simulación entrevistas + feedback              │  │
+│   │  learning_guide: Ruta formativa + skills gap analysis           │  │
+│   │  application_helper: Cover letter + follow-up templates         │  │
+│   │  faq: Preguntas frecuentes empleo España                        │  │
+│   │  DI: @ai.provider + @tenant_brand_voice + @observability        │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
 │   PROVEEDORES IA SOPORTADOS:                                            │
 │   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                    │
 │   │   OpenAI    │  │  Anthropic  │  │  Google AI  │                    │
@@ -845,6 +1021,18 @@
 │   │  • API Keys en Key Module (config sync git-tracked)               │  │
 │   │  • Config Sync: config/sync/ (589 YML, git-tracked)              │  │
 │   │  • Logs sanitizados (sin datos sensibles)                        │  │
+│   │  • AuditLog inmutable (eventos seguridad con IP, actor, tenant)  │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   CAPA 4: COMPLIANCE (G115-1)                                           │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  • Dashboard /admin/seguridad (25+ controles)                    │  │
+│   │  • SOC 2 Type II + ISO 27001:2022 + ENS RD 311/2022 + GDPR      │  │
+│   │  • Verificación security headers en tiempo real                  │  │
+│   │  • Auto-refresh cada 30 segundos                                 │  │
+│   │  • GDPR Drush: gdpr:export (Art.15), gdpr:anonymize (Art.17)    │  │
+│   │  • Security CI: Daily Trivy + ZAP + SARIF (GitHub Security)      │  │
+│   │  • Incident Response Playbook: SEV1-4, AEPD 72h                  │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -901,6 +1089,13 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   • Backups: 30 días                                                    │
 │   • Datos fiscales: 7 años (requisito legal)                            │
 │                                                                         │
+│   HERRAMIENTAS GDPR AUTOMATIZADAS:                                     │
+│   • drush gdpr:export {uid}     → Art. 15 Acceso (JSON)                │
+│   • drush gdpr:anonymize {uid}  → Art. 17 Olvido (hash replacement)    │
+│   • drush gdpr:report           → Informe compliance general           │
+│   • Playbook: SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md                   │
+│   • AEPD notificación: 72h (GDPR Art. 33)                              │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -952,11 +1147,14 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │        │                                                                │
 │        ▼                                                                │
 │   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
-│   │  Lint   │───▶│  Test   │───▶│  Build  │───▶│ Deploy  │             │
-│   │         │    │         │    │         │    │         │             │
-│   │ PHPStan │    │ PHPUnit │    │Composer │    │  Git    │             │
-│   │ ESLint  │    │ Kernel  │    │  SCSS   │    │  Drush  │             │
-│   └─────────┘    └─────────┘    └─────────┘    └─────────┘             │
+│   │  Lint   │───▶│  Test   │───▶│Security │───▶│  Build  │───▶│Deploy│  │
+│   │         │    │         │    │         │    │         │    │      │  │
+│   │ PHPStan │    │ PHPUnit │    │Composer │    │Composer │    │ Git  │  │
+│   │ ESLint  │    │ 80% cov │    │ Trivy   │    │  SCSS   │    │Drush │  │
+│   └─────────┘    └─────────┘    └─────────┘    └─────────┘    └──────┘  │
+│                                                                         │
+│   + SECURITY SCAN (daily cron):                                        │
+│   Trivy + OWASP ZAP + npm/composer audit → SARIF → GitHub Security     │
 │                                                      │                 │
 │                                        ┌─────────────┘                 │
 │                                        ▼                               │
@@ -975,6 +1173,185 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   │                     SLACK NOTIFICATIONS                          │  │
 │   │  ✅ Deploy exitoso a producción                                  │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.3 Monitoring Stack (Production Gaps v8.0.0)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      MONITORING STACK                                    │
+│                 Docker Compose Standalone                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌────────────────────────────────────────────────────────────────────┐│
+│   │                    METRICS (Prometheus :9090)                       ││
+│   │  Scrape targets: drupal, mysql, qdrant, node, loki                 ││
+│   │  14 alert rules: ServiceDown, HighErrorRate, SlowResponseTime,     ││
+│   │  DatabaseConnectionPoolExhausted, QdrantDiskFull,                  ││
+│   │  StripeWebhookFailures, SSLCertificateExpiring...                  ││
+│   └────────────────────────────────────────────────────────────────────┘│
+│                              │                                          │
+│                              ▼                                          │
+│   ┌────────────────────────────────────────────────────────────────────┐│
+│   │                    VISUALIZATION (Grafana :3001)                    ││
+│   │  Dashboards: Platform Overview, API Performance, Business KPIs     ││
+│   │  Data sources: Prometheus + Loki                                   ││
+│   └────────────────────────────────────────────────────────────────────┘│
+│                                                                         │
+│   ┌──────────────────────────┐  ┌──────────────────────────┐           │
+│   │ LOGS                      │  │ ALERTING                  │           │
+│   │ Loki :3100 + Promtail    │  │ AlertManager :9093         │           │
+│   │ drupal, php-fpm, nginx   │  │ critical→Slack+email       │           │
+│   │ 720h retention, TSDB     │  │ warning→Slack #alerts      │           │
+│   └──────────────────────────┘  └──────────────────────────┘           │
+│                                                                         │
+│   FICHEROS:                                                            │
+│   monitoring/docker-compose.monitoring.yml                              │
+│   monitoring/prometheus/prometheus.yml + rules/jaraba_alerts.yml        │
+│   monitoring/loki/loki-config.yml                                      │
+│   monitoring/promtail/promtail-config.yml                              │
+│   monitoring/alertmanager/alertmanager.yml                              │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.4 Security CI Automatizado
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SECURITY SCAN PIPELINE                                │
+│                 .github/workflows/security-scan.yml                      │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Cron: daily 02:00 UTC                                                 │
+│        │                                                                │
+│        ▼                                                                │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
+│   │Composer │───▶│  npm    │───▶│  Trivy  │───▶│ OWASP   │             │
+│   │ audit   │    │  audit  │    │  FS     │    │  ZAP    │             │
+│   │         │    │         │    │  scan   │    │ baseline│             │
+│   └─────────┘    └─────────┘    └─────────┘    └─────────┘             │
+│                                                      │                 │
+│                                               SARIF Upload             │
+│                                               GitHub Security          │
+│                                                                         │
+│   GDPR DRUSH COMMANDS:                                                 │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  drush gdpr:export {uid}     → Art. 15 (Acceso) — JSON export  │  │
+│   │  drush gdpr:anonymize {uid}  → Art. 17 (Olvido) — Hash replace │  │
+│   │  drush gdpr:report           → Informe compliance general      │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   INCIDENT RESPONSE:                                                   │
+│   docs/tecnicos/SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md                 │
+│   SEV1-SEV4 matrix, AEPD 72h (GDPR Art. 33), templates comunicación   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.5 Go-Live Procedures
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    GO-LIVE RUNBOOK                                       │
+│                 scripts/golive/ + docs/tecnicos/                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   SCRIPTS EJECUTABLES:                                                 │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  01_preflight_checks.sh  │ 24 validaciones pre-lanzamiento     │  │
+│   │  (PHP, MariaDB, Redis, Qdrant, Stripe, SSL, DNS, módulos)      │  │
+│   ├─────────────────────────────────────────────────────────────────┤  │
+│   │  02_validation_suite.sh  │ Smoke tests por vertical, API,      │  │
+│   │  CSRF checks, endpoint health                                   │  │
+│   ├─────────────────────────────────────────────────────────────────┤  │
+│   │  03_rollback.sh          │ Rollback automatizado 7 pasos       │  │
+│   │  con notificaciones Slack                                       │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   FASES RUNBOOK:                                                       │
+│   1. Pre-Go-Live (24h antes)  → preflight_checks.sh                   │
+│   2. Deploy                    → git pull, composer, drush              │
+│   3. Validación                → validation_suite.sh                   │
+│   4. Go/No-Go                  → Criterios cuantitativos               │
+│   5. Soft Launch               → 10% tráfico, monitoring               │
+│   6. Public Launch             → 100% tráfico                          │
+│                                                                         │
+│   DOCUMENTO: docs/tecnicos/GO_LIVE_RUNBOOK.md (708 LOC, RACI)         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.6 Testing Infrastructure
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    TESTING INFRASTRUCTURE                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   UNIT TESTS (PHPUnit 11):                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  789+ tests (730 pass, Unit + Kernel + Functional)              │  │
+│   │  Coverage threshold: 80% (enforced in CI)                       │  │
+│   │  Codecov upload + GitHub annotations                            │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   PERFORMANCE (k6):                                                    │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  tests/performance/load_test.js                                 │  │
+│   │  Scenarios: smoke (1 VU) → load (50 VUs) → stress (200 VUs)    │  │
+│   │  Endpoints: homepage, login, API skills, checkout               │  │
+│   │  Thresholds: p95 < 500ms, error rate < 1%                      │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   VISUAL REGRESSION (BackstopJS):                                      │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  tests/visual/backstop.json                                     │  │
+│   │  10 páginas × 3 viewports (375px, 768px, 1440px)               │  │
+│   │  Puppeteer engine, misMatchThreshold 0.1-0.5                   │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   E2E (Cypress):                                                       │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  12 suites, ~670 líneas                                         │  │
+│   │  Canvas editor, dashboard, AI panel, multi-tenant, a11y         │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.7 Email System (MJML Templates)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    EMAIL TEMPLATE SYSTEM                                 │
+│                 jaraba_email module                                      │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   TEMPLATES MJML (24 transaccionales + 1 base):                        │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  auth/       (5) verify, welcome, password_reset/changed, login │  │
+│   │  billing/    (7) invoice, payment_failed, subscription,         │  │
+│   │                   upgrade, trial, cancel, dunning               │  │
+│   │  marketplace/(6) order_confirmed, new_order_seller, shipped,    │  │
+│   │                   delivered, payout, review                     │  │
+│   │  empleabilidad/(5) job_match, application, new_application,     │  │
+│   │                     shortlisted, expired                        │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   FLUJO:                                                               │
+│   template_id ──▶ TemplateLoaderService ──▶ {{ variables }}            │
+│                         │                       │                      │
+│                         ▼                       ▼                      │
+│                   MJML file              MjmlCompilerService           │
+│                                               │                        │
+│                                               ▼                        │
+│                                         HTML responsive                │
+│                                                                         │
+│   SERVICIO: jaraba_email.template_loader                               │
+│   COMPILER: jaraba_email.mjml_compiler                                 │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -1064,6 +1441,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 | **Vertical Emprendimiento Gap Analysis** | `docs/tecnicos/20260115h-Gap_Analysis_Documentacion_Tecnica_Emprendimiento_v1_Claude.md` |
 | **Copiloto v2 Especificaciones** | `docs/tecnicos/20260121a-Especificaciones_Tecnicas_Copiloto_v2_Claude.md` |
 | **Programa Andalucía +ei** | `docs/tecnicos/20260115c-Programa%20Maestro%20Andaluc%C3%ADa%20+ei%20V2.0_Gemini.md` |
+| **Aprendizajes Avatar + Empleabilidad** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_avatar_empleabilidad_activation.md` |
 
 ---
 
@@ -1082,5 +1460,5 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ---
 
-> **Versión:** 6.6.0 | **Fecha:** 2026-02-11 | **Autor:** IA Asistente
+> **Versión:** 9.0.0 | **Fecha:** 2026-02-12 | **Autor:** IA Asistente
 

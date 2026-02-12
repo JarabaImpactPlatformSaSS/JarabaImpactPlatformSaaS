@@ -1,0 +1,11 @@
+name: 'Jaraba Onboarding'
+type: module
+description: 'Sistema de onboarding guiado para usuarios y tenants. Proporciona templates de onboarding, checklists, gamificación y tours interactivos.'
+package: Jaraba
+core_version_requirement: ^11
+php: 8.4
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_journey:jaraba_journey
+  - drupal:group

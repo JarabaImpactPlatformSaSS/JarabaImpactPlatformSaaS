@@ -1,0 +1,179 @@
+{#
+/**
+ * @file
+ * Portal de Partner/Reseller - Dashboard (G117-4).
+ *
+ * Variables:
+ *   - reseller: Entidad Reseller con datos del partner.
+ *   - managed_tenants: Array de tenants gestionados (name, plan, status, created).
+ *   - commissions: Resumen de comisiones (total_tenants, total_revenue,
+ *                  commission_earned, pending_payout).
+ *   - metrics: Metricas de salud (active_tenants, churned_tenants, avg_health_score).
+ *
+ * BEM structure:
+ *   .reseller-portal
+ *     .reseller-portal__header
+ *     .reseller-metrics
+ *     .reseller-tenants-table
+ *     .reseller-commissions
+ */
+#}
+
+{% set status_labels = {
+  'active': 'Activo'|t,
+  'suspended': 'Suspendido'|t,
+  'pending': 'Pendiente'|t,
+  'trial': 'Prueba'|t,
+  'cancelled': 'Cancelado'|t,
+  'past_due': 'Pago pendiente'|t,
+} %}
+
+{% set status_colors = {
+  'active': '#43A047',
+  'suspended': '#E53935',
+  'pending': '#FF8C42',
+  'trial': '#1976D2',
+  'cancelled': '#757575',
+  'past_due': '#FFA000',
+} %}
+
+<div class="reseller-portal">
+
+  {# ===== HEADER ===== #}
+  <div class="reseller-portal__header">
+    <div class="reseller-portal__header-info">
+      <h1 class="reseller-portal__title">
+        {% trans %}Portal de Partner{% endtrans %}
+      </h1>
+      <p class="reseller-portal__subtitle">
+        {{ reseller.company_name.value ?: reseller.label }}
+      </p>
+    </div>
+    <div class="reseller-portal__header-badge">
+      {% set reseller_status = reseller.status_reseller.value|default('pending') %}
+      <span class="reseller-portal__status-badge reseller-portal__status-badge--{{ reseller_status }}">
+        {{ status_labels[reseller_status]|default(reseller_status) }}
+      </span>
+    </div>
+  </div>
+
+  {# ===== METRICS GRID ===== #}
+  <div class="reseller-metrics">
+    <div class="reseller-metric-card">
+      <span class="reseller-metric-card__value">{{ commissions.total_tenants|default(0) }}</span>
+      <span class="reseller-metric-card__label">{% trans %}Total Tenants{% endtrans %}</span>
+    </div>
+
+    <div class="reseller-metric-card">
+      <span class="reseller-metric-card__value">&euro;{{ commissions.total_revenue|default(0)|number_format(2, ',', '.') }}</span>
+      <span class="reseller-metric-card__label">{% trans %}Revenue Generado{% endtrans %}</span>
+    </div>
+
+    <div class="reseller-metric-card">
+      <span class="reseller-metric-card__value">&euro;{{ commissions.commission_earned|default(0)|number_format(2, ',', '.') }}</span>
+      <span class="reseller-metric-card__label">{% trans %}Comision Ganada{% endtrans %}</span>
+    </div>
+
+    <div class="reseller-metric-card">
+      <span class="reseller-metric-card__value">&euro;{{ commissions.pending_payout|default(0)|number_format(2, ',', '.') }}</span>
+      <span class="reseller-metric-card__label">{% trans %}Pago Pendiente{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ===== HEALTH METRICS ===== #}
+  <div class="reseller-portal__health">
+    <div class="reseller-portal__health-item">
+      <span class="reseller-portal__health-value">{{ metrics.active_tenants|default(0) }}</span>
+      <span class="reseller-portal__health-label">{% trans %}Tenants Activos{% endtrans %}</span>
+    </div>
+    <div class="reseller-portal__health-item">
+      <span class="reseller-portal__health-value">{{ metrics.churned_tenants|default(0) }}</span>
+      <span class="reseller-portal__health-label">{% trans %}Tenants Perdidos{% endtrans %}</span>
+    </div>
+    <div class="reseller-portal__health-item">
+      <span class="reseller-portal__health-value">{{ metrics.avg_health_score|default(0) }}%</span>
+      <span class="reseller-portal__health-label">{% trans %}Health Score{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ===== MANAGED TENANTS TABLE ===== #}
+  <div class="reseller-tenants-table">
+    <h2 class="reseller-tenants-table__title">
+      {% trans %}Tenants Gestionados{% endtrans %}
+    </h2>
+
+    <div class="reseller-tenants-table__search">
+      <label for="reseller-tenant-search" class="visually-hidden">{% trans %}Buscar tenant{% endtrans %}</label>
+      <input type="text" id="reseller-tenant-search" class="reseller-tenants-table__search-input"
+             placeholder="{{ 'Buscar tenant...'|t }}" />
+    </div>
+
+    <div class="reseller-tenants-table__wrapper">
+      <table class="reseller-tenants-table__table" id="reseller-tenants-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Tenant{% endtrans %}</th>
+            <th>{% trans %}Plan{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Fecha Alta{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if managed_tenants is empty %}
+            <tr>
+              <td colspan="4" class="reseller-tenants-table__empty">
+                {% trans %}No se encontraron tenants gestionados.{% endtrans %}
+              </td>
+            </tr>
+          {% else %}
+            {% for tenant in managed_tenants %}
+              <tr class="reseller-tenants-table__row" data-tenant-name="{{ tenant.name|lower }}">
+                <td class="reseller-tenants-table__cell--name">{{ tenant.name }}</td>
+                <td>{{ tenant.plan|default('-') }}</td>
+                <td>
+                  {% set t_status = tenant.status|default('active') %}
+                  <span class="reseller-tenants-table__status" style="background: {{ status_colors[t_status]|default('#757575') }}; color: #fff;">
+                    {{ status_labels[t_status]|default(t_status) }}
+                  </span>
+                </td>
+                <td>{{ tenant.created|default('-') }}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ===== COMMISSION SUMMARY ===== #}
+  <div class="reseller-commissions">
+    <h2 class="reseller-commissions__title">
+      {% trans %}Resumen de Comisiones{% endtrans %}
+    </h2>
+    <div class="reseller-commissions__summary">
+      <div class="reseller-commissions__item">
+        <span class="reseller-commissions__item-label">{% trans %}Tasa de Comision{% endtrans %}</span>
+        <span class="reseller-commissions__item-value">{{ reseller.commission_rate.value|default(0)|number_format(2, ',', '.') }}%</span>
+      </div>
+      <div class="reseller-commissions__item">
+        <span class="reseller-commissions__item-label">{% trans %}Modelo{% endtrans %}</span>
+        <span class="reseller-commissions__item-value">
+          {% set model = reseller.revenue_share_model.value|default('percentage') %}
+          {% if model == 'percentage' %}{% trans %}Porcentaje{% endtrans %}
+          {% elseif model == 'flat_fee' %}{% trans %}Tarifa fija{% endtrans %}
+          {% elseif model == 'tiered' %}{% trans %}Escalonado{% endtrans %}
+          {% else %}{{ model }}{% endif %}
+        </span>
+      </div>
+      <div class="reseller-commissions__item">
+        <span class="reseller-commissions__item-label">{% trans %}Revenue Total{% endtrans %}</span>
+        <span class="reseller-commissions__item-value">&euro;{{ commissions.total_revenue|default(0)|number_format(2, ',', '.') }}</span>
+      </div>
+      <div class="reseller-commissions__item">
+        <span class="reseller-commissions__item-label">{% trans %}Comision Generada{% endtrans %}</span>
+        <span class="reseller-commissions__item-value reseller-commissions__item-value--highlight">&euro;{{ commissions.commission_earned|default(0)|number_format(2, ',', '.') }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>

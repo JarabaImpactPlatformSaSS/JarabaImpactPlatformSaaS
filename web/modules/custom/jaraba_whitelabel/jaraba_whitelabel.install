@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_whitelabel.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_whitelabel_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Whitelabel installed. Entity tables (whitelabel_config, custom_domain, whitelabel_email_template, whitelabel_reseller) have been created automatically.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_whitelabel_uninstall(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Whitelabel uninstalled. Entity tables have been removed.'));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_whitelabel_schema(): array {
+  $schema['whitelabel_domain_verification_log'] = [
+    'description' => 'Log of DNS verification attempts per custom domain.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'domain_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID of the custom_domain entity.',
+      ],
+      'verified' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Whether the verification succeeded.',
+      ],
+      'checked_at' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp of the verification attempt.',
+      ],
+      'details' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'description' => 'JSON details of the DNS lookup result.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'domain_id' => ['domain_id'],
+    ],
+  ];
+
+  return $schema;
+}

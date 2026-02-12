@@ -1,0 +1,156 @@
+# Reglas de alertas Prometheus para Jaraba Impact Platform
+groups:
+  - name: service_availability
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Servicio {{ $labels.job }} caído"
+          description: "El servicio {{ $labels.job }} en {{ $labels.instance }} lleva más de 2 minutos sin responder."
+
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
+            /
+            sum(rate(http_requests_total[5m])) by (job)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Tasa de errores 5xx alta en {{ $labels.job }}"
+          description: "Más del 5% de peticiones están devolviendo errores 5xx en {{ $labels.job }}. Tasa actual: {{ $value | humanizePercentage }}."
+
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job)) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tiempo de respuesta alto en {{ $labels.job }}"
+          description: "El percentil 95 de tiempo de respuesta supera 2 segundos en {{ $labels.job }}. P95 actual: {{ $value | humanizeDuration }}."
+
+  - name: database_health
+    rules:
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pool de conexiones de BD casi agotado"
+          description: "Se están usando más del 90% de las conexiones máximas de la base de datos. Conexiones: {{ $value | humanizePercentage }}."
+
+      - alert: DatabaseSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Consultas lentas en base de datos"
+          description: "Se están generando consultas lentas a un ritmo de {{ $value }}/s."
+
+      - alert: DatabaseReplicationLag
+        expr: mysql_slave_status_seconds_behind_master > 30
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Retraso en replicación de BD"
+          description: "La réplica tiene un retraso de {{ $value }} segundos."
+
+  - name: qdrant_health
+    rules:
+      - alert: QdrantDiskFull
+        expr: |
+          (qdrant_storage_disk_usage_bytes / qdrant_storage_disk_total_bytes) > 0.85
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disco de Qdrant casi lleno"
+          description: "El disco de Qdrant supera el 85% de uso. Uso actual: {{ $value | humanizePercentage }}."
+
+      - alert: QdrantCollectionError
+        expr: qdrant_collection_status != 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Colección Qdrant en estado de error"
+          description: "Una colección de Qdrant está reportando un estado no saludable."
+
+  - name: billing_health
+    rules:
+      - alert: StripeWebhookFailures
+        expr: rate(stripe_webhook_failures_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fallos en webhooks de Stripe"
+          description: "Los webhooks de Stripe están fallando a un ritmo de {{ $value }}/s. Esto puede causar pérdida de eventos de pago."
+
+      - alert: PaymentProcessingErrors
+        expr: rate(payment_processing_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Errores en procesamiento de pagos"
+          description: "Se están produciendo errores de procesamiento de pagos. Tasa: {{ $value }}/s."
+
+  - name: ssl_certificates
+    rules:
+      - alert: SSLCertificateExpiring
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 7
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Certificado SSL a punto de expirar"
+          description: "El certificado SSL de {{ $labels.instance }} expira en {{ $value | humanize }} días."
+
+      - alert: SSLCertificateExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 30
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Certificado SSL expira pronto"
+          description: "El certificado SSL de {{ $labels.instance }} expira en {{ $value | humanize }} días."
+
+  - name: system_resources
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Uso alto de CPU"
+          description: "El uso de CPU supera el 85% durante más de 10 minutos. Uso actual: {{ $value }}%."
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.9
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Uso alto de memoria"
+          description: "El uso de memoria supera el 90%. Uso actual: {{ $value | humanizePercentage }}."
+
+      - alert: DiskSpaceLow
+        expr: (1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Espacio en disco bajo"
+          description: "El disco tiene más del 85% de uso. Uso actual: {{ $value | humanizePercentage }}."

@@ -79,3 +79,43 @@ revision-diff:
     - core/drupal
     - core/once
     - ecosistema_jaraba_core/global
+
+# =============================================================================
+# BASE DE CONOCIMIENTO PÚBLICA (KB)
+# Páginas públicas de artículos, categorías, búsqueda y vídeos
+# =============================================================================
+kb-help-center:
+  version: 1.0
+  css:
+    theme:
+      css/kb-help-center.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+
+kb-search:
+  version: 1.0
+  css:
+    theme:
+      css/kb-search.css: {}
+  js:
+    js/kb-search.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+
+kb-article:
+  version: 1.0
+  css:
+    theme:
+      css/kb-article.css: {}
+  js:
+    js/kb-article-actions.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global

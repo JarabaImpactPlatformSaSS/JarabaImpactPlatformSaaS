@@ -1,0 +1,241 @@
+/* Expansion Pipeline Styles — BEM: cs-expansion-pipeline */
+
+/* Layout */
+.cs-expansion-pipeline {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: var(--ej-font-family-body, "Inter", sans-serif);
+  color: var(--ej-color-text, #1e293b);
+}
+
+/* Header */
+.cs-expansion-pipeline__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cs-expansion-pipeline__title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+.cs-expansion-pipeline__subtitle {
+  color: var(--ej-color-text-muted, #64748b);
+  margin: 0.25rem 0 0;
+}
+
+/* Summary */
+.cs-expansion-pipeline__summary {
+  text-align: right;
+}
+.cs-expansion-pipeline__total-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cs-expansion-pipeline__total-amount {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  color: var(--ej-color-success, #16a34a);
+}
+
+/* Stage Counts */
+.cs-expansion-pipeline__stage-counts {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.cs-expansion-pipeline__stage-count {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 1rem;
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.cs-expansion-pipeline__count-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  color: var(--ej-color-primary, #2563eb);
+}
+.cs-expansion-pipeline__count-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+/* Stage-specific colors */
+.cs-expansion-pipeline__stage-count--identified { border-top: 3px solid #94a3b8; }
+.cs-expansion-pipeline__stage-count--qualified { border-top: 3px solid var(--ej-color-primary, #2563eb); }
+.cs-expansion-pipeline__stage-count--proposed { border-top: 3px solid var(--ej-color-warning, #f59e0b); }
+.cs-expansion-pipeline__stage-count--negotiating { border-top: 3px solid #f97316; }
+.cs-expansion-pipeline__stage-count--closed { border-top: 3px solid var(--ej-color-success, #16a34a); }
+
+/* Kanban Board */
+.cs-expansion-pipeline__board {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+/* Column */
+.cs-expansion-pipeline__column {
+  flex: 1;
+  min-width: 250px;
+  background: var(--ej-bg-body, #f8fafc);
+  border-radius: var(--ej-border-radius, 8px);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.2s;
+}
+.cs-expansion-pipeline__column--drag-over {
+  background: rgba(37, 99, 235, 0.05);
+  outline: 2px dashed var(--ej-color-primary, #2563eb);
+  outline-offset: -2px;
+}
+.cs-expansion-pipeline__column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+.cs-expansion-pipeline__column--identified .cs-expansion-pipeline__column-header { border-bottom-color: #94a3b8; }
+.cs-expansion-pipeline__column--qualified .cs-expansion-pipeline__column-header { border-bottom-color: var(--ej-color-primary, #2563eb); }
+.cs-expansion-pipeline__column--proposed .cs-expansion-pipeline__column-header { border-bottom-color: var(--ej-color-warning, #f59e0b); }
+.cs-expansion-pipeline__column--negotiating .cs-expansion-pipeline__column-header { border-bottom-color: #f97316; }
+.cs-expansion-pipeline__column--closed .cs-expansion-pipeline__column-header { border-bottom-color: var(--ej-color-success, #16a34a); }
+.cs-expansion-pipeline__column-title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+.cs-expansion-pipeline__column-count {
+  background: #e2e8f0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.cs-expansion-pipeline__column-body {
+  padding: 0.75rem;
+  flex: 1;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Card */
+.cs-expansion-pipeline__card {
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.cs-expansion-pipeline__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.cs-expansion-pipeline__card--dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+.cs-expansion-pipeline__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.cs-expansion-pipeline__card-tenant {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.cs-expansion-pipeline__card-type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--ej-color-primary, #2563eb);
+  font-weight: 600;
+}
+.cs-expansion-pipeline__card-body {
+  margin-bottom: 0.5rem;
+}
+.cs-expansion-pipeline__card-plan {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-muted, #64748b);
+}
+.cs-expansion-pipeline__card-arrow {
+  color: var(--ej-color-primary, #2563eb);
+  font-weight: 600;
+  margin: 0 0.25rem;
+}
+.cs-expansion-pipeline__card-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ej-color-success, #16a34a);
+  margin-top: 0.25rem;
+}
+.cs-expansion-pipeline__card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.cs-expansion-pipeline__card-date {
+  font-size: 0.7rem;
+  color: var(--ej-color-text-muted, #64748b);
+}
+
+/* Empty Column */
+.cs-expansion-pipeline__empty-column {
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+  color: var(--ej-color-text-muted, #64748b);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cs-expansion-pipeline__board {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cs-expansion-pipeline__column {
+    min-width: 220px;
+  }
+}
+@media (max-width: 600px) {
+  .cs-expansion-pipeline__stage-counts {
+    flex-direction: column;
+  }
+  .cs-expansion-pipeline__header {
+    flex-direction: column;
+  }
+  .cs-expansion-pipeline__summary {
+    text-align: left;
+  }
+}

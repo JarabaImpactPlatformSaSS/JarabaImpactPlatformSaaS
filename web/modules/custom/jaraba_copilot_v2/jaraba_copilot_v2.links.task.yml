@@ -6,7 +6,7 @@ entity.entrepreneur_profile.collection:
   weight: 40
 
 entity.hypothesis.collection:
-  title: 'Hipótesis'
+  title: 'Hipotesis'
   route_name: entity.hypothesis.collection
   base_route: system.admin_content
   weight: 41
@@ -16,3 +16,15 @@ entity.experiment.collection:
   route_name: entity.experiment.collection
   base_route: system.admin_content
   weight: 42
+
+entity.entrepreneur_learning.collection:
+  title: 'Aprendizajes'
+  route_name: entity.entrepreneur_learning.collection
+  base_route: system.admin_content
+  weight: 43
+
+entity.field_exit.collection:
+  title: 'Field Exits'
+  route_name: entity.field_exit.collection
+  base_route: system.admin_content
+  weight: 44

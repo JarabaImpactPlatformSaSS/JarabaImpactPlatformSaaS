@@ -150,6 +150,58 @@ function jaraba_tenant_knowledge_theme(): array {
       ],
       'template' => 'knowledge-revision-diff',
     ],
+
+    // =========================================================================
+    // BASE DE CONOCIMIENTO PÚBLICA (KB)
+    // =========================================================================
+
+    // Landing del Centro de Ayuda KB.
+    'kb_help_center' => [
+      'variables' => [
+        'categories' => [],
+        'popular_articles' => [],
+        'total_articles' => 0,
+      ],
+      'template' => 'kb-help-center',
+    ],
+
+    // Listado de artículos de una categoría KB.
+    'kb_category_listing' => [
+      'variables' => [
+        'category' => NULL,
+        'articles' => [],
+        'other_categories' => [],
+      ],
+      'template' => 'kb-category-listing',
+    ],
+
+    // Detalle de artículo KB.
+    'kb_article_detail' => [
+      'variables' => [
+        'article' => NULL,
+        'related_articles' => [],
+        'videos' => [],
+      ],
+      'template' => 'kb-article-detail',
+    ],
+
+    // Resultados de búsqueda KB.
+    'kb_search_results' => [
+      'variables' => [
+        'query' => '',
+        'results' => [],
+        'result_count' => 0,
+      ],
+      'template' => 'kb-search-results',
+    ],
+
+    // Reproductor de vídeo KB.
+    'kb_video_player' => [
+      'variables' => [
+        'video' => NULL,
+      ],
+      'template' => 'kb-video-player',
+    ],
   ];
 }
 

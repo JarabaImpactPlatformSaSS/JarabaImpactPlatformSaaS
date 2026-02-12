@@ -1,0 +1,259 @@
+/* NPS Survey Styles — BEM: cs-nps-survey */
+
+/* Layout */
+.cs-nps-survey {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: var(--ej-font-family-body, "Inter", sans-serif);
+  color: var(--ej-color-text, #1e293b);
+}
+
+/* Header */
+.cs-nps-survey__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.cs-nps-survey__title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+.cs-nps-survey__description {
+  font-size: 1.1rem;
+  color: var(--ej-color-text-muted, #64748b);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+.cs-nps-survey__info {
+  background: var(--ej-bg-body, #f8fafc);
+  border-radius: var(--ej-border-radius, 8px);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.cs-nps-survey__info-text {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-muted, #64748b);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Score Section */
+.cs-nps-survey__score-section {
+  margin-bottom: 2rem;
+}
+.cs-nps-survey__score-label {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+/* Scale */
+.cs-nps-survey__scale {
+  margin-bottom: 1rem;
+}
+.cs-nps-survey__scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.cs-nps-survey__scale-label {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Score Selector — 0-10 circles */
+.cs-nps-survey__score-selector {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.cs-nps-survey__score-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: var(--ej-bg-surface, #fff);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ej-color-text, #1e293b);
+}
+.cs-nps-survey__score-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Detractor (0-6): red tones */
+.cs-nps-survey__score-btn--detractor {
+  border-color: rgba(220, 38, 38, 0.3);
+}
+.cs-nps-survey__score-btn--detractor:hover {
+  border-color: var(--ej-color-error, #dc2626);
+  background: rgba(220, 38, 38, 0.05);
+}
+.cs-nps-survey__score-btn--detractor.cs-nps-survey__score-btn--selected {
+  background: var(--ej-color-error, #dc2626);
+  border-color: var(--ej-color-error, #dc2626);
+  color: #fff;
+}
+
+/* Passive (7-8): yellow tones */
+.cs-nps-survey__score-btn--passive {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.cs-nps-survey__score-btn--passive:hover {
+  border-color: var(--ej-color-warning, #f59e0b);
+  background: rgba(245, 158, 11, 0.05);
+}
+.cs-nps-survey__score-btn--passive.cs-nps-survey__score-btn--selected {
+  background: var(--ej-color-warning, #f59e0b);
+  border-color: var(--ej-color-warning, #f59e0b);
+  color: #fff;
+}
+
+/* Promoter (9-10): green tones */
+.cs-nps-survey__score-btn--promoter {
+  border-color: rgba(22, 163, 74, 0.3);
+}
+.cs-nps-survey__score-btn--promoter:hover {
+  border-color: var(--ej-color-success, #16a34a);
+  background: rgba(22, 163, 74, 0.05);
+}
+.cs-nps-survey__score-btn--promoter.cs-nps-survey__score-btn--selected {
+  background: var(--ej-color-success, #16a34a);
+  border-color: var(--ej-color-success, #16a34a);
+  color: #fff;
+}
+
+/* Segment Legend */
+.cs-nps-survey__segment-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.cs-nps-survey__segment {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+.cs-nps-survey__segment--detractor {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+}
+.cs-nps-survey__segment--passive {
+  background: rgba(245, 158, 11, 0.08);
+  color: #b45309;
+}
+.cs-nps-survey__segment--promoter {
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+}
+
+/* Comment Section */
+.cs-nps-survey__comment-section {
+  margin-bottom: 2rem;
+}
+.cs-nps-survey__comment-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.cs-nps-survey__comment-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--ej-border-radius, 8px);
+  font-family: var(--ej-font-family-body, "Inter", sans-serif);
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.cs-nps-survey__comment-input:focus {
+  outline: none;
+  border-color: var(--ej-color-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Actions */
+.cs-nps-survey__actions {
+  text-align: center;
+}
+.cs-nps-survey__submit-btn {
+  display: inline-flex;
+  padding: 0.75rem 2rem;
+  background: var(--ej-color-primary, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: var(--ej-border-radius, 8px);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.cs-nps-survey__submit-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.cs-nps-survey__submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cs-nps-survey__privacy-note {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #64748b);
+  margin-top: 0.75rem;
+}
+
+/* Success State */
+.cs-nps-survey__success {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.cs-nps-survey__success-icon {
+  font-size: 3rem;
+  color: var(--ej-color-success, #16a34a);
+  margin-bottom: 1rem;
+}
+.cs-nps-survey__success-title {
+  font-family: var(--ej-font-family-headings, "Outfit", sans-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+.cs-nps-survey__success-message {
+  color: var(--ej-color-text-muted, #64748b);
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .cs-nps-survey__score-selector {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .cs-nps-survey__score-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.85rem;
+  }
+  .cs-nps-survey__segment-legend {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

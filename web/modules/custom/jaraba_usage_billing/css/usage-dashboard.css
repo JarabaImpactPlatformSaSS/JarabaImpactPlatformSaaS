@@ -1,0 +1,375 @@
+/**
+ * @file
+ * Estilos BEM para el dashboard de usage billing.
+ *
+ * Usa variables CSS del Ecosistema Jaraba con fallbacks.
+ */
+
+/* ==========================================================================
+   Dashboard principal
+   ========================================================================== */
+
+.usage-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 2rem);
+  font-family: var(--ej-font-family, 'Inter', sans-serif);
+}
+
+.usage-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ej-spacing-lg, 2rem);
+  padding-bottom: var(--ej-spacing-md, 1rem);
+  border-bottom: 2px solid var(--ej-border-color, #e0e0e0);
+}
+
+.usage-dashboard__title {
+  margin: 0;
+  font-size: var(--ej-font-size-xl, 1.75rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+/* Selector de periodo */
+
+.usage-dashboard__period-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.usage-dashboard__period-label {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-medium, 500);
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.usage-dashboard__period-select {
+  padding: var(--ej-spacing-xs, 0.375rem) var(--ej-spacing-sm, 0.5rem);
+  border: 1px solid var(--ej-border-color, #dee2e6);
+  border-radius: var(--ej-border-radius, 0.375rem);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  background-color: var(--ej-bg-white, #ffffff);
+  color: var(--ej-text-primary, #1a1a2e);
+  cursor: pointer;
+}
+
+.usage-dashboard__period-select:focus {
+  outline: 2px solid var(--ej-color-primary, #0066cc);
+  outline-offset: 2px;
+}
+
+/* Sección de títulos */
+
+.usage-dashboard__section-title {
+  margin: 0 0 var(--ej-spacing-md, 1rem);
+  font-size: var(--ej-font-size-lg, 1.25rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+/* ==========================================================================
+   Tarjetas de métricas
+   ========================================================================== */
+
+.usage-dashboard__metrics {
+  margin-bottom: var(--ej-spacing-xl, 2.5rem);
+}
+
+.usage-dashboard__metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.usage-dashboard__metric-card {
+  padding: var(--ej-spacing-md, 1.25rem);
+  background: var(--ej-bg-white, #ffffff);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-border-radius-lg, 0.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.usage-dashboard__metric-card:hover {
+  box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.12));
+  transform: translateY(-2px);
+}
+
+.usage-dashboard__metric-name {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-medium, 500);
+  color: var(--ej-text-secondary, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--ej-spacing-xs, 0.375rem);
+}
+
+.usage-dashboard__metric-value {
+  font-size: var(--ej-font-size-xxl, 2rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-color-primary, #0066cc);
+  line-height: 1.2;
+  margin-bottom: var(--ej-spacing-xs, 0.25rem);
+}
+
+.usage-dashboard__metric-events {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #999);
+}
+
+.usage-dashboard__metric-cost {
+  margin-top: var(--ej-spacing-sm, 0.5rem);
+  padding-top: var(--ej-spacing-xs, 0.375rem);
+  border-top: 1px solid var(--ej-border-color-light, #f0f0f0);
+  font-size: var(--ej-font-size-md, 1rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-color-success, #28a745);
+}
+
+.usage-dashboard__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--ej-spacing-xl, 2.5rem);
+  color: var(--ej-text-muted, #999);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Gráficos
+   ========================================================================== */
+
+.usage-dashboard__charts {
+  margin-bottom: var(--ej-spacing-xl, 2.5rem);
+}
+
+.usage-dashboard__chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  margin-bottom: var(--ej-spacing-lg, 2rem);
+  padding: var(--ej-spacing-md, 1.25rem);
+  background: var(--ej-bg-white, #ffffff);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-border-radius-lg, 0.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+.usage-dashboard__chart {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ==========================================================================
+   Tabla de costes
+   ========================================================================== */
+
+.usage-dashboard__costs {
+  margin-bottom: var(--ej-spacing-xl, 2.5rem);
+}
+
+.usage-dashboard__cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ej-bg-white, #ffffff);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-border-radius-lg, 0.5rem);
+  overflow: hidden;
+}
+
+.usage-dashboard__cost-table thead {
+  background: var(--ej-bg-light, #f8f9fa);
+}
+
+.usage-dashboard__cost-table th,
+.usage-dashboard__cost-table td {
+  padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+  text-align: left;
+  border-bottom: 1px solid var(--ej-border-color-light, #f0f0f0);
+}
+
+.usage-dashboard__cost-table th {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-text-secondary, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.usage-dashboard__cost-row:last-child td {
+  border-bottom: none;
+}
+
+.usage-dashboard__cost-metric {
+  font-weight: var(--ej-font-weight-medium, 500);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.usage-dashboard__cost-quantity {
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.usage-dashboard__cost-amount {
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-color-primary, #0066cc);
+}
+
+/* ==========================================================================
+   Alertas
+   ========================================================================== */
+
+.usage-alerts {
+  margin-bottom: var(--ej-spacing-xl, 2.5rem);
+}
+
+.usage-alerts__title {
+  margin: 0 0 var(--ej-spacing-md, 1rem);
+  font-size: var(--ej-font-size-lg, 1.25rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.usage-alerts__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.usage-alerts__card {
+  padding: var(--ej-spacing-md, 1.25rem);
+  border-radius: var(--ej-border-radius-lg, 0.5rem);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  background: var(--ej-bg-white, #ffffff);
+}
+
+.usage-alerts__card--warning {
+  border-left: 4px solid var(--ej-color-warning, #ffc107);
+}
+
+.usage-alerts__card--critical {
+  border-left: 4px solid var(--ej-color-danger, #dc3545);
+}
+
+.usage-alerts__card--overage {
+  border-left: 4px solid var(--ej-color-danger, #dc3545);
+  background: var(--ej-bg-danger-light, #fff5f5);
+}
+
+.usage-alerts__card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  margin-bottom: var(--ej-spacing-sm, 0.75rem);
+}
+
+.usage-alerts__card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-bg-white, #ffffff);
+}
+
+.usage-alerts__card-icon--warning {
+  background: var(--ej-color-warning, #ffc107);
+  color: var(--ej-text-dark, #212529);
+}
+
+.usage-alerts__card-icon--critical,
+.usage-alerts__card-icon--overage {
+  background: var(--ej-color-danger, #dc3545);
+}
+
+.usage-alerts__card-type {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+}
+
+.usage-alerts__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-xs, 0.375rem);
+}
+
+.usage-alerts__card-metric {
+  font-size: var(--ej-font-size-md, 1rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.usage-alerts__card-usage {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.usage-alerts__card-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ej-bg-light, #e9ecef);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.usage-alerts__card-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.usage-alerts__card-bar-fill--warning {
+  background: var(--ej-color-warning, #ffc107);
+}
+
+.usage-alerts__card-bar-fill--critical {
+  background: var(--ej-color-danger, #dc3545);
+}
+
+.usage-alerts__card-bar-fill--overage {
+  background: var(--ej-color-danger, #dc3545);
+}
+
+.usage-alerts__card-percentage {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #999);
+}
+
+.usage-alerts__empty {
+  text-align: center;
+  padding: var(--ej-spacing-lg, 2rem);
+  color: var(--ej-text-muted, #999);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .usage-dashboard {
+    padding: var(--ej-spacing-md, 1rem);
+  }
+
+  .usage-dashboard__header {
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    align-items: flex-start;
+  }
+
+  .usage-dashboard__metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usage-alerts__list {
+    grid-template-columns: 1fr;
+  }
+
+  .usage-dashboard__cost-table {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+}

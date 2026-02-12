@@ -18,10 +18,55 @@ services:
       - '@cache.default'
       - '@logger.factory'
 
+  jaraba_analytics.funnel_tracking:
+    class: Drupal\jaraba_analytics\Service\FunnelTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  jaraba_analytics.cohort_analysis:
+    class: Drupal\jaraba_analytics\Service\CohortAnalysisService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
   jaraba_analytics.consent:
     class: Drupal\jaraba_analytics\Service\ConsentService
     arguments:
       - '@entity_type.manager'
       - '@request_stack'
       - '@current_user'
+
+  logger.channel.jaraba_analytics:
+    class: Drupal\Core\Logger\LoggerChannel
+    factory: logger.factory:get
+    arguments: ['jaraba_analytics']
+
+  jaraba_analytics.report_execution:
+    class: Drupal\jaraba_analytics\Service\ReportExecutionService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_analytics'
+      - '@plugin.manager.mail'
+
+  jaraba_analytics.dashboard_manager:
+    class: Drupal\jaraba_analytics\Service\DashboardManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_analytics'
+
+  jaraba_analytics.report_scheduler:
+    class: Drupal\jaraba_analytics\Service\ReportSchedulerService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_analytics'
+
+  jaraba_analytics.analytics_data:
+    class: Drupal\jaraba_analytics\Service\AnalyticsDataService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_analytics'
 

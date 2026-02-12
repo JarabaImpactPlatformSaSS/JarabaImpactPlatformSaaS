@@ -1,0 +1,215 @@
+/* ==========================================================================
+ * Jaraba Integrations — Developer Portal Styles
+ *
+ * DIRECTRICES:
+ * - Solo consumir var(--ej-*, $fallback), NUNCA definir $ej-* aqui
+ * - BEM naming: .block__element--modifier
+ * - Mobile-first con breakpoints del tema
+ * ========================================================================== */
+
+.developer-portal {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: calc(var(--ej-spacing-unit, 4px) * 6);
+}
+
+.developer-portal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: calc(var(--ej-spacing-unit, 4px) * 8);
+  flex-wrap: wrap;
+  gap: calc(var(--ej-spacing-unit, 4px) * 4);
+}
+
+.developer-portal__title {
+  font-family: var(--ej-font-sans, system-ui, sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-neutral-900, #0f172a);
+  margin-bottom: calc(var(--ej-spacing-unit, 4px) * 1);
+}
+
+.developer-portal__subtitle {
+  font-size: 1rem;
+  color: var(--ej-neutral-600, #475569);
+}
+
+.developer-portal__docs-btn {
+  display: inline-block;
+  padding: calc(var(--ej-spacing-unit, 4px) * 2.5) calc(var(--ej-spacing-unit, 4px) * 5);
+  background: var(--ej-primary, #2563eb);
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--ej-border-radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background var(--ej-transition, 150ms ease);
+}
+
+.developer-portal__docs-btn:hover {
+  background: var(--ej-primary-dark, #1d4ed8);
+  color: #fff;
+}
+
+/* SDK Info */
+.developer-portal__sdk {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: calc(var(--ej-spacing-unit, 4px) * 4);
+  margin-bottom: calc(var(--ej-spacing-unit, 4px) * 8);
+}
+
+.developer-portal__sdk-card {
+  background: var(--ej-neutral-50, #f8fafc);
+  border: 1px solid var(--ej-neutral-200, #e2e8f0);
+  border-radius: var(--ej-border-radius, 8px);
+  padding: calc(var(--ej-spacing-unit, 4px) * 5);
+}
+
+.developer-portal__sdk-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-neutral-900, #0f172a);
+  margin-bottom: calc(var(--ej-spacing-unit, 4px) * 2);
+}
+
+.developer-portal__sdk-version {
+  font-size: 0.875rem;
+  color: var(--ej-neutral-500, #64748b);
+  font-family: monospace;
+}
+
+.developer-portal__pending-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--ej-accent, #d97706);
+  color: #fff;
+  border-radius: var(--ej-border-radius, 8px);
+  padding: calc(var(--ej-spacing-unit, 4px) * 5);
+  min-width: 160px;
+}
+
+.developer-portal__pending-count {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.developer-portal__pending-label {
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: calc(var(--ej-spacing-unit, 4px) * 1);
+}
+
+/* Tabla de conectores */
+.developer-portal__section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-neutral-900, #0f172a);
+  margin-bottom: calc(var(--ej-spacing-unit, 4px) * 4);
+}
+
+.developer-portal__connectors-table-wrapper {
+  overflow-x: auto;
+}
+
+.developer-portal__connectors-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.developer-portal__connectors-table th {
+  text-align: left;
+  padding: calc(var(--ej-spacing-unit, 4px) * 3);
+  border-bottom: 2px solid var(--ej-neutral-200, #e2e8f0);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-neutral-500, #64748b);
+}
+
+.developer-portal__connectors-table td {
+  padding: calc(var(--ej-spacing-unit, 4px) * 3);
+  border-bottom: 1px solid var(--ej-neutral-100, #f1f5f9);
+  font-size: 0.875rem;
+  color: var(--ej-neutral-700, #334155);
+}
+
+.developer-portal__connector-row--hover {
+  background: var(--ej-neutral-50, #f8fafc);
+}
+
+/* Status badges */
+.developer-portal__status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: calc(var(--ej-border-radius, 8px) * 2);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.developer-portal__status-badge--draft {
+  background: var(--ej-neutral-100, #f1f5f9);
+  color: var(--ej-neutral-600, #475569);
+}
+
+.developer-portal__status-badge--submitted,
+.developer-portal__status-badge--in_review {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.developer-portal__status-badge--approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.developer-portal__status-badge--rejected,
+.developer-portal__status-badge--revoked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Action links */
+.developer-portal__action-link {
+  color: var(--ej-primary, #2563eb);
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-right: calc(var(--ej-spacing-unit, 4px) * 3);
+}
+
+.developer-portal__action-link:hover {
+  text-decoration: underline;
+}
+
+.developer-portal__action-link--primary {
+  font-weight: 600;
+}
+
+/* Empty state */
+.developer-portal__empty {
+  text-align: center;
+  padding: calc(var(--ej-spacing-unit, 4px) * 10);
+  color: var(--ej-neutral-500, #64748b);
+  background: var(--ej-neutral-50, #f8fafc);
+  border-radius: var(--ej-border-radius, 8px);
+  border: 1px dashed var(--ej-neutral-300, #cbd5e1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .developer-portal {
+    padding: calc(var(--ej-spacing-unit, 4px) * 4);
+  }
+
+  .developer-portal__header {
+    flex-direction: column;
+  }
+
+  .developer-portal__sdk {
+    grid-template-columns: 1fr;
+  }
+}

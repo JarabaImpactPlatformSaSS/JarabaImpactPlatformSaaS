@@ -200,6 +200,62 @@ class JourneyDefinitionLoader
     }
 
     /**
+     * Obtiene la URL del video walkthrough para un step específico (G110-2).
+     *
+     * @param string $avatar
+     *   Identificador del avatar.
+     * @param string $state
+     *   Estado del journey (discovery, activation, engagement, etc.).
+     * @param int $step
+     *   Número del step dentro del estado.
+     *
+     * @return string|null
+     *   URL del video o NULL si no está configurada.
+     */
+    public function getVideoUrlForStep(string $avatar, string $state, int $step): ?string
+    {
+        $steps = $this->getStepsForState($avatar, $state);
+
+        if (!isset($steps[$step])) {
+            return NULL;
+        }
+
+        $videoUrl = $steps[$step]['video_url'] ?? '';
+
+        return !empty($videoUrl) ? $videoUrl : NULL;
+    }
+
+    /**
+     * Obtiene todos los steps con video walkthrough para un avatar.
+     *
+     * @param string $avatar
+     *   Identificador del avatar.
+     *
+     * @return array
+     *   Array asociativo [state => [step_number => video_url]].
+     */
+    public function getStepsWithVideo(string $avatar): array
+    {
+        $definition = $this->getJourneyDefinition($avatar);
+
+        if (!$definition) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($definition['states'] ?? [] as $stateName => $stateData) {
+            foreach ($stateData['steps'] ?? [] as $stepNumber => $stepData) {
+                $videoUrl = $stepData['video_url'] ?? '';
+                if (!empty($videoUrl)) {
+                    $result[$stateName][$stepNumber] = $videoUrl;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Obtiene todas las verticales disponibles.
      */
     public function getAvailableVerticals(): array

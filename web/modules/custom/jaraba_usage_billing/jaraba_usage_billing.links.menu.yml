@@ -1,0 +1,27 @@
+jaraba_usage_billing.admin:
+  title: 'Usage Billing'
+  description: 'Configuración de facturación basada en uso.'
+  route_name: jaraba_usage_billing.admin
+  parent: system.admin_structure
+  weight: 30
+
+jaraba_usage_billing.usage_events:
+  title: 'Eventos de Uso'
+  description: 'Eventos de uso registrados por tenant.'
+  route_name: entity.usage_event.collection
+  parent: system.admin_content
+  weight: 30
+
+jaraba_usage_billing.usage_aggregates:
+  title: 'Agregados de Uso'
+  description: 'Métricas agregadas de uso por periodo.'
+  route_name: entity.usage_aggregate.collection
+  parent: system.admin_content
+  weight: 31
+
+jaraba_usage_billing.pricing_rules:
+  title: 'Reglas de Pricing'
+  description: 'Reglas de pricing para facturación por uso.'
+  route_name: entity.pricing_rule.collection
+  parent: system.admin_content
+  weight: 32

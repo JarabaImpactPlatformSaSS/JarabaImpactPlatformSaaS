@@ -168,3 +168,21 @@ entity.pricing_rule.collection:
   route_name: entity.pricing_rule.collection
   parent: system.admin_structure
   weight: -4
+
+# ---------------------------------------------------------------------------
+# MENÚ DE CONFIGURACIÓN - BADGES / INSIGNIAS (G110-3)
+# ---------------------------------------------------------------------------
+
+entity.badge.collection:
+  title: 'Insignias (Badges)'
+  description: 'Gestiona las insignias de gamificación para reconocer logros de usuarios'
+  route_name: entity.badge.collection
+  parent: system.admin_config
+  weight: 60
+
+entity.badge_award.collection:
+  title: 'Otorgamientos de Insignias'
+  description: 'Consulta los otorgamientos de insignias a usuarios'
+  route_name: entity.badge_award.collection
+  parent: system.admin_config
+  weight: 61

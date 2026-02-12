@@ -44,3 +44,28 @@ services:
       - '@entity_type.manager'
       - '@http_client'
       - '@logger.channel.jaraba_integrations'
+
+  # ===========================================
+  # MARKETPLACE & DEVELOPER PORTAL (f-112 v3)
+  # ===========================================
+
+  # Rate limiting con ventana deslizante para APIs
+  jaraba_integrations.rate_limiter:
+    class: Drupal\jaraba_integrations\Service\RateLimiterService
+    arguments:
+      - '@cache.default'
+      - '@logger.channel.jaraba_integrations'
+
+  # Workflow de aprobacion de conectores
+  jaraba_integrations.app_approval:
+    class: Drupal\jaraba_integrations\Service\AppApprovalService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_integrations'
+
+  # SDK para desarrolladores de conectores
+  jaraba_integrations.connector_sdk:
+    class: Drupal\jaraba_integrations\Service\ConnectorSdkService
+    arguments:
+      - '@logger.channel.jaraba_integrations'

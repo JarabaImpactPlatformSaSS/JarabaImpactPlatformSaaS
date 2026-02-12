@@ -104,7 +104,56 @@ class ThemeTokenService
             return $this->getDefaultCss();
         }
 
-        return $config->generateCssVariables();
+        $fontDeclarations = $this->generateFontDeclarations($config);
+        $cssVariables = $config->generateCssVariables();
+
+        if ($fontDeclarations) {
+            return $fontDeclarations . "\n" . $cssVariables;
+        }
+
+        return $cssVariables;
+    }
+
+    /**
+     * Genera declaraciones @font-face o @import para fuentes personalizadas.
+     *
+     * @param \Drupal\jaraba_theming\Entity\TenantThemeConfig $config
+     *   La configuración de tema activa.
+     *
+     * @return string
+     *   Declaraciones CSS de fuentes, o cadena vacía.
+     */
+    protected function generateFontDeclarations(TenantThemeConfig $config): string
+    {
+        $declarations = [];
+
+        // Fuente personalizada para títulos.
+        $headingUrl = $config->hasField('font_heading_url') ? $config->get('font_heading_url')->value : NULL;
+        $headingFamily = $config->hasField('font_heading_family') ? $config->get('font_heading_family')->value : NULL;
+
+        if ($headingUrl && $headingFamily) {
+            if (str_ends_with($headingUrl, '.woff2')) {
+                $declarations[] = "@font-face {\n  font-family: '{$headingFamily}';\n  src: url('{$headingUrl}') format('woff2');\n  font-display: swap;\n}";
+            }
+            elseif (str_starts_with($headingUrl, 'https://fonts.googleapis.com')) {
+                $declarations[] = "@import url('{$headingUrl}');";
+            }
+        }
+
+        // Fuente personalizada para cuerpo.
+        $bodyUrl = $config->hasField('font_body_url') ? $config->get('font_body_url')->value : NULL;
+        $bodyFamily = $config->hasField('font_body_family') ? $config->get('font_body_family')->value : NULL;
+
+        if ($bodyUrl && $bodyFamily) {
+            if (str_ends_with($bodyUrl, '.woff2')) {
+                $declarations[] = "@font-face {\n  font-family: '{$bodyFamily}';\n  src: url('{$bodyUrl}') format('woff2');\n  font-display: swap;\n}";
+            }
+            elseif (str_starts_with($bodyUrl, 'https://fonts.googleapis.com')) {
+                $declarations[] = "@import url('{$bodyUrl}');";
+            }
+        }
+
+        return implode("\n\n", $declarations);
     }
 
     /**

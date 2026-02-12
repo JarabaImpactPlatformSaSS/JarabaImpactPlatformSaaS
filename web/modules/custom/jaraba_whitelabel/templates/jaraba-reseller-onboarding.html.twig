@@ -1,0 +1,133 @@
+{#
+/**
+ * @file
+ * Template for the reseller/partner onboarding page.
+ *
+ * Available variables:
+ * - steps: Array of onboarding step definitions (key, label, completed).
+ * - current_step: Index of the active step.
+ * - reseller: Reseller data array (or null).
+ */
+#}
+
+<div class="reseller-onboarding" data-current-step="{{ current_step }}">
+
+  <header class="reseller-onboarding__header">
+    <h2 class="reseller-onboarding__title">{% trans %}Partner Onboarding{% endtrans %}</h2>
+    <p class="reseller-onboarding__description">
+      {% trans %}Complete the steps below to become an active partner on the Jaraba platform.{% endtrans %}
+    </p>
+  </header>
+
+  {# --- Progress indicator --- #}
+  <div class="reseller-onboarding__progress">
+    <div class="reseller-onboarding__progress-track">
+      {% for index, step in steps %}
+        <div class="reseller-onboarding__progress-step{% if step.completed %} reseller-onboarding__progress-step--completed{% elseif index == current_step %} reseller-onboarding__progress-step--active{% endif %}">
+          <div class="reseller-onboarding__progress-circle">
+            {% if step.completed %}
+              <span class="reseller-onboarding__check" aria-hidden="true">&#10003;</span>
+            {% else %}
+              <span class="reseller-onboarding__step-num">{{ index + 1 }}</span>
+            {% endif %}
+          </div>
+          <span class="reseller-onboarding__progress-label">{{ step.label }}</span>
+        </div>
+        {% if not loop.last %}
+          <div class="reseller-onboarding__progress-connector{% if step.completed %} reseller-onboarding__progress-connector--completed{% endif %}"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {# --- Step panels --- #}
+  <div class="reseller-onboarding__panels">
+
+    {# Step 0: Company Information #}
+    <div class="reseller-onboarding__panel{% if current_step == 0 %} reseller-onboarding__panel--active{% endif %}" data-panel="0">
+      <h3 class="reseller-onboarding__panel-title">{% trans %}Company Information{% endtrans %}</h3>
+      <p class="reseller-onboarding__panel-description">
+        {% trans %}Provide your company details so we can set up your partner account.{% endtrans %}
+      </p>
+      <div class="reseller-onboarding__form-fields">
+        <div class="reseller-onboarding__field">
+          <label class="reseller-onboarding__label" for="onboard-company-name">{% trans %}Company Name{% endtrans %}</label>
+          <input class="reseller-onboarding__input" type="text" id="onboard-company-name" name="company_name"
+                 value="{{ reseller.company_name|default('') }}" required />
+        </div>
+        <div class="reseller-onboarding__field">
+          <label class="reseller-onboarding__label" for="onboard-contact-email">{% trans %}Contact Email{% endtrans %}</label>
+          <input class="reseller-onboarding__input" type="email" id="onboard-contact-email" name="contact_email"
+                 value="{{ reseller.contact_email|default('') }}" required />
+        </div>
+        <div class="reseller-onboarding__field">
+          <label class="reseller-onboarding__label" for="onboard-territory">{% trans %}Territory / Region{% endtrans %}</label>
+          <input class="reseller-onboarding__input" type="text" id="onboard-territory" name="territory"
+                 placeholder="{% trans %}e.g. Spain, LATAM{% endtrans %}" />
+        </div>
+      </div>
+    </div>
+
+    {# Step 1: Partner Agreement #}
+    <div class="reseller-onboarding__panel{% if current_step == 1 %} reseller-onboarding__panel--active{% endif %}" data-panel="1">
+      <h3 class="reseller-onboarding__panel-title">{% trans %}Partner Agreement{% endtrans %}</h3>
+      <p class="reseller-onboarding__panel-description">
+        {% trans %}Review and accept the partner agreement to continue.{% endtrans %}
+      </p>
+      <div class="reseller-onboarding__agreement-box">
+        <div class="reseller-onboarding__agreement-text">
+          <p>{% trans %}By joining the Jaraba Partner Programme you agree to the terms and conditions of the Partner Agreement, including the revenue share model and territory exclusivity clauses.{% endtrans %}</p>
+        </div>
+        <label class="reseller-onboarding__checkbox-label">
+          <input type="checkbox" name="accept_agreement" class="reseller-onboarding__checkbox" />
+          {% trans %}I accept the Partner Agreement{% endtrans %}
+        </label>
+      </div>
+    </div>
+
+    {# Step 2: Platform Training #}
+    <div class="reseller-onboarding__panel{% if current_step == 2 %} reseller-onboarding__panel--active{% endif %}" data-panel="2">
+      <h3 class="reseller-onboarding__panel-title">{% trans %}Platform Training{% endtrans %}</h3>
+      <p class="reseller-onboarding__panel-description">
+        {% trans %}Complete the required training modules to learn how to manage tenants on the Jaraba platform.{% endtrans %}
+      </p>
+      <ul class="reseller-onboarding__training-list">
+        <li class="reseller-onboarding__training-item">
+          <span class="reseller-onboarding__training-name">{% trans %}Platform Overview{% endtrans %}</span>
+          <span class="reseller-onboarding__training-status">{% trans %}Required{% endtrans %}</span>
+        </li>
+        <li class="reseller-onboarding__training-item">
+          <span class="reseller-onboarding__training-name">{% trans %}Tenant Management{% endtrans %}</span>
+          <span class="reseller-onboarding__training-status">{% trans %}Required{% endtrans %}</span>
+        </li>
+        <li class="reseller-onboarding__training-item">
+          <span class="reseller-onboarding__training-name">{% trans %}Billing & Commissions{% endtrans %}</span>
+          <span class="reseller-onboarding__training-status">{% trans %}Required{% endtrans %}</span>
+        </li>
+      </ul>
+    </div>
+
+    {# Step 3: Launch #}
+    <div class="reseller-onboarding__panel{% if current_step == 3 %} reseller-onboarding__panel--active{% endif %}" data-panel="3">
+      <h3 class="reseller-onboarding__panel-title">{% trans %}Launch{% endtrans %}</h3>
+      <p class="reseller-onboarding__panel-description">
+        {% trans %}Congratulations! Your partner account is ready. You can now access the partner portal.{% endtrans %}
+      </p>
+      <a href="/partner-portal" class="reseller-onboarding__btn reseller-onboarding__btn--launch">
+        {% trans %}Go to Partner Portal{% endtrans %}
+      </a>
+    </div>
+
+  </div>
+
+  {# --- Navigation buttons --- #}
+  <div class="reseller-onboarding__actions">
+    <button type="button" class="reseller-onboarding__btn reseller-onboarding__btn--prev" {% if current_step == 0 %}disabled{% endif %}>
+      {% trans %}Previous{% endtrans %}
+    </button>
+    <button type="button" class="reseller-onboarding__btn reseller-onboarding__btn--next" {% if current_step >= steps|length - 1 %}style="display: none;"{% endif %}>
+      {% trans %}Next{% endtrans %}
+    </button>
+  </div>
+
+</div>

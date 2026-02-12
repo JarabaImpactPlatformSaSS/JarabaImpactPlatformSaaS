@@ -1,0 +1,20 @@
+administer security compliance:
+  title: 'Administrar seguridad y compliance'
+  description: 'Acceso completo a la configuración de seguridad y compliance.'
+  restrict access: true
+
+view audit log:
+  title: 'Ver log de auditoría'
+  description: 'Permite ver los registros de auditoría de seguridad.'
+
+export audit log:
+  title: 'Exportar log de auditoría'
+  description: 'Permite exportar los registros de auditoría en formato CSV.'
+
+manage security policies:
+  title: 'Gestionar políticas de seguridad'
+  description: 'Permite crear, editar y archivar políticas de seguridad.'
+
+view compliance status:
+  title: 'Ver estado de compliance'
+  description: 'Permite ver el dashboard de compliance y estado de frameworks.'

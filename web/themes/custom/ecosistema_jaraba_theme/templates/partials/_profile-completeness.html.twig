@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Ring SVG de completitud del perfil profesional.
+ *
+ * Muestra un circulo de progreso SVG con el porcentaje de completitud
+ * del perfil del candidato y las secciones pendientes.
+ *
+ * Variables:
+ *   - percentage: Porcentaje de completitud (0-100).
+ *   - sections: Array de secciones con: name, completed (bool), url.
+ *   - total_sections: Numero total de secciones.
+ *   - completed_sections: Numero de secciones completadas.
+ *
+ * Uso:
+ *   {% include '@ecosistema_jaraba_theme/partials/_profile-completeness.html.twig' with {
+ *     percentage: 65,
+ *     sections: profile_sections,
+ *   } %}
+ */
+#}
+
+{% set pct = percentage|default(0) %}
+{% set circumference = 251.3 %}
+{% set dash_offset = circumference - (pct / 100 * circumference) %}
+{% set ring_color = pct >= 80 ? 'var(--ej-success, #10B981)' : (pct >= 50 ? 'var(--ej-primary, #4F46E5)' : (pct >= 25 ? 'var(--ej-warning, #F59E0B)' : 'var(--ej-danger, #EF4444)')) %}
+
+<div class="ej-profile-completeness">
+  {# SVG Ring #}
+  <div class="ej-profile-completeness__ring-container">
+    <svg class="ej-profile-completeness__ring" viewBox="0 0 100 100">
+      {# Background circle #}
+      <circle
+        cx="50" cy="50" r="40"
+        fill="none"
+        stroke="var(--ej-border-color, #E5E7EB)"
+        stroke-width="6"
+      />
+      {# Progress circle #}
+      <circle
+        cx="50" cy="50" r="40"
+        fill="none"
+        stroke="{{ ring_color }}"
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-dasharray="{{ circumference }}"
+        stroke-dashoffset="{{ dash_offset }}"
+        transform="rotate(-90, 50, 50)"
+      />
+      {# Percentage text #}
+      <text x="50" y="46" text-anchor="middle" class="ej-profile-completeness__pct-value">{{ pct }}%</text>
+      <text x="50" y="60" text-anchor="middle" class="ej-profile-completeness__pct-label">{{ 'completo'|t }}</text>
+    </svg>
+  </div>
+
+  {# Sections checklist #}
+  {% if sections is not empty %}
+    <div class="ej-profile-completeness__sections">
+      <h4 class="ej-profile-completeness__title">
+        {{ 'Completa tu perfil'|t }}
+        <span>({{ completed_sections|default(0) }}/{{ total_sections|default(0) }})</span>
+      </h4>
+      <ul class="ej-profile-completeness__list">
+        {% for section in sections %}
+          <li class="ej-profile-completeness__item{% if section.completed %} ej-profile-completeness__item--done{% endif %}">
+            {% if section.completed %}
+              {{ jaraba_icon('ui', 'check', { size: '14px', color: 'success' }) }}
+            {% else %}
+              {{ jaraba_icon('ui', 'circle', { size: '14px' }) }}
+            {% endif %}
+            {% if section.url and not section.completed %}
+              <a href="{{ section.url }}">{{ section.name }}</a>
+            {% else %}
+              <span>{{ section.name }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>

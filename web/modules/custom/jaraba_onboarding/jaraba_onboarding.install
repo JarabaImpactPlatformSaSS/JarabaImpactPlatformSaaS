@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_onboarding.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_onboarding_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Onboarding instalado. Las tablas de entidades (onboarding_template, user_onboarding_progress) se han creado automaticamente.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_onboarding_uninstall(): void {
+  // Eliminar configuracion del modulo.
+  \Drupal::configFactory()->getEditable('jaraba_onboarding.settings')->delete();
+
+  \Drupal::messenger()->addStatus(t('Jaraba Onboarding desinstalado. La configuracion ha sido eliminada.'));
+}

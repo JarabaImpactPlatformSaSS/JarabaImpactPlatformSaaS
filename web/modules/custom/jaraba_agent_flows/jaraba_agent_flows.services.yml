@@ -1,0 +1,62 @@
+services:
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  # Canal de logging para el modulo
+  logger.channel.jaraba_agent_flows:
+    parent: logger.channel_base
+    arguments: ['jaraba_agent_flows']
+
+  # ===========================================
+  # SERVICIOS DE EJECUCION Y ORQUESTACION
+  # ===========================================
+
+  # Servicio principal de ejecucion de flujos de agentes IA.
+  # Crea AgentFlowExecution, delega a jaraba_ai_agents.workflow_executor,
+  # registra pasos en AgentFlowStepLog y gestiona el ciclo de vida.
+  jaraba_agent_flows.execution:
+    class: Drupal\jaraba_agent_flows\Service\AgentFlowExecutionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.workflow_executor'
+      - '@logger.channel.jaraba_agent_flows'
+
+  # Servicio de gestion de triggers (cron, webhook, event).
+  # Evalua que flujos deben ejecutarse y los despacha al execution service.
+  jaraba_agent_flows.trigger:
+    class: Drupal\jaraba_agent_flows\Service\AgentFlowTriggerService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_agent_flows.execution'
+      - '@logger.channel.jaraba_agent_flows'
+
+  # ===========================================
+  # SERVICIOS DE VALIDACION Y METRICAS
+  # ===========================================
+
+  # Validador de definiciones JSON de flujos.
+  # Verifica estructura, tipos de paso y parametros requeridos.
+  jaraba_agent_flows.validator:
+    class: Drupal\jaraba_agent_flows\Service\AgentFlowValidatorService
+    arguments:
+      - '@logger.channel.jaraba_agent_flows'
+
+  # Metricas agregadas de flujos y ejecuciones.
+  # Calcula tasas de exito, duraciones promedio y volumenes.
+  jaraba_agent_flows.metrics:
+    class: Drupal\jaraba_agent_flows\Service\AgentFlowMetricsService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agent_flows'
+
+  # ===========================================
+  # SERVICIO DE TEMPLATES
+  # ===========================================
+
+  # Templates predefinidos de flujos por vertical.
+  # Permite crear flujos rapidamente desde plantillas probadas.
+  jaraba_agent_flows.template:
+    class: Drupal\jaraba_agent_flows\Service\AgentFlowTemplateService
+    arguments:
+      - '@logger.channel.jaraba_agent_flows'

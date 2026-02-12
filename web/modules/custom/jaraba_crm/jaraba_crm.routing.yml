@@ -93,3 +93,235 @@ jaraba_crm.api.pipeline.move:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+
+# =============================================================================
+# PIPELINE STAGE SETTINGS (Field UI)
+# =============================================================================
+
+entity.crm_pipeline_stage.settings:
+  path: '/admin/structure/crm-pipeline-stage'
+  defaults:
+    _form: '\Drupal\jaraba_crm\Form\PipelineStageSettingsForm'
+    _title: 'Configuracion de Etapas de Pipeline'
+  requirements:
+    _permission: 'administer crm entities'
+
+# =============================================================================
+# REST API — CRM (spec 150 §4)
+# =============================================================================
+
+# --- Empresas ---
+
+jaraba_crm.api.companies.list:
+  path: '/api/v1/crm/companies'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::listCompanies'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.api.companies.get:
+  path: '/api/v1/crm/companies/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::getCompany'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+    id: '\d+'
+
+jaraba_crm.api.companies.create:
+  path: '/api/v1/crm/companies'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::createCompany'
+  methods: [POST]
+  requirements:
+    _permission: 'create crm entities'
+
+jaraba_crm.api.companies.update:
+  path: '/api/v1/crm/companies/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateCompany'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+jaraba_crm.api.companies.delete:
+  path: '/api/v1/crm/companies/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::deleteCompany'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete crm entities'
+    id: '\d+'
+
+# --- Contactos ---
+
+jaraba_crm.api.contacts.list:
+  path: '/api/v1/crm/contacts'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::listContacts'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.api.contacts.get:
+  path: '/api/v1/crm/contacts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::getContact'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+    id: '\d+'
+
+jaraba_crm.api.contacts.create:
+  path: '/api/v1/crm/contacts'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::createContact'
+  methods: [POST]
+  requirements:
+    _permission: 'create crm entities'
+
+jaraba_crm.api.contacts.update:
+  path: '/api/v1/crm/contacts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateContact'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+jaraba_crm.api.contacts.delete:
+  path: '/api/v1/crm/contacts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::deleteContact'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete crm entities'
+    id: '\d+'
+
+# --- Oportunidades ---
+
+jaraba_crm.api.opportunities.list:
+  path: '/api/v1/crm/opportunities'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::listOpportunities'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.api.opportunities.get:
+  path: '/api/v1/crm/opportunities/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::getOpportunity'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.create:
+  path: '/api/v1/crm/opportunities'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::createOpportunity'
+  methods: [POST]
+  requirements:
+    _permission: 'create crm entities'
+
+jaraba_crm.api.opportunities.update:
+  path: '/api/v1/crm/opportunities/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateOpportunity'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.delete:
+  path: '/api/v1/crm/opportunities/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::deleteOpportunity'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.stage:
+  path: '/api/v1/crm/opportunities/{id}/stage'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::changeStage'
+  methods: [POST]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.won:
+  path: '/api/v1/crm/opportunities/{id}/won'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::markWon'
+  methods: [POST]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.lost:
+  path: '/api/v1/crm/opportunities/{id}/lost'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::markLost'
+  methods: [POST]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
+# --- Pipeline Stages ---
+
+jaraba_crm.api.pipeline_stages.list:
+  path: '/api/v1/crm/pipeline-stages'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::listPipelineStages'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.api.pipeline_stages.reorder:
+  path: '/api/v1/crm/pipeline-stages/reorder'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::reorderPipelineStages'
+  methods: [POST]
+  requirements:
+    _permission: 'edit crm entities'
+
+jaraba_crm.api.pipeline_stages.defaults:
+  path: '/api/v1/crm/pipeline-stages/defaults'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::createDefaultStages'
+  methods: [POST]
+  requirements:
+    _permission: 'administer crm entities'
+
+# --- Actividades ---
+
+jaraba_crm.api.activities.list:
+  path: '/api/v1/crm/activities'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::listActivities'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+
+jaraba_crm.api.activities.create:
+  path: '/api/v1/crm/activities'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::createActivity'
+  methods: [POST]
+  requirements:
+    _permission: 'create crm entities'
+
+# --- Forecasting ---
+
+jaraba_crm.api.forecast:
+  path: '/api/v1/crm/forecast'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::getForecast'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'

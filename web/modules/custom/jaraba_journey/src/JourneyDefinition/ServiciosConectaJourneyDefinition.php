@@ -10,6 +10,8 @@ namespace Drupal\jaraba_journey\JourneyDefinition;
  * Según Doc 103:
  * - Profesional: First Booking <14 días, Booking Rate >70%
  * - Cliente: Time to First Booking <10 min, NPS >50
+ *
+ * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  */
 class ServiciosConectaJourneyDefinition
 {
@@ -30,6 +32,7 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'create_professional_profile',
                         'label' => 'Crear perfil profesional',
                         'ia_intervention' => 'Wizard, importación LinkedIn',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['linkedin_import'],
@@ -41,11 +44,13 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'define_services_rates',
                         'label' => 'Definir servicios y tarifas',
                         'ia_intervention' => 'Templates especialidad, precios mercado',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'configure_availability',
                         'label' => 'Configurar disponibilidad',
                         'ia_intervention' => 'Sync Google/Outlook, optimizar slots',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['market_pricing', 'calendar_sync'],
@@ -57,11 +62,13 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'receive_first_booking',
                         'label' => 'Primera reserva entrante',
                         'ia_intervention' => 'Ficha cliente + preparar contexto',
+                        'video_url' => '',
                     ],
                     5 => [
                         'action' => 'conduct_session',
                         'label' => 'Realizar sesión (presencial/video)',
                         'ia_intervention' => 'Notas automáticas, transcripción',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['client_context', 'session_notes'],
@@ -73,6 +80,7 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'invoice_and_collect',
                         'label' => 'Facturar y cobrar',
                         'ia_intervention' => 'Facturación automática, recordatorios',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['payment_reminder'],
@@ -84,11 +92,13 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'request_review',
                         'label' => 'Solicitar valoración',
                         'ia_intervention' => '72h post-servicio',
+                        'video_url' => '',
                     ],
                     8 => [
                         'action' => 'offer_package',
                         'label' => 'Ofrecer paquete sesiones',
                         'ia_intervention' => 'A cliente recurrente (>3 sesiones)',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['review_request_72h', 'package_upsell'],
@@ -118,6 +128,7 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'describe_need',
                         'label' => 'Describir necesidad',
                         'ia_intervention' => 'Formulario conversacional, triaje automático',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['need_triage'],
@@ -129,11 +140,13 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'receive_matches',
                         'label' => 'Recibir matches de profesionales',
                         'ia_intervention' => 'Lista rankeada por fit, explicar match',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'compare_profiles',
                         'label' => 'Comparar perfiles',
                         'ia_intervention' => 'Vista comparativa, destacar diferenciadores',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['match_explanation', 'profile_comparison'],
@@ -145,11 +158,13 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'book_appointment',
                         'label' => 'Reservar cita',
                         'ia_intervention' => 'Sugerir horario óptimo',
+                        'video_url' => '',
                     ],
                     5 => [
                         'action' => 'receive_service',
                         'label' => 'Recibir servicio',
                         'ia_intervention' => 'Recordatorios, checklist pre-cita',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['optimal_slot', 'pre_appointment_checklist'],
@@ -161,6 +176,7 @@ class ServiciosConectaJourneyDefinition
                         'action' => 'evaluate_and_recommend',
                         'label' => 'Evaluar y recomendar',
                         'ia_intervention' => 'Review + programa referidos',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['referral_program'],

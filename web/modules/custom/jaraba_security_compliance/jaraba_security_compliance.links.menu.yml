@@ -1,0 +1,13 @@
+jaraba_security_compliance.admin:
+  title: 'Seguridad y Compliance'
+  description: 'Panel de seguridad, auditoría y compliance normativo.'
+  route_name: jaraba_security_compliance.admin
+  parent: system.admin_structure
+  weight: 20
+
+jaraba_security_compliance.settings:
+  title: 'Configuración de Security Compliance'
+  description: 'Configuración de retención de datos, políticas y compliance.'
+  route_name: jaraba_security_compliance.settings
+  parent: system.admin_config_security
+  weight: 10

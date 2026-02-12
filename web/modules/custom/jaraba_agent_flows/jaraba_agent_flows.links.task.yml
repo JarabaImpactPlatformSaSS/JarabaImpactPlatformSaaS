@@ -1,0 +1,14 @@
+# ============================================================================
+# ENLACES DE TAREA - JARABA AGENT FLOWS
+# ============================================================================
+# Define las pestanas (tabs) locales para las paginas del modulo.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# TAREAS - CONFIGURACION DE AGENT FLOWS
+# ---------------------------------------------------------------------------
+
+jaraba_agent_flows.settings:
+  title: 'Configuracion'
+  route_name: jaraba_agent_flows.settings
+  base_route: jaraba_agent_flows.settings

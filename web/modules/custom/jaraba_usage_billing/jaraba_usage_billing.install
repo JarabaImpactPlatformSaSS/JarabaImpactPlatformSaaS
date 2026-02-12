@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_usage_billing.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_usage_billing_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Usage Billing instalado. Las tablas de entidades (usage_event, usage_aggregate, pricing_rule) y la cola usage_event_queue se han creado.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_usage_billing_uninstall(): void {
+  // Eliminar la tabla de cola personalizada.
+  $schema = \Drupal::database()->schema();
+  if ($schema->tableExists('usage_event_queue')) {
+    $schema->dropTable('usage_event_queue');
+  }
+
+  // Limpiar estado.
+  \Drupal::state()->deleteMultiple([
+    'jaraba_usage_billing.last_hourly_aggregation',
+    'jaraba_usage_billing.last_daily_aggregation',
+    'jaraba_usage_billing.last_monthly_aggregation',
+  ]);
+
+  \Drupal::messenger()->addStatus(t('Jaraba Usage Billing desinstalado. Tablas y estado eliminados.'));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_usage_billing_schema(): array {
+  $schema['usage_event_queue'] = [
+    'description' => 'Cola de eventos de uso pendientes de procesamiento.',
+    'fields' => [
+      'item_id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID único del item en cola.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID del tenant (group).',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Tipo de evento de uso.',
+      ],
+      'metric_name' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Nombre de la métrica.',
+      ],
+      'quantity' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Cantidad del evento.',
+      ],
+      'unit' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'description' => 'Unidad de medida.',
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'JSON con metadatos adicionales.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de creación.',
+      ],
+      'processed' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => '1 si ya fue procesado, 0 si pendiente.',
+      ],
+    ],
+    'primary key' => ['item_id'],
+    'indexes' => [
+      'tenant_metric' => ['tenant_id', 'metric_name'],
+      'processed' => ['processed'],
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}

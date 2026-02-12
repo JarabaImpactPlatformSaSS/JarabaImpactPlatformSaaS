@@ -1,0 +1,669 @@
+// ==============================================
+// MOBILE COMPONENTS - Componentes nativos para móvil
+// ecosistema_jaraba_theme/scss/components/_mobile-components.scss
+// ==============================================
+// PHASE 5 - G109-1: Mobile UI
+//
+// Componentes CSS-only optimizados para experiencia móvil táctil.
+// Incluye: swipe cards, bottom navigation, pull-to-refresh,
+// action sheets, touch-friendly cards y utilidades responsive.
+//
+// Usa las variables del tema definidas en _variables.scss.
+// ==============================================
+
+@use '../variables' as *;
+
+// ==============================================
+// 1. SWIPE CARDS
+// Componente de tarjeta para interacciones táctiles.
+// Targets de toque mínimo 44px (WCAG 2.5.5).
+// ==============================================
+
+.swipe-card {
+  position: relative;
+  width: 100%;
+  background: $ej-bg-surface;
+  border-radius: $ej-border-radius;
+  box-shadow: $ej-shadow-md;
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  transition: transform $ej-transition-normal, box-shadow $ej-transition-normal;
+  will-change: transform;
+
+  &__content {
+    padding: $ej-spacing-lg;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $ej-spacing-sm;
+    min-height: 44px;
+  }
+
+  &__title {
+    font-family: $ej-font-headings;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $ej-color-headings;
+    margin: 0;
+  }
+
+  &__body {
+    font-family: $ej-font-body;
+    font-size: 0.9375rem;
+    color: $ej-color-body;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $ej-spacing-sm;
+    padding-top: $ej-spacing-sm;
+
+    button,
+    a {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: $ej-spacing-sm $ej-spacing-md;
+      border-radius: $ej-btn-radius;
+      font-family: $ej-font-body;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all $ej-transition-fast;
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+  }
+
+  // Indicador visual de deslizamiento (hint de swipe).
+  &__swipe-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity $ej-transition-normal;
+
+    &--left {
+      left: $ej-spacing-xs;
+      background: $ej-color-danger;
+    }
+
+    &--right {
+      right: $ej-spacing-xs;
+      background: $ej-color-success;
+    }
+  }
+
+  // Animación de hint al pasar el dedo.
+  &.is-swiping-left {
+    transform: translateX(-20px);
+    box-shadow: $ej-shadow-lg;
+
+    .swipe-card__swipe-hint--left {
+      opacity: 1;
+    }
+  }
+
+  &.is-swiping-right {
+    transform: translateX(20px);
+    box-shadow: $ej-shadow-lg;
+
+    .swipe-card__swipe-hint--right {
+      opacity: 1;
+    }
+  }
+
+  // Estado de descarte (dismiss).
+  &.is-dismissed-left {
+    transform: translateX(-110%);
+    opacity: 0;
+    transition: transform 300ms ease-out, opacity 300ms ease-out;
+  }
+
+  &.is-dismissed-right {
+    transform: translateX(110%);
+    opacity: 0;
+    transition: transform 300ms ease-out, opacity 300ms ease-out;
+  }
+}
+
+// ==============================================
+// 2. BOTTOM NAVIGATION
+// Barra de navegación fija inferior con iconos.
+// Compatible con safe area insets (notch).
+// ==============================================
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  background: $ej-bg-surface;
+  border-top: 1px solid $ej-border-color;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+  display: none;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: flex;
+  }
+
+  &__items {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: $ej-spacing-sm $ej-spacing-xs;
+    min-height: 56px;
+    min-width: 64px;
+    color: $ej-color-muted;
+    text-decoration: none;
+    font-family: $ej-font-body;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color $ej-transition-fast;
+    position: relative;
+
+    &:active {
+      background: rgba($ej-color-primary, 0.06);
+    }
+
+    // Icono del tab.
+    .bottom-nav__icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform $ej-transition-fast;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+      }
+    }
+
+    // Label del tab.
+    .bottom-nav__label {
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 72px;
+    }
+
+    // Estado activo.
+    &.is-active {
+      color: $ej-color-primary;
+      font-weight: 600;
+
+      .bottom-nav__icon {
+        transform: scale(1.1);
+      }
+
+      // Indicador de pestaña activa.
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 32px;
+        height: 3px;
+        background: $ej-color-primary;
+        border-radius: 0 0 3px 3px;
+      }
+    }
+
+    // Badge de notificaciones.
+    .bottom-nav__badge {
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 18px);
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      background: $ej-color-danger;
+      color: #fff;
+      font-size: 0.625rem;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+      border-radius: 8px;
+    }
+  }
+}
+
+// Compensar espacio del bottom nav en el contenido.
+body.has-bottom-nav {
+  @media (max-width: $ej-breakpoint-md) {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+  }
+}
+
+// ==============================================
+// 3. PULL-TO-REFRESH
+// Indicador de recarga por gesto de arrastre.
+// ==============================================
+
+.pull-refresh {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 0;
+  overflow: hidden;
+  background: $ej-bg-body;
+  transition: height 200ms ease;
+
+  &__spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid $ej-border-color;
+    border-top-color: $ej-color-primary;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+
+  // Estado de arrastre: revelando el indicador.
+  &.is-pulling {
+    height: 60px;
+
+    .pull-refresh__spinner {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+  }
+
+  // Estado de recarga activa: spinner gira.
+  &.is-refreshing {
+    height: 60px;
+
+    .pull-refresh__spinner {
+      opacity: 1;
+      animation: pull-refresh-spin 750ms linear infinite;
+    }
+  }
+}
+
+@keyframes pull-refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ==============================================
+// 4. MOBILE ACTION SHEET
+// Menú emergente desde abajo con overlay.
+// ==============================================
+
+.action-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity $ej-transition-normal, visibility $ej-transition-normal;
+
+  // Backdrop con blur.
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  // Panel del action sheet.
+  &__panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    background: $ej-bg-surface;
+    border-radius: $ej-border-radius $ej-border-radius 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  // Handle de arrastre (indicador visual de cierre).
+  &__handle {
+    display: flex;
+    justify-content: center;
+    padding: $ej-spacing-sm 0;
+
+    &::after {
+      content: '';
+      width: 36px;
+      height: 4px;
+      background: $ej-border-color;
+      border-radius: 2px;
+    }
+  }
+
+  // Título del action sheet.
+  &__title {
+    font-family: $ej-font-headings;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $ej-color-headings;
+    padding: 0 $ej-spacing-lg $ej-spacing-sm;
+    margin: 0;
+    text-align: center;
+  }
+
+  // Lista de opciones.
+  &__options {
+    list-style: none;
+    margin: 0;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+  }
+
+  &__option {
+    margin: 0;
+    padding: 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba($ej-border-color, 0.5);
+    }
+  }
+
+  // Botón de opción.
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    width: 100%;
+    min-height: 52px;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    border: none;
+    background: transparent;
+    font-family: $ej-font-body;
+    font-size: 1rem;
+    color: $ej-color-body;
+    cursor: pointer;
+    text-align: left;
+    border-radius: $ej-btn-radius;
+    transition: background $ej-transition-fast;
+
+    &:active {
+      background: rgba($ej-color-primary, 0.08);
+    }
+
+    // Variante destructiva (e.g. eliminar).
+    &--destructive {
+      color: $ej-color-danger;
+    }
+  }
+
+  // Separador entre grupos de opciones.
+  &__separator {
+    height: 8px;
+    background: $ej-bg-body;
+    margin: $ej-spacing-xs 0;
+  }
+
+  // Botón de cancelar (al final).
+  &__cancel {
+    display: block;
+    width: calc(100% - #{$ej-spacing-sm} * 2);
+    margin: $ej-spacing-xs $ej-spacing-sm $ej-spacing-sm;
+    min-height: 52px;
+    padding: $ej-spacing-md;
+    border: none;
+    background: $ej-bg-body;
+    font-family: $ej-font-body;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $ej-color-primary;
+    cursor: pointer;
+    text-align: center;
+    border-radius: $ej-btn-radius;
+    transition: background $ej-transition-fast;
+
+    &:active {
+      background: darken($ej-bg-body, 5%);
+    }
+  }
+
+  // Estado abierto.
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+
+    .action-sheet__panel {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Prevenir scroll del body cuando action sheet está abierto.
+body.action-sheet-open {
+  overflow: hidden;
+}
+
+// ==============================================
+// 5. TOUCH-FRIENDLY CARDS
+// Override de .card existente para breakpoints móviles.
+// Padding mayor, ancho completo, layout en columna.
+// ==============================================
+
+@media (max-width: $ej-breakpoint-md) {
+  .card {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: $ej-border-radius;
+
+    // Padding mayor para mejor area de toque.
+    &__body,
+    .card-body {
+      padding: $ej-spacing-lg;
+    }
+
+    &__header,
+    .card-header {
+      padding: $ej-spacing-md $ej-spacing-lg;
+    }
+
+    &__footer,
+    .card-footer {
+      padding: $ej-spacing-md $ej-spacing-lg;
+    }
+
+    // Layout en columna en móvil.
+    &--horizontal {
+      flex-direction: column;
+
+      .card__image,
+      .card-image {
+        width: 100%;
+        max-height: 200px;
+        object-fit: cover;
+      }
+    }
+
+    // Botones y links dentro de cards: targets de toque mínimos.
+    a,
+    button,
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    // Grid de cards: stack completo.
+    &-grid,
+    &-list {
+      grid-template-columns: 1fr;
+      gap: $ej-spacing-md;
+    }
+  }
+}
+
+// ==============================================
+// 6. MOBILE RESPONSIVE UTILITIES
+// Clases helper para visibilidad y layout móvil.
+// ==============================================
+
+// Toggle de visibilidad por dispositivo.
+.mobile-only {
+  display: none !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: block !important;
+  }
+}
+
+.mobile-only--flex {
+  display: none !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: flex !important;
+  }
+}
+
+.mobile-only--inline {
+  display: none !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: inline !important;
+  }
+}
+
+.desktop-only {
+  display: block !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: none !important;
+  }
+}
+
+.desktop-only--flex {
+  display: flex !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: none !important;
+  }
+}
+
+.desktop-only--inline {
+  display: inline !important;
+
+  @media (max-width: $ej-breakpoint-md) {
+    display: none !important;
+  }
+}
+
+// Layout helper: flex a column en móvil.
+.mobile-stack {
+  @media (max-width: $ej-breakpoint-md) {
+    flex-direction: column !important;
+  }
+}
+
+.mobile-stack--reverse {
+  @media (max-width: $ej-breakpoint-md) {
+    flex-direction: column-reverse !important;
+  }
+}
+
+// Ancho completo en pantallas pequeñas.
+.mobile-full-width {
+  @media (max-width: $ej-breakpoint-md) {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+// Padding reducido en móvil.
+.mobile-compact {
+  @media (max-width: $ej-breakpoint-md) {
+    padding: $ej-spacing-sm !important;
+  }
+}
+
+// Texto centrado en móvil.
+.mobile-text-center {
+  @media (max-width: $ej-breakpoint-md) {
+    text-align: center !important;
+  }
+}
+
+// Ocultar overflow horizontal en móvil (prevenir scroll horizontal).
+.mobile-no-overflow {
+  @media (max-width: $ej-breakpoint-md) {
+    overflow-x: hidden !important;
+  }
+}
+
+// Gap reducido en móvil para flex/grid containers.
+.mobile-gap-sm {
+  @media (max-width: $ej-breakpoint-md) {
+    gap: $ej-spacing-sm !important;
+  }
+}
+
+// Touch-friendly: asegura targets de toque mínimo en móvil.
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -18,3 +18,19 @@ view billing usage:
 manage payment methods:
   title: 'Gestionar métodos de pago'
   description: 'Crear, editar y eliminar métodos de pago del tenant.'
+
+manage billing customers:
+  title: 'Gestionar clientes de billing'
+  description: 'Crear, editar y ver clientes de billing.'
+
+manage tenant addons:
+  title: 'Gestionar add-ons de tenant'
+  description: 'Activar, cancelar y ver add-ons de un tenant.'
+
+view billing dunning:
+  title: 'Ver estado de dunning'
+  description: 'Ver el estado del proceso de cobro de un tenant.'
+
+manage subscriptions:
+  title: 'Gestionar suscripciones'
+  description: 'Crear, cambiar y cancelar suscripciones del tenant.'

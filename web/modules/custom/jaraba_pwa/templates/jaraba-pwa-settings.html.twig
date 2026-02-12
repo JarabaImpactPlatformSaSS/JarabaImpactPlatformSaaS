@@ -1,0 +1,107 @@
+{#
+/**
+ * @file
+ * Template for the PWA settings administration page.
+ *
+ * Available variables:
+ * - vapid_public_key: The VAPID public key (base64url string).
+ * - push_enabled: Whether push notifications are configured.
+ * - offline_enabled: Whether offline support is active.
+ * - sync_enabled: Whether background sync is active.
+ * - subscription_count: Number of active push subscriptions.
+ * - pending_sync_count: Number of pending sync actions.
+ * - cache_strategies: Array of cache strategy definitions.
+ */
+#}
+<div class="pwa-settings">
+  <h2>{% trans %}PWA Configuration Overview{% endtrans %}</h2>
+
+  <div class="pwa-settings__section pwa-settings__section--status">
+    <h3>{% trans %}Service Status{% endtrans %}</h3>
+    <table class="pwa-settings__table">
+      <tbody>
+        <tr>
+          <td class="pwa-settings__label">{% trans %}Push Notifications{% endtrans %}</td>
+          <td class="pwa-settings__value">
+            {% if push_enabled %}
+              <span class="pwa-settings__badge pwa-settings__badge--active">{% trans %}Enabled{% endtrans %}</span>
+            {% else %}
+              <span class="pwa-settings__badge pwa-settings__badge--inactive">{% trans %}Disabled{% endtrans %}</span>
+              <p class="pwa-settings__hint">{% trans %}Configure VAPID keys to enable push notifications.{% endtrans %}</p>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td class="pwa-settings__label">{% trans %}Offline Support{% endtrans %}</td>
+          <td class="pwa-settings__value">
+            {% if offline_enabled %}
+              <span class="pwa-settings__badge pwa-settings__badge--active">{% trans %}Active{% endtrans %}</span>
+            {% else %}
+              <span class="pwa-settings__badge pwa-settings__badge--inactive">{% trans %}Inactive{% endtrans %}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td class="pwa-settings__label">{% trans %}Background Sync{% endtrans %}</td>
+          <td class="pwa-settings__value">
+            {% if sync_enabled %}
+              <span class="pwa-settings__badge pwa-settings__badge--active">{% trans %}Active{% endtrans %}</span>
+            {% else %}
+              <span class="pwa-settings__badge pwa-settings__badge--inactive">{% trans %}Inactive{% endtrans %}</span>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pwa-settings__section pwa-settings__section--stats">
+    <h3>{% trans %}Statistics{% endtrans %}</h3>
+    <div class="pwa-settings__stats-grid">
+      <div class="pwa-settings__stat">
+        <span class="pwa-settings__stat-value">{{ subscription_count }}</span>
+        <span class="pwa-settings__stat-label">{% trans %}Active Subscriptions{% endtrans %}</span>
+      </div>
+      <div class="pwa-settings__stat">
+        <span class="pwa-settings__stat-value">{{ pending_sync_count }}</span>
+        <span class="pwa-settings__stat-label">{% trans %}Pending Sync Actions{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+
+  {% if vapid_public_key %}
+  <div class="pwa-settings__section pwa-settings__section--vapid">
+    <h3>{% trans %}VAPID Public Key{% endtrans %}</h3>
+    <p class="pwa-settings__description">{% trans %}This key is used by clients to subscribe to push notifications.{% endtrans %}</p>
+    <code class="pwa-settings__code">{{ vapid_public_key }}</code>
+  </div>
+  {% endif %}
+
+  {% if cache_strategies %}
+  <div class="pwa-settings__section pwa-settings__section--strategies">
+    <h3>{% trans %}Cache Strategies{% endtrans %}</h3>
+    <table class="pwa-settings__table pwa-settings__table--strategies">
+      <thead>
+        <tr>
+          <th>{% trans %}Pattern{% endtrans %}</th>
+          <th>{% trans %}Strategy{% endtrans %}</th>
+          <th>{% trans %}Max Entries{% endtrans %}</th>
+          <th>{% trans %}Max Age{% endtrans %}</th>
+          <th>{% trans %}Description{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for strategy in cache_strategies %}
+        <tr>
+          <td><code>{{ strategy.pattern }}</code></td>
+          <td><span class="pwa-settings__strategy-badge">{{ strategy.strategy }}</span></td>
+          <td>{{ strategy.maxEntries }}</td>
+          <td>{{ strategy.maxAge }}s</td>
+          <td>{{ strategy.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>

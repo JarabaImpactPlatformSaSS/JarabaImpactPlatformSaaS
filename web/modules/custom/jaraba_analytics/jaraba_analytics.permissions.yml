@@ -12,3 +12,35 @@
 'export analytics data':
   title: 'Exportar datos de Analytics'
   description: 'Descargar métricas en formato CSV/Excel.'
+
+'manage cohort definitions':
+  title: 'Gestionar Definiciones de Cohortes'
+  description: 'Crear, editar y eliminar definiciones de cohortes para análisis de retención.'
+
+'view cohort analysis':
+  title: 'Ver Análisis de Cohortes'
+  description: 'Acceder a los dashboards de análisis de cohortes y curvas de retención.'
+
+'manage funnel definitions':
+  title: 'Gestionar Definiciones de Funnels'
+  description: 'Crear, editar y eliminar definiciones de funnels de conversión.'
+
+'view funnel analysis':
+  title: 'Ver Análisis de Funnels'
+  description: 'Acceder a los dashboards de análisis de funnels y tasas de conversión.'
+
+'manage custom reports':
+  title: 'Gestionar Informes Personalizados'
+  description: 'Crear, editar y ejecutar informes personalizados de analytics.'
+
+'manage analytics dashboards':
+  title: 'Gestionar Dashboards de Analytics'
+  description: 'Crear, editar, archivar y eliminar dashboards BI de analytics.'
+
+'manage scheduled reports':
+  title: 'Gestionar Informes Programados'
+  description: 'Crear, editar, pausar y eliminar informes de envio automatico.'
+
+'create dashboards':
+  title: 'Crear Dashboards de Analytics'
+  description: 'Crear nuevos dashboards personalizados de analytics.'

@@ -1,0 +1,9 @@
+name: 'Jaraba Whitelabel'
+type: module
+description: 'White-label configuration, custom domains, email templates, reseller management and branded PDF generation for the Jaraba SaaS platform.'
+package: Jaraba
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_theming:jaraba_theming
+  - group:group

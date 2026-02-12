@@ -146,6 +146,20 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_copilot_v2'
 
+  # Hypothesis Prioritization - ICE score algorithm
+  jaraba_copilot_v2.hypothesis_prioritization:
+    class: Drupal\jaraba_copilot_v2\Service\HypothesisPrioritizationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # BMC Validation - semaphore logic per BMC block
+  jaraba_copilot_v2.bmc_validation:
+    class: Drupal\jaraba_copilot_v2\Service\BmcValidationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_copilot_v2'
+
   logger.channel.jaraba_copilot_v2:
     parent: logger.channel_base
     arguments: ['jaraba_copilot_v2']

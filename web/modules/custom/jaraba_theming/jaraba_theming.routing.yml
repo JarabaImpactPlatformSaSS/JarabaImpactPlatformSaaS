@@ -32,3 +32,14 @@ jaraba_theming.dashboard_customizer:
     _admin_route: FALSE
     no_cache: TRUE
     parameters: {}
+
+# Vista previa del tema (G117-6).
+jaraba_theming.preview:
+  path: '/admin/appearance/theme-preview'
+  defaults:
+    _controller: '\Drupal\jaraba_theming\Controller\ThemePreviewController::preview'
+    _title: 'Vista Previa del Tema'
+  requirements:
+    _permission: 'administer themes'
+  options:
+    _admin_route: TRUE

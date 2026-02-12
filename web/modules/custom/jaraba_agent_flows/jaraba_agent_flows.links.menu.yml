@@ -1,0 +1,30 @@
+# ============================================================================
+# ENLACES DE MENU - JARABA AGENT FLOWS
+# ============================================================================
+# Define los enlaces que aparecen en los menus de administracion
+# de Drupal para las funcionalidades del modulo.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# MENU DE ESTRUCTURA - AGENT FLOWS
+# ---------------------------------------------------------------------------
+
+# Enlace principal en /admin/structure
+jaraba_agent_flows.admin_dashboard:
+  title: 'Flujos de Agentes IA'
+  description: 'Gestiona los flujos automatizados de agentes de inteligencia artificial'
+  route_name: jaraba_agent_flows.admin_dashboard
+  parent: system.admin_structure
+  weight: -5
+
+# ---------------------------------------------------------------------------
+# MENU DE CONFIGURACION - AGENT FLOWS
+# ---------------------------------------------------------------------------
+
+# Configuracion de Agent Flows (Admin > Configuration > Jaraba)
+jaraba_agent_flows.settings_menu:
+  title: 'Agent Flows'
+  description: 'Configurar timeout, concurrencia y politicas de reintento de flujos'
+  route_name: jaraba_agent_flows.settings
+  parent: system.admin_config
+  weight: 65

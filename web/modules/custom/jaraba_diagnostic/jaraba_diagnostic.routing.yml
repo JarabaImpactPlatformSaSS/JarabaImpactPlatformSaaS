@@ -115,7 +115,39 @@ jaraba_diagnostic.api.report:
     _permission: 'export diagnostic report'
     uuid: '[a-f0-9\-]+'
 
-# === Frontend: Wizard público ===
+# === Empleabilidad: Diagnostico Express (Spec 20260120b S3) ===
+
+# Landing publica del diagnostico express de empleabilidad
+jaraba_diagnostic.employability.landing:
+  path: '/empleabilidad/diagnostico'
+  defaults:
+    _controller: '\Drupal\jaraba_diagnostic\Controller\EmployabilityDiagnosticController::landing'
+    _title: 'Diagnostico de Empleabilidad'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# Procesar respuestas del diagnostico (POST JSON)
+jaraba_diagnostic.employability.process:
+  path: '/empleabilidad/diagnostico'
+  defaults:
+    _controller: '\Drupal\jaraba_diagnostic\Controller\EmployabilityDiagnosticController::processAndShowResults'
+    _title: 'Procesar Diagnostico'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# Resultados del diagnostico por UUID
+jaraba_diagnostic.employability.results:
+  path: '/empleabilidad/diagnostico/{uuid}/resultados'
+  defaults:
+    _controller: '\Drupal\jaraba_diagnostic\Controller\EmployabilityDiagnosticController::showResults'
+    _title: 'Resultados del Diagnostico'
+  requirements:
+    _access: 'TRUE'
+    uuid: '[a-f0-9\-]+'
+
+# === Frontend: Wizard público (Emprendimiento) ===
 jaraba_diagnostic.wizard.start:
   path: '/diagnostic/start'
   defaults:

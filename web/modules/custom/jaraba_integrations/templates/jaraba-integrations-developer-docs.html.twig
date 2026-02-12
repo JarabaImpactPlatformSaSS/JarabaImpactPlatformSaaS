@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * Documentacion del SDK para desarrolladores de conectores.
+ *
+ * Variables:
+ *   - sdk_version: Version actual del SDK.
+ *   - api_endpoints: Array de endpoints de la API.
+ */
+#}
+
+<div class="developer-docs">
+
+  <div class="developer-docs__header">
+    <h1 class="developer-docs__title">
+      {% trans %}Documentacion del SDK de Conectores{% endtrans %}
+    </h1>
+    <p class="developer-docs__version">
+      {% trans %}Version del SDK{% endtrans %}: {{ sdk_version }}
+    </p>
+  </div>
+
+  <div class="developer-docs__section">
+    <h2>{% trans %}Endpoints de la API{% endtrans %}</h2>
+    <div class="developer-docs__endpoints">
+      {% for endpoint in api_endpoints %}
+        <div class="developer-docs__endpoint">
+          <code class="developer-docs__method developer-docs__method--{{ endpoint.method|lower }}">{{ endpoint.method }}</code>
+          <code class="developer-docs__path">{{ endpoint.path }}</code>
+          <span class="developer-docs__desc">{{ endpoint.description }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="developer-docs__section">
+    <h2>{% trans %}Como empezar{% endtrans %}</h2>
+    <ol class="developer-docs__steps">
+      <li>{% trans %}Crea un manifest.json con la informacion de tu conector{% endtrans %}</li>
+      <li>{% trans %}Implementa los handlers de instalacion, desinstalacion y webhook{% endtrans %}</li>
+      <li>{% trans %}Prueba tu conector en el entorno sandbox{% endtrans %}</li>
+      <li>{% trans %}Envia tu conector a revision desde el portal de desarrolladores{% endtrans %}</li>
+    </ol>
+  </div>
+
+</div>

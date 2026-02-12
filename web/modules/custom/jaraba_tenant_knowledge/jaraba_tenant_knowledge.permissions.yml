@@ -12,3 +12,15 @@ access tenant knowledge:
 edit tenant knowledge:
   title: 'Editar Conocimiento del Tenant'
   description: 'Modificar la información, FAQs, políticas y documentos del propio tenant.'
+
+view knowledge base:
+  title: 'Ver Base de Conocimiento'
+  description: 'Acceder a los artículos y categorías de la base de conocimiento pública.'
+
+manage kb articles:
+  title: 'Gestionar Artículos KB'
+  description: 'Crear, editar y eliminar artículos y vídeos de la base de conocimiento.'
+
+manage kb categories:
+  title: 'Gestionar Categorías KB'
+  description: 'Crear, editar y eliminar categorías de la base de conocimiento.'

@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Barra compacta de gamificacion: racha + nivel + logros.
+ *
+ * Muestra las metricas de gamificacion del usuario de forma
+ * compacta en una barra horizontal.
+ *
+ * Variables:
+ *   - streak: Dias consecutivos de actividad.
+ *   - level: Nivel actual (1-10).
+ *   - level_label: Etiqueta del nivel (Novato, Junior, etc.).
+ *   - level_progress: Progreso dentro del nivel actual (0-100).
+ *   - total_credits: Total de creditos de impacto acumulados.
+ *   - badges_count: Numero de insignias obtenidas.
+ *   - recent_badges: Array de insignias recientes con: name, icon.
+ *
+ * Uso:
+ *   {% include '@ecosistema_jaraba_theme/partials/_gamification-stats.html.twig' with {
+ *     streak: 5,
+ *     level: 3,
+ *     level_label: 'Junior',
+ *     level_progress: 65,
+ *     total_credits: 350,
+ *     badges_count: 4,
+ *   } %}
+ */
+#}
+
+<div class="ej-gamification">
+  {# Streak #}
+  <div class="ej-gamification__stat">
+    {{ jaraba_icon('ui', 'flame', { size: '18px', color: 'impulse' }) }}
+    <span class="ej-gamification__value">{{ streak|default(0) }}</span>
+    <span class="ej-gamification__label">{{ 'dias'|t }}</span>
+  </div>
+
+  {# Level #}
+  <div class="ej-gamification__stat ej-gamification__stat--level">
+    {{ jaraba_icon('ui', 'trophy', { size: '18px', color: 'innovation' }) }}
+    <div class="ej-gamification__level-info">
+      <span class="ej-gamification__level-name">{{ 'Nivel'|t }} {{ level|default(1) }}: {{ level_label|default('Novato') }}</span>
+      <div class="ej-gamification__level-bar">
+        <div class="ej-gamification__level-fill" style="width: {{ level_progress|default(0) }}%"></div>
+      </div>
+    </div>
+  </div>
+
+  {# Credits #}
+  <div class="ej-gamification__stat">
+    {{ jaraba_icon('ui', 'coin', { size: '18px', color: 'corporate' }) }}
+    <span class="ej-gamification__value">{{ total_credits|default(0) }}</span>
+    <span class="ej-gamification__label">{{ 'creditos'|t }}</span>
+  </div>
+
+  {# Badges #}
+  <div class="ej-gamification__stat">
+    {{ jaraba_icon('ui', 'badge', { size: '18px', color: 'secondary' }) }}
+    <span class="ej-gamification__value">{{ badges_count|default(0) }}</span>
+    <span class="ej-gamification__label">{{ 'logros'|t }}</span>
+    {% if recent_badges is not empty %}
+      <div class="ej-gamification__recent-badges">
+        {% for badge in recent_badges|slice(0, 3) %}
+          <span class="ej-gamification__badge-icon" title="{{ badge.name }}">
+            {{ jaraba_icon('ui', badge.icon|default('badge'), { size: '16px' }) }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>

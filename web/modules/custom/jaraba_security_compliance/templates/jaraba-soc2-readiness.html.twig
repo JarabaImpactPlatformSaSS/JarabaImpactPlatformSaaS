@@ -1,0 +1,109 @@
+{#
+/**
+ * @file
+ * Template for SOC2 Readiness page.
+ *
+ * Available variables:
+ * - trust_criteria: Array of SOC2 Trust Service Criteria.
+ * - controls: Array of assessed controls.
+ * - evidence: Array of evidence items.
+ * - readiness_score: Overall readiness score (0-100).
+ */
+#}
+<div class="soc2-readiness">
+
+  {# Header with readiness score #}
+  <div class="soc2-readiness__header">
+    <h2 class="soc2-readiness__title">{% trans %}SOC 2 Type II Readiness{% endtrans %}</h2>
+    <div class="soc2-readiness__score-badge
+      {% if readiness_score >= 80 %}soc2-readiness__score-badge--good
+      {% elseif readiness_score >= 60 %}soc2-readiness__score-badge--warning
+      {% else %}soc2-readiness__score-badge--critical{% endif %}">
+      <span class="soc2-readiness__score-value">{{ readiness_score }}%</span>
+      <span class="soc2-readiness__score-label">{% trans %}Preparación{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Trust Service Criteria #}
+  <div class="soc2-readiness__criteria">
+    <h3 class="soc2-readiness__section-title">{% trans %}Trust Service Criteria{% endtrans %}</h3>
+
+    {% for key, category in trust_criteria %}
+      <div class="soc2-readiness__criteria-card soc2-readiness__criteria-card--{{ key }}">
+        <div class="soc2-readiness__criteria-header">
+          <h4 class="soc2-readiness__criteria-name">{{ category.label }}</h4>
+        </div>
+        <p class="soc2-readiness__criteria-description">{{ category.description }}</p>
+        <div class="soc2-readiness__criteria-items">
+          {% for criterion in category.criteria %}
+            <span class="soc2-readiness__criterion-tag">{{ criterion }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Controls Status #}
+  <div class="soc2-readiness__controls">
+    <h3 class="soc2-readiness__section-title">{% trans %}Estado de Controles{% endtrans %}</h3>
+
+    {% if controls %}
+      <table class="soc2-readiness__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Control ID{% endtrans %}</th>
+            <th>{% trans %}Nombre{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for control in controls %}
+            <tr class="soc2-readiness__control-row soc2-readiness__control-row--{{ control.status }}">
+              <td><code class="soc2-readiness__control-id">{{ control.control_id }}</code></td>
+              <td>{{ control.control_name }}</td>
+              <td>
+                <span class="soc2-readiness__status-badge soc2-readiness__status-badge--{{ control.status }}">
+                  {% if control.status == 'pass' %}
+                    {% trans %}Cumple{% endtrans %}
+                  {% elseif control.status == 'fail' %}
+                    {% trans %}No Cumple{% endtrans %}
+                  {% elseif control.status == 'warning' %}
+                    {% trans %}Advertencia{% endtrans %}
+                  {% else %}
+                    {% trans %}No Evaluado{% endtrans %}
+                  {% endif %}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="soc2-readiness__no-data">
+        {% trans %}No hay controles evaluados. Ejecute una evaluación SOC2 para obtener resultados.{% endtrans %}
+      </p>
+    {% endif %}
+  </div>
+
+  {# Evidence Tracker #}
+  <div class="soc2-readiness__evidence">
+    <h3 class="soc2-readiness__section-title">{% trans %}Evidencia Recopilada{% endtrans %}</h3>
+
+    {% if evidence %}
+      <ul class="soc2-readiness__evidence-list">
+        {% for item in evidence %}
+          <li class="soc2-readiness__evidence-item">
+            <span class="soc2-readiness__evidence-control">{{ item.control_id }}</span>
+            <span class="soc2-readiness__evidence-description">{{ item.description }}</span>
+            <span class="soc2-readiness__evidence-date">{{ item.date }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="soc2-readiness__no-data">
+        {% trans %}No se ha recopilado evidencia aún. Añada notas de evidencia a las evaluaciones de controles.{% endtrans %}
+      </p>
+    {% endif %}
+  </div>
+
+</div>

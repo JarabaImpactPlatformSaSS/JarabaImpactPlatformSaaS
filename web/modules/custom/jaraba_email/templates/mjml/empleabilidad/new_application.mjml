@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          Nueva candidatura recibida
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has recibido una nueva candidatura para tu oferta de empleo:</p>
+        </mj-text>
+        <mj-section background-color="#eff6ff" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#1e40af">
+              <strong>Candidato:</strong> {{ candidate_name }}<br />
+              <strong>Puesto:</strong> {{ job_title }}<br />
+              <strong>Compatibilidad:</strong> {{ match_score }}%
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-button href="{{ review_url }}" align="center" padding="24px 0">
+          Revisar candidatura
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Revisa el perfil del candidato y gestiona el proceso desde tu panel de reclutamiento.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+          Has recibido este correo porque publicaste una oferta en {{ site_name }} Empleabilidad.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

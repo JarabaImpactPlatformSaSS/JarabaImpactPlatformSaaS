@@ -1,0 +1,89 @@
+# AlertManager configuration for Jaraba Impact Platform
+#
+# Routing por severidad:
+# - critical -> Slack #jaraba-critical + email
+# - warning  -> Slack #jaraba-alerts
+# - info     -> solo Grafana (no AlertManager routing)
+
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alertas@jaraba.io'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+
+route:
+  receiver: 'slack-alerts'
+  group_by: ['alertname', 'job', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+  routes:
+    # Critical alerts -> Slack critical channel + email
+    - receiver: 'critical-alerts'
+      match:
+        severity: critical
+      group_wait: 10s
+      repeat_interval: 1h
+      continue: false
+
+    # Warning alerts -> Slack alerts channel
+    - receiver: 'slack-alerts'
+      match:
+        severity: warning
+      group_wait: 30s
+      repeat_interval: 4h
+      continue: false
+
+receivers:
+  # Critical: Slack + Email
+  - name: 'critical-alerts'
+    slack_configs:
+      - channel: '#jaraba-critical'
+        send_resolved: true
+        title: '{{ .GroupLabels.alertname }} [{{ .Status | toUpper }}]'
+        text: >-
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Details:*
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+          {{ end }}
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+    email_configs:
+      - to: 'ops@jaraba.io'
+        send_resolved: true
+        headers:
+          subject: '[CRITICAL] Jaraba Platform: {{ .GroupLabels.alertname }}'
+
+  # Warning: Slack only
+  - name: 'slack-alerts'
+    slack_configs:
+      - channel: '#jaraba-alerts'
+        send_resolved: true
+        title: '{{ .GroupLabels.alertname }} [{{ .Status | toUpper }}]'
+        text: >-
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Details:*
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+          {{ end }}
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+
+inhibit_rules:
+  - source_match:
+      alertname: 'ServiceDown'
+    target_match:
+      alertname: 'HighErrorRate'
+    equal: ['job']
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'job']

@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Template for the Step Completion celebration.
+ *
+ * Variables:
+ * - step_id: ID of the completed step.
+ * - step_label: Human-readable label of the step.
+ * - next_step: Next step data (id, label) or NULL if onboarding is done.
+ * - achievements_earned: Array of newly earned achievements.
+ *
+ * @see \Drupal\jaraba_onboarding\Controller\OnboardingDashboardController
+ */
+#}
+
+<div class="onboarding-step-complete"
+     data-step-id="{{ step_id }}"
+     aria-live="polite">
+
+  {# ===== Celebration Area ===== #}
+  <div class="onboarding-step-complete__celebration">
+    <div class="onboarding-step-complete__confetti-container"
+         aria-hidden="true"></div>
+
+    <div class="onboarding-step-complete__icon" aria-hidden="true">
+      &#10003;
+    </div>
+
+    <h2 class="onboarding-step-complete__title">
+      {% trans %}Step Completed!{% endtrans %}
+    </h2>
+    <p class="onboarding-step-complete__description">
+      {% trans %}You have completed: {{ step_label }}{% endtrans %}
+    </p>
+  </div>
+
+  {# ===== Achievements Earned ===== #}
+  {% if achievements_earned is not empty %}
+    <div class="onboarding-step-complete__achievements">
+      <h3 class="onboarding-step-complete__achievements-title">
+        {% trans %}Achievements Earned{% endtrans %}
+      </h3>
+      <div class="onboarding-step-complete__achievements-list">
+        {% for achievement in achievements_earned %}
+          <div class="onboarding-step-complete__achievement">
+            <span class="onboarding-step-complete__achievement-icon"
+                  aria-hidden="true">&#9733;</span>
+            <span class="onboarding-step-complete__achievement-label">
+              {{ achievement.label }}
+            </span>
+            <span class="onboarding-step-complete__achievement-points">
+              +{{ achievement.points }} {% trans %}pts{% endtrans %}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ===== Next Step ===== #}
+  <div class="onboarding-step-complete__next">
+    {% if next_step %}
+      <p class="onboarding-step-complete__next-label">
+        {% trans %}Next step:{% endtrans %}
+      </p>
+      <strong class="onboarding-step-complete__next-title">
+        {{ next_step.label }}
+      </strong>
+      <button type="button"
+              class="onboarding-step-complete__next-btn"
+              data-next-step="{{ next_step.id }}">
+        {% trans %}Continue{% endtrans %}
+      </button>
+    {% else %}
+      <p class="onboarding-step-complete__all-done">
+        {% trans %}You have completed all onboarding steps. Welcome aboard!{% endtrans %}
+      </p>
+    {% endif %}
+  </div>
+</div>

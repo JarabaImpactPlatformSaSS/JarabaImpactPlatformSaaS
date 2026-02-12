@@ -1,0 +1,135 @@
+{#
+/**
+ * @file
+ * jaraba-cs-nps-results.html.twig - Resultados NPS dashboard.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-nps-results / cs-nps-results__* / cs-nps-results--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Chart.js para gauge, tendencia y distribucion.
+ *
+ * VARIABLES:
+ * - nps_score: int NPS score (-100 a +100).
+ * - total_responses: int total de respuestas.
+ * - promoters: int count de promotores.
+ * - passives: int count de pasivos.
+ * - detractors: int count de detractores.
+ * - trend_data: array [{month, score, responses}, ...].
+ * - recent_responses: array de respuestas recientes.
+ */
+#}
+
+<div class="cs-nps-results">
+  {# Header #}
+  <header class="cs-nps-results__header">
+    <div class="cs-nps-results__header-content">
+      <h1 class="cs-nps-results__title">{% trans %}NPS Results{% endtrans %}</h1>
+      <p class="cs-nps-results__subtitle">{% trans %}Net Promoter Score analysis and trends.{% endtrans %}</p>
+    </div>
+    <nav class="cs-nps-results__nav">
+      <a href="{{ path('jaraba_customer_success.frontend.dashboard') }}" class="cs-nps-results__nav-link">{% trans %}Dashboard{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.nps_survey') }}" class="cs-nps-results__nav-link">{% trans %}Survey{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.nps_results') }}" class="cs-nps-results__nav-link cs-nps-results__nav-link--active">{% trans %}Results{% endtrans %}</a>
+    </nav>
+  </header>
+
+  {# NPS Score Gauge #}
+  <section class="cs-nps-results__gauge-section">
+    <h2 class="cs-nps-results__section-title">{% trans %}NPS Score{% endtrans %}</h2>
+    <div class="cs-nps-results__gauge">
+      <canvas id="nps-gauge-chart" class="cs-nps-results__gauge-canvas" width="300" height="200"></canvas>
+      <div class="cs-nps-results__gauge-value">
+        <span class="cs-nps-results__gauge-number
+          {% if nps_score >= 50 %} cs-nps-results__gauge-number--excellent
+          {% elseif nps_score >= 0 %} cs-nps-results__gauge-number--good
+          {% elseif nps_score >= -50 %} cs-nps-results__gauge-number--fair
+          {% else %} cs-nps-results__gauge-number--poor
+          {% endif %}">
+          {{ nps_score|default(0) }}
+        </span>
+        <span class="cs-nps-results__gauge-label">{% trans %}NPS Score{% endtrans %}</span>
+        <span class="cs-nps-results__gauge-range">{% trans %}-100 to +100{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="cs-nps-results__total-responses">
+      {% trans %}Based on {{ total_responses }} responses{% endtrans %}
+    </div>
+  </section>
+
+  {# Distribution Bars #}
+  <section class="cs-nps-results__distribution">
+    <h2 class="cs-nps-results__section-title">{% trans %}Response Distribution{% endtrans %}</h2>
+    <div class="cs-nps-results__bars">
+      <div class="cs-nps-results__bar-row">
+        <span class="cs-nps-results__bar-label cs-nps-results__bar-label--promoter">{% trans %}Promoters (9-10){% endtrans %}</span>
+        <div class="cs-nps-results__bar-track">
+          {% set total = promoters + passives + detractors %}
+          {% set pct = total > 0 ? (promoters / total * 100)|round : 0 %}
+          <div class="cs-nps-results__bar-fill cs-nps-results__bar-fill--promoter" style="width: {{ pct }}%;"></div>
+        </div>
+        <span class="cs-nps-results__bar-count">{{ promoters|default(0) }} ({{ pct }}%)</span>
+      </div>
+
+      <div class="cs-nps-results__bar-row">
+        <span class="cs-nps-results__bar-label cs-nps-results__bar-label--passive">{% trans %}Passives (7-8){% endtrans %}</span>
+        <div class="cs-nps-results__bar-track">
+          {% set pct_passive = total > 0 ? (passives / total * 100)|round : 0 %}
+          <div class="cs-nps-results__bar-fill cs-nps-results__bar-fill--passive" style="width: {{ pct_passive }}%;"></div>
+        </div>
+        <span class="cs-nps-results__bar-count">{{ passives|default(0) }} ({{ pct_passive }}%)</span>
+      </div>
+
+      <div class="cs-nps-results__bar-row">
+        <span class="cs-nps-results__bar-label cs-nps-results__bar-label--detractor">{% trans %}Detractors (0-6){% endtrans %}</span>
+        <div class="cs-nps-results__bar-track">
+          {% set pct_detractor = total > 0 ? (detractors / total * 100)|round : 0 %}
+          <div class="cs-nps-results__bar-fill cs-nps-results__bar-fill--detractor" style="width: {{ pct_detractor }}%;"></div>
+        </div>
+        <span class="cs-nps-results__bar-count">{{ detractors|default(0) }} ({{ pct_detractor }}%)</span>
+      </div>
+    </div>
+  </section>
+
+  {# Trend Chart #}
+  <section class="cs-nps-results__trend">
+    <h2 class="cs-nps-results__section-title">{% trans %}NPS Trend{% endtrans %}</h2>
+    <div class="cs-nps-results__trend-chart">
+      <canvas id="nps-trend-chart" class="cs-nps-results__trend-canvas" width="600" height="300"></canvas>
+    </div>
+    {% if trend_data|length == 0 %}
+      <div class="cs-nps-results__empty">
+        <p>{% trans %}Not enough data to display trend. NPS trend will appear after multiple survey periods.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# Recent Responses #}
+  <section class="cs-nps-results__recent">
+    <h2 class="cs-nps-results__section-title">{% trans %}Recent Responses{% endtrans %}</h2>
+    {% if recent_responses|length > 0 %}
+      <div class="cs-nps-results__responses-list">
+        {% for response in recent_responses %}
+          <div class="cs-nps-results__response">
+            <div class="cs-nps-results__response-score
+              {% if response.score >= 9 %} cs-nps-results__response-score--promoter
+              {% elseif response.score >= 7 %} cs-nps-results__response-score--passive
+              {% else %} cs-nps-results__response-score--detractor
+              {% endif %}">
+              {{ response.score }}
+            </div>
+            <div class="cs-nps-results__response-content">
+              {% if response.feedback %}
+                <p class="cs-nps-results__response-feedback">{{ response.feedback }}</p>
+              {% endif %}
+              <span class="cs-nps-results__response-date">{{ response.timestamp|date('d M Y') }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="cs-nps-results__empty">
+        <p>{% trans %}No recent responses available.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+</div>

@@ -15,6 +15,13 @@ services:
       - '@database'
       - '@logger.channel.default'
 
+  # Servicio de scoring para diagnostico express de empleabilidad
+  # Calcula score 0-10 con pesos: LinkedIn 40%, CV 35%, Estrategia 25%
+  jaraba_diagnostic.employability_scoring:
+    class: Drupal\jaraba_diagnostic\Service\EmployabilityScoringService
+    arguments:
+      - '@logger.channel.default'
+
   # Servicio de generación de informes PDF
   jaraba_diagnostic.report:
     class: Drupal\jaraba_diagnostic\Service\DiagnosticReportService

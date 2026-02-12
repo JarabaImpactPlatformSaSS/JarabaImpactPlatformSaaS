@@ -216,6 +216,30 @@ jaraba_candidate.api.import_linkedin:
     _permission: 'edit own profile'
   methods: [POST]
 
+# --- Rutas del Copilot de Empleabilidad (Spec 20260120b S10) ---
+
+# POST: Enviar mensaje al copilot
+jaraba_candidate.copilot.chat:
+  path: '/api/v1/copilot/employability/chat'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::chat'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+  options:
+    _format: json
+
+# GET: Obtener sugerencias contextuales
+jaraba_candidate.copilot.suggestions:
+  path: '/api/v1/copilot/employability/suggestions'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::suggestions'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+  options:
+    _format: json
+
 # --- Rutas de Administración ---
 # Settings stay in /admin/config
 jaraba_candidate.settings:

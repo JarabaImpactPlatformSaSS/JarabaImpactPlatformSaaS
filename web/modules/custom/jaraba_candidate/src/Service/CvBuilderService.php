@@ -185,31 +185,62 @@ class CvBuilderService
     }
 
     /**
-     * Converts HTML CV to PDF.
+     * Converts HTML CV to PDF using Dompdf.
+     *
+     * Genera un PDF A4 portrait con estilos de Design Tokens inyectados.
+     * Guarda el resultado en private://cv_exports/ para descarga.
+     *
+     * @param string $html
+     *   El HTML del CV renderizado.
+     * @param \Drupal\jaraba_candidate\Entity\CandidateProfileInterface $profile
+     *   El perfil del candidato.
+     *
+     * @return array
+     *   Array con 'content' (bytes PDF), 'mime_type' y 'filename'.
      */
     protected function convertHtmlToPdf(string $html, CandidateProfileInterface $profile): array
     {
-        // Use wkhtmltopdf or similar library
-        // For now, return a placeholder
         try {
-            // Add PDF-specific styles
-            $pdf_html = $this->wrapForPdf($html);
+            // Preparar HTML con estilos PDF-friendly.
+            $pdfHtml = $this->wrapForPdf($html);
 
-            // TODO: Integrate with PDF generation library (dompdf, wkhtmltopdf)
-            // For demo purposes, we'll save the HTML as if it were PDF
+            // Crear instancia Dompdf con configuracion segura.
+            $options = new \Dompdf\Options();
+            $options->set('isRemoteEnabled', FALSE);
+            $options->set('isHtml5ParserEnabled', TRUE);
+            $options->set('defaultFont', 'Helvetica');
+            $options->set('dpi', 150);
+
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($pdfHtml);
+
+            // Configurar A4 portrait.
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $pdfContent = $dompdf->output();
             $filename = $this->generateFilename($profile, 'pdf');
-            $directory = 'private://cvs/' . $profile->id();
-            $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
-            $this->logger->info('Generated PDF CV for profile @id', ['@id' => $profile->id()]);
+            // Guardar en private://cv_exports/.
+            $directory = 'private://cv_exports';
+            $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+
+            $filePath = $directory . '/' . $filename;
+            $this->fileSystem->saveData($pdfContent, $filePath, FileSystemInterface::EXISTS_REPLACE);
+
+            $this->logger->info('PDF CV generado para perfil @id: @filename', [
+                '@id' => $profile->id(),
+                '@filename' => $filename,
+            ]);
 
             return [
-                'content' => $pdf_html, // Would be actual PDF bytes
+                'content' => $pdfContent,
                 'mime_type' => 'application/pdf',
                 'filename' => $filename,
+                'file_path' => $filePath,
             ];
         } catch (\Exception $e) {
-            $this->logger->error('PDF generation failed: @msg', ['@msg' => $e->getMessage()]);
+            $this->logger->error('Error generando PDF CV: @msg', ['@msg' => $e->getMessage()]);
             throw $e;
         }
     }

@@ -24,12 +24,13 @@ services:
       - '@file_system'
       - '@logger.channel.jaraba_tenant_knowledge'
 
-  # Servicio de comparación de revisiones (G114-2).
+  # Servicio de versionado de artículos de conocimiento (G114-2).
   jaraba_tenant_knowledge.revision_service:
     class: Drupal\jaraba_tenant_knowledge\Service\KnowledgeRevisionService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_tenant_knowledge'
+      - '@current_user'
 
   # FAQ Bot contextual para clientes del tenant (G114-4).
   jaraba_tenant_knowledge.faq_bot:
@@ -41,6 +42,28 @@ services:
       - '@ai.provider'
       - '@entity_type.manager'
       - '@tempstore.shared'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  # Búsqueda semántica en la base de conocimiento pública.
+  jaraba_tenant_knowledge.kb_search:
+    class: Drupal\jaraba_tenant_knowledge\Service\KbSemanticSearchService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  # Gestión de artículos de la base de conocimiento.
+  jaraba_tenant_knowledge.kb_manager:
+    class: Drupal\jaraba_tenant_knowledge\Service\KbArticleManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_tenant_knowledge'
+
+  # Analíticas de la base de conocimiento.
+  jaraba_tenant_knowledge.kb_analytics:
+    class: Drupal\jaraba_tenant_knowledge\Service\KbAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
       - '@logger.channel.jaraba_tenant_knowledge'
 
   logger.channel.jaraba_tenant_knowledge:

@@ -61,3 +61,65 @@ jaraba_ads.api.campaigns.spend:
   methods: [GET]
   requirements:
     _permission: 'view ads dashboard'
+
+# --- Settings Routes para nuevas entidades (Field UI) ---
+
+jaraba_ads.ads_account.settings:
+  path: '/admin/structure/ads-accounts'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdsAccountSettingsForm'
+    _title: 'Configuración Cuentas de Ads'
+  requirements:
+    _permission: 'administer ads settings'
+
+jaraba_ads.ads_campaign_sync.settings:
+  path: '/admin/structure/ads-campaign-sync'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdsCampaignSyncSettingsForm'
+    _title: 'Configuración Sincronización de Campañas'
+  requirements:
+    _permission: 'administer ads settings'
+
+jaraba_ads.ads_metrics_daily.settings:
+  path: '/admin/structure/ads-metrics-daily'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdsMetricsDailySettingsForm'
+    _title: 'Configuración Métricas Diarias'
+  requirements:
+    _permission: 'administer ads settings'
+
+jaraba_ads.ads_audience_sync.settings:
+  path: '/admin/structure/ads-audience-sync'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdsAudienceSyncSettingsForm'
+    _title: 'Configuración Sincronización de Audiencias'
+  requirements:
+    _permission: 'administer ads settings'
+
+jaraba_ads.ads_conversion_event.settings:
+  path: '/admin/structure/ads-conversion-events'
+  defaults:
+    _form: '\Drupal\jaraba_ads\Form\AdsConversionEventSettingsForm'
+    _title: 'Configuración Eventos de Conversión'
+  requirements:
+    _permission: 'administer ads settings'
+
+# --- OAuth Routes para conexión de cuentas ---
+
+jaraba_ads.oauth.start:
+  path: '/ads/oauth/{platform}/start'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsOAuthController::startOAuth'
+    _title: 'Conectar Cuenta de Ads'
+  requirements:
+    _permission: 'connect ad accounts'
+    platform: 'meta|google'
+
+jaraba_ads.oauth.callback:
+  path: '/ads/oauth/{platform}/callback'
+  defaults:
+    _controller: '\Drupal\jaraba_ads\Controller\AdsOAuthController::handleCallback'
+    _title: 'Callback OAuth Ads'
+  requirements:
+    _permission: 'connect ad accounts'
+    platform: 'meta|google'

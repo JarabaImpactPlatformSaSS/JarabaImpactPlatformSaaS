@@ -210,6 +210,44 @@ class TenantThemeConfig extends ContentEntityBase
             ->setDefaultValue('Inter')
             ->setDisplayConfigurable('form', TRUE);
 
+        // === FUENTES PERSONALIZADAS (G117-5) ===
+
+        $fields['font_heading_url'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('URL Fuente de Títulos'))
+            ->setDescription(t('URL de la fuente personalizada para títulos (woff2 o Google Fonts CSS URL).'))
+            ->setSettings(['max_length' => 512])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 23,
+            ]);
+
+        $fields['font_body_url'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('URL Fuente de Cuerpo'))
+            ->setDescription(t('URL de la fuente personalizada para cuerpo (woff2 o Google Fonts CSS URL).'))
+            ->setSettings(['max_length' => 512])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 24,
+            ]);
+
+        $fields['font_heading_family'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Familia Tipográfica de Títulos'))
+            ->setDescription(t('Nombre CSS font-family para la fuente personalizada de títulos.'))
+            ->setSettings(['max_length' => 100])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 25,
+            ]);
+
+        $fields['font_body_family'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Familia Tipográfica de Cuerpo'))
+            ->setDescription(t('Nombre CSS font-family para la fuente personalizada de cuerpo.'))
+            ->setSettings(['max_length' => 100])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 26,
+            ]);
+
         // === DESIGN TOKENS - ESPACIADO Y BORDES ===
 
         $fields['border_radius'] = BaseFieldDefinition::create('list_string')
@@ -455,11 +493,26 @@ class TenantThemeConfig extends ContentEntityBase
         }
 
         // === TIPOGRAFÍA ===
-        if ($fontHeadings = $this->get('font_headings')->value) {
+        // Priorizar fuentes personalizadas sobre las de Google Fonts seleccionadas.
+        $customHeadingUrl = $this->hasField('font_heading_url') ? $this->get('font_heading_url')->value : NULL;
+        $customHeadingFamily = $this->hasField('font_heading_family') ? $this->get('font_heading_family')->value : NULL;
+        $customBodyUrl = $this->hasField('font_body_url') ? $this->get('font_body_url')->value : NULL;
+        $customBodyFamily = $this->hasField('font_body_family') ? $this->get('font_body_family')->value : NULL;
+
+        if ($customHeadingUrl && $customHeadingFamily) {
+            $vars['--ej-font-family-headings'] = "'{$customHeadingFamily}', sans-serif";
+            $vars['--ej-font-headings'] = "'{$customHeadingFamily}', sans-serif";
+        }
+        elseif ($fontHeadings = $this->get('font_headings')->value) {
             $vars['--ej-font-family-headings'] = "'{$fontHeadings}', sans-serif";
             $vars['--ej-font-headings'] = "'{$fontHeadings}', sans-serif";
         }
-        if ($fontBody = $this->get('font_body')->value) {
+
+        if ($customBodyUrl && $customBodyFamily) {
+            $vars['--ej-font-family-body'] = "'{$customBodyFamily}', sans-serif";
+            $vars['--ej-font-body'] = "'{$customBodyFamily}', sans-serif";
+        }
+        elseif ($fontBody = $this->get('font_body')->value) {
             $vars['--ej-font-family-body'] = "'{$fontBody}', sans-serif";
             $vars['--ej-font-body'] = "'{$fontBody}', sans-serif";
         }

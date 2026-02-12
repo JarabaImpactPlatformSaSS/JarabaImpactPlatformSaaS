@@ -929,6 +929,16 @@ ecosistema_jaraba_core.api.sandbox.stats:
 # mientras redirigen a los dashboards específicos de cada módulo.
 # Permite enlaces consistentes desde la homepage y navegación.
 
+# Dashboard Unificado - Redirige segun avatar detectado
+# Usa AvatarDetectionService con cascada Domain > Path/UTM > Group > Rol
+ecosistema_jaraba_core.dashboard.auto:
+  path: '/dashboard'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectByAvatar'
+    _title: 'Mi Dashboard'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
 # Dashboard Job Seeker - Alias → /jobseeker
 ecosistema_jaraba_core.dashboard.career:
   path: '/dashboard/career'
@@ -1207,3 +1217,64 @@ ecosistema_jaraba_core.api.usage.pricing_rules:
   requirements:
     _permission: 'access usage api'
   methods: [GET]
+
+# =============================================================================
+# COMPLIANCE & AUDIT LOG (G115-1, G115-2)
+# =============================================================================
+
+# Compliance Dashboard
+ecosistema_jaraba_core.compliance_dashboard:
+  path: '/admin/seguridad'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ComplianceDashboardController::dashboard'
+    _title: 'Compliance & Security Dashboard'
+  requirements:
+    _permission: 'view audit logs'
+  options:
+    _admin_route: TRUE
+
+# =============================================================================
+# RESELLER / PARTNER PORTAL (G117-4)
+# =============================================================================
+
+# Portal de partner/reseller con dashboard de comisiones y tenants
+ecosistema_jaraba_core.reseller_portal:
+  path: '/partner-portal'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ResellerPortalController::dashboard'
+    _title: 'Portal de Partner'
+  requirements:
+    _permission: 'access partner portal'
+  options:
+    _admin_route: FALSE
+
+# =============================================================================
+# PUSH NOTIFICATIONS API (G109-3)
+# =============================================================================
+
+# API: Suscribirse a notificaciones push
+ecosistema_jaraba_core.api.push.subscribe:
+  path: '/api/v1/push/subscribe'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PushApiController::subscribe'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+
+# API: Cancelar suscripción push
+ecosistema_jaraba_core.api.push.unsubscribe:
+  path: '/api/v1/push/unsubscribe'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PushApiController::unsubscribe'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [DELETE]
+
+# API: Enviar notificación push de prueba (solo admin)
+ecosistema_jaraba_core.api.push.test:
+  path: '/api/v1/push/test'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PushApiController::test'
+  requirements:
+    _permission: 'administer tenants'
+  methods: [POST]

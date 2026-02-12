@@ -10,3 +10,28 @@ services:
       - '@jaraba_ai_agents.orchestrator'
       - '@queue'
       - '@logger.channel.jaraba_social'
+
+  jaraba_social.account_service:
+    class: Drupal\jaraba_social\Service\SocialAccountService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_social'
+
+  jaraba_social.calendar_service:
+    class: Drupal\jaraba_social\Service\SocialCalendarService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_social'
+
+  jaraba_social.analytics_service:
+    class: Drupal\jaraba_social\Service\SocialAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_social'
+
+  jaraba_social.makecom_integration:
+    class: Drupal\jaraba_social\Service\MakeComIntegrationService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_social'

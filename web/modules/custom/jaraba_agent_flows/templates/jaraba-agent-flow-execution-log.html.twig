@@ -1,0 +1,68 @@
+{#
+/**
+ * @file
+ * Log detallado de una ejecucion de flujo de agente IA.
+ *
+ * Variables:
+ *   - execution: Datos de la ejecucion.
+ *   - steps: Array de pasos con input, output, duration, status.
+ */
+#}
+
+<div class="agent-flow-execution-log">
+
+  <div class="agent-flow-execution-log__header">
+    <h1 class="agent-flow-execution-log__title">
+      {% trans %}Ejecucion{% endtrans %} #{{ execution.id }}
+    </h1>
+    <span class="agent-flow-execution-log__status agent-flow-execution-log__status--{{ execution.status }}">
+      {{ execution.status }}
+    </span>
+  </div>
+
+  <div class="agent-flow-execution-log__summary">
+    <div class="agent-flow-execution-log__summary-item">
+      <span class="agent-flow-execution-log__label">{% trans %}Inicio{% endtrans %}</span>
+      <span class="agent-flow-execution-log__value">{{ execution.started_at_formatted }}</span>
+    </div>
+    <div class="agent-flow-execution-log__summary-item">
+      <span class="agent-flow-execution-log__label">{% trans %}Duracion total{% endtrans %}</span>
+      <span class="agent-flow-execution-log__value">{{ execution.duration_ms }}ms</span>
+    </div>
+    <div class="agent-flow-execution-log__summary-item">
+      <span class="agent-flow-execution-log__label">{% trans %}Pasos{% endtrans %}</span>
+      <span class="agent-flow-execution-log__value">{{ steps|length }}</span>
+    </div>
+  </div>
+
+  {# ===== PASOS ===== #}
+  <div class="agent-flow-execution-log__steps">
+    <h2 class="agent-flow-execution-log__section-title">{% trans %}Pasos de Ejecucion{% endtrans %}</h2>
+
+    {% for step in steps %}
+      <div class="agent-flow-step agent-flow-step--{{ step.status }}">
+        <div class="agent-flow-step__header">
+          <span class="agent-flow-step__order">{{ step.order }}</span>
+          <span class="agent-flow-step__name">{{ step.name }}</span>
+          <span class="agent-flow-step__type">{{ step.type }}</span>
+          <span class="agent-flow-step__duration">{{ step.duration_ms }}ms</span>
+          <span class="agent-flow-step__status">{{ step.status }}</span>
+        </div>
+
+        {% if step.error_detail %}
+          <div class="agent-flow-step__error">
+            <strong>{% trans %}Error{% endtrans %}:</strong> {{ step.error_detail }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if execution.error_message %}
+    <div class="agent-flow-execution-log__error">
+      <h2>{% trans %}Error de Ejecucion{% endtrans %}</h2>
+      <pre class="agent-flow-execution-log__error-detail">{{ execution.error_message }}</pre>
+    </div>
+  {% endif %}
+
+</div>

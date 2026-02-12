@@ -18,3 +18,12 @@ manage webhooks:
 manage oauth clients:
   title: 'Manage OAuth Clients'
   description: 'Create and manage OAuth2 client applications.'
+
+approve connectors:
+  title: 'Approve Connectors'
+  description: 'Review and approve connectors submitted to the marketplace.'
+  restrict access: true
+
+access developer portal:
+  title: 'Access Developer Portal'
+  description: 'Access the developer portal to create and manage connectors.'

@@ -1,0 +1,431 @@
+/**
+ * @file
+ * Styles for PWA components: offline indicator, push opt-in, sync status.
+ *
+ * Uses BEM naming convention with --ej-* CSS custom properties
+ * and fallback values for standalone usage.
+ */
+
+/* ==========================================================================
+   Offline Indicator
+   ========================================================================== */
+
+.pwa-offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.pwa-offline-indicator--visible {
+  transform: translateY(0);
+}
+
+.pwa-offline-indicator__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: var(--ej-color-warning, #f59e0b);
+  color: var(--ej-color-warning-contrast, #ffffff);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-family: var(--ej-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  text-align: center;
+}
+
+.pwa-offline-indicator__icon::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--ej-color-warning-contrast, #ffffff);
+  animation: pwa-pulse 1.5s infinite;
+}
+
+.pwa-offline-indicator__message {
+  font-weight: var(--ej-font-weight-medium, 500);
+}
+
+/* Online Indicator */
+
+.pwa-online-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.pwa-online-indicator--visible {
+  transform: translateY(0);
+}
+
+.pwa-online-indicator__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: var(--ej-color-success, #10b981);
+  color: var(--ej-color-success-contrast, #ffffff);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-family: var(--ej-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  text-align: center;
+}
+
+.pwa-online-indicator__icon::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--ej-color-success-contrast, #ffffff);
+}
+
+.pwa-online-indicator__message {
+  font-weight: var(--ej-font-weight-medium, 500);
+}
+
+/* ==========================================================================
+   Push Opt-in Dialog
+   ========================================================================== */
+
+.pwa-push-optin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.pwa-push-optin--visible {
+  opacity: 1;
+}
+
+.pwa-push-optin--hiding {
+  opacity: 0;
+}
+
+.pwa-push-optin__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.pwa-push-optin__dialog {
+  position: relative;
+  width: 90%;
+  max-width: 28rem;
+  padding: 1.5rem;
+  background-color: var(--ej-color-surface, #ffffff);
+  border-radius: var(--ej-border-radius-lg, 0.75rem);
+  box-shadow: var(--ej-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
+}
+
+.pwa-push-optin__header {
+  margin-bottom: 0.75rem;
+}
+
+.pwa-push-optin__title {
+  margin: 0;
+  font-size: var(--ej-font-size-lg, 1.125rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-color-text-primary, #111827);
+  font-family: var(--ej-font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.pwa-push-optin__body {
+  margin-bottom: 1.25rem;
+}
+
+.pwa-push-optin__description {
+  margin: 0;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-secondary, #6b7280);
+  line-height: var(--ej-line-height-relaxed, 1.625);
+  font-family: var(--ej-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.pwa-push-optin__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.pwa-push-optin__btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--ej-border-radius-md, 0.5rem);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-medium, 500);
+  font-family: var(--ej-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.pwa-push-optin__btn:active {
+  transform: scale(0.98);
+}
+
+.pwa-push-optin__btn--accept {
+  background-color: var(--ej-color-primary, #1a73e8);
+  color: var(--ej-color-primary-contrast, #ffffff);
+}
+
+.pwa-push-optin__btn--accept:hover {
+  background-color: var(--ej-color-primary-dark, #1557b0);
+}
+
+.pwa-push-optin__btn--dismiss {
+  background-color: transparent;
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+.pwa-push-optin__btn--dismiss:hover {
+  background-color: var(--ej-color-bg-hover, #f3f4f6);
+}
+
+/* ==========================================================================
+   Sync Status
+   ========================================================================== */
+
+.pwa-sync-status {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.pwa-sync-status--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.pwa-sync-status__content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: var(--ej-border-radius-md, 0.5rem);
+  box-shadow: var(--ej-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1));
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-family: var(--ej-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.pwa-sync-status__spinner {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--ej-color-border, #e5e7eb);
+  border-top-color: var(--ej-color-primary, #1a73e8);
+  border-radius: 50%;
+}
+
+.pwa-sync-status--syncing .pwa-sync-status__spinner {
+  display: inline-block;
+  animation: pwa-spin 0.8s linear infinite;
+}
+
+.pwa-sync-status__message {
+  color: var(--ej-color-text-primary, #111827);
+  font-weight: var(--ej-font-weight-medium, 500);
+}
+
+.pwa-sync-status__count {
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+/* ==========================================================================
+   PWA Settings Admin Styles
+   ========================================================================== */
+
+.pwa-settings__section {
+  margin-bottom: 2rem;
+}
+
+.pwa-settings__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pwa-settings__table th,
+.pwa-settings__table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ej-color-border, #e5e7eb);
+}
+
+.pwa-settings__table th {
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-color-text-primary, #111827);
+}
+
+.pwa-settings__label {
+  font-weight: var(--ej-font-weight-medium, 500);
+  color: var(--ej-color-text-primary, #111827);
+  min-width: 12rem;
+}
+
+.pwa-settings__badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--ej-border-radius-sm, 0.25rem);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: var(--ej-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pwa-settings__badge--active {
+  background-color: var(--ej-color-success-bg, #d1fae5);
+  color: var(--ej-color-success-text, #065f46);
+}
+
+.pwa-settings__badge--inactive {
+  background-color: var(--ej-color-neutral-bg, #f3f4f6);
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+.pwa-settings__hint {
+  margin: 0.25rem 0 0;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+.pwa-settings__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+
+.pwa-settings__stat {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: var(--ej-border-radius-md, 0.5rem);
+  text-align: center;
+}
+
+.pwa-settings__stat-value {
+  font-size: var(--ej-font-size-2xl, 1.5rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-color-primary, #1a73e8);
+}
+
+.pwa-settings__stat-label {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin-top: 0.25rem;
+}
+
+.pwa-settings__code {
+  display: block;
+  padding: 0.75rem;
+  background-color: var(--ej-color-bg-code, #f3f4f6);
+  border-radius: var(--ej-border-radius-md, 0.5rem);
+  font-family: var(--ej-font-family-mono, "Fira Code", "Consolas", monospace);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  word-break: break-all;
+  color: var(--ej-color-text-primary, #111827);
+}
+
+.pwa-settings__description {
+  margin: 0 0 0.5rem;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+.pwa-settings__strategy-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  background-color: var(--ej-color-primary-bg, #dbeafe);
+  color: var(--ej-color-primary, #1a73e8);
+  border-radius: var(--ej-border-radius-sm, 0.25rem);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: var(--ej-font-weight-medium, 500);
+}
+
+/* ==========================================================================
+   Body State Classes
+   ========================================================================== */
+
+.pwa-is-offline {
+  /* Allow consumers to style based on offline state. */
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes pwa-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes pwa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .pwa-push-optin__dialog {
+    width: 95%;
+    padding: 1.25rem;
+  }
+
+  .pwa-push-optin__actions {
+    flex-direction: column-reverse;
+  }
+
+  .pwa-push-optin__btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pwa-sync-status {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0;
+  }
+
+  .pwa-sync-status__content {
+    border-radius: 0;
+    justify-content: center;
+  }
+}

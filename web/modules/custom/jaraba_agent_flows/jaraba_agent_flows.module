@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Agent Flows.
+ *
+ * PROPOSITO:
+ * Flujos visuales de agentes IA con ejecucion automatica,
+ * triggers configurables, metricas de rendimiento y templates
+ * predefinidos por vertical. Envuelve jaraba_ai_agents.workflow_executor.
+ *
+ * DIRECTRICES:
+ * - Hook-first: hooks nativos de Drupal.
+ * - i18n: todos los textos con t() / {% trans %}.
+ * - Aislamiento: tenant_id en cada entidad via entity_reference a group.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_agent_flows_help(string $route_name): string {
+  if ($route_name === 'help.page.jaraba_agent_flows') {
+    return '<p>' . t('Flujos visuales de agentes IA con ejecucion, triggers, metricas y templates por vertical.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_agent_flows_theme(): array {
+  return [
+    'jaraba_agent_flow_dashboard' => [
+      'variables' => [
+        'flows' => [],
+        'metrics' => [],
+        'recent_executions' => [],
+        'templates' => [],
+      ],
+      'template' => 'jaraba-agent-flow-dashboard',
+    ],
+    'jaraba_agent_flow_detail' => [
+      'variables' => [
+        'flow' => NULL,
+        'executions' => [],
+        'metrics' => [],
+      ],
+      'template' => 'jaraba-agent-flow-detail',
+    ],
+    'jaraba_agent_flow_execution_log' => [
+      'variables' => [
+        'execution' => NULL,
+        'steps' => [],
+      ],
+      'template' => 'jaraba-agent-flow-execution-log',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Anade body classes para paginas de agent flows.
+ */
+function jaraba_agent_flows_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route, 'jaraba_agent_flows.')) {
+    $variables['attributes']['class'][] = 'page--agent-flows';
+
+    if (str_contains($route, 'dashboard')) {
+      $variables['attributes']['class'][] = 'page--agent-flows-dashboard';
+    }
+  }
+}

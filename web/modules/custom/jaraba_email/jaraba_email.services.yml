@@ -41,9 +41,31 @@ services:
       - '@jaraba_email.subscriber_service'
       - '@logger.channel.jaraba_email'
 
+  # Template Loader Service - Carga y compilación de plantillas MJML
+  jaraba_email.template_loader:
+    class: Drupal\jaraba_email\Service\TemplateLoaderService
+    arguments:
+      - '@jaraba_email.mjml_compiler'
+      - '@logger.channel.jaraba_email'
+
   # Email AI Service - Generación con IA
   jaraba_email.ai_service:
     class: Drupal\jaraba_email\Service\EmailAIService
     arguments:
       - '@jaraba_ai_agents.orchestrator'
+      - '@logger.channel.jaraba_email'
+
+  # SendGrid Client Service - Integracion con SendGrid API
+  jaraba_email.sendgrid_client:
+    class: Drupal\jaraba_email\Service\SendGridClientService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_email'
+
+  # Sequence Manager Service - Gestion de secuencias automatizadas
+  jaraba_email.sequence_manager:
+    class: Drupal\jaraba_email\Service\SequenceManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_email.campaign_service'
       - '@logger.channel.jaraba_email'

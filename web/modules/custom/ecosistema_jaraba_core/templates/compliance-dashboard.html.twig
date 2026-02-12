@@ -1,0 +1,210 @@
+{#
+/**
+ * @file
+ * Compliance Dashboard - Security & Compliance Overview (G115-1).
+ *
+ * Variables:
+ *   - controls: Array of compliance frameworks with their controls and statuses.
+ *   - recent_events: Array of last 20 audit log events.
+ *   - security_headers: Array of HTTP security headers and their status.
+ *   - stats: Aggregate compliance statistics (total_audit_logs, critical_events,
+ *            last_assessment, controls_passing, controls_total, compliance_score).
+ *
+ * BEM structure:
+ *   .compliance-dashboard
+ *     .compliance-dashboard__header
+ *     .compliance-dashboard__stats
+ *     .compliance-dashboard__controls
+ *     .compliance-dashboard__events
+ *     .compliance-dashboard__headers
+ */
+#}
+
+{# Translatable status labels #}
+{% set status_labels = {
+  'pass': 'Cumple'|t,
+  'fail': 'No cumple'|t,
+  'warning': 'Revisar'|t,
+} %}
+
+{% set severity_labels = {
+  'info': 'Info'|t,
+  'notice': 'Aviso'|t,
+  'warning': 'Alerta'|t,
+  'critical': 'Critico'|t,
+} %}
+
+<div class="compliance-dashboard">
+
+  {# ===== HEADER ===== #}
+  <div class="compliance-dashboard__header">
+    <div class="compliance-dashboard__header-content">
+      <h1 class="compliance-dashboard__title">
+        {% trans %}Panel de Cumplimiento y Seguridad{% endtrans %}
+      </h1>
+      <p class="compliance-dashboard__subtitle">
+        {% trans %}Estado de controles de seguridad, eventos de auditoria y cabeceras HTTP{% endtrans %}
+      </p>
+    </div>
+    <div class="compliance-dashboard__header-actions">
+      <button class="compliance-dashboard__refresh-btn" id="compliance-refresh" type="button">
+        {% trans %}Actualizar{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# ===== STATS CARDS ===== #}
+  <div class="compliance-dashboard__stats">
+    <div class="compliance-stat-card compliance-stat-card--score">
+      <span class="compliance-stat-card__value" id="compliance-score">{{ stats.compliance_score }}%</span>
+      <span class="compliance-stat-card__label">{% trans %}Puntuacion de Cumplimiento{% endtrans %}</span>
+      <div class="compliance-stat-card__indicator compliance-stat-card__indicator--{{ stats.compliance_score >= 80 ? 'good' : (stats.compliance_score >= 50 ? 'warning' : 'critical') }}"></div>
+    </div>
+
+    <div class="compliance-stat-card compliance-stat-card--controls">
+      <span class="compliance-stat-card__value">{{ stats.controls_passing }}/{{ stats.controls_total }}</span>
+      <span class="compliance-stat-card__label">{% trans %}Controles Aprobados{% endtrans %}</span>
+    </div>
+
+    <div class="compliance-stat-card compliance-stat-card--audit">
+      <span class="compliance-stat-card__value" id="total-audit-logs">{{ stats.total_audit_logs }}</span>
+      <span class="compliance-stat-card__label">{% trans %}Eventos de Auditoria{% endtrans %}</span>
+    </div>
+
+    <div class="compliance-stat-card compliance-stat-card--critical">
+      <span class="compliance-stat-card__value" id="critical-events">{{ stats.critical_events }}</span>
+      <span class="compliance-stat-card__label">{% trans %}Eventos Criticos (30d){% endtrans %}</span>
+    </div>
+
+    <div class="compliance-stat-card compliance-stat-card--assessment">
+      <span class="compliance-stat-card__value compliance-stat-card__value--small">{{ stats.last_assessment }}</span>
+      <span class="compliance-stat-card__label">{% trans %}Ultima Evaluacion{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ===== COMPLIANCE CONTROLS ===== #}
+  <div class="compliance-dashboard__controls">
+    <h2 class="compliance-dashboard__section-title">
+      {% trans %}Controles de Cumplimiento{% endtrans %}
+    </h2>
+    <p class="compliance-dashboard__section-desc">
+      {% trans %}Estado de cada control por marco normativo. Haz clic en el titulo para expandir o colapsar.{% endtrans %}
+    </p>
+
+    {% for framework_key, framework in controls %}
+      <div class="compliance-control-group" data-framework="{{ framework_key }}">
+        <button class="compliance-control-group__header" type="button"
+                aria-expanded="true"
+                aria-controls="controls-{{ framework_key }}">
+          <span class="compliance-control-group__label">{{ framework.label }}</span>
+          <span class="compliance-control-group__description">{{ framework.description }}</span>
+          <span class="compliance-control-group__toggle" aria-hidden="true"></span>
+        </button>
+
+        <div class="compliance-control-group__body" id="controls-{{ framework_key }}">
+          {% for control in framework.controls %}
+            <div class="compliance-control compliance-control--{{ control.status }}">
+              <span class="compliance-control__id">{{ control.id }}</span>
+              <span class="compliance-control__name">{{ control.name }}</span>
+              <span class="compliance-control__status">
+                {{ status_labels[control.status]|default(control.status) }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ===== RECENT AUDIT EVENTS ===== #}
+  <div class="compliance-dashboard__events">
+    <div class="compliance-dashboard__events-header">
+      <h2 class="compliance-dashboard__section-title">
+        {% trans %}Eventos de Auditoria Recientes{% endtrans %}
+      </h2>
+      <div class="compliance-dashboard__events-filter">
+        <label for="severity-filter" class="visually-hidden">{% trans %}Filtrar por severidad{% endtrans %}</label>
+        <select id="severity-filter" class="compliance-event-filter">
+          <option value="all">{% trans %}Todas las severidades{% endtrans %}</option>
+          <option value="critical">{% trans %}Critico{% endtrans %}</option>
+          <option value="warning">{% trans %}Alerta{% endtrans %}</option>
+          <option value="notice">{% trans %}Aviso{% endtrans %}</option>
+          <option value="info">{% trans %}Info{% endtrans %}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="compliance-event-table-wrapper">
+      <table class="compliance-event-table" id="audit-events-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+            <th>{% trans %}Accion{% endtrans %}</th>
+            <th>{% trans %}Entidad{% endtrans %}</th>
+            <th>{% trans %}Usuario{% endtrans %}</th>
+            <th>{% trans %}Severidad{% endtrans %}</th>
+            <th>{% trans %}Mensaje{% endtrans %}</th>
+            <th>{% trans %}IP{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="audit-events-body">
+          {% if recent_events is empty %}
+            <tr>
+              <td colspan="7" class="compliance-event-table__empty">
+                {% trans %}No se encontraron eventos de auditoria.{% endtrans %}
+              </td>
+            </tr>
+          {% else %}
+            {% for event in recent_events %}
+              <tr class="compliance-event-row" data-severity="{{ event.severity }}">
+                <td class="compliance-event-row__time">{{ event.timestamp_formatted }}</td>
+                <td class="compliance-event-row__action">{{ event.action }}</td>
+                <td class="compliance-event-row__entity">{{ event.entity_type }}:{{ event.entity_id }}</td>
+                <td class="compliance-event-row__user">{{ event.user }}</td>
+                <td class="compliance-event-row__severity">
+                  <span class="compliance-severity-badge compliance-severity-badge--{{ event.severity }}">
+                    {{ severity_labels[event.severity]|default(event.severity) }}
+                  </span>
+                </td>
+                <td class="compliance-event-row__message">{{ event.message }}</td>
+                <td class="compliance-event-row__ip">{{ event.ip_address }}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ===== SECURITY HEADERS ===== #}
+  <div class="compliance-dashboard__headers">
+    <h2 class="compliance-dashboard__section-title">
+      {% trans %}Cabeceras de Seguridad HTTP{% endtrans %}
+    </h2>
+    <p class="compliance-dashboard__section-desc">
+      {% trans %}Verificacion de cabeceras de seguridad configuradas en las respuestas HTTP del servidor.{% endtrans %}
+    </p>
+
+    <div class="compliance-header-status-grid">
+      {% for key, header in security_headers %}
+        <div class="compliance-header-status compliance-header-status--{{ header.status }}">
+          <div class="compliance-header-status__top">
+            <span class="compliance-header-status__name">{{ header.name }}</span>
+            <span class="compliance-header-status__badge compliance-header-status__badge--{{ header.status }}">
+              {{ status_labels[header.status]|default(header.status) }}
+            </span>
+          </div>
+          <p class="compliance-header-status__description">{{ header.description }}</p>
+          <code class="compliance-header-status__value">{{ header.value }}</code>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="compliance-dashboard__headers-action">
+      <a href="/admin/config/system/security-headers" class="compliance-dashboard__config-link">
+        {% trans %}Configurar cabeceras de seguridad{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+</div>

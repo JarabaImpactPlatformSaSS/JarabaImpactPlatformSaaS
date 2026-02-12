@@ -1,0 +1,108 @@
+{
+  "id": "jaraba_visual_regression",
+  "viewports": [
+    {
+      "label": "phone",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "label": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "onBeforeScript": "puppet/onBefore.js",
+  "onReadyScript": "puppet/onReady.js",
+  "scenarios": [
+    {
+      "label": "Homepage",
+      "url": "http://localhost:8080/",
+      "referenceUrl": "",
+      "delay": 1000,
+      "misMatchThreshold": 0.1,
+      "requireSameDimensions": false
+    },
+    {
+      "label": "Login Page",
+      "url": "http://localhost:8080/user/login",
+      "delay": 500,
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "Pricing Page",
+      "url": "http://localhost:8080/planes",
+      "delay": 1000,
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "Contact Page",
+      "url": "http://localhost:8080/contacto",
+      "delay": 500,
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "Dashboard - Admin",
+      "url": "http://localhost:8080/admin/dashboard",
+      "delay": 1500,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    },
+    {
+      "label": "Skills Management",
+      "url": "http://localhost:8080/admin/jaraba/skills",
+      "delay": 1000,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    },
+    {
+      "label": "Compliance Dashboard",
+      "url": "http://localhost:8080/admin/jaraba/compliance",
+      "delay": 1500,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    },
+    {
+      "label": "Analytics Dashboard",
+      "url": "http://localhost:8080/admin/analytics",
+      "delay": 1500,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    },
+    {
+      "label": "Billing Management",
+      "url": "http://localhost:8080/admin/billing",
+      "delay": 1000,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    },
+    {
+      "label": "Reseller Portal",
+      "url": "http://localhost:8080/admin/jaraba/reseller",
+      "delay": 1000,
+      "misMatchThreshold": 0.5,
+      "cookiePath": "tests/visual/cookies/admin.json"
+    }
+  ],
+  "paths": {
+    "bitmaps_reference": "tests/visual/bitmaps_reference",
+    "bitmaps_test": "tests/visual/bitmaps_test",
+    "engine_scripts": "tests/visual/engine_scripts",
+    "html_report": "tests/visual/html_report",
+    "ci_report": "tests/visual/ci_report"
+  },
+  "report": ["browser", "CI"],
+  "engine": "puppeteer",
+  "engineOptions": {
+    "args": ["--no-sandbox"]
+  },
+  "asyncCaptureLimit": 5,
+  "asyncCompareLimit": 50,
+  "debug": false,
+  "debugWindow": false
+}

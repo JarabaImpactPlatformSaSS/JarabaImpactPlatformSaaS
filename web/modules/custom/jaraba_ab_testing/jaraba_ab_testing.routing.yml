@@ -69,3 +69,79 @@ jaraba_ab_testing.api.results:
   requirements:
     _permission: 'view experiment results'
     experiment_id: '\d+'
+
+# --- Settings Routes para nuevas entidades (Field UI) ---
+
+entity.experiment_exposure.settings:
+  path: '/admin/structure/experiment-exposures'
+  defaults:
+    _form: '\Drupal\jaraba_ab_testing\Form\ExperimentExposureSettingsForm'
+    _title: 'Configuración Exposiciones de Experimento'
+  requirements:
+    _permission: 'administer ab testing'
+
+entity.experiment_result.settings:
+  path: '/admin/structure/experiment-results'
+  defaults:
+    _form: '\Drupal\jaraba_ab_testing\Form\ExperimentResultSettingsForm'
+    _title: 'Configuración Resultados de Experimento'
+  requirements:
+    _permission: 'administer ab testing'
+
+# --- API: Exposure Tracking ---
+
+# NOTE: exposure/record uses 'access content' intentionally — this endpoint
+# must be accessible to anonymous visitors for client-side A/B exposure tracking.
+jaraba_ab_testing.api.exposure.record:
+  path: '/api/v1/ab-testing/exposures/record'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::recordExposure'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_ab_testing.api.exposure.convert:
+  path: '/api/v1/ab-testing/exposures/convert'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::recordConversion'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_ab_testing.api.exposure.list:
+  path: '/api/v1/ab-testing/experiments/{experiment_id}/exposures'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::listExposures'
+  methods: [GET]
+  requirements:
+    _permission: 'view experiment results'
+    experiment_id: '\d+'
+
+# --- API: Result Calculation ---
+
+jaraba_ab_testing.api.results.calculate:
+  path: '/api/v1/ab-testing/experiments/{experiment_id}/results/calculate'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::calculateResults'
+  methods: [POST]
+  requirements:
+    _permission: 'administer ab testing'
+    experiment_id: '\d+'
+
+jaraba_ab_testing.api.results.auto_stop:
+  path: '/api/v1/ab-testing/experiments/{experiment_id}/auto-stop'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::checkAutoStop'
+  methods: [POST]
+  requirements:
+    _permission: 'administer ab testing'
+    experiment_id: '\d+'
+
+jaraba_ab_testing.api.results.declare_winner:
+  path: '/api/v1/ab-testing/experiments/{experiment_id}/declare-winner'
+  defaults:
+    _controller: '\Drupal\jaraba_ab_testing\Controller\ABTestingApiController::declareWinner'
+  methods: [POST]
+  requirements:
+    _permission: 'declare experiment winner'
+    experiment_id: '\d+'

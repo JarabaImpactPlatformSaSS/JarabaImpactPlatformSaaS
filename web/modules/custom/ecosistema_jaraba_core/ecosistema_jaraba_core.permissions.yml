@@ -193,3 +193,34 @@ view own usage:
 access usage api:
   title: 'Acceder a API de Uso'
   description: 'Consultar datos de uso, facturación y proyecciones vía API REST'
+
+# ===========================================
+# AUDIT LOG & COMPLIANCE (G115-1, G115-2)
+# ===========================================
+
+view audit logs:
+  title: 'Ver Audit Logs'
+  description: 'Ver el historial centralizado de auditoría de seguridad y compliance'
+  restrict access: TRUE
+
+# ===========================================
+# SECURITY POLICIES & COMPLIANCE (G115-3, G115-4)
+# ===========================================
+
+administer security policies:
+  title: 'Administrar Políticas de Seguridad'
+  description: 'Crear, editar y eliminar políticas de seguridad de la plataforma'
+  restrict access: TRUE
+
+administer compliance assessments:
+  title: 'Administrar Evaluaciones de Compliance'
+  description: 'Crear, editar y eliminar evaluaciones de compliance'
+  restrict access: TRUE
+
+# ===========================================
+# RESELLER / PARTNER PORTAL (G117-4)
+# ===========================================
+
+access partner portal:
+  title: 'Acceder al Portal de Partner'
+  description: 'Acceso al dashboard del portal de partner/reseller para ver tenants gestionados y comisiones'

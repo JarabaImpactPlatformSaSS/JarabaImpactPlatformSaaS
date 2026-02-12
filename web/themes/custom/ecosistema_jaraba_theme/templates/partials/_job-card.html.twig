@@ -1,0 +1,102 @@
+{#
+/**
+ * @file
+ * Card reutilizable de oferta de empleo con match score.
+ *
+ * Muestra una oferta de empleo en formato card con:
+ * titulo, empresa, ubicacion, salario, match score y CTA.
+ *
+ * Variables:
+ *   - job: Objeto/array de la oferta con:
+ *     - title: Titulo del puesto.
+ *     - company: Nombre de la empresa.
+ *     - location: Ubicacion (ciudad, remoto, hibrido).
+ *     - salary_range: Rango salarial (ej: "30K-40K").
+ *     - contract_type: Tipo de contrato (indefinido, temporal, etc.).
+ *     - match_score: Porcentaje de match con el perfil (0-100).
+ *     - posted_date: Fecha de publicacion.
+ *     - url: URL de la oferta.
+ *     - tags: Array de etiquetas (skills requeridos).
+ *     - is_featured: Boolean si es oferta destacada.
+ *   - show_apply_button: Boolean para mostrar boton de aplicar.
+ *   - modal_apply: Boolean para abrir candidatura en modal.
+ *
+ * Uso:
+ *   {% include '@ecosistema_jaraba_theme/partials/_job-card.html.twig' with {
+ *     job: job_entity,
+ *     show_apply_button: true,
+ *     modal_apply: true,
+ *   } %}
+ */
+#}
+
+<article class="ej-job-card{% if job.is_featured %} ej-job-card--featured{% endif %}">
+  {# Match score badge #}
+  {% if job.match_score is defined and job.match_score > 0 %}
+    {% set match_class = job.match_score >= 80 ? 'high' : (job.match_score >= 50 ? 'medium' : 'low') %}
+    <div class="ej-job-card__match ej-job-card__match--{{ match_class }}">
+      {{ job.match_score }}% {{ 'match'|t }}
+    </div>
+  {% endif %}
+
+  {# Header #}
+  <div class="ej-job-card__header">
+    <h3 class="ej-job-card__title">
+      <a href="{{ job.url }}">{{ job.title }}</a>
+    </h3>
+    <span class="ej-job-card__company">{{ job.company }}</span>
+  </div>
+
+  {# Meta info #}
+  <div class="ej-job-card__meta">
+    {% if job.location %}
+      <span class="ej-job-card__location">
+        {{ jaraba_icon('ui', 'location', { size: '14px' }) }}
+        {{ job.location }}
+      </span>
+    {% endif %}
+
+    {% if job.salary_range %}
+      <span class="ej-job-card__salary">
+        {{ jaraba_icon('ui', 'currency', { size: '14px' }) }}
+        {{ job.salary_range }}
+      </span>
+    {% endif %}
+
+    {% if job.contract_type %}
+      <span class="ej-job-card__contract">
+        {{ jaraba_icon('ui', 'briefcase', { size: '14px' }) }}
+        {{ job.contract_type }}
+      </span>
+    {% endif %}
+  </div>
+
+  {# Tags (skills) #}
+  {% if job.tags is not empty %}
+    <div class="ej-job-card__tags">
+      {% for tag in job.tags|slice(0, 5) %}
+        <span class="ej-job-card__tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# Footer with CTA and date #}
+  <div class="ej-job-card__footer">
+    <span class="ej-job-card__date">{{ job.posted_date }}</span>
+
+    {% if show_apply_button|default(true) %}
+      {% if modal_apply|default(false) %}
+        <a href="{{ job.url }}/apply"
+           class="ej-job-card__apply use-ajax"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 600, "dialogClass": "ej-modal"}'>
+          {{ 'Aplicar ahora'|t }}
+        </a>
+      {% else %}
+        <a href="{{ job.url }}/apply" class="ej-job-card__apply">
+          {{ 'Aplicar ahora'|t }}
+        </a>
+      {% endif %}
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,5 @@
+jaraba_usage_billing.pricing_rule.add:
+  title: 'Crear regla de pricing'
+  route_name: entity.pricing_rule.add_form
+  appears_on:
+    - entity.pricing_rule.collection

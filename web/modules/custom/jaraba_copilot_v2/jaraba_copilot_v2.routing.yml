@@ -150,7 +150,243 @@ entity.experiment.settings:
   path: '/admin/structure/experiment'
   defaults:
     _form: '\Drupal\jaraba_copilot_v2\Form\ExperimentSettingsForm'
-    _title: 'Configuración de Experimentos'
+    _title: 'Configuracion de Experimentos'
   requirements:
     _permission: 'administer experiments'
+
+entity.entrepreneur_learning.settings:
+  path: '/admin/structure/entrepreneur-learning'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\EntrepreneurLearningSettingsForm'
+    _title: 'Configuracion de Aprendizajes'
+  requirements:
+    _permission: 'administer entrepreneur learnings'
+
+entity.field_exit.settings:
+  path: '/admin/structure/field-exit'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\FieldExitSettingsForm'
+    _title: 'Configuracion de Field Exits'
+  requirements:
+    _permission: 'administer field exits'
+
+# =============================================
+# API v1 - Hypothesis CRUD + Prioritization
+# =============================================
+jaraba_copilot_v2.api.hypotheses.list:
+  path: '/api/v1/hypotheses'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.hypotheses.create:
+  path: '/api/v1/hypotheses'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::create'
+  methods: [POST]
+  requirements:
+    _permission: 'create hypotheses'
+    _format: 'json'
+
+jaraba_copilot_v2.api.hypotheses.get:
+  path: '/api/v1/hypotheses/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.hypotheses.update:
+  path: '/api/v1/hypotheses/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'create hypotheses'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.hypotheses.prioritize:
+  path: '/api/v1/hypotheses/prioritize'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::prioritize'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+# =============================================
+# API v1 - Experiment Lifecycle
+# =============================================
+jaraba_copilot_v2.api.experiments.list:
+  path: '/api/v1/experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::listUserExperiments'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.experiments.create:
+  path: '/api/v1/experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::create'
+  methods: [POST]
+  requirements:
+    _permission: 'create experiments'
+    _format: 'json'
+
+jaraba_copilot_v2.api.experiments.get:
+  path: '/api/v1/experiments/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.experiments.start:
+  path: '/api/v1/experiments/{id}/start'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::start'
+  methods: [POST]
+  requirements:
+    _permission: 'create experiments'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.experiments.result:
+  path: '/api/v1/experiments/{id}/result'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::recordResult'
+  methods: [PATCH]
+  requirements:
+    _permission: 'create experiments'
+    _format: 'json'
+    id: '\d+'
+
+# =============================================
+# API v1 - BMC Validation + Entrepreneur
+# =============================================
+jaraba_copilot_v2.api.bmc.validation:
+  path: '/api/v1/bmc/validation/{userId}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\BmcApiController::validation'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    userId: '\d+'
+
+jaraba_copilot_v2.api.bmc.pivot_log:
+  path: '/api/v1/bmc/pivot-log/{userId}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\BmcApiController::pivotLog'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    userId: '\d+'
+
+jaraba_copilot_v2.api.entrepreneurs.list:
+  path: '/api/v1/entrepreneurs'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.entrepreneurs.create:
+  path: '/api/v1/entrepreneurs'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::create'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.entrepreneurs.get:
+  path: '/api/v1/entrepreneurs/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.entrepreneurs.update:
+  path: '/api/v1/entrepreneurs/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    id: '\d+'
+
+jaraba_copilot_v2.api.entrepreneurs.dime:
+  path: '/api/v1/entrepreneurs/{id}/dime'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::submitDime'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+    id: '\d+'
+
+# =============================================
+# API v1 - Session History + Knowledge
+# =============================================
+jaraba_copilot_v2.api.history:
+  path: '/api/v1/copilot/history/{sessionId}'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotHistoryController::getHistory'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+jaraba_copilot_v2.api.knowledge.search:
+  path: '/api/v1/knowledge/search'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\NormativeKnowledgeController::search'
+  methods: [GET]
+  requirements:
+    _permission: 'access copilot'
+    _format: 'json'
+
+# =============================================
+# Frontend Routes - BMC, Hypotheses, Experiments
+# =============================================
+jaraba_copilot_v2.bmc_dashboard:
+  path: '/emprendimiento/bmc'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotDashboardController::bmcDashboard'
+    _title: 'Business Model Canvas - Validacion'
+  requirements:
+    _permission: 'access copilot'
+
+jaraba_copilot_v2.hypothesis_manager:
+  path: '/emprendimiento/hipotesis'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotDashboardController::hypothesisManager'
+    _title: 'Gestion de Hipotesis'
+  requirements:
+    _permission: 'access copilot'
+
+jaraba_copilot_v2.experiment_lifecycle:
+  path: '/emprendimiento/experimentos/gestion'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotDashboardController::experimentLifecycle'
+    _title: 'Ciclo de Vida de Experimentos'
+  requirements:
+    _permission: 'access copilot'
 

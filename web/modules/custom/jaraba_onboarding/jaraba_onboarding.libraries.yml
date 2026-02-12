@@ -1,0 +1,40 @@
+# Librerias del modulo Jaraba Onboarding.
+
+# Dashboard principal de onboarding.
+dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/onboarding-dashboard.css: {}
+  js:
+    js/onboarding-celebrations.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Checklist interactivo.
+checklist:
+  version: 1.0
+  css:
+    theme:
+      css/onboarding-dashboard.css: {}
+  js:
+    js/onboarding-checklist.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Tours guiados contextuales.
+tours:
+  version: 1.0
+  css:
+    theme:
+      css/onboarding-dashboard.css: {}
+  js:
+    js/onboarding-tours.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -1,0 +1,131 @@
+{#
+/**
+ * @file
+ * Template for the Compliance Report (export/print ready).
+ *
+ * Available variables:
+ * - framework: Framework code (soc2, iso27001, ens, gdpr).
+ * - tenant: Tenant entity or null.
+ * - assessments: Array of assessment data.
+ * - summary: Array of summary statistics.
+ * - generated_at: Timestamp of report generation.
+ */
+#}
+<div class="compliance-report">
+
+  {# Report Header #}
+  <header class="compliance-report__header">
+    <h1 class="compliance-report__title">{% trans %}Informe de Compliance{% endtrans %}</h1>
+    <div class="compliance-report__meta">
+      {% if framework %}
+        <div class="compliance-report__meta-item">
+          <strong>{% trans %}Marco:{% endtrans %}</strong>
+          <span>{{ framework }}</span>
+        </div>
+      {% endif %}
+      {% if tenant %}
+        <div class="compliance-report__meta-item">
+          <strong>{% trans %}Tenant:{% endtrans %}</strong>
+          <span>{{ tenant.label }}</span>
+        </div>
+      {% endif %}
+      <div class="compliance-report__meta-item">
+        <strong>{% trans %}Generado:{% endtrans %}</strong>
+        <span>{{ generated_at }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# Summary Section #}
+  {% if summary %}
+    <section class="compliance-report__summary">
+      <h2 class="compliance-report__section-title">{% trans %}Resumen Ejecutivo{% endtrans %}</h2>
+
+      <div class="compliance-report__summary-grid">
+        {% if summary.total_controls is defined %}
+          <div class="compliance-report__summary-card">
+            <span class="compliance-report__summary-value">{{ summary.total_controls }}</span>
+            <span class="compliance-report__summary-label">{% trans %}Controles Totales{% endtrans %}</span>
+          </div>
+        {% endif %}
+        {% if summary.passing is defined %}
+          <div class="compliance-report__summary-card compliance-report__summary-card--pass">
+            <span class="compliance-report__summary-value">{{ summary.passing }}</span>
+            <span class="compliance-report__summary-label">{% trans %}Cumplen{% endtrans %}</span>
+          </div>
+        {% endif %}
+        {% if summary.failing is defined %}
+          <div class="compliance-report__summary-card compliance-report__summary-card--fail">
+            <span class="compliance-report__summary-value">{{ summary.failing }}</span>
+            <span class="compliance-report__summary-label">{% trans %}No Cumplen{% endtrans %}</span>
+          </div>
+        {% endif %}
+        {% if summary.score is defined %}
+          <div class="compliance-report__summary-card">
+            <span class="compliance-report__summary-value">{{ summary.score }}%</span>
+            <span class="compliance-report__summary-label">{% trans %}Puntuación{% endtrans %}</span>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Assessments Detail #}
+  <section class="compliance-report__detail">
+    <h2 class="compliance-report__section-title">{% trans %}Detalle de Evaluaciones{% endtrans %}</h2>
+
+    {% if assessments %}
+      <table class="compliance-report__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Control ID{% endtrans %}</th>
+            <th>{% trans %}Nombre{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Evidencia{% endtrans %}</th>
+            <th>{% trans %}Evaluador{% endtrans %}</th>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for assessment in assessments %}
+            <tr class="compliance-report__row compliance-report__row--{{ assessment.status }}">
+              <td><code>{{ assessment.control_id }}</code></td>
+              <td>{{ assessment.control_name }}</td>
+              <td>
+                <span class="compliance-report__status compliance-report__status--{{ assessment.status }}">
+                  {% if assessment.status == 'pass' %}
+                    {% trans %}Cumple{% endtrans %}
+                  {% elseif assessment.status == 'fail' %}
+                    {% trans %}No Cumple{% endtrans %}
+                  {% elseif assessment.status == 'warning' %}
+                    {% trans %}Advertencia{% endtrans %}
+                  {% else %}
+                    {% trans %}No Evaluado{% endtrans %}
+                  {% endif %}
+                </span>
+              </td>
+              <td>{{ assessment.evidence|default('-') }}</td>
+              <td>{{ assessment.assessor|default('-') }}</td>
+              <td>{{ assessment.date|default('-') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="compliance-report__no-data">
+        {% trans %}No hay evaluaciones disponibles para este informe.{% endtrans %}
+      </p>
+    {% endif %}
+  </section>
+
+  {# Report Footer #}
+  <footer class="compliance-report__footer">
+    <p class="compliance-report__disclaimer">
+      {% trans %}Este informe ha sido generado automáticamente por Jaraba Security Compliance. Los resultados deben ser revisados por un auditor cualificado antes de ser presentados como evidencia formal.{% endtrans %}
+    </p>
+    <p class="compliance-report__generated">
+      {% trans %}Generado el {% endtrans %}{{ generated_at }}
+    </p>
+  </footer>
+
+</div>

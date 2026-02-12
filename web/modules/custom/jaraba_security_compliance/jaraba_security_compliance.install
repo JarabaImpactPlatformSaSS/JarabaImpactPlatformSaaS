@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_security_compliance.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_security_compliance_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Security Compliance instalado. Las tablas de entidades (security_audit_log, compliance_assessment_v2, security_policy_v2) se han creado automáticamente.'));
+
+  // Set default retention configuration.
+  \Drupal::state()->set('jaraba_security_compliance.retention_config', [
+    'audit_log_days' => 365,
+    'compliance_assessment_days' => 730,
+    'anonymize_after_days' => 90,
+  ]);
+
+  // Initialize compliance tracking state.
+  \Drupal::state()->set('jaraba_security_compliance.last_assessment', 0);
+  \Drupal::state()->set('jaraba_security_compliance.last_retention_run', 0);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_security_compliance_uninstall(): void {
+  // Clean up state variables.
+  \Drupal::state()->deleteMultiple([
+    'jaraba_security_compliance.retention_config',
+    'jaraba_security_compliance.last_assessment',
+    'jaraba_security_compliance.last_retention_run',
+  ]);
+
+  // Clean up module configuration.
+  \Drupal::configFactory()->getEditable('jaraba_security_compliance.settings')->delete();
+
+  \Drupal::messenger()->addStatus(t('Jaraba Security Compliance desinstalado. Los datos de auditoría y compliance se han eliminado.'));
+}

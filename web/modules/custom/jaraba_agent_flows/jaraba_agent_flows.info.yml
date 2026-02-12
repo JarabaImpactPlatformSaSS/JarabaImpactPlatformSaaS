@@ -1,0 +1,12 @@
+name: 'Jaraba Agent Flows'
+type: module
+description: 'Flujos visuales de agentes IA con ejecucion, triggers, metricas y templates predefinidos por vertical.'
+package: Jaraba AI
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_ai_agents:jaraba_ai_agents
+  - group:group
+
+configure: jaraba_agent_flows.settings

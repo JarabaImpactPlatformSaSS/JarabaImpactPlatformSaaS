@@ -45,3 +45,85 @@ consent-banner:
     - core/once
     - ecosistema_jaraba_theme/global-styling
 
+# Cohort Analysis (G116-1).
+cohort-analysis:
+  version: 1.0
+  css:
+    theme:
+      css/cohort-analysis.css: {}
+  js:
+    js/cohort-analysis.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Funnel Tracking (G116-2).
+funnel-analysis:
+  version: 1.0
+  css:
+    theme:
+      css/funnel-analysis.css: {}
+  js:
+    js/funnel-analysis.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Dashboard Builder (G116-6).
+dashboard-builder:
+  version: 1.0
+  css:
+    theme:
+      css/dashboard-builder.css: {}
+  js:
+    js/dashboard-builder.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Widget Renderer (G116-6).
+widget-renderer:
+  version: 1.0
+  js:
+    js/widget-renderer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_analytics/chartjs
+
+# Dashboard View (G116-6).
+dashboard-view:
+  version: 1.0
+  css:
+    theme:
+      css/dashboard-view.css: {}
+  dependencies:
+    - core/drupal
+
+# Report Wizard (G116-7).
+report-wizard:
+  version: 1.0
+  js:
+    js/report-wizard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Scheduled Reports (G116-7).
+scheduled-reports:
+  version: 1.0
+  css:
+    theme:
+      css/scheduled-reports.css: {}
+  js:
+    js/scheduled-reports.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
