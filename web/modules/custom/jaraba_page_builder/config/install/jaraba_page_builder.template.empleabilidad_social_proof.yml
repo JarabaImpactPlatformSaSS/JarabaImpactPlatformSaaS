@@ -1,0 +1,47 @@
+id: 'empleabilidad_social_proof'
+label: 'Empleabilidad: Empresas Aliadas'
+description: 'Seccion credibilidad y confianza especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Empresas Aliadas'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+weight: 43
+preview_data:
+  title: 'Empresas Aliadas'
+  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
+  description: 'Descripcion de ejemplo para la seccion credibilidad y confianza.'
+  cta_text: 'Comenzar'
+  cta_url: '/'

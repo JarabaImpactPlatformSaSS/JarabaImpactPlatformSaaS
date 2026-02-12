@@ -1,0 +1,47 @@
+id: 'agroconecta_hero'
+label: 'AgroConecta: Escaparate del Productor'
+description: 'Seccion seccion hero principal especializada para productores agricolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Escaparate del Productor'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+weight: 0
+preview_data:
+  title: 'Escaparate del Productor'
+  subtitle: 'Subtitulo de ejemplo para AgroConecta'
+  description: 'Descripcion de ejemplo para la seccion seccion hero principal.'
+  cta_text: 'Comenzar'
+  cta_url: '/'

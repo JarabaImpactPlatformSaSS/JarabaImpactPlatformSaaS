@@ -1,0 +1,47 @@
+id: 'comercioconecta_stats'
+label: 'ComercioConecta: Metricas de Ventas'
+description: 'Seccion metricas de impacto especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Metricas de Ventas'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+weight: 19
+preview_data:
+  title: 'Metricas de Ventas'
+  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
+  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
+  cta_text: 'Comenzar'
+  cta_url: '/'

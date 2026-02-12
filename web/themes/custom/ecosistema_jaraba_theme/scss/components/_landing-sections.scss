@@ -1,0 +1,991 @@
+/**
+ * @file _landing-sections.scss
+ * F4 Doc 180 — Estilos para las 9 secciones de landing pages verticales.
+ *
+ * Secciones: Hero, Pain Points, Solution Steps, Features Grid,
+ * Social Proof, Lead Magnet, Pricing Preview, FAQ, Final CTA.
+ *
+ * - Mobile-first responsive
+ * - CSS Custom Properties via var(--ej-*)
+ * - Vertical theming via .vertical-landing--{key}
+ */
+
+@use '../variables' as *;
+
+// =============================================
+// VERTICAL LANDING WRAPPER
+// =============================================
+.vertical-landing {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+// =============================================
+// 1. HERO
+// =============================================
+.landing-hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 1.5rem 4rem;
+  overflow: hidden;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  &__gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--ej-color-corporate, #233D63) 0%,
+      #1a2d4a 40%,
+      #0f1d30 100%
+    );
+    background-size: 300% 300%;
+    animation: landing-gradient-flow 12s ease infinite;
+  }
+
+  &__content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    animation: landing-fade-in-up 0.8s ease-out;
+  }
+
+  &__icon {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+
+    svg {
+      width: 64px;
+      height: 64px;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin: 0 0 1.25rem;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  &__subtitle {
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    animation: landing-fade-in-up 0.8s ease-out 0.2s both;
+  }
+}
+
+@keyframes landing-gradient-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes landing-fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// =============================================
+// 2. PAIN POINTS
+// =============================================
+.landing-pain-points {
+  padding: 5rem 1.5rem;
+  background: var(--ej-bg-body, #F8FAFC);
+
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    text-align: center;
+    margin: 0 0 2.5rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.landing-pain-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: var(--ej-card-radius, 12px);
+  border-left: 4px solid var(--ej-color-error, #EF4444);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      color: var(--ej-color-error, #EF4444);
+    }
+  }
+
+  &__text {
+    font-size: 0.95rem;
+    color: var(--ej-text-primary, #1f2937);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// =============================================
+// 3. SOLUTION STEPS
+// =============================================
+.landing-steps {
+  padding: 5rem 1.5rem;
+  background: #fff;
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    text-align: center;
+    margin: 0 0 3rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0;
+    }
+  }
+}
+
+.landing-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  position: relative;
+  padding: 1.5rem;
+
+  &__number {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ej-color-primary, #FF8C42);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem;
+  }
+
+  &__description {
+    font-size: 0.9rem;
+    color: var(--ej-text-muted, #64748B);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  &__connector {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+      position: absolute;
+      top: 36px;
+      right: -20px;
+      width: 40px;
+      height: 2px;
+      background: var(--ej-border-color, #e5e7eb);
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: -3px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid var(--ej-color-primary, #FF8C42);
+        border-top: 2px solid var(--ej-color-primary, #FF8C42);
+        transform: rotate(45deg);
+      }
+    }
+  }
+}
+
+// =============================================
+// 4. FEATURES GRID
+// =============================================
+.landing-features {
+  padding: 5rem 1.5rem;
+  background: var(--ej-bg-body, #F8FAFC);
+
+  &__container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    text-align: center;
+    margin: 0 0 3rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 960px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.landing-feature {
+  padding: 1.75rem;
+  background: #fff;
+  border-radius: var(--ej-card-radius, 12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  &__icon {
+    margin-bottom: 1rem;
+
+    svg {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem;
+  }
+
+  &__description {
+    font-size: 0.9rem;
+    color: var(--ej-text-muted, #64748B);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// =============================================
+// 5. SOCIAL PROOF
+// =============================================
+.landing-social-proof {
+  padding: 5rem 1.5rem;
+  background: #fff;
+
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  &__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    text-align: center;
+    margin: 0 0 2.5rem;
+  }
+
+  &__testimonials {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.landing-metric {
+  text-align: center;
+
+  &__value {
+    display: block;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--ej-color-primary, #FF8C42);
+    line-height: 1;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #64748B);
+    margin-top: 0.25rem;
+  }
+}
+
+.landing-testimonial {
+  padding: 1.5rem;
+  background: var(--ej-bg-body, #F8FAFC);
+  border-radius: var(--ej-card-radius, 12px);
+  border-left: 4px solid var(--ej-color-primary, #FF8C42);
+  margin: 0;
+
+  &__quote {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ej-text-primary, #1f2937);
+    line-height: 1.6;
+    margin: 0 0 1rem;
+  }
+
+  &__author {
+    font-size: 0.85rem;
+    color: var(--ej-text-muted, #64748B);
+
+    strong {
+      color: var(--ej-text-primary, #1f2937);
+      font-weight: 600;
+    }
+  }
+
+  &__role {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+  }
+}
+
+// =============================================
+// 6. LEAD MAGNET
+// =============================================
+.landing-lead-magnet {
+  padding: 4rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--ej-color-corporate, #233D63) 0%,
+    #1a2d4a 100%
+  );
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      text-align: left;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+
+    svg {
+      width: 48px;
+      height: 48px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  &__text {
+    flex: 1;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.5rem;
+  }
+
+  &__description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+}
+
+// =============================================
+// 7. PRICING PREVIEW
+// =============================================
+.landing-pricing {
+  padding: 5rem 1.5rem;
+  background: var(--ej-bg-body, #F8FAFC);
+
+  &__container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 2.5rem;
+  }
+
+  &__card {
+    background: #fff;
+    border-radius: var(--ej-card-radius, 16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem 2rem;
+  }
+
+  &__price-block {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+  }
+
+  &__from {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #64748B);
+    margin-right: 0.5rem;
+  }
+
+  &__amount {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--ej-color-corporate, #233D63);
+    line-height: 1;
+  }
+
+  &__currency {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-left: 0.25rem;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__period {
+    font-size: 1rem;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    text-align: left;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      font-size: 0.95rem;
+      color: var(--ej-text-primary, #1f2937);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &__free-note {
+    font-size: 0.85rem;
+    color: var(--ej-color-success, #10B981);
+    font-weight: 500;
+    margin: 0 0 1.5rem;
+  }
+}
+
+// =============================================
+// 8. FAQ
+// =============================================
+.landing-faq {
+  padding: 5rem 1.5rem;
+  background: #fff;
+
+  &__container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    text-align: center;
+    margin: 0 0 2.5rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__item {
+    border: 1px solid var(--ej-border-color, #e5e7eb);
+    border-radius: var(--ej-card-radius, 12px);
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+
+    &[open] {
+      border-color: var(--ej-color-primary, #FF8C42);
+    }
+  }
+
+  &__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.125rem 1.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #1f2937);
+    list-style: none;
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::marker {
+      display: none;
+      content: '';
+    }
+
+    span:first-child {
+      flex: 1;
+      padding-right: 1rem;
+    }
+  }
+
+  &__toggle {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.2s ease;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background: var(--ej-text-muted, #64748B);
+      transition: transform 0.2s ease;
+    }
+
+    &::before {
+      width: 12px;
+      height: 2px;
+      transform: translate(-50%, -50%);
+    }
+
+    &::after {
+      width: 2px;
+      height: 12px;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &__item[open] &__toggle::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  &__answer {
+    padding: 0 1.25rem 1.25rem;
+
+    p {
+      font-size: 0.95rem;
+      color: var(--ej-text-muted, #64748B);
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+}
+
+// =============================================
+// 9. FINAL CTA
+// =============================================
+.landing-final-cta {
+  padding: 5rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--ej-color-corporate, #233D63) 0%,
+    #0f1d30 100%
+  );
+  text-align: center;
+
+  &__container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 1rem;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 2rem;
+    line-height: 1.5;
+  }
+
+  &__hint {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 1.5rem 0 0;
+  }
+}
+
+// =============================================
+// SHARED BTN STYLES (landing context)
+// =============================================
+.landing-hero,
+.landing-lead-magnet,
+.landing-final-cta,
+.landing-pricing {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--ej-btn-radius, 8px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+
+    &--primary {
+      background: linear-gradient(
+        135deg,
+        var(--ej-color-primary, #FF8C42) 0%,
+        var(--ej-color-secondary, #E85D04) 100%
+      );
+      color: #fff;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(255, 140, 66, 0.4);
+        color: #fff;
+      }
+    }
+
+    &--outline {
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #fff;
+      }
+    }
+
+    &--lg {
+      padding: 0.875rem 1.75rem;
+      font-size: 1rem;
+    }
+
+    &--xl {
+      padding: 1rem 2.25rem;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// =============================================
+// VERTICAL THEMING
+// =============================================
+
+// AgroConecta — Verde agro
+.vertical-landing--agroconecta {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #2d4a1e 0%, #1a3510 40%, #0f2008 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-color-agro, #556B2F);
+  }
+
+  .landing-step__number {
+    background: var(--ej-color-agro, #556B2F);
+  }
+
+  .landing-metric__value {
+    color: var(--ej-color-agro, #556B2F);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-color-agro, #556B2F);
+  }
+
+  .landing-lead-magnet {
+    background: linear-gradient(135deg, #2d4a1e 0%, #1a3510 100%);
+  }
+
+  .landing-faq__item[open] {
+    border-color: var(--ej-color-agro, #556B2F);
+  }
+
+  .landing-final-cta {
+    background: linear-gradient(135deg, #2d4a1e 0%, #0f2008 100%);
+  }
+}
+
+// ComercioConecta — Verde éxito
+.vertical-landing--comercioconecta {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #065f46 0%, #064e3b 40%, #022c22 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-color-success, #10B981);
+  }
+
+  .landing-step__number {
+    background: var(--ej-color-success, #10B981);
+  }
+
+  .landing-metric__value {
+    color: var(--ej-color-success, #10B981);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-color-success, #10B981);
+  }
+
+  .landing-lead-magnet {
+    background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+  }
+
+  .landing-faq__item[open] {
+    border-color: var(--ej-color-success, #10B981);
+  }
+
+  .landing-final-cta {
+    background: linear-gradient(135deg, #065f46 0%, #022c22 100%);
+  }
+}
+
+// ServiciosConecta — Innovación
+.vertical-landing--serviciosconecta {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #00635f 0%, #004d4a 40%, #002e2c 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-step__number {
+    background: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-metric__value {
+    color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-lead-magnet {
+    background: linear-gradient(135deg, #00635f 0%, #004d4a 100%);
+  }
+
+  .landing-faq__item[open] {
+    border-color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-final-cta {
+    background: linear-gradient(135deg, #00635f 0%, #002e2c 100%);
+  }
+}
+
+// Empleabilidad — Innovación (mismo que servicios pero diferente gradiente)
+.vertical-landing--empleabilidad {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #1a365d 0%, #1e3a5f 40%, #0f2440 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-step__number {
+    background: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-metric__value {
+    color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .landing-faq__item[open] {
+    border-color: var(--ej-color-innovation, #00A9A5);
+  }
+}
+
+// Emprendimiento — Impulso naranja
+.vertical-landing--emprendimiento {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #7c2d12 0%, #6a2410 40%, #431407 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-color-primary, #FF8C42);
+  }
+
+  .landing-step__number {
+    background: var(--ej-color-primary, #FF8C42);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-color-primary, #FF8C42);
+  }
+
+  .landing-lead-magnet {
+    background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
+  }
+
+  .landing-final-cta {
+    background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
+  }
+}
+
+// =============================================
+// REDUCED MOTION
+// =============================================
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero__gradient {
+    animation: none;
+  }
+
+  .landing-hero__content,
+  .landing-hero__actions {
+    animation: none;
+  }
+
+  .landing-pain-point,
+  .landing-feature {
+    transition: none;
+  }
+}

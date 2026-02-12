@@ -1295,6 +1295,58 @@ ecosistema_jaraba_core.lead_magnet.calculadora_madurez:
   requirements:
     _access: 'TRUE'
 
+# =============================================================================
+# F4 LANDING PAGES VERTICALES — 9 secciones (Doc 180)
+# =============================================================================
+# Landing pages publicas con estructura completa de 9 secciones:
+# Hero, Pain Points, Solution Steps, Features Grid, Social Proof,
+# Lead Magnet, Pricing Preview, FAQ (Schema.org), Final CTA.
+
+# Landing AgroConecta — Productores rurales
+ecosistema_jaraba_core.landing.agroconecta:
+  path: '/agroconecta'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::agroconecta'
+    _title: 'AgroConecta - Vende sin intermediarios'
+  requirements:
+    _access: 'TRUE'
+
+# Landing ComercioConecta — Comercios de proximidad
+ecosistema_jaraba_core.landing.comercioconecta:
+  path: '/comercioconecta'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::comercioconecta'
+    _title: 'ComercioConecta - Digitaliza tu comercio'
+  requirements:
+    _access: 'TRUE'
+
+# Landing ServiciosConecta — Profesionales liberales
+ecosistema_jaraba_core.landing.serviciosconecta:
+  path: '/serviciosconecta'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::serviciosconecta'
+    _title: 'ServiciosConecta - Tu consulta digitalizada'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Empleabilidad — Buscadores de empleo
+ecosistema_jaraba_core.landing.empleabilidad:
+  path: '/empleabilidad'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::empleabilidad'
+    _title: 'Empleabilidad - Reinvéntate profesionalmente'
+  requirements:
+    _access: 'TRUE'
+
+# Landing Emprendimiento — Emprendedores y startups
+ecosistema_jaraba_core.landing.emprendimiento:
+  path: '/emprendimiento'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::emprendimientoLanding'
+    _title: 'Emprendimiento - De idea a negocio rentable'
+  requirements:
+    _access: 'TRUE'
+
 # Lead Magnet: Guia Vende Online sin Intermediarios (AgroConecta)
 ecosistema_jaraba_core.lead_magnet.guia_agroconecta:
   path: '/agroconecta/guia-vende-online'
@@ -1321,3 +1373,25 @@ ecosistema_jaraba_core.lead_magnet.template_propuesta:
     _title: 'Template: Propuesta Profesional'
   requirements:
     _access: 'TRUE'
+
+# =============================================
+# F6 — Admin Center Dashboard (Doc 181)
+# =============================================
+
+ecosistema_jaraba_core.admin.center:
+  path: '/admin/jaraba/center'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::dashboard'
+    _title: 'Admin Center'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+ecosistema_jaraba_core.admin.search_api:
+  path: '/api/v1/admin/search'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::searchApi'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
