@@ -269,7 +269,7 @@ class SelfDiscoveryContextServiceTest extends TestCase {
     $result = $method->invoke($this->service, 42);
 
     $this->assertSame(
-      'El usuario aún no ha completado herramientas de autodescubrimiento.',
+      'El usuario aun no ha completado herramientas de autodescubrimiento.',
       $result
     );
   }

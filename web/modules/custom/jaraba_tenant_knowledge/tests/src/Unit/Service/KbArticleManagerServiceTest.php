@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_tenant_knowledge\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\jaraba_tenant_knowledge\Entity\KbArticle;
 use Drupal\jaraba_tenant_knowledge\Service\KbArticleManagerService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -181,11 +180,8 @@ class KbArticleManagerServiceTest extends TestCase {
    * @covers ::incrementViewCount
    */
   public function testIncrementViewCountSavesEntity(): void {
-    $viewCountField = $this->createMock(FieldItemListInterface::class);
-    $viewCountField->value = 10;
-
-    $article = $this->createMock(ContentEntityInterface::class);
-    $article->method('get')->with('view_count')->willReturn($viewCountField);
+    $article = $this->createMock(KbArticle::class);
+    $article->method('getViewCount')->willReturn(10);
     $article->expects($this->once())->method('set')->with('view_count', 11);
     $article->expects($this->once())->method('save');
 
@@ -219,17 +215,9 @@ class KbArticleManagerServiceTest extends TestCase {
    * @covers ::recordFeedback
    */
   public function testRecordFeedbackHelpful(): void {
-    $helpfulField = $this->createMock(FieldItemListInterface::class);
-    $helpfulField->value = 5;
-
-    $notHelpfulField = $this->createMock(FieldItemListInterface::class);
-    $notHelpfulField->value = 2;
-
-    $article = $this->createMock(ContentEntityInterface::class);
-    $article->method('get')->willReturnMap([
-      ['helpful_count', $helpfulField],
-      ['not_helpful_count', $notHelpfulField],
-    ]);
+    $article = $this->createMock(KbArticle::class);
+    $article->method('getHelpfulCount')->willReturn(5);
+    $article->method('getNotHelpfulCount')->willReturn(2);
     $article->expects($this->once())->method('set')->with('helpful_count', 6);
     $article->expects($this->once())->method('save');
 
@@ -247,17 +235,9 @@ class KbArticleManagerServiceTest extends TestCase {
    * @covers ::recordFeedback
    */
   public function testRecordFeedbackNotHelpful(): void {
-    $helpfulField = $this->createMock(FieldItemListInterface::class);
-    $helpfulField->value = 5;
-
-    $notHelpfulField = $this->createMock(FieldItemListInterface::class);
-    $notHelpfulField->value = 2;
-
-    $article = $this->createMock(ContentEntityInterface::class);
-    $article->method('get')->willReturnMap([
-      ['helpful_count', $helpfulField],
-      ['not_helpful_count', $notHelpfulField],
-    ]);
+    $article = $this->createMock(KbArticle::class);
+    $article->method('getHelpfulCount')->willReturn(5);
+    $article->method('getNotHelpfulCount')->willReturn(2);
     $article->expects($this->once())->method('set')->with('not_helpful_count', 3);
     $article->expects($this->once())->method('save');
 
@@ -287,55 +267,27 @@ class KbArticleManagerServiceTest extends TestCase {
 
   /**
    * Creates a mock KB article entity for testing.
+   *
+   * The service calls domain-specific methods (getTitle, getSlug, etc.)
+   * defined on the KbArticle entity class. We use getMockBuilder with
+   * addMethods to add these methods to the ContentEntityInterface mock.
    */
-  protected function createMockArticle(int $id, string $title, string $slug, string $summary): ContentEntityInterface&MockObject {
-    $entity = $this->createMock(ContentEntityInterface::class);
+  protected function createMockArticle(int $id, string $title, string $slug, string $summary): MockObject {
+    $entity = $this->createMock(KbArticle::class);
+
     $entity->method('id')->willReturn($id);
+    $entity->method('getTitle')->willReturn($title);
+    $entity->method('getSlug')->willReturn($slug);
+    $entity->method('getSummary')->willReturn($summary);
+    $entity->method('getBody')->willReturn('Full body content');
+    $entity->method('getCategoryId')->willReturn(NULL);
+    $entity->method('getViewCount')->willReturn(0);
+    $entity->method('getHelpfulCount')->willReturn(0);
+    $entity->method('getNotHelpfulCount')->willReturn(0);
+    $entity->method('getTagsArray')->willReturn([]);
 
-    $titleField = $this->createMock(FieldItemListInterface::class);
-    $titleField->value = $title;
-
-    $slugField = $this->createMock(FieldItemListInterface::class);
-    $slugField->value = $slug;
-
-    $summaryField = $this->createMock(FieldItemListInterface::class);
-    $summaryField->value = $summary;
-
-    $bodyField = $this->createMock(FieldItemListInterface::class);
-    $bodyField->value = 'Full body content';
-
-    $statusField = $this->createMock(FieldItemListInterface::class);
-    $statusField->value = 'published';
-
-    $viewCountField = $this->createMock(FieldItemListInterface::class);
-    $viewCountField->value = 0;
-
-    $helpfulField = $this->createMock(FieldItemListInterface::class);
-    $helpfulField->value = 0;
-
-    $notHelpfulField = $this->createMock(FieldItemListInterface::class);
-    $notHelpfulField->value = 0;
-
-    $tagsField = $this->createMock(FieldItemListInterface::class);
-    $tagsField->value = '[]';
-
-    $categoryRefField = $this->createMock(FieldItemListInterface::class);
-    $categoryRefField->target_id = NULL;
-
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = time();
-
+    $createdField = (object) ['value' => time()];
     $entity->method('get')->willReturnMap([
-      ['title', $titleField],
-      ['slug', $slugField],
-      ['summary', $summaryField],
-      ['body', $bodyField],
-      ['article_status', $statusField],
-      ['view_count', $viewCountField],
-      ['helpful_count', $helpfulField],
-      ['not_helpful_count', $notHelpfulField],
-      ['tags', $tagsField],
-      ['category_id', $categoryRefField],
       ['created', $createdField],
     ]);
 

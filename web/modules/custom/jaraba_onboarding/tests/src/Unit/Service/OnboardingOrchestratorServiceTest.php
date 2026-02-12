@@ -110,7 +110,9 @@ class OnboardingOrchestratorServiceTest extends UnitTestCase {
 
     $newProgress = $this->createMock(UserOnboardingProgress::class);
     $newProgress->method('id')->willReturn(77);
-    $newProgress->method('save')->willReturn(SAVED_NEW);
+    // SAVED_NEW = 1 in Drupal core; use literal to avoid undefined constant
+    // in unit tests that do not bootstrap Drupal.
+    $newProgress->method('save')->willReturn(1);
 
     $progressStorage = $this->createMock(EntityStorageInterface::class);
     $progressStorage->method('getQuery')->willReturn($progressQuery);
@@ -191,7 +193,7 @@ class OnboardingOrchestratorServiceTest extends UnitTestCase {
    */
   public function testGetProgressReturnsData(): void {
     $fieldMock = function ($value) {
-      $field = $this->createMock(FieldItemListInterface::class);
+      $field = new \stdClass();
       $field->value = $value;
       $field->target_id = $value;
       return $field;

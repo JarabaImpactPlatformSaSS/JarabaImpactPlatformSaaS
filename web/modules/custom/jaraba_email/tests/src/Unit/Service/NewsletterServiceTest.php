@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_email\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_email\Entity\EmailCampaign;
 use Drupal\jaraba_email\Service\CampaignService;
 use Drupal\jaraba_email\Service\NewsletterService;
 use Drupal\jaraba_email\Service\SubscriberService;
@@ -48,10 +48,10 @@ class NewsletterServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests crear newsletter con artículos y listas.
+   * Tests crear newsletter con articulos y listas.
    */
   public function testCreateNewsletterCreatesAndSavesCampaign(): void {
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(EmailCampaign::class);
     $campaign->expects($this->once())->method('save');
 
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -82,7 +82,7 @@ class NewsletterServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests resumen semanal sin artículos nuevos retorna NULL.
+   * Tests resumen semanal sin articulos nuevos retorna NULL.
    */
   public function testCreateWeeklyDigestNoArticlesReturnsNull(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -105,12 +105,12 @@ class NewsletterServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests generar HTML con campaña sin artículos retorna cadena vacía.
+   * Tests generar HTML con campana sin articulos retorna cadena vacia.
    */
   public function testGenerateNewsletterHtmlEmptyArticles(): void {
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(EmailCampaign::class);
 
-    // Simular campo article_ids vacío.
+    // Simular campo article_ids vacio.
     $campaign->method('get')
       ->with('article_ids')
       ->willReturn(new \ArrayObject([]));
@@ -121,7 +121,7 @@ class NewsletterServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests obtener estadísticas sin campañas enviadas.
+   * Tests obtener estadisticas sin campanas enviadas.
    */
   public function testGetNewsletterStatsNoCampaigns(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -148,7 +148,7 @@ class NewsletterServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests estadísticas con campañas calcula promedios correctamente.
+   * Tests estadisticas con campanas calcula promedios correctamente.
    */
   public function testGetNewsletterStatsCalculatesAverages(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -163,7 +163,7 @@ class NewsletterServiceTest extends UnitTestCase {
     $uniqueClicksField1 = new \stdClass();
     $uniqueClicksField1->value = 10;
 
-    $campaign1 = $this->createMock(ContentEntityInterface::class);
+    $campaign1 = $this->createMock(EmailCampaign::class);
     $campaign1->method('get')->willReturnMap([
       ['total_sent', $totalSentField1],
       ['unique_opens', $uniqueOpensField1],
@@ -177,7 +177,7 @@ class NewsletterServiceTest extends UnitTestCase {
     $uniqueClicksField2 = new \stdClass();
     $uniqueClicksField2->value = 30;
 
-    $campaign2 = $this->createMock(ContentEntityInterface::class);
+    $campaign2 = $this->createMock(EmailCampaign::class);
     $campaign2->method('get')->willReturnMap([
       ['total_sent', $totalSentField2],
       ['unique_opens', $uniqueOpensField2],

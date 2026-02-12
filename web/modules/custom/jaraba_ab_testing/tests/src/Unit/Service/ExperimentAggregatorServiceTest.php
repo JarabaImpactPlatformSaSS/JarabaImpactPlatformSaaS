@@ -205,11 +205,39 @@ class ExperimentAggregatorServiceTest extends TestCase {
    * @covers ::getDashboardMetrics
    */
   public function testGetDashboardMetricsEmpty(): void {
-    $this->setupQuery($this->experimentStorage, []);
+    // getDashboardMetrics calls getQuery() three times on experiment storage:
+    // 1. count query for active experiments
+    // 2. count query for completed experiments
+    // 3. query for all experiment IDs
+    // Each needs accessCheck, condition, count (for first two), and execute.
+    $countQuery1 = $this->createMock(QueryInterface::class);
+    $countQuery1->method('accessCheck')->willReturnSelf();
+    $countQuery1->method('condition')->willReturnSelf();
+    $countQuery1->method('count')->willReturnSelf();
+    $countQuery1->method('execute')->willReturn(0);
+
+    $countQuery2 = $this->createMock(QueryInterface::class);
+    $countQuery2->method('accessCheck')->willReturnSelf();
+    $countQuery2->method('condition')->willReturnSelf();
+    $countQuery2->method('count')->willReturnSelf();
+    $countQuery2->method('execute')->willReturn(0);
+
+    $allQuery = $this->createMock(QueryInterface::class);
+    $allQuery->method('accessCheck')->willReturnSelf();
+    $allQuery->method('condition')->willReturnSelf();
+    $allQuery->method('execute')->willReturn([]);
+
+    $this->experimentStorage
+      ->method('getQuery')
+      ->willReturnOnConsecutiveCalls($countQuery1, $countQuery2, $allQuery);
 
     $metrics = $this->service->getDashboardMetrics(1);
 
     $this->assertIsArray($metrics);
+    $this->assertArrayHasKey('active_experiments', $metrics);
+    $this->assertArrayHasKey('completed_experiments', $metrics);
+    $this->assertEquals(0, $metrics['active_experiments']);
+    $this->assertEquals(0, $metrics['completed_experiments']);
   }
 
   /**

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ads\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_ads\Entity\AdCampaign;
 use Drupal\jaraba_ads\Service\CampaignManagerService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -52,8 +52,9 @@ class CampaignManagerServiceTest extends UnitTestCase {
    * Tests que createCampaign crea una campana correctamente.
    */
   public function testCreateCampaignSuccess(): void {
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(AdCampaign::class);
     $campaign->method('id')->willReturn(1);
+    $campaign->method('label')->willReturn('Test Campaign');
     $campaign->method('save')->willReturn(1);
 
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -96,8 +97,9 @@ class CampaignManagerServiceTest extends UnitTestCase {
     $statusField = new \stdClass();
     $statusField->value = 'active';
 
-    $campaign = $this->createMock(ContentEntityInterface::class);
+    $campaign = $this->createMock(AdCampaign::class);
     $campaign->method('id')->willReturn(1);
+    $campaign->method('label')->willReturn('Test Campaign');
     $campaign->method('get')->willReturnMap([
       ['status', $statusField],
     ]);

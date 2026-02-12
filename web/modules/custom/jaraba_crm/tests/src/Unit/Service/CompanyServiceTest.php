@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_crm\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_crm\Entity\Company;
 use Drupal\jaraba_crm\Service\CompanyService;
 use Drupal\Tests\UnitTestCase;
 
@@ -62,7 +62,7 @@ class CompanyServiceTest extends UnitTestCase {
       'tenant_id' => 1,
     ];
 
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Company::class);
     $entity->expects($this->once())
       ->method('save');
 
@@ -84,7 +84,7 @@ class CompanyServiceTest extends UnitTestCase {
    * Tests load() devuelve la entidad cuando existe.
    */
   public function testLoadReturnsEntityWhenFound(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Company::class);
 
     $this->storage->expects($this->once())
       ->method('load')
@@ -114,8 +114,8 @@ class CompanyServiceTest extends UnitTestCase {
    * Tests list() devuelve un array de entidades.
    */
   public function testListReturnsEntities(): void {
-    $entity1 = $this->createMock(ContentEntityInterface::class);
-    $entity2 = $this->createMock(ContentEntityInterface::class);
+    $entity1 = $this->createMock(Company::class);
+    $entity2 = $this->createMock(Company::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();
@@ -148,9 +148,6 @@ class CompanyServiceTest extends UnitTestCase {
 
     $this->storage->method('getQuery')
       ->willReturn($query);
-    $this->storage->method('loadMultiple')
-      ->with([])
-      ->willReturn([]);
 
     $result = $this->service->list();
 
@@ -161,7 +158,7 @@ class CompanyServiceTest extends UnitTestCase {
    * Tests search() devuelve empresas que coinciden con la busqueda.
    */
   public function testSearchReturnsMatchingEntities(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Company::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();

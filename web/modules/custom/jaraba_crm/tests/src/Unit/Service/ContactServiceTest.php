@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_crm\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_crm\Entity\Activity;
+use Drupal\jaraba_crm\Entity\Contact;
 use Drupal\jaraba_crm\Service\ContactService;
 use Drupal\Tests\UnitTestCase;
 
@@ -30,6 +31,11 @@ class ContactServiceTest extends UnitTestCase {
   protected EntityStorageInterface $storage;
 
   /**
+   * El storage mockeado para la entidad activity.
+   */
+  protected EntityStorageInterface $activityStorage;
+
+  /**
    * El servicio bajo prueba.
    */
   protected ContactService $service;
@@ -42,10 +48,16 @@ class ContactServiceTest extends UnitTestCase {
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->storage = $this->createMock(EntityStorageInterface::class);
+    $this->activityStorage = $this->createMock(EntityStorageInterface::class);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('crm_contact')
-      ->willReturn($this->storage);
+      ->willReturnCallback(function (string $entityTypeId) {
+        return match ($entityTypeId) {
+          'crm_contact' => $this->storage,
+          'crm_activity' => $this->activityStorage,
+          default => throw new \InvalidArgumentException("Unexpected entity type: $entityTypeId"),
+        };
+      });
 
     $this->service = new ContactService(
       $this->entityTypeManager,
@@ -64,7 +76,7 @@ class ContactServiceTest extends UnitTestCase {
       'tenant_id' => 1,
     ];
 
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Contact::class);
     $entity->expects($this->once())
       ->method('save');
 
@@ -87,7 +99,7 @@ class ContactServiceTest extends UnitTestCase {
    * Tests load() devuelve la entidad cuando existe.
    */
   public function testLoadReturnsEntityWhenFound(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity = $this->createMock(Contact::class);
 
     $this->storage->expects($this->once())
       ->method('load')
@@ -117,13 +129,14 @@ class ContactServiceTest extends UnitTestCase {
    * Tests getByCompany() devuelve los contactos de una empresa.
    */
   public function testGetByCompanyReturnsContacts(): void {
-    $entity1 = $this->createMock(ContentEntityInterface::class);
-    $entity2 = $this->createMock(ContentEntityInterface::class);
+    $entity1 = $this->createMock(Contact::class);
+    $entity2 = $this->createMock(Contact::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
+    $query->method('range')->willReturnSelf();
     $query->method('execute')->willReturn([3 => 3, 8 => 8]);
 
     $this->storage->method('getQuery')
@@ -145,13 +158,11 @@ class ContactServiceTest extends UnitTestCase {
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
+    $query->method('range')->willReturnSelf();
     $query->method('execute')->willReturn([]);
 
     $this->storage->method('getQuery')
       ->willReturn($query);
-    $this->storage->method('loadMultiple')
-      ->with([])
-      ->willReturn([]);
 
     $result = $this->service->getByCompany(999);
 
@@ -162,22 +173,50 @@ class ContactServiceTest extends UnitTestCase {
    * Tests calculateEngagementScore() devuelve la puntuacion de engagement.
    */
   public function testCalculateEngagementScoreReturnsScore(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
-    $entity->method('get')
-      ->willReturnCallback(function (string $fieldName) {
-        if ($fieldName === 'engagement_score') {
-          return (object) ['value' => 85];
-        }
-        return (object) ['value' => NULL];
-      });
+    $entity = $this->createMock(Contact::class);
+    $entity->method('set')->willReturnSelf();
+    $entity->method('save');
 
     $this->storage->method('load')
       ->with(42)
       ->willReturn($entity);
 
+    // Mock the activity query to return some activities.
+    $activityQuery = $this->createMock(QueryInterface::class);
+    $activityQuery->method('accessCheck')->willReturnSelf();
+    $activityQuery->method('condition')->willReturnSelf();
+    $activityQuery->method('execute')->willReturn([10 => 10, 11 => 11]);
+
+    $this->activityStorage->method('getQuery')
+      ->willReturn($activityQuery);
+
+    // Mock activities with types.
+    $activity1 = $this->createMock(Activity::class);
+    $activity1->method('get')
+      ->willReturnCallback(function (string $fieldName) {
+        if ($fieldName === 'type') {
+          return (object) ['value' => 'call'];
+        }
+        return (object) ['value' => NULL];
+      });
+
+    $activity2 = $this->createMock(Activity::class);
+    $activity2->method('get')
+      ->willReturnCallback(function (string $fieldName) {
+        if ($fieldName === 'type') {
+          return (object) ['value' => 'email'];
+        }
+        return (object) ['value' => NULL];
+      });
+
+    $this->activityStorage->method('loadMultiple')
+      ->with([10 => 10, 11 => 11])
+      ->willReturn([$activity1, $activity2]);
+
     $result = $this->service->calculateEngagementScore(42);
 
-    $this->assertIsInt($result);
+    // call=10 + email=5 = 15.
+    $this->assertSame(15, $result);
   }
 
   /**

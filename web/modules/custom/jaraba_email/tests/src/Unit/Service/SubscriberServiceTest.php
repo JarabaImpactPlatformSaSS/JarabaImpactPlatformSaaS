@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_email\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\jaraba_email\Entity\EmailSubscriber;
 use Drupal\jaraba_email\Service\SubscriberService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -65,7 +65,7 @@ class SubscriberServiceTest extends UnitTestCase {
    * Tests buscar suscriptor por email existente retorna entidad.
    */
   public function testFindByEmailReturnsSubscriber(): void {
-    $subscriber = $this->createMock(ContentEntityInterface::class);
+    $subscriber = $this->createMock(EmailSubscriber::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
@@ -134,8 +134,8 @@ class SubscriberServiceTest extends UnitTestCase {
    * Tests obtener suscriptores activos de una lista.
    */
   public function testGetActiveSubscribersReturnsList(): void {
-    $subscriber1 = $this->createMock(ContentEntityInterface::class);
-    $subscriber2 = $this->createMock(ContentEntityInterface::class);
+    $subscriber1 = $this->createMock(EmailSubscriber::class);
+    $subscriber2 = $this->createMock(EmailSubscriber::class);
 
     $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
