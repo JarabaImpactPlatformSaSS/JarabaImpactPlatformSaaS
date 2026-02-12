@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for Jaraba Integrations.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_integrations_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Integrations instalado. Configure en /admin/config/jaraba/integrations.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_integrations_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_integrations.settings')->delete();
+}

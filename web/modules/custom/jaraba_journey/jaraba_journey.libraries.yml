@@ -1,12 +1,11 @@
-# Journey Dashboard Library
-# Usa los estilos compilados en ecosistema_jaraba_core
-
-jaraba_journey.dashboard:
+dashboard:
   version: 1.x
   css:
     theme:
-      # Los estilos están en ecosistema_jaraba_core (_journey-dashboard.scss)
-      # No necesitamos declarar CSS aquí, solo la dependencia
-      {}
+      css/journey-dashboard.css: {}
+  js:
+    js/journey-dashboard.js: {}
   dependencies:
+    - core/drupal
+    - core/once
     - ecosistema_jaraba_core/global
