@@ -4,7 +4,22 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 26.0.0 (Plan Maestro 7 Fases: Interactive Plugins + Editor CRUD + Training Purchase + Canvas E2E + SCSS Compliance + pepejaraba.com + Test Suites)
+**Versión:** 27.0.0 (Sprint Inmediato: Tenant Filtering + Data Integration — 48 TODOs, 27 modulos, 2 entidades nuevas)
+
+> **🔒 SPRINT INMEDIATO — TENANT FILTERING + DATA INTEGRATION (48 TODOs, 27 MÓDULOS)** (2026-02-12)
+> - **48 TODOs resueltos** del catálogo v1.2.0 en 8 fases: TENANT_FILTERING (13) + DATA_INTEGRATION (35)
+> - **F1 Infraestructura tenant**: TenantContextService.getCurrentTenantId(), TenantAccessControlHandler Group membership, ImpactCreditService filtrado via group_relationship, MicroAutomationService iteración tenants reales
+> - **F2 Tenant filtering**: 9 controladores/servicios (CRM, Analytics, PageBuilder, Canvas, Marketplace, Connectors, KbIndexer, ApiController, SandboxTenant)
+> - **F3 Entidades nuevas**: `CandidateLanguage` (CEFR A1-C2, reading/writing/speaking/listening, certificaciones, source tracking) + `EmployerProfile` (empresa, contacto, verificación, tenant_id)
+> - **F4 Entity references**: TrainingProduct.course_ids y CertificationProgram.required_courses → `lms_course`
+> - **F5 Data integration candidate/job_board**: Skills reales, idiomas en CV, dashboard completitud, matching entity queries, employer_profile, applications, agent rating JS + rutas API
+> - **F6 LMS/Training**: Lecciones reales, enrollment service, ladder con lms_enrollment, matching cursos completados, template usage count
+> - **F7 Analytics**: ExpansionRevenue tenants reales, Stripe webhook foc_seller, diagnósticos, xAPI InteractiveResult, conversation_log, mentor availability, cart/cupones Commerce, tokens_used RAG
+> - **F8 Cálculos**: week_streak gamificación, recomendaciones catálogo LMS, learning analytics
+> - **49 ficheros** (44 modificados + 4 nuevos + 1 doc), +3337/-183 líneas
+> - **4 reglas nuevas**: TENANT-001 (filtro obligatorio queries), TENANT-002 (TenantContextService único), ENTITY-REF-001 (target_type específico), BILLING-001 (sincronizar copias billing/core)
+> - **Aprendizaje**: [2026-02-12_sprint_inmediato_tenant_filtering_data_integration.md](./tecnicos/aprendizajes/2026-02-12_sprint_inmediato_tenant_filtering_data_integration.md)
+>
 
 > **📦 MÓDULOS 20260201 — INSIGHTS HUB + LEGAL KNOWLEDGE + FUNDING + AGROCONECTA COPILOTS** (2026-02-12)
 > - **3 módulos nuevos**: `jaraba_insights_hub` (52 archivos), `jaraba_legal_knowledge` (54 archivos), `jaraba_funding` (65 archivos) — 171 archivos totales

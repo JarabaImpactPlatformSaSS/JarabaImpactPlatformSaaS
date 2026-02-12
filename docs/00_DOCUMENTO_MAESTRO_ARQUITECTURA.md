@@ -630,15 +630,36 @@
 │   ├── Frontend: Wizard 3 pasos (JS) + Score Ring (SVG) + CSS compilado │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
-│   📦 jaraba_candidate ✅ (Copilot Empleabilidad)                         │
+│   📦 jaraba_candidate ✅ (Copilot Empleabilidad + Perfil Candidato)       │
 │   ├── EmployabilityCopilotAgent: 6 modos especializados               │
 │   │   ├── Profile Coach, Job Advisor, Interview Prep                   │
 │   │   ├── Learning Guide, Application Helper, FAQ                      │
 │   │   └── Detección automática modo por keywords                       │
 │   ├── CopilotApiController: POST /api/v1/copilot/employability/chat    │
 │   │   └── GET /suggestions (chips contextuales por página)             │
+│   ├── Content Entities:                                                │
+│   │   ├── CandidateProfile: perfil profesional completo                │
+│   │   ├── CandidateSkill: skills con nivel + años experiencia          │
+│   │   └── CandidateLanguage: idiomas CEFR (A1-C2), 4 competencias     │
+│   │       (reading/writing/speaking/listening), certificaciones,       │
+│   │       is_native, source (manual/linkedin/cv_parser)                │
+│   ├── Services: CandidateProfileService (skills reales),               │
+│   │   CvBuilderService (idiomas entity queries)                        │
 │   ├── DI: @ai.provider, @config.factory, @jaraba_ai_agents.tenant_brand_voice │
 │   │   └── @jaraba_ai_agents.observability, @ecosistema_jaraba_core.unified_prompt_builder │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
+│   📦 jaraba_job_board ✅ (Bolsa de Empleo + Matching)                    │
+│   ├── Content Entities:                                                │
+│   │   ├── JobPosting, JobApplication, JobAlert                         │
+│   │   └── EmployerProfile: perfil empresa (company_name, legal_name,   │
+│   │       tax_id, industry taxonomy, company_size, logo, contact,      │
+│   │       is_verified, is_featured, tenant_id)                         │
+│   ├── Services: MatchingService (experience/education/city entity      │
+│   │   queries), ApplicationService, JobPostingService, JobAlertService │
+│   ├── Controllers: JobSearchController (employer_profile loading),     │
+│   │   JobBoardApiController (employer applications query),             │
+│   │   agent-fab.js (rating POST /api/v1/job-board/agent-rating)        │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
 │   📦 jaraba_self_discovery ✅ (Self-Discovery Empleabilidad)               │

@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 18.0.0 (Plan Maestro 7 Fases: Interactive Plugins + Editor CRUD + Training Purchase + Canvas E2E + SCSS Compliance + pepejaraba.com + Test Suites)
+**Versión:** 19.0.0 (Sprint Inmediato: Tenant Filtering + Data Integration — 48 TODOs, 27 modulos, 2 entidades nuevas)
 
 ---
 
@@ -951,7 +951,16 @@ graph TB
 | **Archivos** | Público/privado con control de acceso por Group |
 | **Búsqueda** | Search API con filtros de Group para efecto red |
 
-### 3.5 Ventajas de Single-Instance + Group
+### 3.5 Directrices de Filtrado Multi-Tenant (Sprint Inmediato 2026-02-12)
+
+| Directriz | Descripcion | Prioridad |
+|-----------|-------------|-----------|
+| **TENANT-001: Filtro obligatorio en queries** | Todo entity query o database query que devuelva datos de usuario/contenido DEBE incluir filtro por tenant. Para entidades con campo `tenant_id`: `->condition('tenant_id', $tenantId)`. Para queries DB directas: JOIN a `group_relationship_field_data` filtrando por `gid` + `plugin_id = 'group_membership'` | P0 |
+| **TENANT-002: TenantContextService unico** | Todo controlador o servicio que necesite contexto de tenant DEBE inyectar `ecosistema_jaraba_core.tenant_context` (TenantContextService). NUNCA resolver tenant via queries ad-hoc | P0 |
+| **ENTITY-REF-001: target_type especifico** | Campos entity_reference DEBEN usar el target_type mas especifico disponible (ej. `lms_course` en vez de `node`). NUNCA usar `node` como fallback generico | P1 |
+| **BILLING-001: Sincronizar copias** | Cambios en servicios duplicados entre `jaraba_billing` y `ecosistema_jaraba_core` (ImpactCreditService, ExpansionRevenueService) DEBEN aplicarse en ambas copias simultaneamente | P1 |
+
+### 3.6 Ventajas de Single-Instance + Group
 
 | Ventaja | Descripción |
 |---------|-------------|
@@ -960,7 +969,7 @@ graph TB
 | **Escalabilidad** | Horizontal, sin límite de Tenants |
 | **Datos compartidos** | Taxonomías, usuarios, catálogos entre Verticales |
 
-### 3.6 Configuración por Nivel
+### 3.7 Configuración por Nivel
 
 | Nivel | Qué se configura | Quién configura |
 |-------|------------------|-----------------|
@@ -1877,6 +1886,7 @@ El asistente IA debe:
 | 2026-02-05 | 5.1.0 | **Arquitectura Theming Federated Tokens:** Patrón SSOT para SCSS implementado. 8 módulos satélite con package.json. 10 funciones darken()→color.adjust() migradas. 102 archivos SCSS documentados. Documento maestro: `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` |
 | 2026-02-02 | 5.0.0 | **Frontend Limpio Page Builder (Zero Region Policy):** Template ultra-limpia para PageContent entities. Header inline sin menú ecosistema. Body classes via `hook_preprocess_html()` (`page-page-builder`, `full-width-layout`). SCSS reset grid. Sin breadcrumbs/sidebars heredados. Documento aprendizaje #34 |
 | 2026-02-12 | **18.0.0** | **Plan Maestro 7 Fases Completado:** jaraba_interactive 6 plugins PHP + editor + CRUD API + 5 event subscribers. PurchaseService (jaraba_training). CacheTagsInvalidator (jaraba_page_builder). 5 Cypress E2E specs (60+ tests). SCSS compliance 14 modulos. pepejaraba.com tenant provisionado (7 paginas + menu + design tokens). 11 PHPUnit test files (121+ tests). seed_pepejaraba.php (766 LOC). Nginx vhost produccion. 7 reglas nuevas (INT-001/002, PB-002, TRN-001, SCSS-002, TEST-003, SEED-001) |
+| 2026-02-12 | **19.0.0** | **Sprint Inmediato Tenant Filtering + Data Integration:** 48 TODOs resueltos del catalogo v1.2.0 en 8 fases, 27 modulos. F1: Infraestructura tenant (TenantContextService.getCurrentTenantId(), TenantAccessControlHandler Group membership, ImpactCreditService filtrado tenant, MicroAutomationService iteracion tenants reales). F2: Tenant filtering en 9 controladores/servicios (CRM, Analytics, PageBuilder, Canvas, Marketplace, Connectors, KbIndexer, ApiController, SandboxTenant). F3: 2 entidades nuevas (CandidateLanguage CEFR + EmployerProfile empresa). F4: Entity references TrainingProduct/CertificationProgram a lms_course. F5: Data integration candidate/job_board (skills, idiomas CV, dashboard, matching, employer, applications, agent rating JS+rutas). F6: LMS/Training (lecciones, enrollment, ladder, cursos completados, template usage). F7: Analytics (ExpansionRevenue, Stripe webhook, diagnosticos, xAPI, conversation_log, mentor availability, cart/cupones, tokens RAG). F8: Calculos (week_streak, recomendaciones, learning analytics). 49 ficheros, +3337/-183 lineas. 4 reglas nuevas (TENANT-001, TENANT-002, ENTITY-REF-001, BILLING-001). Aprendizaje: sprint_inmediato_tenant_filtering_data_integration |
 
 ---
 
