@@ -211,3 +211,131 @@ entity.email_sequence.delete_form:
     _title: 'Delete Sequence'
   requirements:
     _permission: 'administer email sequences'
+
+# =============================================================================
+# SEQUENCE STEP SETTINGS (Field UI)
+# =============================================================================
+
+entity.email_sequence_step.settings:
+  path: '/admin/structure/email-sequence-step'
+  defaults:
+    _form: '\Drupal\jaraba_email\Form\EmailSequenceStepSettingsForm'
+    _title: 'Configuracion de Pasos de Secuencia'
+  requirements:
+    _permission: 'administer email sequences'
+
+# =============================================================================
+# REST API — Email Marketing (spec 151 §4)
+# =============================================================================
+
+# --- Listas ---
+
+jaraba_email.api.lists.list:
+  path: '/api/v1/email/lists'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::listLists'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+
+jaraba_email.api.lists.create:
+  path: '/api/v1/email/lists'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::createList'
+  methods: [POST]
+  requirements:
+    _permission: 'administer email lists'
+
+# --- Suscriptores ---
+
+jaraba_email.api.subscribers.list:
+  path: '/api/v1/email/subscribers'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::listSubscribers'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+
+jaraba_email.api.subscribers.create:
+  path: '/api/v1/email/subscribers'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::createSubscriber'
+  methods: [POST]
+  requirements:
+    _permission: 'administer email subscribers'
+
+jaraba_email.api.subscribers.unsubscribe:
+  path: '/api/v1/email/subscribers/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::unsubscribe'
+  methods: [DELETE]
+  requirements:
+    _permission: 'administer email subscribers'
+    id: '\d+'
+
+# --- Campanas ---
+
+jaraba_email.api.campaigns.list:
+  path: '/api/v1/email/campaigns'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::listCampaigns'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+
+jaraba_email.api.campaigns.send:
+  path: '/api/v1/email/campaigns/{id}/send'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::sendCampaign'
+  methods: [POST]
+  requirements:
+    _permission: 'send email campaigns'
+    id: '\d+'
+
+jaraba_email.api.campaigns.stats:
+  path: '/api/v1/email/campaigns/{id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::getCampaignStats'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+    id: '\d+'
+
+# --- Plantillas ---
+
+jaraba_email.api.templates.list:
+  path: '/api/v1/email/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::listTemplates'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+
+# --- Secuencias ---
+
+jaraba_email.api.sequences.list:
+  path: '/api/v1/email/sequences'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::listSequences'
+  methods: [GET]
+  requirements:
+    _permission: 'view email analytics'
+
+jaraba_email.api.sequences.enroll:
+  path: '/api/v1/email/sequences/{id}/enroll'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailApiController::enrollInSequence'
+  methods: [POST]
+  requirements:
+    _permission: 'administer email sequences'
+    id: '\d+'
+
+# --- Webhooks ---
+
+jaraba_email.api.webhooks.sendgrid:
+  path: '/api/v1/webhooks/sendgrid'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\EmailWebhookController::handleSendGridWebhook'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

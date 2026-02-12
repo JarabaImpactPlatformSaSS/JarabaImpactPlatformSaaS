@@ -1,0 +1,214 @@
+{#
+/**
+ * @file
+ * Template for Funnel Analysis.
+ *
+ * Variables:
+ * - funnels: Array of available funnel definitions (id, label).
+ * - funnel_data: Array of funnel steps.
+ *   Each step: { step_name, count, rate, drop_off, drop_off_rate }
+ * - selected_funnel: Currently selected funnel ID.
+ *
+ * Conventions:
+ * - BEM naming (.funnel-analysis, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\AnalyticsDashboardController
+ */
+#}
+
+<div class="funnel-analysis"
+     data-selected-funnel="{{ selected_funnel }}"
+     data-api-base="/api/v1/analytics/funnel">
+
+  {# ===== Header ===== #}
+  <header class="funnel-analysis__header">
+    <div class="funnel-analysis__header-content">
+      <h2 class="funnel-analysis__title">
+        {% trans %}Funnel Analysis{% endtrans %}
+      </h2>
+      <p class="funnel-analysis__subtitle">
+        {% trans %}Conversion funnel with step-by-step drop-off analysis{% endtrans %}
+      </p>
+    </div>
+    <div class="funnel-analysis__header-actions">
+      <button type="button"
+              class="funnel-analysis__export-btn"
+              aria-label="{% trans %}Export funnel data{% endtrans %}">
+        {% trans %}Export CSV{% endtrans %}
+      </button>
+    </div>
+  </header>
+
+  {# ===== Funnel Selector ===== #}
+  <div class="funnel-analysis__selector">
+    <label class="funnel-analysis__selector-label" for="funnel-select">
+      {% trans %}Funnel{% endtrans %}
+    </label>
+    <select class="funnel-analysis__selector-input"
+            id="funnel-select"
+            aria-label="{% trans %}Select funnel{% endtrans %}">
+      {% for funnel in funnels %}
+        <option value="{{ funnel.id }}"
+                {% if funnel.id == selected_funnel %} selected{% endif %}>
+          {{ funnel.label }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label class="funnel-analysis__selector-label" for="funnel-period">
+      {% trans %}Period{% endtrans %}
+    </label>
+    <select class="funnel-analysis__selector-input"
+            id="funnel-period"
+            aria-label="{% trans %}Select time period{% endtrans %}">
+      <option value="7d">{% trans %}Last 7 days{% endtrans %}</option>
+      <option value="30d" selected>{% trans %}Last 30 days{% endtrans %}</option>
+      <option value="90d">{% trans %}Last 90 days{% endtrans %}</option>
+    </select>
+  </div>
+
+  {# ===== Funnel Visualization (Bar Chart) ===== #}
+  <section class="funnel-analysis__visualization"
+           aria-label="{% trans %}Funnel visualization{% endtrans %}">
+    <div class="funnel-analysis__chart">
+      {% if funnel_data is not empty %}
+        {% set first_count = funnel_data|first.count %}
+        {% for step in funnel_data %}
+          {% set width_pct = first_count > 0 ? (step.count / first_count * 100) : 0 %}
+          <div class="funnel-step"
+               data-step-index="{{ loop.index0 }}"
+               data-count="{{ step.count }}"
+               data-rate="{{ step.rate }}"
+               style="--funnel-step-width: {{ width_pct }}%;">
+
+            <div class="funnel-step__bar-container">
+              <div class="funnel-step__bar"
+                   aria-label="{{ step.step_name }}: {{ step.count }} ({{ step.rate }}%)">
+                <span class="funnel-step__count">{{ step.count }}</span>
+              </div>
+            </div>
+
+            <div class="funnel-step__info">
+              <span class="funnel-step__label">{{ step.step_name }}</span>
+              <span class="funnel-step__rate">{{ step.rate }}%</span>
+            </div>
+
+            {# Drop-off indicator between steps (skip for last step) #}
+            {% if not loop.last %}
+              <div class="funnel-step__drop-off"
+                   data-drop-off="{{ step.drop_off_rate }}">
+                <span class="funnel-step__drop-off-arrow" aria-hidden="true"></span>
+                <span class="funnel-step__drop-off-value">
+                  -{{ step.drop_off }} ({{ step.drop_off_rate }}%)
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="funnel-analysis__empty">
+          <p>{% trans %}No funnel data available. Select a funnel to begin analysis.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Overall conversion summary #}
+    <div class="funnel-analysis__conversion-summary">
+      <div class="funnel-analysis__conversion-badge">
+        <span class="funnel-analysis__conversion-label">
+          {% trans %}Overall Conversion{% endtrans %}
+        </span>
+        <span class="funnel-analysis__conversion-value" data-metric="overall-conversion">
+          {% if funnel_data is not empty and funnel_data|first.count > 0 %}
+            {{ ((funnel_data|last.count / funnel_data|first.count) * 100)|number_format(1) }}%
+          {% else %}
+            --
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  {# ===== Detailed Step Breakdown Table ===== #}
+  <section class="funnel-analysis__details"
+           aria-label="{% trans %}Step-by-step breakdown{% endtrans %}">
+    <h3 class="funnel-analysis__details-title">
+      {% trans %}Step-by-Step Breakdown{% endtrans %}
+    </h3>
+    <div class="funnel-analysis__table-wrapper">
+      <table class="funnel-analysis__table">
+        <thead>
+          <tr>
+            <th class="funnel-analysis__th">{% trans %}Step{% endtrans %}</th>
+            <th class="funnel-analysis__th funnel-analysis__th--number">
+              {% trans %}Users{% endtrans %}
+            </th>
+            <th class="funnel-analysis__th funnel-analysis__th--number">
+              {% trans %}Conversion Rate{% endtrans %}
+            </th>
+            <th class="funnel-analysis__th funnel-analysis__th--number">
+              {% trans %}Drop-off{% endtrans %}
+            </th>
+            <th class="funnel-analysis__th funnel-analysis__th--number">
+              {% trans %}Drop-off Rate{% endtrans %}
+            </th>
+            <th class="funnel-analysis__th funnel-analysis__th--bar">
+              {% trans %}Relative{% endtrans %}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="funnel-analysis__tbody">
+          {% if funnel_data is not empty %}
+            {% set first_count = funnel_data|first.count %}
+            {% for step in funnel_data %}
+              {% set bar_width = first_count > 0 ? (step.count / first_count * 100) : 0 %}
+              <tr class="funnel-analysis__row"
+                  data-step-index="{{ loop.index0 }}">
+                <td class="funnel-analysis__td funnel-analysis__td--step">
+                  <span class="funnel-analysis__step-number">{{ loop.index }}</span>
+                  {{ step.step_name }}
+                </td>
+                <td class="funnel-analysis__td funnel-analysis__td--number">
+                  {{ step.count }}
+                </td>
+                <td class="funnel-analysis__td funnel-analysis__td--number">
+                  <span class="funnel-analysis__rate-badge">{{ step.rate }}%</span>
+                </td>
+                <td class="funnel-analysis__td funnel-analysis__td--number funnel-analysis__td--drop-off">
+                  {% if step.drop_off is defined and step.drop_off is not null %}
+                    -{{ step.drop_off }}
+                  {% else %}
+                    --
+                  {% endif %}
+                </td>
+                <td class="funnel-analysis__td funnel-analysis__td--number funnel-analysis__td--drop-off-rate">
+                  {% if step.drop_off_rate is defined and step.drop_off_rate is not null %}
+                    {{ step.drop_off_rate }}%
+                  {% else %}
+                    --
+                  {% endif %}
+                </td>
+                <td class="funnel-analysis__td funnel-analysis__td--bar-cell">
+                  <div class="funnel-analysis__mini-bar">
+                    <div class="funnel-analysis__mini-bar-fill"
+                         style="width: {{ bar_width }}%;"
+                         aria-label="{{ bar_width|number_format(1) }}%">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td class="funnel-analysis__empty-row" colspan="6">
+                {% trans %}No step data available.{% endtrans %}
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

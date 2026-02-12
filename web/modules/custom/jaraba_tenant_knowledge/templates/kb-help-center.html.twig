@@ -1,0 +1,124 @@
+{#
+/**
+ * @file
+ * kb-help-center.html.twig — Landing del Centro de Ayuda KB.
+ *
+ * PROPÓSITO: Página pública con barra de búsqueda, grid de categorías
+ * con iconos y sidebar de artículos populares.
+ *
+ * Variables:
+ * - categories: Array de categorías con keys: id, name, slug, description, icon, article_count.
+ * - popular_articles: Array de artículos populares con keys: id, title, slug, summary, view_count.
+ * - total_articles: Total de artículos publicados.
+ *
+ * BEM: .kb-help-center
+ */
+#}
+
+<div class="kb-help-center">
+  {# Hero con barra de búsqueda #}
+  <section class="kb-help-center__hero">
+    <div class="kb-help-center__hero-content">
+      <h1 class="kb-help-center__title">{% trans %}Base de Conocimiento{% endtrans %}</h1>
+      <p class="kb-help-center__subtitle">
+        {% trans %}Encuentra respuestas, guías y tutoriales para aprovechar al máximo la plataforma.{% endtrans %}
+      </p>
+
+      <form class="kb-help-center__search-form" action="{{ path('jaraba_tenant_knowledge.kb.search') }}" method="get">
+        <div class="kb-help-center__search-wrapper">
+          <svg class="kb-help-center__search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            class="kb-help-center__search-input"
+            placeholder="{{ 'Buscar en la base de conocimiento...'|trans }}"
+            autocomplete="off"
+            data-kb-search-input
+          >
+          <button type="submit" class="kb-help-center__search-btn">
+            {% trans %}Buscar{% endtrans %}
+          </button>
+        </div>
+        {# Dropdown de resultados de autocompletado #}
+        <div class="kb-help-center__autocomplete" data-kb-autocomplete hidden></div>
+      </form>
+
+      <p class="kb-help-center__article-count">
+        {{ total_articles }} {% trans %}artículos disponibles{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  <div class="kb-help-center__layout">
+    {# Contenido principal #}
+    <main class="kb-help-center__main">
+      {# Grid de categorías #}
+      {% if categories is not empty %}
+        <section class="kb-help-center__categories">
+          <h2 class="kb-help-center__section-title">{% trans %}Explorar por Categoría{% endtrans %}</h2>
+          <div class="kb-help-center__categories-grid">
+            {% for category in categories %}
+              <a href="{{ path('jaraba_tenant_knowledge.kb.category', { slug: category.slug }) }}" class="kb-category-card">
+                <div class="kb-category-card__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    {% if category.icon == 'book' %}
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    {% elseif category.icon == 'settings' %}
+                      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    {% elseif category.icon == 'users' %}
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    {% elseif category.icon == 'zap' %}
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    {% elseif category.icon == 'shield' %}
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    {% else %}
+                      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                    {% endif %}
+                  </svg>
+                </div>
+                <h3 class="kb-category-card__title">{{ category.name }}</h3>
+                {% if category.description %}
+                  <p class="kb-category-card__description">{{ category.description|striptags|length > 100 ? category.description|striptags|slice(0, 100) ~ '...' : category.description|striptags }}</p>
+                {% endif %}
+                <span class="kb-category-card__count">
+                  {{ category.article_count }} {{ category.article_count == 1 ? 'artículo'|trans : 'artículos'|trans }}
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    </main>
+
+    {# Sidebar de artículos populares #}
+    {% if popular_articles is not empty %}
+      <aside class="kb-help-center__sidebar">
+        <h2 class="kb-help-center__section-title">{% trans %}Artículos Populares{% endtrans %}</h2>
+        <ul class="kb-help-center__popular-list">
+          {% for article in popular_articles %}
+            <li class="kb-help-center__popular-item">
+              <a href="{{ path('jaraba_tenant_knowledge.kb.article', { slug: article.slug }) }}" class="kb-popular-card">
+                <h4 class="kb-popular-card__title">{{ article.title }}</h4>
+                <p class="kb-popular-card__summary">{{ article.summary }}</p>
+                <span class="kb-popular-card__views">
+                  {{ article.view_count }} {% trans %}vistas{% endtrans %}
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+    {% endif %}
+  </div>
+
+  {# CTA de contacto #}
+  <section class="kb-help-center__contact">
+    <h2 class="kb-help-center__contact-title">{% trans %}¿No encuentras lo que buscas?{% endtrans %}</h2>
+    <p class="kb-help-center__contact-text">
+      {% trans %}Nuestro equipo de soporte está disponible para ayudarte con cualquier pregunta.{% endtrans %}
+    </p>
+  </section>
+</div>

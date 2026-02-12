@@ -1,0 +1,109 @@
+{#
+/**
+ * @file
+ * Template for the email template editor page.
+ *
+ * Available variables:
+ * - templates: Array of email template data arrays.
+ * - current_template: The currently selected template (or null).
+ * - available_variables: Array of variable definitions (token, description).
+ * - tenant_id: The current tenant ID.
+ */
+#}
+
+<div class="email-editor" data-tenant-id="{{ tenant_id }}">
+
+  <div class="email-editor__layout">
+
+    {# --- Template selector sidebar --- #}
+    <aside class="email-editor__sidebar">
+      <h3 class="email-editor__sidebar-title">{% trans %}Templates{% endtrans %}</h3>
+
+      {% if templates|length > 0 %}
+        <ul class="email-editor__template-list">
+          {% for template in templates %}
+            <li class="email-editor__template-item{% if current_template and current_template.id == template.id %} email-editor__template-item--active{% endif %}"
+                data-template-id="{{ template.id }}"
+                data-template-key="{{ template.template_key }}">
+              <button type="button" class="email-editor__template-btn">
+                <span class="email-editor__template-key">{{ template.template_key }}</span>
+                <span class="email-editor__template-status email-editor__template-status--{{ template.template_status }}">
+                  {{ template.template_status }}
+                </span>
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="email-editor__empty-templates">{% trans %}No templates found for this tenant.{% endtrans %}</p>
+      {% endif %}
+
+      {# --- Variable reference panel --- #}
+      <div class="email-editor__variables">
+        <h4 class="email-editor__variables-title">{% trans %}Available Variables{% endtrans %}</h4>
+        <ul class="email-editor__variable-list">
+          {% for variable in available_variables %}
+            <li class="email-editor__variable-item">
+              <button type="button"
+                      class="email-editor__variable-btn"
+                      data-token="{{ variable.token }}"
+                      title="{% trans %}Click to insert{% endtrans %}">
+                <code class="email-editor__variable-token">{{ variable.token }}</code>
+              </button>
+              <span class="email-editor__variable-desc">{{ variable.description }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+
+    {# --- Editor area --- #}
+    <main class="email-editor__main">
+      {% if current_template %}
+        <div class="email-editor__editor" data-template-id="{{ current_template.id }}">
+          <div class="email-editor__field">
+            <label class="email-editor__label" for="email-subject">{% trans %}Subject{% endtrans %}</label>
+            <input class="email-editor__input" type="text" id="email-subject" name="subject"
+                   value="{{ current_template.subject }}" />
+          </div>
+
+          <div class="email-editor__field">
+            <label class="email-editor__label" for="email-body-html">{% trans %}HTML Body{% endtrans %}</label>
+            <textarea class="email-editor__textarea email-editor__textarea--html"
+                      id="email-body-html" name="body_html"
+                      rows="16">{{ current_template.body_html }}</textarea>
+          </div>
+
+          <div class="email-editor__field">
+            <label class="email-editor__label" for="email-body-text">{% trans %}Plain Text Body{% endtrans %}</label>
+            <textarea class="email-editor__textarea email-editor__textarea--text"
+                      id="email-body-text" name="body_text"
+                      rows="8">{{ current_template.body_text }}</textarea>
+          </div>
+
+          <div class="email-editor__actions">
+            <button type="button" class="email-editor__btn email-editor__btn--save">
+              {% trans %}Save Template{% endtrans %}
+            </button>
+            <button type="button" class="email-editor__btn email-editor__btn--preview">
+              {% trans %}Preview{% endtrans %}
+            </button>
+          </div>
+        </div>
+
+        {# --- Live preview pane --- #}
+        <div class="email-editor__preview" id="email-preview-pane" style="display: none;">
+          <h4 class="email-editor__preview-title">{% trans %}Email Preview{% endtrans %}</h4>
+          <div class="email-editor__preview-subject"></div>
+          <div class="email-editor__preview-body"></div>
+        </div>
+      {% else %}
+        <div class="email-editor__no-selection">
+          <p>{% trans %}Select a template from the sidebar to begin editing.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </main>
+
+  </div>
+
+</div>

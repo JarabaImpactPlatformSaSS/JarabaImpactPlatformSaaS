@@ -1,0 +1,516 @@
+/**
+ * @file
+ * Cohort Analysis - Retention heatmap and summary styles.
+ *
+ * BEM structure following project conventions.
+ * Uses var(--ej-*) design tokens from the platform token system.
+ */
+
+/* ============================================================================
+   Container
+   ============================================================================ */
+
+.cohort-analysis {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.cohort-analysis__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+}
+
+.cohort-analysis__header-content {
+  flex: 1;
+}
+
+.cohort-analysis__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.cohort-analysis__subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.95rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.cohort-analysis__header-actions {
+  flex-shrink: 0;
+  margin-left: 1.5rem;
+}
+
+.cohort-analysis__export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--ej-color-primary, #2E7D32);
+  border-radius: 0.5rem;
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cohort-analysis__export-btn:hover {
+  background: var(--ej-color-primary-hover, #256025);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================================
+   Cohort Selector
+   ============================================================================ */
+
+.cohort-analysis__selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.25rem;
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cohort-analysis__selector-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cohort-analysis__selector-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+  border-radius: 0.375rem;
+  background: var(--ej-bg-card, #ffffff);
+  font-size: 0.875rem;
+  color: var(--ej-text-primary, #212121);
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.cohort-analysis__selector-input:focus {
+  outline: 2px solid var(--ej-color-primary, #2E7D32);
+  outline-offset: 1px;
+}
+
+/* ============================================================================
+   Retention Heatmap Table
+   ============================================================================ */
+
+.cohort-analysis__retention-table {
+  margin-bottom: 2.5rem;
+}
+
+.cohort-analysis__table-wrapper {
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cohort-analysis__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 600px;
+}
+
+.cohort-analysis__table thead {
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.cohort-analysis__th {
+  padding: 0.75rem 0.625rem;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-text-secondary, #757575);
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+  white-space: nowrap;
+}
+
+.cohort-analysis__th--cohort {
+  text-align: left;
+  min-width: 120px;
+}
+
+.cohort-analysis__th--users {
+  text-align: right;
+  min-width: 80px;
+}
+
+/* ---- Cells ---- */
+
+.cohort-analysis__row:hover {
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.cohort-analysis__cell {
+  padding: 0.5rem 0.625rem;
+  text-align: center;
+  border-bottom: 1px solid var(--ej-gray-100, #F5F5F5);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cohort-analysis__cell--label {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.cohort-analysis__cell--users {
+  text-align: right;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+/* ---- Retention Cell with Heatmap Gradient ---- */
+
+.cohort-analysis__cell--retention {
+  position: relative;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  min-width: 56px;
+  cursor: default;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cohort-analysis__cell--retention:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.cohort-analysis__cell-value {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+ * Heatmap gradient colors applied via data-retention attribute.
+ * Uses a green-to-red scale: 100% = strong green, 0% = red.
+ * The JS will set inline background-color for precise interpolation,
+ * but these ranges provide a CSS-only fallback.
+ */
+
+.cohort-analysis__cell--retention[data-retention="100"] {
+  background-color: #1b7a3d;
+}
+
+/* 80-99% - strong green */
+.cohort-analysis__cell--retention[data-retention^="9"],
+.cohort-analysis__cell--retention[data-retention^="8"] {
+  background-color: #2e9e51;
+}
+
+/* 60-79% - moderate green */
+.cohort-analysis__cell--retention[data-retention^="7"],
+.cohort-analysis__cell--retention[data-retention^="6"] {
+  background-color: #66bb6a;
+  color: #1b5e20;
+  text-shadow: none;
+}
+
+/* 40-59% - yellow-green */
+.cohort-analysis__cell--retention[data-retention^="5"],
+.cohort-analysis__cell--retention[data-retention^="4"] {
+  background-color: #d4c341;
+  color: #5d4e00;
+  text-shadow: none;
+}
+
+/* 20-39% - orange */
+.cohort-analysis__cell--retention[data-retention^="3"],
+.cohort-analysis__cell--retention[data-retention^="2"] {
+  background-color: #ef8c3a;
+  color: #6e3200;
+  text-shadow: none;
+}
+
+/* 0-19% - red */
+.cohort-analysis__cell--retention[data-retention^="1"],
+.cohort-analysis__cell--retention[data-retention="0"] {
+  background-color: #e53935;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Special case: single-digit exact values override prefix match */
+.cohort-analysis__cell--retention[data-retention="1"],
+.cohort-analysis__cell--retention[data-retention="2"],
+.cohort-analysis__cell--retention[data-retention="3"],
+.cohort-analysis__cell--retention[data-retention="4"],
+.cohort-analysis__cell--retention[data-retention="5"],
+.cohort-analysis__cell--retention[data-retention="6"],
+.cohort-analysis__cell--retention[data-retention="7"],
+.cohort-analysis__cell--retention[data-retention="8"],
+.cohort-analysis__cell--retention[data-retention="9"] {
+  background-color: #e53935;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Empty state */
+.cohort-analysis__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ej-text-muted, #9E9E9E);
+  font-style: italic;
+}
+
+/* ============================================================================
+   Legend
+   ============================================================================ */
+
+.cohort-analysis__legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.cohort-analysis__legend-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cohort-analysis__legend-gradient {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cohort-analysis__legend-min,
+.cohort-analysis__legend-max {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.cohort-analysis__legend-bar {
+  width: 120px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e53935 0%, #ef8c3a 25%, #d4c341 50%, #66bb6a 75%, #1b7a3d 100%);
+}
+
+/* ============================================================================
+   Summary Cards
+   ============================================================================ */
+
+.cohort-analysis__summary {
+  margin-bottom: 2rem;
+}
+
+.cohort-analysis__summary-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.cohort-analysis__summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.cohort-analysis__summary-card {
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cohort-analysis__summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cohort-analysis__summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ej-text-primary, #212121);
+  font-family: var(--ej-font-family-headings, 'Outfit', sans-serif);
+}
+
+.cohort-analysis__summary-label {
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================================
+   Tooltip
+   ============================================================================ */
+
+.cohort-analysis__tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.cohort-analysis__tooltip[aria-hidden="false"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cohort-analysis__tooltip-content {
+  background: var(--ej-text-primary, #212121);
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  white-space: nowrap;
+}
+
+.cohort-analysis__tooltip-cohort {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.cohort-analysis__tooltip-week,
+.cohort-analysis__tooltip-retained,
+.cohort-analysis__tooltip-rate {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+/* ============================================================================
+   Loading state
+   ============================================================================ */
+
+.cohort-analysis.is-loading .cohort-analysis__table-wrapper {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.cohort-analysis.is-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: 3px solid var(--ej-gray-200, #EEEEEE);
+  border-top-color: var(--ej-color-primary, #2E7D32);
+  border-radius: 50%;
+  animation: cohort-spin 0.6s linear infinite;
+}
+
+@keyframes cohort-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .cohort-analysis {
+    padding: 1rem;
+  }
+
+  .cohort-analysis__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .cohort-analysis__header-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .cohort-analysis__export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cohort-analysis__selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .cohort-analysis__selector-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .cohort-analysis__summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cohort-analysis__legend {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .cohort-analysis__summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .cohort-analysis__th,
+  .cohort-analysis__cell {
+    padding: 0.375rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .cohort-analysis__cell--retention {
+    min-width: 44px;
+    font-size: 0.65rem;
+  }
+}

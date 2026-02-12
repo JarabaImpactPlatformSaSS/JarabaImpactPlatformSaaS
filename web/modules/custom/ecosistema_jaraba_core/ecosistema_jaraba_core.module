@@ -402,6 +402,38 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'usage-dashboard-empty',
       'path' => $path . '/templates',
     ],
+
+    // =========================================================================
+    // COMPLIANCE DASHBOARD (G115-1)
+    // =========================================================================
+
+    'compliance_dashboard' => [
+      'variables' => [
+        'controls' => [],
+        'recent_events' => [],
+        'security_headers' => [],
+        'stats' => [],
+      ],
+      'template' => 'compliance-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // =========================================================================
+    // RESELLER PORTAL (G117-4)
+    // =========================================================================
+
+    // Portal de partner/reseller con dashboard de comisiones y tenants
+    // Ruta: /partner-portal
+    'reseller_portal' => [
+      'variables' => [
+        'reseller' => NULL,
+        'managed_tenants' => [],
+        'commissions' => [],
+        'metrics' => [],
+      ],
+      'template' => 'reseller-portal',
+      'path' => $path . '/templates',
+    ],
   ];
 
 
@@ -837,6 +869,26 @@ function ecosistema_jaraba_core_cron() {
   } catch (\Exception $e) {
     \Drupal::logger('ecosistema_jaraba_core')->error(
       'Error en costes IA: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  // 6b. Detección de anomalías de uso (G111-3).
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\UsageAnomalyDetectorService $anomalyDetector */
+    $anomalyDetector = \Drupal::service('ecosistema_jaraba_core.usage_anomaly_detector');
+    $anomalies = $anomalyDetector->detectAnomalies();
+    if (!empty($anomalies)) {
+      $anomalyDetector->notifyAnomalies($anomalies);
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        'Anomaly detection: @count anomalías detectadas',
+        ['@count' => count($anomalies)]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Error en detección de anomalías: @message',
       ['@message' => $e->getMessage()]
     );
   }
@@ -1808,7 +1860,125 @@ function _ecosistema_jaraba_core_cron_health_check() {
     }
   }
   catch (\Exception $e) {
-    $logger->error('❌ Cron health check failed: @error', [
+    $logger->error('Cron health check failed: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_user_insert().
+ *
+ * USR-001: Flujo post-registro con deteccion de avatar y vinculacion
+ * de diagnostico previo. Implementa la automatizacion ECA de registro.
+ *
+ * Acciones:
+ * 1. Crear JourneyState con avatar=pending, state=discovery
+ * 2. Detectar vertical via AvatarDetectionService
+ * 3. Vincular diagnostico si ?diagnostic=UUID en query
+ * 4. Encolar webhook ActiveCampaign
+ *
+ * SPEC: 20260120a Fases 1-2
+ */
+function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account): void {
+  $logger = \Drupal::logger('ecosistema_jaraba_core');
+
+  try {
+    // 1. Detectar avatar del nuevo usuario.
+    $avatarType = 'pending';
+    $vertical = NULL;
+    $detectionSource = 'default';
+
+    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+      $detection = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+      if ($detection->isDetected()) {
+        $avatarType = $detection->avatarType;
+        $vertical = $detection->vertical;
+        $detectionSource = $detection->detectionSource;
+      }
+    }
+
+    // 2. Crear JourneyState si el modulo jaraba_journey existe.
+    if (\Drupal::moduleHandler()->moduleExists('jaraba_journey')) {
+      try {
+        $journeyStorage = \Drupal::entityTypeManager()->getStorage('journey_state');
+        $journeyState = $journeyStorage->create([
+          'user_id' => $account->id(),
+          'avatar' => $avatarType,
+          'state' => 'discovery',
+          'vertical' => $vertical,
+          'detection_source' => $detectionSource,
+        ]);
+        $journeyState->save();
+      }
+      catch (\Exception $e) {
+        $logger->warning('No se pudo crear JourneyState para usuario @uid: @error', [
+          '@uid' => $account->id(),
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    // 3. Vincular diagnostico previo si ?diagnostic=UUID viene en la URL.
+    $request = \Drupal::requestStack()->getCurrentRequest();
+    if ($request) {
+      $diagnosticUuid = $request->query->get('diagnostic');
+      if ($diagnosticUuid && \Drupal::moduleHandler()->moduleExists('jaraba_diagnostic')) {
+        try {
+          $diagnostics = \Drupal::entityTypeManager()
+            ->getStorage('employability_diagnostic')
+            ->loadByProperties(['uuid' => $diagnosticUuid]);
+
+          if (!empty($diagnostics)) {
+            $diagnostic = reset($diagnostics);
+            // Vincular el diagnostico anonimo al nuevo usuario.
+            if (!$diagnostic->getOwnerId() || $diagnostic->getOwnerId() === 0) {
+              $diagnostic->setOwnerId((int) $account->id());
+              $diagnostic->set('avatar_confirmed', 'jobseeker');
+              $diagnostic->save();
+
+              $logger->info('Diagnostico @uuid vinculado a usuario @uid', [
+                '@uuid' => $diagnosticUuid,
+                '@uid' => $account->id(),
+              ]);
+            }
+          }
+        }
+        catch (\Exception $e) {
+          $logger->warning('Error vinculando diagnostico: @error', [
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+
+    // 4. Encolar webhook ActiveCampaign para CRM.
+    if (\Drupal::hasService('queue')) {
+      try {
+        $queue = \Drupal::queue('activecampaign_webhook');
+        $queue->createItem([
+          'event' => 'user_registered',
+          'user_id' => $account->id(),
+          'email' => $account->getEmail(),
+          'avatar' => $avatarType,
+          'vertical' => $vertical,
+          'timestamp' => time(),
+        ]);
+      }
+      catch (\Exception $e) {
+        // No bloquear registro por errores de cola.
+      }
+    }
+
+    $logger->info('USR-001: Usuario @uid registrado. Avatar: @avatar, Vertical: @vertical, Source: @source', [
+      '@uid' => $account->id(),
+      '@avatar' => $avatarType,
+      '@vertical' => $vertical ?? 'none',
+      '@source' => $detectionSource,
+    ]);
+  }
+  catch (\Exception $e) {
+    $logger->error('Error en hook_user_insert: @error', [
       '@error' => $e->getMessage(),
     ]);
   }

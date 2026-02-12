@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Whitelabel.
+ *
+ * Provides white-label configuration, custom domains, branded email
+ * templates, reseller/partner management and branded PDF generation.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_whitelabel_help(string $route_name, RouteMatchInterface $route_match): ?string {
+  switch ($route_name) {
+    case 'help.page.jaraba_whitelabel':
+      $output = '<h3>' . t('About Jaraba Whitelabel') . '</h3>';
+      $output .= '<p>' . t('This module provides white-label capabilities for the Jaraba SaaS platform, including:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Branding configuration per tenant (logo, colours, custom CSS)') . '</li>';
+      $output .= '<li>' . t('Custom domain management with DNS verification and SSL provisioning') . '</li>';
+      $output .= '<li>' . t('Branded email templates per tenant') . '</li>';
+      $output .= '<li>' . t('Reseller / partner portal with commission tracking') . '</li>';
+      $output .= '<li>' . t('Branded PDF generation (invoices, certificates, reports)') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registers the six Twig templates used by the module.
+ */
+function jaraba_whitelabel_theme(array $existing, string $type, string $theme, string $path): array {
+  return [
+    'jaraba_branding_wizard' => [
+      'variables' => [
+        'config' => NULL,
+        'tenant_id' => NULL,
+        'steps' => [],
+        'current_step' => 0,
+      ],
+      'template' => 'jaraba-branding-wizard',
+      'path' => $path . '/templates',
+    ],
+    'jaraba_domain_management' => [
+      'variables' => [
+        'domains' => [],
+        'tenant_id' => NULL,
+        'can_add' => FALSE,
+      ],
+      'template' => 'jaraba-domain-management',
+      'path' => $path . '/templates',
+    ],
+    'jaraba_email_template_editor' => [
+      'variables' => [
+        'templates' => [],
+        'current_template' => NULL,
+        'available_variables' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'jaraba-email-template-editor',
+      'path' => $path . '/templates',
+    ],
+    'jaraba_reseller_dashboard' => [
+      'variables' => [
+        'reseller' => NULL,
+        'managed_tenants' => [],
+        'commissions' => [],
+        'metrics' => [],
+      ],
+      'template' => 'jaraba-reseller-dashboard',
+      'path' => $path . '/templates',
+    ],
+    'jaraba_reseller_onboarding' => [
+      'variables' => [
+        'steps' => [],
+        'current_step' => 0,
+        'reseller' => NULL,
+      ],
+      'template' => 'jaraba-reseller-onboarding',
+      'path' => $path . '/templates',
+    ],
+    'jaraba_whitelabel_preview' => [
+      'variables' => [
+        'config' => NULL,
+        'tenant_id' => NULL,
+        'preview_url' => NULL,
+      ],
+      'template' => 'jaraba-whitelabel-preview',
+      'path' => $path . '/templates',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds whitelabel-related body classes when the current request
+ * is served under a custom domain or whitelabel configuration.
+ */
+function jaraba_whitelabel_preprocess_html(array &$variables): void {
+  $request = \Drupal::request();
+
+  // Check if the request has whitelabel config attached by the subscriber.
+  $whitelabelConfig = $request->attributes->get('whitelabel_config');
+  if (!empty($whitelabelConfig)) {
+    $variables['attributes']['class'][] = 'is-whitelabeled';
+
+    if (!empty($whitelabelConfig['hide_powered_by'])) {
+      $variables['attributes']['class'][] = 'whitelabel--hide-powered-by';
+    }
+
+    if (!empty($whitelabelConfig['tenant_id'])) {
+      $variables['attributes']['class'][] = 'whitelabel--tenant-' . (int) $whitelabelConfig['tenant_id'];
+    }
+  }
+}

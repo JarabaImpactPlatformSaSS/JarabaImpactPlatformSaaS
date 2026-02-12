@@ -25,6 +25,14 @@ jaraba_events.event_registration.settings:
   requirements:
     _permission: 'administer events settings'
 
+entity.event_landing_page.settings:
+  path: '/admin/structure/event-landing-pages'
+  defaults:
+    _form: '\Drupal\jaraba_events\Form\EventLandingPageSettingsForm'
+    _title: 'Configuración Landing Pages de Eventos'
+  requirements:
+    _permission: 'administer events settings'
+
 # --- Rutas Frontend del Marketplace de Eventos (Zero Region) ---
 
 jaraba_events.marketplace:
@@ -71,41 +79,76 @@ jaraba_events.api.events:
     _controller: '\Drupal\jaraba_events\Controller\EventApiController::listEvents'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view events'
 
 jaraba_events.api.events.detail:
-  path: '/api/v1/events/{event_id}'
+  path: '/api/v1/events/{id}'
   defaults:
     _controller: '\Drupal\jaraba_events\Controller\EventApiController::getEvent'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
-    event_id: '\d+'
+    _permission: 'view events'
+
+jaraba_events.api.events.create:
+  path: '/api/v1/events'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::createEvent'
+  methods: [POST]
+  requirements:
+    _permission: 'create events'
+
+jaraba_events.api.events.update:
+  path: '/api/v1/events/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::updateEvent'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit events'
+
+jaraba_events.api.events.delete:
+  path: '/api/v1/events/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::deleteEvent'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete events'
+
+jaraba_events.api.events.registrations:
+  path: '/api/v1/events/{id}/registrations'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::listRegistrations'
+  methods: [GET]
+  requirements:
+    _permission: 'manage event registrations'
 
 jaraba_events.api.events.register:
-  path: '/api/v1/events/{event_id}/register'
+  path: '/api/v1/events/{id}/register'
   defaults:
-    _controller: '\Drupal\jaraba_events\Controller\EventApiController::registerAttendee'
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::registerForEvent'
   methods: [POST]
   requirements:
     _permission: 'register for events'
-    event_id: '\d+'
 
 jaraba_events.api.events.checkin:
-  path: '/api/v1/events/{event_id}/registrations/{registration_id}/checkin'
+  path: '/api/v1/events/{id}/check-in'
   defaults:
     _controller: '\Drupal\jaraba_events\Controller\EventApiController::checkIn'
-  methods: [PATCH]
+  methods: [POST]
   requirements:
     _permission: 'manage event registrations'
-    event_id: '\d+'
-    registration_id: '\d+'
 
 jaraba_events.api.events.stats:
-  path: '/api/v1/events/{event_id}/stats'
+  path: '/api/v1/events/{id}/stats'
   defaults:
-    _controller: '\Drupal\jaraba_events\Controller\EventApiController::eventStats'
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::getEventStats'
   methods: [GET]
   requirements:
     _permission: 'view event analytics'
-    event_id: '\d+'
+
+jaraba_events.api.events.certificate:
+  path: '/api/v1/events/{id}/certificate'
+  defaults:
+    _controller: '\Drupal\jaraba_events\Controller\EventApiController::generateCertificate'
+  methods: [POST]
+  requirements:
+    _permission: 'manage event registrations'

@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Usage Billing.
+ *
+ * Sistema avanzado de facturación basada en uso (usage-based billing)
+ * para el Ecosistema Jaraba SaaS. Proporciona ingesta de eventos,
+ * agregación temporal, cálculo de precios y sincronización con Stripe.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_usage_billing_help(string $route_name, RouteMatchInterface $route_match): ?string {
+  switch ($route_name) {
+    case 'help.page.jaraba_usage_billing':
+      $output = '<h3>' . t('Acerca de') . '</h3>';
+      $output .= '<p>' . t('Sistema de facturación basada en uso para el Ecosistema Jaraba.') . '</p>';
+      $output .= '<h4>' . t('Características') . '</h4>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Ingesta de eventos de uso en tiempo real') . '</li>';
+      $output .= '<li>' . t('Agregación temporal (horaria, diaria, mensual)') . '</li>';
+      $output .= '<li>' . t('Modelos de pricing: flat, tiered, per_unit, package') . '</li>';
+      $output .= '<li>' . t('Sincronización con Stripe Metered Billing') . '</li>';
+      $output .= '<li>' . t('Alertas de umbral y notificaciones') . '</li>';
+      $output .= '<li>' . t('Dashboard visual con Chart.js') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_usage_billing_theme(): array {
+  return [
+    'usage_dashboard' => [
+      'variables' => [
+        'tenant_id' => NULL,
+        'metrics' => [],
+        'aggregates' => [],
+        'alerts' => [],
+        'chart_data' => [],
+        'period' => 'monthly',
+        'cost_summary' => [],
+      ],
+      'template' => 'jaraba-usage-dashboard',
+    ],
+    'usage_alerts' => [
+      'variables' => [
+        'alerts' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'jaraba-usage-alerts',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body en páginas de usage billing.
+ */
+function jaraba_usage_billing_preprocess_html(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if ($route_name && str_starts_with($route_name, 'jaraba_usage_billing.')) {
+    $variables['attributes']['class'][] = 'page--usage-billing';
+
+    if ($route_name === 'jaraba_usage_billing.dashboard') {
+      $variables['attributes']['class'][] = 'page--usage-dashboard';
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Template for the Onboarding Checklist widget.
+ *
+ * Variables:
+ * - items: Array of checklist items with id, label, description, completed.
+ * - progress_percentage: Overall progress 0-100.
+ * - user_id: ID of the current user.
+ *
+ * @see \Drupal\jaraba_onboarding\Service\OnboardingChecklistService
+ */
+#}
+
+<div class="onboarding-checklist"
+     data-user-id="{{ user_id }}"
+     data-progress="{{ progress_percentage }}">
+
+  {# ===== Header ===== #}
+  <div class="onboarding-checklist__header">
+    <h3 class="onboarding-checklist__title">
+      {% trans %}Onboarding Checklist{% endtrans %}
+    </h3>
+    <span class="onboarding-checklist__counter">
+      {% set completed_count = items|filter(item => item.completed)|length %}
+      {{ completed_count }}/{{ items|length }}
+      {% trans %}completed{% endtrans %}
+    </span>
+  </div>
+
+  {# ===== Mini Progress Bar ===== #}
+  <div class="onboarding-checklist__progress-bar" role="progressbar"
+       aria-valuenow="{{ progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="onboarding-checklist__progress-fill"
+         style="width: {{ progress_percentage }}%"></div>
+  </div>
+
+  {# ===== Items ===== #}
+  {% if items is not empty %}
+    <ul class="onboarding-checklist__items">
+      {% for item in items %}
+        <li class="onboarding-checklist__item {{ item.completed ? 'onboarding-checklist__item--done' : '' }}"
+            data-step-id="{{ item.id }}">
+          <span class="onboarding-checklist__check" aria-hidden="true">
+            {{ item.completed ? '&#10003;' : '&#9675;' }}
+          </span>
+          <span class="onboarding-checklist__label">
+            {{ item.label }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="onboarding-checklist__empty">
+      {% trans %}No items in checklist.{% endtrans %}
+    </p>
+  {% endif %}
+</div>

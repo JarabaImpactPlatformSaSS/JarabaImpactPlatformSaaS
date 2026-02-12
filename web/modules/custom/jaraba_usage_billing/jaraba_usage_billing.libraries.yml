@@ -1,0 +1,23 @@
+# Librerías del módulo Jaraba Usage Billing.
+
+# Chart.js CDN.
+chartjs:
+  version: 4.4.1
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js:
+      type: external
+      minified: true
+
+# Dashboard de uso con Chart.js.
+usage-dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/usage-dashboard.css: {}
+  js:
+    js/usage-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_usage_billing/chartjs

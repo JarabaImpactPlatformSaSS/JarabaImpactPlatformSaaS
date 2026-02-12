@@ -1,0 +1,23 @@
+jaraba_whitelabel.whitelabel_config.add:
+  route_name: entity.whitelabel_config.add_form
+  title: 'Add whitelabel config'
+  appears_on:
+    - entity.whitelabel_config.collection
+
+jaraba_whitelabel.custom_domain.add:
+  route_name: entity.custom_domain.add_form
+  title: 'Add custom domain'
+  appears_on:
+    - entity.custom_domain.collection
+
+jaraba_whitelabel.whitelabel_email_template.add:
+  route_name: entity.whitelabel_email_template.add_form
+  title: 'Add email template'
+  appears_on:
+    - entity.whitelabel_email_template.collection
+
+jaraba_whitelabel.whitelabel_reseller.add:
+  route_name: entity.whitelabel_reseller.add_form
+  title: 'Add reseller'
+  appears_on:
+    - entity.whitelabel_reseller.collection

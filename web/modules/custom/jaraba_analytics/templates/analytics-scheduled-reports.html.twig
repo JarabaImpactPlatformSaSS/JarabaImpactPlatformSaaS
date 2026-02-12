@@ -1,0 +1,146 @@
+{#
+/**
+ * @file
+ * Template for Analytics Scheduled Reports list.
+ *
+ * Variables:
+ * - reports: Array of report data objects with id, name, schedule_type,
+ *   report_status, recipients, last_sent, next_send.
+ * - can_manage: Boolean indicating if user can manage reports.
+ *
+ * Conventions:
+ * - BEM naming (.analytics-reports, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\ScheduledReportController::listReports
+ */
+#}
+
+<div class="analytics-reports">
+
+  {# ===== Header ===== #}
+  <header class="analytics-reports__header">
+    <div class="analytics-reports__header-content">
+      <h2 class="analytics-reports__title">
+        {% trans %}Scheduled Reports{% endtrans %}
+      </h2>
+      <p class="analytics-reports__subtitle">
+        {% trans %}Automated reports sent to your team on a regular schedule{% endtrans %}
+      </p>
+    </div>
+    {% if can_manage %}
+      <div class="analytics-reports__header-actions">
+        <a href="/admin/content/scheduled-reports/add"
+           class="analytics-reports__create-btn"
+           aria-label="{% trans %}Create new scheduled report{% endtrans %}">
+          {% trans %}+ New Report{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </header>
+
+  {# ===== Reports Table ===== #}
+  <section class="analytics-reports__table-section"
+           aria-label="{% trans %}Reports list{% endtrans %}">
+    {% if reports is not empty %}
+      <table class="analytics-reports__table" role="grid">
+        <thead>
+          <tr>
+            <th class="analytics-reports__th">{% trans %}Name{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Schedule{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Status{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Recipients{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Last Sent{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Next Send{% endtrans %}</th>
+            <th class="analytics-reports__th">{% trans %}Actions{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody class="analytics-reports__tbody">
+          {% for report in reports %}
+            <tr class="analytics-reports__row analytics-reports__row--{{ report.report_status }}"
+                data-report-id="{{ report.id }}">
+              <td class="analytics-reports__cell analytics-reports__cell--name">
+                {{ report.name }}
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--schedule">
+                <span class="analytics-reports__schedule-badge analytics-reports__schedule-badge--{{ report.schedule_type }}">
+                  {{ report.schedule_type }}
+                </span>
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--status">
+                <span class="analytics-reports__status-badge analytics-reports__status-badge--{{ report.report_status }}">
+                  {{ report.report_status == 'active' ? 'Active'|t : 'Paused'|t }}
+                </span>
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--recipients">
+                {{ report.recipients|length }} {% trans %}recipient(s){% endtrans %}
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--last-sent">
+                {% if report.last_sent %}
+                  {{ report.last_sent|date('Y-m-d H:i') }}
+                {% else %}
+                  <span class="analytics-reports__not-sent">{% trans %}Never{% endtrans %}</span>
+                {% endif %}
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--next-send">
+                {% if report.next_send and report.report_status == 'active' %}
+                  {{ report.next_send|date('Y-m-d H:i') }}
+                {% else %}
+                  <span class="analytics-reports__not-scheduled">--</span>
+                {% endif %}
+              </td>
+              <td class="analytics-reports__cell analytics-reports__cell--actions">
+                <button type="button"
+                        class="analytics-reports__action-btn analytics-reports__action-btn--preview"
+                        data-action="preview-report"
+                        data-report-id="{{ report.id }}"
+                        aria-label="{% trans %}Preview report{% endtrans %}">
+                  {% trans %}Preview{% endtrans %}
+                </button>
+                {% if can_manage %}
+                  <a href="/admin/content/scheduled-reports/{{ report.id }}/edit"
+                     class="analytics-reports__action-btn analytics-reports__action-btn--edit"
+                     aria-label="{% trans %}Edit report{% endtrans %}">
+                    {% trans %}Edit{% endtrans %}
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="analytics-reports__empty">
+        <p class="analytics-reports__empty-message">
+          {% trans %}No scheduled reports found. Create your first report to automate analytics delivery.{% endtrans %}
+        </p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# ===== Preview Modal ===== #}
+  <div class="analytics-reports__preview-modal analytics-reports__preview-modal--hidden"
+       role="dialog"
+       aria-label="{% trans %}Report preview{% endtrans %}"
+       aria-hidden="true">
+    <div class="analytics-reports__preview-overlay"></div>
+    <div class="analytics-reports__preview-content">
+      <div class="analytics-reports__preview-header">
+        <h3 class="analytics-reports__preview-title">{% trans %}Report Preview{% endtrans %}</h3>
+        <button type="button"
+                class="analytics-reports__preview-close"
+                data-action="close-preview"
+                aria-label="{% trans %}Close preview{% endtrans %}">
+          &#x2715;
+        </button>
+      </div>
+      <div class="analytics-reports__preview-body">
+        <div class="analytics-reports__preview-loading">
+          {% trans %}Loading preview...{% endtrans %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

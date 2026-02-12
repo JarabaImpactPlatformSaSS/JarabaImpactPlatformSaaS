@@ -32,3 +32,68 @@ services:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # MetaAdsClientService: Integración con Meta Marketing API
+  # Responsabilidad: obtener campañas, métricas, crear audiencias custom,
+  #   subir conversiones offline, refrescar access tokens
+  # Relaciones: consume AdsAccount entity, config.factory
+  # =====================================================================
+  jaraba_ads.meta_ads_client:
+    class: Drupal\jaraba_ads\Service\MetaAdsClientService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # GoogleAdsClientService: Integración con Google Ads API
+  # Responsabilidad: obtener campañas, métricas, crear audiencias
+  #   Customer Match, subir conversiones offline, refrescar tokens
+  # Relaciones: consume AdsAccount entity, config.factory
+  # =====================================================================
+  jaraba_ads.google_ads_client:
+    class: Drupal\jaraba_ads\Service\GoogleAdsClientService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # AdsAudienceSyncService: Sincronización de audiencias CRM → Ads
+  # Responsabilidad: sincronizar segmentos de CRM como audiencias en
+  #   plataformas de ads, crear audiencias desde contactos CRM, CRUD
+  # Relaciones: consume AdsAudienceSync entity
+  # =====================================================================
+  jaraba_ads.audience_sync:
+    class: Drupal\jaraba_ads\Service\AdsAudienceSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_crm.contact'
+      - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # ConversionTrackingService: Tracking de conversiones offline
+  # Responsabilidad: registrar eventos de conversión offline, obtener
+  #   conversiones pendientes de envío, marcar como enviadas
+  # Relaciones: consume AdsConversionEvent entity
+  # =====================================================================
+  jaraba_ads.conversion_tracking:
+    class: Drupal\jaraba_ads\Service\ConversionTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ads'
+
+  # =====================================================================
+  # AdsSyncService: Orquestación de sincronización multi-plataforma
+  # Responsabilidad: sincronizar campañas y métricas desde Meta/Google,
+  #   coordinar flujo de sync completo por tenant
+  # Relaciones: consume MetaAdsClientService, GoogleAdsClientService
+  # =====================================================================
+  jaraba_ads.ads_sync:
+    class: Drupal\jaraba_ads\Service\AdsSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ads.meta_ads_client'
+      - '@jaraba_ads.google_ads_client'
+      - '@logger.channel.jaraba_ads'

@@ -1,0 +1,160 @@
+{#
+/**
+ * @file
+ * kb-article-detail.html.twig — Vista de artículo KB.
+ *
+ * PROPÓSITO: Muestra el detalle de un artículo con breadcrumb, título,
+ * cuerpo, botones de feedback, vídeos vinculados y artículos relacionados.
+ *
+ * Variables:
+ * - article: Array con keys: id, title, slug, body, summary, category_name,
+ *   category_slug, view_count, helpful_count, not_helpful_count, tags, created, changed.
+ *   O NULL si no existe.
+ * - related_articles: Array de artículos relacionados.
+ * - videos: Array de vídeos vinculados con keys: id, title, video_url, thumbnail_url, duration.
+ *
+ * BEM: .kb-article
+ */
+#}
+
+<div class="kb-article">
+  {% if article %}
+    {# Breadcrumb #}
+    <nav class="kb-article__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+      <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-article__breadcrumb-link">
+        {% trans %}Base de Conocimiento{% endtrans %}
+      </a>
+      {% if article.category_slug %}
+        <span class="kb-article__breadcrumb-sep">/</span>
+        <a href="{{ path('jaraba_tenant_knowledge.kb.category', { slug: article.category_slug }) }}" class="kb-article__breadcrumb-link">
+          {{ article.category_name }}
+        </a>
+      {% endif %}
+      <span class="kb-article__breadcrumb-sep">/</span>
+      <span class="kb-article__breadcrumb-current">{{ article.title|length > 60 ? article.title|slice(0, 60) ~ '...' : article.title }}</span>
+    </nav>
+
+    {# Contenido principal #}
+    <article class="kb-article__content">
+      <header class="kb-article__header">
+        {% if article.category_name %}
+          <span class="kb-article__category-badge">{{ article.category_name }}</span>
+        {% endif %}
+        <h1 class="kb-article__title">{{ article.title }}</h1>
+        <div class="kb-article__meta">
+          <span class="kb-article__views">{{ article.view_count }} {% trans %}vistas{% endtrans %}</span>
+        </div>
+      </header>
+
+      <div class="kb-article__body">
+        {{ article.body|raw }}
+      </div>
+
+      {# Vídeos vinculados #}
+      {% if videos is not empty %}
+        <section class="kb-article__videos">
+          <h2 class="kb-article__videos-title">{% trans %}Vídeos Relacionados{% endtrans %}</h2>
+          <div class="kb-article__videos-grid">
+            {% for video in videos %}
+              <div class="kb-video-embed" data-video-url="{{ video.video_url }}">
+                {% if video.thumbnail_url %}
+                  <div class="kb-video-embed__thumbnail">
+                    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" class="kb-video-embed__img" loading="lazy">
+                    <button class="kb-video-embed__play-btn" aria-label="{% trans %}Reproducir vídeo{% endtrans %}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                      </svg>
+                    </button>
+                  </div>
+                {% endif %}
+                <h3 class="kb-video-embed__title">{{ video.title }}</h3>
+                <span class="kb-video-embed__duration">{{ video.duration }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {# Tags #}
+      {% if article.tags is not empty %}
+        <div class="kb-article__tags">
+          {% for tag in article.tags %}
+            <span class="kb-article__tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Feedback #}
+      <footer class="kb-article__footer">
+        <div class="kb-article__feedback" data-kb-feedback>
+          <span class="kb-article__feedback-label">{% trans %}¿Te resultó útil este artículo?{% endtrans %}</span>
+          <div class="kb-article__feedback-buttons">
+            <button class="kb-article__feedback-btn kb-article__feedback-btn--yes" data-kb-feedback-btn="yes" data-article-id="{{ article.id }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+              </svg>
+              {% trans %}Sí{% endtrans %} <span class="kb-article__feedback-count">({{ article.helpful_count }})</span>
+            </button>
+            <button class="kb-article__feedback-btn kb-article__feedback-btn--no" data-kb-feedback-btn="no" data-article-id="{{ article.id }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+              </svg>
+              {% trans %}No{% endtrans %} <span class="kb-article__feedback-count">({{ article.not_helpful_count }})</span>
+            </button>
+          </div>
+          <div class="kb-article__feedback-thanks" hidden data-kb-feedback-thanks>
+            {% trans %}Gracias por tu valoración.{% endtrans %}
+          </div>
+        </div>
+
+        {# Acciones del artículo #}
+        <div class="kb-article__actions">
+          <button class="kb-article__action-btn" data-kb-copy-link title="{% trans %}Copiar enlace{% endtrans %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            {% trans %}Copiar enlace{% endtrans %}
+          </button>
+          <button class="kb-article__action-btn" data-kb-print title="{% trans %}Imprimir{% endtrans %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            {% trans %}Imprimir{% endtrans %}
+          </button>
+        </div>
+      </footer>
+    </article>
+
+    {# Artículos relacionados #}
+    {% if related_articles is not empty %}
+      <aside class="kb-article__related">
+        <h2 class="kb-article__related-title">{% trans %}Artículos Relacionados{% endtrans %}</h2>
+        <div class="kb-article__related-grid">
+          {% for related in related_articles %}
+            <a href="{{ path('jaraba_tenant_knowledge.kb.article', { slug: related.slug }) }}" class="kb-article__related-card">
+              <h4 class="kb-article__related-card-title">{{ related.title }}</h4>
+              <p class="kb-article__related-card-summary">{{ related.summary }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      </aside>
+    {% endif %}
+
+    {# Botón volver #}
+    <div class="kb-article__back">
+      <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-article__back-link">
+        &larr; {% trans %}Volver a la Base de Conocimiento{% endtrans %}
+      </a>
+    </div>
+  {% else %}
+    {# Artículo no encontrado #}
+    <div class="kb-article__not-found">
+      <h1 class="kb-article__title">{% trans %}Artículo no encontrado{% endtrans %}</h1>
+      <p>{% trans %}El artículo que buscas no existe o ha sido archivado.{% endtrans %}</p>
+      <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-article__back-link">
+        &larr; {% trans %}Volver a la Base de Conocimiento{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

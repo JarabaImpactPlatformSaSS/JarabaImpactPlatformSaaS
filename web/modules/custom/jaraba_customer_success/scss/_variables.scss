@@ -1,0 +1,18 @@
+// Customer Success Design Tokens
+$cs-font-family: var(--ej-font-family-body, 'Inter', sans-serif);
+$cs-font-headings: var(--ej-font-family-headings, 'Outfit', sans-serif);
+
+$cs-color-primary: var(--ej-color-primary, #2563eb);
+$cs-color-success: var(--ej-color-success, #16a34a);
+$cs-color-warning: var(--ej-color-warning, #f59e0b);
+$cs-color-danger: var(--ej-color-error, #dc2626);
+
+$cs-bg-body: var(--ej-bg-body, #f8fafc);
+$cs-bg-surface: var(--ej-bg-surface, #ffffff);
+$cs-color-text: var(--ej-color-text, #1e293b);
+$cs-color-text-muted: var(--ej-color-text-muted, #64748b);
+
+$cs-border-radius: var(--ej-border-radius, 8px);
+$cs-border-color: #e2e8f0;
+$cs-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$cs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);

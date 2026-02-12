@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Template for the offline connectivity indicator bar.
+ *
+ * Displays a small bar at the top of the page when the user
+ * loses network connectivity. Automatically hidden when online.
+ *
+ * Available variables:
+ * - message_offline: Text shown when offline (default provided by JS).
+ * - message_online: Text shown briefly when reconnected.
+ */
+#}
+<div class="pwa-offline-indicator" data-pwa-offline-indicator role="status" aria-live="polite" hidden>
+  <div class="pwa-offline-indicator__content">
+    <span class="pwa-offline-indicator__icon" aria-hidden="true"></span>
+    <span class="pwa-offline-indicator__message">
+      {{ message_offline|default('You are currently offline. Some features may be unavailable.'|t) }}
+    </span>
+  </div>
+</div>
+
+<div class="pwa-online-indicator" data-pwa-online-indicator role="status" aria-live="polite" hidden>
+  <div class="pwa-online-indicator__content">
+    <span class="pwa-online-indicator__icon" aria-hidden="true"></span>
+    <span class="pwa-online-indicator__message">
+      {{ message_online|default('Connection restored.'|t) }}
+    </span>
+  </div>
+</div>

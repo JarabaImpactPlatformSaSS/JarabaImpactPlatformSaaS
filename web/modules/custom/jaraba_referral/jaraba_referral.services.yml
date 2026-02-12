@@ -19,3 +19,40 @@ services:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_referral'
+
+  # =====================================================================
+  # RewardProcessingService: Creación, validación y payout de recompensas
+  # Responsabilidad: crear recompensas, aprobar/rechazar, procesar pagos
+  #   vía Stripe, consultar pendientes y recompensas por usuario
+  # Relaciones: consume ReferralReward entity
+  # =====================================================================
+  jaraba_referral.reward_processing:
+    class: Drupal\jaraba_referral\Service\RewardProcessingService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_foc.stripe_connect'
+      - '@logger.channel.jaraba_referral'
+
+  # =====================================================================
+  # LeaderboardService: Ranking y gamificación de referidores
+  # Responsabilidad: obtener leaderboard por tenant, estadísticas,
+  #   niveles de embajador, posición del usuario
+  # Relaciones: consume ReferralCode entity
+  # =====================================================================
+  jaraba_referral.leaderboard:
+    class: Drupal\jaraba_referral\Service\LeaderboardService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_referral'
+
+  # =====================================================================
+  # ReferralTrackingService: Seguimiento de clicks, signups y conversiones
+  # Responsabilidad: registrar clicks en enlaces de referido, signups
+  #   vía código, conversiones con valor, estadísticas de tracking
+  # Relaciones: consume ReferralCode entity, Referral entity
+  # =====================================================================
+  jaraba_referral.tracking:
+    class: Drupal\jaraba_referral\Service\ReferralTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_referral'

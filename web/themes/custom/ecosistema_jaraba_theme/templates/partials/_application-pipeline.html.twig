@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * Mini-pipeline horizontal de candidaturas.
+ *
+ * Muestra el estado de las candidaturas del usuario en un pipeline
+ * visual compacto con etapas: Aplicado > Visto > Entrevista > Oferta.
+ *
+ * Variables:
+ *   - applications: Array de candidaturas con sus estados.
+ *     Cada elemento tiene: job_title, company, status, date, match_score.
+ *   - total_count: Numero total de candidaturas.
+ *   - stats: Resumen por estado { applied, viewed, interview, offer }.
+ *
+ * Uso:
+ *   {% include '@ecosistema_jaraba_theme/partials/_application-pipeline.html.twig' with {
+ *     applications: applications,
+ *     stats: pipeline_stats,
+ *   } %}
+ */
+#}
+
+<div class="ej-pipeline">
+  <h3 class="ej-pipeline__title">{{ 'Mis candidaturas'|t }}</h3>
+
+  {# Pipeline stages #}
+  <div class="ej-pipeline__stages">
+    {% set stages = [
+      { key: 'applied', label: 'Aplicado'|t, icon: 'send' },
+      { key: 'viewed', label: 'Visto'|t, icon: 'eye' },
+      { key: 'interview', label: 'Entrevista'|t, icon: 'calendar' },
+      { key: 'offer', label: 'Oferta'|t, icon: 'star' },
+    ] %}
+
+    {% for stage in stages %}
+      <div class="ej-pipeline__stage">
+        <div class="ej-pipeline__stage-icon">
+          {{ jaraba_icon('ui', stage.icon, { size: '20px' }) }}
+        </div>
+        <span class="ej-pipeline__stage-count">{{ stats[stage.key] ?? 0 }}</span>
+        <span class="ej-pipeline__stage-label">{{ stage.label }}</span>
+      </div>
+      {% if not loop.last %}
+        <div class="ej-pipeline__connector"></div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {# Recent applications list #}
+  {% if applications is not empty %}
+    <div class="ej-pipeline__list">
+      {% for app in applications|slice(0, 5) %}
+        <div class="ej-pipeline__item ej-pipeline__item--{{ app.status }}">
+          <div class="ej-pipeline__item-info">
+            <span class="ej-pipeline__item-title">{{ app.job_title }}</span>
+            <span class="ej-pipeline__item-company">{{ app.company }}</span>
+          </div>
+          <div class="ej-pipeline__item-meta">
+            {% if app.match_score is defined %}
+              <span class="ej-pipeline__match">{{ app.match_score }}%</span>
+            {% endif %}
+            <span class="ej-pipeline__item-date">{{ app.date }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="ej-pipeline__empty">{{ 'Aun no has aplicado a ninguna oferta.'|t }}</p>
+  {% endif %}
+</div>

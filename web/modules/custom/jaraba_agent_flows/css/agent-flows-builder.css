@@ -1,0 +1,136 @@
+/**
+ * @file
+ * Estilos del editor visual de flujos de agentes IA.
+ *
+ * BEM structure:
+ *   .agent-flow-builder
+ *     .agent-flow-builder__canvas
+ *     .agent-flow-builder__sidebar
+ *     .agent-flow-builder__toolbar
+ */
+
+.agent-flow-builder {
+  display: flex;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.agent-flow-builder__sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.agent-flow-builder__canvas {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  padding: 2rem;
+}
+
+.agent-flow-builder__toolbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.agent-flow-builder__toolbar-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.agent-flow-builder__toolbar-btn:hover {
+  background: #f0f0f0;
+}
+
+.agent-flow-builder__toolbar-btn--primary {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+.agent-flow-builder__toolbar-btn--primary:hover {
+  background: #1565c0;
+}
+
+/* Step nodes */
+.agent-flow-step-node {
+  position: absolute;
+  min-width: 180px;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  cursor: move;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.agent-flow-step-node:hover {
+  border-color: #1976d2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+}
+
+.agent-flow-step-node--selected {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+.agent-flow-step-node__type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.agent-flow-step-node__type--generate { color: #7b1fa2; }
+.agent-flow-step-node__type--validate { color: #0288d1; }
+.agent-flow-step-node__type--transform { color: #f57c00; }
+.agent-flow-step-node__type--publish { color: #43a047; }
+.agent-flow-step-node__type--condition { color: #fdd835; }
+.agent-flow-step-node__type--api_call { color: #e53935; }
+
+.agent-flow-step-node__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Sidebar step types */
+.agent-flow-step-palette {
+  margin-bottom: 1rem;
+}
+
+.agent-flow-step-palette__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.agent-flow-step-palette__item {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.agent-flow-step-palette__item:hover {
+  background: #f0f0f0;
+}

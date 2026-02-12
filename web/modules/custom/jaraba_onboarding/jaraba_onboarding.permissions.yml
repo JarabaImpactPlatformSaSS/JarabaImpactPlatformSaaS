@@ -1,0 +1,12 @@
+administer onboarding:
+  title: 'Administrar onboarding'
+  description: 'Acceso completo a todas las entidades y configuracion de onboarding.'
+  restrict access: true
+
+manage onboarding:
+  title: 'Gestionar onboarding'
+  description: 'Crear, editar y eliminar templates de onboarding y gestionar progreso de usuarios.'
+
+view onboarding progress:
+  title: 'Ver progreso de onboarding'
+  description: 'Ver el progreso de onboarding propio y acceder al dashboard.'

@@ -1,0 +1,59 @@
+# ===========================================
+# Rutas administrativas
+# ===========================================
+
+jaraba_usage_billing.admin:
+  path: '/admin/structure/usage-billing'
+  defaults:
+    _form: '\Drupal\jaraba_usage_billing\Form\UsageBillingSettingsForm'
+    _title: 'Configuración de Usage Billing'
+  requirements:
+    _permission: 'administer usage billing'
+
+jaraba_usage_billing.pricing_rule.settings:
+  path: '/admin/config/usage-billing/pricing-rule'
+  defaults:
+    _form: '\Drupal\jaraba_usage_billing\Form\UsageBillingSettingsForm'
+    _title: 'Configuración de Reglas de Pricing'
+  requirements:
+    _permission: 'administer usage billing'
+
+# ===========================================
+# Rutas del frontend
+# ===========================================
+
+jaraba_usage_billing.dashboard:
+  path: '/uso/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_usage_billing\Controller\UsageDashboardController::dashboard'
+    _title: 'Dashboard de Uso'
+  requirements:
+    _permission: 'view usage data'
+
+# ===========================================
+# REST API — Usage Billing
+# ===========================================
+
+jaraba_usage_billing.api.events.ingest:
+  path: '/api/v1/usage/events'
+  defaults:
+    _controller: '\Drupal\jaraba_usage_billing\Controller\UsageApiController::ingestEvent'
+  requirements:
+    _permission: 'ingest usage events'
+  methods: [POST]
+
+jaraba_usage_billing.api.aggregates.get:
+  path: '/api/v1/usage/aggregates'
+  defaults:
+    _controller: '\Drupal\jaraba_usage_billing\Controller\UsageApiController::getAggregates'
+  requirements:
+    _permission: 'view usage data'
+  methods: [GET]
+
+jaraba_usage_billing.api.dashboard.get:
+  path: '/api/v1/usage/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_usage_billing\Controller\UsageApiController::getDashboardData'
+  requirements:
+    _permission: 'view usage data'
+  methods: [GET]

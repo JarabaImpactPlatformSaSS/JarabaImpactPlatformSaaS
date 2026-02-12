@@ -1,0 +1,13 @@
+jaraba_whitelabel.admin:
+  title: 'Whitelabel'
+  description: 'Manage whitelabel configuration, custom domains, email templates and resellers.'
+  route_name: jaraba_whitelabel.admin
+  parent: system.admin_structure
+  weight: 20
+
+jaraba_whitelabel.settings:
+  title: 'Settings'
+  description: 'Global whitelabel settings.'
+  route_name: jaraba_whitelabel.settings
+  parent: jaraba_whitelabel.admin
+  weight: 0

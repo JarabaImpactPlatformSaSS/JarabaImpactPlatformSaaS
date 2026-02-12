@@ -400,3 +400,83 @@ jaraba_tenant_knowledge.correction.delete:
   requirements:
     _permission: 'edit tenant knowledge'
 
+# =============================================================================
+# BASE DE CONOCIMIENTO PÚBLICA (KB) - /ayuda/kb
+# =============================================================================
+# Rutas públicas para el centro de ayuda basado en entidades KB.
+
+jaraba_tenant_knowledge.kb.index:
+  path: '/ayuda/kb'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbHelpCenterController::index'
+    _title: 'Base de Conocimiento'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_tenant_knowledge.kb.category:
+  path: '/ayuda/kb/categoria/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbHelpCenterController::category'
+    _title: 'Categoría'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_tenant_knowledge.kb.article:
+  path: '/ayuda/kb/articulo/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbHelpCenterController::article'
+    _title: 'Artículo'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_tenant_knowledge.kb.search:
+  path: '/ayuda/kb/buscar'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbHelpCenterController::search'
+    _title: 'Buscar en Base de Conocimiento'
+  requirements:
+    _access: 'TRUE'
+
+# API de búsqueda KB.
+jaraba_tenant_knowledge.kb.search_api:
+  path: '/api/v1/kb/search'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbSearchApiController::search'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# API de analíticas KB.
+jaraba_tenant_knowledge.kb.analytics_api:
+  path: '/api/v1/kb/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_knowledge\Controller\KbAnalyticsApiController::analytics'
+  requirements:
+    _permission: 'manage kb articles'
+  methods: [GET]
+
+# Admin routes for KB entities.
+jaraba_tenant_knowledge.admin.kb_articles:
+  path: '/admin/content/kb-articles'
+  defaults:
+    _entity_list: 'kb_article'
+    _title: 'Artículos KB'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.kb_categories:
+  path: '/admin/content/kb-categories'
+  defaults:
+    _entity_list: 'kb_category'
+    _title: 'Categorías KB'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+jaraba_tenant_knowledge.admin.kb_videos:
+  path: '/admin/content/kb-videos'
+  defaults:
+    _entity_list: 'kb_video'
+    _title: 'Vídeos KB'
+  requirements:
+    _permission: 'administer tenant knowledge'
+

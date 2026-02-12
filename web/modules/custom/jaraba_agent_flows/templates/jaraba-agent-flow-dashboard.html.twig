@@ -1,0 +1,161 @@
+{#
+/**
+ * @file
+ * Dashboard de flujos de agentes IA.
+ *
+ * Variables:
+ *   - flows: Array de flujos del tenant.
+ *   - metrics: Metricas globales (total_flows, total_executions, avg_duration, success_rate).
+ *   - recent_executions: Ultimas 10 ejecuciones.
+ *   - templates: Templates disponibles por vertical.
+ *
+ * BEM structure:
+ *   .agent-flow-dashboard
+ *     .agent-flow-dashboard__header
+ *     .agent-flow-dashboard__metrics
+ *     .agent-flow-dashboard__flows
+ *     .agent-flow-dashboard__recent
+ *     .agent-flow-dashboard__templates
+ */
+#}
+
+{% set status_labels = {
+  'draft': 'Borrador'|t,
+  'active': 'Activo'|t,
+  'paused': 'Pausado'|t,
+  'archived': 'Archivado'|t,
+} %}
+
+{% set exec_status_labels = {
+  'pending': 'Pendiente'|t,
+  'running': 'Ejecutando'|t,
+  'completed': 'Completada'|t,
+  'failed': 'Fallida'|t,
+  'cancelled': 'Cancelada'|t,
+} %}
+
+<div class="agent-flow-dashboard">
+
+  {# ===== HEADER ===== #}
+  <div class="agent-flow-dashboard__header">
+    <div class="agent-flow-dashboard__header-content">
+      <h1 class="agent-flow-dashboard__title">
+        {% trans %}Flujos de Agentes IA{% endtrans %}
+      </h1>
+      <p class="agent-flow-dashboard__subtitle">
+        {% trans %}Crea, gestiona y monitorea flujos automatizados de agentes de inteligencia artificial{% endtrans %}
+      </p>
+    </div>
+    <div class="agent-flow-dashboard__header-actions">
+      <a href="/admin/content/agent-flows/add" class="agent-flow-dashboard__create-btn">
+        {% trans %}Nuevo Flujo{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# ===== METRICAS ===== #}
+  <div class="agent-flow-dashboard__metrics">
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.total_flows|default(0) }}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Flujos totales{% endtrans %}</span>
+    </div>
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.total_executions|default(0) }}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Ejecuciones{% endtrans %}</span>
+    </div>
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.avg_duration|default(0) }}ms</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Duracion media{% endtrans %}</span>
+    </div>
+    <div class="agent-flow-metric-card agent-flow-metric-card--{{ metrics.success_rate|default(0) >= 90 ? 'good' : 'warning' }}">
+      <span class="agent-flow-metric-card__value">{{ metrics.success_rate|default(0) }}%</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Tasa de exito{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ===== LISTADO DE FLUJOS ===== #}
+  <div class="agent-flow-dashboard__flows">
+    <h2 class="agent-flow-dashboard__section-title">
+      {% trans %}Mis Flujos{% endtrans %}
+    </h2>
+
+    {% if flows is empty %}
+      <div class="agent-flow-dashboard__empty">
+        <p>{% trans %}Aun no has creado ningun flujo de agente.{% endtrans %}</p>
+        <p>{% trans %}Usa una plantilla predefinida o crea uno desde cero.{% endtrans %}</p>
+      </div>
+    {% else %}
+      <div class="agent-flow-dashboard__flows-grid">
+        {% for flow in flows %}
+          <div class="agent-flow-card agent-flow-card--{{ flow.status }}"
+               data-flow-id="{{ flow.id }}">
+            <div class="agent-flow-card__header">
+              <h3 class="agent-flow-card__name">{{ flow.name }}</h3>
+              <span class="agent-flow-card__status agent-flow-card__status--{{ flow.status }}">
+                {{ status_labels[flow.status]|default(flow.status) }}
+              </span>
+            </div>
+            <p class="agent-flow-card__description">{{ flow.description }}</p>
+            <div class="agent-flow-card__meta">
+              <span class="agent-flow-card__trigger">{{ flow.trigger_type }}</span>
+              <span class="agent-flow-card__executions">{{ flow.execution_count }} {% trans %}ejecuciones{% endtrans %}</span>
+            </div>
+            <div class="agent-flow-card__actions">
+              <a href="/flujos-agente/{{ flow.id }}" class="agent-flow-card__link">
+                {% trans %}Ver detalle{% endtrans %}
+              </a>
+              {% if flow.status == 'active' %}
+                <button class="agent-flow-card__execute-btn" data-flow-id="{{ flow.id }}" type="button">
+                  {% trans %}Ejecutar{% endtrans %}
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {# ===== EJECUCIONES RECIENTES ===== #}
+  {% if recent_executions is not empty %}
+    <div class="agent-flow-dashboard__recent">
+      <h2 class="agent-flow-dashboard__section-title">
+        {% trans %}Ejecuciones Recientes{% endtrans %}
+      </h2>
+      <div class="agent-flow-execution-list">
+        {% for exec in recent_executions %}
+          <div class="agent-flow-execution-item agent-flow-execution-item--{{ exec.status }}">
+            <span class="agent-flow-execution-item__flow">{{ exec.flow_name }}</span>
+            <span class="agent-flow-execution-item__status">
+              {{ exec_status_labels[exec.status]|default(exec.status) }}
+            </span>
+            <span class="agent-flow-execution-item__duration">{{ exec.duration_ms }}ms</span>
+            <span class="agent-flow-execution-item__time">{{ exec.started_at_formatted }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ===== TEMPLATES ===== #}
+  {% if templates is not empty %}
+    <div class="agent-flow-dashboard__templates">
+      <h2 class="agent-flow-dashboard__section-title">
+        {% trans %}Plantillas Predefinidas{% endtrans %}
+      </h2>
+      <div class="agent-flow-template-grid">
+        {% for template in templates %}
+          <div class="agent-flow-template-card">
+            <h3 class="agent-flow-template-card__name">{{ template.name }}</h3>
+            <p class="agent-flow-template-card__description">{{ template.description }}</p>
+            <span class="agent-flow-template-card__vertical">{{ template.vertical }}</span>
+            <button class="agent-flow-template-card__use-btn" data-template-id="{{ template.id }}" type="button">
+              {% trans %}Usar plantilla{% endtrans %}
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>

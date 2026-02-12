@@ -1,0 +1,109 @@
+{#
+/**
+ * @file
+ * Template for Analytics Dashboard List.
+ *
+ * Variables:
+ * - dashboards: Array of dashboard data objects with id, name, description,
+ *   is_default, is_shared, dashboard_status, created.
+ * - can_create: Boolean indicating if user can create new dashboards.
+ *
+ * Conventions:
+ * - BEM naming (.analytics-dashboards, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\DashboardBuilderController::listDashboards
+ */
+#}
+
+<div class="analytics-dashboards">
+
+  {# ===== Header ===== #}
+  <header class="analytics-dashboards__header">
+    <div class="analytics-dashboards__header-content">
+      <h2 class="analytics-dashboards__title">
+        {% trans %}Analytics Dashboards{% endtrans %}
+      </h2>
+      <p class="analytics-dashboards__subtitle">
+        {% trans %}Create and manage custom BI dashboards with configurable widgets{% endtrans %}
+      </p>
+    </div>
+    {% if can_create %}
+      <div class="analytics-dashboards__header-actions">
+        <a href="/admin/content/analytics-dashboards/add"
+           class="analytics-dashboards__create-btn"
+           aria-label="{% trans %}Create new dashboard{% endtrans %}">
+          {% trans %}+ New Dashboard{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </header>
+
+  {# ===== Dashboard Cards Grid ===== #}
+  <section class="analytics-dashboards__grid"
+           aria-label="{% trans %}Dashboard list{% endtrans %}">
+    {% if dashboards is not empty %}
+      {% for dashboard in dashboards %}
+        <article class="analytics-dashboards__card analytics-dashboards__card--{{ dashboard.dashboard_status }}"
+                 data-dashboard-id="{{ dashboard.id }}">
+          <div class="analytics-dashboards__card-header">
+            <h3 class="analytics-dashboards__card-title">
+              <a href="/analytics/dashboards/{{ dashboard.id }}"
+                 class="analytics-dashboards__card-link">
+                {{ dashboard.name }}
+              </a>
+            </h3>
+            {% if dashboard.is_default %}
+              <span class="analytics-dashboards__badge analytics-dashboards__badge--default">
+                {% trans %}Default{% endtrans %}
+              </span>
+            {% endif %}
+            {% if dashboard.is_shared %}
+              <span class="analytics-dashboards__badge analytics-dashboards__badge--shared">
+                {% trans %}Shared{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+
+          {% if dashboard.description %}
+            <p class="analytics-dashboards__card-description">
+              {{ dashboard.description }}
+            </p>
+          {% endif %}
+
+          <div class="analytics-dashboards__card-footer">
+            <span class="analytics-dashboards__card-status analytics-dashboards__card-status--{{ dashboard.dashboard_status }}">
+              {{ dashboard.dashboard_status == 'active' ? 'Active'|t : 'Archived'|t }}
+            </span>
+            <div class="analytics-dashboards__card-actions">
+              <a href="/analytics/dashboards/{{ dashboard.id }}"
+                 class="analytics-dashboards__action-btn analytics-dashboards__action-btn--view"
+                 aria-label="{% trans %}View dashboard{% endtrans %}">
+                {% trans %}View{% endtrans %}
+              </a>
+              <a href="/analytics/dashboards/{{ dashboard.id }}/builder"
+                 class="analytics-dashboards__action-btn analytics-dashboards__action-btn--edit"
+                 aria-label="{% trans %}Edit dashboard{% endtrans %}">
+                {% trans %}Edit{% endtrans %}
+              </a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <div class="analytics-dashboards__empty">
+        <p class="analytics-dashboards__empty-message">
+          {% trans %}No dashboards found. Create your first dashboard to get started.{% endtrans %}
+        </p>
+        {% if can_create %}
+          <a href="/admin/content/analytics-dashboards/add"
+             class="analytics-dashboards__create-btn">
+            {% trans %}Create Dashboard{% endtrans %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+
+</div>

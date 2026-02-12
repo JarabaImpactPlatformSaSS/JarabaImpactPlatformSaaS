@@ -1,0 +1,119 @@
+{#
+/**
+ * @file
+ * Portal de desarrolladores para conectores del marketplace.
+ *
+ * Variables:
+ *   - connectors: Array de conectores del desarrollador actual.
+ *   - sdk_info: Informacion del SDK (version, docs_url).
+ *   - pending_review: Numero de conectores pendientes de revision.
+ *
+ * BEM structure:
+ *   .developer-portal
+ *     .developer-portal__header
+ *     .developer-portal__sdk
+ *     .developer-portal__connectors
+ */
+#}
+
+{% set status_labels = {
+  'draft': 'Borrador'|t,
+  'submitted': 'Enviado'|t,
+  'in_review': 'En revision'|t,
+  'approved': 'Aprobado'|t,
+  'rejected': 'Rechazado'|t,
+  'revoked': 'Revocado'|t,
+} %}
+
+<div class="developer-portal">
+
+  {# ===== HEADER ===== #}
+  <div class="developer-portal__header">
+    <div class="developer-portal__header-content">
+      <h1 class="developer-portal__title">
+        {% trans %}Portal de Desarrolladores{% endtrans %}
+      </h1>
+      <p class="developer-portal__subtitle">
+        {% trans %}Crea y gestiona tus conectores para el marketplace{% endtrans %}
+      </p>
+    </div>
+    <div class="developer-portal__header-actions">
+      <a href="{{ sdk_info.docs_url }}" class="developer-portal__docs-btn">
+        {% trans %}Documentacion SDK{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# ===== SDK INFO ===== #}
+  <div class="developer-portal__sdk">
+    <div class="developer-portal__sdk-card">
+      <h3 class="developer-portal__sdk-title">{% trans %}SDK de Conectores{% endtrans %}</h3>
+      <p class="developer-portal__sdk-version">{% trans %}Version{% endtrans %}: {{ sdk_info.version }}</p>
+      <p class="developer-portal__sdk-desc">
+        {% trans %}Usa el SDK para crear conectores compatibles con el marketplace.{% endtrans %}
+      </p>
+    </div>
+
+    {% if pending_review > 0 %}
+      <div class="developer-portal__pending-card">
+        <span class="developer-portal__pending-count">{{ pending_review }}</span>
+        <span class="developer-portal__pending-label">{% trans %}conectores pendientes de revision{% endtrans %}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  {# ===== MIS CONECTORES ===== #}
+  <div class="developer-portal__connectors">
+    <div class="developer-portal__connectors-header">
+      <h2 class="developer-portal__section-title">
+        {% trans %}Mis Conectores{% endtrans %}
+      </h2>
+    </div>
+
+    {% if connectors is empty %}
+      <div class="developer-portal__empty">
+        <p>{% trans %}Aun no has creado ningun conector.{% endtrans %}</p>
+        <p>{% trans %}Consulta la documentacion del SDK para empezar.{% endtrans %}</p>
+      </div>
+    {% else %}
+      <div class="developer-portal__connectors-table-wrapper">
+        <table class="developer-portal__connectors-table">
+          <thead>
+            <tr>
+              <th>{% trans %}Nombre{% endtrans %}</th>
+              <th>{% trans %}Version{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}Instalaciones{% endtrans %}</th>
+              <th>{% trans %}Acciones{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for connector in connectors %}
+              <tr class="developer-portal__connector-row">
+                <td class="developer-portal__connector-name">{{ connector.name }}</td>
+                <td class="developer-portal__connector-version">v{{ connector.version }}</td>
+                <td class="developer-portal__connector-status">
+                  <span class="developer-portal__status-badge developer-portal__status-badge--{{ connector.status }}">
+                    {{ status_labels[connector.status]|default(connector.status) }}
+                  </span>
+                </td>
+                <td class="developer-portal__connector-installs">{{ connector.installs }}</td>
+                <td class="developer-portal__connector-actions">
+                  <a href="/integraciones/{{ connector.id }}" class="developer-portal__action-link">
+                    {% trans %}Editar{% endtrans %}
+                  </a>
+                  {% if connector.status == 'draft' or connector.status == 'rejected' %}
+                    <a href="/integraciones/{{ connector.id }}/submit" class="developer-portal__action-link developer-portal__action-link--primary">
+                      {% trans %}Enviar a revision{% endtrans %}
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+</div>

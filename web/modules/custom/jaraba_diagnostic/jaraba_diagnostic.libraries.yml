@@ -1,3 +1,17 @@
+# Diagnostico Express de Empleabilidad (Spec 20260120b S3)
+employability-diagnostic:
+  version: 1.0.0
+  css:
+    theme:
+      css/employability-diagnostic.css: {}
+  js:
+    js/employability-diagnostic.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Wizard de emprendimiento
 wizard:
   version: 1.0.0
   css:

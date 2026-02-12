@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template para las alertas de uso.
+ *
+ * Variables disponibles:
+ * - alerts: Array de alertas activas.
+ *   Cada alerta contiene: tenant_id, metric, current_usage, limit,
+ *   percentage, alert_type (warning|critical|overage).
+ * - tenant_id: ID del tenant actual.
+ */
+#}
+<div class="usage-alerts" data-tenant-id="{{ tenant_id }}">
+
+  <h3 class="usage-alerts__title">{% trans %}Alertas de Uso{% endtrans %}</h3>
+
+  {% if alerts %}
+    <div class="usage-alerts__list">
+      {% for alert in alerts %}
+        <div class="usage-alerts__card usage-alerts__card--{{ alert.alert_type }}">
+          <div class="usage-alerts__card-header">
+            {% if alert.alert_type == 'overage' %}
+              <span class="usage-alerts__card-icon usage-alerts__card-icon--overage">!</span>
+              <span class="usage-alerts__card-type">{% trans %}Exceso de Uso{% endtrans %}</span>
+            {% elseif alert.alert_type == 'critical' %}
+              <span class="usage-alerts__card-icon usage-alerts__card-icon--critical">!</span>
+              <span class="usage-alerts__card-type">{% trans %}Alerta Crítica{% endtrans %}</span>
+            {% else %}
+              <span class="usage-alerts__card-icon usage-alerts__card-icon--warning">!</span>
+              <span class="usage-alerts__card-type">{% trans %}Advertencia{% endtrans %}</span>
+            {% endif %}
+          </div>
+
+          <div class="usage-alerts__card-body">
+            <div class="usage-alerts__card-metric">{{ alert.metric }}</div>
+            <div class="usage-alerts__card-usage">
+              {% trans %}Uso actual{% endtrans %}: {{ alert.current_usage|number_format(2, '.', ',') }}
+              / {{ alert.limit|number_format(2, '.', ',') }}
+            </div>
+            <div class="usage-alerts__card-bar">
+              <div class="usage-alerts__card-bar-fill usage-alerts__card-bar-fill--{{ alert.alert_type }}"
+                   style="width: {{ min(alert.percentage, 100) }}%">
+              </div>
+            </div>
+            <div class="usage-alerts__card-percentage">
+              {{ alert.percentage|number_format(1) }}% {% trans %}del límite{% endtrans %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="usage-alerts__empty">{% trans %}No hay alertas activas.{% endtrans %}</p>
+  {% endif %}
+
+</div>

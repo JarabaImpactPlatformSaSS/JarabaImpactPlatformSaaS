@@ -1,0 +1,30 @@
+# Schema for jaraba_tenant_knowledge module.
+# This module uses entity-based configuration (TenantKnowledgeConfig entity)
+# rather than Drupal's exportable config system.
+# Schema is provided for completeness and future extensibility.
+
+jaraba_tenant_knowledge.settings:
+  type: config_object
+  label: 'Tenant Knowledge settings'
+  mapping:
+    qdrant_collection_prefix:
+      type: string
+      label: 'Qdrant collection name prefix'
+    embedding_model:
+      type: string
+      label: 'Embedding model identifier'
+    chunk_size:
+      type: integer
+      label: 'Document chunk size for indexing'
+    chunk_overlap:
+      type: integer
+      label: 'Chunk overlap for indexing'
+    max_search_results:
+      type: integer
+      label: 'Maximum search results to return'
+    faq_bot_enabled:
+      type: boolean
+      label: 'Enable FAQ bot widget'
+    help_center_enabled:
+      type: boolean
+      label: 'Enable tenant help center'

@@ -1,0 +1,114 @@
+# ============================================================================
+# RUTAS DEL MODULO JARABA AGENT FLOWS
+# ============================================================================
+# Este archivo define las rutas disponibles en el modulo.
+# Las rutas estan organizadas por funcionalidad:
+#   - Administracion de flujos (backend)
+#   - Dashboard frontend
+#   - API REST v1
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# ADMINISTRACION - BACKEND
+# ---------------------------------------------------------------------------
+
+# Dashboard administrativo de flujos de agente
+jaraba_agent_flows.admin_dashboard:
+  path: '/admin/structure/agent-flows'
+  defaults:
+    _entity_list: 'agent_flow'
+    _title: 'Flujos de Agentes IA'
+  requirements:
+    _permission: 'administer agent flows'
+  options:
+    _admin_route: TRUE
+
+# Configuracion del modulo
+jaraba_agent_flows.settings:
+  path: '/admin/config/jaraba/agent-flows'
+  defaults:
+    _form: '\Drupal\jaraba_agent_flows\Form\AgentFlowSettingsForm'
+    _title: 'Configuracion de Agent Flows'
+  requirements:
+    _permission: 'administer agent flows'
+  options:
+    _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# FRONTEND - DASHBOARD DE USUARIO
+# ---------------------------------------------------------------------------
+
+# Dashboard principal de flujos (frontend)
+jaraba_agent_flows.dashboard:
+  path: '/flujos-agente'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowDashboardController::dashboard'
+    _title: 'Flujos de Agentes IA'
+  requirements:
+    _permission: 'view agent flows'
+  options:
+    _admin_route: FALSE
+
+# Detalle de un flujo (frontend)
+jaraba_agent_flows.flow_detail:
+  path: '/flujos-agente/{agent_flow}'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowDashboardController::detail'
+    _title: 'Detalle del Flujo'
+  requirements:
+    _permission: 'view agent flows'
+    agent_flow: '\d+'
+  options:
+    _admin_route: FALSE
+
+# ---------------------------------------------------------------------------
+# API REST v1 - FLUJOS DE AGENTES
+# ---------------------------------------------------------------------------
+
+# Listar flujos de agente
+jaraba_agent_flows.api.list:
+  path: '/api/v1/agent-flows'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowApiController::listFlows'
+  requirements:
+    _permission: 'view agent flows'
+  methods: [GET]
+
+# Obtener un flujo especifico
+jaraba_agent_flows.api.get:
+  path: '/api/v1/agent-flows/{flow_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowApiController::getFlow'
+  requirements:
+    _permission: 'view agent flows'
+    flow_id: '\d+'
+  methods: [GET]
+
+# Ejecutar un flujo
+jaraba_agent_flows.api.execute:
+  path: '/api/v1/agent-flows/{flow_id}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowApiController::executeFlow'
+  requirements:
+    _permission: 'manage agent flows'
+    flow_id: '\d+'
+  methods: [POST]
+
+# Listar ejecuciones de un flujo
+jaraba_agent_flows.api.executions:
+  path: '/api/v1/agent-flows/{flow_id}/executions'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowApiController::getExecutions'
+  requirements:
+    _permission: 'view agent flows'
+    flow_id: '\d+'
+  methods: [GET]
+
+# Listar templates de flujo
+jaraba_agent_flows.api.templates:
+  path: '/api/v1/agent-flows/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_agent_flows\Controller\AgentFlowApiController::getTemplates'
+  requirements:
+    _permission: 'view agent flows'
+  methods: [GET]

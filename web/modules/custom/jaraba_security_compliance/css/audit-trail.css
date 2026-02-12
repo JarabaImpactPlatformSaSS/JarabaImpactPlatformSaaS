@@ -1,0 +1,219 @@
+/**
+ * @file
+ * Styles for the Audit Trail page.
+ *
+ * BEM methodology with CSS custom properties (var(--ej-*, $fallback)).
+ */
+
+/* Audit Trail Container */
+.audit-trail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 2rem);
+  font-family: var(--ej-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+/* Header */
+.audit-trail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ej-spacing-md, 1.5rem);
+  flex-wrap: wrap;
+  gap: var(--ej-spacing-sm, 0.75rem);
+}
+
+.audit-trail__title {
+  font-size: var(--ej-font-size-2xl, 1.75rem);
+  font-weight: var(--ej-font-weight-bold, 700);
+  color: var(--ej-color-text-primary, #233D63);
+  margin: 0;
+}
+
+.audit-trail__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.audit-trail__count {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-secondary, #6c757d);
+}
+
+.audit-trail__export-btn {
+  background: var(--ej-color-primary, #00A9A5);
+  color: #fff;
+  border: none;
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
+  border-radius: var(--ej-border-radius-sm, 4px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.audit-trail__export-btn:hover {
+  background: var(--ej-color-primary-dark, #008b87);
+}
+
+/* Filters */
+.audit-trail__filters {
+  display: flex;
+  gap: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  flex-wrap: wrap;
+  padding: var(--ej-spacing-md, 1rem);
+  background: var(--ej-color-surface-alt, #f8f9fa);
+  border-radius: var(--ej-border-radius, 8px);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+}
+
+.audit-trail__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-xs, 0.25rem);
+}
+
+.audit-trail__filter-label {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  color: var(--ej-color-text-secondary, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.audit-trail__filter-select,
+.audit-trail__filter-input {
+  padding: var(--ej-spacing-xs, 0.5rem);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: var(--ej-border-radius-sm, 4px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  background: var(--ej-color-surface, #fff);
+  min-width: 150px;
+}
+
+.audit-trail__filter-select:focus,
+.audit-trail__filter-input:focus {
+  outline: none;
+  border-color: var(--ej-color-primary, #00A9A5);
+  box-shadow: 0 0 0 2px var(--ej-color-primary-alpha, rgba(0, 169, 165, 0.2));
+}
+
+/* Events Table */
+.audit-trail__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+.audit-trail__th {
+  text-align: left;
+  padding: var(--ej-spacing-sm, 0.75rem);
+  background: var(--ej-color-surface-alt, #f8f9fa);
+  color: var(--ej-color-text-secondary, #6c757d);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  border-bottom: 2px solid var(--ej-color-border, #e5e7eb);
+  white-space: nowrap;
+}
+
+.audit-trail__row {
+  transition: background 0.15s ease;
+}
+
+.audit-trail__row:hover {
+  background: var(--ej-color-surface-hover, #f0f4f8);
+}
+
+.audit-trail__row--critical {
+  border-left: 3px solid var(--ej-color-danger, #dc3545);
+}
+
+.audit-trail__row--warning {
+  border-left: 3px solid var(--ej-color-warning-text, #fd7e14);
+}
+
+.audit-trail__row--notice {
+  border-left: 3px solid var(--ej-color-success, #198754);
+}
+
+.audit-trail__row--info {
+  border-left: 3px solid var(--ej-color-info, #0d6efd);
+}
+
+.audit-trail__cell {
+  padding: var(--ej-spacing-sm, 0.75rem);
+  border-bottom: 1px solid var(--ej-color-border-light, #f0f0f0);
+  vertical-align: middle;
+}
+
+.audit-trail__cell--date {
+  white-space: nowrap;
+  color: var(--ej-color-text-secondary, #6c757d);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+}
+
+.audit-trail__event-code {
+  background: var(--ej-color-surface-alt, #f8f9fa);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+/* Severity Badges */
+.audit-trail__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--ej-border-radius-sm, 4px);
+  color: #fff;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: var(--ej-font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.audit-trail__badge--info { background: var(--ej-color-info, #0d6efd); }
+.audit-trail__badge--notice { background: var(--ej-color-success, #198754); }
+.audit-trail__badge--warning { background: var(--ej-color-warning-text, #fd7e14); }
+.audit-trail__badge--critical { background: var(--ej-color-danger, #dc3545); }
+
+.audit-trail__na {
+  color: var(--ej-color-text-muted, #adb5bd);
+}
+
+/* Empty State */
+.audit-trail__empty {
+  text-align: center;
+  padding: var(--ej-spacing-xl, 3rem);
+  color: var(--ej-color-text-muted, #6c757d);
+}
+
+/* Pager */
+.audit-trail__pager {
+  margin-top: var(--ej-spacing-lg, 1.5rem);
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .audit-trail__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .audit-trail__filters {
+    flex-direction: column;
+  }
+
+  .audit-trail__filter-select,
+  .audit-trail__filter-input {
+    min-width: 100%;
+  }
+
+  .audit-trail__table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

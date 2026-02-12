@@ -29,6 +29,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
  * - missing: Información faltante
  * - policy: Violación de política
  *
+ * MULTILINGÜE (G114-3):
+ * Campos de contenido traducibles (title, original_query, incorrect_response,
+ * correct_response, generated_rule, related_topic).
+ * Campos de organización (correction_type, priority, status, timestamps) no traducibles.
+ * Integración con content_translation para UI de traducción estándar.
+ *
  * @ContentEntityType(
  *   id = "tenant_ai_correction",
  *   label = @Translation("Corrección de IA"),
@@ -48,11 +54,14 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "access" = "Drupal\jaraba_tenant_knowledge\TenantKnowledgeAccessControlHandler",
  *   },
  *   base_table = "tenant_ai_correction",
+ *   data_table = "tenant_ai_correction_field_data",
+ *   translatable = TRUE,
  *   admin_permission = "administer tenant knowledge",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
  *     "label" = "title",
+ *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "add-form" = "/knowledge/corrections/add",
@@ -104,6 +113,7 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
             ->setLabel(t('Título'))
             ->setDescription(t('Breve descripción de la corrección.'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setSetting('max_length', 255)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
@@ -139,6 +149,7 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
         $fields['original_query'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Pregunta Original'))
             ->setDescription(t('¿Qué preguntó el usuario?'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 2,
@@ -150,6 +161,7 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
             ->setLabel(t('Respuesta Incorrecta'))
             ->setDescription(t('¿Qué respondió el copiloto incorrectamente?'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 3,
@@ -163,6 +175,7 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
             ->setLabel(t('Respuesta Correcta'))
             ->setDescription(t('¿Cuál debería haber sido la respuesta?'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 4,
@@ -172,7 +185,8 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
         // Regla generada (para inyectar en prompts futuros).
         $fields['generated_rule'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Regla Generada'))
-            ->setDescription(t('Instrucción derivada para el copiloto.'));
+            ->setDescription(t('Instrucción derivada para el copiloto.'))
+            ->setTranslatable(TRUE);
 
         // === CATEGORIZACIÓN ===
 
@@ -180,6 +194,7 @@ class TenantAiCorrection extends ContentEntityBase implements EntityChangedInter
         $fields['related_topic'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Tema Relacionado'))
             ->setDescription(t('Producto, servicio o tema afectado.'))
+            ->setTranslatable(TRUE)
             ->setSetting('max_length', 255)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',

@@ -903,6 +903,17 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'page-vertical-landing';
   }
 
+  // Diagnostico de Empleabilidad - zero-region full-width (Spec 20260120b S3)
+  $employability_diagnostic_routes = [
+    'jaraba_diagnostic.employability.landing',
+    'jaraba_diagnostic.employability.process',
+    'jaraba_diagnostic.employability.results',
+  ];
+  if (in_array($route, $employability_diagnostic_routes)) {
+    $variables['attributes']['class'][] = 'page-employability-diagnostic';
+    $variables['attributes']['class'][] = 'landing-page';
+  }
+
   // Dashboard frontend routes - clase para anular grid hero--split
   // Ver: docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md
   $dashboard_frontend_routes = [

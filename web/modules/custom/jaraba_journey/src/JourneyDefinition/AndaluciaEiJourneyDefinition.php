@@ -11,6 +11,8 @@ namespace Drupal\jaraba_journey\JourneyDefinition;
  * - Beneficiario: Solicitudes completas >85%, Subsanaciones <20%
  * - Técnico STO: Expedientes/día
  * - Administrador: Ejecución presupuesto
+ *
+ * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  */
 class AndaluciaEiJourneyDefinition
 {
@@ -31,6 +33,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'verify_eligibility',
                         'label' => 'Verificar elegibilidad',
                         'ia_intervention' => 'Checklist interactivo, pre-validar criterios',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['eligibility_check'],
@@ -42,11 +45,13 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'complete_application',
                         'label' => 'Completar solicitud',
                         'ia_intervention' => 'Formulario guiado, validar campos tiempo real',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'attach_documentation',
                         'label' => 'Adjuntar documentación',
                         'ia_intervention' => 'Checklist visual, verificar completitud',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['field_validation', 'doc_completeness'],
@@ -58,11 +63,13 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'track_status',
                         'label' => 'Seguimiento de estado',
                         'ia_intervention' => 'Tracking tiempo real, notificar cambios',
+                        'video_url' => '',
                     ],
                     5 => [
                         'action' => 'subsanation_if_needed',
                         'label' => 'Subsanar requerimientos',
                         'ia_intervention' => 'Explicar qué falta exactamente',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['status_notification', 'subsanation_guide'],
@@ -74,6 +81,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'receive_resolution',
                         'label' => 'Recibir resolución',
                         'ia_intervention' => 'Guía siguiente fase',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['next_phase_guide'],
@@ -96,6 +104,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'receive_application',
                         'label' => 'Recibir solicitud',
                         'ia_intervention' => 'Pre-validación automática documentación',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['auto_validation'],
@@ -107,11 +116,13 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'review_documentation',
                         'label' => 'Revisar documentación',
                         'ia_intervention' => 'Generar requerimiento subsanación',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'process_expedient',
                         'label' => 'Procesar expediente',
                         'ia_intervention' => 'Alertas plazo próximo a vencer',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['subsanation_generation', 'deadline_alert'],
@@ -123,6 +134,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'daily_summary',
                         'label' => 'Resumen diario',
                         'ia_intervention' => 'Resumen expedientes pendientes',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['daily_summary'],
@@ -145,6 +157,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'dashboard_daily',
                         'label' => 'Dashboard diario',
                         'ia_intervention' => 'KPIs ejecución presupuestaria',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['budget_kpis'],
@@ -156,11 +169,13 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'monitor_deviations',
                         'label' => 'Monitorear desviaciones',
                         'ia_intervention' => 'Alerta temprana + causa probable',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'sto_benchmarking',
                         'label' => 'Comparativa STOs',
                         'ia_intervention' => 'Benchmarking rendimiento entidades',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['deviation_alert', 'sto_comparison'],
@@ -172,6 +187,7 @@ class AndaluciaEiJourneyDefinition
                         'action' => 'generate_periodic_report',
                         'label' => 'Generar informe periódico',
                         'ia_intervention' => 'Auto-generación datos actualizados',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['report_generation'],

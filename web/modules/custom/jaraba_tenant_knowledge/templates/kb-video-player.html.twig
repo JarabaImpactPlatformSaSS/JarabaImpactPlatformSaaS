@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * kb-video-player.html.twig — Reproductor de vídeo KB.
+ *
+ * PROPÓSITO: Muestra un vídeo embebido con su descripción.
+ * Soporta URLs de YouTube y Vimeo con iframe responsive.
+ *
+ * Variables:
+ * - video: Array con keys: id, title, video_url, thumbnail_url, description, duration.
+ *
+ * BEM: .kb-video
+ */
+#}
+
+<div class="kb-video">
+  {% if video %}
+    <div class="kb-video__player-wrapper">
+      <div class="kb-video__player" data-video-url="{{ video.video_url }}">
+        {# El JS detectará YouTube/Vimeo y creará el iframe apropiado #}
+        {% if video.thumbnail_url %}
+          <div class="kb-video__poster" data-kb-video-poster>
+            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" class="kb-video__poster-img" loading="lazy">
+            <button class="kb-video__play-btn" data-kb-video-play aria-label="{% trans %}Reproducir vídeo{% endtrans %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/>
+                <polygon points="10 8 16 12 10 16 10 8" fill="white"/>
+              </svg>
+            </button>
+          </div>
+        {% else %}
+          <div class="kb-video__iframe-container" data-kb-video-container>
+            {# iframe se inyecta por JS basado en video_url #}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="kb-video__info">
+      <h3 class="kb-video__title">{{ video.title }}</h3>
+      {% if video.duration %}
+        <span class="kb-video__duration">{{ video.duration }}</span>
+      {% endif %}
+      {% if video.description %}
+        <div class="kb-video__description">
+          {{ video.description|raw }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

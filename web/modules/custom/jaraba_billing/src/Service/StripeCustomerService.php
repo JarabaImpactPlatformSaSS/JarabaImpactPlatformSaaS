@@ -70,7 +70,76 @@ class StripeCustomerService {
       '@tenant' => $tenantId,
     ]);
 
+    // Sync with local BillingCustomer entity.
+    $this->syncBillingCustomer($tenantId, $customer['id'], $email, $name);
+
     return $customer;
+  }
+
+  /**
+   * Busca un BillingCustomer local por tenant_id.
+   *
+   * Evita llamada API innecesaria a Stripe si ya existe localmente.
+   *
+   * @return array|null
+   *   Datos del customer local o NULL si no existe.
+   */
+  public function getByTenantId(int $tenantId): ?array {
+    $storage = $this->entityTypeManager->getStorage('billing_customer');
+    $entities = $storage->loadByProperties(['tenant_id' => $tenantId]);
+
+    if (empty($entities)) {
+      return NULL;
+    }
+
+    $entity = reset($entities);
+    return [
+      'id' => (int) $entity->id(),
+      'tenant_id' => (int) $entity->get('tenant_id')->target_id,
+      'stripe_customer_id' => $entity->get('stripe_customer_id')->value,
+      'billing_email' => $entity->get('billing_email')->value,
+      'billing_name' => $entity->get('billing_name')->value,
+      'tax_id' => $entity->get('tax_id')->value,
+      'tax_id_type' => $entity->get('tax_id_type')->value,
+      'default_payment_method' => $entity->get('default_payment_method')->value,
+    ];
+  }
+
+  /**
+   * Sincroniza datos de Stripe customer con la entidad BillingCustomer local.
+   */
+  protected function syncBillingCustomer(int $tenantId, string $stripeCustomerId, string $email, string $name): void {
+    try {
+      $storage = $this->entityTypeManager->getStorage('billing_customer');
+      $existing = $storage->loadByProperties(['tenant_id' => $tenantId]);
+
+      if (empty($existing)) {
+        $entity = $storage->create([
+          'tenant_id' => $tenantId,
+          'stripe_customer_id' => $stripeCustomerId,
+          'billing_email' => $email,
+          'billing_name' => $name,
+        ]);
+        $entity->save();
+        $this->logger->info('BillingCustomer local creado para tenant @tenant', ['@tenant' => $tenantId]);
+      }
+      else {
+        $entity = reset($existing);
+        $entity->set('stripe_customer_id', $stripeCustomerId);
+        $entity->set('billing_email', $email);
+        if ($name) {
+          $entity->set('billing_name', $name);
+        }
+        $entity->save();
+        $this->logger->info('BillingCustomer local actualizado para tenant @tenant', ['@tenant' => $tenantId]);
+      }
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error syncing BillingCustomer for tenant @tenant: @error', [
+        '@tenant' => $tenantId,
+        '@error' => $e->getMessage(),
+      ]);
+    }
   }
 
   /**

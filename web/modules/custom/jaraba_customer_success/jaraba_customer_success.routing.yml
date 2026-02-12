@@ -74,6 +74,43 @@ jaraba_customer_success.frontend.expansion:
   requirements:
     _permission: 'manage expansion signals'
 
+# NPS survey frontend page.
+jaraba_customer_success.nps_survey:
+  path: '/customer-success/nps'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\NpsSurveyController::surveyPage'
+    _title: 'NPS Survey'
+  requirements:
+    _permission: 'view customer success'
+
+# NPS results page.
+jaraba_customer_success.nps_results:
+  path: '/customer-success/nps/resultados'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\NpsSurveyController::resultsPage'
+    _title: 'NPS Results'
+  requirements:
+    _permission: 'manage customer success'
+
+# Health detail for a tenant.
+jaraba_customer_success.health_detail:
+  path: '/customer-success/health/{tenant_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::tenantDetail'
+    _title: 'Health Detail'
+  requirements:
+    _permission: 'view customer success'
+    tenant_id: '\d+'
+
+# Expansion pipeline view.
+jaraba_customer_success.expansion:
+  path: '/customer-success/expansion'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::expansion'
+    _title: 'Expansion Pipeline'
+  requirements:
+    _permission: 'manage customer success'
+
 # =============================================
 # RUTAS API REST
 # =============================================
@@ -162,3 +199,40 @@ jaraba_customer_success.api.playbook_execute:
     parameters:
       cs_playbook:
         type: entity:cs_playbook
+
+# =============================================
+# RUTAS API NPS
+# =============================================
+
+# GET /api/v1/cs/nps/survey — Active NPS survey.
+jaraba_customer_success.api.nps.active:
+  path: '/api/v1/cs/nps/survey'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\NpsApiController::getActiveSurvey'
+  requirements:
+    _permission: 'view customer success'
+  methods: [GET]
+  options:
+    _format: json
+
+# POST /api/v1/cs/nps/submit — Submit NPS response.
+jaraba_customer_success.api.nps.submit:
+  path: '/api/v1/cs/nps/submit'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\NpsApiController::submitResponse'
+  requirements:
+    _permission: 'view customer success'
+  methods: [POST]
+  options:
+    _format: json
+
+# GET /api/v1/cs/nps/results — NPS results.
+jaraba_customer_success.api.nps.results:
+  path: '/api/v1/cs/nps/results'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\NpsApiController::getResults'
+  requirements:
+    _permission: 'manage customer success'
+  methods: [GET]
+  options:
+    _format: json

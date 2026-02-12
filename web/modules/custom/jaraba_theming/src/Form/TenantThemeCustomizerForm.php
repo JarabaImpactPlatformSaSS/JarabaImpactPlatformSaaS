@@ -376,6 +376,48 @@ class TenantThemeCustomizerForm extends FormBase
             '#default_value' => $this->getConfigValue($config, 'font_size_base', '16'),
         ];
 
+        // Fuentes personalizadas (Avanzado) - G117-5
+        $form['typography']['custom_fonts'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Fuentes Personalizadas (Avanzado)'),
+            '#description' => $this->t('Si se configuran fuentes personalizadas, se priorizan sobre la selección anterior de Google Fonts.'),
+            '#attributes' => ['class' => ['custom-fonts-fieldset']],
+        ];
+
+        $form['typography']['custom_fonts']['font_heading_url'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('URL Fuente de Títulos'),
+            '#default_value' => $this->getConfigValue($config, 'font_heading_url', ''),
+            '#maxlength' => 512,
+            '#description' => $this->t('URL de un archivo .woff2 o URL de Google Fonts CSS (ej: https://fonts.googleapis.com/css2?family=...).'),
+            '#placeholder' => 'https://fonts.googleapis.com/css2?family=MiFuente',
+        ];
+
+        $form['typography']['custom_fonts']['font_heading_family'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Familia Tipográfica de Títulos'),
+            '#default_value' => $this->getConfigValue($config, 'font_heading_family', ''),
+            '#maxlength' => 100,
+            '#description' => $this->t('Nombre CSS font-family exacto de la fuente personalizada de títulos (ej: "Mi Fuente Custom").'),
+        ];
+
+        $form['typography']['custom_fonts']['font_body_url'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('URL Fuente de Cuerpo'),
+            '#default_value' => $this->getConfigValue($config, 'font_body_url', ''),
+            '#maxlength' => 512,
+            '#description' => $this->t('URL de un archivo .woff2 o URL de Google Fonts CSS (ej: https://fonts.googleapis.com/css2?family=...).'),
+            '#placeholder' => 'https://fonts.googleapis.com/css2?family=MiFuente',
+        ];
+
+        $form['typography']['custom_fonts']['font_body_family'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Familia Tipográfica de Cuerpo'),
+            '#default_value' => $this->getConfigValue($config, 'font_body_family', ''),
+            '#maxlength' => 100,
+            '#description' => $this->t('Nombre CSS font-family exacto de la fuente personalizada de cuerpo (ej: "Mi Fuente Custom").'),
+        ];
+
         // === TAB 4: ENCABEZADO ===
         $form['header_options'] = [
             '#type' => 'details',
@@ -694,6 +736,10 @@ class TenantThemeCustomizerForm extends FormBase
             'font_headings' => 'font_headings',
             'font_body' => 'font_body',
             'font_size_base' => 'font_size_base',
+            'font_heading_url' => 'font_heading_url',
+            'font_heading_family' => 'font_heading_family',
+            'font_body_url' => 'font_body_url',
+            'font_body_family' => 'font_body_family',
 
             // Componentes
             'header_variant' => 'header_variant',

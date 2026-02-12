@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for Jaraba Customer Success.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_customer_success_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Customer Success instalado. Configure en /admin/config/jaraba/customer-success.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_customer_success_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_customer_success.settings')->delete();
+}

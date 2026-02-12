@@ -333,5 +333,72 @@ class CopilotQueryLoggerService
         }
     }
 
+    /**
+     * Obtiene el historial de una sesion con user_id y role.
+     *
+     * @param string $sessionId
+     *   ID de la sesion.
+     *
+     * @return array
+     *   Mensajes de la sesion ordenados cronologicamente.
+     */
+    public function getSessionHistory(string $sessionId): array {
+        if (!$this->isTableReady()) {
+            return [];
+        }
+
+        try {
+            $fields = ['id', 'source', 'query', 'response', 'mode', 'session_id', 'created'];
+
+            // Check if new columns exist
+            if ($this->database->schema()->fieldExists('copilot_query_log', 'user_id')) {
+                $fields[] = 'user_id';
+            }
+            if ($this->database->schema()->fieldExists('copilot_query_log', 'role')) {
+                $fields[] = 'role';
+            }
+            if ($this->database->schema()->fieldExists('copilot_query_log', 'tokens_used')) {
+                $fields[] = 'tokens_used';
+            }
+
+            $result = $this->database->select('copilot_query_log', 'q')
+                ->fields('q', $fields)
+                ->condition('session_id', $sessionId)
+                ->orderBy('created', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->execute()
+                ->fetchAll(\PDO::FETCH_ASSOC);
+
+            $messages = [];
+            foreach ($result as $row) {
+                // User message
+                $messages[] = [
+                    'role' => $row['role'] ?? 'user',
+                    'content' => $row['query'],
+                    'timestamp' => (int) $row['created'],
+                    'mode' => $row['mode'] ?? NULL,
+                ];
+
+                // Assistant response
+                if (!empty($row['response'])) {
+                    $messages[] = [
+                        'role' => 'assistant',
+                        'content' => $row['response'],
+                        'timestamp' => (int) $row['created'],
+                        'mode' => $row['mode'] ?? NULL,
+                        'tokens_used' => (int) ($row['tokens_used'] ?? 0),
+                    ];
+                }
+            }
+
+            return $messages;
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('Error getting session history: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+            return [];
+        }
+    }
 
 }

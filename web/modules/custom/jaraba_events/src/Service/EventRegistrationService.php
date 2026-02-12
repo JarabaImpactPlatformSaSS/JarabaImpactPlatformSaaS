@@ -4,6 +4,7 @@ namespace Drupal\jaraba_events\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\jaraba_email\Service\SequenceManagerService;
 use Drupal\jaraba_events\Entity\EventRegistration;
 use Drupal\jaraba_events\Entity\MarketingEvent;
 use Drupal\jaraba_events\Exception\DuplicateRegistrationException;
@@ -68,6 +69,13 @@ class EventRegistrationService {
   protected LoggerInterface $logger;
 
   /**
+   * Servicio de secuencias de email para notificaciones pre/post evento.
+   *
+   * @var \Drupal\jaraba_email\Service\SequenceManagerService|null
+   */
+  protected ?SequenceManagerService $sequenceManager;
+
+  /**
    * Constructor del servicio de registro de eventos.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -78,17 +86,21 @@ class EventRegistrationService {
    *   Servicio de contexto de tenant para filtrado multi-tenant.
    * @param \Psr\Log\LoggerInterface $logger
    *   Canal de log dedicado para trazar operaciones del módulo.
+   * @param \Drupal\jaraba_email\Service\SequenceManagerService|null $sequence_manager
+   *   Servicio de secuencias de email para notificaciones automáticas.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
     $tenant_context,
     LoggerInterface $logger,
+    ?SequenceManagerService $sequence_manager = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
     $this->tenantContext = $tenant_context;
     $this->logger = $logger;
+    $this->sequenceManager = $sequence_manager;
   }
 
   /**
@@ -228,6 +240,9 @@ class EventRegistrationService {
       '@status' => $registration_status,
       '@ticket' => $ticket_code,
     ]);
+
+    // Inscribir en secuencia de email post-registro si hay secuencia configurada.
+    $this->enrollInEventEmailSequence($event, $registration);
 
     return $registration;
   }
@@ -557,6 +572,63 @@ class EventRegistrationService {
           '@event' => $event->label(),
         ]);
       }
+    }
+  }
+
+  /**
+   * Inscribe al asistente en la secuencia de email del evento.
+   *
+   * LÓGICA: Si el evento tiene una secuencia de email configurada
+   *   (campo email_sequence_id), inscribe al suscriptor correspondiente
+   *   al email del asistente en esa secuencia. Silencioso si no hay
+   *   secuencia configurada o si el servicio de email no está disponible.
+   *
+   * @param \Drupal\jaraba_events\Entity\MarketingEvent $event
+   *   Entidad del evento con posible secuencia de email.
+   * @param \Drupal\jaraba_events\Entity\EventRegistration $registration
+   *   Entidad de registro con datos del asistente.
+   */
+  protected function enrollInEventEmailSequence(MarketingEvent $event, EventRegistration $registration): void {
+    if (!$this->sequenceManager) {
+      return;
+    }
+
+    try {
+      // Verificar si el evento tiene secuencia de email configurada.
+      if (!$event->hasField('email_sequence_id') || $event->get('email_sequence_id')->isEmpty()) {
+        return;
+      }
+
+      $sequenceId = (int) $event->get('email_sequence_id')->target_id;
+      if ($sequenceId <= 0) {
+        return;
+      }
+
+      // Buscar suscriptor por email del asistente.
+      $email = $registration->get('attendee_email')->value;
+      if (!$email) {
+        return;
+      }
+
+      $subscriberStorage = $this->entityTypeManager->getStorage('email_subscriber');
+      $subscribers = $subscriberStorage->loadByProperties(['email' => $email]);
+
+      if (!empty($subscribers)) {
+        $subscriber = reset($subscribers);
+        $this->sequenceManager->enrollSubscriber((int) $subscriber->id(), $sequenceId);
+
+        $this->logger->info('Asistente @email inscrito en secuencia de email #@seq para evento @event', [
+          '@email' => $email,
+          '@seq' => $sequenceId,
+          '@event' => $event->label(),
+        ]);
+      }
+    }
+    catch (\Exception $e) {
+      // No bloquear el registro por errores de email.
+      $this->logger->warning('Error inscribiendo asistente en secuencia de email: @error', [
+        '@error' => $e->getMessage(),
+      ]);
     }
   }
 

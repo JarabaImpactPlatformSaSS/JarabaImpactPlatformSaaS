@@ -1,0 +1,50 @@
+# Jaraba PWA libraries.
+
+# Service Worker registration and lifecycle management.
+service-worker:
+  version: 1.0
+  js:
+    js/pwa-service-worker.js:
+      preprocess: false
+      weight: -100
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# Push notification opt-in dialog.
+push-optin:
+  version: 1.0
+  css:
+    theme:
+      css/pwa-components.css: {}
+  js:
+    js/pwa-push-optin.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Offline connectivity indicator bar.
+offline-indicator:
+  version: 1.0
+  css:
+    theme:
+      css/pwa-components.css: {}
+  js:
+    js/pwa-offline-indicator.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Background sync status indicator.
+sync-status:
+  version: 1.0
+  css:
+    theme:
+      css/pwa-components.css: {}
+  js:
+    js/pwa-sync-status.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

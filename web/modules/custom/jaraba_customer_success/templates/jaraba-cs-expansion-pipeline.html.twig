@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * jaraba-cs-expansion-pipeline.html.twig - Vista del pipeline de expansion.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-expansion-pipeline / cs-expansion-pipeline__* / cs-expansion-pipeline--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Layout kanban con columnas por etapa del pipeline.
+ *
+ * VARIABLES:
+ * - pipeline: array {identified: [], qualified: [], proposed: [], negotiating: [], closed: []}
+ * - total_expansion_value: float valor total de expansion.
+ * - stage_counts: array {identified: N, qualified: N, ...}
+ */
+#}
+
+<div class="cs-expansion-pipeline">
+  {# Header #}
+  <header class="cs-expansion-pipeline__header">
+    <div class="cs-expansion-pipeline__header-content">
+      <h1 class="cs-expansion-pipeline__title">{% trans %}Expansion Pipeline{% endtrans %}</h1>
+      <p class="cs-expansion-pipeline__subtitle">{% trans %}Track upsell and cross-sell opportunities across pipeline stages.{% endtrans %}</p>
+    </div>
+    <div class="cs-expansion-pipeline__summary">
+      <div class="cs-expansion-pipeline__total-value">
+        <span class="cs-expansion-pipeline__total-label">{% trans %}Total Pipeline Value{% endtrans %}</span>
+        <span class="cs-expansion-pipeline__total-amount">&euro;{{ total_expansion_value|default(0)|number_format(0, ',', '.') }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# Stage Counts #}
+  <section class="cs-expansion-pipeline__stage-counts">
+    {% set stages = {
+      'identified': 'Identified'|t,
+      'qualified': 'Qualified'|t,
+      'proposed': 'Proposed'|t,
+      'negotiating': 'Negotiating'|t,
+      'closed': 'Closed'|t
+    } %}
+    {% for key, label in stages %}
+      <div class="cs-expansion-pipeline__stage-count cs-expansion-pipeline__stage-count--{{ key }}">
+        <span class="cs-expansion-pipeline__count-value">{{ stage_counts[key]|default(0) }}</span>
+        <span class="cs-expansion-pipeline__count-label">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </section>
+
+  {# Pipeline Kanban Board #}
+  <section class="cs-expansion-pipeline__board">
+    {% for key, label in stages %}
+      <div class="cs-expansion-pipeline__column cs-expansion-pipeline__column--{{ key }}" data-stage="{{ key }}">
+        <div class="cs-expansion-pipeline__column-header">
+          <h2 class="cs-expansion-pipeline__column-title">{{ label }}</h2>
+          <span class="cs-expansion-pipeline__column-count">{{ pipeline[key]|default([])|length }}</span>
+        </div>
+
+        <div class="cs-expansion-pipeline__column-body">
+          {% if pipeline[key] is defined and pipeline[key]|length > 0 %}
+            {% for signal in pipeline[key] %}
+              <div class="cs-expansion-pipeline__card" data-signal-id="{{ signal.id|default('') }}">
+                <div class="cs-expansion-pipeline__card-header">
+                  <span class="cs-expansion-pipeline__card-tenant">{{ signal.tenant_name|default('Unknown') }}</span>
+                  <span class="cs-expansion-pipeline__card-type">{{ signal.signal_type|default('')|replace({'_': ' '})|capitalize }}</span>
+                </div>
+                <div class="cs-expansion-pipeline__card-body">
+                  <div class="cs-expansion-pipeline__card-plan">
+                    {{ signal.current_plan|default('--') }}
+                    {% if signal.recommended_plan is defined and signal.recommended_plan %}
+                      <span class="cs-expansion-pipeline__card-arrow">&rarr;</span>
+                      {{ signal.recommended_plan }}
+                    {% endif %}
+                  </div>
+                  {% if signal.potential_arr is defined and signal.potential_arr > 0 %}
+                    <div class="cs-expansion-pipeline__card-value">
+                      +&euro;{{ signal.potential_arr|number_format(0, ',', '.') }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="cs-expansion-pipeline__card-footer">
+                  {% if signal.detected_at is defined %}
+                    <span class="cs-expansion-pipeline__card-date">{{ signal.detected_at|date('d M Y') }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="cs-expansion-pipeline__empty-column">
+              <p>{% trans %}No signals in this stage.{% endtrans %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+</div>

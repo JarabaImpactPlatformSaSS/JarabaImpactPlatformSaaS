@@ -1,0 +1,375 @@
+/**
+ * @file
+ * Reseller Portal Dashboard (G117-4) - Partner Portal Styles.
+ *
+ * BEM structure following project conventions.
+ * Uses var(--ej-*) design tokens from the platform token system.
+ */
+
+/* ============================================================================
+   Portal Container
+   ============================================================================ */
+
+.reseller-portal {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.reseller-portal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+}
+
+.reseller-portal__header-info {
+  flex: 1;
+}
+
+.reseller-portal__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.reseller-portal__subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.reseller-portal__header-badge {
+  flex-shrink: 0;
+  margin-left: 1.5rem;
+}
+
+.reseller-portal__status-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.reseller-portal__status-badge--active {
+  background: rgba(67, 160, 71, 0.12);
+  color: var(--ej-color-success, #43A047);
+}
+
+.reseller-portal__status-badge--suspended {
+  background: rgba(229, 57, 53, 0.12);
+  color: var(--ej-color-error, #E53935);
+}
+
+.reseller-portal__status-badge--pending {
+  background: rgba(255, 140, 66, 0.12);
+  color: var(--ej-color-warning, #FF8C42);
+}
+
+/* ============================================================================
+   Metrics Grid (4 columns)
+   ============================================================================ */
+
+.reseller-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.reseller-metric-card {
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reseller-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.reseller-metric-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ej-text-primary, #212121);
+}
+
+.reseller-metric-card__label {
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================================
+   Health Metrics Row
+   ============================================================================ */
+
+.reseller-portal__health {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  padding: 1.25rem;
+  background: var(--ej-gray-50, #FAFAFA);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+}
+
+.reseller-portal__health-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.reseller-portal__health-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, #2E7D32);
+}
+
+.reseller-portal__health-label {
+  font-size: 0.75rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================================
+   Tenants Table
+   ============================================================================ */
+
+.reseller-tenants-table {
+  margin-bottom: 2.5rem;
+}
+
+.reseller-tenants-table__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.reseller-tenants-table__search {
+  margin-bottom: 1rem;
+}
+
+.reseller-tenants-table__search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ej-text-primary, #212121);
+  background: var(--ej-bg-card, #ffffff);
+  transition: border-color 0.15s ease;
+}
+
+.reseller-tenants-table__search-input:focus {
+  outline: 2px solid var(--ej-color-primary, #2E7D32);
+  outline-offset: 1px;
+  border-color: var(--ej-color-primary, #2E7D32);
+}
+
+.reseller-tenants-table__wrapper {
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+.reseller-tenants-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reseller-tenants-table__table thead {
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.reseller-tenants-table__table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-text-secondary, #757575);
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+  white-space: nowrap;
+}
+
+.reseller-tenants-table__table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ej-gray-100, #F5F5F5);
+  vertical-align: middle;
+}
+
+.reseller-tenants-table__table tbody tr:hover {
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.reseller-tenants-table__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ej-text-muted, #9E9E9E);
+  font-style: italic;
+}
+
+.reseller-tenants-table__cell--name {
+  font-weight: 500;
+}
+
+.reseller-tenants-table__status {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.625rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* Hidden rows by search filter */
+.reseller-tenants-table__row--hidden {
+  display: none;
+}
+
+/* ============================================================================
+   Commissions Section
+   ============================================================================ */
+
+.reseller-commissions {
+  margin-bottom: 2.5rem;
+}
+
+.reseller-commissions__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.reseller-commissions__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.reseller-commissions__item {
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reseller-commissions__item-label {
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reseller-commissions__item-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+}
+
+.reseller-commissions__item-value--highlight {
+  color: var(--ej-color-primary, #2E7D32);
+  font-size: 1.5rem;
+}
+
+/* ============================================================================
+   Access Denied
+   ============================================================================ */
+
+.reseller-portal__access-denied {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.reseller-portal__access-denied h2 {
+  font-size: 1.5rem;
+  color: var(--ej-text-primary, #212121);
+  margin-bottom: 1rem;
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+  .reseller-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .reseller-portal {
+    padding: 1rem;
+  }
+
+  .reseller-portal__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .reseller-portal__header-badge {
+    margin-left: 0;
+  }
+
+  .reseller-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .reseller-portal__health {
+    flex-direction: column;
+  }
+
+  .reseller-commissions__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .reseller-tenants-table__search-input {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reseller-metrics {
+    grid-template-columns: 1fr;
+  }
+}

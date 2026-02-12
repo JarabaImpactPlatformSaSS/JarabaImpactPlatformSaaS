@@ -11,6 +11,8 @@ namespace Drupal\jaraba_journey\JourneyDefinition;
  * - Estudiante: Completion Rate >70%, Certification Rate >60%
  * - Formador: Tasa aprobados
  * - Admin LMS: Engagement rate
+ *
+ * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  */
 class CertificacionJourneyDefinition
 {
@@ -31,6 +33,7 @@ class CertificacionJourneyDefinition
                         'action' => 'explore_catalog',
                         'label' => 'Explorar catálogo de cursos',
                         'ia_intervention' => 'Recomendar según perfil y objetivos',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['course_recommendations'],
@@ -42,6 +45,7 @@ class CertificacionJourneyDefinition
                         'action' => 'enroll_course',
                         'label' => 'Matricularse en curso',
                         'ia_intervention' => 'Onboarding, personalizar learning path',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['learning_path_personalization'],
@@ -53,11 +57,13 @@ class CertificacionJourneyDefinition
                         'action' => 'consume_content',
                         'label' => 'Consumir contenido',
                         'ia_intervention' => 'Adaptar ritmo según engagement',
+                        'video_url' => '',
                     ],
                     4 => [
                         'action' => 'complete_exercises',
                         'label' => 'Completar ejercicios/quizzes',
                         'ia_intervention' => 'Feedback inmediato, áreas de refuerzo',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['pace_adaptation', 'reinforcement_areas'],
@@ -69,6 +75,7 @@ class CertificacionJourneyDefinition
                         'action' => 'take_certification_exam',
                         'label' => 'Realizar examen certificación',
                         'ia_intervention' => 'Preguntas adaptativas, proctored',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['exam_simulation'],
@@ -80,6 +87,7 @@ class CertificacionJourneyDefinition
                         'action' => 'obtain_credential',
                         'label' => 'Obtener credencial',
                         'ia_intervention' => 'Badge Open Badges 3.0, sugerir siguiente',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['next_certification_suggestion'],
@@ -107,6 +115,7 @@ class CertificacionJourneyDefinition
                         'action' => 'create_course',
                         'label' => 'Crear curso',
                         'ia_intervention' => 'Asistente estructuración contenido',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['content_structure'],
@@ -118,11 +127,13 @@ class CertificacionJourneyDefinition
                         'action' => 'design_evaluations',
                         'label' => 'Diseñar evaluaciones',
                         'ia_intervention' => 'Generación automática preguntas',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'monitor_students',
                         'label' => 'Monitorear estudiantes',
                         'ia_intervention' => 'Alertas + sugerencias intervención',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['question_generation', 'student_difficulty_alert'],
@@ -134,6 +145,7 @@ class CertificacionJourneyDefinition
                         'action' => 'cohort_report',
                         'label' => 'Informe de cohorte',
                         'ia_intervention' => 'Resultados y mejoras sugeridas',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['improvement_suggestions'],
@@ -156,6 +168,7 @@ class CertificacionJourneyDefinition
                         'action' => 'mass_user_import',
                         'label' => 'Importación masiva usuarios',
                         'ia_intervention' => 'Importación inteligente con validación',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['smart_import'],
@@ -167,11 +180,13 @@ class CertificacionJourneyDefinition
                         'action' => 'compliance_monitoring',
                         'label' => 'Monitorear compliance',
                         'ia_intervention' => 'Alertas formaciones obligatorias',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'boost_participation',
                         'label' => 'Impulsar participación',
                         'ia_intervention' => 'Sugerencias gamificación',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['compliance_alert', 'gamification_suggestions'],
@@ -183,6 +198,7 @@ class CertificacionJourneyDefinition
                         'action' => 'audit_report',
                         'label' => 'Informe auditoría',
                         'ia_intervention' => 'Auto-generación informes xAPI',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['xapi_report'],

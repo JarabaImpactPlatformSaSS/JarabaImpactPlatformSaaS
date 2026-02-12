@@ -1,0 +1,20 @@
+jaraba_pwa.settings:
+  title: 'PWA Configuration'
+  description: 'Configure Progressive Web App settings, VAPID keys, and caching strategies.'
+  route_name: jaraba_pwa.settings
+  parent: system.admin_config
+  weight: 50
+
+jaraba_pwa.push_subscriptions:
+  title: 'Push Subscriptions'
+  description: 'View and manage push notification subscriptions.'
+  route_name: entity.push_subscription.collection
+  parent: system.admin_content
+  weight: 30
+
+jaraba_pwa.pending_sync_actions:
+  title: 'Pending Sync Actions'
+  description: 'View and manage pending background sync actions.'
+  route_name: entity.pending_sync_action.collection
+  parent: system.admin_content
+  weight: 31

@@ -1,0 +1,18 @@
+# ============================================================================
+# ENLACES DE ACCION - JARABA AGENT FLOWS
+# ============================================================================
+# Define los botones de accion (como "Anadir") que aparecen en las paginas
+# de listado de entidades.
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# ACCIONES - AGENT FLOWS
+# ---------------------------------------------------------------------------
+
+# Boton "Crear Flujo" en la lista de flujos de agente
+entity.agent_flow.add_form:
+  route_name: entity.agent_flow.add_form
+  title: 'Crear Nuevo Flujo'
+  appears_on:
+    - entity.agent_flow.collection
+    - jaraba_agent_flows.admin_dashboard

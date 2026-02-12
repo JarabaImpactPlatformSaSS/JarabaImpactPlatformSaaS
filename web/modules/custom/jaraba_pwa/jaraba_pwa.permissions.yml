@@ -1,0 +1,12 @@
+administer pwa:
+  title: 'Administer PWA'
+  description: 'Full access to PWA configuration, VAPID keys, and push subscription management.'
+  restrict access: true
+
+manage push subscriptions:
+  title: 'Manage push subscriptions'
+  description: 'View and manage push notification subscriptions for all users.'
+
+receive push notifications:
+  title: 'Receive push notifications'
+  description: 'Subscribe to and receive push notifications from the platform.'

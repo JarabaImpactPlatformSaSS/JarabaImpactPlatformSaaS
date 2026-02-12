@@ -1,0 +1,107 @@
+{#
+/**
+ * @file
+ * Template for Analytics Dashboard View.
+ *
+ * Variables:
+ * - dashboard: Dashboard data object with id, name, description,
+ *   layout_config, is_default, is_shared.
+ * - widgets: Array of widget data objects with id, name, widget_type,
+ *   query_config, display_config, position (row, col, width, height).
+ * - can_edit: Boolean indicating if user can edit the dashboard.
+ *
+ * Conventions:
+ * - BEM naming (.analytics-dashboard-view, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\DashboardBuilderController::viewDashboard
+ */
+#}
+
+<div class="analytics-dashboard-view"
+     data-dashboard-id="{{ dashboard.id }}">
+
+  {# ===== Header ===== #}
+  <header class="analytics-dashboard-view__header">
+    <div class="analytics-dashboard-view__header-content">
+      <h2 class="analytics-dashboard-view__title">
+        {{ dashboard.name }}
+      </h2>
+      {% if dashboard.description %}
+        <p class="analytics-dashboard-view__description">
+          {{ dashboard.description }}
+        </p>
+      {% endif %}
+    </div>
+    <div class="analytics-dashboard-view__header-actions">
+      {% if can_edit %}
+        <a href="/analytics/dashboards/{{ dashboard.id }}/builder"
+           class="analytics-dashboard-view__edit-btn"
+           aria-label="{% trans %}Edit dashboard{% endtrans %}">
+          {% trans %}Edit Dashboard{% endtrans %}
+        </a>
+      {% endif %}
+      <button type="button"
+              class="analytics-dashboard-view__refresh-btn"
+              data-action="refresh-all"
+              aria-label="{% trans %}Refresh all widgets{% endtrans %}">
+        {% trans %}Refresh{% endtrans %}
+      </button>
+      <a href="/analytics/dashboards"
+         class="analytics-dashboard-view__back-btn"
+         aria-label="{% trans %}Back to dashboard list{% endtrans %}">
+        {% trans %}Back{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# ===== Widget Grid ===== #}
+  <section class="analytics-dashboard-view__grid"
+           aria-label="{% trans %}Dashboard widgets{% endtrans %}">
+    {% if widgets is not empty %}
+      {% for widget in widgets %}
+        <div class="analytics-dashboard-view__widget analytics-dashboard-view__widget--{{ widget.widget_type }}"
+             data-widget-id="{{ widget.id }}"
+             data-widget-type="{{ widget.widget_type }}"
+             style="grid-row: {{ widget.position.row }} / span {{ widget.position.height }}; grid-column: {{ widget.position.col }} / span {{ widget.position.width }};">
+
+          <div class="analytics-dashboard-view__widget-header">
+            <h3 class="analytics-dashboard-view__widget-title">
+              {{ widget.name }}
+            </h3>
+            <div class="analytics-dashboard-view__widget-actions">
+              <button type="button"
+                      class="analytics-dashboard-view__widget-refresh"
+                      data-action="refresh-widget"
+                      data-widget-id="{{ widget.id }}"
+                      aria-label="{% trans %}Refresh widget{% endtrans %}">
+                {% trans %}Refresh{% endtrans %}
+              </button>
+            </div>
+          </div>
+
+          <div class="analytics-dashboard-view__widget-body"
+               data-widget-container="{{ widget.id }}">
+            <div class="analytics-dashboard-view__widget-loading">
+              {% trans %}Loading...{% endtrans %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="analytics-dashboard-view__empty">
+        <p class="analytics-dashboard-view__empty-message">
+          {% trans %}This dashboard has no widgets yet.{% endtrans %}
+        </p>
+        {% if can_edit %}
+          <a href="/analytics/dashboards/{{ dashboard.id }}/builder"
+             class="analytics-dashboard-view__add-widget-btn">
+            {% trans %}Add Widgets{% endtrans %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+
+</div>

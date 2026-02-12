@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Detalle de un flujo de agente IA.
+ *
+ * Variables:
+ *   - flow: Datos del flujo (name, description, status, trigger_type, config, etc).
+ *   - executions: Ultimas ejecuciones del flujo.
+ *   - metrics: Metricas especificas del flujo (total, success_rate, avg_duration).
+ */
+#}
+
+{% set status_labels = {
+  'draft': 'Borrador'|t,
+  'active': 'Activo'|t,
+  'paused': 'Pausado'|t,
+  'archived': 'Archivado'|t,
+} %}
+
+<div class="agent-flow-detail">
+
+  <div class="agent-flow-detail__header">
+    <div class="agent-flow-detail__header-content">
+      <a href="/flujos-agente" class="agent-flow-detail__back">
+        {% trans %}Volver a flujos{% endtrans %}
+      </a>
+      <h1 class="agent-flow-detail__title">{{ flow.name }}</h1>
+      <span class="agent-flow-detail__status agent-flow-detail__status--{{ flow.status }}">
+        {{ status_labels[flow.status]|default(flow.status) }}
+      </span>
+    </div>
+    <div class="agent-flow-detail__actions">
+      {% if flow.status == 'active' %}
+        <button class="agent-flow-detail__execute-btn" data-flow-id="{{ flow.id }}" type="button">
+          {% trans %}Ejecutar ahora{% endtrans %}
+        </button>
+      {% endif %}
+      <a href="/admin/content/agent-flows/{{ flow.id }}/edit" class="agent-flow-detail__edit-btn">
+        {% trans %}Editar{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {% if flow.description %}
+    <p class="agent-flow-detail__description">{{ flow.description }}</p>
+  {% endif %}
+
+  {# ===== METRICAS DEL FLUJO ===== #}
+  <div class="agent-flow-detail__metrics">
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.total_executions|default(0) }}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Ejecuciones totales{% endtrans %}</span>
+    </div>
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.success_rate|default(0) }}%</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Tasa de exito{% endtrans %}</span>
+    </div>
+    <div class="agent-flow-metric-card">
+      <span class="agent-flow-metric-card__value">{{ metrics.avg_duration|default(0) }}ms</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Duracion media{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ===== CONFIGURACION ===== #}
+  <div class="agent-flow-detail__config">
+    <h2 class="agent-flow-detail__section-title">{% trans %}Configuracion{% endtrans %}</h2>
+    <div class="agent-flow-detail__config-grid">
+      <div class="agent-flow-detail__config-item">
+        <span class="agent-flow-detail__config-label">{% trans %}Tipo de Trigger{% endtrans %}</span>
+        <span class="agent-flow-detail__config-value">{{ flow.trigger_type }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# ===== HISTORIAL DE EJECUCIONES ===== #}
+  <div class="agent-flow-detail__executions">
+    <h2 class="agent-flow-detail__section-title">{% trans %}Historial de Ejecuciones{% endtrans %}</h2>
+
+    {% if executions is empty %}
+      <p class="agent-flow-detail__empty">{% trans %}Este flujo aun no ha sido ejecutado.{% endtrans %}</p>
+    {% else %}
+      <table class="agent-flow-detail__executions-table">
+        <thead>
+          <tr>
+            <th>{% trans %}ID{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Inicio{% endtrans %}</th>
+            <th>{% trans %}Duracion{% endtrans %}</th>
+            <th>{% trans %}Disparado por{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exec in executions %}
+            <tr class="agent-flow-detail__execution-row agent-flow-detail__execution-row--{{ exec.status }}">
+              <td>#{{ exec.id }}</td>
+              <td>
+                <span class="agent-flow-detail__exec-status agent-flow-detail__exec-status--{{ exec.status }}">
+                  {{ exec.status }}
+                </span>
+              </td>
+              <td>{{ exec.started_at_formatted }}</td>
+              <td>{{ exec.duration_ms }}ms</td>
+              <td>{{ exec.triggered_by }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+</div>

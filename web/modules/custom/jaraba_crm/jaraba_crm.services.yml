@@ -1,4 +1,9 @@
 services:
+  # Canal de log del modulo CRM.
+  logger.channel.jaraba_crm:
+    parent: logger.channel_base
+    arguments: ['jaraba_crm']
+
   jaraba_crm.company:
     class: Drupal\jaraba_crm\Service\CompanyService
     arguments: ['@entity_type.manager']
@@ -14,3 +19,19 @@ services:
   jaraba_crm.activity:
     class: Drupal\jaraba_crm\Service\ActivityService
     arguments: ['@entity_type.manager']
+
+  # Servicio de gestion de etapas del pipeline.
+  jaraba_crm.pipeline_stage:
+    class: Drupal\jaraba_crm\Service\PipelineStageService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_crm'
+
+  # Servicio de forecasting y metricas de ventas.
+  jaraba_crm.forecasting:
+    class: Drupal\jaraba_crm\Service\CrmForecastingService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_crm.opportunity'
+      - '@jaraba_crm.pipeline_stage'
+      - '@logger.channel.jaraba_crm'

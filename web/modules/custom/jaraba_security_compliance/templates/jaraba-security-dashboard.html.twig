@@ -1,0 +1,137 @@
+{#
+/**
+ * @file
+ * Template for the Security Dashboard.
+ *
+ * Available variables:
+ * - compliance_score: Overall compliance score (0-100).
+ * - frameworks: Array of framework compliance data.
+ * - recent_events: Array of recent audit events.
+ * - active_policies: Array of active security policies.
+ * - stats: Array of dashboard statistics.
+ */
+#}
+<div class="security-dashboard">
+
+  {# Compliance Score Gauge #}
+  <div class="security-dashboard__score-section">
+    <h2 class="security-dashboard__title">{% trans %}Dashboard de Seguridad y Compliance{% endtrans %}</h2>
+
+    <div class="security-dashboard__gauge" data-score="{{ compliance_score }}">
+      <div class="security-dashboard__gauge-circle">
+        <svg viewBox="0 0 120 120" class="security-dashboard__gauge-svg">
+          <circle cx="60" cy="60" r="54" class="security-dashboard__gauge-track" />
+          <circle cx="60" cy="60" r="54" class="security-dashboard__gauge-fill"
+                  stroke-dasharray="{{ (compliance_score / 100) * 339.29 }} 339.29" />
+        </svg>
+        <div class="security-dashboard__gauge-value">
+          <span class="security-dashboard__gauge-number">{{ compliance_score }}</span>
+          <span class="security-dashboard__gauge-label">%</span>
+        </div>
+      </div>
+      <p class="security-dashboard__gauge-description">
+        {% trans %}Puntuación Global de Compliance{% endtrans %}
+      </p>
+    </div>
+  </div>
+
+  {# Framework Cards #}
+  <div class="security-dashboard__frameworks">
+    <h3 class="security-dashboard__section-title">{% trans %}Marcos Normativos{% endtrans %}</h3>
+
+    <div class="security-dashboard__frameworks-grid">
+      {% for code, framework in frameworks %}
+        <div class="security-dashboard__framework-card security-dashboard__framework-card--{{ code }}">
+          <div class="security-dashboard__framework-header">
+            <h4 class="security-dashboard__framework-name">{{ framework.label }}</h4>
+            <span class="security-dashboard__framework-score
+              {% if framework.score >= 80 %}security-dashboard__framework-score--good
+              {% elseif framework.score >= 60 %}security-dashboard__framework-score--warning
+              {% else %}security-dashboard__framework-score--critical{% endif %}">
+              {{ framework.score }}%
+            </span>
+          </div>
+          <div class="security-dashboard__framework-stats">
+            <div class="security-dashboard__framework-stat">
+              <span class="security-dashboard__stat-value security-dashboard__stat-value--pass">{{ framework.passing }}</span>
+              <span class="security-dashboard__stat-label">{% trans %}Cumple{% endtrans %}</span>
+            </div>
+            <div class="security-dashboard__framework-stat">
+              <span class="security-dashboard__stat-value security-dashboard__stat-value--fail">{{ framework.failing }}</span>
+              <span class="security-dashboard__stat-label">{% trans %}No Cumple{% endtrans %}</span>
+            </div>
+            <div class="security-dashboard__framework-stat">
+              <span class="security-dashboard__stat-value security-dashboard__stat-value--warning">{{ framework.warnings }}</span>
+              <span class="security-dashboard__stat-label">{% trans %}Advertencia{% endtrans %}</span>
+            </div>
+            <div class="security-dashboard__framework-stat">
+              <span class="security-dashboard__stat-value security-dashboard__stat-value--na">{{ framework.not_assessed }}</span>
+              <span class="security-dashboard__stat-label">{% trans %}Sin Evaluar{% endtrans %}</span>
+            </div>
+          </div>
+          <div class="security-dashboard__framework-bar">
+            <div class="security-dashboard__framework-bar-fill" style="width: {{ framework.score }}%"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Recent Audit Events #}
+  <div class="security-dashboard__events">
+    <h3 class="security-dashboard__section-title">{% trans %}Eventos Recientes de Auditoría{% endtrans %}</h3>
+
+    {% if recent_events %}
+      <div class="security-dashboard__events-table">
+        <table class="security-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Evento{% endtrans %}</th>
+              <th>{% trans %}Severidad{% endtrans %}</th>
+              <th>{% trans %}Actor{% endtrans %}</th>
+              <th>{% trans %}IP{% endtrans %}</th>
+              <th>{% trans %}Fecha{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in recent_events %}
+              <tr class="security-dashboard__event-row security-dashboard__event-row--{{ event.severity }}">
+                <td><code class="security-dashboard__event-type">{{ event.event_type }}</code></td>
+                <td>
+                  <span class="security-dashboard__severity-badge security-dashboard__severity-badge--{{ event.severity }}">
+                    {{ event.severity }}
+                  </span>
+                </td>
+                <td>{{ event.actor }}</td>
+                <td><code>{{ event.ip_address }}</code></td>
+                <td>{{ event.timestamp_formatted }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="security-dashboard__no-data">{% trans %}No hay eventos de auditoría registrados.{% endtrans %}</p>
+    {% endif %}
+  </div>
+
+  {# Active Policies Summary #}
+  <div class="security-dashboard__policies">
+    <h3 class="security-dashboard__section-title">{% trans %}Políticas de Seguridad Activas{% endtrans %}</h3>
+
+    {% if active_policies %}
+      <ul class="security-dashboard__policies-list">
+        {% for policy in active_policies %}
+          <li class="security-dashboard__policy-item">
+            <span class="security-dashboard__policy-name">{{ policy.name }}</span>
+            <span class="security-dashboard__policy-type">{{ policy.type }}</span>
+            <span class="security-dashboard__policy-version">v{{ policy.version }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="security-dashboard__no-data">{% trans %}No hay políticas de seguridad activas.{% endtrans %}</p>
+    {% endif %}
+  </div>
+
+</div>

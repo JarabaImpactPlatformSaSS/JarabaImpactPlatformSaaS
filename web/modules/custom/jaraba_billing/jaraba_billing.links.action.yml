@@ -15,3 +15,15 @@ jaraba_billing.payment_method.add:
   route_name: entity.billing_payment_method.add_form
   appears_on:
     - entity.billing_payment_method.collection
+
+jaraba_billing.billing_customer.add:
+  title: 'Crear cliente de billing'
+  route_name: entity.billing_customer.add_form
+  appears_on:
+    - entity.billing_customer.collection
+
+jaraba_billing.tenant_addon.add:
+  title: 'Activar add-on'
+  route_name: entity.tenant_addon.add_form
+  appears_on:
+    - entity.tenant_addon.collection

@@ -142,6 +142,58 @@ class BillingInvoice extends ContentEntityBase implements EntityChangedInterface
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    $fields['stripe_customer_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Customer ID'))
+      ->setDescription(t('ID del customer en Stripe (cus_xxx).'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['subtotal'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Subtotal'))
+      ->setDescription(t('Base imponible antes de impuestos.'))
+      ->setSetting('precision', 10)
+      ->setSetting('scale', 4)
+      ->setDefaultValue('0.0000')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['tax'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Impuestos'))
+      ->setDescription(t('IVA u otros impuestos aplicados.'))
+      ->setSetting('precision', 10)
+      ->setSetting('scale', 4)
+      ->setDefaultValue('0.0000')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['total'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Total'))
+      ->setDescription(t('Total = subtotal + impuestos.'))
+      ->setSetting('precision', 10)
+      ->setSetting('scale', 4)
+      ->setDefaultValue('0.0000')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['billing_reason'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Razón de Facturación'))
+      ->setDescription(t('Motivo por el que se generó la factura.'))
+      ->setSetting('allowed_values', [
+        'subscription_cycle' => t('Ciclo de suscripción'),
+        'subscription_create' => t('Creación de suscripción'),
+        'subscription_update' => t('Actualización de suscripción'),
+        'manual' => t('Manual'),
+        'upcoming' => t('Próxima'),
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['lines'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Líneas de Factura'))
+      ->setDescription(t('JSON con el desglose de conceptos de la factura.'))
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['currency'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Moneda'))
       ->setRequired(TRUE)

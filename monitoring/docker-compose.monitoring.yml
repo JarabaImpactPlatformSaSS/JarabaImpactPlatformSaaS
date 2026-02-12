@@ -1,0 +1,119 @@
+# Stack de monitoring standalone para Jaraba Impact Platform
+# Independiente de Lando para evitar inestabilidad Docker Desktop.
+#
+# Uso: docker compose -f monitoring/docker-compose.monitoring.yml up -d
+#
+# Componentes:
+# - Prometheus: métricas y scraping (puerto 9090)
+# - Grafana: dashboards y visualización (puerto 3001)
+# - Loki: agregación de logs (puerto 3100)
+# - Promtail: recolección de logs
+# - AlertManager: gestión de alertas (puerto 9093)
+
+version: '3.8'
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+  loki_data: {}
+
+services:
+  # ============================================
+  # PROMETHEUS - Métricas y alertas
+  # ============================================
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: jaraba-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - monitoring
+
+  # ============================================
+  # GRAFANA - Dashboards y visualización
+  # ============================================
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: jaraba-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-jaraba-admin-2024}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - monitoring
+
+  # ============================================
+  # LOKI - Agregación de logs
+  # ============================================
+  loki:
+    image: grafana/loki:2.9.6
+    container_name: jaraba-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring
+
+  # ============================================
+  # PROMTAIL - Recolección de logs
+  # ============================================
+  promtail:
+    image: grafana/promtail:2.9.6
+    container_name: jaraba-promtail
+    restart: unless-stopped
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - ../web/sites/default/files/logs:/var/log/drupal:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - monitoring
+
+  # ============================================
+  # ALERTMANAGER - Gestión de alertas
+  # ============================================
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: jaraba-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - monitoring

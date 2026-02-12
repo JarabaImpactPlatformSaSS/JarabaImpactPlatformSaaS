@@ -11,3 +11,79 @@
 function jaraba_billing_install(): void {
   \Drupal::messenger()->addStatus(t('Jaraba Billing instalado. Las tablas de entidades (billing_invoice, billing_usage_record, billing_payment_method) se han creado automáticamente.'));
 }
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_billing_schema(): array {
+  $schema['billing_dunning_state'] = [
+    'description' => 'Estado del proceso de dunning por tenant.',
+    'fields' => [
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID del tenant (group).',
+      ],
+      'started_at' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de inicio del proceso de dunning.',
+      ],
+      'current_step' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Paso actual del proceso (0-5).',
+      ],
+      'last_action_at' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp de la última acción ejecutada.',
+      ],
+    ],
+    'primary key' => ['tenant_id'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Add fiscal fields to BillingInvoice and sync fields to BillingUsageRecord.
+ *
+ * Also creates the billing_dunning_state table.
+ */
+function jaraba_billing_update_10001(): void {
+  // En Drupal 11, applyUpdates() ha sido eliminado.
+  // Instalamos las definiciones de entidad pendientes manualmente.
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // Instalar entidades nuevas si no existen.
+  $newEntityTypes = [
+    'billing_invoice',
+    'billing_payment_method',
+    'billing_usage_record',
+    'billing_customer',
+    'tenant_addon',
+  ];
+
+  foreach ($newEntityTypes as $entityTypeId) {
+    if (!$updateManager->getEntityType($entityTypeId)) {
+      $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+      if ($entityType) {
+        $updateManager->installEntityType($entityType);
+      }
+    }
+  }
+
+  // Create dunning state table if not exists.
+  $schema = \Drupal::database()->schema();
+  if (!$schema->tableExists('billing_dunning_state')) {
+    $spec = jaraba_billing_schema()['billing_dunning_state'];
+    $schema->createTable('billing_dunning_state', $spec);
+  }
+}

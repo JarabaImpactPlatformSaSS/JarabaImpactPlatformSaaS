@@ -1,0 +1,807 @@
+/**
+ * @file
+ * Onboarding Dashboard, Checklist, Tours and Celebrations styles.
+ *
+ * BEM structure following project conventions.
+ * Uses var(--ej-*) design tokens from the platform token system.
+ */
+
+/* ============================================================================
+   Dashboard Container
+   ============================================================================ */
+
+.onboarding-dashboard {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+/* ============================================================================
+   Dashboard Header
+   ============================================================================ */
+
+.onboarding-dashboard__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
+}
+
+.onboarding-dashboard__title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-text-primary, #212121);
+  font-family: var(--ej-font-family-headings, 'Outfit', sans-serif);
+}
+
+.onboarding-dashboard__subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+/* ============================================================================
+   Progress Bar
+   ============================================================================ */
+
+.onboarding-dashboard__progress {
+  margin-bottom: 2.5rem;
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.onboarding-dashboard__progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-dashboard__progress-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.onboarding-dashboard__progress-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, #2E7D32);
+  font-family: var(--ej-font-family-headings, 'Outfit', sans-serif);
+}
+
+.onboarding-dashboard__progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--ej-gray-100, #F5F5F5);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.onboarding-dashboard__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    var(--ej-color-primary, #2E7D32),
+    var(--ej-color-primary-hover, #256025));
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.onboarding-dashboard__progress-complete {
+  margin: 1rem 0 0 0;
+  font-weight: 600;
+  color: var(--ej-color-primary, #2E7D32);
+  text-align: center;
+}
+
+/* ============================================================================
+   Section Titles
+   ============================================================================ */
+
+.onboarding-dashboard__section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+/* ============================================================================
+   Checklist
+   ============================================================================ */
+
+.onboarding-dashboard__checklist {
+  margin-bottom: 2.5rem;
+}
+
+.onboarding-dashboard__checklist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.onboarding-dashboard__checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.onboarding-dashboard__checklist-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.onboarding-dashboard__checklist-item--completed {
+  border-color: var(--ej-color-primary, #2E7D32);
+  background: rgba(46, 125, 50, 0.04);
+}
+
+.onboarding-dashboard__checklist-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1rem;
+  background: var(--ej-gray-100, #F5F5F5);
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-dashboard__checklist-item--completed .onboarding-dashboard__checklist-icon {
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+}
+
+.onboarding-dashboard__checklist-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboarding-dashboard__checklist-label {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-dashboard__checklist-item--completed .onboarding-dashboard__checklist-label {
+  text-decoration: line-through;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-dashboard__checklist-description {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-dashboard__checklist-action {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ej-color-primary, #2E7D32);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ej-color-primary, #2E7D32);
+  font-weight: 500;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.onboarding-dashboard__checklist-action:hover {
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+}
+
+.onboarding-dashboard__checklist-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   Achievements Grid
+   ============================================================================ */
+
+.onboarding-dashboard__achievements {
+  margin-bottom: 2rem;
+}
+
+.onboarding-dashboard__achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.onboarding-dashboard__achievement-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.25rem 1rem;
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboarding-dashboard__achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.onboarding-dashboard__achievement-icon {
+  font-size: 1.75rem;
+  color: var(--ej-color-accent, #FF9800);
+  margin-bottom: 0.5rem;
+}
+
+.onboarding-dashboard__achievement-label {
+  font-size: 0.85rem;
+  color: var(--ej-text-primary, #212121);
+  margin-bottom: 0.25rem;
+}
+
+.onboarding-dashboard__achievement-points {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, #2E7D32);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.onboarding-dashboard__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ej-text-muted, #9E9E9E);
+  font-style: italic;
+}
+
+/* ============================================================================
+   Checklist Widget (sidebar / compact version)
+   ============================================================================ */
+
+.onboarding-checklist {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-gray-200, #EEEEEE);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.onboarding-checklist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-checklist__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-checklist__counter {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, #2E7D32);
+}
+
+.onboarding-checklist__progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--ej-gray-100, #F5F5F5);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.onboarding-checklist__progress-fill {
+  height: 100%;
+  background: var(--ej-color-primary, #2E7D32);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.onboarding-checklist__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.onboarding-checklist__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--ej-gray-100, #F5F5F5);
+}
+
+.onboarding-checklist__item:last-child {
+  border-bottom: none;
+}
+
+.onboarding-checklist__check {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  background: var(--ej-gray-100, #F5F5F5);
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-checklist__item--done .onboarding-checklist__check {
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+}
+
+.onboarding-checklist__label {
+  font-size: 0.85rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-checklist__item--done .onboarding-checklist__label {
+  text-decoration: line-through;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-checklist__empty {
+  text-align: center;
+  padding: 1rem;
+  color: var(--ej-text-muted, #9E9E9E);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* ============================================================================
+   Tour Overlay and Tooltip
+   ============================================================================ */
+
+.onboarding-tour__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9990;
+  display: none;
+}
+
+.onboarding-tour__tooltip {
+  position: absolute;
+  z-index: 9995;
+  display: none;
+  max-width: 360px;
+  background: var(--ej-bg-card, #ffffff);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 1.25rem;
+  font-family: var(--ej-font-family, Inter, -apple-system, sans-serif);
+}
+
+.onboarding-tour__tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-tour__tooltip-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-tour__tooltip-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--ej-text-secondary, #757575);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.onboarding-tour__tooltip-close:hover {
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-tour__tooltip-body {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.onboarding-tour__tooltip-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.onboarding-tour__tooltip-counter {
+  font-size: 0.75rem;
+  color: var(--ej-text-muted, #9E9E9E);
+}
+
+.onboarding-tour__tooltip-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.onboarding-tour__tooltip-prev,
+.onboarding-tour__tooltip-next {
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.onboarding-tour__tooltip-prev {
+  background: transparent;
+  border: 1px solid var(--ej-gray-300, #E0E0E0);
+  color: var(--ej-text-secondary, #757575);
+}
+
+.onboarding-tour__tooltip-prev:hover {
+  background: var(--ej-gray-50, #FAFAFA);
+}
+
+.onboarding-tour__tooltip-next {
+  background: var(--ej-color-primary, #2E7D32);
+  border: 1px solid var(--ej-color-primary, #2E7D32);
+  color: #fff;
+}
+
+.onboarding-tour__tooltip-next:hover {
+  background: var(--ej-color-primary-hover, #256025);
+}
+
+.onboarding-tour__highlight {
+  position: relative;
+  z-index: 9992;
+  box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.3);
+  border-radius: 0.25rem;
+}
+
+/* ============================================================================
+   Celebration Overlay
+   ============================================================================ */
+
+.onboarding-celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  animation: onboarding-celebration-in 0.3s ease;
+}
+
+.onboarding-celebration--closing {
+  animation: onboarding-celebration-out 0.3s ease forwards;
+}
+
+@keyframes onboarding-celebration-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes onboarding-celebration-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.onboarding-celebration__content {
+  position: relative;
+  background: var(--ej-bg-card, #ffffff);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  animation: onboarding-celebration-bounce 0.5s ease;
+}
+
+@keyframes onboarding-celebration-bounce {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.onboarding-celebration__confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.onboarding-celebration__particle {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  animation: onboarding-confetti-fall linear forwards;
+}
+
+@keyframes onboarding-confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.onboarding-celebration__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+  font-size: 2rem;
+}
+
+.onboarding-celebration__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--ej-text-primary, #212121);
+  font-family: var(--ej-font-family-headings, 'Outfit', sans-serif);
+}
+
+.onboarding-celebration__message {
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0 0 1.5rem 0;
+}
+
+.onboarding-celebration__close {
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboarding-celebration__close:hover {
+  background: var(--ej-color-primary-hover, #256025);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================================
+   Step Complete Template
+   ============================================================================ */
+
+.onboarding-step-complete {
+  font-family: var(--ej-font-family, Inter, -apple-system, sans-serif);
+  max-width: 600px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.onboarding-step-complete__celebration {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.onboarding-step-complete__confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.onboarding-step-complete__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+  font-size: 2.5rem;
+}
+
+.onboarding-step-complete__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-step-complete__description {
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0;
+}
+
+.onboarding-step-complete__achievements {
+  margin-bottom: 2rem;
+}
+
+.onboarding-step-complete__achievements-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-step-complete__achievements-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.onboarding-step-complete__achievement {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--ej-bg-card, #ffffff);
+  border: 1px solid var(--ej-color-accent, #FF9800);
+  border-radius: 2rem;
+}
+
+.onboarding-step-complete__achievement-icon {
+  color: var(--ej-color-accent, #FF9800);
+  font-size: 1rem;
+}
+
+.onboarding-step-complete__achievement-label {
+  font-size: 0.85rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-step-complete__achievement-points {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, #2E7D32);
+}
+
+.onboarding-step-complete__next {
+  margin-top: 2rem;
+}
+
+.onboarding-step-complete__next-label {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0 0 0.5rem 0;
+}
+
+.onboarding-step-complete__next-title {
+  font-size: 1.25rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.onboarding-step-complete__next-btn {
+  padding: 0.625rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--ej-color-primary, #2E7D32);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.onboarding-step-complete__next-btn:hover {
+  background: var(--ej-color-primary-hover, #256025);
+}
+
+.onboarding-step-complete__all-done {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ej-color-primary, #2E7D32);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .onboarding-dashboard {
+    padding: 1rem;
+  }
+
+  .onboarding-dashboard__title {
+    font-size: 1.5rem;
+  }
+
+  .onboarding-dashboard__checklist-item {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .onboarding-dashboard__checklist-action {
+    width: 100%;
+    text-align: center;
+  }
+
+  .onboarding-dashboard__achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .onboarding-tour__tooltip {
+    max-width: 280px;
+  }
+
+  .onboarding-celebration__content {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .onboarding-dashboard__achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-step-complete__achievements-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}

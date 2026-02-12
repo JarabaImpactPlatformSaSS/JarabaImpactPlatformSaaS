@@ -258,6 +258,33 @@ class PlanValidator
      * @return bool
      *   TRUE si la feature está disponible.
      */
+    /**
+     * Mapeo de features a códigos de add-on para verificación en PlanValidator.
+     *
+     * Se usa query directa a TenantAddon para evitar dependencia circular
+     * con FeatureAccessService.
+     */
+    protected const FEATURE_ADDON_MAP = [
+        'crm_pipeline' => 'jaraba_crm',
+        'crm_contacts' => 'jaraba_crm',
+        'lead_scoring' => 'jaraba_crm',
+        'email_campaigns' => 'jaraba_email',
+        'email_sequences' => 'jaraba_email',
+        'email_templates' => 'jaraba_email',
+        'social_calendar' => 'jaraba_social',
+        'social_posts' => 'jaraba_social',
+        'ads_sync' => 'paid_ads_sync',
+        'roas_tracking' => 'paid_ads_sync',
+        'pixels_manager' => 'retargeting_pixels',
+        'server_tracking' => 'retargeting_pixels',
+        'events_create' => 'events_webinars',
+        'webinar_integration' => 'events_webinars',
+        'experiments' => 'ab_testing',
+        'ab_variants' => 'ab_testing',
+        'referral_codes' => 'referral_program',
+        'rewards' => 'referral_program',
+    ];
+
     public function hasFeature(TenantInterface $tenant, string $feature): bool
     {
         // Primero verificar si el tenant está activo.
@@ -271,17 +298,39 @@ class PlanValidator
         }
 
         // Verificar si la feature está en el plan.
-        if (!$plan->hasFeature($feature)) {
-            return FALSE;
+        if ($plan->hasFeature($feature)) {
+            // Verificar si la vertical del tenant tiene la feature habilitada.
+            $vertical = $tenant->getVertical();
+            if ($vertical && !$vertical->hasFeature($feature)) {
+                return FALSE;
+            }
+            return TRUE;
         }
 
-        // Verificar si la vertical del tenant tiene la feature habilitada.
-        $vertical = $tenant->getVertical();
-        if ($vertical && !$vertical->hasFeature($feature)) {
-            return FALSE;
+        // Feature not in base plan: check active add-ons.
+        $addonCode = self::FEATURE_ADDON_MAP[$feature] ?? NULL;
+        if ($addonCode) {
+            try {
+                $addonStorage = $this->entityTypeManager->getStorage('tenant_addon');
+                $addons = $addonStorage->loadByProperties([
+                    'tenant_id' => $tenant->id(),
+                    'addon_code' => $addonCode,
+                    'status' => 'active',
+                ]);
+                if (!empty($addons)) {
+                    return TRUE;
+                }
+            }
+            catch (\Exception $e) {
+                $this->logger->warning('Error checking add-on @code for tenant @id: @error', [
+                    '@code' => $addonCode,
+                    '@id' => $tenant->id(),
+                    '@error' => $e->getMessage(),
+                ]);
+            }
         }
 
-        return TRUE;
+        return FALSE;
     }
 
     /**

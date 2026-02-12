@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * Template para resultados del diagnostico de empleabilidad.
+ *
+ * Muestra score ring SVG, perfil detectado, gap principal y CTAs.
+ * Acceso por UUID, publico.
+ *
+ * Variables:
+ *   - diagnostic: Entidad EmployabilityDiagnostic.
+ *   - score: Puntuacion 0-10.
+ *   - profile_type: Tipo de perfil (invisible, desconectado, etc.).
+ *   - profile_label: Etiqueta legible del perfil.
+ *   - profile_description: Descripcion del perfil.
+ *   - primary_gap: Gap principal detectado.
+ *   - dimension_scores: Scores por dimension.
+ *   - recommendations: Lista de recomendaciones.
+ */
+#}
+
+<div class="ej-diagnostic-results">
+  <div class="ej-diagnostic-results__header">
+    <h1>{{ 'Tu resultado de empleabilidad'|t }}</h1>
+  </div>
+
+  {# Score ring SVG #}
+  <div class="ej-diagnostic-results__score-container">
+    {% set dash_offset = 339.3 - (score / 10 * 339.3) %}
+    {% set score_color = score >= 8 ? 'var(--ej-success, #10B981)' : (score >= 6 ? 'var(--ej-primary, #4F46E5)' : (score >= 4 ? 'var(--ej-warning, #F59E0B)' : 'var(--ej-danger, #EF4444)')) %}
+    <svg class="ej-diagnostic-results__score-ring" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" fill="none" stroke="var(--ej-border-color, #e5e7eb)" stroke-width="8"/>
+      <circle cx="60" cy="60" r="54" fill="none" stroke="{{ score_color }}" stroke-width="8" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="{{ dash_offset }}" transform="rotate(-90, 60, 60)"/>
+      <text x="60" y="55" text-anchor="middle" class="ej-diagnostic-results__score-value">{{ score|number_format(1) }}</text>
+      <text x="60" y="75" text-anchor="middle" class="ej-diagnostic-results__score-label">{{ 'de 10'|t }}</text>
+    </svg>
+  </div>
+
+  {# Profile #}
+  <div class="ej-diagnostic-results__profile ej-diagnostic-results__profile--{{ profile_type }}">
+    <h2>{{ profile_label }}</h2>
+    <p>{{ profile_description }}</p>
+  </div>
+
+  {# Gap principal #}
+  {% if primary_gap %}
+  <div class="ej-diagnostic-results__gap">
+    <h3>{{ 'Tu area de mejora principal'|t }}</h3>
+    <div class="ej-diagnostic-results__gap-badge">
+      {% set gap_labels = { 'linkedin': 'LinkedIn', 'cv': 'CV / ATS', 'search_strategy': 'Estrategia de busqueda' } %}
+      {{ gap_labels[primary_gap] ?? primary_gap }}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Dimension scores #}
+  <div class="ej-diagnostic-results__dimensions">
+    <h3>{{ 'Detalle por dimension'|t }}</h3>
+    {% for key, score_val in dimension_scores %}
+      {% set dimension_labels = { 'linkedin': 'LinkedIn', 'cv_ats': 'CV ATS', 'estrategia': 'Estrategia' } %}
+      <div class="ej-diagnostic-results__dimension">
+        <span class="ej-diagnostic-results__dimension-label">{{ dimension_labels[key] ?? key }}</span>
+        <div class="ej-diagnostic-results__dimension-bar">
+          <div class="ej-diagnostic-results__dimension-fill" style="width: {{ score_val * 10 }}%"></div>
+        </div>
+        <span class="ej-diagnostic-results__dimension-value">{{ score_val|number_format(1) }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Recommendations #}
+  {% if recommendations %}
+  <div class="ej-diagnostic-results__recommendations">
+    <h3>{{ 'Tu plan de accion'|t }}</h3>
+    {% for rec in recommendations %}
+      <div class="ej-diagnostic-results__recommendation">
+        <h4>{{ rec.title }}</h4>
+        <p>{{ rec.description }}</p>
+        {% if rec.action %}
+          <span class="ej-diagnostic-results__recommendation-action">{{ rec.action }}</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# CTAs #}
+  <div class="ej-diagnostic-results__ctas">
+    <a href="/user/register?diagnostic={{ diagnostic.uuid.value }}" class="ej-diagnostic-results__cta-primary">
+      {{ 'Registrarme y empezar mi transformacion'|t }}
+    </a>
+    <a href="/empleabilidad/diagnostico" class="ej-diagnostic-results__cta-secondary">
+      {{ 'Repetir diagnostico'|t }}
+    </a>
+  </div>
+</div>

@@ -10,6 +10,8 @@ namespace Drupal\jaraba_journey\JourneyDefinition;
  * Según Doc 103:
  * - Comerciante: Ventas online +30% MoM, Store Setup <30 min
  * - Comprador Local: Click-to-Reserve <60s, Return Rate >40%
+ *
+ * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  */
 class ComercioConectaJourneyDefinition
 {
@@ -30,6 +32,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'register_business',
                         'label' => 'Registrar negocio',
                         'ia_intervention' => 'Wizard 3 pasos, importar Google My Business',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['gmb_import'],
@@ -41,16 +44,19 @@ class ComercioConectaJourneyDefinition
                         'action' => 'configure_online_store',
                         'label' => 'Configurar tienda online',
                         'ia_intervention' => 'Plantillas por sector pre-configuradas',
+                        'video_url' => '',
                     ],
                     3 => [
                         'action' => 'upload_products_mobile',
                         'label' => 'Subir productos (fotos móvil)',
                         'ia_intervention' => 'Procesamiento batch, fichas automáticas IA',
+                        'video_url' => '',
                     ],
                     4 => [
                         'action' => 'connect_pos',
                         'label' => 'Conectar TPV/POS (opcional)',
                         'ia_intervention' => 'Sincronización automática stock',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['sector_template', 'batch_upload', 'pos_sync'],
@@ -62,11 +68,13 @@ class ComercioConectaJourneyDefinition
                         'action' => 'publish_flash_offer',
                         'label' => 'Publicar primera oferta flash',
                         'ia_intervention' => 'Sugerir horario óptimo publicación',
+                        'video_url' => '',
                     ],
                     6 => [
                         'action' => 'generate_dynamic_qr',
                         'label' => 'Generar QR dinámico',
                         'ia_intervention' => 'Tracking escaneos tiempo real',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['optimal_timing', 'qr_tracking'],
@@ -78,6 +86,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'first_online_sale',
                         'label' => 'Primera venta online',
                         'ia_intervention' => 'Celebración + cross-sell',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['first_sale_celebration'],
@@ -89,11 +98,13 @@ class ComercioConectaJourneyDefinition
                         'action' => 'collect_reviews',
                         'label' => 'Recolectar reseñas',
                         'ia_intervention' => 'Solicitud automática post-venta',
+                        'video_url' => '',
                     ],
                     9 => [
                         'action' => 'optimize_seo_local',
                         'label' => 'Optimizar SEO local',
                         'ia_intervention' => 'Auditoría SEO + acciones sugeridas',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['review_request', 'seo_audit'],
@@ -124,6 +135,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'scan_qr_storefront',
                         'label' => 'Escanear QR en escaparate',
                         'ia_intervention' => 'Landing tienda con ofertas activas',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['time_limited_offers'],
@@ -135,6 +147,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'explore_catalog',
                         'label' => 'Explorar catálogo desde casa',
                         'ia_intervention' => 'Ordenar por relevancia personal',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['personalized_order'],
@@ -146,6 +159,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'reserve_for_pickup',
                         'label' => 'Reservar producto para recoger',
                         'ia_intervention' => 'Recordatorio antes de cierre',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['pickup_reminder'],
@@ -157,6 +171,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'pickup_in_store',
                         'label' => 'Recoger en tienda',
                         'ia_intervention' => 'Check-in digital + puntos fidelidad',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['loyalty_points', 'related_products'],
@@ -168,6 +183,7 @@ class ComercioConectaJourneyDefinition
                         'action' => 'leave_review',
                         'label' => 'Dejar reseña',
                         'ia_intervention' => 'Incentivar con puntos/descuento',
+                        'video_url' => '',
                     ],
                 ],
                 'triggers' => ['review_incentive'],

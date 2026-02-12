@@ -1,0 +1,7 @@
+qdrant_collection_prefix: 'tenant_knowledge'
+embedding_model: 'text-embedding-3-small'
+chunk_size: 512
+chunk_overlap: 50
+max_search_results: 5
+faq_bot_enabled: true
+help_center_enabled: true

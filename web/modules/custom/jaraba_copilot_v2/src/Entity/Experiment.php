@@ -28,7 +28,8 @@ use Drupal\user\EntityOwnerTrait;
  *   ),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "list_builder" = "Drupal\jaraba_copilot_v2\ListBuilder\ExperimentListBuilder",
+ *     "access" = "Drupal\jaraba_copilot_v2\Access\ExperimentAccessControlHandler",
  *     "form" = {
  *       "default" = "Drupal\Core\Entity\ContentEntityForm",
  *       "add" = "Drupal\Core\Entity\ContentEntityForm",

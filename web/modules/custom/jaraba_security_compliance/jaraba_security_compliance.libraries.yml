@@ -1,0 +1,35 @@
+security-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/security-dashboard.css: {}
+  js:
+    js/security-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+audit-trail:
+  version: 1.x
+  css:
+    theme:
+      css/audit-trail.css: {}
+  js:
+    js/audit-trail.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+soc2-readiness:
+  version: 1.x
+  css:
+    theme:
+      css/security-dashboard.css: {}
+  js:
+    js/security-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -24,3 +24,85 @@ jaraba_social.api.stats:
   methods: [GET]
   requirements:
     _permission: 'access social dashboard'
+
+# =============================================
+# Field UI settings route for SocialPostVariant
+# =============================================
+
+entity.social_post_variant.settings:
+  path: '/admin/config/social/post-variant'
+  defaults:
+    _form: '\Drupal\jaraba_social\Form\SocialPostVariantSettingsForm'
+    _title: 'Configuración de Variantes de Post Social'
+  requirements:
+    _permission: 'administer social media'
+
+# =============================================
+# API: Social Calendar
+# =============================================
+
+jaraba_social.api.calendar:
+  path: '/api/v1/social/calendar'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::calendar'
+  methods: [GET]
+  requirements:
+    _permission: 'view social media'
+
+jaraba_social.api.calendar.reschedule:
+  path: '/api/v1/social/calendar/reschedule'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::reschedule'
+  methods: [POST]
+  requirements:
+    _permission: 'manage social media'
+
+# =============================================
+# API: Social Analytics
+# =============================================
+
+jaraba_social.api.analytics.metrics:
+  path: '/api/v1/social/analytics/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::analyticsMetrics'
+  methods: [GET]
+  requirements:
+    _permission: 'view social media'
+
+jaraba_social.api.analytics.post_performance:
+  path: '/api/v1/social/analytics/post/{post_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::postPerformance'
+  methods: [GET]
+  requirements:
+    _permission: 'view social media'
+    post_id: '\d+'
+
+jaraba_social.api.analytics.top_posts:
+  path: '/api/v1/social/analytics/top-posts'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::topPosts'
+  methods: [GET]
+  requirements:
+    _permission: 'view social media'
+
+# =============================================
+# API: Make.com Integration
+# =============================================
+
+jaraba_social.api.makecom.publish:
+  path: '/api/v1/social/makecom/publish/{post_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::makecomPublish'
+  methods: [POST]
+  requirements:
+    _permission: 'manage social media'
+    post_id: '\d+'
+
+jaraba_social.api.makecom.webhook:
+  path: '/api/v1/social/makecom/webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::makecomWebhook'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

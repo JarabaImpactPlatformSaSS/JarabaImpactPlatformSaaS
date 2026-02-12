@@ -84,11 +84,61 @@ function jaraba_copilot_v2_schema() {
 function jaraba_copilot_v2_update_10001() {
   $schema = jaraba_copilot_v2_schema();
   $database = \Drupal::database();
-  
+
   if (!$database->schema()->tableExists('copilot_query_log')) {
     $database->schema()->createTable('copilot_query_log', $schema['copilot_query_log']);
     return t('Tabla copilot_query_log creada correctamente.');
   }
-  
+
   return t('Tabla copilot_query_log ya existía.');
+}
+
+/**
+ * Add user_id, role and tokens_used columns to copilot_query_log.
+ */
+function jaraba_copilot_v2_update_10002() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $messages = [];
+
+  if ($schema->tableExists('copilot_query_log')) {
+    if (!$schema->fieldExists('copilot_query_log', 'user_id')) {
+      $schema->addField('copilot_query_log', 'user_id', [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'ID del usuario que hizo la consulta.',
+      ]);
+      $schema->addIndex('copilot_query_log', 'user_id', ['user_id'], [
+        'fields' => [
+          'user_id' => ['type' => 'int', 'unsigned' => TRUE],
+        ],
+      ]);
+      $messages[] = 'Campo user_id agregado.';
+    }
+
+    if (!$schema->fieldExists('copilot_query_log', 'role')) {
+      $schema->addField('copilot_query_log', 'role', [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => 'user',
+        'description' => 'Rol del mensaje: user o assistant.',
+      ]);
+      $messages[] = 'Campo role agregado.';
+    }
+
+    if (!$schema->fieldExists('copilot_query_log', 'tokens_used')) {
+      $schema->addField('copilot_query_log', 'tokens_used', [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Tokens consumidos en la consulta.',
+      ]);
+      $messages[] = 'Campo tokens_used agregado.';
+    }
+  }
+
+  return implode(' ', $messages) ?: 'Sin cambios necesarios.';
 }

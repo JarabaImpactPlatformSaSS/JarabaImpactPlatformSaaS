@@ -1,0 +1,36 @@
+services:
+  logger.channel.jaraba_pwa:
+    parent: logger.channel_base
+    arguments: ['jaraba_pwa']
+
+  jaraba_pwa.push:
+    class: Drupal\jaraba_pwa\Service\PlatformPushService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_pwa'
+      - '@config.factory'
+
+  jaraba_pwa.sync_manager:
+    class: Drupal\jaraba_pwa\Service\PwaSyncManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_pwa'
+
+  jaraba_pwa.manifest:
+    class: Drupal\jaraba_pwa\Service\PwaManifestService
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_pwa'
+
+  jaraba_pwa.offline_data:
+    class: Drupal\jaraba_pwa\Service\PwaOfflineDataService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_pwa'
+
+  jaraba_pwa.cache_strategy:
+    class: Drupal\jaraba_pwa\Service\PwaCacheStrategyService
+    arguments:
+      - '@logger.channel.jaraba_pwa'

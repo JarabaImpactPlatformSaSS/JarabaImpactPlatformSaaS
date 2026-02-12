@@ -1,0 +1,24 @@
+administer whitelabel:
+  title: 'Administer whitelabel'
+  description: 'Full administrative access to all whitelabel settings, entities and configuration.'
+  restrict access: TRUE
+
+manage branding:
+  title: 'Manage branding'
+  description: 'Access the branding wizard to customise logo, colours and CSS for a tenant.'
+
+manage custom domains:
+  title: 'Manage custom domains'
+  description: 'Add, verify, and remove custom domains for a tenant.'
+
+manage email templates:
+  title: 'Manage email templates'
+  description: 'Create and edit branded email templates for a tenant.'
+
+manage resellers:
+  title: 'Manage resellers'
+  description: 'Create, edit and manage reseller/partner records and commissions.'
+
+view reseller portal:
+  title: 'View reseller portal'
+  description: 'Access the partner portal dashboard to view managed tenants and commissions.'

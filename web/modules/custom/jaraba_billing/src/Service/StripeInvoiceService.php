@@ -51,6 +51,12 @@ class StripeInvoiceService {
       'status' => $this->mapStripeStatus($stripeInvoice['status'] ?? 'draft'),
       'amount_due' => ($stripeInvoice['amount_due'] ?? 0) / 100,
       'amount_paid' => ($stripeInvoice['amount_paid'] ?? 0) / 100,
+      'stripe_customer_id' => $stripeInvoice['customer'] ?? NULL,
+      'subtotal' => ($stripeInvoice['subtotal'] ?? 0) / 100,
+      'tax' => ($stripeInvoice['tax'] ?? 0) / 100,
+      'total' => ($stripeInvoice['total'] ?? 0) / 100,
+      'billing_reason' => $stripeInvoice['billing_reason'] ?? 'manual',
+      'lines' => json_encode($stripeInvoice['lines']['data'] ?? []),
       'currency' => strtoupper($stripeInvoice['currency'] ?? 'EUR'),
       'period_start' => $stripeInvoice['period_start'] ?? NULL,
       'period_end' => $stripeInvoice['period_end'] ?? NULL,
@@ -179,6 +185,72 @@ class StripeInvoiceService {
     ]);
 
     return $result;
+  }
+
+  /**
+   * Envía registros de uso pendientes a Stripe.
+   *
+   * Carga BillingUsageRecord donde reported_at IS NULL,
+   * agrupa por subscription_item_id, y reporta el uso agregado.
+   *
+   * @return int
+   *   Número de registros procesados.
+   */
+  public function flushUsageToStripe(): int {
+    $storage = $this->entityTypeManager->getStorage('billing_usage_record');
+
+    // Load unreported records (reported_at is NULL).
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->notExists('reported_at')
+      ->exists('subscription_item_id')
+      ->sort('created', 'ASC');
+    $ids = $query->execute();
+
+    if (empty($ids)) {
+      return 0;
+    }
+
+    $records = $storage->loadMultiple($ids);
+
+    // Group by subscription_item_id.
+    $grouped = [];
+    foreach ($records as $record) {
+      $itemId = $record->get('subscription_item_id')->value;
+      if ($itemId) {
+        $grouped[$itemId][] = $record;
+      }
+    }
+
+    $processed = 0;
+    foreach ($grouped as $subscriptionItemId => $itemRecords) {
+      $totalQuantity = 0;
+      foreach ($itemRecords as $record) {
+        $totalQuantity += (int) $record->get('quantity')->value;
+      }
+
+      try {
+        $this->reportUsage($subscriptionItemId, $totalQuantity);
+
+        // Mark all records as reported.
+        $now = time();
+        foreach ($itemRecords as $record) {
+          $record->set('reported_at', $now);
+          $record->save();
+        }
+
+        $processed += count($itemRecords);
+      }
+      catch (\Exception $e) {
+        $this->logger->error('Error flushing usage to Stripe for item @item: @error', [
+          '@item' => $subscriptionItemId,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    $this->logger->info('Flushed @count usage records to Stripe', ['@count' => $processed]);
+    return $processed;
   }
 
   /**

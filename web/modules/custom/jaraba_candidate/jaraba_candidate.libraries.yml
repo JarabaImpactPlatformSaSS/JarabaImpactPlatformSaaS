@@ -6,6 +6,16 @@ career_dashboard:
   dependencies:
     - core/drupal
 
+# Copilot de Empleabilidad (Spec 20260120b S10)
+employability-copilot:
+  version: 1.x
+  js:
+    js/employability-copilot.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 skills_manager:
   version: 1.x
   js:

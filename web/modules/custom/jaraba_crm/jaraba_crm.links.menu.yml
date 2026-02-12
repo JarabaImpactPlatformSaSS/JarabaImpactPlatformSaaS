@@ -31,6 +31,13 @@ jaraba_crm.structure.activity:
   parent: system.admin_structure
   weight: 53
 
+jaraba_crm.structure.pipeline_stage:
+  title: 'CRM: Etapas de Pipeline'
+  description: 'Configurar campos y formularios de etapas del pipeline.'
+  route_name: entity.crm_pipeline_stage.settings
+  parent: system.admin_structure
+  weight: 54
+
 # Configuración global en /admin/config
 jaraba_crm.admin_config:
   title: 'CRM'

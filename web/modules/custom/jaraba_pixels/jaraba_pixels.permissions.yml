@@ -8,3 +8,11 @@ administer pixels:
 view pixel stats:
   title: 'Ver estadísticas de Pixels'
   description: 'Permite ver métricas de eventos enviados a plataformas de marketing.'
+
+view pixels:
+  title: 'Ver pixels de seguimiento'
+  description: 'Permite ver la lista de pixels, eventos y registros de consentimiento.'
+
+manage pixels:
+  title: 'Gestionar pixels de seguimiento'
+  description: 'Permite crear, editar y eliminar pixels, eventos y registros de consentimiento.'

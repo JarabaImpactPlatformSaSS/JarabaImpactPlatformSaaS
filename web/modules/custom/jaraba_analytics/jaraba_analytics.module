@@ -24,6 +24,58 @@ function jaraba_analytics_theme() {
       ],
       'template' => 'analytics-dashboard',
     ],
+    'cohort_analysis' => [
+      'variables' => [
+        'cohort' => NULL,
+        'retention_data' => [],
+        'weeks' => [],
+      ],
+      'template' => 'cohort-analysis',
+    ],
+    'funnel_analysis' => [
+      'variables' => [
+        'funnel' => NULL,
+        'results' => [],
+      ],
+      'template' => 'funnel-analysis',
+    ],
+    'analytics_dashboard_list' => [
+      'variables' => [
+        'dashboards' => [],
+        'can_create' => FALSE,
+      ],
+      'template' => 'analytics-dashboard-list',
+    ],
+    'analytics_dashboard_view' => [
+      'variables' => [
+        'dashboard' => NULL,
+        'widgets' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'analytics-dashboard-view',
+    ],
+    'analytics_dashboard_builder' => [
+      'variables' => [
+        'dashboard' => NULL,
+        'widgets' => [],
+        'widget_types' => [],
+      ],
+      'template' => 'analytics-dashboard-builder',
+    ],
+    'analytics_scheduled_reports' => [
+      'variables' => [
+        'reports' => [],
+        'can_manage' => FALSE,
+      ],
+      'template' => 'analytics-scheduled-reports',
+    ],
+    'analytics_report_wizard' => [
+      'variables' => [
+        'metrics' => [],
+        'dimensions' => [],
+      ],
+      'template' => 'analytics-report-wizard',
+    ],
   ];
 }
 

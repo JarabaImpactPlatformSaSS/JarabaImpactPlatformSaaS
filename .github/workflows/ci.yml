@@ -127,6 +127,30 @@ jobs:
           files: coverage.xml
           fail_ci_if_error: false
 
+      - name: Check coverage threshold (80%)
+        run: |
+          if [ -f coverage.xml ]; then
+            COVERAGE=$(php -r "
+              \$xml = simplexml_load_file('coverage.xml');
+              \$metrics = \$xml->project->metrics;
+              \$stmts = (int)\$metrics['statements'];
+              \$covered = (int)\$metrics['coveredstatements'];
+              if (\$stmts > 0) {
+                echo round((\$covered / \$stmts) * 100, 2);
+              } else {
+                echo '0';
+              }
+            ")
+            echo "Coverage: ${COVERAGE}%"
+            if [ "$(echo "${COVERAGE} < 80" | bc -l)" -eq 1 ]; then
+              echo "::error::Coverage ${COVERAGE}% is below the 80% threshold"
+              exit 1
+            fi
+            echo "::notice::Coverage ${COVERAGE}% meets the 80% threshold"
+          else
+            echo "::warning::coverage.xml not found, skipping coverage check"
+          fi
+
   # ===========================================
   # JOB 3: ANÁLISIS DE SEGURIDAD
   # ===========================================

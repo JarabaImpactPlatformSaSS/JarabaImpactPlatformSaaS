@@ -1,0 +1,16 @@
+administer agent flows:
+  title: 'Administer Agent Flows'
+  description: 'Full administration of agent flows, including deletion.'
+  restrict access: true
+
+manage agent flows:
+  title: 'Manage Agent Flows'
+  description: 'Create, edit, and execute agent flows.'
+
+view agent flows:
+  title: 'View Agent Flows'
+  description: 'View agent flows and their execution history.'
+
+view agent flow executions:
+  title: 'View Agent Flow Executions'
+  description: 'View detailed execution logs of agent flows.'

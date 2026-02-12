@@ -1,0 +1,43 @@
+branding-wizard:
+  version: VERSION
+  css:
+    component:
+      css/branding-wizard.css: {}
+  js:
+    js/branding-wizard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+domain-management:
+  version: VERSION
+  css:
+    component:
+      css/domain-management.css: {}
+  js:
+    js/domain-management.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+email-editor:
+  version: VERSION
+  css:
+    component:
+      css/email-editor.css: {}
+  js:
+    js/email-template-editor.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+reseller-portal:
+  version: VERSION
+  css:
+    component:
+      css/reseller-portal.css: {}
+  js:
+    js/reseller-portal.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

@@ -1,0 +1,5 @@
+jaraba_onboarding.template.add:
+  title: 'Crear template de onboarding'
+  route_name: entity.onboarding_template.add_form
+  appears_on:
+    - entity.onboarding_template.collection

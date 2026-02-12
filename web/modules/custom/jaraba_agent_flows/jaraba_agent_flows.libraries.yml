@@ -1,0 +1,47 @@
+# ============================================================================
+# BIBLIOTECAS DEL MODULO JARABA AGENT FLOWS
+# ============================================================================
+# Define las bibliotecas de CSS y JS del modulo.
+# Las bibliotecas se cargan condicionalmente segun la pagina/funcionalidad.
+#
+# COMPILACION SCSS:
+# Los archivos SCSS en scss/ se compilan a css/ con el siguiente comando:
+# npx sass scss/main.scss:css/agent-flows.css --style=compressed
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL DASHBOARD DE AGENT FLOWS
+# ---------------------------------------------------------------------------
+# Dashboard principal con listado de flujos, metricas, ejecuciones
+# recientes y templates predefinidos. Incluye Chart.js para graficos.
+
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/agent-flows-dashboard.css: {}
+  js:
+    js/agent-flows-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DEL FLOW BUILDER
+# ---------------------------------------------------------------------------
+# Editor visual de flujos con drag-and-drop de pasos, conexiones
+# y configuracion de parametros. Incluye validacion en tiempo real.
+
+builder:
+  version: 1.x
+  css:
+    theme:
+      css/agent-flows-builder.css: {}
+  js:
+    js/agent-flows-builder.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.ajax

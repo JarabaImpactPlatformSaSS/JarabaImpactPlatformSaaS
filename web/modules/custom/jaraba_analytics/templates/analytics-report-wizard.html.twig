@@ -1,0 +1,239 @@
+{#
+/**
+ * @file
+ * Template for Analytics Report Creation Wizard.
+ *
+ * Variables:
+ * - metrics: Available metrics list from AnalyticsDataService.
+ * - dimensions: Available dimensions list from AnalyticsDataService.
+ *
+ * Conventions:
+ * - BEM naming (.analytics-report-wizard, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\ScheduledReportController
+ */
+#}
+
+<div class="analytics-report-wizard"
+     data-current-step="1"
+     data-total-steps="4">
+
+  {# ===== Header ===== #}
+  <header class="analytics-report-wizard__header">
+    <h2 class="analytics-report-wizard__title">
+      {% trans %}Create Scheduled Report{% endtrans %}
+    </h2>
+  </header>
+
+  {# ===== Progress Steps ===== #}
+  <nav class="analytics-report-wizard__steps" aria-label="{% trans %}Wizard steps{% endtrans %}">
+    <ol class="analytics-report-wizard__step-list">
+      <li class="analytics-report-wizard__step analytics-report-wizard__step--active"
+          data-step="1">
+        <span class="analytics-report-wizard__step-number">1</span>
+        <span class="analytics-report-wizard__step-label">{% trans %}Metrics{% endtrans %}</span>
+      </li>
+      <li class="analytics-report-wizard__step" data-step="2">
+        <span class="analytics-report-wizard__step-number">2</span>
+        <span class="analytics-report-wizard__step-label">{% trans %}Filters{% endtrans %}</span>
+      </li>
+      <li class="analytics-report-wizard__step" data-step="3">
+        <span class="analytics-report-wizard__step-number">3</span>
+        <span class="analytics-report-wizard__step-label">{% trans %}Schedule{% endtrans %}</span>
+      </li>
+      <li class="analytics-report-wizard__step" data-step="4">
+        <span class="analytics-report-wizard__step-number">4</span>
+        <span class="analytics-report-wizard__step-label">{% trans %}Recipients{% endtrans %}</span>
+      </li>
+    </ol>
+  </nav>
+
+  {# ===== Step 1: Metric Selection ===== #}
+  <section class="analytics-report-wizard__panel analytics-report-wizard__panel--active"
+           data-panel="1"
+           aria-label="{% trans %}Select metrics{% endtrans %}">
+    <h3 class="analytics-report-wizard__panel-title">
+      {% trans %}Select Metrics{% endtrans %}
+    </h3>
+    <p class="analytics-report-wizard__panel-description">
+      {% trans %}Choose the metrics to include in your report{% endtrans %}
+    </p>
+    <div class="analytics-report-wizard__metric-list">
+      <label class="analytics-report-wizard__metric-item">
+        <input type="checkbox" name="metrics[]" value="page_views" class="analytics-report-wizard__checkbox">
+        <span class="analytics-report-wizard__metric-label">{% trans %}Page Views{% endtrans %}</span>
+      </label>
+      <label class="analytics-report-wizard__metric-item">
+        <input type="checkbox" name="metrics[]" value="unique_visitors" class="analytics-report-wizard__checkbox">
+        <span class="analytics-report-wizard__metric-label">{% trans %}Unique Visitors{% endtrans %}</span>
+      </label>
+      <label class="analytics-report-wizard__metric-item">
+        <input type="checkbox" name="metrics[]" value="sessions" class="analytics-report-wizard__checkbox">
+        <span class="analytics-report-wizard__metric-label">{% trans %}Sessions{% endtrans %}</span>
+      </label>
+      <label class="analytics-report-wizard__metric-item">
+        <input type="checkbox" name="metrics[]" value="conversions" class="analytics-report-wizard__checkbox">
+        <span class="analytics-report-wizard__metric-label">{% trans %}Conversions{% endtrans %}</span>
+      </label>
+      <label class="analytics-report-wizard__metric-item">
+        <input type="checkbox" name="metrics[]" value="bounce_rate" class="analytics-report-wizard__checkbox">
+        <span class="analytics-report-wizard__metric-label">{% trans %}Bounce Rate{% endtrans %}</span>
+      </label>
+    </div>
+  </section>
+
+  {# ===== Step 2: Filters ===== #}
+  <section class="analytics-report-wizard__panel"
+           data-panel="2"
+           aria-label="{% trans %}Configure filters{% endtrans %}">
+    <h3 class="analytics-report-wizard__panel-title">
+      {% trans %}Configure Filters{% endtrans %}
+    </h3>
+    <p class="analytics-report-wizard__panel-description">
+      {% trans %}Narrow down the data included in your report{% endtrans %}
+    </p>
+    <div class="analytics-report-wizard__filters">
+      <div class="analytics-report-wizard__filter-row">
+        <label class="analytics-report-wizard__filter-label" for="wizard-date-range">
+          {% trans %}Date Range{% endtrans %}
+        </label>
+        <select id="wizard-date-range"
+                name="date_range"
+                class="analytics-report-wizard__filter-select">
+          <option value="last_7_days">{% trans %}Last 7 Days{% endtrans %}</option>
+          <option value="last_30_days" selected>{% trans %}Last 30 Days{% endtrans %}</option>
+          <option value="last_90_days">{% trans %}Last 90 Days{% endtrans %}</option>
+          <option value="last_year">{% trans %}Last Year{% endtrans %}</option>
+        </select>
+      </div>
+      <div class="analytics-report-wizard__filter-row">
+        <label class="analytics-report-wizard__filter-label" for="wizard-device-type">
+          {% trans %}Device Type{% endtrans %}
+        </label>
+        <select id="wizard-device-type"
+                name="device_type"
+                class="analytics-report-wizard__filter-select">
+          <option value="">{% trans %}All Devices{% endtrans %}</option>
+          <option value="desktop">{% trans %}Desktop{% endtrans %}</option>
+          <option value="mobile">{% trans %}Mobile{% endtrans %}</option>
+          <option value="tablet">{% trans %}Tablet{% endtrans %}</option>
+        </select>
+      </div>
+      <div class="analytics-report-wizard__filter-row">
+        <label class="analytics-report-wizard__filter-label" for="wizard-country">
+          {% trans %}Country{% endtrans %}
+        </label>
+        <input type="text"
+               id="wizard-country"
+               name="country"
+               class="analytics-report-wizard__filter-input"
+               placeholder="{% trans %}e.g. ES{% endtrans %}">
+      </div>
+    </div>
+  </section>
+
+  {# ===== Step 3: Schedule ===== #}
+  <section class="analytics-report-wizard__panel"
+           data-panel="3"
+           aria-label="{% trans %}Set schedule{% endtrans %}">
+    <h3 class="analytics-report-wizard__panel-title">
+      {% trans %}Set Schedule{% endtrans %}
+    </h3>
+    <p class="analytics-report-wizard__panel-description">
+      {% trans %}Choose when and how often to send this report{% endtrans %}
+    </p>
+    <div class="analytics-report-wizard__schedule">
+      <div class="analytics-report-wizard__schedule-row">
+        <label class="analytics-report-wizard__schedule-label" for="wizard-frequency">
+          {% trans %}Frequency{% endtrans %}
+        </label>
+        <select id="wizard-frequency"
+                name="schedule_type"
+                class="analytics-report-wizard__schedule-select">
+          <option value="daily">{% trans %}Daily{% endtrans %}</option>
+          <option value="weekly" selected>{% trans %}Weekly{% endtrans %}</option>
+          <option value="monthly">{% trans %}Monthly{% endtrans %}</option>
+        </select>
+      </div>
+      <div class="analytics-report-wizard__schedule-row">
+        <label class="analytics-report-wizard__schedule-label" for="wizard-day">
+          {% trans %}Day{% endtrans %}
+        </label>
+        <select id="wizard-day"
+                name="day_of_week"
+                class="analytics-report-wizard__schedule-select">
+          <option value="monday" selected>{% trans %}Monday{% endtrans %}</option>
+          <option value="tuesday">{% trans %}Tuesday{% endtrans %}</option>
+          <option value="wednesday">{% trans %}Wednesday{% endtrans %}</option>
+          <option value="thursday">{% trans %}Thursday{% endtrans %}</option>
+          <option value="friday">{% trans %}Friday{% endtrans %}</option>
+        </select>
+      </div>
+      <div class="analytics-report-wizard__schedule-row">
+        <label class="analytics-report-wizard__schedule-label" for="wizard-time">
+          {% trans %}Time{% endtrans %}
+        </label>
+        <input type="time"
+               id="wizard-time"
+               name="time"
+               class="analytics-report-wizard__schedule-input"
+               value="08:00">
+      </div>
+    </div>
+  </section>
+
+  {# ===== Step 4: Recipients ===== #}
+  <section class="analytics-report-wizard__panel"
+           data-panel="4"
+           aria-label="{% trans %}Add recipients{% endtrans %}">
+    <h3 class="analytics-report-wizard__panel-title">
+      {% trans %}Add Recipients{% endtrans %}
+    </h3>
+    <p class="analytics-report-wizard__panel-description">
+      {% trans %}Enter email addresses for report delivery{% endtrans %}
+    </p>
+    <div class="analytics-report-wizard__recipients">
+      <div class="analytics-report-wizard__recipient-input-group">
+        <input type="email"
+               class="analytics-report-wizard__recipient-input"
+               id="wizard-recipient-email"
+               placeholder="{% trans %}email@example.com{% endtrans %}">
+        <button type="button"
+                class="analytics-report-wizard__recipient-add-btn"
+                data-action="add-recipient">
+          {% trans %}Add{% endtrans %}
+        </button>
+      </div>
+      <ul class="analytics-report-wizard__recipient-list"
+          aria-label="{% trans %}Added recipients{% endtrans %}">
+      </ul>
+    </div>
+  </section>
+
+  {# ===== Navigation ===== #}
+  <footer class="analytics-report-wizard__footer">
+    <button type="button"
+            class="analytics-report-wizard__nav-btn analytics-report-wizard__nav-btn--prev"
+            data-action="prev-step"
+            disabled
+            aria-label="{% trans %}Previous step{% endtrans %}">
+      {% trans %}Previous{% endtrans %}
+    </button>
+    <button type="button"
+            class="analytics-report-wizard__nav-btn analytics-report-wizard__nav-btn--next"
+            data-action="next-step"
+            aria-label="{% trans %}Next step{% endtrans %}">
+      {% trans %}Next{% endtrans %}
+    </button>
+    <button type="button"
+            class="analytics-report-wizard__nav-btn analytics-report-wizard__nav-btn--submit"
+            data-action="submit-report"
+            style="display: none;"
+            aria-label="{% trans %}Create report{% endtrans %}">
+      {% trans %}Create Report{% endtrans %}
+    </button>
+  </footer>
+
+</div>

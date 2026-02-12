@@ -1,0 +1,29 @@
+jaraba_security_compliance.admin.dashboard:
+  route_name: jaraba_security_compliance.admin
+  title: 'Dashboard'
+  base_route: jaraba_security_compliance.admin
+  weight: 0
+
+jaraba_security_compliance.admin.audit_logs:
+  route_name: entity.security_audit_log.collection
+  title: 'Audit Logs'
+  base_route: jaraba_security_compliance.admin
+  weight: 10
+
+jaraba_security_compliance.admin.assessments:
+  route_name: entity.compliance_assessment_v2.collection
+  title: 'Evaluaciones'
+  base_route: jaraba_security_compliance.admin
+  weight: 20
+
+jaraba_security_compliance.admin.policies:
+  route_name: entity.security_policy_v2.collection
+  title: 'Políticas'
+  base_route: jaraba_security_compliance.admin
+  weight: 30
+
+jaraba_security_compliance.admin.settings:
+  route_name: jaraba_security_compliance.settings
+  title: 'Configuración'
+  base_route: jaraba_security_compliance.admin
+  weight: 40

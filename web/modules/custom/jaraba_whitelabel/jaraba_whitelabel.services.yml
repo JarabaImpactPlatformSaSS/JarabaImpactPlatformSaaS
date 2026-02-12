@@ -1,0 +1,45 @@
+services:
+  logger.channel.jaraba_whitelabel:
+    parent: logger.channel_base
+    arguments: ['jaraba_whitelabel']
+
+  jaraba_whitelabel.config_resolver:
+    class: Drupal\jaraba_whitelabel\Service\ConfigResolverService
+    arguments:
+      - '@entity_type.manager'
+      - '@request_stack'
+      - '@logger.channel.jaraba_whitelabel'
+
+  jaraba_whitelabel.domain_manager:
+    class: Drupal\jaraba_whitelabel\Service\DomainManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_whitelabel'
+
+  jaraba_whitelabel.email_renderer:
+    class: Drupal\jaraba_whitelabel\Service\EmailRendererService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_whitelabel'
+
+  jaraba_whitelabel.reseller_manager:
+    class: Drupal\jaraba_whitelabel\Service\ResellerManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_whitelabel'
+
+  jaraba_whitelabel.branded_pdf:
+    class: Drupal\jaraba_whitelabel\Service\BrandedPdfService
+    arguments:
+      - '@file_system'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_whitelabel'
+
+  jaraba_whitelabel.request_subscriber:
+    class: Drupal\jaraba_whitelabel\EventSubscriber\WhitelabelRequestSubscriber
+    arguments:
+      - '@jaraba_whitelabel.config_resolver'
+      - '@logger.channel.jaraba_whitelabel'
+    tags:
+      - { name: event_subscriber }

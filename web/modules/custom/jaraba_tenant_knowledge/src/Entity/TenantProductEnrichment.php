@@ -23,6 +23,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
  * - FAQs específicas del producto
  * - Comparativas y diferenciadores
  *
+ * MULTILINGÜE (G114-3):
+ * Campos de contenido traducibles (product_name, description, specifications,
+ * benefits, use_cases, price_info, product_faqs).
+ * Campos de organización (product_sku, category, is_published, timestamps) no traducibles.
+ * Integración con content_translation para UI de traducción estándar.
+ *
  * @ContentEntityType(
  *   id = "tenant_product_enrichment",
  *   label = @Translation("Enriquecimiento de Producto"),
@@ -42,11 +48,14 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "access" = "Drupal\jaraba_tenant_knowledge\TenantKnowledgeAccessControlHandler",
  *   },
  *   base_table = "tenant_product_enrichment",
+ *   data_table = "tenant_product_enrichment_field_data",
+ *   translatable = TRUE,
  *   admin_permission = "administer tenant knowledge",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
  *     "label" = "product_name",
+ *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "add-form" = "/knowledge/products/add",
@@ -92,6 +101,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
             ->setLabel(t('Nombre del Producto'))
             ->setDescription(t('Nombre comercial del producto o servicio.'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setSetting('max_length', 255)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
@@ -114,6 +124,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['description'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Descripción Completa'))
             ->setDescription(t('Descripción detallada para que el copiloto pueda explicar el producto.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 3,
@@ -124,6 +135,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['specifications'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Especificaciones Técnicas'))
             ->setDescription(t('Características técnicas, medidas, materiales, etc.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 4,
@@ -133,6 +145,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['benefits'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Beneficios y Diferenciadores'))
             ->setDescription(t('¿Por qué elegir este producto? Ventajas competitivas.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 5,
@@ -142,6 +155,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['use_cases'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('Casos de Uso'))
             ->setDescription(t('¿Para quién es ideal? Escenarios de uso.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 6,
@@ -153,6 +167,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['price_info'] = BaseFieldDefinition::create('string_long')
             ->setLabel(t('Información de Precios'))
             ->setDescription(t('Precio o rango de precios, promociones, etc.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'string_textarea',
                 'weight' => 7,
@@ -164,6 +179,7 @@ class TenantProductEnrichment extends ContentEntityBase implements EntityChanged
         $fields['product_faqs'] = BaseFieldDefinition::create('text_long')
             ->setLabel(t('FAQs del Producto'))
             ->setDescription(t('Preguntas y respuestas frecuentes específicas.'))
+            ->setTranslatable(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'text_textarea',
                 'weight' => 8,

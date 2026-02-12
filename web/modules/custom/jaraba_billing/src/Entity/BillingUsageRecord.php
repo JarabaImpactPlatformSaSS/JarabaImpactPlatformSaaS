@@ -118,6 +118,36 @@ class BillingUsageRecord extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    $fields['subscription_item_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Subscription Item ID'))
+      ->setDescription(t('ID del subscription item en Stripe (si_xxx).'))
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['reported_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Reportado a Stripe'))
+      ->setDescription(t('Timestamp de cuándo se envió a Stripe. NULL = pendiente.'))
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['idempotency_key'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Clave de Idempotencia'))
+      ->setDescription(t('Clave única para prevenir registros duplicados.'))
+      ->setSetting('max_length', 128)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['billed'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Facturado'))
+      ->setDescription(t('Indica si este uso ya ha sido facturado.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['billing_period'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Periodo de Facturación'))
+      ->setDescription(t('Periodo en formato YYYY-MM.'))
+      ->setSetting('max_length', 7)
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['metadata'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Metadatos'))
       ->setDescription(t('JSON con datos adicionales del registro de uso.'))

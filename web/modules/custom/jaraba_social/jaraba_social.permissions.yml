@@ -13,3 +13,16 @@ administer social posts:
 create social posts:
   title: 'Crear publicaciones sociales'
   description: 'Crear nuevas publicaciones en redes sociales.'
+
+administer social media:
+  title: 'Administrar modulo Social Media'
+  description: 'Acceso total a todas las funcionalidades de redes sociales, incluyendo configuracion de entidades.'
+  restrict access: true
+
+view social media:
+  title: 'Ver contenido de Social Media'
+  description: 'Permite ver publicaciones, analiticas y calendario de redes sociales.'
+
+manage social media:
+  title: 'Gestionar Social Media'
+  description: 'Permite crear, editar, eliminar y reprogramar publicaciones y variantes.'

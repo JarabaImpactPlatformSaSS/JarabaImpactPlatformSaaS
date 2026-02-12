@@ -1,0 +1,131 @@
+{#
+/**
+ * @file
+ * Plantilla HTML de certificado con marca del tenant (G117-3).
+ *
+ * Diseno elegante con borde decorativo, colores de marca y
+ * nombre del destinatario destacado. Disponible para renderizado
+ * Twig-to-PDF o envio por email.
+ *
+ * Variables:
+ *   - title: (string) Titulo del certificado.
+ *   - recipient_name: (string) Nombre del destinatario.
+ *   - description: (string) Descripcion o motivo del certificado.
+ *   - date: (string) Fecha de emision.
+ *   - certificate_id: (string) Identificador unico del certificado.
+ *   - issuer_name: (string) Nombre del emisor.
+ *   - brand: (array) Configuracion de marca del tenant:
+ *     - color_primary: (string) Color principal hex.
+ *     - color_secondary: (string) Color secundario hex.
+ *     - color_accent: (string) Color de acento hex.
+ *     - logo_url: (string|null) URL del logo.
+ *     - font_heading: (string) Fuente para titulos.
+ *     - font_body: (string) Fuente para cuerpo.
+ *
+ * BEM structure:
+ *   .branded-certificate
+ *     .branded-certificate__border
+ *     .branded-certificate__logo
+ *     .branded-certificate__title
+ *     .branded-certificate__recipient
+ *     .branded-certificate__description
+ *     .branded-certificate__meta
+ *     .branded-certificate__issuer
+ *     .branded-certificate__footer
+ */
+#}
+
+{% set primary = brand.color_primary|default('#FF8C42') %}
+{% set secondary = brand.color_secondary|default('#00A9A5') %}
+{% set accent = brand.color_accent|default('#233D63') %}
+{% set font_heading = brand.font_heading|default('Outfit') %}
+{% set font_body = brand.font_body|default('Inter') %}
+
+<div class="branded-certificate" style="max-width: 900px; margin: 0 auto; font-family: '{{ font_body }}', 'Helvetica Neue', Arial, sans-serif; color: #333;">
+
+  {# ===== BORDE EXTERIOR DECORATIVO ===== #}
+  <div class="branded-certificate__border" style="border: 3px solid {{ primary }}; padding: 8px; margin: 20px;">
+    <div style="border: 1px solid {{ secondary }}; padding: 40px 50px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative;">
+
+      {# Barra decorativa superior #}
+      <div style="position: absolute; top: 0; left: 30px; right: 30px; height: 4px; background: linear-gradient(90deg, {{ primary }}, {{ secondary }});"></div>
+
+      {# ===== LOGO ===== #}
+      {% if brand.logo_url %}
+        <div class="branded-certificate__logo" style="margin-bottom: 20px;">
+          <img src="{{ brand.logo_url }}" alt="{{ 'Logo'|t }}" style="max-height: 60px; max-width: 200px;" />
+        </div>
+      {% endif %}
+
+      {# ===== TITULO ===== #}
+      <div class="branded-certificate__title" style="margin-bottom: 10px;">
+        <h1 style="margin: 0; font-family: '{{ font_heading }}', serif; font-size: 36px; color: {{ primary }}; font-weight: 700; text-transform: uppercase; letter-spacing: 3px;">
+          {{ title|default('CERTIFICADO'|t) }}
+        </h1>
+      </div>
+
+      {# Ornamento bajo titulo #}
+      <div style="width: 120px; height: 2px; background: {{ secondary }}; margin: 12px auto 24px;"></div>
+
+      {# ===== TEXTO INTRODUCTORIO ===== #}
+      <p style="font-size: 16px; color: #666; margin: 0 0 10px; font-style: italic;">
+        {{ 'Se certifica que'|t }}
+      </p>
+
+      {# ===== NOMBRE DEL DESTINATARIO ===== #}
+      <div class="branded-certificate__recipient" style="margin: 8px 0 20px;">
+        <h2 style="margin: 0; font-family: '{{ font_heading }}', serif; font-size: 32px; color: {{ accent }}; font-weight: 700;">
+          {{ recipient_name }}
+        </h2>
+        <div style="width: 80%; height: 1px; background: #ddd; margin: 12px auto 0;"></div>
+      </div>
+
+      {# ===== DESCRIPCION ===== #}
+      {% if description %}
+        <div class="branded-certificate__description" style="max-width: 550px; margin: 0 auto 28px;">
+          <p style="font-size: 14px; color: #555; line-height: 1.7; margin: 0;">
+            {{ description }}
+          </p>
+        </div>
+      {% endif %}
+
+      {# ===== METADATOS ===== #}
+      <div class="branded-certificate__meta" style="margin: 20px 0; font-size: 13px; color: #888;">
+        <p style="margin: 4px 0;">
+          {{ 'Fecha de emision:'|t }} <strong>{{ date }}</strong>
+        </p>
+        {% if certificate_id %}
+          <p style="margin: 4px 0;">
+            {{ 'ID:'|t }} <span style="font-family: monospace; color: {{ secondary }};">{{ certificate_id }}</span>
+          </p>
+        {% endif %}
+      </div>
+
+      {# ===== FIRMA DEL EMISOR ===== #}
+      {% if issuer_name %}
+        <div class="branded-certificate__issuer" style="margin-top: 24px;">
+          <div style="width: 200px; border-top: 2px solid {{ primary }}; margin: 0 auto; padding-top: 8px;">
+            <p style="margin: 0; font-size: 14px; font-weight: 600; color: {{ primary }};">
+              {{ issuer_name }}
+            </p>
+            <p style="margin: 2px 0 0; font-size: 11px; color: #999;">
+              {{ 'Entidad emisora'|t }}
+            </p>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Barra decorativa inferior #}
+      <div style="position: absolute; bottom: 0; left: 30px; right: 30px; height: 4px; background: linear-gradient(90deg, {{ secondary }}, {{ primary }});"></div>
+
+    </div>
+  </div>
+
+  {# ===== PIE DE PAGINA ===== #}
+  <div class="branded-certificate__footer" style="text-align: center; padding: 8px 32px;">
+    <p style="margin: 0; font-size: 10px; color: #bbb;">
+      {{ 'Ecosistema Jaraba'|t }} &copy; {{ 'now'|date('Y') }} &mdash; {{ 'Documento generado automaticamente'|t }}
+    </p>
+  </div>
+
+</div>

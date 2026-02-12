@@ -1,0 +1,97 @@
+# =============================================================================
+# ADMIN ROUTES
+# =============================================================================
+
+jaraba_whitelabel.admin:
+  path: '/admin/structure/whitelabel'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Whitelabel'
+  requirements:
+    _permission: 'administer whitelabel'
+
+jaraba_whitelabel.settings:
+  path: '/admin/structure/whitelabel/settings'
+  defaults:
+    _form: '\Drupal\jaraba_whitelabel\Form\WhitelabelSettingsForm'
+    _title: 'Whitelabel Settings'
+  requirements:
+    _permission: 'administer whitelabel'
+
+# =============================================================================
+# FRONTEND ROUTES
+# =============================================================================
+
+jaraba_whitelabel.branding_wizard:
+  path: '/whitelabel/branding'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\BrandingWizardController::wizard'
+    _title: 'Branding Wizard'
+  requirements:
+    _permission: 'manage branding'
+
+jaraba_whitelabel.domain_management:
+  path: '/whitelabel/dominios'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\DomainManagementController::overview'
+    _title: 'Domain Management'
+  requirements:
+    _permission: 'manage custom domains'
+
+jaraba_whitelabel.email_templates:
+  path: '/whitelabel/emails'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\EmailTemplateEditorController::editor'
+    _title: 'Email Templates'
+  requirements:
+    _permission: 'manage email templates'
+
+jaraba_whitelabel.reseller_portal:
+  path: '/partner-portal'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\ResellerPortalController::dashboard'
+    _title: 'Partner Portal'
+  requirements:
+    _permission: 'view reseller portal'
+
+jaraba_whitelabel.reseller_onboarding:
+  path: '/partner-portal/onboarding'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\ResellerPortalController::onboarding'
+    _title: 'Partner Onboarding'
+  requirements:
+    _permission: 'view reseller portal'
+
+# =============================================================================
+# API ROUTES
+# =============================================================================
+
+jaraba_whitelabel.api.get_config:
+  path: '/api/v1/whitelabel/config'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\WhitelabelApiController::getConfig'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+
+jaraba_whitelabel.api.get_domains:
+  path: '/api/v1/whitelabel/domains'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\WhitelabelApiController::getDomains'
+  methods: [GET]
+  requirements:
+    _permission: 'manage custom domains'
+  options:
+    no_cache: TRUE
+
+jaraba_whitelabel.api.add_domain:
+  path: '/api/v1/whitelabel/domains'
+  defaults:
+    _controller: '\Drupal\jaraba_whitelabel\Controller\WhitelabelApiController::addDomain'
+  methods: [POST]
+  requirements:
+    _permission: 'manage custom domains'
+  options:
+    no_cache: TRUE

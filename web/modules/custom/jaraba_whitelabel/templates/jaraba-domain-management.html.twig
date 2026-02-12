@@ -1,0 +1,138 @@
+{#
+/**
+ * @file
+ * Template for the domain management overview page.
+ *
+ * Available variables:
+ * - domains: Array of domain data arrays.
+ * - tenant_id: The current tenant ID.
+ * - can_add: Boolean whether the tenant can add more domains.
+ */
+#}
+
+<div class="domain-management" data-tenant-id="{{ tenant_id }}">
+
+  <header class="domain-management__header">
+    <h2 class="domain-management__title">{% trans %}Custom Domains{% endtrans %}</h2>
+    <p class="domain-management__description">
+      {% trans %}Manage your custom domains. Each domain must have its DNS verified before it becomes active.{% endtrans %}
+    </p>
+  </header>
+
+  {# --- Domain list table --- #}
+  {% if domains|length > 0 %}
+    <div class="domain-management__table-wrapper">
+      <table class="domain-management__table">
+        <thead class="domain-management__thead">
+          <tr>
+            <th class="domain-management__th">{% trans %}Domain{% endtrans %}</th>
+            <th class="domain-management__th">{% trans %}Status{% endtrans %}</th>
+            <th class="domain-management__th">{% trans %}SSL{% endtrans %}</th>
+            <th class="domain-management__th">{% trans %}DNS Verified{% endtrans %}</th>
+            <th class="domain-management__th">{% trans %}Actions{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody class="domain-management__tbody">
+          {% for domain in domains %}
+            <tr class="domain-management__row" data-domain-id="{{ domain.id }}">
+              <td class="domain-management__td domain-management__td--domain">
+                {{ domain.domain }}
+              </td>
+              <td class="domain-management__td">
+                <span class="domain-management__badge domain-management__badge--{{ domain.domain_status }}">
+                  {{ domain.domain_status }}
+                </span>
+              </td>
+              <td class="domain-management__td">
+                <span class="domain-management__badge domain-management__badge--ssl-{{ domain.ssl_status }}">
+                  {{ domain.ssl_status }}
+                </span>
+              </td>
+              <td class="domain-management__td">
+                {% if domain.dns_verified %}
+                  <span class="domain-management__verified">{% trans %}Verified{% endtrans %}</span>
+                {% else %}
+                  <span class="domain-management__unverified">{% trans %}Pending{% endtrans %}</span>
+                {% endif %}
+              </td>
+              <td class="domain-management__td domain-management__td--actions">
+                {% if not domain.dns_verified %}
+                  <button type="button"
+                          class="domain-management__btn domain-management__btn--verify"
+                          data-domain-id="{{ domain.id }}"
+                          title="{% trans %}Verify DNS{% endtrans %}">
+                    {% trans %}Verify DNS{% endtrans %}
+                  </button>
+                  <button type="button"
+                          class="domain-management__btn domain-management__btn--copy-token"
+                          data-token="{{ domain.dns_verification_token }}"
+                          title="{% trans %}Copy verification token{% endtrans %}">
+                    {% trans %}Copy Token{% endtrans %}
+                  </button>
+                {% endif %}
+                <button type="button"
+                        class="domain-management__btn domain-management__btn--remove"
+                        data-domain-id="{{ domain.id }}"
+                        data-domain-name="{{ domain.domain }}"
+                        title="{% trans %}Remove domain{% endtrans %}">
+                  {% trans %}Remove{% endtrans %}
+                </button>
+              </td>
+            </tr>
+
+            {# DNS verification instructions (collapsed by default) #}
+            {% if not domain.dns_verified %}
+              <tr class="domain-management__dns-instructions" data-dns-for="{{ domain.id }}" style="display: none;">
+                <td colspan="5" class="domain-management__td">
+                  <div class="domain-management__instructions">
+                    <h4 class="domain-management__instructions-title">{% trans %}DNS Verification Instructions{% endtrans %}</h4>
+                    <p>{% trans %}Add the following TXT record to your DNS configuration:{% endtrans %}</p>
+                    <dl class="domain-management__dns-record">
+                      <dt>{% trans %}Host{% endtrans %}</dt>
+                      <dd><code>_jaraba-verify.{{ domain.domain }}</code></dd>
+                      <dt>{% trans %}Type{% endtrans %}</dt>
+                      <dd><code>TXT</code></dd>
+                      <dt>{% trans %}Value{% endtrans %}</dt>
+                      <dd><code class="domain-management__token-value">{{ domain.dns_verification_token }}</code></dd>
+                    </dl>
+                    <p class="domain-management__dns-note">
+                      {% trans %}DNS changes may take up to 48 hours to propagate. Click "Verify DNS" once the record is in place.{% endtrans %}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="domain-management__empty">
+      <p>{% trans %}No custom domains configured yet.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+  {# --- Add domain form --- #}
+  {% if can_add %}
+    <div class="domain-management__add-form">
+      <h3 class="domain-management__add-title">{% trans %}Add Custom Domain{% endtrans %}</h3>
+      <div class="domain-management__add-fields">
+        <div class="domain-management__field">
+          <label class="domain-management__label" for="new-domain-input">{% trans %}Domain Name{% endtrans %}</label>
+          <input class="domain-management__input" type="text" id="new-domain-input"
+                 name="domain" placeholder="app.example.com"
+                 pattern="^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)+$" />
+        </div>
+        <button type="button" class="domain-management__btn domain-management__btn--add" id="add-domain-btn">
+          {% trans %}Add Domain{% endtrans %}
+        </button>
+      </div>
+      <div class="domain-management__add-feedback" id="add-domain-feedback" role="alert"></div>
+    </div>
+  {% else %}
+    <div class="domain-management__limit-notice">
+      <p>{% trans %}You have reached the maximum number of custom domains.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+</div>

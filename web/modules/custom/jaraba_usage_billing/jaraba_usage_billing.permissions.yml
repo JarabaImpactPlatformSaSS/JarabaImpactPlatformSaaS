@@ -1,0 +1,16 @@
+administer usage billing:
+  title: 'Administrar facturación por uso'
+  description: 'Acceso completo a todas las entidades y configuración de usage billing.'
+  restrict access: true
+
+manage usage billing:
+  title: 'Gestionar facturación por uso'
+  description: 'Crear y editar reglas de pricing y configuraciones de uso.'
+
+view usage data:
+  title: 'Ver datos de uso'
+  description: 'Ver eventos de uso, agregados y dashboards del tenant.'
+
+ingest usage events:
+  title: 'Ingestar eventos de uso'
+  description: 'Enviar eventos de uso a través de la API de ingesta.'

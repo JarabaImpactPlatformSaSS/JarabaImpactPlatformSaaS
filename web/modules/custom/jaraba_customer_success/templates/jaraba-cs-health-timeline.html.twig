@@ -1,0 +1,137 @@
+{#
+/**
+ * @file
+ * jaraba-cs-health-timeline.html.twig - Timeline de eventos de salud.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-health-timeline / cs-health-timeline__* / cs-health-timeline--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Timeline vertical con eventos codificados por tipo.
+ *
+ * VARIABLES:
+ * - events: array [{type, title, description, timestamp, data}, ...].
+ *   Types: score_change, churn_signal, playbook_execution, nps_submission.
+ * - tenant_name: string nombre del tenant (opcional).
+ */
+#}
+
+<div class="cs-health-timeline">
+  {# Header #}
+  <header class="cs-health-timeline__header">
+    <h1 class="cs-health-timeline__title">
+      {% if tenant_name %}
+        {% trans %}Health Timeline: {{ tenant_name }}{% endtrans %}
+      {% else %}
+        {% trans %}Health Timeline{% endtrans %}
+      {% endif %}
+    </h1>
+    <p class="cs-health-timeline__subtitle">{% trans %}Chronological view of health events, churn signals, and actions taken.{% endtrans %}</p>
+  </header>
+
+  {# Filter tabs #}
+  <nav class="cs-health-timeline__filters">
+    <button type="button" class="cs-health-timeline__filter cs-health-timeline__filter--active" data-filter="all">
+      {% trans %}All{% endtrans %}
+    </button>
+    <button type="button" class="cs-health-timeline__filter" data-filter="score_change">
+      {% trans %}Score Changes{% endtrans %}
+    </button>
+    <button type="button" class="cs-health-timeline__filter" data-filter="churn_signal">
+      {% trans %}Churn Signals{% endtrans %}
+    </button>
+    <button type="button" class="cs-health-timeline__filter" data-filter="playbook_execution">
+      {% trans %}Playbooks{% endtrans %}
+    </button>
+    <button type="button" class="cs-health-timeline__filter" data-filter="nps_submission">
+      {% trans %}NPS{% endtrans %}
+    </button>
+  </nav>
+
+  {# Timeline #}
+  {% if events|length > 0 %}
+    <div class="cs-health-timeline__list">
+      {% for event in events %}
+        <div class="cs-health-timeline__event cs-health-timeline__event--{{ event.type|default('generic') }}" data-event-type="{{ event.type|default('generic') }}">
+          <div class="cs-health-timeline__event-marker">
+            <span class="cs-health-timeline__event-dot cs-health-timeline__event-dot--{{ event.type|default('generic') }}"></span>
+            <span class="cs-health-timeline__event-line"></span>
+          </div>
+
+          <div class="cs-health-timeline__event-content">
+            <div class="cs-health-timeline__event-header">
+              <span class="cs-health-timeline__event-type">
+                {% if event.type == 'score_change' %}
+                  {% trans %}Score Change{% endtrans %}
+                {% elseif event.type == 'churn_signal' %}
+                  {% trans %}Churn Signal{% endtrans %}
+                {% elseif event.type == 'playbook_execution' %}
+                  {% trans %}Playbook{% endtrans %}
+                {% elseif event.type == 'nps_submission' %}
+                  {% trans %}NPS Response{% endtrans %}
+                {% else %}
+                  {% trans %}Event{% endtrans %}
+                {% endif %}
+              </span>
+              <span class="cs-health-timeline__event-time">
+                {% if event.timestamp %}
+                  {{ event.timestamp|date('d M Y H:i') }}
+                {% endif %}
+              </span>
+            </div>
+
+            <h3 class="cs-health-timeline__event-title">{{ event.title|default('') }}</h3>
+
+            {% if event.description %}
+              <p class="cs-health-timeline__event-description">{{ event.description }}</p>
+            {% endif %}
+
+            {# Event-specific data #}
+            {% if event.type == 'score_change' and event.data is defined %}
+              <div class="cs-health-timeline__event-data cs-health-timeline__score-change">
+                <span class="cs-health-timeline__score-from">{{ event.data.from|default('--') }}</span>
+                <span class="cs-health-timeline__score-arrow">&rarr;</span>
+                <span class="cs-health-timeline__score-to">{{ event.data.to|default('--') }}</span>
+                {% if event.data.delta is defined %}
+                  <span class="cs-health-timeline__score-delta
+                    {% if event.data.delta > 0 %} cs-health-timeline__score-delta--positive
+                    {% elseif event.data.delta < 0 %} cs-health-timeline__score-delta--negative
+                    {% endif %}">
+                    {% if event.data.delta > 0 %}+{% endif %}{{ event.data.delta }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if event.type == 'nps_submission' and event.data is defined %}
+              <div class="cs-health-timeline__event-data cs-health-timeline__nps-data">
+                <span class="cs-health-timeline__nps-score
+                  {% if event.data.score >= 9 %} cs-health-timeline__nps-score--promoter
+                  {% elseif event.data.score >= 7 %} cs-health-timeline__nps-score--passive
+                  {% else %} cs-health-timeline__nps-score--detractor
+                  {% endif %}">
+                  {{ event.data.score }}
+                </span>
+                {% if event.data.feedback %}
+                  <p class="cs-health-timeline__nps-feedback">"{{ event.data.feedback }}"</p>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if event.type == 'playbook_execution' and event.data is defined %}
+              <div class="cs-health-timeline__event-data cs-health-timeline__playbook-data">
+                <span class="cs-health-timeline__playbook-name">{{ event.data.playbook_name|default('') }}</span>
+                <span class="cs-health-timeline__playbook-status cs-health-timeline__playbook-status--{{ event.data.status|default('pending') }}">
+                  {{ event.data.status|default('pending')|capitalize }}
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="cs-health-timeline__empty">
+      <p>{% trans %}No health events recorded yet. Events will appear as health scores are calculated and actions are taken.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

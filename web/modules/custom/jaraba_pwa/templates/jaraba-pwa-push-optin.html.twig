@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template for the push notification opt-in dialog.
+ *
+ * Displays a consent dialog asking the user to enable push
+ * notifications. Includes the VAPID public key for client-side
+ * subscription via the Push API.
+ *
+ * Available variables:
+ * - title: Dialog title text.
+ * - description: Explanatory text about notifications.
+ * - accept_label: Label for the accept/enable button.
+ * - dismiss_label: Label for the dismiss/later button.
+ * - vapid_public_key: VAPID public key for Push API subscription.
+ */
+#}
+<div class="pwa-push-optin" data-pwa-push-optin hidden
+     data-vapid-key="{{ vapid_public_key }}"
+     role="dialog"
+     aria-labelledby="pwa-push-optin-title"
+     aria-describedby="pwa-push-optin-description">
+
+  <div class="pwa-push-optin__backdrop"></div>
+
+  <div class="pwa-push-optin__dialog">
+    <div class="pwa-push-optin__header">
+      <h3 class="pwa-push-optin__title" id="pwa-push-optin-title">
+        {{ title|default('Enable Notifications'|t) }}
+      </h3>
+    </div>
+
+    <div class="pwa-push-optin__body">
+      <p class="pwa-push-optin__description" id="pwa-push-optin-description">
+        {{ description|default('Stay informed with real-time updates about your projects, tasks, and team activity. You can disable notifications at any time from your settings.'|t) }}
+      </p>
+    </div>
+
+    <div class="pwa-push-optin__actions">
+      <button type="button"
+              class="pwa-push-optin__btn pwa-push-optin__btn--accept"
+              data-pwa-push-accept>
+        {{ accept_label|default('Enable Notifications'|t) }}
+      </button>
+      <button type="button"
+              class="pwa-push-optin__btn pwa-push-optin__btn--dismiss"
+              data-pwa-push-dismiss>
+        {{ dismiss_label|default('Maybe Later'|t) }}
+      </button>
+    </div>
+  </div>
+</div>

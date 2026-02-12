@@ -11,6 +11,7 @@ services:
       - '@jaraba_analytics.consent'
       - '@logger.factory'
       - '@http_client'
+      - '@jaraba_ads.conversion_tracking'
 
   # =========================================================================
   # Servicio: Cola Redis Asíncrona (V2)
@@ -86,3 +87,18 @@ services:
     arguments:
       - '@http_client'
       - '@logger.factory'
+
+  # Logger channel
+  logger.channel.jaraba_pixels:
+    class: Drupal\Core\Logger\LoggerChannel
+    factory: logger.factory:get
+    arguments: ['jaraba_pixels']
+
+  # =========================================================================
+  # Servicio: Gestión de Consentimiento RGPD
+  # =========================================================================
+  jaraba_pixels.consent_management:
+    class: Drupal\jaraba_pixels\Service\ConsentManagementService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_pixels'

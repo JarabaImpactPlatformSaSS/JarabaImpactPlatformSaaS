@@ -23,3 +23,9 @@ entity.crm_activity.add:
   route_name: entity.crm_activity.add_form
   appears_on:
     - entity.crm_activity.collection
+
+entity.crm_pipeline_stage.add:
+  title: 'Añadir etapa de pipeline'
+  route_name: entity.crm_pipeline_stage.add_form
+  appears_on:
+    - entity.crm_pipeline_stage.collection

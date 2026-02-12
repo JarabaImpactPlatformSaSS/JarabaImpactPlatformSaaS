@@ -1,0 +1,86 @@
+{#
+/**
+ * @file
+ * kb-category-listing.html.twig — Página de categoría KB.
+ *
+ * PROPÓSITO: Muestra los artículos de una categoría con breadcrumb
+ * y sidebar con otras categorías.
+ *
+ * Variables:
+ * - category: Array con keys: id, name, slug, description, icon. O NULL si no existe.
+ * - articles: Array de artículos con keys: id, title, slug, summary, view_count, created.
+ * - other_categories: Array de otras categorías con keys: id, name, slug, icon.
+ *
+ * BEM: .kb-category
+ */
+#}
+
+<div class="kb-category">
+  {% if category %}
+    {# Breadcrumb #}
+    <nav class="kb-category__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+      <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-category__breadcrumb-link">
+        {% trans %}Base de Conocimiento{% endtrans %}
+      </a>
+      <span class="kb-category__breadcrumb-sep">/</span>
+      <span class="kb-category__breadcrumb-current">{{ category.name }}</span>
+    </nav>
+
+    {# Cabecera de categoría #}
+    <header class="kb-category__header">
+      <h1 class="kb-category__title">{{ category.name }}</h1>
+      {% if category.description %}
+        <p class="kb-category__description">{{ category.description|raw }}</p>
+      {% endif %}
+    </header>
+
+    <div class="kb-category__layout">
+      {# Lista de artículos #}
+      <main class="kb-category__main">
+        {% if articles is not empty %}
+          <div class="kb-category__article-list">
+            {% for article in articles %}
+              <a href="{{ path('jaraba_tenant_knowledge.kb.article', { slug: article.slug }) }}" class="kb-article-card">
+                <h3 class="kb-article-card__title">{{ article.title }}</h3>
+                <p class="kb-article-card__summary">{{ article.summary }}</p>
+                <div class="kb-article-card__meta">
+                  <span class="kb-article-card__views">{{ article.view_count }} {% trans %}vistas{% endtrans %}</span>
+                  <span class="kb-article-card__link">{% trans %}Leer más{% endtrans %} &rarr;</span>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="kb-category__empty">
+            <p>{% trans %}No hay artículos en esta categoría todavía.{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </main>
+
+      {# Sidebar con otras categorías #}
+      {% if other_categories is not empty %}
+        <aside class="kb-category__sidebar">
+          <h3 class="kb-category__sidebar-title">{% trans %}Otras Categorías{% endtrans %}</h3>
+          <ul class="kb-category__sidebar-list">
+            {% for other in other_categories %}
+              <li>
+                <a href="{{ path('jaraba_tenant_knowledge.kb.category', { slug: other.slug }) }}" class="kb-category__sidebar-link">
+                  {{ other.name }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </aside>
+      {% endif %}
+    </div>
+  {% else %}
+    {# Categoría no encontrada #}
+    <div class="kb-category__not-found">
+      <h1 class="kb-category__title">{% trans %}Categoría no encontrada{% endtrans %}</h1>
+      <p>{% trans %}La categoría que buscas no existe o ha sido desactivada.{% endtrans %}</p>
+      <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-category__back-link">
+        &larr; {% trans %}Volver a la Base de Conocimiento{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

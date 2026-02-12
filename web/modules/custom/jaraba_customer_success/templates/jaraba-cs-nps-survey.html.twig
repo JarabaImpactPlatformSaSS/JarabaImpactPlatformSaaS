@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * jaraba-cs-nps-survey.html.twig - Encuesta NPS frontend.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-nps-survey / cs-nps-survey__* / cs-nps-survey--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Escala visual 0-10 con color coding por segmento.
+ *
+ * VARIABLES:
+ * - survey_title: Titulo principal de la encuesta.
+ * - survey_description: Descripcion/pregunta NPS.
+ * - submit_url: URL del endpoint de envio.
+ */
+#}
+
+<div class="cs-nps-survey" data-submit-url="{{ submit_url }}">
+  {# Header #}
+  <header class="cs-nps-survey__header">
+    <h1 class="cs-nps-survey__title">{{ survey_title }}</h1>
+    <p class="cs-nps-survey__description">{{ survey_description }}</p>
+    <div class="cs-nps-survey__info">
+      <p class="cs-nps-survey__info-text">
+        {% trans %}Net Promoter Score (NPS) measures customer loyalty and satisfaction. Your response helps us improve our platform and service.{% endtrans %}
+      </p>
+    </div>
+  </header>
+
+  {# Score Selector #}
+  <section class="cs-nps-survey__score-section">
+    <h2 class="cs-nps-survey__score-label">{% trans %}Select your score{% endtrans %}</h2>
+
+    <div class="cs-nps-survey__scale">
+      <div class="cs-nps-survey__scale-labels">
+        <span class="cs-nps-survey__scale-label cs-nps-survey__scale-label--low">{% trans %}Not at all likely{% endtrans %}</span>
+        <span class="cs-nps-survey__scale-label cs-nps-survey__scale-label--high">{% trans %}Extremely likely{% endtrans %}</span>
+      </div>
+
+      <div class="cs-nps-survey__score-selector" role="radiogroup" aria-label="{% trans %}NPS Score{% endtrans %}">
+        {% for i in 0..10 %}
+          {% if i <= 6 %}
+            {% set segment = 'detractor' %}
+          {% elseif i <= 8 %}
+            {% set segment = 'passive' %}
+          {% else %}
+            {% set segment = 'promoter' %}
+          {% endif %}
+          <button type="button"
+                  class="cs-nps-survey__score-btn cs-nps-survey__score-btn--{{ segment }}"
+                  data-score="{{ i }}"
+                  role="radio"
+                  aria-checked="false"
+                  aria-label="{% trans %}Score {{ i }}{% endtrans %}">
+            {{ i }}
+          </button>
+        {% endfor %}
+      </div>
+
+      <div class="cs-nps-survey__segment-legend">
+        <span class="cs-nps-survey__segment cs-nps-survey__segment--detractor">{% trans %}Detractors (0-6){% endtrans %}</span>
+        <span class="cs-nps-survey__segment cs-nps-survey__segment--passive">{% trans %}Passives (7-8){% endtrans %}</span>
+        <span class="cs-nps-survey__segment cs-nps-survey__segment--promoter">{% trans %}Promoters (9-10){% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# Comment #}
+  <section class="cs-nps-survey__comment-section">
+    <label class="cs-nps-survey__comment-label" for="nps-comment">
+      {% trans %}Tell us more (optional){% endtrans %}
+    </label>
+    <textarea
+      id="nps-comment"
+      class="cs-nps-survey__comment-input"
+      rows="4"
+      placeholder="{% trans %}What is the primary reason for your score?{% endtrans %}"
+    ></textarea>
+  </section>
+
+  {# Submit #}
+  <section class="cs-nps-survey__actions">
+    <button type="button" class="cs-nps-survey__submit-btn" disabled>
+      {% trans %}Submit Response{% endtrans %}
+    </button>
+    <p class="cs-nps-survey__privacy-note">
+      {% trans %}Your response is anonymous and will be used to improve our service.{% endtrans %}
+    </p>
+  </section>
+
+  {# Success message (hidden by default) #}
+  <div class="cs-nps-survey__success" style="display: none;">
+    <div class="cs-nps-survey__success-icon">&#10003;</div>
+    <h2 class="cs-nps-survey__success-title">{% trans %}Thank you!{% endtrans %}</h2>
+    <p class="cs-nps-survey__success-message">{% trans %}Your feedback has been recorded and will help us improve.{% endtrans %}</p>
+  </div>
+</div>

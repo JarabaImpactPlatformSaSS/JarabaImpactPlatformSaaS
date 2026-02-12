@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * kb-search-results.html.twig — Resultados de búsqueda KB.
+ *
+ * PROPÓSITO: Muestra los resultados de búsqueda con barra de búsqueda,
+ * tarjetas de resultados con resaltado de coincidencias y estado de
+ * sin resultados.
+ *
+ * Variables:
+ * - query: Término de búsqueda.
+ * - results: Array de resultados con keys: id, title, slug, summary, score.
+ * - result_count: Número total de resultados.
+ *
+ * BEM: .kb-search
+ */
+#}
+
+<div class="kb-search">
+  {# Breadcrumb #}
+  <nav class="kb-search__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+    <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-search__breadcrumb-link">
+      {% trans %}Base de Conocimiento{% endtrans %}
+    </a>
+    <span class="kb-search__breadcrumb-sep">/</span>
+    <span class="kb-search__breadcrumb-current">{% trans %}Búsqueda{% endtrans %}</span>
+  </nav>
+
+  {# Barra de búsqueda #}
+  <section class="kb-search__header">
+    <h1 class="kb-search__title">{% trans %}Resultados de Búsqueda{% endtrans %}</h1>
+    <form class="kb-search__form" action="{{ path('jaraba_tenant_knowledge.kb.search') }}" method="get">
+      <div class="kb-search__input-wrapper">
+        <svg class="kb-search__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          value="{{ query }}"
+          class="kb-search__input"
+          placeholder="{{ 'Buscar en la base de conocimiento...'|trans }}"
+          autocomplete="off"
+          data-kb-search-input
+        >
+        <button type="submit" class="kb-search__btn">{% trans %}Buscar{% endtrans %}</button>
+      </div>
+      <div class="kb-search__autocomplete" data-kb-autocomplete hidden></div>
+    </form>
+  </section>
+
+  {# Resultados #}
+  {% if query %}
+    <div class="kb-search__meta">
+      <p class="kb-search__result-count">
+        {{ result_count }} {% trans %}resultado(s) para{% endtrans %} <strong>"{{ query }}"</strong>
+      </p>
+    </div>
+
+    {% if results is not empty %}
+      <div class="kb-search__results">
+        {% for result in results %}
+          <a href="{{ path('jaraba_tenant_knowledge.kb.article', { slug: result.slug }) }}" class="kb-search-card">
+            <h3 class="kb-search-card__title">{{ result.title }}</h3>
+            <p class="kb-search-card__summary">{{ result.summary }}</p>
+            <span class="kb-search-card__link">{% trans %}Leer artículo{% endtrans %} &rarr;</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      {# Sin resultados #}
+      <div class="kb-search__no-results">
+        <svg class="kb-search__no-results-icon" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="8" x2="14" y2="14"/>
+          <line x1="14" y1="8" x2="8" y2="14"/>
+        </svg>
+        <h2 class="kb-search__no-results-title">{% trans %}No se encontraron resultados{% endtrans %}</h2>
+        <p class="kb-search__no-results-text">
+          {% trans %}Intenta con otros términos o explora nuestras categorías.{% endtrans %}
+        </p>
+        <a href="{{ path('jaraba_tenant_knowledge.kb.index') }}" class="kb-search__browse-link">
+          {% trans %}Explorar categorías{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="kb-search__empty">
+      <p>{% trans %}Escribe un término de búsqueda para encontrar artículos.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

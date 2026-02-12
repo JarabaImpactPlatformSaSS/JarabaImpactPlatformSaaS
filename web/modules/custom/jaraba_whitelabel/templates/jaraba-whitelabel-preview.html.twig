@@ -1,0 +1,127 @@
+{#
+/**
+ * @file
+ * Template for the whitelabel preview page.
+ *
+ * Available variables:
+ * - config: Whitelabel configuration array (or null).
+ * - tenant_id: The current tenant ID.
+ * - preview_url: URL to render in the preview iframe.
+ */
+#}
+
+<div class="whitelabel-preview" data-tenant-id="{{ tenant_id }}">
+
+  <div class="whitelabel-preview__layout">
+
+    {# --- Preview area --- #}
+    <main class="whitelabel-preview__main">
+      <h2 class="whitelabel-preview__title">{% trans %}Whitelabel Preview{% endtrans %}</h2>
+      <p class="whitelabel-preview__description">
+        {% trans %}This preview shows how your platform will look with the current branding configuration.{% endtrans %}
+      </p>
+
+      <div class="whitelabel-preview__frame-wrapper">
+        {% if preview_url %}
+          <iframe class="whitelabel-preview__iframe"
+                  src="{{ preview_url }}"
+                  title="{% trans %}Whitelabel preview{% endtrans %}"
+                  sandbox="allow-same-origin allow-scripts">
+          </iframe>
+        {% else %}
+          <div class="whitelabel-preview__mockup">
+            {# Header mockup #}
+            <div class="whitelabel-preview__mockup-header"
+                 style="background-color: {{ config.primary_color|default('#FF8C42') }};">
+              {% if config.logo_url %}
+                <img src="{{ config.logo_url }}" alt="{% trans %}Logo{% endtrans %}" class="whitelabel-preview__mockup-logo" />
+              {% else %}
+                <span class="whitelabel-preview__mockup-company">{{ config.company_name|default('Your Company') }}</span>
+              {% endif %}
+            </div>
+
+            {# Content mockup #}
+            <div class="whitelabel-preview__mockup-body">
+              <div class="whitelabel-preview__mockup-content">
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--wide"></div>
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--medium"></div>
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--narrow"></div>
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--wide"></div>
+              </div>
+              <div class="whitelabel-preview__mockup-sidebar"
+                   style="border-left-color: {{ config.secondary_color|default('#2D6A4F') }};">
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--medium"></div>
+                <div class="whitelabel-preview__mockup-line whitelabel-preview__mockup-line--narrow"></div>
+              </div>
+            </div>
+
+            {# Footer mockup #}
+            <div class="whitelabel-preview__mockup-footer">
+              {% if config.custom_footer_html %}
+                {{ config.custom_footer_html|raw }}
+              {% else %}
+                <span class="whitelabel-preview__mockup-footer-text">{% trans %}Footer content{% endtrans %}</span>
+              {% endif %}
+              {% if not config.hide_powered_by %}
+                <span class="whitelabel-preview__powered-by">{% trans %}Powered by Jaraba{% endtrans %}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </main>
+
+    {# --- Config summary sidebar --- #}
+    <aside class="whitelabel-preview__sidebar">
+      <h3 class="whitelabel-preview__sidebar-title">{% trans %}Configuration Summary{% endtrans %}</h3>
+
+      {% if config %}
+        <dl class="whitelabel-preview__summary">
+          <dt class="whitelabel-preview__dt">{% trans %}Config Key{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">{{ config.config_key|default('—') }}</dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Company Name{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">{{ config.company_name|default('—') }}</dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Primary Colour{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">
+            <span class="whitelabel-preview__color-dot" style="background-color: {{ config.primary_color|default('#ccc') }};"></span>
+            {{ config.primary_color|default('—') }}
+          </dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Secondary Colour{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">
+            <span class="whitelabel-preview__color-dot" style="background-color: {{ config.secondary_color|default('#ccc') }};"></span>
+            {{ config.secondary_color|default('—') }}
+          </dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Logo{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">
+            {% if config.logo_url %}
+              <img src="{{ config.logo_url }}" alt="{% trans %}Logo{% endtrans %}" class="whitelabel-preview__thumb" />
+            {% else %}
+              {% trans %}Not set{% endtrans %}
+            {% endif %}
+          </dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Favicon{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">{{ config.favicon_url|default('Not set') }}</dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Hide Powered By{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">{{ config.hide_powered_by ? 'Yes'|t : 'No'|t }}</dd>
+
+          <dt class="whitelabel-preview__dt">{% trans %}Status{% endtrans %}</dt>
+          <dd class="whitelabel-preview__dd">
+            <span class="whitelabel-preview__status whitelabel-preview__status--{{ config.config_status|default('inactive') }}">
+              {{ config.config_status|default('inactive') }}
+            </span>
+          </dd>
+        </dl>
+      {% else %}
+        <p class="whitelabel-preview__no-config">{% trans %}No configuration loaded.{% endtrans %}</p>
+      {% endif %}
+    </aside>
+
+  </div>
+
+</div>

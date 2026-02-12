@@ -18,3 +18,17 @@ jaraba_billing.payment_methods:
   route_name: entity.billing_payment_method.collection
   parent: system.admin_content
   weight: 22
+
+jaraba_billing.billing_customers:
+  title: 'Clientes de Billing'
+  description: 'Clientes de billing con datos fiscales y de Stripe.'
+  route_name: entity.billing_customer.collection
+  parent: system.admin_content
+  weight: 23
+
+jaraba_billing.tenant_addons:
+  title: 'Add-ons de Tenant'
+  description: 'Add-ons activos por suscripción de tenant.'
+  route_name: entity.tenant_addon.collection
+  parent: system.admin_content
+  weight: 24

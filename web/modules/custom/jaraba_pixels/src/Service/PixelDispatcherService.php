@@ -4,6 +4,7 @@ namespace Drupal\jaraba_pixels\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\jaraba_ads\Service\ConversionTrackingService;
 use Drupal\jaraba_analytics\Service\ConsentService;
 use Drupal\jaraba_pixels\Client\LinkedInCapiClient;
 use Drupal\jaraba_pixels\Client\TikTokEventsClient;
@@ -62,6 +63,13 @@ class PixelDispatcherService
     protected ClientInterface $httpClient;
 
     /**
+     * Servicio de tracking de conversiones offline de jaraba_ads.
+     *
+     * @var \Drupal\jaraba_ads\Service\ConversionTrackingService|null
+     */
+    protected ?ConversionTrackingService $conversionTracking;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -71,6 +79,7 @@ class PixelDispatcherService
         ConsentService $consent_service,
         $logger_factory,
         ClientInterface $http_client,
+        ?ConversionTrackingService $conversion_tracking = NULL,
     ) {
         $this->database = $database;
         $this->eventMapper = $event_mapper;
@@ -78,6 +87,7 @@ class PixelDispatcherService
         $this->consentService = $consent_service;
         $this->logger = $logger_factory->get('jaraba_pixels');
         $this->httpClient = $http_client;
+        $this->conversionTracking = $conversion_tracking;
     }
 
     /**
@@ -115,6 +125,9 @@ class PixelDispatcherService
         foreach ($credentials as $platform => $credential) {
             $this->dispatchToPlatform($platform, $credential, $data);
         }
+
+        // Reenviar eventos de conversión al módulo de ads para ROAS tracking.
+        $this->forwardConversionToAds($data);
     }
 
     /**
@@ -624,6 +637,59 @@ class PixelDispatcherService
                 'code' => 0,
                 'error' => $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Reenvía eventos de conversión al módulo de ads para ROAS tracking.
+     *
+     * LÓGICA: Si el evento es un tipo de conversión (purchase, add_to_cart,
+     *   complete_registration, etc.), lo registra en el ConversionTrackingService
+     *   de jaraba_ads para que pueda calcular ROAS por campaña.
+     *
+     * @param array $data
+     *   Datos del evento de analytics.
+     */
+    protected function forwardConversionToAds(array $data): void
+    {
+        if (!$this->conversionTracking) {
+            return;
+        }
+
+        $conversionEvents = [
+            'purchase',
+            'add_to_cart',
+            'complete_registration',
+            'subscribe',
+            'start_trial',
+            'lead',
+        ];
+
+        $eventType = $data['event_type'] ?? '';
+        if (!in_array($eventType, $conversionEvents, TRUE)) {
+            return;
+        }
+
+        try {
+            $tenantId = (int) ($data['tenant_id'] ?? 0);
+            if ($tenantId <= 0) {
+                return;
+            }
+
+            $this->conversionTracking->recordConversion($tenantId, 'pixel', [
+                'event_name' => $eventType,
+                'event_time' => $data['timestamp'] ?? time(),
+                'email_hash' => !empty($data['ip_address']) ? hash('sha256', $data['ip_address']) : '',
+                'conversion_value' => $data['value'] ?? NULL,
+                'currency' => $data['currency'] ?? 'EUR',
+                'order_id' => $data['event_id'] ?? '',
+            ]);
+        }
+        catch (\Exception $e) {
+            // No bloquear el dispatch por errores de ads tracking.
+            $this->logger->warning('Error reenviando conversión a ads: @message', [
+                '@message' => $e->getMessage(),
+            ]);
         }
     }
 

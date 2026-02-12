@@ -1,0 +1,55 @@
+# ==============================================
+# Admin settings
+# ==============================================
+
+jaraba_pwa.settings:
+  path: '/admin/config/jaraba/pwa'
+  defaults:
+    _controller: '\Drupal\jaraba_pwa\Controller\PwaSettingsController::settings'
+    _title: 'PWA Configuration'
+  requirements:
+    _permission: 'administer pwa'
+
+# ==============================================
+# REST API - Push Notifications
+# ==============================================
+
+jaraba_pwa.api.push.subscribe:
+  path: '/api/v1/pwa/push/subscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_pwa\Controller\PwaApiController::subscribe'
+  requirements:
+    _permission: 'receive push notifications'
+  methods: [POST]
+
+jaraba_pwa.api.push.unsubscribe:
+  path: '/api/v1/pwa/push/unsubscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_pwa\Controller\PwaApiController::unsubscribe'
+  requirements:
+    _permission: 'receive push notifications'
+  methods: [DELETE]
+
+# ==============================================
+# REST API - Manifest
+# ==============================================
+
+jaraba_pwa.api.manifest:
+  path: '/api/v1/pwa/manifest'
+  defaults:
+    _controller: '\Drupal\jaraba_pwa\Controller\PwaApiController::getManifest'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# ==============================================
+# REST API - Background Sync
+# ==============================================
+
+jaraba_pwa.api.sync:
+  path: '/api/v1/pwa/sync'
+  defaults:
+    _controller: '\Drupal\jaraba_pwa\Controller\PwaApiController::syncActions'
+  requirements:
+    _permission: 'receive push notifications'
+  methods: [POST]

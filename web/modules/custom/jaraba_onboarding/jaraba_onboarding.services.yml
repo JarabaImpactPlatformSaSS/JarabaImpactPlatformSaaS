@@ -1,0 +1,44 @@
+services:
+  # ===========================================
+  # JARABA ONBOARDING — Servicios de Onboarding Guiado
+  # ===========================================
+
+  # Logger channel para onboarding
+  logger.channel.jaraba_onboarding:
+    parent: logger.channel_base
+    arguments: ['jaraba_onboarding']
+
+  # Orquestador principal del flujo de onboarding
+  jaraba_onboarding.orchestrator:
+    class: Drupal\jaraba_onboarding\Service\OnboardingOrchestratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_onboarding'
+      - '@logger.channel.jaraba_onboarding'
+
+  # Gamificacion y recompensas de onboarding
+  jaraba_onboarding.gamification:
+    class: Drupal\jaraba_onboarding\Service\OnboardingGamificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_onboarding'
+
+  # Gestion de checklists de onboarding
+  jaraba_onboarding.checklist:
+    class: Drupal\jaraba_onboarding\Service\OnboardingChecklistService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_onboarding'
+
+  # Ayuda contextual por paso y ruta
+  jaraba_onboarding.contextual_help:
+    class: Drupal\jaraba_onboarding\Service\OnboardingContextualHelpService
+    arguments:
+      - '@logger.channel.jaraba_onboarding'
+
+  # Analytics de completacion y drop-off
+  jaraba_onboarding.analytics:
+    class: Drupal\jaraba_onboarding\Service\OnboardingAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_onboarding'

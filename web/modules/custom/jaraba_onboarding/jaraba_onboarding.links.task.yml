@@ -1,0 +1,9 @@
+jaraba_onboarding.settings:
+  title: 'Configuracion'
+  route_name: jaraba_onboarding.settings
+  base_route: jaraba_onboarding.settings
+
+jaraba_onboarding.onboarding_template.settings:
+  title: 'Configuracion'
+  route_name: jaraba_onboarding.onboarding_template.settings
+  base_route: jaraba_onboarding.onboarding_template.settings

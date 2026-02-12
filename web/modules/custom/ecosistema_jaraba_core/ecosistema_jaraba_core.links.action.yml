@@ -91,3 +91,13 @@ entity.pricing_rule.add_form:
   title: 'Añadir Regla de Precios'
   appears_on:
     - entity.pricing_rule.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - BADGES / INSIGNIAS (G110-3)
+# ---------------------------------------------------------------------------
+
+entity.badge.add_form:
+  route_name: entity.badge.add_form
+  title: 'Añadir Insignia'
+  appears_on:
+    - entity.badge.collection

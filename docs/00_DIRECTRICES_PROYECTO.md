@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-11 23:30
-**Versión:** 6.6.0 (Config Sync Git-Tracked — Deploy estándar Drupal)
+**Última actualización:** 2026-02-12 23:59
+**Versión:** 9.0.0 (Avatar Detection + Empleabilidad UI — 7 Fases)
 
 ---
 
@@ -59,6 +59,65 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
     - Fase 1: Marketplace + Provider Portal + Booking Engine
     - Entidades: ProviderProfile, ServiceOffering, Booking, AvailabilitySlot, ServicePackage
     - Frontend: 4 SCSS partials (Dart Sass @use), Twig templates, BEM + var(--ej-*)
+- **Security & Compliance** ⭐: Dashboard cumplimiento normativo (G115-1 ✅):
+  - `AuditLog` entity inmutable + `AuditLogService` centralizado
+  - `ComplianceDashboardController` en `/admin/seguridad`: 25+ controles, 4 frameworks (SOC 2, ISO 27001, ENS, GDPR)
+  - Frontend: compliance-dashboard.css/js, template Twig, auto-refresh 30s
+- **Advanced Analytics** ⭐: Cohort Analysis + Funnel Tracking (✅):
+  - `jaraba_analytics`: 2 Content Entities nuevas (CohortDefinition, FunnelDefinition)
+  - 2 Services (CohortAnalysisService, FunnelTrackingService), 2 API Controllers REST
+  - Frontend: templates Twig, JS interactivo, heatmap retención, visualización funnel
+- **Billing SaaS** ⭐: Ciclo completo Stripe Billing (✅ Clase Mundial):
+  - `jaraba_billing`: 5 Content Entities (BillingInvoice, BillingUsageRecord, BillingPaymentMethod, BillingCustomer, TenantAddon)
+  - 13 Servicios: PlanValidator, TenantSubscriptionService, TenantMeteringService, PricingRuleEngine, ReverseTrialService, ExpansionRevenueService, ImpactCreditService, SyntheticCfoService, StripeCustomerService, StripeSubscriptionService, StripeInvoiceService, DunningService, FeatureAccessService
+  - 4 Controllers: BillingWebhookController (10 eventos Stripe), BillingApiController (13 endpoints), UsageBillingApiController (7 endpoints), AddonApiController (6 endpoints)
+  - 26 endpoints REST API: suscripciones, facturas, uso, add-ons, portal Stripe, metodos de pago
+  - Dunning 6 pasos (spec 134 §6), Feature Access plan+addons (spec 158 §6.1)
+  - Catálogo Stripe: 5 productos × 4 tiers × 2 intervalos = 40 precios con lookup_keys
+  - Comisiones marketplace: agroconecta 8%, comercioconecta 6%, serviciosconecta 10%, enterprise 3%
+- **AI Skills Verticales** ⭐: 30 skills predefinidas con contenido experto (✅ Seedado):
+  - Seed script: `scripts/seed_vertical_skills.php` (1,647 LOC, idempotente)
+  - 7 empleabilidad + 7 emprendimiento + 6 agroconecta + 5 comercioconecta + 5 serviciosconecta
+  - Contenido especializado mercado español (Markdown: Propósito/Input/Proceso/Output/Restricciones/Ejemplos/Validación)
+- **Monitoring Stack** ⭐: Observabilidad completa (✅ Configurado):
+  - Docker Compose standalone: `monitoring/docker-compose.monitoring.yml`
+  - Prometheus (9090) + Grafana (3001) + Loki (3100) + Promtail + AlertManager (9093)
+  - 14 reglas de alertas (ServiceDown, HighErrorRate, QdrantDiskFull, StripeWebhookFailures, etc.)
+  - Routing: critical→Slack #jaraba-critical + email, warning→Slack #jaraba-alerts
+- **Go-Live Procedures** ⭐: Runbook ejecutable (✅ Completado):
+  - `scripts/golive/01_preflight_checks.sh`: 24 validaciones pre-lanzamiento
+  - `scripts/golive/02_validation_suite.sh`: Smoke tests por vertical
+  - `scripts/golive/03_rollback.sh`: Rollback automatizado 7 pasos
+  - `docs/tecnicos/GO_LIVE_RUNBOOK.md`: 6 fases, RACI matrix, criterios Go/No-Go
+- **Security CI + GDPR** ⭐: Automatización seguridad (✅ Completado):
+  - `.github/workflows/security-scan.yml`: Daily cron (Trivy + OWASP ZAP + composer/npm audit)
+  - `GdprCommands.php`: `drush gdpr:export` (Art.15), `drush gdpr:anonymize` (Art.17), `drush gdpr:report`
+  - `SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md`: SEV1-4, AEPD 72h, templates comunicación
+- **Email Templates MJML** ⭐: 24 plantillas transaccionales (✅ Completado):
+  - `jaraba_email/templates/mjml/`: auth/ (5), billing/ (7), marketplace/ (6), empleabilidad/ (5) + base.mjml
+  - `TemplateLoaderService`: template_id → MJML → compilación via MjmlCompilerService
+- **Avatar Detection + Empleabilidad UI** ⭐: Flujo completo end-to-end vertical empleabilidad (✅ Activado):
+  - `ecosistema_jaraba_core`: AvatarDetectionService (cascada 4 niveles: Domain→Path/UTM→Group→Rol)
+  - `jaraba_diagnostic`: EmployabilityDiagnostic entity (14 campos, 5 perfiles). EmployabilityScoringService (LinkedIn 40%/CV 35%/Estrategia 25%). Wizard 3 pasos + templates Twig + JS
+  - `jaraba_candidate`: EmployabilityCopilotAgent (6 modos: Profile Coach, Job Advisor, Interview Prep, Learning Guide, Application Helper, FAQ). Extiende BaseAgent con @ai.provider
+  - Hooks ECA: hook_user_insert (JourneyState discovery), hook_entity_insert(employability_diagnostic) (rol candidate, LMS enrollment)
+  - CV PDF Export: dompdf v2.0.8, CvBuilderService::convertHtmlToPdf() con Design Tokens
+  - Frontend: modal-system.js + 4 partials Twig (_application-pipeline, _job-card, _gamification-stats, _profile-completeness)
+- **Testing Enhancement** ⭐: k6 + BackstopJS + CI coverage (✅ Completado):
+  - `tests/performance/load_test.js`: smoke/load/stress scenarios, p95 < 500ms
+- **Marketing AI Stack** ⭐: 9 módulos nativos al 100% (✅ Clase Mundial):
+  - `jaraba_crm`: CRM Pipeline completo — 5 Content Entities (Company, Contact, Opportunity, Activity, PipelineStage), CrmApiController (22 endpoints), CrmForecastingService, PipelineStageService, PipelineKanbanController. 10 unit tests
+  - `jaraba_email`: Email Marketing AI — 5 Content Entities (EmailCampaign, EmailList, EmailSequence, EmailTemplate, EmailSequenceStep), EmailApiController (17 endpoints), EmailWebhookController (SendGrid HMAC), SendGridClientService, SequenceManagerService, EmailAIService. 24 plantillas MJML. 12 unit tests
+  - `jaraba_ab_testing`: A/B Testing Engine — 4 Content Entities (Experiment, ExperimentVariant, ExperimentExposure, ExperimentResult), ABTestingApiController, ExposureTrackingService, ResultCalculationService, StatisticalEngineService, VariantAssignmentService. 8 unit tests
+  - `jaraba_pixels`: Pixel Manager CAPI — 4 Content Entities (TrackingPixel, TrackingEvent, ConsentRecord, PixelCredential), PixelDispatcherService, ConsentManagementService, CredentialManagerService, RedisQueueService, BatchProcessorService. 5 unit tests
+  - `jaraba_events`: Marketing Events — 3 Content Entities (MarketingEvent, EventRegistration, EventLandingPage), EventApiController, EventRegistrationService, EventAnalyticsService, EventLandingService, EventCertificateService. 3 unit tests
+  - `jaraba_social`: AI Social Manager — 3 Content Entities (SocialAccount, SocialPost, SocialPostVariant), SocialPostService, SocialAccountService, SocialCalendarService, SocialAnalyticsService, MakeComIntegrationService. 3 unit tests
+  - `jaraba_referral`: Programa Referidos — 3 Content Entities (ReferralProgram, ReferralCode, ReferralReward), ReferralApiController (9 endpoints), RewardProcessingService, LeaderboardService, ReferralTrackingService, ReferralManagerService. 3 unit tests
+  - `jaraba_ads`: Ads Multi-Platform — 5 Content Entities (AdsAccount, AdsCampaignSync, AdsMetricsDaily, AdsAudienceSync, AdsConversionEvent), AdsOAuthController, AdsWebhookController, MetaAdsClientService, GoogleAdsClientService, AdsAudienceSyncService, ConversionTrackingService, AdsSyncService. 6 unit tests
+  - **Total**: ~150+ archivos PHP, 50 unit test files (~200+ test methods), 9 routing.yml, 9 services.yml, 3 page templates Twig
+  - **Cross-módulo**: FeatureAccessService cubre 9 módulos, hook_preprocess_html para todas las rutas frontend
+  - `tests/visual/backstop.json`: 10 páginas × 3 viewports (phone/tablet/desktop)
+  - CI: 80% coverage threshold enforcement en GitHub Actions
 
 ### 1.5 Idioma de Documentación
 - **Documentación**: Español
@@ -145,6 +204,13 @@ npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
 | `page--content-hub.html.twig` | `/content-hub` | Dashboard editor |
 | `page--dashboard.html.twig` | `/employer`, `/jobseeker`, etc. | Dashboards de verticales |
 | `page--vertical-landing.html.twig` | `/empleo`, `/talento`, etc. | Landing pages de verticales |
+| `page--crm.html.twig` | `/crm` | Dashboard CRM full-width |
+| `page--eventos.html.twig` | `/eventos` | Dashboard eventos marketing full-width |
+| `page--experimentos.html.twig` | `/experimentos` | Dashboard A/B Testing full-width |
+| `page--referidos.html.twig` | `/referidos` | Dashboard programa referidos full-width |
+| `page--ads.html.twig` | `/ads` | Dashboard campañas publicitarias full-width |
+| `page--social.html.twig` | `/social` | Dashboard social media full-width |
+| `page--pixels.html.twig` | `/pixels` | Dashboard gestión píxeles full-width |
 
 **Cuándo usar:**
 - ✅ Landings de marketing con secciones hero, features, CTA
@@ -404,7 +470,7 @@ Widget chat público integrado en `/ayuda` que responde preguntas de clientes fi
 
 ### 2.4 Centro de Operaciones Financieras (FOC)
 
-> **Módulo**: `jaraba_foc` | **Estado**: 🟡 Parcial (~35-40%)
+> **Módulo**: `jaraba_foc` | **Estado**: ✅ Operativo
 > Ver: [Documento Técnico FOC v2](./tecnicos/20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md)
 
 | Componente | Descripción |
@@ -415,10 +481,11 @@ Widget chat público integrado en `/ayuda` que responde preguntas de clientes fi
 | **ETL Automatizado** | Webhooks Stripe + ActiveCampaign + Make.com |
 
 > [!IMPORTANT]
-> **Servicios Billing en `ecosistema_jaraba_core`:** Además del módulo FOC, existen 4 servicios
-> de billing distribuidos en core: `JarabaStripeConnect`, `TenantSubscriptionService`,
-> `TenantMeteringService` y `WebhookService`. Se requiere consolidación para evitar duplicación
-> con `StripeConnectService` en FOC. Ver auditoría coherencia 2026-02-11.
+> **Consolidación Billing completada (v7.0.0):** El módulo `jaraba_billing` ahora centraliza
+> todo el ciclo de billing SaaS (5 entidades, 13 servicios, 26 endpoints REST, DunningService,
+> FeatureAccessService). El FOC mantiene su rol de operaciones financieras (transacciones
+> inmutables, métricas SaaS, `StripeConnectService` como transporte HTTP). La duplicación
+> con servicios de core se eliminó: billing usa `jaraba_foc.stripe_connect` como dependencia.
 
 **Métricas SaaS 2.0 Implementadas:**
 
@@ -1098,6 +1165,16 @@ Antes de implementar cualquier feature, verificar:
 
 Si la respuesta a cualquiera es "No" y debería ser "Sí", **refactorizar antes de continuar**.
 
+### 5.8 Reglas Técnicas Descubiertas (2026-02-12 — Avatar + Empleabilidad)
+
+| Regla | ID | Descripción |
+|-------|----|-------------|
+| **PHP 8.4 Property Redeclaration** | DRUPAL11-001 | En PHP 8.4, las clases hijas NO pueden redeclarar propiedades tipadas heredadas de la clase padre (ej: `protected EntityTypeManagerInterface $entityTypeManager` en ControllerBase). Solución: NO usar promoted constructor params para propiedades heredadas; asignar manualmente `$this->entityTypeManager = $param;` en el constructor |
+| **Drupal 11 applyUpdates() Removal** | DRUPAL11-002 | `EntityDefinitionUpdateManager::applyUpdates()` fue eliminado en Drupal 11. Para instalar nuevas entidades, usar `$updateManager->installEntityType($entityType)` por cada entidad individual |
+| **Logger Channel Factory** | SERVICE-001 | Todo módulo que use `@logger.channel.{module}` en services.yml DEBE declarar el logger channel en el mismo fichero: `logger.channel.{module}: { class: ..., factory: logger.factory:get, arguments: ['{module}'] }` |
+| **EntityOwnerInterface** | ENTITY-001 | Toda Content Entity que use `EntityOwnerTrait` DEBE declarar `implements EntityOwnerInterface` y `EntityChangedInterface` en la clase. El trait por sí solo NO satisface la interfaz requerida por Drupal |
+| **Dart Sass @use Scoping** | SCSS-001 | Dart Sass `@use` crea scope aislado. Cada parcial SCSS que necesite variables del módulo DEBE incluir `@use '../variables' as *;` al inicio del fichero. NO se heredan del fichero padre que lo importa |
+
 ---
 
 ## 6. Entornos de Desarrollo
@@ -1162,6 +1239,66 @@ lando db-import backup.sql
 - **NUNCA** editar archivos YML en `config/sync/` manualmente. Siempre exportar con `drush cex`.
 - El pipeline incluye sincronización de UUID (`system.site.uuid`) como prerequisito de `config:import`.
 - Las entidades Key con `key_provider: config` contienen API keys reales. Aceptable en repo privado; migrar a `key_provider: env` como mejora futura.
+
+### 6.5 Monitoring Stack
+
+> **Directorio:** `monitoring/` | **Estado:** ✅ Configurado (2026-02-12)
+
+Stack de observabilidad standalone (Docker Compose independiente de Lando):
+
+| Componente | Puerto | Función |
+|------------|--------|---------|
+| **Prometheus** | 9090 | Scraping métricas cada 15s (drupal, mysql, qdrant, node, loki) |
+| **Grafana** | 3001 | Dashboards visuales + alertas |
+| **Loki** | 3100 | Agregación de logs (720h retención) |
+| **Promtail** | — | Recolector (drupal, php-fpm, webserver, system logs) |
+| **AlertManager** | 9093 | Routing alertas por severidad |
+
+**Comandos:**
+```bash
+# Iniciar monitoring stack
+cd monitoring && docker compose -f docker-compose.monitoring.yml up -d
+
+# Verificar servicios
+docker compose -f docker-compose.monitoring.yml ps
+```
+
+**Reglas:**
+- **MONITORING-001**: Toda alerta `critical` debe tener 2+ canales de notificación (Slack + email)
+- Las alertas se definen en `monitoring/prometheus/rules/jaraba_alerts.yml` (14 reglas)
+- Routing: critical → Slack #jaraba-critical + email, warning → Slack #jaraba-alerts
+
+### 6.6 Go-Live Procedures
+
+> **Directorio:** `scripts/golive/` | **Runbook:** `docs/tecnicos/GO_LIVE_RUNBOOK.md`
+
+| Script | Función |
+|--------|---------|
+| `01_preflight_checks.sh` | 24 validaciones pre-lanzamiento (PHP, MariaDB, Redis, Qdrant, Stripe, SSL, DNS, módulos, permisos, config) |
+| `02_validation_suite.sh` | Smoke tests por vertical, API validation, CSRF checks |
+| `03_rollback.sh` | Rollback automatizado 7 pasos con notificaciones Slack |
+
+**Reglas:**
+- **GOLIVE-001**: Todo script shell generado debe pasar `bash -n` (syntax check) antes de commit
+- Los scripts deben ejecutarse en orden secuencial (01 → 02 → 03 solo si falla deploy)
+
+### 6.7 Security CI
+
+> **Fichero:** `.github/workflows/security-scan.yml` | **Estado:** ✅ Configurado
+
+- Ejecución: daily cron 02:00 UTC
+- Scans: Composer audit → npm audit → Trivy FS → OWASP ZAP baseline
+- Output: SARIF upload a GitHub Security tab
+- Notificación: Slack en vulnerabilidades CRITICAL/HIGH
+
+**GDPR Drush Commands:**
+```bash
+lando drush gdpr:export {uid}     # Art. 15 — Exporta datos personales (JSON)
+lando drush gdpr:anonymize {uid}  # Art. 17 — Anonimiza datos (hash replace)
+lando drush gdpr:report           # Informe compliance general
+```
+
+**Regla SECURITY-001:** CI de seguridad requiere mínimo `composer audit` + dependency scan (Trivy).
 
 ---
 
@@ -1603,6 +1740,12 @@ El asistente IA debe:
 | 2026-02-02 | 4.9.0 | **Análisis Page Builder Rendering Bug:** Identificada causa raíz (themes dinámicos no registrados en hook_theme). Solución propuesta: registro dinámico de themes leyendo PageTemplate entities. Alternativa: inline_template. Plan 3 fases: arreglar bug (4-6h), onboarding meta-sitio (20-30h), SEO/GEO (15-20h). Documento multi-perspectiva (Negocio, Finanzas, Arquitectura, UX, SEO/GEO, IA) |
 | 2026-02-08 | **5.4.0** | **Elevación Page Builder Clase Mundial:** Diagnóstico exhaustivo cruzando 6 docs + 8 archivos código. 7 gaps identificados (Dual Architecture, Hot-Swap, Tests E2E, Traits Commerce). Plan 4 sprints (21h). Nuevo doc arquitectura + aprendizaje #47. Tareas pendientes actualizadas. Score objetivo 9.2→9.8/10 |
 | 2026-02-08 | **5.5.0** | **Auditoría GrapesJS changeProp + Model Defaults:** 14 componentes auditados. Regla GRAPEJS-001: todo trait `changeProp: true` DEBE tener propiedad model-level en `defaults`. Stats Counter corregido (13 model defaults + título `<h2>` + labels `display:block`). Timeline dots duplicados eliminados. Pricing Toggle ↔ Table desconexión documentada. Aprendizaje `2026-02-08_grapesjs_changeprop_model_defaults_audit.md` |
+| 2026-02-12 | **9.0.0** | **Avatar Detection + Empleabilidad UI — 7 Fases:** AvatarDetectionService (cascada 4 niveles Domain→Path/UTM→Group→Rol). EmployabilityDiagnostic entity (14 campos, 5 perfiles). EmployabilityScoringService. EmployabilityCopilotAgent (6 modos BaseAgent). CV PDF (dompdf 2.0.8). Modal system. 4 partials Twig. Activación: 16 entidades, 789 tests (730 pass). 16 controllers PHP 8.4 corregidos. Drupal 11 installEntityType(). 5 reglas: DRUPAL11-001, DRUPAL11-002, SERVICE-001, ENTITY-001, SCSS-001. Aprendizaje #64 |
+| 2026-02-12 | **9.0.0** | **Marketing AI Stack — 9 Módulos 100%:** Auditoría cruzada 16 specs (145-158) vs código existente. 9 módulos completados al 100% (jaraba_crm, jaraba_email, jaraba_ab_testing, jaraba_pixels, jaraba_events, jaraba_social, jaraba_referral, jaraba_ads + jaraba_billing ya clase mundial). ~150+ archivos PHP nuevos. 50 unit test files (~200+ test methods, 100% cobertura servicios). 3 page templates Twig nuevos (page--experimentos, page--referidos, page--ads). Cross-módulo: FeatureAccessService cubre 9 módulos, hook_preprocess_html todas las rutas frontend. Tabla plantillas Twig actualizada (6→11 templates). Aprendizaje #64 |
+| 2026-02-12 | **8.0.0** | **Production Gaps Resolution — 7 Fases:** Cierre gaps críticos producción. Fase 1: 30 skills verticales AI (seed script 1,647 LOC, contenido experto mercado español). Fase 2: Monitoring stack (Prometheus+Grafana+Loki+Promtail+AlertManager, 14 alertas). Fase 3: Go-live runbook (3 scripts ejecutables + documento 6 fases RACI). Fase 4: Security CI daily (Trivy+ZAP+SARIF) + GDPR Drush commands (export/anonymize/report) + playbook incidentes. Fase 5: Catálogo Stripe (40 precios, comisiones marketplace). Fase 6: 24 templates MJML email + TemplateLoaderService. Fase 7: k6 load + BackstopJS visual regression + CI coverage 80%. 44 ficheros creados, 3 modificados. Reglas: SKILLS-001, MONITORING-001, GOLIVE-001, SECURITY-001, STRIPE-001, EMAIL-001, TEST-002. Aprendizaje #63 |
+| 2026-02-12 | **7.0.0** | **Billing Clase Mundial — Cierre 15 Gaps:** Auditoría cruzada de 3 specs maestras (134_Stripe_Billing, 111_UsageBased_Pricing, 158_Vertical_Pricing_Matrix). 15 gaps cerrados (G1-G15). 2 entidades nuevas (BillingCustomer, TenantAddon). 6 campos añadidos a BillingInvoice (subtotal, tax, total, billing_reason, lines, stripe_customer_id). 5 campos añadidos a BillingUsageRecord (subscription_item_id, reported_at, idempotency_key, billed, billing_period). 2 servicios nuevos (DunningService 6 pasos, FeatureAccessService plan+addons). 3 API controllers (BillingApi 13 endpoints, UsageBillingApi 7 endpoints, AddonApi 6 endpoints = 26 total). Webhooks handleSubscriptionUpdated y handleTrialWillEnd implementados (ya no son no-ops). syncInvoice campos fiscales. PlanValidator soporte add-ons. flushUsageToStripe. 88 tests (304 assertions). 11 test fixes PHP 8.4 (stdClass vs mock dynamic properties). Aprendizaje #62 |
+| 2026-02-12 | **6.9.0** | **Compliance Dashboard + Advanced Analytics:** G115-1 Security & Compliance Dashboard en `/admin/seguridad` con 25+ controles (SOC 2, ISO 27001, ENS, GDPR). AuditLog entity inmutable + AuditLogService. Advanced Analytics: CohortDefinition + FunnelDefinition entities, CohortAnalysisService (retención semanal), FunnelTrackingService (conversión por pasos), 2 API Controllers REST + frontend interactivo. Integrations Dashboard UI (CSS/JS/SCSS). Customer Success install + SCSS. Tenant Knowledge config schema. 207→227 tests. Aprendizaje #61 |
+| 2026-02-12 | **6.8.0** | **Billing Entities + Stripe Integration:** 3 Content Entities (BillingInvoice, BillingUsageRecord, BillingPaymentMethod) con forms, access handlers, list builders. 3 servicios Stripe (StripeCustomerService, StripeSubscriptionService, StripeInvoiceService). BillingWebhookController 8 eventos. Plantilla `page--eventos.html.twig` Zero Region. Fix consent-banner library CSS. 8 test files (199→207 tests). Permisos, routing, links completos para jaraba_billing |
 | 2026-02-11 | **6.7.0** | **Config Sync Git-Tracked:** Migración de config sync de `web/sites/default/files/config_HASH/sync/` (gitignored) a `config/sync/` (git-tracked). 589 archivos YML + traducciones en/es. Override `config_sync_directory` en `settings.jaraba_rag.php`. Step UUID sync en deploy.yml. Entidades Key (qdrant_api, openai_api, anthropic_api, google_gemini_api_key) ahora llegan a producción via `config:import`. Elimina workaround JWT directo en settings.local.php. 4 reglas: DEPLOY-001 a DEPLOY-004. Aprendizaje #60 |
 | 2026-02-11 | **6.6.0** | **Sprint C4: IA Asistente Integrada — Plan v3.1 100% COMPLETADO:** 10/10 sprints implementados (A1-A3, B1-B2, C1-C4). C4.1: SeoSuggestionService + endpoint + botón toolbar + panel SEO. C4.2: AiTemplateGeneratorService + endpoint. C4.3: Selectores Vertical/Tono en modal IA + Brand Voice backend. C4.4: Prompt-to-Page con mode toggle + section checkboxes. 2 servicios nuevos (~840 LOC), 3 rutas API, controller +3 endpoints, grapesjs-jaraba-ai.js v2 (+240 LOC), toolbar botón 🤖. Aprendizaje #59 |
 | 2026-02-11 | **6.5.0** | **G114-4 FAQ Bot Contextual:** Widget chat público en `/ayuda` para clientes finales del tenant. FaqBotService (embedding → Qdrant search → LLM grounded → escalación 3-tier). FaqBotApiController (POST /api/v1/help/chat + feedback). Rate limiting 10 req/min/IP. Frontend FAB widget (faq-bot.js, _faq-bot.scss, faq-bot-widget.html.twig). Diferenciación explícita vs jaraba_copilot_v2. HelpCenterController integrado. Sección §2.3.3 documentada. Aprendizaje #58 |

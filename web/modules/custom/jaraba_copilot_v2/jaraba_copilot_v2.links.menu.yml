@@ -20,6 +20,20 @@ entity.experiment.settings:
   parent: system.admin_structure
   weight: 32
 
+entity.entrepreneur_learning.settings:
+  title: 'Aprendizajes'
+  description: 'Configurar campos y presentacion de Aprendizajes de Emprendedor.'
+  route_name: entity.entrepreneur_learning.settings
+  parent: system.admin_structure
+  weight: 33
+
+entity.field_exit.settings:
+  title: 'Field Exits'
+  description: 'Configurar campos y presentacion de Field Exits (Customer Discovery).'
+  route_name: entity.field_exit.settings
+  parent: system.admin_structure
+  weight: 34
+
 # Configuración del módulo Copiloto v2
 jaraba_copilot_v2.settings:
   title: 'Copiloto v2 Emprendimiento'

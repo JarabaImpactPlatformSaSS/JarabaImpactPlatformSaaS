@@ -1,0 +1,67 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          Suscripci&oacute;n cancelada
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Tu suscripci&oacute;n en {{ site_name }} ha sido cancelada el <strong>{{ cancel_date }}</strong>.</p>
+        </mj-text>
+        <mj-section background-color="#f9fafb" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px">
+              <strong>Acceso activo hasta:</strong> {{ access_end_date }}<br />
+              Podr&aacute;s seguir utilizando tu cuenta hasta esa fecha. Despu&eacute;s, se limitar&aacute; el acceso a las funcionalidades premium.
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-text padding-top="16px">
+          <p>Lamentamos verte marchar. Si cambiaste de opini&oacute;n, puedes reactivar tu suscripci&oacute;n en cualquier momento antes de la fecha l&iacute;mite.</p>
+        </mj-text>
+        <mj-button href="{{ reactivate_url }}" align="center" padding="24px 0">
+          Reactivar suscripci&oacute;n
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+          Has recibido este correo porque tienes una cuenta en {{ site_name }}.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

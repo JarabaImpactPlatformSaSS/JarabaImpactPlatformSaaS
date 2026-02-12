@@ -1,0 +1,33 @@
+services:
+  logger.channel.jaraba_security_compliance:
+    parent: logger.channel_base
+    arguments: ['jaraba_security_compliance']
+
+  jaraba_security_compliance.audit_log:
+    class: Drupal\jaraba_security_compliance\Service\AuditLogService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.policy_enforcer:
+    class: Drupal\jaraba_security_compliance\Service\PolicyEnforcerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.compliance_tracker:
+    class: Drupal\jaraba_security_compliance\Service\ComplianceTrackerService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.data_retention:
+    class: Drupal\jaraba_security_compliance\Service\DataRetentionService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@config.factory'
+      - '@logger.channel.jaraba_security_compliance'

@@ -1,0 +1,213 @@
+{#
+/**
+ * @file
+ * Template for Analytics Dashboard Builder.
+ *
+ * Variables:
+ * - dashboard: Dashboard data object with id, name, layout_config.
+ * - widgets: Array of existing widget data objects.
+ * - widget_types: Available widget types (key => label).
+ *
+ * Conventions:
+ * - BEM naming (.analytics-builder, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\DashboardBuilderController::builderPage
+ */
+#}
+
+<div class="analytics-builder"
+     data-dashboard-id="{{ dashboard.id }}">
+
+  {# ===== Header ===== #}
+  <header class="analytics-builder__header">
+    <div class="analytics-builder__header-content">
+      <h2 class="analytics-builder__title">
+        {% trans %}Dashboard Builder{% endtrans %}: {{ dashboard.name }}
+      </h2>
+    </div>
+    <div class="analytics-builder__header-actions">
+      <button type="button"
+              class="analytics-builder__save-btn"
+              data-action="save-layout"
+              aria-label="{% trans %}Save dashboard layout{% endtrans %}">
+        {% trans %}Save Layout{% endtrans %}
+      </button>
+      <a href="/analytics/dashboards/{{ dashboard.id }}"
+         class="analytics-builder__preview-btn"
+         aria-label="{% trans %}Preview dashboard{% endtrans %}">
+        {% trans %}Preview{% endtrans %}
+      </a>
+      <a href="/analytics/dashboards"
+         class="analytics-builder__back-btn"
+         aria-label="{% trans %}Back to dashboards{% endtrans %}">
+        {% trans %}Back{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  <div class="analytics-builder__workspace">
+
+    {# ===== Widget Palette (Sidebar) ===== #}
+    <aside class="analytics-builder__palette"
+           aria-label="{% trans %}Widget palette{% endtrans %}">
+      <h3 class="analytics-builder__palette-title">
+        {% trans %}Widgets{% endtrans %}
+      </h3>
+      <p class="analytics-builder__palette-hint">
+        {% trans %}Drag widgets onto the canvas{% endtrans %}
+      </p>
+      <div class="analytics-builder__palette-list">
+        {% for type_key, type_label in widget_types %}
+          <div class="analytics-builder__palette-item"
+               draggable="true"
+               data-widget-type="{{ type_key }}"
+               aria-label="{{ type_label }}">
+            <span class="analytics-builder__palette-icon analytics-builder__palette-icon--{{ type_key }}"></span>
+            <span class="analytics-builder__palette-label">{{ type_label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </aside>
+
+    {# ===== Grid Canvas ===== #}
+    <main class="analytics-builder__canvas"
+          aria-label="{% trans %}Dashboard canvas{% endtrans %}"
+          data-grid-columns="12"
+          data-grid-row-height="80">
+      <div class="analytics-builder__grid">
+        {% if widgets is not empty %}
+          {% for widget in widgets %}
+            <div class="analytics-builder__widget analytics-builder__widget--{{ widget.widget_type }}"
+                 data-widget-id="{{ widget.id }}"
+                 data-widget-type="{{ widget.widget_type }}"
+                 data-position="{{ widget.position.row }}:{{ widget.position.col }}:{{ widget.position.width }}:{{ widget.position.height }}"
+                 style="grid-row: {{ widget.position.row }} / span {{ widget.position.height }}; grid-column: {{ widget.position.col }} / span {{ widget.position.width }};">
+
+              <div class="analytics-builder__widget-header">
+                <span class="analytics-builder__widget-drag-handle"
+                      aria-label="{% trans %}Drag to reposition{% endtrans %}">
+                  &#x2630;
+                </span>
+                <span class="analytics-builder__widget-name">{{ widget.name }}</span>
+                <div class="analytics-builder__widget-controls">
+                  <button type="button"
+                          class="analytics-builder__widget-config-btn"
+                          data-action="configure-widget"
+                          data-widget-id="{{ widget.id }}"
+                          aria-label="{% trans %}Configure widget{% endtrans %}">
+                    &#x2699;
+                  </button>
+                  <button type="button"
+                          class="analytics-builder__widget-remove-btn"
+                          data-action="remove-widget"
+                          data-widget-id="{{ widget.id }}"
+                          aria-label="{% trans %}Remove widget{% endtrans %}">
+                    &#x2715;
+                  </button>
+                </div>
+              </div>
+
+              <div class="analytics-builder__widget-preview"
+                   data-widget-container="{{ widget.id }}">
+                <span class="analytics-builder__widget-type-label">{{ widget.widget_type }}</span>
+              </div>
+
+              <div class="analytics-builder__widget-resize-handle"
+                   aria-label="{% trans %}Drag to resize{% endtrans %}">
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {# Drop zone indicator #}
+        <div class="analytics-builder__drop-zone" aria-hidden="true">
+          <span class="analytics-builder__drop-zone-text">
+            {% trans %}Drop widget here{% endtrans %}
+          </span>
+        </div>
+      </div>
+    </main>
+
+    {# ===== Widget Config Panel ===== #}
+    <aside class="analytics-builder__config-panel analytics-builder__config-panel--hidden"
+           aria-label="{% trans %}Widget configuration{% endtrans %}">
+      <div class="analytics-builder__config-header">
+        <h3 class="analytics-builder__config-title">
+          {% trans %}Widget Settings{% endtrans %}
+        </h3>
+        <button type="button"
+                class="analytics-builder__config-close"
+                data-action="close-config"
+                aria-label="{% trans %}Close configuration{% endtrans %}">
+          &#x2715;
+        </button>
+      </div>
+
+      <form class="analytics-builder__config-form">
+        <div class="analytics-builder__config-field">
+          <label class="analytics-builder__config-label" for="widget-name">
+            {% trans %}Name{% endtrans %}
+          </label>
+          <input type="text"
+                 class="analytics-builder__config-input"
+                 id="widget-name"
+                 name="name"
+                 placeholder="{% trans %}Widget name{% endtrans %}">
+        </div>
+
+        <div class="analytics-builder__config-field">
+          <label class="analytics-builder__config-label" for="widget-data-source">
+            {% trans %}Data Source{% endtrans %}
+          </label>
+          <input type="text"
+                 class="analytics-builder__config-input"
+                 id="widget-data-source"
+                 name="data_source"
+                 placeholder="{% trans %}e.g. analytics_event{% endtrans %}">
+        </div>
+
+        <div class="analytics-builder__config-field">
+          <label class="analytics-builder__config-label" for="widget-metric">
+            {% trans %}Metric{% endtrans %}
+          </label>
+          <select class="analytics-builder__config-select"
+                  id="widget-metric"
+                  name="metric">
+            <option value="page_views">{% trans %}Page Views{% endtrans %}</option>
+            <option value="unique_visitors">{% trans %}Unique Visitors{% endtrans %}</option>
+            <option value="sessions">{% trans %}Sessions{% endtrans %}</option>
+            <option value="events">{% trans %}Total Events{% endtrans %}</option>
+            <option value="conversions">{% trans %}Conversions{% endtrans %}</option>
+          </select>
+        </div>
+
+        <div class="analytics-builder__config-field">
+          <label class="analytics-builder__config-label" for="widget-date-range">
+            {% trans %}Date Range{% endtrans %}
+          </label>
+          <select class="analytics-builder__config-select"
+                  id="widget-date-range"
+                  name="date_range">
+            <option value="today">{% trans %}Today{% endtrans %}</option>
+            <option value="last_7_days">{% trans %}Last 7 Days{% endtrans %}</option>
+            <option value="last_30_days" selected>{% trans %}Last 30 Days{% endtrans %}</option>
+            <option value="last_90_days">{% trans %}Last 90 Days{% endtrans %}</option>
+            <option value="last_year">{% trans %}Last Year{% endtrans %}</option>
+          </select>
+        </div>
+
+        <div class="analytics-builder__config-actions">
+          <button type="button"
+                  class="analytics-builder__config-save-btn"
+                  data-action="save-widget-config">
+            {% trans %}Apply{% endtrans %}
+          </button>
+        </div>
+      </form>
+    </aside>
+
+  </div>
+
+</div>

@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_pwa.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_pwa_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba PWA installed. Entity tables (push_subscription, pending_sync_action) have been created automatically. Configure VAPID keys at /admin/config/jaraba/pwa.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_pwa_uninstall(): void {
+  // Remove module configuration.
+  \Drupal::configFactory()->getEditable('jaraba_pwa.settings')->delete();
+
+  \Drupal::messenger()->addStatus(t('Jaraba PWA uninstalled. Push subscription and sync action data has been removed.'));
+}

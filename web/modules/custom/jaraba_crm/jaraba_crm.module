@@ -18,6 +18,31 @@ declare(strict_types=1);
 require_once __DIR__ . '/jaraba_crm.allowed_values.inc';
 
 /**
+ * Implements hook_preprocess_HOOK() for html.html.twig.
+ *
+ * Agrega clases al body para las páginas frontend del CRM.
+ */
+function jaraba_crm_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  if (!$route_name) {
+    return;
+  }
+
+  $route_classes = [
+    'jaraba_crm.dashboard' => ['page--crm', 'page--crm-dashboard'],
+    'jaraba_crm.pipeline' => ['page--crm', 'page--crm-pipeline'],
+    'jaraba_crm.kanban' => ['page--crm', 'page--crm-kanban'],
+  ];
+
+  if (isset($route_classes[$route_name])) {
+    foreach ($route_classes[$route_name] as $class) {
+      $variables['attributes']['class'][] = $class;
+    }
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function jaraba_crm_theme(): array {

@@ -1,0 +1,5 @@
+jaraba_whitelabel.settings:
+  route_name: jaraba_whitelabel.settings
+  title: 'Settings'
+  base_route: jaraba_whitelabel.admin
+  weight: 0

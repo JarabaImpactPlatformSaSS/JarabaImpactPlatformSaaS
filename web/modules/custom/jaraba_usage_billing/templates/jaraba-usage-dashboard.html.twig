@@ -1,0 +1,100 @@
+{#
+/**
+ * @file
+ * Template para el dashboard de uso.
+ *
+ * Variables disponibles:
+ * - tenant_id: ID del tenant actual.
+ * - metrics: Resumen de métricas por nombre.
+ * - aggregates: Entidades UsageAggregate.
+ * - alerts: Alertas activas.
+ * - chart_data: Datos para gráficos Chart.js.
+ * - period: Periodo seleccionado (hourly|daily|monthly).
+ * - cost_summary: Resumen de costes por métrica.
+ */
+#}
+<div class="usage-dashboard" data-tenant-id="{{ tenant_id }}">
+
+  <header class="usage-dashboard__header">
+    <h2 class="usage-dashboard__title">{% trans %}Dashboard de Uso{% endtrans %}</h2>
+    <div class="usage-dashboard__period-selector" data-drupal-selector="usage-period-selector">
+      <label class="usage-dashboard__period-label" for="usage-period">{% trans %}Periodo{% endtrans %}:</label>
+      <select class="usage-dashboard__period-select" id="usage-period" name="period">
+        <option value="hourly" {% if period == 'hourly' %}selected{% endif %}>{% trans %}Horario{% endtrans %}</option>
+        <option value="daily" {% if period == 'daily' %}selected{% endif %}>{% trans %}Diario{% endtrans %}</option>
+        <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>{% trans %}Mensual{% endtrans %}</option>
+      </select>
+    </div>
+  </header>
+
+  {# Tarjetas de métricas #}
+  <section class="usage-dashboard__metrics">
+    <h3 class="usage-dashboard__section-title">{% trans %}Resumen de Métricas{% endtrans %}</h3>
+    <div class="usage-dashboard__metrics-grid">
+      {% if metrics %}
+        {% for metric_name, metric_data in metrics %}
+          <div class="usage-dashboard__metric-card">
+            <div class="usage-dashboard__metric-name">{{ metric_name }}</div>
+            <div class="usage-dashboard__metric-value">
+              {{ metric_data.total_quantity|number_format(2, '.', ',') }}
+            </div>
+            <div class="usage-dashboard__metric-events">
+              {{ metric_data.total_events }} {% trans %}eventos{% endtrans %}
+            </div>
+            {% if cost_summary[metric_name] is defined %}
+              <div class="usage-dashboard__metric-cost">
+                {{ cost_summary[metric_name].cost|number_format(2, '.', ',') }} EUR
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="usage-dashboard__empty">{% trans %}No hay datos de uso disponibles para este periodo.{% endtrans %}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {# Area de gráficos #}
+  <section class="usage-dashboard__charts">
+    <h3 class="usage-dashboard__section-title">{% trans %}Evolución de Uso{% endtrans %}</h3>
+    <div class="usage-dashboard__chart-container">
+      <canvas id="usage-chart-main" class="usage-dashboard__chart" width="800" height="400"></canvas>
+    </div>
+    <div class="usage-dashboard__chart-container">
+      <canvas id="usage-chart-cost" class="usage-dashboard__chart" width="800" height="300"></canvas>
+    </div>
+  </section>
+
+  {# Resumen de costes #}
+  {% if cost_summary %}
+    <section class="usage-dashboard__costs">
+      <h3 class="usage-dashboard__section-title">{% trans %}Desglose de Costes{% endtrans %}</h3>
+      <table class="usage-dashboard__cost-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Métrica{% endtrans %}</th>
+            <th>{% trans %}Cantidad{% endtrans %}</th>
+            <th>{% trans %}Coste{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for metric_name, cost_data in cost_summary %}
+            <tr class="usage-dashboard__cost-row">
+              <td class="usage-dashboard__cost-metric">{{ metric_name }}</td>
+              <td class="usage-dashboard__cost-quantity">{{ cost_data.quantity|number_format(2, '.', ',') }}</td>
+              <td class="usage-dashboard__cost-amount">{{ cost_data.cost|number_format(2, '.', ',') }} EUR</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% endif %}
+
+  {# Sección de alertas #}
+  {% if alerts %}
+    <section class="usage-dashboard__alerts">
+      {% include 'jaraba-usage-alerts.html.twig' with { alerts: alerts, tenant_id: tenant_id } %}
+    </section>
+  {% endif %}
+
+</div>

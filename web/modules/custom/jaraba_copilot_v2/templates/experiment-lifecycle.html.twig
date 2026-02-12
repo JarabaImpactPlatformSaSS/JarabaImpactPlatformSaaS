@@ -1,0 +1,68 @@
+{#
+/**
+ * @file
+ * Template para la vista de ciclo de vida de experimentos.
+ * Test Card -> Ejecucion -> Learning Card.
+ *
+ * Variables:
+ * - experiments: Array de experimentos del usuario.
+ * - stats: Estadisticas de experimentos.
+ */
+#}
+
+<div class="experiment-lifecycle">
+  <div class="experiment-lifecycle__header">
+    <h1 class="experiment-lifecycle__title">{{ 'Ciclo de Vida de Experimentos'|t }}</h1>
+    <a href="{{ path('entity.experiment.add_form') }}"
+       class="use-ajax btn btn--primary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Nuevo Experimento'|t }}
+    </a>
+  </div>
+
+  {% if stats is defined %}
+    <div class="experiment-lifecycle__stats">
+      <div class="experiment-lifecycle__stat">
+        <span class="experiment-lifecycle__stat-value">{{ stats.planned|default(0) }}</span>
+        <span class="experiment-lifecycle__stat-label">{{ 'Planificados'|t }}</span>
+      </div>
+      <div class="experiment-lifecycle__stat">
+        <span class="experiment-lifecycle__stat-value">{{ stats.in_progress|default(0) }}</span>
+        <span class="experiment-lifecycle__stat-label">{{ 'En Progreso'|t }}</span>
+      </div>
+      <div class="experiment-lifecycle__stat">
+        <span class="experiment-lifecycle__stat-value">{{ stats.completed|default(0) }}</span>
+        <span class="experiment-lifecycle__stat-label">{{ 'Completados'|t }}</span>
+      </div>
+      <div class="experiment-lifecycle__stat">
+        <span class="experiment-lifecycle__stat-value">{{ stats.total_points|default(0) }} Pi</span>
+        <span class="experiment-lifecycle__stat-label">{{ 'Puntos Ganados'|t }}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="experiment-lifecycle__filters">
+    <select id="filter-exp-status" class="experiment-lifecycle__filter" data-filter="status">
+      <option value="">{{ 'Todos los estados'|t }}</option>
+      <option value="PLANNED">{{ 'Planificados'|t }}</option>
+      <option value="IN_PROGRESS">{{ 'En Progreso'|t }}</option>
+      <option value="COMPLETED">{{ 'Completados'|t }}</option>
+      <option value="CANCELLED">{{ 'Cancelados'|t }}</option>
+    </select>
+  </div>
+
+  <div class="experiment-lifecycle__list" id="experiment-list">
+    {% if experiments is not empty %}
+      {% for experiment in experiments %}
+        {% include '@jaraba_copilot_v2/partials/_experiment-card-full.html.twig' with {
+          'experiment': experiment,
+        } only %}
+      {% endfor %}
+    {% else %}
+      <div class="experiment-lifecycle__empty">
+        <p>{{ 'No tienes experimentos aun. Crea una hipotesis primero y luego disena un experimento para validarla.'|t }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

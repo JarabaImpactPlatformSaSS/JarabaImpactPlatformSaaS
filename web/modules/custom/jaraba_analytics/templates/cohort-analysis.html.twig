@@ -1,0 +1,173 @@
+{#
+/**
+ * @file
+ * Template for Cohort Analysis.
+ *
+ * Variables:
+ * - cohorts: Array of available cohort definitions (id, label).
+ * - retention_data: Retention matrix keyed by week.
+ *   Each row: { cohort_label, users, weeks: [{ week, retained, rate }] }
+ * - selected_cohort: Currently selected cohort ID.
+ *
+ * Conventions:
+ * - BEM naming (.cohort-analysis, __element, --modifier)
+ * - All user-facing strings wrapped in {% trans %}
+ * - Design tokens via var(--ej-*)
+ *
+ * @see \Drupal\jaraba_analytics\Controller\AnalyticsDashboardController
+ */
+#}
+
+<div class="cohort-analysis"
+     data-selected-cohort="{{ selected_cohort }}"
+     data-api-base="/api/v1/analytics/cohort">
+
+  {# ===== Header ===== #}
+  <header class="cohort-analysis__header">
+    <div class="cohort-analysis__header-content">
+      <h2 class="cohort-analysis__title">
+        {% trans %}Cohort Analysis{% endtrans %}
+      </h2>
+      <p class="cohort-analysis__subtitle">
+        {% trans %}User retention over time by signup cohort{% endtrans %}
+      </p>
+    </div>
+    <div class="cohort-analysis__header-actions">
+      <button type="button"
+              class="cohort-analysis__export-btn"
+              aria-label="{% trans %}Export cohort data{% endtrans %}">
+        {% trans %}Export CSV{% endtrans %}
+      </button>
+    </div>
+  </header>
+
+  {# ===== Cohort Selector ===== #}
+  <div class="cohort-analysis__selector">
+    <label class="cohort-analysis__selector-label" for="cohort-select">
+      {% trans %}Cohort{% endtrans %}
+    </label>
+    <select class="cohort-analysis__selector-input"
+            id="cohort-select"
+            aria-label="{% trans %}Select cohort{% endtrans %}">
+      {% for cohort in cohorts %}
+        <option value="{{ cohort.id }}"
+                {% if cohort.id == selected_cohort %} selected{% endif %}>
+          {{ cohort.label }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label class="cohort-analysis__selector-label" for="cohort-granularity">
+      {% trans %}Granularity{% endtrans %}
+    </label>
+    <select class="cohort-analysis__selector-input"
+            id="cohort-granularity"
+            aria-label="{% trans %}Select time granularity{% endtrans %}">
+      <option value="weekly" selected>{% trans %}Weekly{% endtrans %}</option>
+      <option value="monthly">{% trans %}Monthly{% endtrans %}</option>
+    </select>
+  </div>
+
+  {# ===== Retention Heatmap Table ===== #}
+  <section class="cohort-analysis__retention-table"
+           aria-label="{% trans %}Retention heatmap{% endtrans %}">
+    <div class="cohort-analysis__table-wrapper">
+      <table class="cohort-analysis__table" role="grid">
+        <thead>
+          <tr>
+            <th class="cohort-analysis__th cohort-analysis__th--cohort">
+              {% trans %}Cohort{% endtrans %}
+            </th>
+            <th class="cohort-analysis__th cohort-analysis__th--users">
+              {% trans %}Users{% endtrans %}
+            </th>
+            {# Week columns rendered by JS based on data depth #}
+          </tr>
+        </thead>
+        <tbody class="cohort-analysis__tbody">
+          {% if retention_data is not empty %}
+            {% for row in retention_data %}
+              <tr class="cohort-analysis__row">
+                <td class="cohort-analysis__cell cohort-analysis__cell--label">
+                  {{ row.cohort_label }}
+                </td>
+                <td class="cohort-analysis__cell cohort-analysis__cell--users">
+                  {{ row.users }}
+                </td>
+                {% for week in row.weeks %}
+                  <td class="cohort-analysis__cell cohort-analysis__cell--retention"
+                      data-retention="{{ week.rate }}"
+                      data-retained="{{ week.retained }}"
+                      data-week="{{ week.week }}"
+                      aria-label="{{ week.rate }}% {% trans %}retention{% endtrans %}">
+                    <span class="cohort-analysis__cell-value">{{ week.rate }}%</span>
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td class="cohort-analysis__empty" colspan="100%">
+                {% trans %}No cohort data available. Select a cohort to begin analysis.{% endtrans %}
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Legend #}
+    <div class="cohort-analysis__legend" aria-hidden="true">
+      <span class="cohort-analysis__legend-label">{% trans %}Retention{% endtrans %}</span>
+      <div class="cohort-analysis__legend-gradient">
+        <span class="cohort-analysis__legend-min">0%</span>
+        <div class="cohort-analysis__legend-bar"></div>
+        <span class="cohort-analysis__legend-max">100%</span>
+      </div>
+    </div>
+  </section>
+
+  {# ===== Summary Metrics ===== #}
+  <section class="cohort-analysis__summary"
+           aria-label="{% trans %}Key metrics{% endtrans %}">
+    <h3 class="cohort-analysis__summary-title">
+      {% trans %}Key Metrics{% endtrans %}
+    </h3>
+    <div class="cohort-analysis__summary-cards">
+      <div class="cohort-analysis__summary-card">
+        <span class="cohort-analysis__summary-value" data-metric="avg-retention">--</span>
+        <span class="cohort-analysis__summary-label">
+          {% trans %}Avg. Retention (Week 4){% endtrans %}
+        </span>
+      </div>
+      <div class="cohort-analysis__summary-card">
+        <span class="cohort-analysis__summary-value" data-metric="best-cohort">--</span>
+        <span class="cohort-analysis__summary-label">
+          {% trans %}Best Performing Cohort{% endtrans %}
+        </span>
+      </div>
+      <div class="cohort-analysis__summary-card">
+        <span class="cohort-analysis__summary-value" data-metric="churn-rate">--</span>
+        <span class="cohort-analysis__summary-label">
+          {% trans %}Avg. Churn Rate{% endtrans %}
+        </span>
+      </div>
+      <div class="cohort-analysis__summary-card">
+        <span class="cohort-analysis__summary-value" data-metric="total-users">--</span>
+        <span class="cohort-analysis__summary-label">
+          {% trans %}Total Users Tracked{% endtrans %}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  {# ===== Tooltip (hidden, positioned by JS) ===== #}
+  <div class="cohort-analysis__tooltip" role="tooltip" aria-hidden="true">
+    <div class="cohort-analysis__tooltip-content">
+      <strong class="cohort-analysis__tooltip-cohort"></strong>
+      <span class="cohort-analysis__tooltip-week"></span>
+      <span class="cohort-analysis__tooltip-retained"></span>
+      <span class="cohort-analysis__tooltip-rate"></span>
+    </div>
+  </div>
+</div>

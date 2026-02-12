@@ -28,7 +28,9 @@ use Drupal\user\EntityOwnerTrait;
  *     plural = "@count field exits",
  *   ),
  *   handlers = {
- *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\jaraba_copilot_v2\ListBuilder\FieldExitListBuilder",
+ *     "access" = "Drupal\jaraba_copilot_v2\Access\FieldExitAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
  *       "default" = "Drupal\Core\Entity\ContentEntityForm",

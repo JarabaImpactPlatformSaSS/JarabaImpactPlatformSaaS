@@ -20,6 +20,7 @@ services:
       - '@current_user'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_events'
+      - '@jaraba_email.sequence_manager'
 
   # =====================================================================
   # EventAnalyticsService: Métricas y analítica de eventos
@@ -32,6 +33,18 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_events'
+
+  # =====================================================================
+  # EventCertificateService: Generación y verificación de certificados
+  # Responsabilidad: generar certificados de asistencia, recopilar datos
+  #   para el PDF del certificado, verificar autenticidad por ticket_code
+  # Relaciones: consume EventRegistration, MarketingEvent
+  # =====================================================================
+  jaraba_events.certificate:
+    class: Drupal\jaraba_events\Service\EventCertificateService
+    arguments:
+      - '@entity_type.manager'
       - '@logger.channel.jaraba_events'
 
   # =====================================================================

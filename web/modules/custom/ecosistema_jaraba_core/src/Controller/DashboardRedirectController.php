@@ -3,6 +3,8 @@
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\AvatarDetectionService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Url;
 
@@ -11,10 +13,49 @@ use Drupal\Core\Url;
  *
  * Provides consistent /dashboard/{avatar} URLs that redirect to
  * the actual dashboard routes in their respective modules.
+ * Incluye redireccion automatica por avatar detectado via cascada.
  *
  * @see ecosistema_jaraba_core.routing.yml
+ * @see \Drupal\ecosistema_jaraba_core\Service\AvatarDetectionService
  */
 class DashboardRedirectController extends ControllerBase {
+
+  /**
+   * El servicio de deteccion de avatar.
+   */
+  protected ?AvatarDetectionService $avatarDetection = NULL;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->avatarDetection = $container->get('ecosistema_jaraba_core.avatar_detection');
+    return $instance;
+  }
+
+  /**
+   * Redirect to dashboard based on detected avatar.
+   *
+   * Usa AvatarDetectionService para resolver automaticamente el avatar
+   * del usuario mediante cascada Domain > Path/UTM > Group > Rol.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Redirect to the appropriate dashboard.
+   */
+  public function redirectByAvatar(): RedirectResponse {
+    $routeName = $this->avatarDetection->resolveDashboardRoute();
+
+    try {
+      $url = Url::fromRoute($routeName)->toString();
+    }
+    catch (\Exception $e) {
+      // Fallback al dashboard del tenant si la ruta no existe.
+      $url = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard')->toString();
+    }
+
+    return new RedirectResponse($url, 302);
+  }
 
   /**
    * Redirect to Job Seeker dashboard.
