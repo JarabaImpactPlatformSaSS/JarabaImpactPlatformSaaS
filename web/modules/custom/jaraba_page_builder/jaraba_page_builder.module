@@ -854,3 +854,59 @@ function jaraba_page_builder_cron(): void {
   $scheduler->processScheduledPublishes();
 }
 
+/**
+ * Implements hook_mail().
+ *
+ * P2-03: Define los emails del workflow editorial i18n.
+ * Los emails son encolados por WorkflowTransitionSubscriber y
+ * procesados por WorkflowNotifyWorker.
+ */
+function jaraba_page_builder_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'workflow_review_request':
+    case 'workflow_approved':
+    case 'workflow_changes_requested':
+      $message['subject'] = $params['subject'] ?? t('Notificacion del Workflow Editorial');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * P2-03: Detecta cambios de moderation_state en page_content y delega
+ * al servicio WorkflowTransitionSubscriber para notificaciones.
+ */
+function jaraba_page_builder_entity_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Solo procesar entidades page_content con content moderation.
+  if ($entity->getEntityTypeId() !== 'page_content') {
+    return;
+  }
+
+  if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+    return;
+  }
+
+  // Verificar que la entidad tiene el campo moderation_state.
+  if (!$entity->hasField('moderation_state')) {
+    return;
+  }
+
+  $new_state = $entity->get('moderation_state')->value;
+  $original_state = NULL;
+
+  if (isset($entity->original) && $entity->original->hasField('moderation_state')) {
+    $original_state = $entity->original->get('moderation_state')->value;
+  }
+
+  // Solo reaccionar si hubo un cambio de estado real.
+  if ($original_state === NULL || $original_state === $new_state) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber $service */
+  $service = \Drupal::service('jaraba_page_builder.workflow_transition');
+  $service->onStateChanged($entity, $original_state, $new_state);
+}
+
