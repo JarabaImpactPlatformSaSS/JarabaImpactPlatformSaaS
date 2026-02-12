@@ -310,19 +310,25 @@ class GroundingValidator
     /**
      * Valida con NLI usando LLM (versión avanzada).
      *
-     * @todo Implementar cuando se necesite mayor precisión.
+     * AI-07: Sanitiza inputs antes de interpolar en prompts NLI.
+     *
+     * @todo Implementar llamada LLM cuando se necesite mayor precisión.
      */
     protected function validateWithNli(string $claim, string $context): array
     {
+        // AI-07: Sanitizar y limitar inputs antes de interpolar en prompt.
+        $sanitizedContext = $this->sanitizeNliInput($context, 8000);
+        $sanitizedClaim = $this->sanitizeNliInput($claim, 1000);
+
         // Prompt para NLI con LLM
         $prompt = <<<PROMPT
 Analiza si la siguiente afirmación está SOPORTADA por el contexto.
 
 CONTEXTO:
-{$context}
+{$sanitizedContext}
 
 AFIRMACIÓN:
-{$claim}
+{$sanitizedClaim}
 
 Responde SOLO con:
 - ENTAILED: La afirmación se puede inferir del contexto
@@ -338,6 +344,46 @@ PROMPT;
             'confidence' => 0.5,
             'source' => NULL,
         ];
+    }
+
+    /**
+     * Sanitiza un input antes de interpolarlo en un prompt NLI.
+     *
+     * AI-07: Previene inyección de instrucciones eliminando patrones
+     * que podrían alterar el comportamiento del LLM, y limita longitud.
+     *
+     * @param string $input
+     *   Texto a sanitizar.
+     * @param int $maxLength
+     *   Longitud máxima en caracteres.
+     *
+     * @return string
+     *   Texto sanitizado.
+     */
+    protected function sanitizeNliInput(string $input, int $maxLength): string
+    {
+        // Limitar longitud.
+        $input = mb_substr($input, 0, $maxLength);
+
+        // Eliminar caracteres de control (excepto newlines y tabs).
+        $input = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $input);
+
+        // Eliminar patrones de inyección de prompts.
+        $dangerousPatterns = [
+            '/ignore\s+(all\s+)?(previous|above|prior)\s+(instructions?|rules?|prompts?)/i',
+            '/you\s+are\s+now/i',
+            '/new\s+instructions?:/i',
+            '/system\s*:/i',
+            '/\bignora\b.*\b(instrucciones|reglas|anteriores)\b/i',
+            '/\bahora\s+eres\b/i',
+            '/\bnuevas?\s+instrucciones?\b/i',
+        ];
+
+        foreach ($dangerousPatterns as $pattern) {
+            $input = preg_replace($pattern, '[FILTERED]', $input);
+        }
+
+        return trim($input);
     }
 
 }

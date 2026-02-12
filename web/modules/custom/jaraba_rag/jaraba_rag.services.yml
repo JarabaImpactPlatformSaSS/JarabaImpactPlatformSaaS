@@ -19,6 +19,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # Servicio Principal: Orquestador RAG
+  # AI-11: Inyecta cache.default para caché de respuestas RAG.
   # ---------------------------------------------------------------------------
   jaraba_rag.rag_service:
     class: Drupal\jaraba_rag\Service\JarabaRagService
@@ -31,6 +32,7 @@ services:
       - '@entity_type.manager'
       - '@logger.factory'
       - '@config.factory'
+      - '@cache.default'
 
   # ---------------------------------------------------------------------------
   # Contexto Multi-Tenant
@@ -63,6 +65,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # Servicio de Indexación
+  # AI-05: Inyecta cache.default para caché de embeddings por hash de contenido.
   # ---------------------------------------------------------------------------
   jaraba_rag.indexer:
     class: Drupal\jaraba_rag\Service\KbIndexerService
@@ -73,4 +76,5 @@ services:
       - '@entity_type.manager'
       - '@logger.factory'
       - '@config.factory'
+      - '@cache.default'
 

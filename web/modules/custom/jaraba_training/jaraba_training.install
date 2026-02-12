@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update y uninstall hooks para jaraba_training.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_training_install(): void {
+  \Drupal::messenger()->addStatus(t('Módulo Jaraba Training instalado correctamente.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_training_uninstall(): void {
+  // Limpiar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_training.settings')->delete();
+}

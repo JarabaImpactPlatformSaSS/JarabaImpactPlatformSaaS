@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_copilot_v2.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_copilot_v2_schema() {
+  $schema['copilot_query_log'] = [
+    'description' => 'Log de consultas del Copiloto para analytics.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key.',
+      ],
+      'source' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Fuente: public, emprendimiento, empleabilidad.',
+      ],
+      'query' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'Pregunta del usuario.',
+      ],
+      'response' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'Respuesta generada.',
+      ],
+      'context_data' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'description' => 'Contexto adicional (JSON).',
+      ],
+      'session_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'description' => 'ID de sesión.',
+      ],
+      'page_url' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'description' => 'URL de la página.',
+      ],
+      'mode' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'description' => 'Modo del copiloto usado.',
+      ],
+      'was_helpful' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Feedback: 1=útil, 0=no útil, NULL=sin feedback.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp de creación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'source' => ['source'],
+      'mode' => ['mode'],
+      'created' => ['created'],
+      'was_helpful' => ['was_helpful'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Crea la tabla copilot_query_log para logging de queries.
+ */
+function jaraba_copilot_v2_update_10001() {
+  $schema = jaraba_copilot_v2_schema();
+  $database = \Drupal::database();
+  
+  if (!$database->schema()->tableExists('copilot_query_log')) {
+    $database->schema()->createTable('copilot_query_log', $schema['copilot_query_log']);
+    return t('Tabla copilot_query_log creada correctamente.');
+  }
+  
+  return t('Tabla copilot_query_log ya existía.');
+}

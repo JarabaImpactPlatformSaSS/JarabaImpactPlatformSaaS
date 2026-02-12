@@ -1,0 +1,213 @@
+/**
+ * @file
+ * Estilos para la Escalera de Valor.
+ * 
+ * Usa variables CSS inyectables del ecosistema Jaraba.
+ */
+
+/* === VARIABLES LOCALES === */
+.training-ladder {
+    --ladder-level-height: 200px;
+    --ladder-level-gap: 1.5rem;
+    --ladder-card-width: 280px;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.training-ladder {
+    max-width: var(--ej-container-max-width, 1200px);
+    margin: 0 auto;
+    padding: var(--ej-spacing-xl, 2rem);
+}
+
+/* === HEADER === */
+.ladder-header {
+    text-align: center;
+    margin-bottom: var(--ej-spacing-2xl, 3rem);
+}
+
+.ladder-header h1 {
+    font-size: var(--ej-font-size-3xl, 2.5rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+    color: var(--ej-color-text-primary, #1a1a1a);
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+}
+
+.ladder-intro {
+    font-size: var(--ej-font-size-lg, 1.125rem);
+    color: var(--ej-color-text-secondary, #666);
+}
+
+/* === NIVELES === */
+.ladder-levels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ladder-level-gap);
+}
+
+.ladder-level {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-lg, 1.5rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    background: var(--ej-color-background-card, #fff);
+    border-radius: var(--ej-border-radius-lg, 12px);
+    border: 1px solid var(--ej-color-border, #e5e5e5);
+    transition: all 0.3s ease;
+}
+
+.ladder-level:hover {
+    box-shadow: var(--ej-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.1));
+    transform: translateY(-2px);
+}
+
+.ladder-level.current {
+    border-color: var(--ej-color-primary, #6366f1);
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.05) 0%,
+            rgba(139, 92, 246, 0.05) 100%);
+}
+
+.ladder-level.completed {
+    opacity: 0.8;
+}
+
+/* === HEADER DEL NIVEL === */
+.level-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.level-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ej-color-primary, #6366f1);
+    color: #fff;
+    font-size: var(--ej-font-size-xl, 1.25rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+}
+
+.level-title {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: var(--ej-font-weight-medium, 500);
+    color: var(--ej-color-text-secondary, #666);
+    text-align: center;
+    margin: 0;
+}
+
+/* === PRODUCTOS === */
+.level-products {
+    display: flex;
+    gap: var(--ej-spacing-md, 1rem);
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.product-card {
+    background: var(--ej-color-background, #fff);
+    border: 1px solid var(--ej-color-border, #e5e5e5);
+    border-radius: var(--ej-border-radius-md, 8px);
+    padding: var(--ej-spacing-md, 1rem);
+    min-width: var(--ladder-card-width);
+    transition: all 0.2s ease;
+}
+
+.product-card:hover {
+    border-color: var(--ej-color-primary, #6366f1);
+    box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+}
+
+.product-card.free {
+    border-color: var(--ej-color-success, #10b981);
+}
+
+.product-card h3 {
+    font-size: var(--ej-font-size-md, 1rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.price-amount {
+    font-size: var(--ej-font-size-xl, 1.25rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+    color: var(--ej-color-primary, #6366f1);
+}
+
+.price-free {
+    font-size: var(--ej-font-size-xl, 1.25rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+    color: var(--ej-color-success, #10b981);
+}
+
+.price-period {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-text-muted, #999);
+}
+
+.no-products {
+    color: var(--ej-color-text-muted, #999);
+    font-style: italic;
+}
+
+/* === BOTONES === */
+.product-card .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    border-radius: var(--ej-border-radius-sm, 6px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: var(--ej-font-weight-medium, 500);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.product-card .btn-primary {
+    background: var(--ej-color-primary, #6366f1);
+    color: #fff;
+}
+
+.product-card .btn-primary:hover {
+    background: var(--ej-color-primary-dark, #4f46e5);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .ladder-level {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .level-header {
+        flex-direction: row;
+        gap: var(--ej-spacing-sm, 0.5rem);
+        width: 100%;
+    }
+
+    .level-number {
+        width: 36px;
+        height: 36px;
+        font-size: var(--ej-font-size-md, 1rem);
+    }
+
+    .level-products {
+        width: 100%;
+    }
+
+    .product-card {
+        min-width: 100%;
+    }
+}

@@ -1,0 +1,159 @@
+services:
+  jaraba_copilot_v2.feature_unlock:
+    class: Drupal\jaraba_copilot_v2\Service\FeatureUnlockService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  jaraba_copilot_v2.copilot_session:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotSessionService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_copilot_v2.feature_unlock'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  jaraba_copilot_v2.experiment_library:
+    class: Drupal\jaraba_copilot_v2\Service\ExperimentLibraryService
+    arguments:
+      - '@jaraba_copilot_v2.feature_unlock'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  jaraba_copilot_v2.normative_knowledge:
+    class: Drupal\jaraba_copilot_v2\Service\NormativeKnowledgeService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # Claude API Service - Integración directa con Anthropic
+  jaraba_copilot_v2.claude_api:
+    class: Drupal\jaraba_copilot_v2\Service\ClaudeApiService
+    arguments:
+      - '@config.factory'
+      - '@key.repository'
+      - '@http_client'
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@jaraba_copilot_v2.feature_unlock'
+      - '@jaraba_copilot_v2.normative_knowledge'
+
+  # Cache service for AI responses (reduces costs)
+  jaraba_copilot_v2.copilot_cache:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotCacheService
+    arguments:
+      - '@cache.copilot_responses'
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@cache_tags.invalidator'
+
+  # v3: Entrepreneur context for hyper-personalization
+  jaraba_copilot_v2.entrepreneur_context:
+    class: Drupal\jaraba_copilot_v2\Service\EntrepreneurContextService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  jaraba_copilot_v2.copilot_orchestrator:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@jaraba_copilot_v2.feature_unlock'
+      - '@jaraba_copilot_v2.normative_knowledge'
+      - '@jaraba_copilot_v2.mode_detector'
+      - '@jaraba_copilot_v2.normative_rag'
+      - '@jaraba_copilot_v2.copilot_cache'
+      - '@jaraba_copilot_v2.entrepreneur_context'
+
+  jaraba_copilot_v2.mode_detector:
+    class: Drupal\jaraba_copilot_v2\Service\ModeDetectorService
+
+  # v3: Test Cards - Testing Business Ideas (Osterwalder)
+  jaraba_copilot_v2.test_card_generator:
+    class: Drupal\jaraba_copilot_v2\Service\TestCardGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # v3: Learning Cards - Documenta resultados de experimentos
+  jaraba_copilot_v2.learning_card:
+    class: Drupal\jaraba_copilot_v2\Service\LearningCardService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  jaraba_copilot_v2.normative_rag:
+    class: Drupal\jaraba_copilot_v2\Service\NormativeRAGService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@jaraba_copilot_v2.normative_knowledge'
+      - '@ai.provider'
+      - '@jaraba_rag.qdrant_client'
+
+  # v3: Value Proposition Canvas - Osterwalder methodology
+  jaraba_copilot_v2.value_proposition_canvas:
+    class: Drupal\jaraba_copilot_v2\Service\ValuePropositionCanvasService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # v3: Business Pattern Detector - 10 patrones BMG
+  jaraba_copilot_v2.business_pattern_detector:
+    class: Drupal\jaraba_copilot_v2\Service\BusinessPatternDetectorService
+
+  # v3: Pivot Detector - señales y tipos de pivot
+  jaraba_copilot_v2.pivot_detector:
+    class: Drupal\jaraba_copilot_v2\Service\PivotDetectorService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # v3: Gamification - badges Customer Discovery
+  jaraba_copilot_v2.customer_discovery_gamification:
+    class: Drupal\jaraba_copilot_v2\Service\CustomerDiscoveryGamificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # Query Logger para analytics (patrón AgroConecta)
+  jaraba_copilot_v2.query_logger:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService
+    arguments:
+      - '@database'
+      - '@config.factory'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # Content Grounding - busca contenido real en Drupal (patrón AgroConecta)
+  jaraba_copilot_v2.content_grounding:
+    class: Drupal\jaraba_copilot_v2\Service\ContentGroundingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # FAQ Generator - genera FAQs automáticas desde preguntas frecuentes
+  jaraba_copilot_v2.faq_generator:
+    class: Drupal\jaraba_copilot_v2\Service\FaqGeneratorService
+    arguments:
+      - '@jaraba_copilot_v2.query_logger'
+      - '@jaraba_copilot_v2.claude_api'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  logger.channel.jaraba_copilot_v2:
+    parent: logger.channel_base
+    arguments: ['jaraba_copilot_v2']
+
+  # Custom cache bin for copilot responses
+  cache.copilot_responses:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [copilot_responses]

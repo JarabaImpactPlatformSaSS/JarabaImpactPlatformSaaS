@@ -16,7 +16,7 @@
   <div class="premium-header">
     <div class="premium-header__content">
       <h1 class="premium-header__title">
-        <span class="premium-header__icon">🏢</span>
+        <span class="premium-header__icon">{{ jaraba_icon('business', 'company', { variant: 'duotone', color: 'corporate', size: '32px' }) }}</span>
         {% trans %}Estadísticas del Tenant{% endtrans %} #{{ tenant_id }}
       </h1>
     </div>
@@ -30,25 +30,25 @@
   {# Contenido similar al dashboard principal pero para un tenant específico #}
   <div class="premium-section">
     <h2 class="premium-section__title">
-      <span class="premium-section__icon">📊</span>
+      <span class="premium-section__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'corporate', size: '24px' }) }}</span>
       {% trans %}Esta Semana{% endtrans %}
     </h2>
     {% if week_stats %}
     <div class="premium-cards">
       <div class="premium-card premium-card--primary">
-        <span class="premium-card__icon">💬</span>
+        <span class="premium-card__icon">{{ jaraba_icon('ui', 'message', { variant: 'duotone', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.total_queries|default(0)|number_format }}</span>
         <span class="premium-card__label">{% trans %}Consultas{% endtrans %}</span>
       </div>
       <div class="premium-card premium-card--success">
-        <span class="premium-card__icon">✅</span>
+        <span class="premium-card__icon">{{ jaraba_icon('actions', 'check', { variant: 'duotone', color: 'success', size: '24px' }) }}</span>
         <span class="premium-card__value">{{ week_stats.success_rate|default(0)|number_format(1) }}%</span>
         <span class="premium-card__label">{% trans %}Éxito{% endtrans %}</span>
       </div>
     </div>
     {% else %}
     <div class="premium-empty">
-      <span class="premium-empty__icon">📭</span>
+      <span class="premium-empty__icon">{{ jaraba_icon('ui', 'inbox', { variant: 'duotone', color: 'neutral', size: '48px' }) }}</span>
       <p class="premium-empty__message">{% trans %}Sin datos disponibles{% endtrans %}</p>
     </div>
     {% endif %}

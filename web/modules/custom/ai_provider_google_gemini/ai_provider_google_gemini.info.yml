@@ -1,0 +1,10 @@
+name: Google Gemini (AI Studio)
+description: Enables the use of Google AI Studio (Gemini API) for the AI module.
+package: AI Providers
+type: module
+core_version_requirement: ^10.3 || ^11
+configure: ai_provider_google_gemini.settings_form
+
+dependencies:
+  - ai:ai
+  - key:key

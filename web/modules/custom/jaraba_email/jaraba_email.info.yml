@@ -1,0 +1,10 @@
+name: 'Jaraba Email'
+type: module
+description: 'Native Email Marketing with AI - Lists, Campaigns, Sequences, SendGrid integration.'
+package: Jaraba Marketing
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+configure: jaraba_email.settings

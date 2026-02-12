@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Template para la Escalera de Valor.
+ *
+ * Variables:
+ * - products: Lista de productos ordenados por peldaño.
+ * - current_level: Nivel actual del usuario (0-5).
+ */
+#}
+
+<div class="training-ladder">
+  <header class="ladder-header">
+    <h1>{% trans %}Escalera de Valor{% endtrans %}</h1>
+    <p class="ladder-intro">
+      {% trans %}Tu camino hacia la transformación profesional.{% endtrans %}
+    </p>
+  </header>
+
+  <div class="ladder-levels">
+    {% for level in 0..5 %}
+      {% set level_products = products|filter(p => p.ladderLevel == level) %}
+      
+      <section class="ladder-level level-{{ level }} {{ current_level == level ? 'current' : '' }} {{ current_level > level ? 'completed' : '' }}">
+        <div class="level-header">
+          <span class="level-number">{{ level }}</span>
+          <h2 class="level-title">
+            {% if level == 0 %}
+              {% trans %}Lead Magnets{% endtrans %}
+            {% elseif level == 1 %}
+              {% trans %}Microcursos{% endtrans %}
+            {% elseif level == 2 %}
+              {% trans %}Membresías{% endtrans %}
+            {% elseif level == 3 %}
+              {% trans %}Mastermind{% endtrans %}
+            {% elseif level == 4 %}
+              {% trans %}Mentoring 1:1{% endtrans %}
+            {% else %}
+              {% trans %}Certificaciones{% endtrans %}
+            {% endif %}
+          </h2>
+        </div>
+        
+        <div class="level-products">
+          {% for product in level_products %}
+            <article class="product-card {{ product.isFree ? 'free' : '' }}">
+              <h3>{{ product.title }}</h3>
+              <div class="product-price">
+                {% if product.isFree %}
+                  <span class="price-free">{% trans %}Gratis{% endtrans %}</span>
+                {% else %}
+                  <span class="price-amount">€{{ product.price|number_format(0) }}</span>
+                  {% if product.billingType == 'recurring_monthly' %}
+                    <span class="price-period">/{% trans %}mes{% endtrans %}</span>
+                  {% elseif product.billingType == 'recurring_annual' %}
+                    <span class="price-period">/{% trans %}año{% endtrans %}</span>
+                  {% endif %}
+                {% endif %}
+              </div>
+              <a href="/training/product/{{ product.id }}" class="btn btn-primary">
+                {% trans %}Ver más{% endtrans %}
+              </a>
+            </article>
+          {% else %}
+            <p class="no-products">{% trans %}Próximamente{% endtrans %}</p>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+</div>

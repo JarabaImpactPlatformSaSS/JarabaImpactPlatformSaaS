@@ -1,0 +1,13 @@
+jaraba_integrations.admin:
+  title: 'Integrations'
+  description: 'Manage the integration marketplace and connectors.'
+  route_name: jaraba_integrations.admin_dashboard
+  parent: system.admin_structure
+  weight: 15
+
+jaraba_integrations.settings:
+  title: 'Integration Settings'
+  description: 'Configure integration marketplace settings.'
+  route_name: jaraba_integrations.settings
+  parent: system.admin_config_services
+  weight: 15

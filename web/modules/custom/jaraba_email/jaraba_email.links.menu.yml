@@ -1,0 +1,41 @@
+jaraba_email.admin:
+  title: 'Email Marketing'
+  parent: system.admin_jaraba
+  route_name: jaraba_email.dashboard
+  weight: 30
+
+jaraba_email.lists:
+  title: 'Lists'
+  parent: jaraba_email.admin
+  route_name: entity.email_list.collection
+  weight: 1
+
+jaraba_email.subscribers:
+  title: 'Subscribers'
+  parent: jaraba_email.admin
+  route_name: entity.email_subscriber.collection
+  weight: 2
+
+jaraba_email.campaigns:
+  title: 'Campaigns'
+  parent: jaraba_email.admin
+  route_name: entity.email_campaign.collection
+  weight: 3
+
+jaraba_email.templates:
+  title: 'Templates'
+  parent: jaraba_email.admin
+  route_name: entity.email_template.collection
+  weight: 4
+
+jaraba_email.sequences:
+  title: 'Sequences'
+  parent: jaraba_email.admin
+  route_name: entity.email_sequence.collection
+  weight: 5
+
+jaraba_email.settings:
+  title: 'Settings'
+  parent: jaraba_email.admin
+  route_name: jaraba_email.settings
+  weight: 10

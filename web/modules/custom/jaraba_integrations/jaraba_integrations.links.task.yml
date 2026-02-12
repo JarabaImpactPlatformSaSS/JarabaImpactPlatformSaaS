@@ -1,0 +1,28 @@
+jaraba_integrations.admin_dashboard:
+  title: 'Connectors'
+  route_name: jaraba_integrations.admin_dashboard
+  base_route: jaraba_integrations.admin_dashboard
+
+jaraba_integrations.admin_installations:
+  title: 'Installations'
+  route_name: jaraba_integrations.admin_installations
+  base_route: jaraba_integrations.admin_dashboard
+  weight: 5
+
+jaraba_integrations.admin_webhooks:
+  title: 'Webhooks'
+  route_name: jaraba_integrations.admin_webhooks
+  base_route: jaraba_integrations.admin_dashboard
+  weight: 10
+
+jaraba_integrations.admin_oauth:
+  title: 'OAuth Clients'
+  route_name: jaraba_integrations.admin_oauth
+  base_route: jaraba_integrations.admin_dashboard
+  weight: 15
+
+jaraba_integrations.settings_tab:
+  title: 'Settings'
+  route_name: jaraba_integrations.settings
+  base_route: jaraba_integrations.admin_dashboard
+  weight: 20

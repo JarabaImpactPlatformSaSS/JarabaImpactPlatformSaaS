@@ -52,6 +52,14 @@ function jaraba_theming_page_attachments(array &$attachments): void {
  * Añade clases al HTML basadas en la configuración de tema.
  */
 function jaraba_theming_preprocess_html(array &$variables): void {
+  // No aplicar clases de variante en páginas de administración.
+  // hero--split crea un grid 2 columnas que rompe el layout admin.
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+  $is_admin = \Drupal::service('router.admin_context')->isAdminRoute();
+  if ($is_admin || str_starts_with($route, 'system.') || str_starts_with($route, 'dblog.')) {
+    return;
+  }
+
   /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
   $tokenService = \Drupal::service('jaraba_theming.token_service');
 

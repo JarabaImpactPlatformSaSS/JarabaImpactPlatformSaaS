@@ -1,0 +1,390 @@
+{#
+/**
+ * @file
+ * Dashboard de Analytics del Copiloto.
+ *
+ * Variables:
+ * - table_ready: TRUE si la tabla de logging existe.
+ * - message: Mensaje de error si la tabla no está lista.
+ * - stats: Estadísticas generales (total_queries, feedback_positive, etc.)
+ * - stats_by_source: Estadísticas por fuente (public, emprendimiento, empleabilidad)
+ * - recent_queries: Queries recientes
+ * - problematic_queries: Queries sin feedback positivo
+ * - frequent_questions: Preguntas frecuentes agrupadas
+ */
+#}
+
+<div class="admin-premium copilot-analytics-dashboard">
+  {# Header #}
+  <div class="copilot-analytics__header">
+    <div class="copilot-analytics__header-content">
+      <h1 class="copilot-analytics__title">
+        {{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '32px' }) }}
+        {% trans %}Copiloto Analytics{% endtrans %}
+      </h1>
+      <p class="copilot-analytics__subtitle">{% trans %}Métricas de uso y análisis de preguntas{% endtrans %}</p>
+    </div>
+    <div class="copilot-analytics__actions">
+      <a href="{{ path('jaraba_copilot_v2.settings') }}" class="btn btn-secondary">
+        {{ jaraba_icon('ui', 'settings', { size: '18px' }) }}
+        {% trans %}Configuración{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {% if not table_ready %}
+  {# Alert: Tabla no lista #}
+  <div class="alert-card alert-card--warning">
+    <span class="alert-card__icon">{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '24px' }) }}</span>
+    <div class="alert-card__content">
+      <strong>{% trans %}Configuración requerida{% endtrans %}</strong>
+      <p>{{ message }}</p>
+      <code style="display: block; margin-top: 0.5rem;">lando drush updatedb</code>
+    </div>
+  </div>
+  {% else %}
+
+  {# KPI Cards #}
+  <div class="copilot-analytics__metrics">
+    <div class="metric-card metric-card--primary">
+      <div class="metric-card__icon">{{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '28px' }) }}</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ stats.total_queries|default(0)|number_format }}</span>
+        <span class="metric-card__label">{% trans %}Total Queries (30d){% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="metric-card metric-card--success">
+      <div class="metric-card__icon">{{ jaraba_icon('status', 'check-circle', { color: 'success', size: '28px' }) }}</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ stats.feedback_positive|default(0) }}</span>
+        <span class="metric-card__label">{% trans %}Feedback Positivo{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="metric-card metric-card--warning">
+      <div class="metric-card__icon">{{ jaraba_icon('status', 'alert-triangle', { color: 'warning', size: '28px' }) }}</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ stats.feedback_negative|default(0) }}</span>
+        <span class="metric-card__label">{% trans %}Feedback Negativo{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-card__icon">{{ jaraba_icon('analytics', 'gauge', { color: 'verde-innovacion', size: '28px' }) }}</div>
+      <div class="metric-card__content">
+        <span class="metric-card__value">{{ stats.satisfaction_rate|default(0) }}%</span>
+        <span class="metric-card__label">{% trans %}Satisfacción{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Stats by Source #}
+  {% if stats_by_source %}
+  <div class="copilot-analytics__section">
+    <h2 class="copilot-analytics__section-title">
+      {{ jaraba_icon('navigation', 'layers', { size: '24px' }) }}
+      {% trans %}Actividad por Fuente{% endtrans %}
+    </h2>
+    <div class="resource-cards">
+      {% for source, data in stats_by_source %}
+        {% if data.total_queries > 0 %}
+        <div class="resource-card">
+          <div class="resource-card__header">
+            <span class="resource-card__icon">
+              {% if source == 'public' %}{{ jaraba_icon('navigation', 'globe', { size: '24px' }) }}
+              {% elseif source == 'emprendimiento' %}{{ jaraba_icon('business', 'rocket', { size: '24px' }) }}
+              {% elseif source == 'empleabilidad' %}{{ jaraba_icon('business', 'briefcase', { size: '24px' }) }}
+              {% else %}{{ jaraba_icon('ai', 'chat', { size: '24px' }) }}
+              {% endif %}
+            </span>
+            <span class="resource-card__title">{{ source|capitalize }}</span>
+          </div>
+          <div class="resource-card__value">{{ data.total_queries }} {% trans %}queries{% endtrans %}</div>
+          <div class="resource-card__cost">{{ data.satisfaction_rate|default(0) }}% {% trans %}satisfacción{% endtrans %}</div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Problematic Queries #}
+  {% if problematic_queries is not empty %}
+  <div class="copilot-analytics__section">
+    <h2 class="copilot-analytics__section-title">
+      {{ jaraba_icon('status', 'alert-circle', { color: 'danger', size: '24px' }) }}
+      {% trans %}Queries Problemáticas{% endtrans %}
+      <span class="badge badge--warning">{{ problematic_queries|length }}</span>
+    </h2>
+    <p class="copilot-analytics__section-desc">{% trans %}Preguntas con feedback negativo o sin respuesta satisfactoria{% endtrans %}</p>
+    
+    <div class="copilot-analytics__table-container">
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Pregunta{% endtrans %}</th>
+            <th>{% trans %}Fuente{% endtrans %}</th>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+            <th>{% trans %}Feedback{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for query in problematic_queries %}
+          <tr>
+            <td class="query-text">
+              <span title="{{ query.query }}">{{ query.query|slice(0, 80) }}{% if query.query|length > 80 %}...{% endif %}</span>
+            </td>
+            <td><span class="source-badge source-badge--{{ query.source }}">{{ query.source }}</span></td>
+            <td>{{ query.created|date('d/m H:i') }}</td>
+            <td>
+              {% if query.was_helpful is same as(false) %}
+                <span class="feedback-badge feedback-badge--negative">{{ jaraba_icon('status', 'thumbs-down', { size: '14px' }) }}</span>
+              {% else %}
+                <span class="feedback-badge feedback-badge--none">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {# Frequent Questions #}
+  {% if frequent_questions is not empty %}
+  <div class="copilot-analytics__section">
+    <h2 class="copilot-analytics__section-title">
+      {{ jaraba_icon('ai', 'lightbulb', { color: 'naranja-impulso', size: '24px' }) }}
+      {% trans %}Preguntas Frecuentes{% endtrans %}
+    </h2>
+    <p class="copilot-analytics__section-desc">{% trans %}Temas más consultados - úsalos para crear FAQs o mejorar contenido{% endtrans %}</p>
+    
+    <div class="frequent-questions-list">
+      {% for item in frequent_questions %}
+      <div class="frequent-question-card">
+        <div class="frequent-question-card__count">{{ item.count }}</div>
+        <div class="frequent-question-card__content">
+          <span class="frequent-question-card__text">{{ item.query }}</span>
+          <span class="frequent-question-card__source">{{ item.source|default('—') }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Recent Queries #}
+  {% if recent_queries is not empty %}
+  <div class="copilot-analytics__section">
+    <h2 class="copilot-analytics__section-title">
+      {{ jaraba_icon('actions', 'clock', { size: '24px' }) }}
+      {% trans %}Queries Recientes{% endtrans %}
+    </h2>
+    
+    <div class="copilot-analytics__table-container">
+      <table class="table table--modern">
+        <thead>
+          <tr>
+            <th>{% trans %}Pregunta{% endtrans %}</th>
+            <th>{% trans %}Fuente{% endtrans %}</th>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+            <th>{% trans %}Tokens{% endtrans %}</th>
+            <th>{% trans %}Feedback{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for query in recent_queries %}
+          <tr>
+            <td class="query-text">
+              <span title="{{ query.query }}">{{ query.query|slice(0, 60) }}{% if query.query|length > 60 %}...{% endif %}</span>
+            </td>
+            <td><span class="source-badge source-badge--{{ query.source }}">{{ query.source }}</span></td>
+            <td>{{ query.created|date('d/m H:i') }}</td>
+            <td>{{ query.tokens_used|default(0)|number_format }}</td>
+            <td>
+              {% if query.was_helpful is same as(true) %}
+                <span class="feedback-badge feedback-badge--positive">{{ jaraba_icon('status', 'thumbs-up', { size: '14px' }) }}</span>
+              {% elseif query.was_helpful is same as(false) %}
+                <span class="feedback-badge feedback-badge--negative">{{ jaraba_icon('status', 'thumbs-down', { size: '14px' }) }}</span>
+              {% else %}
+                <span class="feedback-badge feedback-badge--none">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% endif %}{# end table_ready #}
+</div>
+
+<style>
+/* Copilot Analytics Dashboard Styles */
+.copilot-analytics-dashboard {
+  --ca-bg: #0f172a;
+  --ca-card-bg: rgba(30, 41, 59, 0.7);
+  --ca-text-primary: #f1f5f9;
+  --ca-text-secondary: #94a3b8;
+  --ca-border: rgba(148, 163, 184, 0.1);
+  
+  background: var(--ca-bg);
+  color: var(--ca-text-primary);
+  padding: 2rem;
+  border-radius: 16px;
+  min-height: 600px;
+}
+
+.copilot-analytics__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ca-border);
+}
+
+.copilot-analytics__title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.copilot-analytics__subtitle {
+  color: var(--ca-text-secondary);
+  margin: 0.5rem 0 0;
+}
+
+.copilot-analytics__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.copilot-analytics__section {
+  background: var(--ca-card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.copilot-analytics__section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.copilot-analytics__section-desc {
+  color: var(--ca-text-secondary);
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
+}
+
+.copilot-analytics__table-container {
+  overflow-x: auto;
+}
+
+.copilot-analytics__table-container .table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.copilot-analytics__table-container th,
+.copilot-analytics__table-container td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ca-border);
+}
+
+.copilot-analytics__table-container th {
+  font-weight: 600;
+  color: var(--ca-text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.query-text {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.source-badge--public { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+.source-badge--emprendimiento { background: rgba(255, 140, 66, 0.2); color: #FF8C42; }
+.source-badge--empleabilidad { background: rgba(0, 169, 165, 0.2); color: #00A9A5; }
+
+.feedback-badge {
+  display: inline-flex;
+  padding: 0.25rem;
+}
+
+.feedback-badge--positive { color: #10b981; }
+.feedback-badge--negative { color: #ef4444; }
+.feedback-badge--none { color: var(--ca-text-secondary); }
+
+.frequent-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.frequent-question-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.frequent-question-card__count {
+  min-width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF8C42, #00A9A5);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.frequent-question-card__text {
+  font-weight: 500;
+}
+
+.frequent-question-card__source {
+  font-size: 0.75rem;
+  color: var(--ca-text-secondary);
+}
+
+.badge--warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+</style>

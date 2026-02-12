@@ -1,0 +1,36 @@
+# Configuración de Allowed Values para jaraba_training
+# Estos valores son editables desde config YAML o importación
+
+# Tipos de producto de formación para la Escalera de Valor
+product_types:
+  lead_magnet: "Lead Magnet (Gratis)"
+  microcourse: "Microcurso ($19-49)"
+  membership: "Membresía ($97/mes)"
+  mastermind: "Mastermind Group ($497/mes)"
+  mentoring: "Mentoring 1:1 ($997+)"
+  certification_consultant: "Certificación Consultor"
+  certification_entity: "Certificación Entidad"
+  regional_franchise: "Franquicia Regional"
+
+# Tipos de facturación
+billing_types:
+  free: "Gratuito"
+  one_time: "Pago Único"
+  recurring_monthly: "Recurrente Mensual"
+  recurring_annual: "Recurrente Anual"
+  cohort: "Cohorte / Convocatoria"
+
+# Tipos de certificación (niveles del programa)
+certification_types:
+  consultant: "Consultor Certificado"
+  entity: "Entidad Certificada"
+  regional_franchise: "Franquicia Regional"
+  master_trainer: "Master Trainer"
+
+# Estados de certificación de usuario
+certification_statuses:
+  in_progress: "En Proceso"
+  pending_exam: "Pendiente de Examen"
+  certified: "Certificado"
+  expired: "Expirado"
+  revoked: "Revocado"

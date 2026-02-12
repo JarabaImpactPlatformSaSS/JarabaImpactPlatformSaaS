@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template for displaying a locked feature with preview.
+ *
+ * Available variables:
+ * - feature: The feature identifier.
+ * - unlock_week: Week number when feature unlocks.
+ * - preview: Preview description of the feature.
+ * - message: Localized message about when it unlocks.
+ * - current_week: Current program week of the user.
+ * - weeks_remaining: Number of weeks until unlock.
+ *
+ * @see Drupal\jaraba_copilot_v2\Service\FeatureUnlockService
+ */
+#}
+
+<div class="feature-locked" data-feature="{{ feature }}" data-unlock-week="{{ unlock_week }}">
+  <div class="feature-locked__overlay">
+    <div class="feature-locked__content">
+      <div class="feature-locked__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      
+      <h3 class="feature-locked__title">
+        {{ 'Disponible en Semana @week'|t({'@week': unlock_week}) }}
+      </h3>
+      
+      {% if weeks_remaining > 0 %}
+      <p class="feature-locked__countdown">
+        {% if weeks_remaining == 1 %}
+          {{ '¡Solo @count semana más!'|t({'@count': weeks_remaining}) }}
+        {% else %}
+          {{ 'Faltan @count semanas'|t({'@count': weeks_remaining}) }}
+        {% endif %}
+      </p>
+      {% endif %}
+      
+      <div class="feature-locked__preview">
+        <p class="feature-locked__preview-label">{{ 'Lo que podrás hacer:'|t }}</p>
+        <p class="feature-locked__preview-text">{{ preview }}</p>
+      </div>
+      
+      <div class="feature-locked__encouragement">
+        <p>{{ 'Mientras tanto, sigue avanzando con las herramientas disponibles. ¡Cada paso cuenta!'|t }}</p>
+      </div>
+    </div>
+  </div>
+</div>

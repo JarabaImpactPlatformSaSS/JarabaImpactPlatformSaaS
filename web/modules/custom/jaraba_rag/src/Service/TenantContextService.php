@@ -198,44 +198,69 @@ class TenantContextService
             ];
         }
 
-        // Usuario autenticado con tenant
+        // BE-02: Usuario autenticado con tenant.
+        // Se usa 'should' para la VISIBILIDAD (contenido propio O compartido O plataforma),
+        // pero se envuelve en 'must' para GARANTIZAR que el filtro de tenant
+        // se aplica correctamente y no se filtra contenido de otros tenants privados.
         return [
-            'should' => [
-                // NIVEL 4: Contenido exclusivo del tenant
+            'must' => [
+                // Filtro principal: solo contenido visible para este tenant.
                 [
-                    'key' => 'tenant_id',
-                    'match' => ['value' => $tenantId],
-                ],
-                // NIVEL 3: Contenido compartido por plan
-                [
-                    'must' => [
+                    'should' => [
+                        // NIVEL 4: Contenido exclusivo del tenant
+                        [
+                            'key' => 'tenant_id',
+                            'match' => ['value' => $tenantId],
+                        ],
+                        // NIVEL 3: Contenido compartido por plan
+                        [
+                            'must' => [
+                                [
+                                    'key' => 'shared_type',
+                                    'match' => ['value' => 'plan'],
+                                ],
+                                [
+                                    'key' => 'plan_level',
+                                    'match' => ['any' => $accessiblePlans],
+                                ],
+                            ],
+                        ],
+                        // NIVEL 2: Contenido compartido por vertical
+                        [
+                            'must' => [
+                                [
+                                    'key' => 'shared_type',
+                                    'match' => ['value' => 'vertical'],
+                                ],
+                                [
+                                    'key' => 'vertical',
+                                    'match' => ['value' => $vertical],
+                                ],
+                            ],
+                        ],
+                        // NIVEL 1: Contenido de plataforma
                         [
                             'key' => 'shared_type',
-                            'match' => ['value' => 'plan'],
-                        ],
-                        [
-                            'key' => 'plan_level',
-                            'match' => ['any' => $accessiblePlans],
+                            'match' => ['value' => 'platform'],
                         ],
                     ],
                 ],
-                // NIVEL 2: Contenido compartido por vertical
+            ],
+            // must_not: Excluir contenido privado de OTROS tenants.
+            'must_not' => [
                 [
                     'must' => [
                         [
-                            'key' => 'shared_type',
-                            'match' => ['value' => 'vertical'],
+                            'key' => 'access_level',
+                            'match' => ['value' => 'private'],
                         ],
                         [
-                            'key' => 'vertical',
-                            'match' => ['value' => $vertical],
+                            'key' => 'tenant_id',
+                            'match' => ['value' => $tenantId],
+                            // Negar: excluir privados que NO son del tenant actual.
+                            // Qdrant no soporta != directo, por eso usamos must_not.
                         ],
                     ],
-                ],
-                // NIVEL 1: Contenido de plataforma
-                [
-                    'key' => 'shared_type',
-                    'match' => ['value' => 'platform'],
                 ],
             ],
         ];

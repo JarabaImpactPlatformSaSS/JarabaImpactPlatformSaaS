@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-integrations",
+  "version": "1.0.0",
+  "description": "SCSS build para Jaraba Integrations Marketplace",
+  "private": true,
+  "scripts": {
+    "sass:build": "sass --style=compressed --no-source-map scss/:css/",
+    "sass:watch": "sass --watch --style=expanded scss/:css/"
+  },
+  "devDependencies": {
+    "sass": "^1.97.2"
+  }
+}

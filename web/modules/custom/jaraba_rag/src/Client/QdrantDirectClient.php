@@ -70,13 +70,18 @@ class QdrantDirectClient
         $host = $config->get('vector_db.host') ?: 'http://qdrant:6333';
         $collection = $config->get('vector_db.collection') ?: 'jaraba_kb';
 
-        // Obtener API key del módulo Key si está configurada
+        // SEC-04: Obtener API key - soporta módulo Key (por ID) o valor directo.
         $apiKey = '';
-        $keyId = $config->get('vector_db.api_key');
-        if ($keyId) {
-            $key = $this->keyRepository->getKey($keyId);
+        $apiKeyConfig = $config->get('vector_db.api_key');
+        if ($apiKeyConfig) {
+            // Intentar primero como Key ID del módulo Key (producción recomendada).
+            $key = $this->keyRepository->getKey($apiKeyConfig);
             if ($key) {
                 $apiKey = $key->getKeyValue();
+            }
+            else {
+                // Fallback: usar como valor directo (desde settings.php / env vars).
+                $apiKey = $apiKeyConfig;
             }
         }
 
@@ -393,7 +398,7 @@ class QdrantDirectClient
     {
         try {
             $response = $this->request('GET', '/');
-            return isset($response['title']) && $response['title'] === 'qdrant - vectorass engine';
+            return isset($response['title']) && $response['title'] === 'qdrant - vector search engine';
         } catch (\Exception $e) {
             return FALSE;
         }

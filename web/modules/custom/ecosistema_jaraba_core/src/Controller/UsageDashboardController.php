@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\ecosistema_jaraba_core\Service\PricingRuleEngine;
+use Drupal\jaraba_billing\Service\PricingRuleEngine;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
-use Drupal\ecosistema_jaraba_core\Service\TenantMeteringService;
+use Drupal\jaraba_billing\Service\TenantMeteringService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,7 +28,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Traducciones con t() en todas las cadenas visibles
  * - Datos de Chart.js se pasan via drupalSettings
  */
-class UsageDashboardController extends ControllerBase {
+class UsageDashboardController extends ControllerBase
+{
 
   /**
    * Constructor con inyección de dependencias.
@@ -37,12 +38,14 @@ class UsageDashboardController extends ControllerBase {
     protected TenantContextService $tenantContext,
     protected TenantMeteringService $metering,
     protected PricingRuleEngine $pricingEngine,
-  ) {}
+  ) {
+  }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static {
+  public static function create(ContainerInterface $container): static
+  {
     return new static(
       $container->get('ecosistema_jaraba_core.tenant_context'),
       $container->get('ecosistema_jaraba_core.tenant_metering'),
@@ -53,7 +56,8 @@ class UsageDashboardController extends ControllerBase {
   /**
    * Página principal de uso: /mi-cuenta/uso.
    */
-  public function dashboard(): array {
+  public function dashboard(): array
+  {
     $tenant = $this->tenantContext->getCurrentTenant();
 
     if (!$tenant) {

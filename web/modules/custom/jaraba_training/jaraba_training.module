@@ -1,0 +1,317 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Módulo principal para el Sistema de Training y Certificación.
+ *
+ * Implementa la "Escalera de Valor" con productos formativos,
+ * programas de certificación y tracking de royalties.
+ *
+ * Automatizaciones ECA implementadas (via hooks Drupal):
+ * - ECA-TRAIN-001: Generar número de certificado automático
+ * - ECA-TRAIN-002: Notificar activación de certificación
+ * - ECA-TRAIN-003: Registrar royalties en órdenes Commerce
+ * - ECA-TRAIN-004: Recordatorios de expiración (cron)
+ *
+ * @see docs/tecnicos/20260115_46_Training_Certification_System.md
+ * @see .agent/workflows/drupal-eca-hooks.md
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+// Incluir callbacks de allowed_values (Directriz Nuclear #20).
+require_once __DIR__ . '/jaraba_training.allowed_values.inc';
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_training_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_training') {
+    return '<p>' . t('Sistema de Training y Certificación Método Jaraba™ - Escalera de Valor.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_training_theme(): array {
+  return [
+    'training_ladder' => [
+      'variables' => [
+        'products' => [],
+        'current_level' => 0,
+      ],
+      'template' => 'training-ladder',
+    ],
+    'training_product_card' => [
+      'variables' => [
+        'product' => NULL,
+        'is_current' => FALSE,
+        'is_recommended' => FALSE,
+      ],
+      'template' => 'training-product-card',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * ECA-TRAIN-001: Genera número de certificado automático al crear certificación.
+ */
+function jaraba_training_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'user_certification') {
+    _jaraba_training_generate_certificate_number($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * ECA-TRAIN-002: Notifica cuando una certificación pasa a estado 'active'.
+ */
+function jaraba_training_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'user_certification') {
+    $newStatus = $entity->get('certification_status')->value ?? '';
+    $oldStatus = $entity->original?->get('certification_status')->value ?? '';
+
+    if ($newStatus !== $oldStatus && $newStatus === 'active') {
+      _jaraba_training_notify_certification_active($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for commerce_order.
+ *
+ * ECA-TRAIN-003: Registra royalties cuando una orden pasa a 'completed'.
+ */
+function jaraba_training_commerce_order_update(EntityInterface $order): void {
+  // Verificar que Commerce está instalado.
+  if (!interface_exists('Drupal\commerce_order\Entity\OrderInterface')) {
+    return;
+  }
+
+  $newState = $order->getState()->getId();
+  $oldState = $order->original?->getState()->getId() ?? '';
+
+  if ($newState === 'completed' && $oldState !== 'completed') {
+    _jaraba_training_process_order_royalties($order);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * ECA-TRAIN-004: Procesa recordatorios de expiración de certificaciones.
+ */
+function jaraba_training_cron(): void {
+  _jaraba_training_process_expiration_reminders();
+}
+
+// =============================================================================
+// FUNCIONES AUXILIARES ECA
+// =============================================================================
+
+/**
+ * Genera número de certificado único.
+ *
+ * Formato: CERT-{YEAR}-{SEQ:4}
+ * Ejemplo: CERT-2026-0001
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $certification
+ *   La entidad UserCertification.
+ */
+function _jaraba_training_generate_certificate_number(EntityInterface $certification): void {
+  // Solo generar si no tiene número.
+  $currentNumber = $certification->get('certificate_number')->value ?? '';
+  if (!empty($currentNumber)) {
+    return;
+  }
+
+  $year = date('Y');
+  
+  // Obtener siguiente secuencia del año.
+  $database = \Drupal::database();
+  $count = $database->select('user_certification', 'uc')
+    ->condition('certificate_number', "CERT-{$year}-%", 'LIKE')
+    ->countQuery()
+    ->execute()
+    ->fetchField();
+
+  $sequence = (int) $count + 1;
+  $certificateNumber = sprintf('CERT-%s-%04d', $year, $sequence);
+
+  // Actualizar entidad.
+  $certification->set('certificate_number', $certificateNumber);
+  $certification->save();
+
+  \Drupal::logger('jaraba_training')->info(
+    '📜 Número de certificado generado: @number para user @user',
+    ['@number' => $certificateNumber, '@user' => $certification->get('user_id')->target_id]
+  );
+}
+
+/**
+ * Notifica al usuario cuando su certificación pasa a activa.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $certification
+ *   La entidad UserCertification.
+ */
+function _jaraba_training_notify_certification_active(EntityInterface $certification): void {
+  $userId = $certification->get('user_id')->target_id ?? NULL;
+  if (!$userId) {
+    return;
+  }
+
+  $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+  if (!$user) {
+    return;
+  }
+
+  // Obtener programa.
+  $programId = $certification->get('program_id')->target_id ?? NULL;
+  $program = $programId ? \Drupal::entityTypeManager()->getStorage('certification_program')->load($programId) : NULL;
+
+  // Encolar notificación.
+  $queue = \Drupal::queue('jaraba_training_notifications');
+  $queue->createItem([
+    'type' => 'certification_active',
+    'user_id' => $userId,
+    'user_email' => $user->getEmail(),
+    'certification_id' => $certification->id(),
+    'certificate_number' => $certification->get('certificate_number')->value ?? '',
+    'program_name' => $program?->label() ?? 'Certificación',
+    'created' => time(),
+  ]);
+
+  \Drupal::logger('jaraba_training')->info(
+    '🎓 Notificación encolada: certificación @id activada para user @user',
+    ['@id' => $certification->id(), '@user' => $userId]
+  );
+}
+
+/**
+ * Procesa royalties de una orden Commerce completada.
+ *
+ * Busca productos con consultor/franquiciado asociado y registra royalty.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $order
+ *   La orden de Commerce.
+ */
+function _jaraba_training_process_order_royalties(EntityInterface $order): void {
+  /** @var \Drupal\jaraba_training\Service\RoyaltyTracker $royaltyTracker */
+  $royaltyTracker = \Drupal::service('jaraba_training.royalty_tracker');
+
+  // Obtener total de la orden.
+  $totalPrice = $order->getTotalPrice();
+  if (!$totalPrice) {
+    return;
+  }
+  $orderAmount = (float) $totalPrice->getNumber();
+
+  // Buscar si hay un consultor/franquiciado asociado a la orden.
+  // El consultor puede estar en: campo custom, variation, o metadatos.
+  $consultorCertificationId = NULL;
+
+  // Opción 1: Campo custom en la orden.
+  if ($order->hasField('field_referral_certification') && !$order->get('field_referral_certification')->isEmpty()) {
+    $consultorCertificationId = (int) $order->get('field_referral_certification')->target_id;
+  }
+
+  // Opción 2: Data de la orden (set por frontend/checkout).
+  if (!$consultorCertificationId) {
+    $orderData = $order->getData('referral_certification');
+    if ($orderData) {
+      $consultorCertificationId = (int) $orderData;
+    }
+  }
+
+  if (!$consultorCertificationId) {
+    \Drupal::logger('jaraba_training')->debug(
+      'Order @id completed without referral certification',
+      ['@id' => $order->id()]
+    );
+    return;
+  }
+
+  // Obtener porcentaje de royalty del programa.
+  $certification = \Drupal::entityTypeManager()->getStorage('user_certification')->load($consultorCertificationId);
+  if (!$certification) {
+    return;
+  }
+
+  $program = $certification->get('program_id')->entity ?? NULL;
+  $royaltyPercent = $program ? ((float) ($program->get('royalty_percent')->value ?? 10)) : 10;
+
+  // Registrar royalty.
+  $royaltyAmount = $royaltyTracker->recordRoyalty($consultorCertificationId, $orderAmount, $royaltyPercent);
+
+  \Drupal::logger('jaraba_training')->info(
+    '💰 Royalty registrado: €@amount (@percent%) para cert @cert de order @order',
+    [
+      '@amount' => number_format($royaltyAmount, 2),
+      '@percent' => $royaltyPercent,
+      '@cert' => $consultorCertificationId,
+      '@order' => $order->id(),
+    ]
+  );
+}
+
+/**
+ * Procesa recordatorios de expiración de certificaciones.
+ *
+ * Envía notificaciones a usuarios cuyas certificaciones expiran en 30 días.
+ */
+function _jaraba_training_process_expiration_reminders(): void {
+  $threshold = strtotime('+30 days');
+  $now = \Drupal::time()->getRequestTime();
+
+  $storage = \Drupal::entityTypeManager()->getStorage('user_certification');
+  $query = $storage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('certification_status', 'active')
+    ->condition('expiration_date', date('Y-m-d', $now), '>')
+    ->condition('expiration_date', date('Y-m-d', $threshold), '<')
+    ->range(0, 20);
+
+  $ids = $query->execute();
+  if (empty($ids)) {
+    return;
+  }
+
+  $queue = \Drupal::queue('jaraba_training_notifications');
+  foreach ($ids as $id) {
+    $certification = $storage->load($id);
+    if (!$certification) {
+      continue;
+    }
+
+    // Verificar que no se ha enviado ya.
+    // Usamos un campo o state para trackear.
+    $stateKey = "jaraba_training.expiration_reminder.{$id}";
+    $state = \Drupal::state();
+    if ($state->get($stateKey)) {
+      continue;
+    }
+
+    $queue->createItem([
+      'type' => 'expiration_reminder',
+      'certification_id' => $id,
+      'user_id' => $certification->get('user_id')->target_id,
+      'expiration_date' => $certification->get('expiration_date')->value,
+    ]);
+
+    // Marcar como enviado.
+    $state->set($stateKey, time());
+  }
+
+  \Drupal::logger('jaraba_training')->debug(
+    'Expiration reminders: @count queued',
+    ['@count' => count($ids)]
+  );
+}

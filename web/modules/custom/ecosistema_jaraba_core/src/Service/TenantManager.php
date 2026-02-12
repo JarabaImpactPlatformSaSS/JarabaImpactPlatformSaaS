@@ -8,6 +8,8 @@ use Drupal\ecosistema_jaraba_core\Entity\Tenant;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Entity\VerticalInterface;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
+use Drupal\jaraba_billing\Service\PlanValidator;
+use Drupal\jaraba_billing\Service\TenantSubscriptionService;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 
@@ -236,7 +238,8 @@ class TenantManager
         $tenant->set('trial_ends', $trial_ends->format('Y-m-d\TH:i:s'));
         $tenant->save();
         $this->logger->info('Trial iniciado para tenant @id: @days días', [
-            '@id' => $tenant->id(), '@days' => $days,
+            '@id' => $tenant->id(),
+            '@days' => $days,
         ]);
         return $tenant;
     }
@@ -267,7 +270,8 @@ class TenantManager
         $tenant->setSubscriptionStatus(TenantInterface::STATUS_SUSPENDED);
         $tenant->save();
         $this->logger->warning('Tenant @id suspendido: @reason', [
-            '@id' => $tenant->id(), '@reason' => $reason ?: 'Sin especificar',
+            '@id' => $tenant->id(),
+            '@reason' => $reason ?: 'Sin especificar',
         ]);
         return $tenant;
     }
@@ -285,7 +289,8 @@ class TenantManager
         }
         $tenant->save();
         $this->logger->info('Suscripción cancelada para tenant @id (inmediata: @immediate)', [
-            '@id' => $tenant->id(), '@immediate' => $immediate ? 'sí' : 'no',
+            '@id' => $tenant->id(),
+            '@immediate' => $immediate ? 'sí' : 'no',
         ]);
         return $tenant;
     }
@@ -303,8 +308,11 @@ class TenantManager
         $validation = $this->planValidator->validatePlanChange($tenant, $new_plan);
         if (!$validation['valid']) {
             throw new \InvalidArgumentException(
-                sprintf('Plan change validation failed for tenant %s: %s',
-                    $tenant->id(), implode(', ', $validation['errors']))
+                sprintf(
+                    'Plan change validation failed for tenant %s: %s',
+                    $tenant->id(),
+                    implode(', ', $validation['errors'])
+                )
             );
         }
         $old_plan = $tenant->getSubscriptionPlan();

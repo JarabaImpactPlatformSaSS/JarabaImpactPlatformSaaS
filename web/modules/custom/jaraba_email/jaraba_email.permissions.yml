@@ -1,0 +1,38 @@
+# Email Module Permissions
+
+'administer email lists':
+  title: 'Administer email lists'
+  description: 'Create, edit, and delete email lists.'
+  restrict access: true
+
+'administer email subscribers':
+  title: 'Administer email subscribers'
+  description: 'Manage email subscribers.'
+  restrict access: true
+
+'administer email templates':
+  title: 'Administer email templates'
+  description: 'Create and modify email templates.'
+  restrict access: true
+
+'administer email campaigns':
+  title: 'Administer email campaigns'
+  description: 'Create, edit, and send email campaigns.'
+  restrict access: true
+
+'administer email sequences':
+  title: 'Administer email sequences'
+  description: 'Create and manage email automation sequences.'
+  restrict access: true
+
+'view email analytics':
+  title: 'View email analytics'
+  description: 'Access email campaign statistics and reports.'
+
+'send email campaigns':
+  title: 'Send email campaigns'
+  description: 'Trigger the sending of email campaigns.'
+
+'import email subscribers':
+  title: 'Import email subscribers'
+  description: 'Bulk import subscribers from CSV files.'

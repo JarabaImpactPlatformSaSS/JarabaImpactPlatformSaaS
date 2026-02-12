@@ -1,0 +1,191 @@
+# =============================================================================
+# RUTAS ADMIN - Panel de administración de integraciones
+# =============================================================================
+
+jaraba_integrations.admin_dashboard:
+  path: '/admin/structure/integrations'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationAdminController::dashboard'
+    _title: 'Integration Marketplace'
+  requirements:
+    _permission: 'administer integrations'
+
+jaraba_integrations.admin_installations:
+  path: '/admin/structure/integrations/installations'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationAdminController::installations'
+    _title: 'Connector Installations'
+  requirements:
+    _permission: 'administer integrations'
+
+jaraba_integrations.admin_webhooks:
+  path: '/admin/structure/integrations/webhooks'
+  defaults:
+    _entity_list: 'webhook_subscription'
+    _title: 'Webhook Subscriptions'
+  requirements:
+    _permission: 'administer integrations'
+
+jaraba_integrations.admin_oauth:
+  path: '/admin/structure/integrations/oauth'
+  defaults:
+    _entity_list: 'oauth_client'
+    _title: 'OAuth Clients'
+  requirements:
+    _permission: 'administer integrations'
+
+jaraba_integrations.settings:
+  path: '/admin/config/services/integrations'
+  defaults:
+    _form: '\Drupal\jaraba_integrations\Form\IntegrationSettingsForm'
+    _title: 'Integration Settings'
+  requirements:
+    _permission: 'administer integrations'
+
+# =============================================================================
+# RUTAS FRONTEND - Dashboard de integraciones para tenants
+# =============================================================================
+
+jaraba_integrations.frontend.dashboard:
+  path: '/integraciones'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::dashboard'
+    _title: 'Integraciones'
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.frontend.connector_detail:
+  path: '/integraciones/{connector}'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::connectorDetail'
+    _title_callback: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::connectorTitle'
+  requirements:
+    _permission: 'install connectors'
+  options:
+    parameters:
+      connector:
+        type: entity:connector
+
+jaraba_integrations.frontend.connector_install:
+  path: '/integraciones/{connector}/instalar'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::installConnector'
+    _title: 'Instalar Conector'
+  requirements:
+    _permission: 'install connectors'
+  methods: [POST]
+  options:
+    parameters:
+      connector:
+        type: entity:connector
+
+jaraba_integrations.frontend.connector_uninstall:
+  path: '/integraciones/{connector}/desinstalar'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::uninstallConnector'
+    _title: 'Desinstalar Conector'
+  requirements:
+    _permission: 'install connectors'
+  methods: [POST]
+  options:
+    parameters:
+      connector:
+        type: entity:connector
+
+jaraba_integrations.frontend.connector_configure:
+  path: '/integraciones/{connector}/configurar'
+  defaults:
+    _form: '\Drupal\jaraba_integrations\Form\ConnectorConfigurationForm'
+    _title: 'Configurar Conector'
+  requirements:
+    _permission: 'install connectors'
+  options:
+    parameters:
+      connector:
+        type: entity:connector
+
+jaraba_integrations.frontend.webhooks:
+  path: '/integraciones/webhooks'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\IntegrationDashboardController::webhooks'
+    _title: 'Webhooks'
+  requirements:
+    _permission: 'manage webhooks'
+
+# =============================================================================
+# RUTAS API - REST endpoints para integraciones
+# =============================================================================
+
+jaraba_integrations.api.connectors.list:
+  path: '/api/v1/integrations/connectors'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\ConnectorApiController::listConnectors'
+  methods: [GET]
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.api.connectors.get:
+  path: '/api/v1/integrations/connectors/{connector_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\ConnectorApiController::getConnector'
+  methods: [GET]
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.api.connectors.install:
+  path: '/api/v1/integrations/connectors/{connector_id}/install'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\ConnectorApiController::install'
+  methods: [POST]
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.api.connectors.uninstall:
+  path: '/api/v1/integrations/connectors/{connector_id}/uninstall'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\ConnectorApiController::uninstall'
+  methods: [POST]
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.api.connectors.health:
+  path: '/api/v1/integrations/connectors/{connector_id}/health'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\ConnectorApiController::healthCheck'
+  methods: [GET]
+  requirements:
+    _permission: 'install connectors'
+
+# OAuth2 Authorization Flow
+jaraba_integrations.oauth.authorize:
+  path: '/oauth/authorize'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\OauthController::authorize'
+    _title: 'Authorize Application'
+  requirements:
+    _permission: 'install connectors'
+
+jaraba_integrations.oauth.token:
+  path: '/oauth/token'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\OauthController::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_integrations.oauth.callback:
+  path: '/oauth/callback'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\OauthController::callback'
+    _title: 'OAuth Callback'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Webhook Receiver
+jaraba_integrations.webhook.receive:
+  path: '/api/v1/integrations/webhooks/{webhook_id}/receive'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\WebhookReceiverController::receive'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

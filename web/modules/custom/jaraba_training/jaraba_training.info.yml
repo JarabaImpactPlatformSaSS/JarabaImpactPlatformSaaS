@@ -1,0 +1,15 @@
+name: Jaraba Training
+type: module
+description: 'Sistema de Certificación y Escalera de Valor - Training Certification System'
+package: Jaraba Formación
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_lms:jaraba_lms
+  - jaraba_mentoring:jaraba_mentoring
+
+configure: jaraba_training.settings

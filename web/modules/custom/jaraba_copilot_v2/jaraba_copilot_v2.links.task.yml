@@ -1,0 +1,18 @@
+# Tabs en /admin/content
+entity.entrepreneur_profile.collection:
+  title: 'Emprendedores'
+  route_name: entity.entrepreneur_profile.collection
+  base_route: system.admin_content
+  weight: 40
+
+entity.hypothesis.collection:
+  title: 'Hipótesis'
+  route_name: entity.hypothesis.collection
+  base_route: system.admin_content
+  weight: 41
+
+entity.experiment.collection:
+  title: 'Experimentos'
+  route_name: entity.experiment.collection
+  base_route: system.admin_content
+  weight: 42

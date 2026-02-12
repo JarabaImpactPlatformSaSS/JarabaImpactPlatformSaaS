@@ -1,0 +1,72 @@
+services:
+  # ===========================================
+  # JARABA BILLING — Servicios de Subscripción y Metering
+  # ===========================================
+  # Extraídos de ecosistema_jaraba_core (TD-003 God Object)
+  # Los service IDs originales en ecosistema_jaraba_core.services.yml
+  # son ahora aliases backward-compatible que apuntan aquí.
+
+  # Logger channel para billing
+  logger.channel.jaraba_billing:
+    parent: logger.channel_base
+    arguments: ['jaraba_billing']
+
+  # Validador de límites de planes SaaS
+  jaraba_billing.plan_validator:
+    class: Drupal\jaraba_billing\Service\PlanValidator
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # BE-03 + BIZ-002: Gestión del ciclo de vida de subscripciones
+  jaraba_billing.tenant_subscription:
+    class: Drupal\jaraba_billing\Service\TenantSubscriptionService
+    arguments:
+      - '@jaraba_billing.plan_validator'
+      - '@logger.channel.jaraba_billing'
+
+  # Metering avanzado por tenant (usage-based pricing)
+  jaraba_billing.tenant_metering:
+    class: Drupal\jaraba_billing\Service\TenantMeteringService
+    arguments:
+      - '@database'
+
+  # Motor de cálculo de precios basado en PricingRule
+  jaraba_billing.pricing_engine:
+    class: Drupal\jaraba_billing\Service\PricingRuleEngine
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # Reverse Trial con downgrade automático
+  jaraba_billing.reverse_trial:
+    class: Drupal\jaraba_billing\Service\ReverseTrialService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@plugin.manager.mail'
+      - '@state'
+
+  # Tracking de expansion revenue y PQA
+  jaraba_billing.expansion_revenue:
+    class: Drupal\jaraba_billing\Service\ExpansionRevenueService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.factory'
+
+  # Créditos de impacto para gamificación y engagement
+  jaraba_billing.impact_credit:
+    class: Drupal\jaraba_billing\Service\ImpactCreditService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+
+  # Agente CFO Sintético para Emprendimiento Digital
+  jaraba_billing.synthetic_cfo:
+    class: Drupal\jaraba_billing\Service\SyntheticCfoService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
