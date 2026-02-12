@@ -1,0 +1,13 @@
+# Configuración por defecto del módulo Andalucía +ei
+
+# Umbrales para transición a fase Inserción
+horas_minimas_orientacion: 10
+horas_minimas_formacion: 50
+
+# Tracking de mentoría IA
+horas_por_sesion_ia: 0.25
+maximo_horas_ia_dia: 4
+
+# Integración STO
+sto_sync_enabled: false
+sto_endpoint: ''

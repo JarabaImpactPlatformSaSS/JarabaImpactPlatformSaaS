@@ -1,0 +1,159 @@
+{#
+/**
+ * @file
+ * Detalle de pedido del cliente con timeline de seguimiento.
+ *
+ * Variables:
+ *   - order: Array con datos del pedido
+ *   - items: Array de líneas del pedido
+ *   - timeline: Array de estados con status (completed/current/pending)
+ *
+ * Body class: customer-order-detail-page
+ */
+#}
+<div class="customer-portal">
+  <div class="customer-portal__header">
+    <h1 class="customer-portal__title">{{ 'Pedido'|t }} {{ order.order_number }}</h1>
+    <nav class="customer-portal__nav">
+      <a href="/mi-cuenta" class="customer-portal__nav-link">{{ 'Mi Cuenta'|t }}</a>
+      <a href="/mi-cuenta/pedidos" class="customer-portal__nav-link customer-portal__nav-link--active">{{ 'Pedidos'|t }}</a>
+      <a href="/mi-cuenta/direcciones" class="customer-portal__nav-link">{{ 'Direcciones'|t }}</a>
+      <a href="/mi-cuenta/favoritos" class="customer-portal__nav-link">{{ 'Favoritos'|t }}</a>
+    </nav>
+  </div>
+
+  {# Timeline de seguimiento #}
+  {% if timeline is not empty %}
+    <div class="customer-portal__timeline">
+      {% for step in timeline %}
+        <div class="customer-portal__timeline-step customer-portal__timeline-step--{{ step.status }}">
+          <span class="customer-portal__timeline-icon">{{ step.icon }}</span>
+          <span class="customer-portal__timeline-label">{{ step.label|t }}</span>
+          <span class="customer-portal__timeline-connector"></span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="customer-portal__detail-content">
+    {# Info principal #}
+    <div class="customer-portal__detail-main">
+
+      {# Items del pedido #}
+      <section class="customer-portal__section">
+        <h2 class="customer-portal__section-title">{{ 'Artículos'|t }}</h2>
+        {% if items is not empty %}
+          <div class="customer-portal__items-list">
+            {% for item in items %}
+              <div class="customer-portal__item-row">
+                <div class="customer-portal__item-info">
+                  <span class="customer-portal__item-name">{{ item.title }}</span>
+                  <span class="customer-portal__item-qty">x{{ item.quantity }}</span>
+                </div>
+                <div class="customer-portal__item-prices">
+                  <span class="customer-portal__item-unit">{{ item.unit_price }}/ud</span>
+                  <span class="customer-portal__item-total">{{ item.total_price }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </section>
+
+      {# Tracking del envío #}
+      {% if order.shipment %}
+        <section class="customer-portal__section">
+          <h2 class="customer-portal__section-title">{{ 'Seguimiento del envío'|t }}</h2>
+          <div class="agro-tracking" data-shipment-id="{{ order.shipment.id }}">
+            <div class="agro-tracking__header">
+              <div class="agro-tracking__title">
+                📦 {{ order.shipment.carrier_name }}
+              </div>
+              <span class="agro-tracking__status-badge agro-tracking__status-badge--{{ order.shipment.state }}">
+                {{ order.shipment.state_label|t }}
+              </span>
+            </div>
+
+            {% if order.shipment.tracking_number %}
+              <div class="agro-tracking__tracking-number">
+                {{ 'Nº seguimiento:'|t }} {{ order.shipment.tracking_number }}
+              </div>
+            {% endif %}
+
+            <div class="agro-tracking__timeline">
+              {% if order.shipment.events is not empty %}
+                {% for event in order.shipment.events %}
+                  <div class="agro-tracking__event {{ loop.first ? 'agro-tracking__event--current' : 'agro-tracking__event--completed' }}">
+                    <div class="agro-tracking__event-time">{{ event.timestamp }}</div>
+                    <div class="agro-tracking__event-title">{{ event.description }}</div>
+                    {% if event.location %}
+                      <div class="agro-tracking__event-location">📍 {{ event.location }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="agro-tracking__no-events">{{ 'Pendiente de recogida por el transportista.'|t }}</p>
+              {% endif %}
+            </div>
+
+            {% if order.shipment.estimated_delivery %}
+              <div class="agro-tracking__eta">
+                🚚 {{ 'Entrega estimada:'|t }} <strong>{{ order.shipment.estimated_delivery }}</strong>
+              </div>
+            {% endif %}
+          </div>
+        </section>
+      {% endif %}
+
+      {# Acciones #}
+      {% if order.can_cancel %}
+        <div class="customer-portal__actions">
+          <button class="customer-portal__btn customer-portal__btn--danger"
+                  data-action="cancel"
+                  data-order-number="{{ order.order_number }}">
+            {{ 'Cancelar pedido'|t }}
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Sidebar: Resumen + Dirección #}
+    <aside class="customer-portal__detail-sidebar">
+      <section class="customer-portal__section">
+        <h2 class="customer-portal__section-title">{{ 'Resumen'|t }}</h2>
+        <div class="customer-portal__summary">
+          <div class="customer-portal__summary-row">
+            <span>{{ 'Subtotal'|t }}</span>
+            <span>{{ order.subtotal }}</span>
+          </div>
+          <div class="customer-portal__summary-row">
+            <span>{{ 'Envío'|t }}</span>
+            <span>{{ order.shipping_total }}</span>
+          </div>
+          <div class="customer-portal__summary-row customer-portal__summary-row--total">
+            <span>{{ 'Total'|t }}</span>
+            <span>{{ order.total }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="customer-portal__section">
+        <h2 class="customer-portal__section-title">{{ 'Entrega'|t }}</h2>
+        <div class="customer-portal__delivery">
+          <p><strong>{{ order.delivery_method }}</strong></p>
+          {% if order.shipping_address %}
+            <p>{{ order.shipping_address }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      <div class="customer-portal__section">
+        <span class="customer-portal__detail-date">{{ 'Realizado:'|t }} {{ order.created }}</span>
+      </div>
+    </aside>
+  </div>
+
+  <div class="customer-portal__back">
+    <a href="/mi-cuenta/pedidos" class="customer-portal__btn">← {{ 'Volver a pedidos'|t }}</a>
+  </div>
+</div>

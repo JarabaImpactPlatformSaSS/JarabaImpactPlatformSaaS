@@ -1,0 +1,78 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_andalucia_ei.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function jaraba_andalucia_ei_schema(): array {
+  $schema['jaraba_andalucia_ei_ia_audit'] = [
+    'description' => 'Auditoría de sesiones de mentoría con Tutor IA.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'participante_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID del participante Andalucía +ei.',
+      ],
+      'horas' => [
+        'type' => 'numeric',
+        'precision' => 8,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Horas de la sesión.',
+      ],
+      'tipo_interaccion' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'chat',
+        'description' => 'Tipo: chat, canvas, diagnostic.',
+      ],
+      'fecha' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'description' => 'Fecha YYYY-MM-DD.',
+      ],
+      'timestamp' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp de la sesión.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'participante_fecha' => ['participante_id', 'fecha'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_andalucia_ei_install(): void {
+  \Drupal::messenger()->addStatus(t('Módulo Andalucía +ei instalado correctamente.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_andalucia_ei_uninstall(): void {
+  // Limpiar configuración del módulo.
+  \Drupal::configFactory()->getEditable('jaraba_andalucia_ei.settings')->delete();
+}

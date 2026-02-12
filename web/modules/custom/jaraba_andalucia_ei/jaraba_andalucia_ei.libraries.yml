@@ -1,0 +1,7 @@
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+  dependencies:
+    - core/drupal

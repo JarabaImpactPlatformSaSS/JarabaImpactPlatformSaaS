@@ -1,0 +1,84 @@
+{#
+ # Template: Marketplace de Servicios Profesionales
+ # Ruta: /servicios
+ # Variables: providers, categories, modalities, current_filters, total_results, pager
+ #}
+
+<div class="servicios-marketplace">
+  <header class="servicios-marketplace__header">
+    <h1 class="servicios-marketplace__title">{{ 'Servicios Profesionales'|t }}</h1>
+    <p class="servicios-marketplace__subtitle">{{ 'Encuentra profesionales de confianza cerca de ti'|t }}</p>
+  </header>
+
+  {# Barra de filtros #}
+  <div class="servicios-marketplace__filters">
+    <form class="servicios-filters" method="get" action="">
+      <div class="servicios-filters__group">
+        <input
+          type="text"
+          name="search"
+          class="servicios-filters__search"
+          placeholder="{{ 'Buscar profesional o servicio...'|t }}"
+          value="{{ current_filters.search|default('') }}"
+        />
+      </div>
+
+      <div class="servicios-filters__group">
+        <select name="category" class="servicios-filters__select">
+          <option value="">{{ 'Todas las categorías'|t }}</option>
+          {% for category in categories %}
+            <option value="{{ category.tid }}"
+              {{ current_filters.category == category.tid ? 'selected' : '' }}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="servicios-filters__btn btn btn--primary">
+        {{ 'Filtrar'|t }}
+      </button>
+    </form>
+  </div>
+
+  {# Contador de resultados #}
+  <div class="servicios-marketplace__meta">
+    <span class="servicios-marketplace__count">
+      {{ '%count profesionales encontrados'|t({'%count': total_results}) }}
+    </span>
+  </div>
+
+  {# Grid de profesionales #}
+  {% if providers|length > 0 %}
+    <div class="servicios-marketplace__grid">
+      {% for provider in providers %}
+        {% include '@jaraba_servicios_conecta/partials/provider-card.html.twig' with {
+          provider: provider
+        } only %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="servicios-marketplace__empty">
+      <p>{{ 'No se encontraron profesionales con los filtros seleccionados.'|t }}</p>
+    </div>
+  {% endif %}
+
+  {# Paginación #}
+  {% if pager and pager.total_pages > 1 %}
+    <nav class="servicios-marketplace__pager" aria-label="{{ 'Paginación'|t }}">
+      {% if pager.current > 1 %}
+        <a href="?page={{ pager.current - 1 }}" class="pager__link pager__link--prev">
+          {{ 'Anterior'|t }}
+        </a>
+      {% endif %}
+      <span class="pager__info">
+        {{ 'Página %current de %total'|t({'%current': pager.current, '%total': pager.total_pages}) }}
+      </span>
+      {% if pager.current < pager.total_pages %}
+        <a href="?page={{ pager.current + 1 }}" class="pager__link pager__link--next">
+          {{ 'Siguiente'|t }}
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+</div>

@@ -1,0 +1,130 @@
+# Servicios del módulo AgroConecta Core
+services:
+  jaraba_agroconecta.product_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ProductAgroService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_agroconecta.producer_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ProducerProfileService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_agroconecta.marketplace_service:
+    class: Drupal\jaraba_agroconecta_core\Service\MarketplaceService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_agroconecta.product_service'
+      - '@jaraba_agroconecta.producer_service'
+
+  jaraba_agroconecta.order_service:
+    class: Drupal\jaraba_agroconecta_core\Service\OrderService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_agroconecta.stripe_payment_service:
+    class: Drupal\jaraba_agroconecta_core\Service\StripePaymentService
+    arguments:
+      - '@jaraba_foc.stripe_connect'
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@config.factory'
+
+  jaraba_agroconecta.producer_dashboard_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ProducerDashboardService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+
+  # Fase 4: Reviews + Notificaciones
+
+  jaraba_agroconecta.review_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ReviewAgroService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_agroconecta.notification_service:
+    class: Drupal\jaraba_agroconecta_core\Service\NotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@plugin.manager.mail'
+      - '@logger.factory'
+
+  # Fase 5: Search & Discovery
+
+  jaraba_agroconecta.search_service:
+    class: Drupal\jaraba_agroconecta_core\Service\AgroSearchService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  # Fase 5: Promotions & Coupons
+
+  jaraba_agroconecta.promotion_service:
+    class: Drupal\jaraba_agroconecta_core\Service\PromotionService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@current_user'
+
+  # Fase 5: Shipping Core
+
+  jaraba_agroconecta.shipping_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ShippingService
+    arguments:
+      - '@entity_type.manager'
+
+  # Fase 6: Traceability + QR
+
+  jaraba_agroconecta.traceability_service:
+    class: Drupal\jaraba_agroconecta_core\Service\TraceabilityService
+    arguments:
+      - '@entity_type.manager'
+
+  jaraba_agroconecta.qr_service:
+    class: Drupal\jaraba_agroconecta_core\Service\QrService
+    arguments:
+      - '@entity_type.manager'
+
+  # Fase 7: Analytics
+
+  jaraba_agroconecta.analytics_service:
+    class: Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+
+  # Fase 9: Producer Copilot
+
+  jaraba_agroconecta.copilot_service:
+    class: Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.producer_copilot_agent'
+
+  # Fase 10: Sales Agent
+
+  jaraba_agroconecta_core.sales_agent:
+    class: Drupal\jaraba_agroconecta_core\Service\SalesAgentService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.default'
+
+  # Fase 11: Partner Document Hub B2B (Sprint AC6-2)
+
+  jaraba_agroconecta_core.partner_document:
+    class: Drupal\jaraba_agroconecta_core\Service\PartnerDocumentService
+    arguments:
+      - '@entity_type.manager'

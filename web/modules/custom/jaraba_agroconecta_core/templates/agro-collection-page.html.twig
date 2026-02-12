@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Template de la página de colección AgroConecta.
+ *
+ * Variables:
+ *   - collection: Datos de la colección (id, name, slug, description, type_label).
+ *   - products: Array de productos resueltos.
+ *   - total: Total de productos en la colección.
+ */
+#}
+
+<div class="agro-collection-page" id="agro-collection-root">
+
+  {# === Breadcrumb === #}
+  <nav class="agro-breadcrumb" aria-label="{{ 'Breadcrumb'|t }}">
+    <ol class="agro-breadcrumb__list">
+      <li class="agro-breadcrumb__item">
+        <a href="/agroconecta/search" class="agro-breadcrumb__link">{% trans %}Inicio{% endtrans %}</a>
+      </li>
+      <li class="agro-breadcrumb__item">
+        <span class="agro-breadcrumb__current" aria-current="page">{{ collection.name }}</span>
+      </li>
+    </ol>
+  </nav>
+
+  {# === Header de colección === #}
+  <section class="agro-collection-header">
+    <div class="agro-collection-header__info">
+      <span class="agro-collection-header__badge">{{ collection.type_label }}</span>
+      <h1 class="agro-collection-header__title">{{ collection.name }}</h1>
+      {% if collection.description %}
+        <p class="agro-collection-header__desc">{{ collection.description }}</p>
+      {% endif %}
+      <span class="agro-collection-header__count">{{ total }} {% trans %}productos{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# === Grid de productos === #}
+  <div class="agro-products-grid" id="agro-collection-results">
+    {% if products|length > 0 %}
+      {% for product in products %}
+        <article class="agro-product-card" data-product-id="{{ product.id }}">
+          <div class="agro-product-card__image agro-product-card__image--placeholder"></div>
+          <div class="agro-product-card__body">
+            <h3 class="agro-product-card__name">{{ product.name }}</h3>
+            <div class="agro-product-card__price">{{ product.price|number_format(2, ',', '.') }} €</div>
+            {% if product.average_rating > 0 %}
+              <div class="agro-product-card__rating" data-agro-rating="{{ product.average_rating|round }}">
+                <span class="agro-product-card__stars"></span>
+                <span class="agro-product-card__review-count">({{ product.review_count }})</span>
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <div class="agro-search-empty">
+        <span class="agro-search-empty__icon">📦</span>
+        <p>{% trans %}Esta colección no tiene productos todavía.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# === Paginación === #}
+  {% if total > products|length %}
+    <div class="agro-search-pagination" id="agro-collection-pagination">
+      <button class="agro-btn agro-btn--outline" id="agro-collection-load-more">
+        {% trans %}Cargar más productos{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

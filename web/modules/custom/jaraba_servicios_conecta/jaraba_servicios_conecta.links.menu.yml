@@ -1,0 +1,44 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para ServiciosConecta
+# Cada entidad tiene su entrada en el menú de estructura de Drupal
+# =============================================================================
+
+# Profesionales en Structure
+jaraba_servicios_conecta.provider_profile.settings:
+  title: 'Profesionales Servicios'
+  description: 'Configuración de la entidad Perfil Profesional de ServiciosConecta.'
+  route_name: jaraba_servicios_conecta.provider_profile.settings
+  parent: system.admin_structure
+  weight: 85
+
+# Servicios ofertados en Structure
+jaraba_servicios_conecta.service_offering.settings:
+  title: 'Servicios Ofertados'
+  description: 'Configuración de la entidad Servicio Ofertado de ServiciosConecta.'
+  route_name: jaraba_servicios_conecta.service_offering.settings
+  parent: system.admin_structure
+  weight: 86
+
+# Reservas en Structure
+jaraba_servicios_conecta.booking.settings:
+  title: 'Reservas Servicios'
+  description: 'Configuración de la entidad Reserva de ServiciosConecta.'
+  route_name: jaraba_servicios_conecta.booking.settings
+  parent: system.admin_structure
+  weight: 87
+
+# Disponibilidad en Structure
+jaraba_servicios_conecta.availability_slot.settings:
+  title: 'Disponibilidad Servicios'
+  description: 'Configuración de slots de disponibilidad de ServiciosConecta.'
+  route_name: jaraba_servicios_conecta.availability_slot.settings
+  parent: system.admin_structure
+  weight: 88
+
+# Paquetes en Structure
+jaraba_servicios_conecta.service_package.settings:
+  title: 'Paquetes Servicios'
+  description: 'Configuración de paquetes de servicios de ServiciosConecta.'
+  route_name: jaraba_servicios_conecta.service_package.settings
+  parent: system.admin_structure
+  weight: 89

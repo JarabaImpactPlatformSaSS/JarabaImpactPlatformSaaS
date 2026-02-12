@@ -1,0 +1,355 @@
+// ============================================
+// Reviews Widget - AgroConecta (Phase 4)
+// ============================================
+// BEM: .agro-reviews__, .agro-stars__, .agro-rating-*
+// DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+//
+// COMPILACIÓN:
+// docker exec jarabasaas_appserver_1 bash -c \
+//   "cd /app/web/modules/custom/jaraba_agroconecta_core && npx sass scss/main.scss css/agroconecta.css --style=compressed"
+
+$review-primary: var(--ej-color-agro, #556B2F);
+$review-surface: var(--ej-bg-surface, #ffffff);
+$review-text: var(--ej-text-primary, #1a1a2e);
+$review-text-muted: var(--ej-text-muted, #6c757d);
+$review-border: var(--ej-border-color, #e0e0e0);
+$review-radius: var(--ej-radius-md, 12px);
+$review-radius-sm: var(--ej-radius-sm, 8px);
+$review-shadow: var(--ej-shadow-md, 0 2px 12px rgba(0, 0, 0, 0.06));
+$review-star-color: var(--ej-color-warning, #F59E0B);
+$review-star-empty: var(--ej-border-color, #d1d5db);
+$review-success: var(--ej-color-success, #10B981);
+
+// === Star Rating ===
+.agro-stars {
+    display: inline-flex;
+    gap: 2px;
+    align-items: center;
+
+    &__star {
+        font-size: 20px;
+        cursor: default;
+        transition: transform 0.15s ease, color 0.15s ease;
+        user-select: none;
+
+        &--filled {
+            color: $review-star-color;
+        }
+
+        &--empty {
+            color: $review-star-empty;
+        }
+    }
+
+    &--interactive &__star {
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+}
+
+// === Rating Summary (Stats) ===
+.agro-rating-summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    padding: 20px;
+    background: $review-surface;
+    border-radius: $review-radius;
+    box-shadow: $review-shadow;
+    margin-bottom: 24px;
+
+    &__score {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-width: 100px;
+    }
+
+    &__average {
+        font-size: 40px;
+        font-weight: 800;
+        line-height: 1;
+        color: $review-text;
+    }
+
+    &__count {
+        font-size: 13px;
+        color: $review-text-muted;
+    }
+
+    &__bars {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        justify-content: center;
+    }
+}
+
+// === Rating Distribution Bars ===
+.agro-rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &__label {
+        font-size: 13px;
+        min-width: 28px;
+        text-align: right;
+        color: $review-text-muted;
+    }
+
+    &__track {
+        flex: 1;
+        height: 8px;
+        background: var(--ej-bg-muted, #f1f5f9);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        background: $review-star-color;
+        border-radius: 4px;
+        transition: width 0.4s ease;
+    }
+
+    &__count {
+        font-size: 12px;
+        color: $review-text-muted;
+        min-width: 20px;
+    }
+}
+
+// === Single Review Card ===
+.agro-review {
+    padding: 16px 0;
+    border-bottom: 1px solid $review-border;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &__header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    &__author {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    &__verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: $review-success;
+        font-weight: 500;
+    }
+
+    &__date {
+        font-size: 12px;
+        color: $review-text-muted;
+        margin-left: auto;
+    }
+
+    &__title {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 4px;
+    }
+
+    &__body {
+        font-size: 14px;
+        line-height: 1.6;
+        color: $review-text;
+        margin: 0;
+    }
+
+    // Producer response
+    &__response {
+        margin-top: 12px;
+        padding: 12px 16px;
+        background: var(--ej-bg-muted, #f8fafc);
+        border-radius: $review-radius-sm;
+        border-left: 3px solid $review-primary;
+    }
+
+    &__response-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: $review-primary;
+        display: block;
+        margin-bottom: 4px;
+    }
+}
+
+// === Reviews Section Container ===
+.agro-reviews {
+    &__loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 24px;
+        justify-content: center;
+        color: $review-text-muted;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 32px;
+        color: $review-text-muted;
+        font-style: italic;
+    }
+
+    &__error {
+        text-align: center;
+        padding: 16px;
+        color: var(--ej-color-danger, #EF4444);
+    }
+
+    &__pagination {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 13px;
+        color: $review-text-muted;
+    }
+}
+
+// === Review Submit Form ===
+.agro-review-form {
+    padding: 20px;
+    background: $review-surface;
+    border-radius: $review-radius;
+    box-shadow: $review-shadow;
+
+    &__field {
+        margin-bottom: 16px;
+    }
+
+    &__label {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid $review-border;
+        border-radius: $review-radius-sm;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+        box-sizing: border-box;
+
+        &:focus {
+            outline: none;
+            border-color: $review-primary;
+            box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.12);
+        }
+    }
+
+    &__textarea {
+        @extend .agro-review-form__input;
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    &__submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: $review-primary;
+        color: #fff;
+        border: none;
+        border-radius: $review-radius-sm;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s ease, transform 0.15s ease;
+
+        &:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    }
+
+    &__feedback {
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--ej-color-danger, #EF4444);
+    }
+
+    &__success {
+        text-align: center;
+        padding: 32px;
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(16, 185, 129, 0.1);
+        color: $review-success;
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+}
+
+// === Spinner ===
+.agro-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid $review-border;
+    border-top-color: $review-primary;
+    border-radius: 50%;
+    animation: agro-spin 0.6s linear infinite;
+}
+
+@keyframes agro-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// === Responsive ===
+@media (max-width: 768px) {
+    .agro-rating-summary {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .agro-review__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .agro-review__date {
+        margin-left: 0;
+    }
+
+    .agro-review-form {
+        padding: 16px;
+    }
+}

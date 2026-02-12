@@ -1,0 +1,96 @@
+{#
+/**
+ * @file
+ * Template: Hub Documental B2B — Dashboard Productor.
+ *
+ * Variables:
+ *   - user_id: ID del usuario actual.
+ *   - tenant_id: ID del tenant actual.
+ *
+ * Sprint AC6-2 (Doc 82).
+ * Convención BEM: .agro-hub-*
+ */
+#}
+
+<div class="agro-hub" data-producer-id="{{ user_id }}" data-tenant-id="{{ tenant_id }}">
+
+  {# --- Cabecera --- #}
+  <div class="agro-hub__header">
+    <div>
+      <h1 class="agro-hub__title">{{ 'Hub Documental B2B'|t }}</h1>
+      <p class="agro-hub__subtitle">{{ 'Gestiona documentos y acceso para tus socios comerciales'|t }}</p>
+    </div>
+    <div class="agro-hub__actions">
+      <button class="agro-hub-btn agro-hub-btn--primary" data-action="invite-partner">
+        {{ 'Invitar Partner'|t }}
+      </button>
+      <button class="agro-hub-btn agro-hub-btn--secondary" data-action="export-csv">
+        {{ 'Exportar CSV'|t }}
+      </button>
+    </div>
+  </div>
+
+  {# --- KPIs --- #}
+  <div class="agro-hub-kpis">
+    <div class="agro-hub-kpis__card agro-hub-animate" data-kpi="active_partners">
+      <div class="agro-hub-kpis__value">--</div>
+      <div class="agro-hub-kpis__label">{{ 'Partners activos'|t }}</div>
+    </div>
+    <div class="agro-hub-kpis__card agro-hub-animate" data-kpi="total_documents">
+      <div class="agro-hub-kpis__value">--</div>
+      <div class="agro-hub-kpis__label">{{ 'Documentos'|t }}</div>
+    </div>
+    <div class="agro-hub-kpis__card agro-hub-animate" data-kpi="total_downloads">
+      <div class="agro-hub-kpis__value">--</div>
+      <div class="agro-hub-kpis__label">{{ 'Descargas totales'|t }}</div>
+    </div>
+    <div class="agro-hub-kpis__card agro-hub-animate" data-kpi="week_downloads">
+      <div class="agro-hub-kpis__value">--</div>
+      <div class="agro-hub-kpis__label">{{ 'Descargas (7d)'|t }}</div>
+    </div>
+    <div class="agro-hub-kpis__card agro-hub-kpis__card--warning agro-hub-animate" data-kpi="expiring_certifications">
+      <div class="agro-hub-kpis__value">--</div>
+      <div class="agro-hub-kpis__label">{{ 'Cert. por caducar'|t }}</div>
+    </div>
+  </div>
+
+  {# --- Partners --- #}
+  <div class="agro-hub-partners">
+    <div class="agro-hub-partners__header">
+      <h2 class="agro-hub-partners__title">{{ 'Socios Comerciales'|t }}</h2>
+    </div>
+    <table class="agro-hub-partners__table">
+      <thead>
+        <tr>
+          <th class="agro-hub-partners__th">{{ 'Partner'|t }}</th>
+          <th class="agro-hub-partners__th">{{ 'Email'|t }}</th>
+          <th class="agro-hub-partners__th">{{ 'Tipo'|t }}</th>
+          <th class="agro-hub-partners__th">{{ 'Nivel'|t }}</th>
+          <th class="agro-hub-partners__th">{{ 'Estado'|t }}</th>
+          <th class="agro-hub-partners__th">{{ 'Acciones'|t }}</th>
+        </tr>
+      </thead>
+      <tbody class="agro-hub-partners__body">
+        <tr>
+          <td colspan="6" class="agro-hub-empty__text">{{ 'Cargando partners...'|t }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {# --- Documentos --- #}
+  <div class="agro-hub-docs">
+    <div class="agro-hub-docs__header">
+      <h2 class="agro-hub-docs__title">{{ 'Documentos Compartidos'|t }}</h2>
+      <button class="agro-hub-btn agro-hub-btn--primary" data-action="upload-document">
+        {{ 'Subir Documento'|t }}
+      </button>
+    </div>
+    <div class="agro-hub-docs__grid">
+      <div class="agro-hub-empty">
+        <div class="agro-hub-empty__text">{{ 'Cargando documentos...'|t }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>

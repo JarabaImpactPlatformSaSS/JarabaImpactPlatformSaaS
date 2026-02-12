@@ -1,0 +1,151 @@
+{#
+/**
+ * @file
+ * QR Dynamic Dashboard para productores AgroConecta.
+ *
+ * Sprint AC6-1 — Doc 81.
+ * Body classes: qr-dashboard, agro-page.
+ *
+ * Variables:
+ *   - tenant_name: Nombre del productor/marketplace
+ */
+#}
+
+<div class="agro-qr-dashboard">
+
+  {# === Header === #}
+  <div class="agro-qr-dashboard__header">
+    <div>
+      <h1 class="agro-qr-dashboard__title">{% trans %}QR Dashboard{% endtrans %}</h1>
+      <p class="agro-qr-dashboard__subtitle">
+        {% trans %}Analítica de tus códigos QR y leads capturados{% endtrans %}
+        {% if tenant_name %} — {{ tenant_name }}{% endif %}
+      </p>
+    </div>
+    <div class="agro-qr-dashboard__actions">
+      <button class="agro-qr-generate-btn" data-qr-generate>
+        <span aria-hidden="true">+</span>
+        {% trans %}Generar QR{% endtrans %}
+      </button>
+      <button class="agro-export-btn" data-qr-export-csv>
+        {% trans %}Exportar Leads CSV{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# === Period Selector === #}
+  <div class="agro-date-picker" style="margin-bottom: var(--ej-spacing-xl, 2rem);">
+    <button class="agro-date-picker__preset" data-period="7d">{% trans %}7 días{% endtrans %}</button>
+    <button class="agro-date-picker__preset agro-date-picker__preset--active" data-period="30d">{% trans %}30 días{% endtrans %}</button>
+    <button class="agro-date-picker__preset" data-period="90d">{% trans %}90 días{% endtrans %}</button>
+  </div>
+
+  {# === KPI Cards === #}
+  <div class="agro-qr-kpi-grid">
+    <div class="agro-qr-kpi agro-qr-kpi--qrcodes" data-qr-kpi="total_qr_codes">
+      <p class="agro-qr-kpi__label">{% trans %}QR Codes{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+
+    <div class="agro-qr-kpi agro-qr-kpi--scans" data-qr-kpi="total_scans">
+      <p class="agro-qr-kpi__label">{% trans %}Escaneos Totales{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+
+    <div class="agro-qr-kpi agro-qr-kpi--unique" data-qr-kpi="unique_scans">
+      <p class="agro-qr-kpi__label">{% trans %}Escaneos Únicos{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+
+    <div class="agro-qr-kpi agro-qr-kpi--conversions" data-qr-kpi="total_conversions">
+      <p class="agro-qr-kpi__label">{% trans %}Conversiones{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+
+    <div class="agro-qr-kpi agro-qr-kpi--rate" data-qr-kpi="conversion_rate">
+      <p class="agro-qr-kpi__label">{% trans %}Tasa de Conversión{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+
+    <div class="agro-qr-kpi agro-qr-kpi--leads" data-qr-kpi="total_leads">
+      <p class="agro-qr-kpi__label">{% trans %}Leads Capturados{% endtrans %}</p>
+      <p class="agro-qr-kpi__value">—</p>
+    </div>
+  </div>
+
+  {# === QR Codes Table === #}
+  <div class="agro-qr-table">
+    <div class="agro-qr-table__header">
+      <h2 class="agro-qr-table__title">{% trans %}QR Codes Activos{% endtrans %}</h2>
+      <div class="agro-qr-table__filters">
+        <select class="agro-qr-table__filter-select" aria-label="{% trans %}Filtrar por tipo{% endtrans %}">
+          <option value="">{% trans %}Todos los tipos{% endtrans %}</option>
+          <option value="batch">{% trans %}Lote{% endtrans %}</option>
+          <option value="product">{% trans %}Producto{% endtrans %}</option>
+          <option value="producer">{% trans %}Productor{% endtrans %}</option>
+          <option value="campaign">{% trans %}Campaña{% endtrans %}</option>
+        </select>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans %}Nombre{% endtrans %}</th>
+          <th>{% trans %}Tipo{% endtrans %}</th>
+          <th>{% trans %}Escaneos{% endtrans %}</th>
+          <th>{% trans %}Únicos{% endtrans %}</th>
+          <th>{% trans %}Conv.{% endtrans %}</th>
+          <th>{% trans %}Tasa{% endtrans %}</th>
+          <th>{% trans %}Acciones{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="7" class="agro-qr-table__empty">
+            {% trans %}Cargando QR codes...{% endtrans %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="agro-qr-table__pagination"></div>
+  </div>
+
+  {# === QR Detail Panel (dinámico) === #}
+  <div class="agro-qr-detail" style="display: none;"></div>
+
+  {# === Charts === #}
+  <div class="agro-qr-charts">
+    <div class="agro-qr-chart">
+      <h2 class="agro-qr-chart__title">{% trans %}Escaneos por Día{% endtrans %}</h2>
+      <div class="agro-qr-chart__canvas" data-chart="scans-trend">
+        <canvas></canvas>
+      </div>
+    </div>
+    <div class="agro-qr-chart">
+      <h2 class="agro-qr-chart__title">{% trans %}Dispositivos{% endtrans %}</h2>
+      <div class="agro-qr-devices">
+        <ul class="agro-qr-devices__list" data-devices>
+          <li class="agro-qr-devices__item">
+            <span class="agro-qr-devices__icon agro-qr-devices__icon--mobile" aria-hidden="true"></span>
+            <span class="agro-qr-devices__label">{% trans %}Mobile{% endtrans %}</span>
+            <div class="agro-qr-devices__bar"><span style="width: 0%;"></span></div>
+            <span class="agro-qr-devices__percent">—</span>
+          </li>
+          <li class="agro-qr-devices__item">
+            <span class="agro-qr-devices__icon agro-qr-devices__icon--tablet" aria-hidden="true"></span>
+            <span class="agro-qr-devices__label">{% trans %}Tablet{% endtrans %}</span>
+            <div class="agro-qr-devices__bar"><span style="width: 0%;"></span></div>
+            <span class="agro-qr-devices__percent">—</span>
+          </li>
+          <li class="agro-qr-devices__item">
+            <span class="agro-qr-devices__icon agro-qr-devices__icon--desktop" aria-hidden="true"></span>
+            <span class="agro-qr-devices__label">{% trans %}Desktop{% endtrans %}</span>
+            <div class="agro-qr-devices__bar"><span style="width: 0%;"></span></div>
+            <span class="agro-qr-devices__percent">—</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>

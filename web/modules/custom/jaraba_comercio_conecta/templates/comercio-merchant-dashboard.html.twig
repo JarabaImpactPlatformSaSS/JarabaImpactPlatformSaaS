@@ -1,0 +1,182 @@
+{#
+/**
+ * @file
+ * Template del dashboard del comerciante ComercioConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Header/Footer via partials.
+ * Body classes inyectadas via hook_preprocess_html(): comercio-page, merchant-dashboard-page.
+ *
+ * Variables:
+ *   - merchant: Entidad MerchantProfile.
+ *   - kpis: Array con KPIs del comerciante.
+ *   - recent_orders: Array de pedidos recientes (Fase 2).
+ *   - stock_alerts: Array de productos con stock bajo.
+ *   - sales_chart_data: Datos para el gráfico de ventas (Fase 3).
+ */
+#}
+
+<div class="comercio-merchant-dashboard">
+
+  {# === Header del dashboard === #}
+  <header class="comercio-merchant-dashboard__header">
+    <div class="comercio-merchant-dashboard__header-inner container">
+      <div class="comercio-merchant-dashboard__welcome">
+        {% if merchant.get('logo').entity %}
+          <img class="comercio-merchant-dashboard__logo"
+               src="{{ file_url(merchant.get('logo').entity.fileuri) }}"
+               alt="{{ merchant.get('business_name').value }}"
+               loading="lazy">
+        {% endif %}
+        <div>
+          <h1 class="comercio-merchant-dashboard__title">
+            {% trans %}Panel de Comerciante{% endtrans %}
+          </h1>
+          <p class="comercio-merchant-dashboard__business-name">
+            {{ merchant.get('business_name').value }}
+          </p>
+        </div>
+      </div>
+
+      {# Acciones rápidas #}
+      <div class="comercio-merchant-dashboard__actions">
+        <a href="{{ path('jaraba_comercio_conecta.merchant.products') }}"
+           class="comercio-btn comercio-btn--primary">
+          {% trans %}Mis Productos{% endtrans %}
+        </a>
+        <button class="comercio-btn comercio-btn--outline"
+                data-slide-panel="nuevo-producto"
+                data-slide-panel-url="{{ path('entity.product_retail.add_form') }}"
+                data-slide-panel-title="{{ 'Nuevo Producto'|trans }}">
+          + {% trans %}Añadir Producto{% endtrans %}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  {# === KPIs Cards === #}
+  <section class="comercio-kpis container" aria-label="{{ 'Indicadores clave'|trans }}">
+    <div class="comercio-kpis__grid">
+
+      <div class="comercio-kpi-card">
+        <div class="comercio-kpi-card__icon">
+          {{ jaraba_icon('commerce', 'shopping-bag', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <div class="comercio-kpi-card__content">
+          <span class="comercio-kpi-card__value">{{ kpis.total_products|default(0) }}</span>
+          <span class="comercio-kpi-card__label">{% trans %}Productos{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="comercio-kpi-card comercio-kpi-card--warning">
+        <div class="comercio-kpi-card__icon">
+          {{ jaraba_icon('commerce', 'barcode', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <div class="comercio-kpi-card__content">
+          <span class="comercio-kpi-card__value">{{ kpis.stock_alerts|default(0) }}</span>
+          <span class="comercio-kpi-card__label">{% trans %}Alertas Stock{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="comercio-kpi-card">
+        <div class="comercio-kpi-card__icon">
+          {{ jaraba_icon('commerce', 'store', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <div class="comercio-kpi-card__content">
+          <span class="comercio-kpi-card__value">
+            {% if kpis.average_rating %}
+              {{ kpis.average_rating|number_format(1) }} ★
+            {% else %}
+              —
+            {% endif %}
+          </span>
+          <span class="comercio-kpi-card__label">{% trans %}Rating{% endtrans %}</span>
+        </div>
+      </div>
+
+      <div class="comercio-kpi-card">
+        <div class="comercio-kpi-card__icon">
+          {{ jaraba_icon('commerce', 'store', { variant: 'duotone', size: '24px' }) }}
+        </div>
+        <div class="comercio-kpi-card__content">
+          <span class="comercio-kpi-card__value">{{ kpis.total_reviews|default(0) }}</span>
+          <span class="comercio-kpi-card__label">{% trans %}Reseñas{% endtrans %}</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  {# === Alertas de stock bajo === #}
+  {% if stock_alerts|length > 0 %}
+    <section class="comercio-stock-alerts container" aria-label="{{ 'Alertas de stock'|trans }}">
+      <h2 class="comercio-section-title comercio-section-title--warning">
+        {% trans %}Productos con stock bajo{% endtrans %}
+      </h2>
+      <div class="comercio-table-responsive">
+        <table class="comercio-table">
+          <thead>
+            <tr>
+              <th>{% trans %}Producto{% endtrans %}</th>
+              <th>{% trans %}SKU{% endtrans %}</th>
+              <th>{% trans %}Stock{% endtrans %}</th>
+              <th>{% trans %}Umbral{% endtrans %}</th>
+              <th>{% trans %}Acción{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for alert in stock_alerts %}
+              <tr class="{{ alert.stock == 0 ? 'comercio-table__row--danger' : 'comercio-table__row--warning' }}">
+                <td>{{ alert.title }}</td>
+                <td><code>{{ alert.sku }}</code></td>
+                <td>
+                  <span class="comercio-badge {{ alert.stock == 0 ? 'comercio-badge--danger' : 'comercio-badge--warning' }}">
+                    {{ alert.stock }}
+                  </span>
+                </td>
+                <td>{{ alert.threshold }}</td>
+                <td>
+                  <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                          data-slide-panel="editar-stock"
+                          data-slide-panel-url="{{ path('entity.product_retail.edit_form', {'product_retail': alert.id}) }}"
+                          data-slide-panel-title="{{ 'Actualizar Stock'|trans }}">
+                    {% trans %}Actualizar{% endtrans %}
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === Pedidos recientes (Fase 2) === #}
+  <section class="comercio-recent-orders container" aria-label="{{ 'Pedidos recientes'|trans }}">
+    <h2 class="comercio-section-title">{% trans %}Pedidos Recientes{% endtrans %}</h2>
+    {% if recent_orders|length > 0 %}
+      {# TODO Fase 2: Tabla de pedidos recientes #}
+    {% else %}
+      <div class="comercio-empty-state comercio-empty-state--compact">
+        <p>{% trans %}Aún no tienes pedidos. Los pedidos aparecerán aquí cuando los clientes compren tus productos.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# === Estado de verificación === #}
+  {% set status = merchant.get('verification_status').value %}
+  {% if status != 'approved' %}
+    <section class="comercio-verification-banner container" aria-label="{{ 'Estado de verificación'|trans }}">
+      <div class="comercio-verification-banner__inner comercio-verification-banner__inner--{{ status }}">
+        {% set status_messages = {
+          'pending': 'Tu perfil de comerciante está pendiente de verificación. Envía la documentación necesaria para activar tu tienda.'|trans,
+          'documents_submitted': 'Hemos recibido tu documentación. Estamos revisándola.'|trans,
+          'under_review': 'Tu documentación está en revisión. Te notificaremos cuando esté aprobada.'|trans,
+          'rejected': 'Tu solicitud ha sido rechazada. Contacta con soporte para más información.'|trans,
+          'suspended': 'Tu cuenta de comerciante está suspendida. Contacta con soporte.'|trans,
+        } %}
+        <p>{{ status_messages[status]|default('') }}</p>
+      </div>
+    </section>
+  {% endif %}
+
+</div>

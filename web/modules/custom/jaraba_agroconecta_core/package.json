@@ -1,0 +1,22 @@
+{
+    "name": "jaraba-agroconecta-core",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo AgroConecta Core de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/main.scss:css/agroconecta.css --style=compressed",
+        "build:all": "npm run build && echo '✅ Build AgroConecta completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "agroconecta",
+        "marketplace",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

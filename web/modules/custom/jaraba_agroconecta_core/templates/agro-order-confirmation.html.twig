@@ -1,0 +1,53 @@
+{#
+/**
+ * @file
+ * Template de confirmación de pedido para AgroConecta.
+ *
+ * Variables:
+ *   - order: Array con datos del pedido serializado.
+ *   - order_number: Número del pedido.
+ *
+ * Body class: order-confirmation-page
+ */
+#}
+<div class="agro-confirmation">
+  <div class="agro-confirmation__icon">✓</div>
+
+  <h1 class="agro-confirmation__title">
+    {{ '¡Pedido confirmado!'|t }}
+  </h1>
+
+  <p class="agro-confirmation__number">
+    {{ 'Nº de pedido:'|t }} <strong>{{ order_number }}</strong>
+  </p>
+
+  {% if order %}
+    <div class="agro-confirmation__details">
+      <div class="agro-confirmation__detail">
+        <span class="agro-confirmation__label">{{ 'Estado'|t }}</span>
+        <span class="agro-confirmation__value">{{ order.state_label }}</span>
+      </div>
+      <div class="agro-confirmation__detail">
+        <span class="agro-confirmation__label">{{ 'Total'|t }}</span>
+        <span class="agro-confirmation__value agro-confirmation__value--total">
+          {{ order.total }}
+        </span>
+      </div>
+      <div class="agro-confirmation__detail">
+        <span class="agro-confirmation__label">{{ 'Método de entrega'|t }}</span>
+        <span class="agro-confirmation__value">{{ order.delivery_method }}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="agro-confirmation__message">
+    <p>{{ 'Recibirás un email de confirmación con los detalles de tu pedido.'|t }}</p>
+    <p>{{ 'Los productores prepararán tu pedido lo antes posible.'|t }}</p>
+  </div>
+
+  <div class="agro-confirmation__actions">
+    <a href="/marketplace" class="agro-confirmation__btn agro-confirmation__btn--primary">
+      {{ 'Volver al Marketplace'|t }}
+    </a>
+  </div>
+</div>

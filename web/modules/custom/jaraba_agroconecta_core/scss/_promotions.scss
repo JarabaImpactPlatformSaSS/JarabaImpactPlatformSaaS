@@ -1,0 +1,377 @@
+/**
+ * @file
+ * Estilos de promociones y cupones AgroConecta.
+ *
+ * DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+ * Fase 6b — Promotions & Coupons.
+ */
+
+// === DISCOUNT BADGES (en Product Cards) ===
+
+.agro-discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+
+    &--percentage {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff;
+    }
+
+    &--bogo {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+    }
+
+    &--free-shipping {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+    }
+
+    &--fixed {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #fff;
+    }
+}
+
+// Precio con descuento en product cards
+.agro-product-card__price {
+    &--original {
+        text-decoration: line-through;
+        color: var(--ej-color-text-muted, #9ca3af);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 400;
+        margin-right: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    &--discounted {
+        color: #dc2626;
+        font-weight: 700;
+    }
+}
+
+// === COUPON INPUT (en Checkout) ===
+
+.agro-coupon {
+    margin-top: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-md, 1rem);
+    background: var(--ej-color-surface, #fff);
+    border: 1px dashed var(--ej-color-border, #d1d5db);
+    border-radius: var(--ej-radius-md, 8px);
+
+    &__title {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 600;
+        color: var(--ej-color-text-primary, #1a1a2e);
+        margin: 0 0 var(--ej-spacing-sm, 0.75rem);
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-xs, 0.5rem);
+    }
+
+    &__form {
+        display: flex;
+        gap: var(--ej-spacing-xs, 0.5rem);
+    }
+
+    &__input {
+        flex: 1;
+        padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 0.75rem);
+        border: 1px solid var(--ej-color-border, #d1d5db);
+        border-radius: var(--ej-radius-md, 8px);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-family: monospace;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-primary, #2d6a4f);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+        }
+
+        &--error {
+            border-color: #ef4444;
+
+            &:focus {
+                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+            }
+        }
+
+        &--success {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+    }
+
+    &__btn {
+        padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
+        background: var(--ej-color-primary, #2d6a4f);
+        color: #fff;
+        border: none;
+        border-radius: var(--ej-radius-md, 8px);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background: var(--ej-color-primary-hover, #245a42);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &--remove {
+            background: transparent;
+            color: #ef4444;
+            padding: var(--ej-spacing-xs, 0.5rem);
+            font-size: var(--ej-font-size-xs, 0.75rem);
+
+            &:hover {
+                background: #fef2f2;
+            }
+        }
+    }
+
+    &__message {
+        margin-top: var(--ej-spacing-xs, 0.5rem);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        &--success {
+            color: #059669;
+        }
+
+        &--error {
+            color: #ef4444;
+        }
+    }
+
+    // Applied coupon display
+    &__applied {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--ej-spacing-sm, 0.75rem);
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: var(--ej-radius-md, 8px);
+    }
+
+    &__applied-info {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 0.75rem);
+    }
+
+    &__applied-code {
+        font-family: monospace;
+        font-weight: 700;
+        color: #065f46;
+        text-transform: uppercase;
+    }
+
+    &__applied-discount {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: #059669;
+        font-weight: 600;
+    }
+}
+
+// === PROMO BANNER ===
+
+.agro-promo-banner {
+    position: relative;
+    overflow: hidden;
+    padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+    border-radius: var(--ej-radius-lg, 12px);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+    background: linear-gradient(135deg, #2d6a4f, #40916c, #52b788);
+    background-size: 200% 200%;
+    animation: agro-promo-gradient 6s ease infinite;
+    color: #fff;
+
+    &__content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--ej-spacing-md, 1rem);
+    }
+
+    &__text {
+        h3 {
+            font-size: var(--ej-font-size-lg, 1.125rem);
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+
+        p {
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            opacity: 0.9;
+            margin: 0;
+        }
+    }
+
+    &__cta {
+        padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-lg, 1.5rem);
+        background: #fff;
+        color: var(--ej-color-primary, #2d6a4f);
+        border: none;
+        border-radius: var(--ej-radius-md, 8px);
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    // Decorative circles
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+    }
+
+    &::before {
+        width: 200px;
+        height: 200px;
+        background: #fff;
+        top: -80px;
+        right: -40px;
+    }
+
+    &::after {
+        width: 120px;
+        height: 120px;
+        background: #fff;
+        bottom: -40px;
+        left: -20px;
+    }
+}
+
+@keyframes agro-promo-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+// === ACTIVE PROMOTIONS GRID ===
+
+.agro-promotions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.agro-promo-card {
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-lg, 12px);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border: 1px solid var(--ej-color-border, #e5e7eb);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+        transform: translateY(-2px);
+    }
+
+    &__ribbon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+
+        span {
+            position: absolute;
+            display: block;
+            width: 120px;
+            padding: 4px 0;
+            background: var(--ej-color-primary, #2d6a4f);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            transform: rotate(45deg);
+            top: 18px;
+            right: -28px;
+        }
+    }
+
+    &__name {
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        font-weight: 700;
+        color: var(--ej-color-text-primary, #1a1a2e);
+        margin: 0 0 var(--ej-spacing-xs, 0.5rem);
+    }
+
+    &__description {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-secondary, #374151);
+        margin-bottom: var(--ej-spacing-md, 1rem);
+        line-height: 1.5;
+    }
+
+    &__dates {
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-text-muted, #9ca3af);
+    }
+
+    &__usage {
+        margin-top: var(--ej-spacing-sm, 0.75rem);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-text-muted, #6b7280);
+    }
+
+    &__progress {
+        margin-top: 4px;
+        height: 4px;
+        background: var(--ej-color-border, #e5e7eb);
+        border-radius: 2px;
+        overflow: hidden;
+
+        span {
+            display: block;
+            height: 100%;
+            background: var(--ej-color-primary, #2d6a4f);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    }
+}

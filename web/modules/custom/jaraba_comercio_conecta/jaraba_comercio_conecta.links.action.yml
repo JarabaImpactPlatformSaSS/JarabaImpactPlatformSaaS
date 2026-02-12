@@ -1,0 +1,32 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Producto" en la colección de productos
+jaraba_comercio_conecta.product_retail.add:
+  title: 'Añadir Producto'
+  route_name: entity.product_retail.add_form
+  appears_on:
+    - entity.product_retail.collection
+
+# Botón "Añadir Variación" en la colección de variaciones
+jaraba_comercio_conecta.product_variation_retail.add:
+  title: 'Añadir Variación'
+  route_name: entity.product_variation_retail.add_form
+  appears_on:
+    - entity.product_variation_retail.collection
+
+# Botón "Añadir Ubicación" en la colección de ubicaciones de stock
+jaraba_comercio_conecta.stock_location.add:
+  title: 'Añadir Ubicación'
+  route_name: entity.stock_location.add_form
+  appears_on:
+    - entity.stock_location.collection
+
+# Botón "Añadir Comerciante" en la colección de comerciantes
+jaraba_comercio_conecta.merchant_profile.add:
+  title: 'Añadir Comerciante'
+  route_name: entity.merchant_profile.add_form
+  appears_on:
+    - entity.merchant_profile.collection

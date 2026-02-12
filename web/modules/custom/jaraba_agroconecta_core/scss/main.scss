@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Estilos principales del módulo AgroConecta.
+ *
+ * DIRECTRIZ: Solo consume var(--ej-*, $fallback) — NUNCA define $ej-*.
+ * Los tokens se definen en ecosistema_jaraba_core/scss/_variables.scss
+ *
+ * Compilar: cd web/modules/custom/jaraba_agroconecta_core && npm run build
+ */
+
+@use 'sass:color';
+
+// Importar parciales
+@import 'marketplace';
+@import 'producer-portal';
+@import 'checkout';
+@import 'customer-portal';
+@import 'reviews';
+@import 'notifications';
+@import 'search';
+@import 'shipping';
+@import 'promotions';
+@import 'traceability';
+@import 'analytics';
+@import 'admin';
+@import 'copilot';
+@import 'sales-chat';
+@import 'qr-dashboard';
+@import 'partner-hub';

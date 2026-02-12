@@ -1,0 +1,89 @@
+{#
+/**
+ * @file
+ * Parcial: Widget de reseñas para productos/productores.
+ *
+ * Variables:
+ *   - target_type: Tipo de entidad (product_agro, producer_profile)
+ *   - target_id: ID de la entidad
+ *   - show_form: Boolean - mostrar formulario de envío (default: false)
+ *   - review_type: Tipo de reseña (product, delivery, producer) (default: product)
+ *   - limit: Número de reseñas a cargar (default: 10)
+ *
+ * Este parcial se incluye desde los templates de producto o portal:
+ *   {% include '@jaraba_agroconecta_core/partials/agro-reviews-widget.html.twig' with {
+ *     target_type: 'product_agro',
+ *     target_id: product.id,
+ *     show_form: logged_in,
+ *   } %}
+ *
+ * DIRECTRIZ:
+ * - Todos los textos usan |t para i18n
+ * - JS se carga dinámicamente vía data attributes
+ */
+#}
+{% set review_limit = limit|default(10) %}
+{% set review_type = review_type|default('product') %}
+
+{{ attach_library('jaraba_agroconecta_core/agroconecta.reviews') }}
+
+{# Stats summary #}
+<section class="customer-portal__section">
+  <h2 class="customer-portal__section-title">⭐ {{ 'Opiniones de Clientes'|t }}</h2>
+
+  <div data-agro-stats data-agro-target-type="{{ target_type }}" data-agro-target-id="{{ target_id }}">
+    <div class="agro-reviews__loading">
+      <span class="agro-spinner"></span> {{ 'Cargando estadísticas...'|t }}
+    </div>
+  </div>
+
+  {# Reviews list #}
+  <div data-agro-reviews data-agro-target-type="{{ target_type }}" data-agro-target-id="{{ target_id }}" data-agro-limit="{{ review_limit }}">
+    <div class="agro-reviews__loading">
+      <span class="agro-spinner"></span> {{ 'Cargando reseñas...'|t }}
+    </div>
+  </div>
+</section>
+
+{# Submit form (solo autenticados) #}
+{% if show_form|default(false) %}
+  <section class="customer-portal__section">
+    <h3 class="customer-portal__section-title">✍️ {{ 'Escribe tu opinión'|t }}</h3>
+
+    <form class="agro-review-form"
+          data-agro-review-form
+          data-agro-type="{{ review_type }}"
+          data-agro-target-type="{{ target_type }}"
+          data-agro-target-id="{{ target_id }}">
+
+      <div class="agro-review-form__field">
+        <label class="agro-review-form__label">{{ 'Puntuación'|t }} *</label>
+        <div class="agro-stars agro-stars--interactive" data-rating="0">
+          {% for i in 1..5 %}
+            <span class="agro-stars__star agro-stars__star--empty" data-value="{{ i }}">★</span>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="rating" value="0" />
+      </div>
+
+      <div class="agro-review-form__field">
+        <label class="agro-review-form__label">{{ 'Título (opcional)'|t }}</label>
+        <input type="text" name="title" class="agro-review-form__input"
+               placeholder="{{ 'Resume tu experiencia...'|t }}" maxlength="255" />
+      </div>
+
+      <div class="agro-review-form__field">
+        <label class="agro-review-form__label">{{ 'Tu opinión'|t }} *</label>
+        <textarea name="body" class="agro-review-form__textarea"
+                  placeholder="{{ 'Cuéntanos tu experiencia con este producto...'|t }}"
+                  required minlength="10" maxlength="2000"></textarea>
+      </div>
+
+      <div class="agro-review-form__feedback"></div>
+
+      <button type="submit" class="agro-review-form__submit">
+        {{ 'Enviar reseña'|t }}
+      </button>
+    </form>
+  </section>
+{% endif %}

@@ -1,0 +1,86 @@
+// =============================================================================
+// ComercioConecta — Variables y Design Tokens
+//
+// DIRECTRIZ: NUNCA definir $ej-* en módulos satélite.
+// Usar SOLO var(--ej-*, fallback) para heredar tokens del tema.
+// Los valores locales son fallbacks que se aplican solo si el tema
+// no ha inyectado sus CSS Variables.
+//
+// Paleta: Comercio de Barrio → Naranja Impulso (#FF8C42)
+// Ver: docs/tecnicos/20260117f-101_Industry_Style_Presets_v1_Claude.md
+// =============================================================================
+
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// Fallback values (solo se usan si --ej-* no están definidos por el tema)
+// ---------------------------------------------------------------------------
+$comercio-primary: #FF8C42;       // Naranja Impulso
+$comercio-primary-light: color.scale($comercio-primary, $lightness: 85%);
+$comercio-primary-dark: color.scale($comercio-primary, $lightness: -25%);
+$comercio-secondary: #2D6A4F;     // Verde Confianza
+$comercio-cream: #FFF8F0;         // Crema fondo
+$comercio-text: #1A1A2E;          // Texto principal
+$comercio-text-muted: #6B7280;    // Texto secundario
+$comercio-border: #E5E7EB;        // Bordes suaves
+$comercio-surface: #FFFFFF;        // Fondo de cards
+$comercio-danger: #DC2626;         // Rojo peligro
+$comercio-warning: #F59E0B;        // Amarillo alerta
+$comercio-success: #059669;        // Verde éxito
+
+// ---------------------------------------------------------------------------
+// Spacing (scale 4px base, matching the theme)
+// ---------------------------------------------------------------------------
+$space-xs: 0.25rem;   // 4px
+$space-sm: 0.5rem;    // 8px
+$space-md: 1rem;      // 16px
+$space-lg: 1.5rem;    // 24px
+$space-xl: 2rem;      // 32px
+$space-2xl: 3rem;     // 48px
+$space-3xl: 4rem;     // 64px
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+$font-base: var(--ej-font-body, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+$font-heading: var(--ej-font-heading, 'Inter', sans-serif);
+$font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+// ---------------------------------------------------------------------------
+// Breakpoints (mobile-first)
+// ---------------------------------------------------------------------------
+$bp-sm: 576px;
+$bp-md: 768px;
+$bp-lg: 992px;
+$bp-xl: 1200px;
+$bp-2xl: 1400px;
+
+// ---------------------------------------------------------------------------
+// Border radius
+// ---------------------------------------------------------------------------
+$radius-sm: 0.375rem;   // 6px
+$radius-md: 0.5rem;     // 8px
+$radius-lg: 0.75rem;    // 12px
+$radius-xl: 1rem;       // 16px
+$radius-full: 50%;
+
+// ---------------------------------------------------------------------------
+// Shadows (glassmorphism + elevation)
+// ---------------------------------------------------------------------------
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+// ---------------------------------------------------------------------------
+// Transitions
+// ---------------------------------------------------------------------------
+$transition-fast: 150ms ease;
+$transition-base: 250ms ease;
+$transition-slow: 350ms ease;
+
+// ---------------------------------------------------------------------------
+// Container
+// ---------------------------------------------------------------------------
+$container-max: 1200px;
+$container-padding: $space-md;

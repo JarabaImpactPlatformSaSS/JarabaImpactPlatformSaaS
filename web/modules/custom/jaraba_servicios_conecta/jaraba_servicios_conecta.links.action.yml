@@ -1,0 +1,39 @@
+# =============================================================================
+# Botones de acción (+ Añadir) en las páginas de colección admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Botón "Añadir Profesional" en la colección de profesionales
+jaraba_servicios_conecta.provider_profile.add:
+  title: 'Añadir Profesional'
+  route_name: entity.provider_profile.add_form
+  appears_on:
+    - entity.provider_profile.collection
+
+# Botón "Añadir Servicio" en la colección de servicios
+jaraba_servicios_conecta.service_offering.add:
+  title: 'Añadir Servicio'
+  route_name: entity.service_offering.add_form
+  appears_on:
+    - entity.service_offering.collection
+
+# Botón "Añadir Reserva" en la colección de reservas
+jaraba_servicios_conecta.booking.add:
+  title: 'Añadir Reserva'
+  route_name: entity.booking.add_form
+  appears_on:
+    - entity.booking.collection
+
+# Botón "Añadir Slot" en la colección de disponibilidad
+jaraba_servicios_conecta.availability_slot.add:
+  title: 'Añadir Slot'
+  route_name: entity.availability_slot.add_form
+  appears_on:
+    - entity.availability_slot.collection
+
+# Botón "Añadir Paquete" en la colección de paquetes
+jaraba_servicios_conecta.service_package.add:
+  title: 'Añadir Paquete'
+  route_name: entity.service_package.add_form
+  appears_on:
+    - entity.service_package.collection

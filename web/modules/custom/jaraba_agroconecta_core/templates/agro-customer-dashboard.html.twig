@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * Dashboard principal del cliente.
+ *
+ * Variables:
+ *   - active_order: Pedido activo (NULL si no hay)
+ *   - total_orders: Total de pedidos históricos
+ *   - recent_products: Productos de compras recientes
+ *   - user_name: Nombre del usuario
+ *
+ * Body class: customer-dashboard-page
+ */
+#}
+<div class="customer-portal">
+  <div class="customer-portal__header">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <h1 class="customer-portal__title">{{ '¡Hola, @name!'|t({'@name': user_name}) }}</h1>
+
+      {# Campana de notificaciones (Fase 4) #}
+      {% include '@jaraba_agroconecta_core/partials/agro-notification-bell.html.twig' %}
+    </div>
+
+    <nav class="customer-portal__nav">
+      <a href="/mi-cuenta" class="customer-portal__nav-link customer-portal__nav-link--active">{{ 'Mi Cuenta'|t }}</a>
+      <a href="/mi-cuenta/pedidos" class="customer-portal__nav-link">{{ 'Pedidos'|t }}</a>
+      <a href="/mi-cuenta/direcciones" class="customer-portal__nav-link">{{ 'Direcciones'|t }}</a>
+      <a href="/mi-cuenta/favoritos" class="customer-portal__nav-link">{{ 'Favoritos'|t }}</a>
+    </nav>
+  </div>
+
+  {# Pedido activo #}
+  {% if active_order %}
+    <div class="customer-portal__active-order">
+      <h3 class="customer-portal__active-order-title">📦 {{ 'Pedido en Curso'|t }}</h3>
+      <div class="customer-portal__active-order-card">
+        <div class="customer-portal__active-order-info">
+          <span class="customer-portal__active-order-number">{{ active_order.order_number }}</span>
+          <span class="customer-portal__active-order-items">{{ active_order.item_count }} {{ 'productos'|t }} • {{ active_order.total }}</span>
+        </div>
+        <div class="customer-portal__active-order-status">
+          <span class="customer-portal__order-state customer-portal__order-state--{{ active_order.state }}">
+            {{ active_order.state_label }}
+          </span>
+          <a href="/mi-cuenta/pedidos/{{ active_order.order_number }}" class="customer-portal__btn customer-portal__btn--sm">{{ 'Ver tracking'|t }}</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Quick stats #}
+  <div class="customer-portal__stats">
+    <div class="customer-portal__stat-card">
+      <span class="customer-portal__stat-icon">📦</span>
+      <div class="customer-portal__stat-content">
+        <span class="customer-portal__stat-value">{{ total_orders }}</span>
+        <span class="customer-portal__stat-label">{{ 'Pedidos'|t }}</span>
+      </div>
+    </div>
+    <div class="customer-portal__stat-card">
+      <span class="customer-portal__stat-icon">❤️</span>
+      <div class="customer-portal__stat-content">
+        <span class="customer-portal__stat-value">{{ recent_products|length }}</span>
+        <span class="customer-portal__stat-label">{{ 'Productos Probados'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Comprar de nuevo #}
+  {% if recent_products is not empty %}
+    <section class="customer-portal__section">
+      <h2 class="customer-portal__section-title">🔄 {{ 'Compra de Nuevo'|t }}</h2>
+      <div class="customer-portal__product-grid">
+        {% for product in recent_products %}
+          <div class="customer-portal__product-card">
+            <div class="customer-portal__product-info">
+              <span class="customer-portal__product-name">{{ product.title }}</span>
+              <span class="customer-portal__product-price">{{ product.price }}</span>
+            </div>
+            <a href="/marketplace/producto/{{ product.product_id }}" class="customer-portal__btn customer-portal__btn--sm">{{ 'Ver'|t }}</a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Accesos rápidos #}
+  <div class="customer-portal__quick-links">
+    <a href="/mi-cuenta/pedidos" class="customer-portal__quick-link">
+      <span class="customer-portal__quick-link-icon">📦</span>
+      <span>{{ 'Ver todos mis pedidos'|t }}</span>
+    </a>
+    <a href="/marketplace" class="customer-portal__quick-link">
+      <span class="customer-portal__quick-link-icon">🛒</span>
+      <span>{{ 'Ir al Marketplace'|t }}</span>
+    </a>
+  </div>
+</div>

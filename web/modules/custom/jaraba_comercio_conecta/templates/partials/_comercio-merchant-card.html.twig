@@ -1,0 +1,72 @@
+{#
+/**
+ * @file
+ * Parcial: Card de comerciante para sidebar y producto detalle.
+ *
+ * Variables:
+ *   - merchant: Entidad MerchantProfile.
+ *   - show_link: Boolean, si se muestra link a la página del comercio.
+ */
+#}
+
+<div class="comercio-merchant-card">
+  {% if merchant.get('logo').entity %}
+    <img class="comercio-merchant-card__logo"
+         src="{{ file_url(merchant.get('logo').entity.fileuri) }}"
+         alt="{{ merchant.get('business_name').value }}"
+         loading="lazy">
+  {% else %}
+    <div class="comercio-merchant-card__logo comercio-merchant-card__logo--placeholder">
+      {{ jaraba_icon('commerce', 'store', { variant: 'duotone', size: '32px' }) }}
+    </div>
+  {% endif %}
+
+  <div class="comercio-merchant-card__info">
+    <h3 class="comercio-merchant-card__name">
+      {% if show_link|default(false) and merchant.get('slug').value %}
+        <a href="{{ path('jaraba_comercio_conecta.merchant_page', {'merchant_slug': merchant.get('slug').value}) }}">
+          {{ merchant.get('business_name').value }}
+        </a>
+      {% else %}
+        {{ merchant.get('business_name').value }}
+      {% endif %}
+    </h3>
+
+    {% set type_labels = {
+      'retail': 'Comercio'|trans,
+      'food': 'Alimentación'|trans,
+      'services': 'Servicios'|trans,
+      'crafts': 'Artesanía'|trans,
+      'other': 'Otro'|trans,
+    } %}
+    <span class="comercio-merchant-card__type">
+      {{ type_labels[merchant.get('business_type').value]|default('') }}
+    </span>
+
+    {% if merchant.get('address_city').value %}
+      <span class="comercio-merchant-card__location">
+        {{ merchant.get('address_city').value }}
+        {% if merchant.get('address_province').value %}
+          ({{ merchant.get('address_province').value }})
+        {% endif %}
+      </span>
+    {% endif %}
+
+    {% if merchant.get('average_rating').value %}
+      <div class="comercio-merchant-card__rating">
+        <span class="comercio-merchant-card__stars">
+          {{ merchant.get('average_rating').value|number_format(1) }} ★
+        </span>
+        <span class="comercio-merchant-card__review-count">
+          ({{ merchant.get('total_reviews').value|default(0) }} {% trans %}reseñas{% endtrans %})
+        </span>
+      </div>
+    {% endif %}
+
+    {% if merchant.get('accepts_click_collect').value %}
+      <span class="comercio-merchant-card__badge comercio-merchant-card__badge--click-collect">
+        {% trans %}Click & Collect{% endtrans %}
+      </span>
+    {% endif %}
+  </div>
+</div>

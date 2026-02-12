@@ -1,0 +1,2237 @@
+# Rutas del módulo Jaraba AgroConecta Core
+# CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
+
+# ============================================
+# PRODUCTOS AGRO
+# ============================================
+
+entity.product_agro.collection:
+  path: '/admin/content/agro-products'
+  defaults:
+    _entity_list: 'product_agro'
+    _title: 'Productos Agro'
+  requirements:
+    _permission: 'manage agro products'
+
+entity.product_agro.canonical:
+  path: '/admin/content/agro-products/{product_agro}'
+  defaults:
+    _entity_view: 'product_agro'
+    _title: 'Ver Producto Agro'
+  requirements:
+    _permission: 'manage agro products'
+
+entity.product_agro.add_form:
+  path: '/admin/content/agro-products/add'
+  defaults:
+    _entity_form: 'product_agro.add'
+    _title: 'Añadir Producto Agro'
+  requirements:
+    _permission: 'manage agro products'
+
+entity.product_agro.edit_form:
+  path: '/admin/content/agro-products/{product_agro}/edit'
+  defaults:
+    _entity_form: 'product_agro.edit'
+    _title: 'Editar Producto Agro'
+  requirements:
+    _permission: 'manage agro products'
+
+entity.product_agro.delete_form:
+  path: '/admin/content/agro-products/{product_agro}/delete'
+  defaults:
+    _entity_form: 'product_agro.delete'
+    _title: 'Eliminar Producto Agro'
+  requirements:
+    _permission: 'manage agro products'
+
+entity.product_agro.settings:
+  path: '/admin/structure/agro-product'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ProductAgroSettingsForm'
+    _title: 'Configuración Producto Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# PERFILES DE PRODUCTOR
+# ============================================
+
+entity.producer_profile.collection:
+  path: '/admin/content/agro-producers'
+  defaults:
+    _entity_list: 'producer_profile'
+    _title: 'Productores'
+  requirements:
+    _permission: 'manage producer profiles'
+
+entity.producer_profile.canonical:
+  path: '/admin/content/agro-producers/{producer_profile}'
+  defaults:
+    _entity_view: 'producer_profile'
+    _title: 'Ver Productor'
+  requirements:
+    _permission: 'manage producer profiles'
+
+entity.producer_profile.add_form:
+  path: '/admin/content/agro-producers/add'
+  defaults:
+    _entity_form: 'producer_profile.add'
+    _title: 'Añadir Productor'
+  requirements:
+    _permission: 'manage producer profiles'
+
+entity.producer_profile.edit_form:
+  path: '/admin/content/agro-producers/{producer_profile}/edit'
+  defaults:
+    _entity_form: 'producer_profile.edit'
+    _title: 'Editar Productor'
+  requirements:
+    _permission: 'manage producer profiles'
+
+entity.producer_profile.delete_form:
+  path: '/admin/content/agro-producers/{producer_profile}/delete'
+  defaults:
+    _entity_form: 'producer_profile.delete'
+    _title: 'Eliminar Productor'
+  requirements:
+    _permission: 'manage producer profiles'
+
+entity.producer_profile.settings:
+  path: '/admin/structure/agro-producer'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ProducerProfileSettingsForm'
+    _title: 'Configuración Perfil de Productor'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# CERTIFICACIONES AGRO
+# ============================================
+
+entity.agro_certification.collection:
+  path: '/admin/content/agro-certifications'
+  defaults:
+    _entity_list: 'agro_certification'
+    _title: 'Certificaciones Agro'
+  requirements:
+    _permission: 'manage agro certifications'
+
+entity.agro_certification.canonical:
+  path: '/admin/content/agro-certifications/{agro_certification}'
+  defaults:
+    _entity_view: 'agro_certification'
+    _title: 'Ver Certificación'
+  requirements:
+    _permission: 'manage agro certifications'
+
+entity.agro_certification.add_form:
+  path: '/admin/content/agro-certifications/add'
+  defaults:
+    _entity_form: 'agro_certification.add'
+    _title: 'Añadir Certificación Agro'
+  requirements:
+    _permission: 'manage agro certifications'
+
+entity.agro_certification.edit_form:
+  path: '/admin/content/agro-certifications/{agro_certification}/edit'
+  defaults:
+    _entity_form: 'agro_certification.edit'
+    _title: 'Editar Certificación'
+  requirements:
+    _permission: 'manage agro certifications'
+
+entity.agro_certification.delete_form:
+  path: '/admin/content/agro-certifications/{agro_certification}/delete'
+  defaults:
+    _entity_form: 'agro_certification.delete'
+    _title: 'Eliminar Certificación'
+  requirements:
+    _permission: 'manage agro certifications'
+
+entity.agro_certification.settings:
+  path: '/admin/structure/agro-certification'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroCertificationSettingsForm'
+    _title: 'Configuración Certificaciones Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# FRONTEND: MARKETPLACE
+# ============================================
+
+jaraba_agroconecta.marketplace:
+  path: '/marketplace'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\MarketplaceController::index'
+    _title: 'Marketplace'
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.product_detail:
+  path: '/producto/{product_agro}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\MarketplaceController::productDetail'
+    _title: 'Detalle del Producto'
+  requirements:
+    _permission: 'access marketplace'
+  options:
+    parameters:
+      product_agro:
+        type: entity:product_agro
+
+# ============================================
+# CONFIGURACIÓN DEL MÓDULO
+# ============================================
+
+jaraba_agroconecta.settings:
+  path: '/admin/config/agroconecta/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroconectaSettingsForm'
+    _title: 'Configuración AgroConecta'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# API REST
+# ============================================
+
+jaraba_agroconecta.api.products:
+  path: '/api/v1/agro/products'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::listProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro products'
+
+jaraba_agroconecta.api.product:
+  path: '/api/v1/agro/products/{product_agro}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::getProduct'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro products'
+  options:
+    parameters:
+      product_agro:
+        type: entity:product_agro
+
+jaraba_agroconecta.api.producers:
+  path: '/api/v1/agro/producers'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::listProducers'
+  methods: [GET]
+  requirements:
+    _permission: 'view producer profiles'
+
+# ============================================
+# PEDIDOS AGRO (Fase 2)
+# ============================================
+
+entity.order_agro.collection:
+  path: '/admin/content/agro-orders'
+  defaults:
+    _entity_list: 'order_agro'
+    _title: 'Pedidos Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.order_agro.canonical:
+  path: '/admin/content/agro-orders/{order_agro}'
+  defaults:
+    _entity_view: 'order_agro'
+    _title: 'Ver Pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.order_agro.add_form:
+  path: '/admin/content/agro-orders/add'
+  defaults:
+    _entity_form: 'order_agro.add'
+    _title: 'Añadir Pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.order_agro.edit_form:
+  path: '/admin/content/agro-orders/{order_agro}/edit'
+  defaults:
+    _entity_form: 'order_agro.edit'
+    _title: 'Editar Pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.order_agro.delete_form:
+  path: '/admin/content/agro-orders/{order_agro}/delete'
+  defaults:
+    _entity_form: 'order_agro.delete'
+    _title: 'Eliminar Pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.order_agro.settings:
+  path: '/admin/structure/agro-order'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\OrderAgroSettingsForm'
+    _title: 'Configuración Pedidos Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# SUB-PEDIDOS AGRO (Fase 2)
+# ============================================
+
+entity.suborder_agro.collection:
+  path: '/admin/content/agro-suborders'
+  defaults:
+    _entity_list: 'suborder_agro'
+    _title: 'Sub-pedidos Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.suborder_agro.canonical:
+  path: '/admin/content/agro-suborders/{suborder_agro}'
+  defaults:
+    _entity_view: 'suborder_agro'
+    _title: 'Ver Sub-pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.suborder_agro.edit_form:
+  path: '/admin/content/agro-suborders/{suborder_agro}/edit'
+  defaults:
+    _entity_form: 'suborder_agro.edit'
+    _title: 'Editar Sub-pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.suborder_agro.delete_form:
+  path: '/admin/content/agro-suborders/{suborder_agro}/delete'
+  defaults:
+    _entity_form: 'suborder_agro.delete'
+    _title: 'Eliminar Sub-pedido Agro'
+  requirements:
+    _permission: 'manage agro orders'
+
+entity.suborder_agro.settings:
+  path: '/admin/structure/agro-suborder'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\SuborderAgroSettingsForm'
+    _title: 'Configuración Sub-pedidos Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# FRONTEND: CHECKOUT (Fase 2)
+# ============================================
+
+jaraba_agroconecta.checkout:
+  path: '/checkout'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::checkout'
+    _title: 'Checkout'
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.checkout_process:
+  path: '/checkout/process'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::processCheckout'
+  methods: [POST]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.checkout_confirm:
+  path: '/checkout/confirm'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::confirmOrder'
+  methods: [POST]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.order_confirmation:
+  path: '/pedido/{order_number}/confirmacion'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::orderConfirmation'
+    _title: 'Pedido Confirmado'
+  requirements:
+    _permission: 'access marketplace'
+
+# ============================================
+# API REST: PEDIDOS (Fase 2)
+# ============================================
+
+jaraba_agroconecta.api.orders:
+  path: '/api/v1/agro/orders'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::listOrders'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.order:
+  path: '/api/v1/agro/orders/{order_number}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::getOrder'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.orders.cancel:
+  path: '/api/v1/agro/orders/{order_number}/cancel'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::cancelOrder'
+  methods: [POST]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.producer.orders:
+  path: '/api/v1/agro/producer/orders'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::listProducerOrders'
+  methods: [GET]
+  requirements:
+    _permission: 'manage producer profiles'
+
+jaraba_agroconecta.api.producer.order.confirm:
+  path: '/api/v1/agro/producer/orders/{suborder_agro}/confirm'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::confirmSuborder'
+  methods: [POST]
+  requirements:
+    _permission: 'manage producer profiles'
+  options:
+    parameters:
+      suborder_agro:
+        type: entity:suborder_agro
+
+jaraba_agroconecta.api.producer.order.ship:
+  path: '/api/v1/agro/producer/orders/{suborder_agro}/ship'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::shipSuborder'
+  methods: [POST]
+  requirements:
+    _permission: 'manage producer profiles'
+  options:
+    parameters:
+      suborder_agro:
+        type: entity:suborder_agro
+
+# ============================================
+# PORTAL DEL PRODUCTOR (Fase 3)
+# ============================================
+
+jaraba_agroconecta.producer.dashboard:
+  path: '/productor'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::dashboard'
+    _title: 'Mi Tienda'
+  requirements:
+    _permission: 'manage producer profiles'
+
+jaraba_agroconecta.producer.orders:
+  path: '/productor/pedidos'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orders'
+    _title: 'Mis Pedidos'
+  requirements:
+    _permission: 'manage producer profiles'
+
+jaraba_agroconecta.producer.order_detail:
+  path: '/productor/pedidos/{suborder_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orderDetail'
+    _title: 'Detalle del Pedido'
+  requirements:
+    _permission: 'manage producer profiles'
+    suborder_id: '\d+'
+
+jaraba_agroconecta.producer.products:
+  path: '/productor/productos'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::products'
+    _title: 'Mis Productos'
+  requirements:
+    _permission: 'manage producer profiles'
+
+jaraba_agroconecta.producer.payouts:
+  path: '/productor/finanzas'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::payouts'
+    _title: 'Finanzas'
+  requirements:
+    _permission: 'manage producer profiles'
+
+jaraba_agroconecta.producer.settings:
+  path: '/productor/configuracion'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::settings'
+    _title: 'Configuración'
+  requirements:
+    _permission: 'manage producer profiles'
+
+# ============================================
+# PORTAL DEL CLIENTE (Fase 3)
+# ============================================
+
+jaraba_agroconecta.customer.dashboard:
+  path: '/mi-cuenta'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::dashboard'
+    _title: 'Mi Cuenta'
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.customer.orders:
+  path: '/mi-cuenta/pedidos'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::orders'
+    _title: 'Mis Pedidos'
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.customer.order_detail:
+  path: '/mi-cuenta/pedidos/{order_number}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::orderDetail'
+    _title: 'Detalle del Pedido'
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.customer.addresses:
+  path: '/mi-cuenta/direcciones'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::addresses'
+    _title: 'Mis Direcciones'
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.customer.favorites:
+  path: '/mi-cuenta/favoritos'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::favorites'
+    _title: 'Mis Favoritos'
+  requirements:
+    _role: 'authenticated'
+
+# ============================================
+# RESEÑAS AGRO (Fase 4)
+# ============================================
+
+entity.review_agro.collection:
+  path: '/admin/content/agro-reviews'
+  defaults:
+    _entity_list: 'review_agro'
+    _title: 'Reseñas Agro'
+  requirements:
+    _permission: 'manage agro reviews'
+
+entity.review_agro.canonical:
+  path: '/admin/content/agro-reviews/{review_agro}'
+  defaults:
+    _entity_view: 'review_agro'
+    _title: 'Ver Reseña'
+  requirements:
+    _permission: 'manage agro reviews'
+
+entity.review_agro.add_form:
+  path: '/admin/content/agro-reviews/add'
+  defaults:
+    _entity_form: 'review_agro.add'
+    _title: 'Añadir Reseña'
+  requirements:
+    _permission: 'manage agro reviews'
+
+entity.review_agro.edit_form:
+  path: '/admin/content/agro-reviews/{review_agro}/edit'
+  defaults:
+    _entity_form: 'review_agro.edit'
+    _title: 'Editar Reseña'
+  requirements:
+    _permission: 'manage agro reviews'
+
+entity.review_agro.delete_form:
+  path: '/admin/content/agro-reviews/{review_agro}/delete'
+  defaults:
+    _entity_form: 'review_agro.delete'
+    _title: 'Eliminar Reseña'
+  requirements:
+    _permission: 'manage agro reviews'
+
+entity.review_agro.settings:
+  path: '/admin/structure/agro-review'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ReviewAgroSettingsForm'
+    _title: 'Configuración Reseñas Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# PLANTILLAS DE NOTIFICACIÓN (Fase 4)
+# ============================================
+
+entity.notification_template_agro.collection:
+  path: '/admin/content/agro-notification-templates'
+  defaults:
+    _entity_list: 'notification_template_agro'
+    _title: 'Plantillas de Notificación Agro'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_template_agro.canonical:
+  path: '/admin/content/agro-notification-templates/{notification_template_agro}'
+  defaults:
+    _entity_view: 'notification_template_agro'
+    _title: 'Ver Plantilla de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_template_agro.add_form:
+  path: '/admin/content/agro-notification-templates/add'
+  defaults:
+    _entity_form: 'notification_template_agro.add'
+    _title: 'Añadir Plantilla de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_template_agro.edit_form:
+  path: '/admin/content/agro-notification-templates/{notification_template_agro}/edit'
+  defaults:
+    _entity_form: 'notification_template_agro.edit'
+    _title: 'Editar Plantilla de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_template_agro.delete_form:
+  path: '/admin/content/agro-notification-templates/{notification_template_agro}/delete'
+  defaults:
+    _entity_form: 'notification_template_agro.delete'
+    _title: 'Eliminar Plantilla de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_template_agro.settings:
+  path: '/admin/structure/agro-notification-template'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\NotificationTemplateAgroSettingsForm'
+    _title: 'Configuración Plantillas Notificación Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# LOGS DE NOTIFICACIÓN (Fase 4) — Solo lectura
+# ============================================
+
+entity.notification_log_agro.collection:
+  path: '/admin/content/agro-notification-logs'
+  defaults:
+    _entity_list: 'notification_log_agro'
+    _title: 'Logs de Notificación Agro'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_log_agro.canonical:
+  path: '/admin/content/agro-notification-logs/{notification_log_agro}'
+  defaults:
+    _entity_view: 'notification_log_agro'
+    _title: 'Ver Log de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_log_agro.delete_form:
+  path: '/admin/content/agro-notification-logs/{notification_log_agro}/delete'
+  defaults:
+    _entity_form: 'notification_log_agro.delete'
+    _title: 'Eliminar Log de Notificación'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.notification_log_agro.settings:
+  path: '/admin/structure/agro-notification-log'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\NotificationLogAgroSettingsForm'
+    _title: 'Configuración Logs Notificación Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# PREFERENCIAS DE NOTIFICACIÓN (Fase 4)
+# ============================================
+
+entity.notification_preference_agro.collection:
+  path: '/admin/content/agro-notification-prefs'
+  defaults:
+    _entity_list: 'notification_preference_agro'
+    _title: 'Preferencias de Notificación Agro'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_preference_agro.canonical:
+  path: '/admin/content/agro-notification-prefs/{notification_preference_agro}'
+  defaults:
+    _entity_view: 'notification_preference_agro'
+    _title: 'Ver Preferencia de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_preference_agro.add_form:
+  path: '/admin/content/agro-notification-prefs/add'
+  defaults:
+    _entity_form: 'notification_preference_agro.add'
+    _title: 'Añadir Preferencia de Notificación'
+  requirements:
+    _role: 'authenticated'
+
+entity.notification_preference_agro.edit_form:
+  path: '/admin/content/agro-notification-prefs/{notification_preference_agro}/edit'
+  defaults:
+    _entity_form: 'notification_preference_agro.edit'
+    _title: 'Editar Preferencia de Notificación'
+  requirements:
+    _role: 'authenticated'
+
+entity.notification_preference_agro.delete_form:
+  path: '/admin/content/agro-notification-prefs/{notification_preference_agro}/delete'
+  defaults:
+    _entity_form: 'notification_preference_agro.delete'
+    _title: 'Eliminar Preferencia de Notificación'
+  requirements:
+    _permission: 'manage agro notifications'
+
+entity.notification_preference_agro.settings:
+  path: '/admin/structure/agro-notification-preference'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\NotificationPreferenceAgroSettingsForm'
+    _title: 'Configuración Preferencias Notificación Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# FASE 4: API REST — Reviews
+# ============================================
+
+jaraba_agroconecta.api.reviews.list:
+  path: '/api/v1/agro/reviews'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::list'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.reviews.stats:
+  path: '/api/v1/agro/reviews/stats'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::stats'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.reviews.create:
+  path: '/api/v1/agro/reviews'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::createReview'
+  methods: [POST]
+  requirements:
+    _permission: 'submit agro reviews'
+
+jaraba_agroconecta.api.reviews.respond:
+  path: '/api/v1/agro/reviews/{review_id}/respond'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::respond'
+  methods: [POST]
+  requirements:
+    _permission: 'respond agro reviews'
+
+jaraba_agroconecta.api.reviews.pending:
+  path: '/api/v1/agro/reviews/pending'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::pending'
+  methods: [GET]
+  requirements:
+    _permission: 'manage agro reviews'
+
+jaraba_agroconecta.api.reviews.moderate:
+  path: '/api/v1/agro/reviews/{review_id}/moderate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::moderate'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro reviews'
+
+# ============================================
+# FASE 4: API REST — Notificaciones
+# ============================================
+
+jaraba_agroconecta.api.notifications.preferences.get:
+  path: '/api/v1/agro/notifications/preferences'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::getPreferences'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_agroconecta.api.notifications.preferences.update:
+  path: '/api/v1/agro/notifications/preferences'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::updatePreferences'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_agroconecta.api.notifications.send:
+  path: '/api/v1/agro/notifications/send'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::send'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro notifications'
+
+jaraba_agroconecta.api.notifications.logs:
+  path: '/api/v1/agro/notifications/logs'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::logs'
+  methods: [GET]
+  requirements:
+    _permission: 'manage agro notifications'
+
+jaraba_agroconecta.api.notifications.metrics:
+  path: '/api/v1/agro/notifications/metrics'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::metrics'
+  methods: [GET]
+  requirements:
+    _permission: 'manage agro notifications'
+
+# ============================================
+# CATEGORÍAS (Fase 5: Search & Discovery)
+# ============================================
+
+entity.agro_category.collection:
+  path: '/admin/content/agro-categories'
+  defaults:
+    _entity_list: 'agro_category'
+    _title: 'Categorías Agro'
+  requirements:
+    _permission: 'manage agro categories'
+
+entity.agro_category.canonical:
+  path: '/admin/content/agro-categories/{agro_category}'
+  defaults:
+    _entity_view: 'agro_category'
+    _title: 'Ver Categoría'
+  requirements:
+    _permission: 'manage agro categories'
+
+entity.agro_category.add_form:
+  path: '/admin/content/agro-categories/add'
+  defaults:
+    _entity_form: 'agro_category.add'
+    _title: 'Añadir Categoría'
+  requirements:
+    _permission: 'manage agro categories'
+
+entity.agro_category.edit_form:
+  path: '/admin/content/agro-categories/{agro_category}/edit'
+  defaults:
+    _entity_form: 'agro_category.edit'
+    _title: 'Editar Categoría'
+  requirements:
+    _permission: 'manage agro categories'
+
+entity.agro_category.delete_form:
+  path: '/admin/content/agro-categories/{agro_category}/delete'
+  defaults:
+    _entity_form: 'agro_category.delete'
+    _title: 'Eliminar Categoría'
+  requirements:
+    _permission: 'manage agro categories'
+
+entity.agro_category.settings:
+  path: '/admin/structure/agro-category'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroCategorySettingsForm'
+    _title: 'Configuración Categorías Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# COLECCIONES (Fase 5: Search & Discovery)
+# ============================================
+
+entity.agro_collection.collection:
+  path: '/admin/content/agro-collections'
+  defaults:
+    _entity_list: 'agro_collection'
+    _title: 'Colecciones Agro'
+  requirements:
+    _permission: 'manage agro collections'
+
+entity.agro_collection.canonical:
+  path: '/admin/content/agro-collections/{agro_collection}'
+  defaults:
+    _entity_view: 'agro_collection'
+    _title: 'Ver Colección'
+  requirements:
+    _permission: 'manage agro collections'
+
+entity.agro_collection.add_form:
+  path: '/admin/content/agro-collections/add'
+  defaults:
+    _entity_form: 'agro_collection.add'
+    _title: 'Añadir Colección'
+  requirements:
+    _permission: 'manage agro collections'
+
+entity.agro_collection.edit_form:
+  path: '/admin/content/agro-collections/{agro_collection}/edit'
+  defaults:
+    _entity_form: 'agro_collection.edit'
+    _title: 'Editar Colección'
+  requirements:
+    _permission: 'manage agro collections'
+
+entity.agro_collection.delete_form:
+  path: '/admin/content/agro-collections/{agro_collection}/delete'
+  defaults:
+    _entity_form: 'agro_collection.delete'
+    _title: 'Eliminar Colección'
+  requirements:
+    _permission: 'manage agro collections'
+
+entity.agro_collection.settings:
+  path: '/admin/structure/agro-collection'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroCollectionSettingsForm'
+    _title: 'Configuración Colecciones Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# BÚSQUEDA - API REST (Fase 5: Search & Discovery)
+# ============================================
+
+jaraba_agroconecta.api.search:
+  path: '/api/v1/agro/search'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::search'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.search.autocomplete:
+  path: '/api/v1/agro/search/autocomplete'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::autocomplete'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.categories:
+  path: '/api/v1/agro/categories'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::categories'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.categories.products:
+  path: '/api/v1/agro/categories/{category_id}/products'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::categoryProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+    category_id: '\d+'
+
+jaraba_agroconecta.api.collections:
+  path: '/api/v1/agro/collections'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::collections'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.collections.detail:
+  path: '/api/v1/agro/collections/{collection_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::collectionDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+    collection_id: '\d+'
+
+# ============================================
+# BÚSQUEDA - FRONTEND (Fase 5: Search & Discovery)
+# ============================================
+
+jaraba_agroconecta.search_page:
+  path: '/agroconecta/search'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::searchPage'
+    _title: 'Buscar Productos'
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.category_page:
+  path: '/agroconecta/category/{slug}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::categoryPage'
+    _title: 'Categoría'
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.collection_page:
+  path: '/agroconecta/collection/{slug}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::collectionPage'
+    _title: 'Colección'
+  requirements:
+    _permission: 'access marketplace'
+
+# ============================================
+# PROMOCIONES (Fase 5: Promotions & Coupons)
+# ============================================
+
+entity.promotion_agro.collection:
+  path: '/admin/content/agro-promotions'
+  defaults:
+    _entity_list: 'promotion_agro'
+    _title: 'Promociones Agro'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.promotion_agro.canonical:
+  path: '/admin/content/agro-promotions/{promotion_agro}'
+  defaults:
+    _entity_view: 'promotion_agro'
+    _title: 'Ver Promoción'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.promotion_agro.add_form:
+  path: '/admin/content/agro-promotions/add'
+  defaults:
+    _entity_form: 'promotion_agro.add'
+    _title: 'Añadir Promoción'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.promotion_agro.edit_form:
+  path: '/admin/content/agro-promotions/{promotion_agro}/edit'
+  defaults:
+    _entity_form: 'promotion_agro.edit'
+    _title: 'Editar Promoción'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.promotion_agro.delete_form:
+  path: '/admin/content/agro-promotions/{promotion_agro}/delete'
+  defaults:
+    _entity_form: 'promotion_agro.delete'
+    _title: 'Eliminar Promoción'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.promotion_agro.settings:
+  path: '/admin/structure/agro-promotion'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\PromotionAgroSettingsForm'
+    _title: 'Configuración Promociones Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# CUPONES (Fase 5: Promotions & Coupons)
+# ============================================
+
+entity.coupon_agro.collection:
+  path: '/admin/content/agro-coupons'
+  defaults:
+    _entity_list: 'coupon_agro'
+    _title: 'Cupones Agro'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.coupon_agro.canonical:
+  path: '/admin/content/agro-coupons/{coupon_agro}'
+  defaults:
+    _entity_view: 'coupon_agro'
+    _title: 'Ver Cupón'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.coupon_agro.add_form:
+  path: '/admin/content/agro-coupons/add'
+  defaults:
+    _entity_form: 'coupon_agro.add'
+    _title: 'Añadir Cupón'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.coupon_agro.edit_form:
+  path: '/admin/content/agro-coupons/{coupon_agro}/edit'
+  defaults:
+    _entity_form: 'coupon_agro.edit'
+    _title: 'Editar Cupón'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.coupon_agro.delete_form:
+  path: '/admin/content/agro-coupons/{coupon_agro}/delete'
+  defaults:
+    _entity_form: 'coupon_agro.delete'
+    _title: 'Eliminar Cupón'
+  requirements:
+    _permission: 'manage agro promotions'
+
+entity.coupon_agro.settings:
+  path: '/admin/structure/agro-coupon'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CouponAgroSettingsForm'
+    _title: 'Configuración Cupones Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# PROMOTIONS & COUPONS - API REST (Fase 5)
+# ============================================
+
+jaraba_agroconecta.api.promotions:
+  path: '/api/v1/agro/promotions'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.promotions.detail:
+  path: '/api/v1/agro/promotions/{promotion_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::detail'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+    promotion_id: '\d+'
+
+jaraba_agroconecta.api.promotions.evaluate:
+  path: '/api/v1/agro/promotions/evaluate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::evaluate'
+  methods: [POST]
+  requirements:
+    _permission: 'access checkout'
+
+jaraba_agroconecta.api.coupons.validate:
+  path: '/api/v1/agro/coupons/validate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::validateCoupon'
+  methods: [POST]
+  requirements:
+    _permission: 'access checkout'
+
+jaraba_agroconecta.api.coupons.redeem:
+  path: '/api/v1/agro/coupons/redeem'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::redeemCoupon'
+  methods: [POST]
+  requirements:
+    _permission: 'access checkout'
+
+# ============================================
+# ZONAS DE ENVÍO (Fase 5: Shipping Core)
+# ============================================
+
+entity.shipping_zone_agro.collection:
+  path: '/admin/content/agro-shipping-zones'
+  defaults:
+    _entity_list: 'shipping_zone_agro'
+    _title: 'Zonas de Envío Agro'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_zone_agro.canonical:
+  path: '/admin/content/agro-shipping-zones/{shipping_zone_agro}'
+  defaults:
+    _entity_view: 'shipping_zone_agro'
+    _title: 'Ver Zona de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_zone_agro.add_form:
+  path: '/admin/content/agro-shipping-zones/add'
+  defaults:
+    _entity_form: 'shipping_zone_agro.add'
+    _title: 'Añadir Zona de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_zone_agro.edit_form:
+  path: '/admin/content/agro-shipping-zones/{shipping_zone_agro}/edit'
+  defaults:
+    _entity_form: 'shipping_zone_agro.edit'
+    _title: 'Editar Zona de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_zone_agro.delete_form:
+  path: '/admin/content/agro-shipping-zones/{shipping_zone_agro}/delete'
+  defaults:
+    _entity_form: 'shipping_zone_agro.delete'
+    _title: 'Eliminar Zona de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_zone_agro.settings:
+  path: '/admin/structure/agro-shipping-zone'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ShippingZoneAgroSettingsForm'
+    _title: 'Configuración Zonas de Envío Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# MÉTODOS DE ENVÍO (Fase 5: Shipping Core)
+# ============================================
+
+entity.shipping_method_agro.collection:
+  path: '/admin/content/agro-shipping-methods'
+  defaults:
+    _entity_list: 'shipping_method_agro'
+    _title: 'Métodos de Envío Agro'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_method_agro.canonical:
+  path: '/admin/content/agro-shipping-methods/{shipping_method_agro}'
+  defaults:
+    _entity_view: 'shipping_method_agro'
+    _title: 'Ver Método de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_method_agro.add_form:
+  path: '/admin/content/agro-shipping-methods/add'
+  defaults:
+    _entity_form: 'shipping_method_agro.add'
+    _title: 'Añadir Método de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_method_agro.edit_form:
+  path: '/admin/content/agro-shipping-methods/{shipping_method_agro}/edit'
+  defaults:
+    _entity_form: 'shipping_method_agro.edit'
+    _title: 'Editar Método de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_method_agro.delete_form:
+  path: '/admin/content/agro-shipping-methods/{shipping_method_agro}/delete'
+  defaults:
+    _entity_form: 'shipping_method_agro.delete'
+    _title: 'Eliminar Método de Envío'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.shipping_method_agro.settings:
+  path: '/admin/structure/agro-shipping-method'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ShippingMethodAgroSettingsForm'
+    _title: 'Configuración Métodos de Envío Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# SHIPPING - API REST (Fase 5)
+# ============================================
+
+jaraba_agroconecta.api.shipping.zones:
+  path: '/api/v1/agro/shipping/zones'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::zones'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.shipping.methods:
+  path: '/api/v1/agro/shipping/methods'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::methods'
+  methods: [GET]
+  requirements:
+    _permission: 'access marketplace'
+
+jaraba_agroconecta.api.shipping.calculate:
+  path: '/api/v1/agro/shipping/calculate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::calculate'
+  methods: [POST]
+  requirements:
+    _permission: 'access checkout'
+
+jaraba_agroconecta.api.shipping.detect_zone:
+  path: '/api/v1/agro/shipping/detect-zone'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::detectZone'
+  methods: [POST]
+  requirements:
+    _permission: 'access checkout'
+
+# ============================================
+# LOTES / TRAZABILIDAD (Fase 6: Traceability)
+# ============================================
+
+entity.agro_batch.collection:
+  path: '/admin/content/agro-batches'
+  defaults:
+    _entity_list: 'agro_batch'
+    _title: 'Lotes Agro'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.agro_batch.canonical:
+  path: '/admin/content/agro-batches/{agro_batch}'
+  defaults:
+    _entity_view: 'agro_batch'
+    _title: 'Ver Lote'
+  requirements:
+    _permission: 'view agro traceability'
+
+entity.agro_batch.add_form:
+  path: '/admin/content/agro-batches/add'
+  defaults:
+    _entity_form: 'agro_batch.add'
+    _title: 'Añadir Lote'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.agro_batch.edit_form:
+  path: '/admin/content/agro-batches/{agro_batch}/edit'
+  defaults:
+    _entity_form: 'agro_batch.edit'
+    _title: 'Editar Lote'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.agro_batch.delete_form:
+  path: '/admin/content/agro-batches/{agro_batch}/delete'
+  defaults:
+    _entity_form: 'agro_batch.delete'
+    _title: 'Eliminar Lote'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.agro_batch.settings:
+  path: '/admin/structure/agro-batch'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración Lotes Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# Eventos de trazabilidad
+
+entity.trace_event_agro.collection:
+  path: '/admin/content/agro-trace-events'
+  defaults:
+    _entity_list: 'trace_event_agro'
+    _title: 'Eventos Trazabilidad'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.trace_event_agro.canonical:
+  path: '/admin/content/agro-trace-events/{trace_event_agro}'
+  defaults:
+    _entity_view: 'trace_event_agro'
+    _title: 'Ver Evento'
+  requirements:
+    _permission: 'view agro traceability'
+
+entity.trace_event_agro.add_form:
+  path: '/admin/content/agro-trace-events/add'
+  defaults:
+    _entity_form: 'trace_event_agro.add'
+    _title: 'Añadir Evento'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.trace_event_agro.edit_form:
+  path: '/admin/content/agro-trace-events/{trace_event_agro}/edit'
+  defaults:
+    _entity_form: 'trace_event_agro.edit'
+    _title: 'Editar Evento'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.trace_event_agro.delete_form:
+  path: '/admin/content/agro-trace-events/{trace_event_agro}/delete'
+  defaults:
+    _entity_form: 'trace_event_agro.delete'
+    _title: 'Eliminar Evento'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.trace_event_agro.settings:
+  path: '/admin/structure/agro-trace-event'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración Eventos Trazabilidad'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# Pruebas de integridad
+
+entity.integrity_proof_agro.collection:
+  path: '/admin/content/agro-integrity-proofs'
+  defaults:
+    _entity_list: 'integrity_proof_agro'
+    _title: 'Pruebas Integridad'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.integrity_proof_agro.canonical:
+  path: '/admin/content/agro-integrity-proofs/{integrity_proof_agro}'
+  defaults:
+    _entity_view: 'integrity_proof_agro'
+    _title: 'Ver Prueba'
+  requirements:
+    _permission: 'view agro traceability'
+
+entity.integrity_proof_agro.add_form:
+  path: '/admin/content/agro-integrity-proofs/add'
+  defaults:
+    _entity_form: 'integrity_proof_agro.add'
+    _title: 'Añadir Prueba'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.integrity_proof_agro.edit_form:
+  path: '/admin/content/agro-integrity-proofs/{integrity_proof_agro}/edit'
+  defaults:
+    _entity_form: 'integrity_proof_agro.edit'
+    _title: 'Editar Prueba'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.integrity_proof_agro.delete_form:
+  path: '/admin/content/agro-integrity-proofs/{integrity_proof_agro}/delete'
+  defaults:
+    _entity_form: 'integrity_proof_agro.delete'
+    _title: 'Eliminar Prueba'
+  requirements:
+    _permission: 'manage agro traceability'
+
+entity.integrity_proof_agro.settings:
+  path: '/admin/structure/agro-integrity-proof'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración Pruebas Integridad'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# QR CODES (Fase 6: QR Dynamic)
+# ============================================
+
+entity.qr_code_agro.collection:
+  path: '/admin/content/agro-qr-codes'
+  defaults:
+    _entity_list: 'qr_code_agro'
+    _title: 'Códigos QR Agro'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_code_agro.canonical:
+  path: '/admin/content/agro-qr-codes/{qr_code_agro}'
+  defaults:
+    _entity_view: 'qr_code_agro'
+    _title: 'Ver QR'
+  requirements:
+    _permission: 'view agro qr'
+
+entity.qr_code_agro.add_form:
+  path: '/admin/content/agro-qr-codes/add'
+  defaults:
+    _entity_form: 'qr_code_agro.add'
+    _title: 'Añadir Código QR'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_code_agro.edit_form:
+  path: '/admin/content/agro-qr-codes/{qr_code_agro}/edit'
+  defaults:
+    _entity_form: 'qr_code_agro.edit'
+    _title: 'Editar QR'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_code_agro.delete_form:
+  path: '/admin/content/agro-qr-codes/{qr_code_agro}/delete'
+  defaults:
+    _entity_form: 'qr_code_agro.delete'
+    _title: 'Eliminar QR'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_code_agro.settings:
+  path: '/admin/structure/agro-qr-code'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración QR Agro'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.qr_scan_event.collection:
+  path: '/admin/content/agro-qr-scans'
+  defaults:
+    _entity_list: 'qr_scan_event'
+    _title: 'Escaneos QR'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_scan_event.canonical:
+  path: '/admin/content/agro-qr-scans/{qr_scan_event}'
+  defaults:
+    _entity_view: 'qr_scan_event'
+    _title: 'Detalle Escaneo'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_lead_capture.collection:
+  path: '/admin/content/agro-qr-leads'
+  defaults:
+    _entity_list: 'qr_lead_capture'
+    _title: 'Leads QR'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_lead_capture.canonical:
+  path: '/admin/content/agro-qr-leads/{qr_lead_capture}'
+  defaults:
+    _entity_view: 'qr_lead_capture'
+    _title: 'Detalle Lead'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_lead_capture.delete_form:
+  path: '/admin/content/agro-qr-leads/{qr_lead_capture}/delete'
+  defaults:
+    _entity_form: 'qr_lead_capture.delete'
+    _title: 'Eliminar Lead'
+  requirements:
+    _permission: 'manage agro qr'
+
+entity.qr_lead_capture.settings:
+  path: '/admin/structure/agro-qr-lead'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración Leads QR'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# TRAZABILIDAD + QR API REST (Fase 6)
+# ============================================
+
+jaraba_agroconecta.api.traceability.batch:
+  path: '/api/v1/agro/traceability/{code}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::getBatchTraceability'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.traceability.add_event:
+  path: '/api/v1/agro/traceability/events'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::addTraceEvent'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro traceability'
+
+jaraba_agroconecta.api.traceability.verify:
+  path: '/api/v1/agro/traceability/{batch_id}/verify'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::verifyIntegrity'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro traceability'
+
+jaraba_agroconecta.api.traceability.proof:
+  path: '/api/v1/agro/traceability/proof'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::createProof'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro traceability'
+
+jaraba_agroconecta.api.qr.generate:
+  path: '/api/v1/agro/qr/generate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::generateQr'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro qr'
+
+jaraba_agroconecta.api.qr.scan:
+  path: '/api/v1/agro/qr/scan'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::trackScan'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.qr.lead:
+  path: '/api/v1/agro/qr/lead'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::captureLead'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.qr.analytics:
+  path: '/api/v1/agro/qr/{qr_id}/analytics'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::qrAnalytics'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro qr'
+
+jaraba_agroconecta.api.qr.list:
+  path: '/api/v1/agro/qr/list'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::listQrCodes'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro qr'
+
+# ============================================
+# ANALYTICS DASHBOARD (Fase 7: Doc 57)
+# ============================================
+
+entity.analytics_daily_agro.collection:
+  path: '/admin/content/agro-analytics-daily'
+  defaults:
+    _entity_list: 'analytics_daily_agro'
+    _title: 'Métricas Diarias Agro'
+  requirements:
+    _permission: 'view agro analytics'
+
+entity.analytics_daily_agro.canonical:
+  path: '/admin/content/agro-analytics-daily/{analytics_daily_agro}'
+  defaults:
+    _entity_view: 'analytics_daily_agro'
+    _title: 'Detalle Día'
+  requirements:
+    _permission: 'view agro analytics'
+
+entity.alert_rule_agro.collection:
+  path: '/admin/content/agro-alert-rules'
+  defaults:
+    _entity_list: 'alert_rule_agro'
+    _title: 'Reglas Alerta Agro'
+  requirements:
+    _permission: 'manage agro analytics'
+
+entity.alert_rule_agro.canonical:
+  path: '/admin/content/agro-alert-rules/{alert_rule_agro}'
+  defaults:
+    _entity_view: 'alert_rule_agro'
+    _title: 'Ver Regla'
+  requirements:
+    _permission: 'view agro analytics'
+
+entity.alert_rule_agro.add_form:
+  path: '/admin/content/agro-alert-rules/add'
+  defaults:
+    _entity_form: 'alert_rule_agro.add'
+    _title: 'Crear Regla Alerta'
+  requirements:
+    _permission: 'manage agro analytics'
+
+entity.alert_rule_agro.edit_form:
+  path: '/admin/content/agro-alert-rules/{alert_rule_agro}/edit'
+  defaults:
+    _entity_form: 'alert_rule_agro.edit'
+    _title: 'Editar Regla'
+  requirements:
+    _permission: 'manage agro analytics'
+
+entity.alert_rule_agro.delete_form:
+  path: '/admin/content/agro-alert-rules/{alert_rule_agro}/delete'
+  defaults:
+    _entity_form: 'alert_rule_agro.delete'
+    _title: 'Eliminar Regla'
+  requirements:
+    _permission: 'manage agro analytics'
+
+entity.alert_rule_agro.settings:
+  path: '/admin/structure/agro-alert-rule'
+  defaults:
+    _form: 'Drupal\Core\Entity\ContentEntityForm'
+    _title: 'Configuración Reglas Alerta'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# API Analytics
+
+jaraba_agroconecta.api.analytics.dashboard:
+  path: '/api/v1/agro/analytics/dashboard'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::dashboard'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro analytics'
+
+jaraba_agroconecta.api.analytics.top_products:
+  path: '/api/v1/agro/analytics/top-products'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::topProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro analytics'
+
+jaraba_agroconecta.api.analytics.top_producers:
+  path: '/api/v1/agro/analytics/top-producers'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::topProducers'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro analytics'
+
+jaraba_agroconecta.api.analytics.aggregate:
+  path: '/api/v1/agro/analytics/aggregate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::aggregate'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro analytics'
+
+jaraba_agroconecta.api.analytics.alerts:
+  path: '/api/v1/agro/analytics/alerts'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::alerts'
+  methods: [GET]
+  requirements:
+    _permission: 'view agro analytics'
+
+jaraba_agroconecta.api.analytics.evaluate_alerts:
+  path: '/api/v1/agro/analytics/alerts/evaluate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::evaluateAlerts'
+  methods: [POST]
+  requirements:
+    _permission: 'manage agro analytics'
+
+# ============================================
+# ADMIN PANEL (Fase 8: Doc 58)
+# ============================================
+
+jaraba_agroconecta.api.admin.overview:
+  path: '/api/v1/agro/admin/overview'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::overview'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+jaraba_agroconecta.api.admin.health:
+  path: '/api/v1/agro/admin/health'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::health'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+jaraba_agroconecta.api.admin.activity:
+  path: '/api/v1/agro/admin/activity'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::activity'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+jaraba_agroconecta.api.admin.report_products:
+  path: '/api/v1/agro/admin/reports/products'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportProducts'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+jaraba_agroconecta.api.admin.report_orders:
+  path: '/api/v1/agro/admin/reports/orders'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportOrders'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+jaraba_agroconecta.api.admin.report_producers:
+  path: '/api/v1/agro/admin/reports/producers'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportProducers'
+  methods: [GET]
+  requirements:
+    _permission: 'administer agroconecta'
+
+# ============================================
+# PRODUCER COPILOT (Fase 9: Doc 67)
+# ============================================
+
+entity.copilot_conversation_agro.collection:
+  path: '/admin/content/agro-copilot-conversations'
+  defaults:
+    _entity_list: 'copilot_conversation_agro'
+    _title: 'Conversaciones Copiloto'
+  requirements:
+    _permission: 'manage agro copilot'
+
+entity.copilot_conversation_agro.canonical:
+  path: '/admin/content/agro-copilot-conversations/{copilot_conversation_agro}'
+  defaults:
+    _entity_view: 'copilot_conversation_agro'
+    _title: 'Conversación'
+  requirements:
+    _permission: 'use agro copilot'
+
+entity.copilot_message_agro.collection:
+  path: '/admin/content/agro-copilot-messages'
+  defaults:
+    _entity_list: 'copilot_message_agro'
+    _title: 'Mensajes Copiloto'
+  requirements:
+    _permission: 'manage agro copilot'
+
+# API Copilot
+
+jaraba_agroconecta.api.copilot.chat:
+  path: '/api/v1/producer/copilot/chat'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::chat'
+  methods: [POST]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.generate_description:
+  path: '/api/v1/producer/copilot/generate/description'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::generateDescription'
+  methods: [POST]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.suggest_price:
+  path: '/api/v1/producer/copilot/generate/price'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::suggestPrice'
+  methods: [POST]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.review_response:
+  path: '/api/v1/producer/copilot/generate/review-response'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::reviewResponse'
+  methods: [POST]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.conversations:
+  path: '/api/v1/producer/copilot/conversations'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::conversations'
+  methods: [GET]
+  requirements:
+    _permission: 'use agro copilot'
+
+jaraba_agroconecta.api.copilot.messages:
+  path: '/api/v1/producer/copilot/conversations/{conversation_id}/messages'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::messages'
+  methods: [GET]
+  requirements:
+    _permission: 'use agro copilot'
+
+# ============================================
+# SALES AGENT (Sprint AC5-17/18)
+# ============================================
+
+# API Sales Agent
+
+jaraba_agroconecta.api.sales.chat:
+  path: '/api/v1/sales/chat'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::chat'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.conversations:
+  path: '/api/v1/sales/conversations'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::listConversations'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.sales.search:
+  path: '/api/v1/sales/search'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::search'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.recommendations:
+  path: '/api/v1/sales/recommendations'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::recommendations'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.sales.cart_add:
+  path: '/api/v1/sales/cart/add'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::addToCart'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.coupon_apply:
+  path: '/api/v1/sales/coupon/apply'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::applyCoupon'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.order_status:
+  path: '/api/v1/sales/order/{order_id}/status'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::orderStatus'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    order_id: '\d+'
+
+jaraba_agroconecta.api.sales.preferences:
+  path: '/api/v1/sales/preferences'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::getPreferences'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.sales.rate:
+  path: '/api/v1/sales/conversations/{conversation_id}/rate'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::rateConversation'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+    conversation_id: '\d+'
+
+# ============================================
+# QR DYNAMIC SYSTEM (Sprint AC6-1 — Doc 81)
+# ============================================
+
+# Redirect público — Puente phy-gital (sin autenticación)
+jaraba_agroconecta.qr.redirect:
+  path: '/q/{code}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::redirectQr'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# API QR Management
+jaraba_agroconecta.api.qr.detail:
+  path: '/api/v1/agro/qr/{qr_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::getQr'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    qr_id: '\d+'
+
+jaraba_agroconecta.api.qr.update:
+  path: '/api/v1/agro/qr/{qr_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::updateQr'
+  methods: [PATCH]
+  requirements:
+    _role: 'authenticated'
+    qr_id: '\d+'
+
+jaraba_agroconecta.api.qr.delete:
+  path: '/api/v1/agro/qr/{qr_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::deleteQr'
+  methods: [DELETE]
+  requirements:
+    _role: 'authenticated'
+    qr_id: '\d+'
+
+jaraba_agroconecta.api.qr.scans:
+  path: '/api/v1/agro/qr/{qr_id}/scans'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::listScans'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    qr_id: '\d+'
+
+jaraba_agroconecta.api.qr.batch:
+  path: '/api/v1/agro/qr/batch'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::batchGenerate'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.qr.download:
+  path: '/api/v1/agro/qr/{qr_id}/download/{format}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::downloadQr'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    qr_id: '\d+'
+    format: 'png|svg|pdf'
+
+jaraba_agroconecta.api.qr.dashboard:
+  path: '/api/v1/agro/qr/dashboard'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::dashboard'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+# ============================================
+# LEAD MANAGEMENT (Doc 81)
+# ============================================
+
+# Captura pública de lead (desde landing QR, sin autenticación)
+jaraba_agroconecta.api.leads.capture:
+  path: '/api/v1/agro/leads'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::capture'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.leads.list:
+  path: '/api/v1/agro/leads'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::list'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.leads.detail:
+  path: '/api/v1/agro/leads/{lead_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::get'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    lead_id: '\d+'
+
+jaraba_agroconecta.api.leads.delete:
+  path: '/api/v1/agro/leads/{lead_id}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::delete'
+  methods: [DELETE]
+  requirements:
+    _role: 'authenticated'
+    lead_id: '\d+'
+
+jaraba_agroconecta.api.leads.export:
+  path: '/api/v1/agro/leads/export'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::export'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.leads.sync:
+  path: '/api/v1/agro/leads/{lead_id}/sync'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::syncCrm'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+    lead_id: '\d+'
+
+# ============================================
+# PARTNER DOCUMENT HUB B2B (Sprint AC6-2 — Doc 82)
+# ============================================
+
+# --- Entity Settings Routes (Field UI) ---
+entity.partner_relationship.settings:
+  path: '/admin/structure/partner-relationship'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\PartnerRelationshipSettingsForm'
+    _title: 'Configuración Relación Partner'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.product_document.settings:
+  path: '/admin/structure/product-document'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\ProductDocumentSettingsForm'
+    _title: 'Configuración Documento de Producto'
+  requirements:
+    _permission: 'administer agroconecta'
+
+# --- Producer API (authenticated) ---
+
+jaraba_agroconecta.api.hub.partners.create:
+  path: '/api/v1/hub/partners'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::createPartner'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.partners.list:
+  path: '/api/v1/hub/partners'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::listPartners'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.partners.update:
+  path: '/api/v1/hub/partners/{uuid}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::updatePartner'
+  methods: [PATCH]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.partners.revoke:
+  path: '/api/v1/hub/partners/{uuid}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::revokePartner'
+  methods: [DELETE]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.documents.upload:
+  path: '/api/v1/hub/documents'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::uploadDocument'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.documents.list:
+  path: '/api/v1/hub/documents'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::listDocuments'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.documents.update:
+  path: '/api/v1/hub/documents/{uuid}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::updateDocument'
+  methods: [PATCH]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.documents.delete:
+  path: '/api/v1/hub/documents/{uuid}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::deleteDocument'
+  methods: [DELETE]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_agroconecta.api.hub.analytics:
+  path: '/api/v1/hub/analytics'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::getAnalytics'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+
+# --- Partner Portal API (public, token-based auth) ---
+
+jaraba_agroconecta.api.portal.data:
+  path: '/api/v1/portal/{token}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::getPortalData'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.portal.products:
+  path: '/api/v1/portal/{token}/products'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::listProducts'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.portal.product_documents:
+  path: '/api/v1/portal/{token}/products/{product_id}/documents'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::getProductDocuments'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    product_id: '\d+'
+
+jaraba_agroconecta.api.portal.all_documents:
+  path: '/api/v1/portal/{token}/documents'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::listAllDocuments'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.portal.download:
+  path: '/api/v1/portal/{token}/documents/{uuid}/download'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadDocument'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.portal.download_pack:
+  path: '/api/v1/portal/{token}/products/{product_id}/download-pack'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadPack'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    product_id: '\d+'
+
+jaraba_agroconecta.api.portal.download_all:
+  path: '/api/v1/portal/{token}/download-all'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadAll'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.portal.request_link:
+  path: '/api/v1/portal/request-link'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::requestMagicLink'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# ============================================
+# SPRINT AC6-2: PARTNER DOCUMENT HUB B2B
+# Settings routes para Field UI (los CRUD los genera AdminHtmlRouteProvider)
+# Nota: entity.partner_relationship.settings ya definida arriba (línea 2073)
+# ============================================
+
+# Nota: entity.product_document.settings ya definida arriba (línea 2081)

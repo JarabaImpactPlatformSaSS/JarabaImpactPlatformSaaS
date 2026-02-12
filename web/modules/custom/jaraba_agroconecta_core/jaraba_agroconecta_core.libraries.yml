@@ -1,0 +1,217 @@
+# Bibliotecas del módulo AgroConecta Core
+
+agroconecta.frontend:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global
+    - ecosistema_jaraba_theme/slide-panel
+
+agroconecta.marketplace:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/marketplace.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.admin:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  dependencies:
+    - core/drupal
+
+agroconecta.checkout:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/checkout.js: {}
+    https://js.stripe.com/v3/: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.producer:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/producer-portal.js: {}
+    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.customer:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/customer-portal.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.reviews:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/reviews.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.notifications:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/notifications.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.search:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/search.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.shipping:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/shipping.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.traceability:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/traceability.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.analytics:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/analytics.js: {}
+    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.copilot:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/copilot.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.sales-chat:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/sales-chat.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.qr-dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/qr-dashboard.js: {}
+    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.lead-capture:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/qr-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend
+
+agroconecta.partner-hub:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  js:
+    js/partner-hub.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_agroconecta_core/agroconecta.frontend

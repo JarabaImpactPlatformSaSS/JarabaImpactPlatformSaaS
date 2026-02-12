@@ -1,0 +1,301 @@
+// ============================================
+// Notification Center - AgroConecta (Phase 4)
+// ============================================
+// BEM: .agro-bell__, .agro-prefs__
+// DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+//
+// COMPILACIÓN:
+// docker exec jarabasaas_appserver_1 bash -c \
+//   "cd /app/web/modules/custom/jaraba_agroconecta_core && npx sass scss/main.scss css/agroconecta.css --style=compressed"
+
+$notif-primary: var(--ej-color-agro, #556B2F);
+$notif-surface: var(--ej-bg-surface, #ffffff);
+$notif-text: var(--ej-text-primary, #1a1a2e);
+$notif-text-muted: var(--ej-text-muted, #6c757d);
+$notif-border: var(--ej-border-color, #e0e0e0);
+$notif-radius: var(--ej-radius-md, 12px);
+$notif-radius-sm: var(--ej-radius-sm, 8px);
+$notif-shadow: var(--ej-shadow-md, 0 2px 12px rgba(0, 0, 0, 0.06));
+$notif-danger: var(--ej-color-danger, #EF4444);
+$notif-success: var(--ej-color-success, #10B981);
+
+// === Bell Widget ===
+.agro-bell {
+    position: relative;
+    display: inline-flex;
+
+    &__toggle {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid $notif-border;
+        background: $notif-surface;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 20px;
+
+        &:hover {
+            box-shadow: $notif-shadow;
+            transform: translateY(-1px);
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 10px;
+        background: $notif-danger;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 360px;
+        max-height: 420px;
+        overflow-y: auto;
+        background: $notif-surface;
+        border-radius: $notif-radius;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        border: 1px solid $notif-border;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        &--open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid $notif-border;
+
+        h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    &__list {
+        padding: 4px 0;
+    }
+
+    &__item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        transition: background 0.15s ease;
+        cursor: pointer;
+
+        &:hover {
+            background: var(--ej-bg-muted, #f8fafc);
+        }
+
+        &--unread {
+            background: rgba(85, 107, 47, 0.04);
+            border-left: 3px solid $notif-primary;
+        }
+    }
+
+    &__icon {
+        font-size: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    &__content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__subject {
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0 0 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__time {
+        font-size: 12px;
+        color: $notif-text-muted;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 24px;
+        color: $notif-text-muted;
+        font-size: 14px;
+    }
+
+    &__error {
+        text-align: center;
+        padding: 16px;
+        color: $notif-danger;
+        font-size: 13px;
+    }
+
+    &__loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+}
+
+// === Notification Preferences ===
+.agro-prefs {
+    &__title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 20px;
+    }
+
+    &__grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    &__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        background: $notif-surface;
+        border-radius: $notif-radius-sm;
+        border: 1px solid $notif-border;
+        transition: box-shadow 0.2s ease;
+
+        &:hover {
+            box-shadow: $notif-shadow;
+        }
+    }
+
+    &__type-label {
+        font-weight: 500;
+        font-size: 14px;
+        text-transform: capitalize;
+    }
+
+    &__channels {
+        display: flex;
+        gap: 16px;
+    }
+
+    &__channel {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        cursor: pointer;
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #556B2F;
+            cursor: pointer;
+        }
+    }
+
+    &__save {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: $notif-primary;
+        color: #fff;
+        border: none;
+        border-radius: $notif-radius-sm;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.9;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__feedback {
+        margin-top: 12px;
+        font-size: 13px;
+        padding: 8px 12px;
+        border-radius: $notif-radius-sm;
+
+        &--success {
+            background: rgba(16, 185, 129, 0.08);
+            color: $notif-success;
+        }
+
+        &--error {
+            background: rgba(239, 68, 68, 0.08);
+            color: $notif-danger;
+        }
+    }
+}
+
+// === Responsive ===
+@media (max-width: 768px) {
+    .agro-bell__dropdown {
+        width: 300px;
+        right: -20px;
+    }
+
+    .agro-prefs {
+        &__row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        &__channels {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .agro-bell__dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: $notif-radius $notif-radius 0 0;
+    }
+}

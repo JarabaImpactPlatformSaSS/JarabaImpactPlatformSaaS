@@ -1,0 +1,17 @@
+name: Jaraba Andalucía +ei
+type: module
+description: 'Programa Andalucía +ei - Emprendimiento Aumentado con IA y Estrategia Real. Gestión de participantes, tracking de horas IA y fases PIIL.'
+package: Jaraba Programas
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_sepe_teleformacion:jaraba_sepe_teleformacion
+  - jaraba_lms:jaraba_lms
+  - jaraba_mentoring:jaraba_mentoring
+  - jaraba_copilot_v2:jaraba_copilot_v2
+
+configure: jaraba_andalucia_ei.settings

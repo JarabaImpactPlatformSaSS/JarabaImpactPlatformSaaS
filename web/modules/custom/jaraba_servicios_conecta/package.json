@@ -1,0 +1,12 @@
+{
+  "name": "jaraba-servicios-conecta",
+  "version": "1.0.0",
+  "description": "SCSS compilation for ServiciosConecta module",
+  "scripts": {
+    "build": "sass scss/main.scss:css/jaraba-servicios-conecta.css --style=compressed",
+    "watch": "sass scss/main.scss:css/jaraba-servicios-conecta.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

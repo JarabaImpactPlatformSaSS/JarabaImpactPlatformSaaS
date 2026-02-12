@@ -1,0 +1,34 @@
+{#
+ # Template: Listado de Servicios del Profesional
+ # Ruta: /mi-servicio/servicios
+ # Variables: provider, offerings, total, current_filters
+ #}
+
+<div class="servicios-provider-offerings">
+  <header class="servicios-provider-offerings__header">
+    <h1>{{ 'Mis Servicios'|t }}</h1>
+    <a href="/mi-servicio/servicios/add" class="btn btn--primary"
+       data-slide-panel data-slide-panel-title="{{ 'Nuevo Servicio'|t }}">
+      {{ 'Añadir Servicio'|t }}
+    </a>
+  </header>
+
+  <p class="servicios-provider-offerings__count">
+    {{ '%count servicios configurados'|t({'%count': total}) }}
+  </p>
+
+  {% if offerings|length > 0 %}
+    <div class="servicios-provider-offerings__grid">
+      {% for offering in offerings %}
+        {% include '@jaraba_servicios_conecta/partials/service-card.html.twig' with {
+          service: offering,
+          show_actions: true
+        } only %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="servicios-provider-offerings__empty">
+      <p>{{ 'Aún no has creado ningún servicio. Crea tu primer servicio para que los clientes puedan reservar citas.'|t }}</p>
+    </div>
+  {% endif %}
+</div>

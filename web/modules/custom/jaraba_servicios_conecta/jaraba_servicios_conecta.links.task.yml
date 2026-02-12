@@ -1,0 +1,39 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de ServiciosConecta
+# Cada entidad aparece como una pestaña en la sección de contenido
+# =============================================================================
+
+# Tab Profesionales en admin/content
+jaraba_servicios_conecta.provider_profile.collection:
+  title: 'Profesionales'
+  route_name: entity.provider_profile.collection
+  base_route: system.admin_content
+  weight: 60
+
+# Tab Servicios en admin/content
+jaraba_servicios_conecta.service_offering.collection:
+  title: 'Servicios'
+  route_name: entity.service_offering.collection
+  base_route: system.admin_content
+  weight: 61
+
+# Tab Reservas en admin/content
+jaraba_servicios_conecta.booking.collection:
+  title: 'Reservas'
+  route_name: entity.booking.collection
+  base_route: system.admin_content
+  weight: 62
+
+# Tab Disponibilidad en admin/content
+jaraba_servicios_conecta.availability_slot.collection:
+  title: 'Disponibilidad'
+  route_name: entity.availability_slot.collection
+  base_route: system.admin_content
+  weight: 63
+
+# Tab Paquetes en admin/content
+jaraba_servicios_conecta.service_package.collection:
+  title: 'Paquetes'
+  route_name: entity.service_package.collection
+  base_route: system.admin_content
+  weight: 64

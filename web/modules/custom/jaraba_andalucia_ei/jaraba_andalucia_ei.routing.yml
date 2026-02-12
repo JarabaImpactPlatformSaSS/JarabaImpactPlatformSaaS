@@ -1,0 +1,80 @@
+# Rutas del módulo Andalucía +ei
+# CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
+
+# === COLECCIÓN DE PARTICIPANTES ===
+entity.programa_participante_ei.collection:
+  path: '/admin/content/andalucia-ei'
+  defaults:
+    _entity_list: 'programa_participante_ei'
+    _title: 'Participantes Andalucía +ei'
+  requirements:
+    _permission: 'view programa participante ei'
+
+# === CRUD PARTICIPANTE ===
+entity.programa_participante_ei.canonical:
+  path: '/admin/content/andalucia-ei/{programa_participante_ei}'
+  defaults:
+    _entity_view: 'programa_participante_ei'
+    _title: 'Ver Participante'
+  requirements:
+    _permission: 'view programa participante ei'
+
+entity.programa_participante_ei.add_form:
+  path: '/admin/content/andalucia-ei/add'
+  defaults:
+    _entity_form: 'programa_participante_ei.add'
+    _title: 'Añadir Participante'
+  requirements:
+    _permission: 'create programa participante ei'
+
+entity.programa_participante_ei.edit_form:
+  path: '/admin/content/andalucia-ei/{programa_participante_ei}/edit'
+  defaults:
+    _entity_form: 'programa_participante_ei.edit'
+    _title: 'Editar Participante'
+  requirements:
+    _permission: 'edit programa participante ei'
+
+entity.programa_participante_ei.delete_form:
+  path: '/admin/content/andalucia-ei/{programa_participante_ei}/delete'
+  defaults:
+    _entity_form: 'programa_participante_ei.delete'
+    _title: 'Eliminar Participante'
+  requirements:
+    _permission: 'delete programa participante ei'
+
+# === SETTINGS (para Field UI) - en /admin/structure ===
+entity.programa_participante_ei.settings:
+  path: '/admin/structure/programa-participante-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\ProgramaParticipanteEiSettingsForm'
+    _title: 'Configuración Participante Andalucía +ei'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === CONFIGURACIÓN DEL MÓDULO ===
+jaraba_andalucia_ei.settings:
+  path: '/admin/config/programas/andalucia-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\AndaluciaEiSettingsForm'
+    _title: 'Configuración Andalucía +ei'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === EXPORTACIÓN STO ===
+jaraba_andalucia_ei.sto_export:
+  path: '/admin/content/andalucia-ei/export-sto'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\StoExportController::exportForm'
+    _title: 'Exportar para STO'
+  requirements:
+    _permission: 'export sto data'
+
+# === FRONTEND DASHBOARD ===
+jaraba_andalucia_ei.dashboard:
+  path: '/andalucia-ei'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard'
+    _title: 'Andalucía +ei'
+  requirements:
+    _permission: 'access content'

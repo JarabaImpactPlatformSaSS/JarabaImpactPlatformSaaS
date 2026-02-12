@@ -1,0 +1,121 @@
+// =============================================================================
+// ComercioConecta — Merchant Products & Analytics Styles
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Merchant products header
+// ---------------------------------------------------------------------------
+.comercio-merchant-products {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+    padding-block: $space-xl;
+
+    @media (min-width: $bp-md) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $comercio-text-muted);
+  }
+
+  &__filters {
+    margin-bottom: $space-lg;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Filter tabs
+// ---------------------------------------------------------------------------
+.comercio-filter-tabs {
+  display: flex;
+  gap: $space-xs;
+  overflow-x: auto;
+  padding-bottom: $space-xs;
+}
+
+.comercio-filter-tab {
+  padding: $space-sm $space-md;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--ej-color-body, $comercio-text);
+  background: var(--ej-card-bg, $comercio-surface);
+  border: 1px solid var(--ej-card-border, $comercio-border);
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: var(--ej-color-primary, $comercio-primary);
+  }
+
+  &--active {
+    background: var(--ej-color-primary, $comercio-primary);
+    border-color: var(--ej-color-primary, $comercio-primary);
+    color: #fff;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Period selector (analytics)
+// ---------------------------------------------------------------------------
+.comercio-merchant-analytics__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  padding-block: $space-xl;
+
+  @media (min-width: $bp-md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  h1 {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.comercio-period-selector {
+  display: flex;
+  gap: $space-xs;
+}
+
+.comercio-period-btn {
+  padding: $space-xs $space-md;
+  border-radius: $radius-sm;
+  font-size: 0.8125rem;
+  text-decoration: none;
+  color: var(--ej-color-body, $comercio-text);
+  background: var(--ej-card-bg, $comercio-surface);
+  border: 1px solid var(--ej-card-border, $comercio-border);
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: var(--ej-color-primary, $comercio-primary);
+  }
+
+  &--active {
+    background: var(--ej-color-primary, $comercio-primary);
+    border-color: var(--ej-color-primary, $comercio-primary);
+    color: #fff;
+  }
+}

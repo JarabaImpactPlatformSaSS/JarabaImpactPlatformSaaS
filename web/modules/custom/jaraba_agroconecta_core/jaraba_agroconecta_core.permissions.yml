@@ -1,0 +1,166 @@
+# Permisos del módulo Jaraba AgroConecta Core
+
+administer agroconecta:
+  title: 'Administrar AgroConecta'
+  description: 'Acceso completo a la gestión del marketplace AgroConecta.'
+  restrict access: true
+
+manage agro products:
+  title: 'Gestionar productos agro'
+  description: 'Crear, editar y eliminar productos agroalimentarios.'
+
+view agro products:
+  title: 'Ver productos agro'
+  description: 'Ver el catálogo de productos agroalimentarios.'
+
+manage producer profiles:
+  title: 'Gestionar perfiles de productor'
+  description: 'Crear, editar y eliminar perfiles de productor.'
+  restrict access: true
+
+view producer profiles:
+  title: 'Ver perfiles de productor'
+  description: 'Ver los perfiles de productor del marketplace.'
+
+manage agro certifications:
+  title: 'Gestionar certificaciones agro'
+  description: 'Crear, editar y eliminar certificaciones de producto.'
+  restrict access: true
+
+view agro certifications:
+  title: 'Ver certificaciones agro'
+  description: 'Ver las certificaciones de productos agroalimentarios.'
+
+access marketplace:
+  title: 'Acceder al marketplace'
+  description: 'Ver la página pública del marketplace AgroConecta.'
+
+manage agro orders:
+  title: 'Gestionar pedidos agro'
+  description: 'Ver, editar y gestionar pedidos del marketplace.'
+  restrict access: true
+
+view own agro orders:
+  title: 'Ver mis pedidos agro'
+  description: 'Ver el historial de pedidos propios.'
+
+access checkout:
+  title: 'Acceder al checkout'
+  description: 'Realizar compras en el marketplace AgroConecta.'
+
+# Fase 4: Reviews
+
+manage agro reviews:
+  title: 'Gestionar reseñas agro'
+  description: 'Moderar, editar y eliminar reseñas del marketplace.'
+  restrict access: true
+
+view agro reviews:
+  title: 'Ver reseñas agro'
+  description: 'Ver las reseñas publicadas en el marketplace.'
+
+submit agro reviews:
+  title: 'Enviar reseñas agro'
+  description: 'Crear nuevas reseñas de productos y productores.'
+
+respond agro reviews:
+  title: 'Responder a reseñas agro'
+  description: 'Responder como productor a las reseñas recibidas.'
+
+# Fase 4: Notificaciones
+
+manage agro notifications:
+  title: 'Gestionar notificaciones agro'
+  description: 'Administrar plantillas, ver logs y gestionar preferencias de notificación.'
+  restrict access: true
+
+# Fase 5: Search & Discovery
+
+manage agro categories:
+  title: 'Gestionar categorías agro'
+  description: 'Crear, editar y eliminar categorías de producto del marketplace.'
+  restrict access: true
+
+view agro categories:
+  title: 'Ver categorías agro'
+  description: 'Ver las categorías de producto del marketplace.'
+
+manage agro collections:
+  title: 'Gestionar colecciones agro'
+  description: 'Crear, editar y eliminar colecciones de productos.'
+  restrict access: true
+
+view agro collections:
+  title: 'Ver colecciones agro'
+  description: 'Ver las colecciones de productos del marketplace.'
+
+# Fase 5: Promotions & Coupons
+
+manage agro promotions:
+  title: 'Gestionar promociones agro'
+  description: 'Crear, editar y eliminar promociones y cupones del marketplace.'
+  restrict access: true
+
+view agro promotions:
+  title: 'Ver promociones agro'
+  description: 'Ver las promociones activas del marketplace.'
+
+# Fase 5: Shipping Core
+
+manage agro shipping:
+  title: 'Gestionar envío agro'
+  description: 'Crear y gestionar zonas y métodos de envío del marketplace.'
+  restrict access: true
+
+view agro shipping:
+  title: 'Ver opciones de envío agro'
+  description: 'Ver las opciones de envío disponibles.'
+
+# ============================================
+# TRAZABILIDAD + QR (Fase 6)
+# ============================================
+
+manage agro traceability:
+  title: 'Gestionar trazabilidad agro'
+  description: 'Crear lotes, eventos y pruebas de integridad.'
+  restrict access: true
+
+view agro traceability:
+  title: 'Ver trazabilidad agro'
+  description: 'Ver lotes, cadena de eventos y pruebas de integridad.'
+
+manage agro qr:
+  title: 'Gestionar QR agro'
+  description: 'Crear y gestionar códigos QR, ver analytics y leads.'
+  restrict access: true
+
+view agro qr:
+  title: 'Ver QR agro'
+  description: 'Ver códigos QR, escaneos y analytics.'
+
+# ============================================
+# ANALYTICS (Fase 7)
+# ============================================
+
+manage agro analytics:
+  title: 'Gestionar analytics agro'
+  description: 'Crear métricas, configurar reglas de alerta y forzar agregación.'
+  restrict access: true
+
+view agro analytics:
+  title: 'Ver analytics agro'
+  description: 'Ver dashboard, KPIs, rankings y alertas.'
+
+# ============================================
+# COPILOT (Fase 9)
+# ============================================
+
+use agro copilot:
+  title: 'Usar copiloto agro'
+  description: 'Chatear con el copiloto IA, generar descripciones y sugerencias.'
+
+manage agro copilot:
+  title: 'Gestionar copiloto agro'
+  description: 'Ver todas las conversaciones, moderar respuestas y configurar.'
+  restrict access: true
+

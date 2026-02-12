@@ -1,0 +1,25 @@
+services:
+  jaraba_andalucia_ei.ai_mentorship_tracker:
+    class: Drupal\jaraba_andalucia_ei\Service\AiMentorshipTracker
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.sto_export:
+    class: Drupal\jaraba_andalucia_ei\Service\StoExportService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_sepe_teleformacion.soap_service'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.fase_transition_manager:
+    class: Drupal\jaraba_andalucia_ei\Service\FaseTransitionManager
+    arguments:
+      - '@entity_type.manager'
+      - '@event_dispatcher'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  logger.channel.jaraba_andalucia_ei:
+    parent: logger.channel_base
+    arguments: ['jaraba_andalucia_ei']

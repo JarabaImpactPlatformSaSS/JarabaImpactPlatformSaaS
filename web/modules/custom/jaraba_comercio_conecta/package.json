@@ -1,0 +1,12 @@
+{
+  "name": "jaraba-comercio-conecta",
+  "version": "1.0.0",
+  "description": "SCSS compilation for ComercioConecta module",
+  "scripts": {
+    "build": "sass scss/main.scss:css/jaraba-comercio-conecta.css --style=compressed",
+    "watch": "sass scss/main.scss:css/jaraba-comercio-conecta.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

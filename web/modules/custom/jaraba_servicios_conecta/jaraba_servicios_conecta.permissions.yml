@@ -1,0 +1,115 @@
+# =============================================================================
+# Permisos del módulo ServiciosConecta
+# Estructura: permisos por entidad y funcionalidad del marketplace
+# Lógica: control granular de acceso multi-tenant para profesionales y clientes
+# =============================================================================
+
+# --- Profesionales ---
+manage servicios providers:
+  title: 'Gestionar profesionales ServiciosConecta'
+  description: 'Acceso completo a CRUD de todos los perfiles profesionales.'
+  restrict access: true
+
+view servicios providers:
+  title: 'Ver profesionales ServiciosConecta'
+  description: 'Ver perfiles de profesionales en el marketplace público.'
+
+create servicios providers:
+  title: 'Crear perfil profesional ServiciosConecta'
+  description: 'Crear nuevos perfiles de profesional.'
+
+edit own provider profile:
+  title: 'Editar perfil profesional propio'
+  description: 'Editar el perfil profesional del usuario actual.'
+
+delete own provider profile:
+  title: 'Eliminar perfil profesional propio'
+  description: 'Eliminar el perfil profesional del usuario actual.'
+
+# --- Servicios ofertados ---
+manage servicios offerings:
+  title: 'Gestionar servicios ServiciosConecta'
+  description: 'Acceso completo a CRUD de todos los servicios ofertados.'
+  restrict access: true
+
+view servicios offerings:
+  title: 'Ver servicios ServiciosConecta'
+  description: 'Ver catálogo de servicios en el marketplace.'
+
+create servicios offerings:
+  title: 'Crear servicios ServiciosConecta'
+  description: 'Crear nuevas ofertas de servicio.'
+
+edit own servicios offerings:
+  title: 'Editar servicios propios ServiciosConecta'
+  description: 'Editar servicios creados por el propio profesional.'
+
+delete own servicios offerings:
+  title: 'Eliminar servicios propios ServiciosConecta'
+  description: 'Eliminar servicios creados por el propio profesional.'
+
+# --- Reservas ---
+manage servicios bookings:
+  title: 'Gestionar reservas ServiciosConecta'
+  description: 'Acceso completo a todas las reservas de la plataforma.'
+  restrict access: true
+
+view servicios bookings:
+  title: 'Ver reservas ServiciosConecta'
+  description: 'Ver reservas de citas.'
+
+create servicios bookings:
+  title: 'Crear reservas ServiciosConecta'
+  description: 'Crear nuevas reservas de cita.'
+
+manage own servicios bookings:
+  title: 'Gestionar reservas propias'
+  description: 'Gestionar las reservas del profesional actual.'
+
+view own servicios bookings:
+  title: 'Ver reservas propias'
+  description: 'Ver historial de reservas del cliente actual.'
+
+# --- Disponibilidad ---
+manage servicios availability:
+  title: 'Gestionar disponibilidad ServiciosConecta'
+  description: 'Gestionar slots y excepciones de disponibilidad.'
+
+# --- Paquetes ---
+manage servicios packages:
+  title: 'Gestionar paquetes ServiciosConecta'
+  description: 'Crear y gestionar paquetes de servicios.'
+  restrict access: true
+
+manage own servicios packages:
+  title: 'Gestionar paquetes propios'
+  description: 'Crear y gestionar paquetes del propio profesional.'
+
+# --- Reseñas ---
+manage servicios reviews:
+  title: 'Gestionar reseñas ServiciosConecta'
+  description: 'Moderar y gestionar todas las reseñas.'
+  restrict access: true
+
+view servicios reviews:
+  title: 'Ver reseñas ServiciosConecta'
+  description: 'Ver reseñas de profesionales y servicios.'
+
+submit servicios reviews:
+  title: 'Enviar reseñas ServiciosConecta'
+  description: 'Publicar reseñas de profesionales y servicios.'
+
+respond servicios reviews:
+  title: 'Responder a reseñas ServiciosConecta'
+  description: 'Responder a reseñas como profesional.'
+
+# --- Admin ---
+access servicios admin:
+  title: 'Acceder al panel de administración ServiciosConecta'
+  description: 'Acceso al dashboard administrativo de la plataforma.'
+  restrict access: true
+
+administer servicios settings:
+  title: 'Administrar configuración ServiciosConecta'
+  description: 'Acceso a la configuración global del módulo.'
+  restrict access: true

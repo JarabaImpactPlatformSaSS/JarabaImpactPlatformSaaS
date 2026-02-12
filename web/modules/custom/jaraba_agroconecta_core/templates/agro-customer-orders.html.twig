@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Historial de pedidos del cliente.
+ *
+ * Variables:
+ *   - orders: Array de pedidos serializados
+ *   - total: Total de pedidos
+ *
+ * Body class: customer-orders-page
+ */
+#}
+<div class="customer-portal">
+  <div class="customer-portal__header">
+    <h1 class="customer-portal__title">{{ 'Mis Pedidos'|t }}</h1>
+    <nav class="customer-portal__nav">
+      <a href="/mi-cuenta" class="customer-portal__nav-link">{{ 'Mi Cuenta'|t }}</a>
+      <a href="/mi-cuenta/pedidos" class="customer-portal__nav-link customer-portal__nav-link--active">{{ 'Pedidos'|t }}</a>
+      <a href="/mi-cuenta/direcciones" class="customer-portal__nav-link">{{ 'Direcciones'|t }}</a>
+      <a href="/mi-cuenta/favoritos" class="customer-portal__nav-link">{{ 'Favoritos'|t }}</a>
+    </nav>
+  </div>
+
+  <div class="customer-portal__section">
+    <p class="customer-portal__subtitle">{{ 'Total:'|t }} {{ total }} {{ 'pedidos'|t }}</p>
+
+    {% if orders is not empty %}
+      <div class="customer-portal__orders-list">
+        {% for order in orders %}
+          <div class="customer-portal__order-card">
+            <div class="customer-portal__order-card-header">
+              <div class="customer-portal__order-card-info">
+                <strong class="customer-portal__order-number">{{ order.order_number }}</strong>
+                <span class="customer-portal__order-date">{{ order.created }}</span>
+              </div>
+              <span class="customer-portal__order-state customer-portal__order-state--{{ order.state }}">
+                {{ order.state_label }}
+              </span>
+            </div>
+            <div class="customer-portal__order-card-body">
+              <div class="customer-portal__order-meta">
+                <span>{{ order.item_count }} {{ 'productos'|t }}</span>
+                <span class="customer-portal__order-total">{{ order.total }}</span>
+              </div>
+              <a href="/mi-cuenta/pedidos/{{ order.order_number }}" class="customer-portal__btn customer-portal__btn--outline">
+                {{ 'Ver detalle'|t }} →
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="customer-portal__empty">
+        <p>{{ 'Aún no tienes pedidos.'|t }}</p>
+        <a href="/marketplace" class="customer-portal__btn customer-portal__btn--primary">{{ 'Explorar Marketplace'|t }}</a>
+      </div>
+    {% endif %}
+  </div>
+</div>

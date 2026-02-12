@@ -1,0 +1,47 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para ServiciosConecta
+  # Permite filtrar mensajes del vertical en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_servicios_conecta:
+    parent: logger.channel_base
+    arguments: ['jaraba_servicios_conecta']
+
+  # =====================================================================
+  # ProviderService: Lógica del profesional y marketplace público
+  # Responsabilidad: listado de profesionales, búsqueda, filtros, perfiles
+  # Relaciones: consume ProviderProfile, ServiceOffering, taxonomías
+  # =====================================================================
+  jaraba_servicios_conecta.provider:
+    class: Drupal\jaraba_servicios_conecta\Service\ProviderService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_servicios_conecta'
+
+  # =====================================================================
+  # ServiceOfferingService: CRUD y lógica de servicios ofertados
+  # Responsabilidad: crear, actualizar, publicar/despublicar servicios,
+  #   gestión de paquetes y tarifas
+  # Relaciones: consume ProviderProfile, ServicePackage
+  # =====================================================================
+  jaraba_servicios_conecta.service_offering:
+    class: Drupal\jaraba_servicios_conecta\Service\ServiceOfferingService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_servicios_conecta'
+
+  # =====================================================================
+  # AvailabilityService: Gestión de disponibilidad y slots
+  # Responsabilidad: calcular slots disponibles, detectar colisiones,
+  #   sincronización con calendarios externos (Fase 4)
+  # Relaciones: consume AvailabilitySlot, AvailabilityException, Booking
+  # =====================================================================
+  jaraba_servicios_conecta.availability:
+    class: Drupal\jaraba_servicios_conecta\Service\AvailabilityService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@datetime.time'
+      - '@logger.channel.jaraba_servicios_conecta'

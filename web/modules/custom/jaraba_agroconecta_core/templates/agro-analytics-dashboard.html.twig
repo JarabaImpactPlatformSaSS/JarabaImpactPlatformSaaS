@@ -1,0 +1,113 @@
+{#
+/**
+ * @file
+ * Analytics Dashboard (Operational Tower) para AgroConecta.
+ *
+ * DIRECTRIZ: Template pública sin page.content.
+ * Body classes: analytics-dashboard, agro-page.
+ *
+ * Variables:
+ *   - period: Periodo actual ('7d', '30d', '90d')
+ *   - kpis: Array de KPIs con formatted, change
+ *   - marketplace_name: Nombre del marketplace
+ */
+#}
+
+<div class="agro-analytics">
+
+  {# === Header === #}
+  <div class="agro-analytics__header">
+    <div>
+      <h1 class="agro-analytics__title">📊 {% trans %}Analytics Dashboard{% endtrans %}</h1>
+      <p class="agro-analytics__subtitle">{{ marketplace_name }}</p>
+    </div>
+    <div class="agro-date-picker">
+      <button class="agro-date-picker__preset" data-period="7d">{% trans %}7 días{% endtrans %}</button>
+      <button class="agro-date-picker__preset agro-date-picker__preset--active" data-period="30d">{% trans %}30 días{% endtrans %}</button>
+      <button class="agro-date-picker__preset" data-period="90d">{% trans %}90 días{% endtrans %}</button>
+    </div>
+  </div>
+
+  {# === KPI Cards === #}
+  <div class="agro-kpi-grid">
+    <div class="agro-kpi-card agro-kpi-card--gmv" data-kpi="gmv">
+      <p class="agro-kpi-card__label">{% trans %}Volumen Total (GMV){% endtrans %}</p>
+      <p class="agro-kpi-card__value">—</p>
+      <span class="agro-kpi-card__change agro-kpi-card__change--neutral">—</span>
+      <div class="agro-kpi-card__sparkline" data-sparkline="gmv"></div>
+    </div>
+
+    <div class="agro-kpi-card agro-kpi-card--orders" data-kpi="orders">
+      <p class="agro-kpi-card__label">{% trans %}Pedidos{% endtrans %}</p>
+      <p class="agro-kpi-card__value">—</p>
+      <span class="agro-kpi-card__change agro-kpi-card__change--neutral">—</span>
+      <div class="agro-kpi-card__sparkline" data-sparkline="orders"></div>
+    </div>
+
+    <div class="agro-kpi-card agro-kpi-card--aov" data-kpi="aov">
+      <p class="agro-kpi-card__label">{% trans %}Ticket Medio{% endtrans %}</p>
+      <p class="agro-kpi-card__value">—</p>
+      <span class="agro-kpi-card__change agro-kpi-card__change--neutral">—</span>
+      <div class="agro-kpi-card__sparkline" data-sparkline="aov"></div>
+    </div>
+
+    <div class="agro-kpi-card agro-kpi-card--conversion" data-kpi="conversion">
+      <p class="agro-kpi-card__label">{% trans %}Tasa de Conversión{% endtrans %}</p>
+      <p class="agro-kpi-card__value">—</p>
+      <span class="agro-kpi-card__change agro-kpi-card__change--neutral">—</span>
+      <div class="agro-kpi-card__sparkline" data-sparkline="conversion"></div>
+    </div>
+
+    <div class="agro-kpi-card agro-kpi-card--users" data-kpi="active_users">
+      <p class="agro-kpi-card__label">{% trans %}Usuarios Activos{% endtrans %}</p>
+      <p class="agro-kpi-card__value">—</p>
+      <span class="agro-kpi-card__change agro-kpi-card__change--neutral">—</span>
+      <div class="agro-kpi-card__sparkline" data-sparkline="active_users"></div>
+    </div>
+  </div>
+
+  {# === Charts === #}
+  <div class="agro-analytics-charts">
+    <div class="agro-chart-card">
+      <h2 class="agro-chart-card__title">📈 {% trans %}Evolución de Ventas{% endtrans %}</h2>
+      <div class="agro-chart-card__canvas" data-chart="sales-trend">
+        <canvas></canvas>
+      </div>
+    </div>
+    <div class="agro-chart-card">
+      <h2 class="agro-chart-card__title">🥧 {% trans %}Categorías{% endtrans %}</h2>
+      <div class="agro-chart-card__canvas" data-chart="categories">
+        <canvas></canvas>
+      </div>
+    </div>
+  </div>
+
+  {# === Rankings === #}
+  <div class="agro-rankings">
+    <div class="agro-ranking-card">
+      <h2 class="agro-ranking-card__title">🏆 {% trans %}Top Productos{% endtrans %}</h2>
+      <ul class="agro-ranking-card__list" data-ranking="products">
+        <li class="agro-ranking-card__item">
+          <span class="agro-ranking-card__name">{% trans %}Cargando...{% endtrans %}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="agro-ranking-card">
+      <h2 class="agro-ranking-card__title">👨‍🌾 {% trans %}Top Productores{% endtrans %}</h2>
+      <ul class="agro-ranking-card__list" data-ranking="producers">
+        <li class="agro-ranking-card__item">
+          <span class="agro-ranking-card__name">{% trans %}Cargando...{% endtrans %}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  {# === Alerts === #}
+  <div class="agro-chart-card">
+    <h2 class="agro-chart-card__title">🔔 {% trans %}Alertas Activas{% endtrans %}</h2>
+    <div class="agro-alerts__list">
+      <p style="padding: 1rem; color: var(--ej-color-text-muted);">{% trans %}Cargando alertas...{% endtrans %}</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,206 @@
+{#
+/**
+ * @file
+ * Landing pública de trazabilidad QR AgroConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Accesible vía QR público.
+ * Body classes inyectadas via hook_preprocess_html(): traceability-landing, agro-page.
+ *
+ * Variables:
+ *   - batch: Datos del lote (batch_code, harvest_date, certifications, etc.)
+ *   - product: Datos del producto (name, description, origin, image)
+ *   - producer: Datos del productor (name, location, avatar_url)
+ *   - events: Array de eventos de trazabilidad
+ *   - integrity: Resultado de verificación de integridad
+ *   - product_url: URL del producto en el marketplace
+ */
+#}
+
+<div class="agro-trace-landing">
+
+  {# === Hero === #}
+  <section class="agro-trace-landing__hero">
+    <span class="agro-trace-landing__hero-badge">
+      🔍 {% trans %}Trazabilidad Verificada{% endtrans %}
+    </span>
+    <h1 class="agro-trace-landing__hero-product">{{ product.name }}</h1>
+    <p class="agro-trace-landing__hero-producer">
+      {{ 'Producido por'|t }} {{ producer.name }} · {{ product.origin }}
+    </p>
+    <span class="agro-trace-landing__hero-batch">
+      {{ 'Lote'|t }}: {{ batch.batch_code }}
+    </span>
+  </section>
+
+  {# === Verificación de integridad === #}
+  <section class="agro-trace-landing__section">
+    <h2 class="agro-trace-landing__section-title">
+      🛡️ {% trans %}Verificación de Integridad{% endtrans %}
+    </h2>
+    <div id="agro-integrity-badge"
+         class="agro-integrity-badge agro-integrity-badge--{{ integrity.verified ? 'verified' : 'pending' }}">
+      <span class="agro-integrity-badge__icon">
+        {{ integrity.verified ? '✓' : '⏳' }}
+      </span>
+      <span class="agro-integrity-badge__text">
+        {% if integrity.verified %}
+          <strong>{% trans %}Integridad verificada{% endtrans %}</strong>
+          <small>{% trans %}Todos los datos son auténticos{% endtrans %}</small>
+        {% else %}
+          <strong>{% trans %}Pendiente de verificación{% endtrans %}</strong>
+          <small>{% trans %}Pulse para verificar{% endtrans %}</small>
+        {% endif %}
+      </span>
+      {% if integrity.data_hash %}
+        <span class="agro-integrity-badge__hash" title="{{ 'Click para copiar'|t }}">
+          {{ integrity.data_hash }}
+        </span>
+      {% endif %}
+    </div>
+    {% if not integrity.verified %}
+      <button type="button" class="agro-trace-landing__cta-btn"
+              data-trace-verify="{{ batch.id }}"
+              style="margin-top: 1rem;">
+        🔐 {% trans %}Verificar ahora{% endtrans %}
+      </button>
+    {% endif %}
+  </section>
+
+  {# === Certificaciones === #}
+  {% if batch.certifications is not empty %}
+    <section class="agro-trace-landing__section">
+      <h2 class="agro-trace-landing__section-title">
+        📋 {% trans %}Certificaciones{% endtrans %}
+      </h2>
+      <div class="agro-trace-landing__certifications">
+        {% for cert in batch.certifications %}
+          <span class="agro-trace-landing__cert-badge">
+            ✓ {{ cert }}
+          </span>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# === Timeline de trazabilidad === #}
+  <section class="agro-trace-landing__section">
+    <h2 class="agro-trace-landing__section-title">
+      📍 {% trans %}Recorrido del Producto{% endtrans %}
+    </h2>
+    {% if events is not empty %}
+      <div class="agro-trace-timeline">
+        <div class="agro-trace-timeline__line"></div>
+        {% for event in events %}
+          <div class="agro-trace-timeline__event">
+            <span class="agro-trace-timeline__event-icon agro-trace-timeline__event-icon--{{ event.event_type }}">
+              {% if event.event_type == 'harvest' %}🌾
+              {% elseif event.event_type == 'processing' %}⚙️
+              {% elseif event.event_type == 'analysis' %}🔬
+              {% elseif event.event_type == 'packaging' %}📦
+              {% elseif event.event_type == 'shipping' %}🚚
+              {% else %}📌
+              {% endif %}
+            </span>
+            <div class="agro-trace-timeline__event-card">
+              <div class="agro-trace-timeline__event-header">
+                <span class="agro-trace-timeline__event-type">
+                  {% if event.event_type == 'harvest' %}{% trans %}Cosecha{% endtrans %}
+                  {% elseif event.event_type == 'processing' %}{% trans %}Procesado{% endtrans %}
+                  {% elseif event.event_type == 'analysis' %}{% trans %}Análisis{% endtrans %}
+                  {% elseif event.event_type == 'packaging' %}{% trans %}Envasado{% endtrans %}
+                  {% elseif event.event_type == 'shipping' %}{% trans %}Expedición{% endtrans %}
+                  {% else %}{{ event.event_type }}
+                  {% endif %}
+                </span>
+                <span class="agro-trace-timeline__event-date">{{ event.event_date }}</span>
+                <span class="agro-trace-timeline__chevron">▼</span>
+              </div>
+              {% if event.location %}
+                <div class="agro-trace-timeline__event-location">📍 {{ event.location }}</div>
+              {% endif %}
+              <div class="agro-trace-timeline__event-details">
+                {% if event.description %}
+                  <p>{{ event.description }}</p>
+                {% endif %}
+                {% if event.gps_coordinates %}
+                  <p><small>🌐 {{ event.gps_coordinates }}</small></p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{% trans %}No hay eventos de trazabilidad registrados para este lote.{% endtrans %}</p>
+    {% endif %}
+  </section>
+
+  {# === Productor === #}
+  <section class="agro-trace-landing__section">
+    <h2 class="agro-trace-landing__section-title">
+      👨‍🌾 {% trans %}Nuestro Productor{% endtrans %}
+    </h2>
+    <div class="agro-trace-landing__producer-card">
+      {% if producer.avatar_url %}
+        <img src="{{ producer.avatar_url }}" alt="{{ producer.name }}"
+             class="agro-trace-landing__producer-avatar" loading="lazy" />
+      {% endif %}
+      <div>
+        <div class="agro-trace-landing__producer-name">{{ producer.name }}</div>
+        <div class="agro-trace-landing__producer-origin">📍 {{ producer.location }}</div>
+      </div>
+    </div>
+  </section>
+
+  {# === CTA: Comprar producto === #}
+  {% if product_url %}
+    <div class="agro-trace-landing__cta">
+      <h2 class="agro-trace-landing__cta-title">
+        {% trans %}¿Te gusta lo que ves?{% endtrans %}
+      </h2>
+      <a href="{{ product_url }}" class="agro-trace-landing__cta-btn">
+        🛒 {% trans %}Comprar este producto{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+
+  {# === Powered by === #}
+  <div class="agro-trace-landing__powered">
+    {% trans %}Trazabilidad verificada por AgroConecta · Jaraba Impact Platform{% endtrans %}
+  </div>
+
+</div>
+
+{# Schema.org structured data #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name|e('js') }}",
+  "description": "{{ product.description|e('js') }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ producer.name|e('js') }}"
+  },
+  {% if product.image %}
+  "image": "{{ product.image|e('js') }}",
+  {% endif %}
+  "category": "{{ product.category|default('Agroalimentario')|e('js') }}",
+  "countryOfOrigin": {
+    "@type": "Country",
+    "name": "España"
+  },
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "Lote",
+      "value": "{{ batch.batch_code|e('js') }}"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Origen",
+      "value": "{{ product.origin|e('js') }}"
+    }
+  ]
+}
+</script>

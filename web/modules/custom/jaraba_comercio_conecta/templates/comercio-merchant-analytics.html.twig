@@ -1,0 +1,91 @@
+{#
+/**
+ * @file
+ * Template del dashboard de analíticas del comerciante.
+ *
+ * DIRECTRIZ: Template limpia sin page.content.
+ * Body classes: comercio-page, merchant-analytics-page.
+ *
+ * Variables:
+ *   - merchant: Entidad MerchantProfile.
+ *   - kpis: Array con KPIs.
+ *   - charts: Datos para gráficos.
+ *   - top_products: Array de productos más vendidos.
+ *   - period: Periodo seleccionado (7d, 30d, 90d).
+ */
+#}
+
+<div class="comercio-merchant-analytics">
+  <header class="comercio-merchant-analytics__header container">
+    <h1>{% trans %}Analíticas{% endtrans %}</h1>
+    <div class="comercio-period-selector">
+      <a href="?period=7d" class="comercio-period-btn {{ period == '7d' ? 'comercio-period-btn--active' : '' }}">
+        {% trans %}7 días{% endtrans %}
+      </a>
+      <a href="?period=30d" class="comercio-period-btn {{ period == '30d' ? 'comercio-period-btn--active' : '' }}">
+        {% trans %}30 días{% endtrans %}
+      </a>
+      <a href="?period=90d" class="comercio-period-btn {{ period == '90d' ? 'comercio-period-btn--active' : '' }}">
+        {% trans %}90 días{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# KPIs #}
+  <section class="comercio-kpis container" aria-label="{{ 'Indicadores'|trans }}">
+    <div class="comercio-kpis__grid">
+      <div class="comercio-kpi-card">
+        <span class="comercio-kpi-card__value">{{ kpis.total_products|default(0) }}</span>
+        <span class="comercio-kpi-card__label">{% trans %}Productos Activos{% endtrans %}</span>
+      </div>
+      <div class="comercio-kpi-card">
+        <span class="comercio-kpi-card__value">{{ kpis.stock_alerts|default(0) }}</span>
+        <span class="comercio-kpi-card__label">{% trans %}Alertas Stock{% endtrans %}</span>
+      </div>
+      <div class="comercio-kpi-card">
+        <span class="comercio-kpi-card__value">{{ kpis.average_rating|default(0)|number_format(1) }} ★</span>
+        <span class="comercio-kpi-card__label">{% trans %}Rating Medio{% endtrans %}</span>
+      </div>
+      <div class="comercio-kpi-card">
+        <span class="comercio-kpi-card__value">{{ kpis.total_reviews|default(0) }}</span>
+        <span class="comercio-kpi-card__label">{% trans %}Total Reseñas{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# Productos más populares #}
+  {% if top_products|length > 0 %}
+    <section class="comercio-top-products container" aria-label="{{ 'Productos más populares'|trans }}">
+      <h2 class="comercio-section-title">{% trans %}Productos Más Populares{% endtrans %}</h2>
+      <div class="comercio-table-responsive">
+        <table class="comercio-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans %}Producto{% endtrans %}</th>
+              <th>{% trans %}Precio{% endtrans %}</th>
+              <th>{% trans %}Stock{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in top_products %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ product.title }}</td>
+                <td>{{ product.price|number_format(2, ',', '.') }} €</td>
+                <td>{{ product.stock }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  {# Placeholder para gráficos (Fase 3+) #}
+  <section class="comercio-charts container" aria-label="{{ 'Gráficos'|trans }}">
+    <div class="comercio-empty-state comercio-empty-state--compact">
+      <p>{% trans %}Los gráficos de ventas estarán disponibles cuando se activen los pedidos.{% endtrans %}</p>
+    </div>
+  </section>
+</div>

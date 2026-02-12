@@ -1,0 +1,66 @@
+{#
+ # Template: Dashboard del Profesional
+ # Ruta: /mi-servicio
+ # Variables: provider, kpis, upcoming_bookings, pending_bookings, recent_reviews
+ #}
+
+<div class="servicios-provider-dashboard">
+  <header class="servicios-provider-dashboard__header">
+    <h1>{{ 'Mi Servicio'|t }}</h1>
+    <p class="servicios-provider-dashboard__welcome">
+      {{ 'Bienvenido/a, %name'|t({'%name': provider.display_name.value}) }}
+    </p>
+  </header>
+
+  {# KPIs #}
+  <div class="servicios-provider-dashboard__kpis">
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ kpis.total_bookings }}</span>
+      <span class="kpi-card__label">{{ 'Total Reservas'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ kpis.upcoming_count }}</span>
+      <span class="kpi-card__label">{{ 'Próximas Citas'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ kpis.average_rating|number_format(1) }}</span>
+      <span class="kpi-card__label">{{ 'Valoración Media'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ kpis.total_reviews }}</span>
+      <span class="kpi-card__label">{{ 'Total Reseñas'|t }}</span>
+    </div>
+  </div>
+
+  {# Acciones rápidas #}
+  <div class="servicios-provider-dashboard__actions">
+    <a href="/mi-servicio/servicios" class="btn btn--secondary">{{ 'Mis Servicios'|t }}</a>
+    <a href="/mi-servicio/reservas" class="btn btn--secondary">{{ 'Mis Reservas'|t }}</a>
+    <a href="/mi-servicio/calendario" class="btn btn--secondary">{{ 'Calendario'|t }}</a>
+    <a href="/mi-servicio/perfil" class="btn btn--secondary">{{ 'Editar Perfil'|t }}</a>
+  </div>
+
+  {# Próximas citas #}
+  <section class="servicios-provider-dashboard__upcoming">
+    <h2>{{ 'Próximas Citas'|t }}</h2>
+    {% if upcoming_bookings|length > 0 %}
+      <div class="servicios-bookings-list">
+        {% for booking in upcoming_bookings %}
+          <div class="servicios-booking-item">
+            <div class="servicios-booking-item__date">
+              {{ booking.booking_date.value }}
+            </div>
+            <div class="servicios-booking-item__client">
+              {{ booking.client_name.value }}
+            </div>
+            <div class="servicios-booking-item__status">
+              {{ booking.status.value }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ 'No tienes citas próximas.'|t }}</p>
+    {% endif %}
+  </section>
+</div>

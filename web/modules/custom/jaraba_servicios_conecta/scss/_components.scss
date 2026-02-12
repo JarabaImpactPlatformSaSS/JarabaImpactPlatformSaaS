@@ -1,0 +1,292 @@
+// =============================================================================
+// ServiciosConecta — Componentes reutilizables
+// Cards, badges, botones específicos del vertical
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// --- Provider Card ---
+.provider-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--ej-surface, $servicios-surface);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow $transition-base, transform $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__photo {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: var(--ej-surface, $servicios-cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--placeholder {
+      background: color.scale($servicios-primary, $lightness: 80%);
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__initials {
+    font-family: $font-heading;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--ej-primary, $servicios-primary);
+    opacity: 0.5;
+  }
+
+  &__body {
+    flex: 1;
+    padding: $space-md;
+  }
+
+  &__name {
+    font-family: $font-heading;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: $space-xs;
+
+    a {
+      color: var(--ej-text-primary, $servicios-text);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--ej-primary, $servicios-primary);
+      }
+    }
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    color: var(--ej-primary, $servicios-primary);
+    margin-bottom: $space-xs;
+  }
+
+  &__location {
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+    margin-bottom: $space-sm;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    margin-bottom: $space-sm;
+
+    .rating__stars {
+      font-weight: 700;
+      color: var(--ej-warning, $servicios-warning);
+      font-size: 0.875rem;
+    }
+
+    .rating__count {
+      font-size: 0.75rem;
+      color: var(--ej-text-secondary, $servicios-text-muted);
+    }
+  }
+
+  &__badges {
+    display: flex;
+    gap: $space-xs;
+    flex-wrap: wrap;
+  }
+
+  &__footer {
+    padding: $space-sm $space-md $space-md;
+    text-align: center;
+  }
+}
+
+// --- Service Card ---
+.service-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--ej-surface, $servicios-surface);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  &__image {
+    height: 120px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    padding: $space-md;
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, $servicios-text);
+    margin-bottom: $space-sm;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: $space-md;
+    margin-bottom: $space-sm;
+  }
+
+  &__price {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-primary, $servicios-primary);
+  }
+
+  &__duration {
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+
+  &__modality {
+    margin-bottom: $space-sm;
+  }
+
+  &__footer {
+    display: flex;
+    gap: $space-sm;
+    padding: $space-sm $space-md $space-md;
+  }
+}
+
+// --- Badges ---
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-xs $space-sm;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+
+  &--online {
+    background: color.scale($servicios-online, $lightness: 85%);
+    color: color.scale($servicios-online, $lightness: -30%);
+  }
+
+  &--in_person {
+    background: color.scale($servicios-primary, $lightness: 85%);
+    color: $servicios-primary-dark;
+  }
+
+  &--hybrid {
+    background: color.scale($servicios-accent, $lightness: 85%);
+    color: color.scale($servicios-accent, $lightness: -20%);
+  }
+
+  &--home_visit {
+    background: color.scale($servicios-success, $lightness: 85%);
+    color: color.scale($servicios-success, $lightness: -20%);
+  }
+
+  &--phone {
+    background: color.scale($servicios-text-muted, $lightness: 80%);
+    color: $servicios-text;
+  }
+
+  &--featured {
+    background: color.scale($servicios-warning, $lightness: 80%);
+    color: color.scale($servicios-warning, $lightness: -30%);
+  }
+}
+
+// --- Botones ---
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-sm $space-lg;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all $transition-fast;
+
+  &--primary {
+    background: var(--ej-primary, $servicios-primary);
+    color: #FFFFFF;
+
+    &:hover {
+      background: var(--ej-primary-dark, $servicios-primary-dark);
+    }
+  }
+
+  &--secondary {
+    background: var(--ej-surface, $servicios-surface);
+    color: var(--ej-primary, $servicios-primary);
+    border-color: var(--ej-border, $servicios-border);
+
+    &:hover {
+      background: var(--ej-surface, $servicios-cream);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--ej-primary, $servicios-primary);
+    border-color: var(--ej-primary, $servicios-primary);
+
+    &:hover {
+      background: var(--ej-primary, $servicios-primary);
+      color: #FFFFFF;
+    }
+  }
+
+  &--sm {
+    padding: $space-xs $space-md;
+    font-size: 0.75rem;
+  }
+}
+
+// --- Pager ---
+.pager {
+  &__link {
+    padding: $space-sm $space-md;
+    border-radius: $radius-md;
+    text-decoration: none;
+    color: var(--ej-primary, $servicios-primary);
+    border: 1px solid var(--ej-border, $servicios-border);
+    font-size: 0.875rem;
+
+    &:hover {
+      background: var(--ej-surface, $servicios-cream);
+    }
+  }
+
+  &__info {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+}
