@@ -90,9 +90,11 @@ class MjmlCompilerServiceTest extends UnitTestCase {
     // por lo que se usará la conversión fallback.
     $result = $this->service->compile($mjml);
 
-    // El fallback debe producir HTML con contenido.
+    // El resultado debe producir HTML con contenido.
+    // El binario MJML puede estar disponible (produciendo <!doctype html>)
+    // o se usa el fallback (produciendo <!DOCTYPE html>).
     $this->assertStringContainsString('Contenido', $result);
-    $this->assertStringContainsString('<!DOCTYPE html>', $result);
+    $this->assertMatchesRegularExpression('/<!doctype html>/i', $result);
   }
 
 }

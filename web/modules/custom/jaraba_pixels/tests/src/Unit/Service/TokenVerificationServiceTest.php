@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_pixels\Unit\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\jaraba_pixels\Service\CredentialManagerService;
@@ -62,7 +65,7 @@ class TokenVerificationServiceTest extends UnitTestCase {
       ->addMethods(['get'])
       ->getMock();
     $loggerFactory->method('get')
-      ->with('jaraba_pixels')
+      ->with('jaraba_pixels.tokens')
       ->willReturn($this->logger);
 
     $this->service = new TokenVerificationService(
@@ -71,6 +74,21 @@ class TokenVerificationServiceTest extends UnitTestCase {
       $this->state,
       $loggerFactory,
     );
+
+    // Set up a mock container for \Drupal::config() calls in the service.
+    $siteConfig = $this->createMock(ImmutableConfig::class);
+    $siteConfig->method('get')
+      ->with('mail')
+      ->willReturn('admin@example.com');
+
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')
+      ->with('system.site')
+      ->willReturn($siteConfig);
+
+    $container = new ContainerBuilder();
+    $container->set('config.factory', $configFactory);
+    \Drupal::setContainer($container);
   }
 
   /**
@@ -83,7 +101,10 @@ class TokenVerificationServiceTest extends UnitTestCase {
     $result = $this->service->verifyAllCredentials();
 
     $this->assertIsArray($result);
-    $this->assertEmpty($result);
+    $this->assertSame(0, $result['checked']);
+    $this->assertEmpty($result['expired']);
+    $this->assertEmpty($result['expiring_soon']);
+    $this->assertEmpty($result['valid']);
   }
 
   /**
@@ -112,9 +133,24 @@ class TokenVerificationServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests que sendExpirationAlert no envia mail si no hay resultados.
+   * Tests que sendExpirationAlert no envia mail si no hay email configurado.
    */
   public function testSendExpirationAlertNoMailWhenEmpty(): void {
+    // Override the container with an empty admin email.
+    $siteConfig = $this->createMock(ImmutableConfig::class);
+    $siteConfig->method('get')
+      ->with('mail')
+      ->willReturn('');
+
+    $configFactory = $this->createMock(ConfigFactoryInterface::class);
+    $configFactory->method('get')
+      ->with('system.site')
+      ->willReturn($siteConfig);
+
+    $container = new ContainerBuilder();
+    $container->set('config.factory', $configFactory);
+    \Drupal::setContainer($container);
+
     $this->mailManager->expects($this->never())
       ->method('mail');
 
@@ -126,15 +162,15 @@ class TokenVerificationServiceTest extends UnitTestCase {
    */
   public function testSendExpirationAlertSendsMailWhenExpired(): void {
     $results = [
-      'meta' => [
-        'platform' => 'meta',
-        'status' => 'expired',
-        'expires_at' => time() - 86400,
+      'expired' => [
+        ['tenant_id' => 1, 'platform' => 'meta'],
       ],
+      'expiring_soon' => [],
     ];
 
     $this->mailManager->expects($this->once())
-      ->method('mail');
+      ->method('mail')
+      ->willReturn(['result' => TRUE]);
 
     $this->service->sendExpirationAlert($results);
   }

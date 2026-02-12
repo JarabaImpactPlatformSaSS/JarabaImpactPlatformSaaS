@@ -192,7 +192,7 @@ class EventCertificateServiceTest extends TestCase {
   protected function createMockRegistration(string $status): MockObject {
     $registration = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
 
-    $statusField = $this->createMock(FieldItemListInterface::class);
+    $statusField = new \stdClass();
     $statusField->value = $status;
 
     $registration->method('get')
@@ -200,8 +200,9 @@ class EventCertificateServiceTest extends TestCase {
         if ($field_name === 'registration_status') {
           return $statusField;
         }
-        $field = $this->createMock(FieldItemListInterface::class);
+        $field = new \stdClass();
         $field->value = NULL;
+        $field->target_id = NULL;
         return $field;
       });
 

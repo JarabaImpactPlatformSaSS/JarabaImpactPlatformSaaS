@@ -13,6 +13,11 @@ use Drupal\jaraba_usage_billing\Service\UsageIngestionService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
+// SAVED_NEW is defined in core/includes/common.inc, not loaded in unit tests.
+if (!defined('SAVED_NEW')) {
+  define('SAVED_NEW', 1);
+}
+
 /**
  * Tests para UsageIngestionService.
  *
@@ -129,8 +134,14 @@ class UsageIngestionServiceTest extends UnitTestCase {
       ->with('usage_event')
       ->willReturn($storage);
 
+    // Use an anonymous class to avoid Transaction's readonly property
+    // issue when __destruct runs on mock objects.
+    $transaction = new class () {
+      public function commitOrRelease(): void {}
+      public function rollBack(): void {}
+    };
     $this->database->method('startTransaction')
-      ->willReturn($this->createMock(\Drupal\Core\Database\Transaction::class));
+      ->willReturn($transaction);
 
     $events = [
       [

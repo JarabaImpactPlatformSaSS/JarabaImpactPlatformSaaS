@@ -50,7 +50,7 @@ class RedisQueueServiceTest extends UnitTestCase {
       ->addMethods(['get'])
       ->getMock();
     $loggerFactory->method('get')
-      ->with('jaraba_pixels')
+      ->with('jaraba_pixels.queue')
       ->willReturn($this->logger);
 
     $this->service = new RedisQueueService(

@@ -70,8 +70,10 @@ class AdsSyncServiceTest extends UnitTestCase {
     $result = $this->service->syncAllAccounts(1);
 
     $this->assertIsArray($result);
-    $this->assertArrayHasKey('total', $result);
-    $this->assertEquals(0, $result['total']);
+    $this->assertArrayHasKey('accounts_synced', $result);
+    $this->assertEquals(0, $result['accounts_synced']);
+    $this->assertArrayHasKey('campaigns_found', $result);
+    $this->assertEquals(0, $result['campaigns_found']);
   }
 
   /**
@@ -88,8 +90,8 @@ class AdsSyncServiceTest extends UnitTestCase {
     $result = $this->service->syncAccount(999);
 
     $this->assertIsArray($result);
-    $this->assertArrayHasKey('success', $result);
-    $this->assertFalse($result['success']);
+    $this->assertArrayHasKey('campaigns_synced', $result);
+    $this->assertEquals(0, $result['campaigns_synced']);
   }
 
   /**
@@ -98,27 +100,39 @@ class AdsSyncServiceTest extends UnitTestCase {
   public function testSyncAccountMetaSuccess(): void {
     $platformField = new \stdClass();
     $platformField->value = 'meta';
-    $tokenField = new \stdClass();
-    $tokenField->value = 'valid_token';
-    $externalField = new \stdClass();
-    $externalField->value = 'ext_meta_123';
+    $tenantIdField = new \stdClass();
+    $tenantIdField->target_id = 10;
 
     $account = $this->createMock(ContentEntityInterface::class);
     $account->method('id')->willReturn(1);
     $account->method('get')->willReturnMap([
       ['platform', $platformField],
-      ['access_token', $tokenField],
-      ['external_account_id', $externalField],
+      ['tenant_id', $tenantIdField],
     ]);
     $account->method('set')->willReturnSelf();
     $account->method('save')->willReturn(1);
 
-    $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('load')->with(1)->willReturn($account);
+    $accountStorage = $this->createMock(EntityStorageInterface::class);
+    $accountStorage->method('load')->with(1)->willReturn($account);
+
+    // Mock campaign sync storage with query for existing campaigns.
+    $campaignQuery = $this->createMock(QueryInterface::class);
+    $campaignQuery->method('accessCheck')->willReturnSelf();
+    $campaignQuery->method('condition')->willReturnSelf();
+    $campaignQuery->method('execute')->willReturn([]);
+
+    $newCampaign = $this->createMock(ContentEntityInterface::class);
+    $newCampaign->method('save')->willReturn(1);
+
+    $campaignStorage = $this->createMock(EntityStorageInterface::class);
+    $campaignStorage->method('getQuery')->willReturn($campaignQuery);
+    $campaignStorage->method('create')->willReturn($newCampaign);
 
     $this->entityTypeManager->method('getStorage')
-      ->with('ads_account')
-      ->willReturn($storage);
+      ->willReturnMap([
+        ['ads_account', $accountStorage],
+        ['ads_campaign_sync', $campaignStorage],
+      ]);
 
     $this->metaAdsClient->method('getCampaigns')
       ->willReturn([
@@ -128,7 +142,9 @@ class AdsSyncServiceTest extends UnitTestCase {
     $result = $this->service->syncAccount(1);
 
     $this->assertIsArray($result);
-    $this->assertArrayHasKey('success', $result);
+    $this->assertArrayHasKey('campaigns_synced', $result);
+    $this->assertEquals(1, $result['campaigns_synced']);
+    $this->assertEquals(1, $result['campaigns_created']);
   }
 
   /**

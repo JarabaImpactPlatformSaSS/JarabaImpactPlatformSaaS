@@ -62,7 +62,7 @@ class BatchProcessorServiceTest extends UnitTestCase {
       ->addMethods(['get'])
       ->getMock();
     $loggerFactory->method('get')
-      ->with('jaraba_pixels')
+      ->with('jaraba_pixels.batch')
       ->willReturn($this->logger);
 
     $this->service = new BatchProcessorService(
@@ -77,6 +77,9 @@ class BatchProcessorServiceTest extends UnitTestCase {
    * Tests que process devuelve 0 cuando la cola esta vacia.
    */
   public function testProcessReturnsZeroWhenQueueEmpty(): void {
+    $this->queue->method('isAvailable')
+      ->willReturn(TRUE);
+
     $this->queue->expects($this->once())
       ->method('dequeue')
       ->with(100)
@@ -91,6 +94,9 @@ class BatchProcessorServiceTest extends UnitTestCase {
    * Tests que process procesa un lote con eventos.
    */
   public function testProcessHandlesBatchWithEvents(): void {
+    $this->queue->method('isAvailable')
+      ->willReturn(TRUE);
+
     $events = [
       ['event_type' => 'page_view', 'platform' => 'meta', 'tenant_id' => 1],
       ['event_type' => 'purchase', 'platform' => 'google', 'tenant_id' => 1],
@@ -122,8 +128,11 @@ class BatchProcessorServiceTest extends UnitTestCase {
     $this->assertIsArray($grouped);
     $this->assertArrayHasKey('meta', $grouped);
     $this->assertArrayHasKey('google', $grouped);
-    $this->assertCount(2, $grouped['meta']);
-    $this->assertCount(1, $grouped['google']);
+    $this->assertArrayHasKey('linkedin', $grouped);
+    $this->assertArrayHasKey('tiktok', $grouped);
+    // The service broadcasts all events to all platforms.
+    $this->assertCount(3, $grouped['meta']);
+    $this->assertCount(3, $grouped['google']);
   }
 
   /**

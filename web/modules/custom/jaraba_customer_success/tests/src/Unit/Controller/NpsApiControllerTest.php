@@ -41,6 +41,9 @@ class NpsApiControllerTest extends UnitTestCase {
       $this->npsSurveyService,
       $this->logger,
     );
+
+    // The controller uses $this->t() from StringTranslationTrait.
+    $this->controller->setStringTranslation($this->getStringTranslationStub());
   }
 
   /**
