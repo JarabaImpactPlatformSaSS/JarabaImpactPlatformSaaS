@@ -1,0 +1,33 @@
+{
+    "name": "jaraba-impact-platform-e2e",
+    "version": "1.0.0",
+    "description": "Cypress E2E tests for Jaraba Impact Platform SaaS",
+    "scripts": {
+        "cy:open": "cypress open",
+        "cy:run": "cypress run",
+        "cy:run:chrome": "cypress run --browser chrome",
+        "cy:run:firefox": "cypress run --browser firefox",
+        "cy:run:headed": "cypress run --headed",
+        "cy:run:record": "cypress run --record",
+        "test:e2e": "cypress run",
+        "test:e2e:ci": "cypress run --browser chrome --headless",
+        "docker:run": "docker-compose -f docker-compose.cypress.yml run --rm cypress",
+        "docker:run:chrome": "docker-compose -f docker-compose.cypress.yml run --rm cypress run --browser chrome",
+        "docker:run:spec": "docker-compose -f docker-compose.cypress.yml run --rm cypress run --spec"
+    },
+    "devDependencies": {
+        "cypress": "^13.6.0",
+        "@cypress/grep": "^4.0.1",
+        "cypress-real-events": "^1.11.0",
+        "cypress-file-upload": "^5.0.8"
+    },
+    "keywords": [
+        "cypress",
+        "e2e",
+        "testing",
+        "drupal",
+        "saas"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

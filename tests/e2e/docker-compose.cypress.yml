@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  cypress:
+    image: cypress/included:13.6.0
+    working_dir: /e2e
+    environment:
+      # Usa la URL interna de Lando (nombre del contenedor appserver)
+      - CYPRESS_baseUrl=https://jarabaimpactplatformsaas.lndo.site
+      - CYPRESS_ADMIN_USER=admin
+      - CYPRESS_ADMIN_PASS=admin
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+      - ./:/e2e
+      - ./cypress/videos:/e2e/cypress/videos
+      - ./cypress/screenshots:/e2e/cypress/screenshots
+    # Conectar a la red externa de Lando
+    networks:
+      - lando_bridge
+    command: [ "run", "--browser", "electron" ]
+
+  # Modo interactivo (requiere X11/VNC)
+  cypress-open:
+    image: cypress/included:13.6.0
+    working_dir: /e2e
+    environment:
+      - CYPRESS_baseUrl=http://host.docker.internal:8000
+      - DISPLAY=host.docker.internal:0
+    volumes:
+      - ./:/e2e
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: [ "open" ]
+
+networks:
+  lando_bridge:
+    external: true
+    name: landoproxyhyperion5000gandalfedition_edge
