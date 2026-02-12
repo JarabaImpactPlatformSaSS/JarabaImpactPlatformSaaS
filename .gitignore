@@ -64,6 +64,20 @@ web/themes/custom/ecosistema_jaraba_theme/js/dist/
 # ----- TESTING -----
 web/sites/simpletest
 phpunit.xml
+phpunit_error.txt
+phpunit_full.txt
+
+# ----- TEMPORARY DEBUG SCRIPTS -----
+fix_preview_images.php
+fix_stats_attrs.php
+inject_demo_blocks.php
+inspect_canvas_data.php
+inspect_styles.php
+rebuild_routes.php
+settings_base.txt
+sync_rendered_html.php
+verify_page45.php
+verify_render.php
 
 # ----- BACKUPS -----
 *.sql
