@@ -1153,6 +1153,21 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = $comercio_routes[$route];
   }
 
+  // =========================================================================
+  // COPILOTO v2 - BMC Dashboard, Hypothesis Manager, Experiment Lifecycle
+  // Rutas /emprendimiento/bmc, /emprendimiento/hipotesis, /emprendimiento/experimentos/gestion
+  // =========================================================================
+  $copilot_v2_routes = [
+    'jaraba_copilot_v2.bmc_dashboard' => 'page-bmc-dashboard',
+    'jaraba_copilot_v2.hypothesis_manager' => 'page-hypothesis-manager',
+    'jaraba_copilot_v2.experiment_lifecycle' => 'page-experiment-lifecycle',
+  ];
+  if (isset($copilot_v2_routes[$route])) {
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = $copilot_v2_routes[$route];
+    $variables['attributes']['class'][] = 'full-width-page';
+  }
+
   if ($config->get('enable_promo_banner')) {
     $variables['attributes']['class'][] = 'has-promo-banner';
   }

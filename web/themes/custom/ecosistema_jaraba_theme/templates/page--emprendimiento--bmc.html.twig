@@ -1,0 +1,67 @@
+{#
+/**
+ * @file
+ * Page template limpio para BMC Dashboard (/emprendimiento/bmc).
+ *
+ * DIRECTRICES:
+ * - SIN regiones sidebar (sidebar_first, sidebar_second)
+ * - Layout full-width para dashboard BMC
+ * - Mantiene header/footer via parciales
+ * - Mantiene breadcrumb y mensajes del sistema
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium">
+
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Full Width BMC Dashboard
+     ============================================= #}
+  <main class="main-content main-content--full" role="main">
+    {# Breadcrumbs #}
+    {% if page.breadcrumb %}
+      <div class="breadcrumb-wrapper container">
+        {{ page.breadcrumb }}
+      </div>
+    {% endif %}
+
+    {# Mensajes del sistema #}
+    {% if page.highlighted %}
+      <div class="highlighted container">
+        {{ page.highlighted }}
+      </div>
+    {% endif %}
+
+    {# Contenido BMC Dashboard - Sin sidebars #}
+    <div class="main-content__inner main-content__inner--full">
+      {% if page.content %}
+        {{ page.content }}
+      {% endif %}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+</div>
