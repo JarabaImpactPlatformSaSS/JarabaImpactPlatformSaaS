@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Partial: bloque BMC individual con semaforo y lista de hipotesis.
+ *
+ * Variables:
+ * - block: Datos del bloque (code, label, total_hypotheses, validated_hypotheses, ratio, semaphore, percentage).
+ */
+#}
+
+<div class="bmc-block bmc-block--{{ block.code|lower|replace({'$': 'dollar'}) }} bmc-block--{{ block.semaphore|lower }}">
+  <div class="bmc-block__header">
+    <span class="bmc-block__semaphore bmc-block__semaphore--{{ block.semaphore|lower }}"
+          title="{{ block.semaphore }}">
+    </span>
+    <h3 class="bmc-block__title">{{ block.label }}</h3>
+    <span class="bmc-block__code">{{ block.code }}</span>
+  </div>
+
+  <div class="bmc-block__stats">
+    <span class="bmc-block__percentage">{{ block.percentage }}%</span>
+    <span class="bmc-block__count">
+      {{ block.validated_hypotheses }}/{{ block.total_hypotheses }}
+    </span>
+  </div>
+
+  <div class="bmc-block__progress">
+    <div class="bmc-block__progress-bar" style="width: {{ block.percentage }}%"></div>
+  </div>
+
+  {% if block.total_hypotheses == 0 %}
+    <p class="bmc-block__empty">{{ 'Sin hipotesis'|t }}</p>
+  {% endif %}
+</div>

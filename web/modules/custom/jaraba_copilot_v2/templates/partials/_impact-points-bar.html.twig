@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Partial: barra de puntos de impacto con nivel.
+ *
+ * Variables:
+ * - points: Puntos de impacto acumulados.
+ */
+#}
+
+{% set levels = [
+  {'name': 'Novato'|t, 'min': 0, 'max': 100},
+  {'name': 'Explorador'|t, 'min': 100, 'max': 300},
+  {'name': 'Validador'|t, 'min': 300, 'max': 600},
+  {'name': 'Experto'|t, 'min': 600, 'max': 1000},
+  {'name': 'Maestro'|t, 'min': 1000, 'max': 2000},
+] %}
+
+{% set current_level = levels[0] %}
+{% for level in levels %}
+  {% if points >= level.min %}
+    {% set current_level = level %}
+  {% endif %}
+{% endfor %}
+
+{% set progress = 0 %}
+{% if current_level.max > current_level.min %}
+  {% set progress = ((points - current_level.min) / (current_level.max - current_level.min) * 100)|round %}
+  {% if progress > 100 %}
+    {% set progress = 100 %}
+  {% endif %}
+{% endif %}
+
+<div class="impact-points-bar">
+  <div class="impact-points-bar__info">
+    <span class="impact-points-bar__level">{{ current_level.name }}</span>
+    <span class="impact-points-bar__points">{{ points }} Pi</span>
+  </div>
+  <div class="impact-points-bar__track">
+    <div class="impact-points-bar__fill" style="width: {{ progress }}%"></div>
+  </div>
+  <div class="impact-points-bar__next">
+    {{ 'Siguiente nivel: %max Pi'|t({'%max': current_level.max}) }}
+  </div>
+</div>
