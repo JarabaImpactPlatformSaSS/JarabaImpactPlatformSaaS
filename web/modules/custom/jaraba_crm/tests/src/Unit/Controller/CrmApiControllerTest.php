@@ -11,6 +11,7 @@ use Drupal\jaraba_crm\Service\ContactService;
 use Drupal\jaraba_crm\Service\CrmForecastingService;
 use Drupal\jaraba_crm\Service\OpportunityService;
 use Drupal\jaraba_crm\Service\PipelineStageService;
+use Drupal\jaraba_crm\Service\SalesPlaybookService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ class CrmApiControllerTest extends UnitTestCase {
   protected PipelineStageService $pipelineStageService;
   protected CrmForecastingService $forecastingService;
   protected LoggerInterface $logger;
+  protected SalesPlaybookService $salesPlaybook;
 
   /**
    * {@inheritdoc}
@@ -44,6 +46,7 @@ class CrmApiControllerTest extends UnitTestCase {
     $this->pipelineStageService = $this->createMock(PipelineStageService::class);
     $this->forecastingService = $this->createMock(CrmForecastingService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->salesPlaybook = $this->createMock(SalesPlaybookService::class);
   }
 
   /**
@@ -58,6 +61,7 @@ class CrmApiControllerTest extends UnitTestCase {
       $this->pipelineStageService,
       $this->forecastingService,
       $this->logger,
+      $this->salesPlaybook,
     );
 
     // El controller necesita getCurrentTenantId() que depende del container.
@@ -77,6 +81,7 @@ class CrmApiControllerTest extends UnitTestCase {
       $this->pipelineStageService,
       $this->forecastingService,
       $this->logger,
+      $this->salesPlaybook,
     );
 
     $this->assertNotNull($controller);

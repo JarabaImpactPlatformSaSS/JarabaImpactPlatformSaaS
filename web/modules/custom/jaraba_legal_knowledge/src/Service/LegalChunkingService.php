@@ -39,7 +39,136 @@ class LegalChunkingService {
   ) {}
 
   /**
-   * Divide un texto legal en chunks semanticos.
+   * Divide un texto legal en chunks semanticos (API simplificada).
+   *
+   * Divide el texto por doble salto de linea (parrafos) y agrupa
+   * parrafos en chunks que no excedan el limite de tokens.
+   * Cada chunk devuelto contiene: content, token_count, chunk_index.
+   *
+   * @param string $text
+   *   Texto a fragmentar.
+   *
+   * @return array
+   *   Array de chunks. Cada chunk contiene:
+   *   - content: (string) Texto del fragmento.
+   *   - token_count: (int) Estimacion de tokens del chunk.
+   *   - chunk_index: (int) Indice secuencial del chunk (base 0).
+   */
+  public function chunkText(string $text): array {
+    if (empty(trim($text))) {
+      return [];
+    }
+
+    // Split by double newlines to get paragraphs.
+    $paragraphs = preg_split('/\n\s*\n/', $text);
+    if ($paragraphs === FALSE) {
+      $paragraphs = [$text];
+    }
+    $paragraphs = array_values(array_filter(array_map('trim', $paragraphs)));
+
+    if (empty($paragraphs)) {
+      return [];
+    }
+
+    $chunks = [];
+    $chunkIndex = 0;
+    $currentContent = '';
+    $currentTokens = 0;
+
+    foreach ($paragraphs as $paragraph) {
+      if (empty($paragraph)) {
+        continue;
+      }
+
+      $paragraphTokens = $this->estimateTokens($paragraph);
+
+      // If adding this paragraph would exceed the limit, flush current chunk.
+      if ($currentTokens + $paragraphTokens > self::TARGET_CHUNK_TOKENS && !empty($currentContent)) {
+        $chunks[] = [
+          'content' => trim($currentContent),
+          'token_count' => $currentTokens,
+          'chunk_index' => $chunkIndex,
+        ];
+        $chunkIndex++;
+        $currentContent = '';
+        $currentTokens = 0;
+      }
+
+      // If a single paragraph exceeds the limit, split it by sentences.
+      if ($paragraphTokens > self::TARGET_CHUNK_TOKENS && empty($currentContent)) {
+        $sentenceChunks = $this->splitLargeParagraph($paragraph, $chunkIndex);
+        foreach ($sentenceChunks as $sentenceChunk) {
+          $chunks[] = $sentenceChunk;
+          $chunkIndex++;
+        }
+        continue;
+      }
+
+      $currentContent .= ($currentContent !== '' ? "\n\n" : '') . $paragraph;
+      $currentTokens += $paragraphTokens;
+    }
+
+    // Final chunk.
+    if (!empty(trim($currentContent))) {
+      $chunks[] = [
+        'content' => trim($currentContent),
+        'token_count' => $currentTokens,
+        'chunk_index' => $chunkIndex,
+      ];
+    }
+
+    return $chunks;
+  }
+
+  /**
+   * Detecta articulos en un texto legal.
+   *
+   * Busca patrones como "Articulo N." o "Art. N." y devuelve un array
+   * con informacion de cada articulo encontrado.
+   *
+   * @param string $text
+   *   Texto donde buscar articulos.
+   *
+   * @return array
+   *   Array de articulos encontrados. Cada articulo contiene:
+   *   - article_number: (string) Numero del articulo.
+   *   - title: (string) Titulo del articulo (texto tras el numero).
+   *   - position: (int) Posicion del inicio del articulo en el texto.
+   */
+  public function detectArticles(string $text): array {
+    if (empty(trim($text))) {
+      return [];
+    }
+
+    $articles = [];
+
+    // Match "Articulo N." or "Art. N." patterns (case-insensitive, with/without accents).
+    $pattern = '/\b(?:Art[ií]culo|Art\.)\s+(\d+(?:\s+[Bb]is)?)\b[.\-:\s]*(.*)/iu';
+
+    if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+      foreach ($matches[1] as $index => $match) {
+        $articleNumber = trim($match[0]);
+        $titleText = isset($matches[2][$index]) ? trim($matches[2][$index][0]) : '';
+
+        // Extract just the title part (first line or up to first period).
+        $titleLines = explode("\n", $titleText);
+        $title = trim($titleLines[0]);
+        // Remove trailing period if present.
+        $title = rtrim($title, '.');
+
+        $articles[] = [
+          'article_number' => $articleNumber,
+          'title' => $title,
+          'position' => (int) $matches[0][$index][1],
+        ];
+      }
+    }
+
+    return $articles;
+  }
+
+  /**
+   * Divide un texto legal en chunks semanticos (API completa).
    *
    * @param string $fullText
    *   Texto completo de la norma.
@@ -176,9 +305,65 @@ class LegalChunkingService {
    *   Estimacion del numero de tokens.
    */
   public function estimateTokens(string $text): int {
+    if (empty(trim($text))) {
+      return 0;
+    }
+
     $wordCount = str_word_count($text);
 
     return (int) ceil($wordCount * 1.3);
+  }
+
+  /**
+   * Splits a large paragraph into smaller chunks by sentences.
+   *
+   * @param string $paragraph
+   *   The large paragraph to split.
+   * @param int $startIndex
+   *   Starting chunk index.
+   *
+   * @return array
+   *   Array of chunks.
+   */
+  protected function splitLargeParagraph(string $paragraph, int $startIndex): array {
+    // Split by sentence boundaries.
+    $sentences = preg_split('/(?<=[.!?])\s+/', $paragraph);
+    if ($sentences === FALSE) {
+      $sentences = [$paragraph];
+    }
+
+    $chunks = [];
+    $chunkIndex = $startIndex;
+    $currentContent = '';
+    $currentTokens = 0;
+
+    foreach ($sentences as $sentence) {
+      $sentenceTokens = $this->estimateTokens($sentence);
+
+      if ($currentTokens + $sentenceTokens > self::TARGET_CHUNK_TOKENS && !empty($currentContent)) {
+        $chunks[] = [
+          'content' => trim($currentContent),
+          'token_count' => $currentTokens,
+          'chunk_index' => $chunkIndex,
+        ];
+        $chunkIndex++;
+        $currentContent = '';
+        $currentTokens = 0;
+      }
+
+      $currentContent .= ($currentContent !== '' ? ' ' : '') . $sentence;
+      $currentTokens += $sentenceTokens;
+    }
+
+    if (!empty(trim($currentContent))) {
+      $chunks[] = [
+        'content' => trim($currentContent),
+        'token_count' => $currentTokens,
+        'chunk_index' => $chunkIndex,
+      ];
+    }
+
+    return $chunks;
   }
 
   /**

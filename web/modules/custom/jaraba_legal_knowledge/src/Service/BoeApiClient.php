@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  * - Base URL configurable via jaraba_legal_knowledge.settings.
  * - Reintentos automaticos (hasta 3) con backoff lineal.
  * - Timeout de 30 segundos por peticion.
- * - Respuestas parseadas desde JSON.
+ * - Soporte para respuestas XML (sumarios, documentos) y JSON.
  *
  * @see https://www.boe.es/datosabiertos/
  */
@@ -51,6 +51,250 @@ class BoeApiClient {
     protected ConfigFactoryInterface $configFactory,
     protected LoggerInterface $logger,
   ) {}
+
+  /**
+   * Construye una URL completa para la API del BOE.
+   *
+   * @param string $endpoint
+   *   Tipo de recurso: 'sumario', 'documento', etc.
+   * @param array $params
+   *   Parametros de consulta (e.g., ['fecha' => '20250115']).
+   *
+   * @return string
+   *   URL completa con parametros de query.
+   */
+  public function buildUrl(string $endpoint, array $params = []): string {
+    $baseUrl = $this->getBaseUrl();
+    $url = $baseUrl . '/' . ltrim($endpoint, '/');
+
+    if (!empty($params)) {
+      $url .= '?' . http_build_query($params);
+    }
+
+    return $url;
+  }
+
+  /**
+   * Parsea la respuesta XML de un sumario del BOE.
+   *
+   * @param string $xml
+   *   Cadena XML de la respuesta del sumario.
+   *
+   * @return array
+   *   Array con clave 'items' que contiene la lista de normas.
+   *   Cada item tiene claves: id, titulo, urlPdf, seccion, departamento.
+   *   Devuelve ['items' => []] si el XML es invalido o vacio.
+   */
+  public function parseSumarioResponse(string $xml): array {
+    if (empty(trim($xml))) {
+      return ['items' => []];
+    }
+
+    // Suppress XML parsing warnings for invalid input.
+    $previousUseErrors = libxml_use_internal_errors(TRUE);
+
+    try {
+      $simpleXml = simplexml_load_string($xml);
+
+      if ($simpleXml === FALSE) {
+        libxml_clear_errors();
+        return ['items' => []];
+      }
+
+      $items = [];
+
+      // Navigate the BOE sumario XML structure.
+      foreach ($simpleXml->xpath('//item') as $item) {
+        $attributes = $item->attributes();
+        $id = $attributes && isset($attributes['id']) ? (string) $attributes['id'] : '';
+        $titulo = isset($item->titulo) ? (string) $item->titulo : '';
+        $urlPdf = isset($item->urlPdf) ? (string) $item->urlPdf : '';
+
+        // Attempt to get the parent section and department context.
+        $seccion = '';
+        $departamento = '';
+        $parent = $item->xpath('..');
+        if (!empty($parent)) {
+          $epigParent = $parent[0]->xpath('..');
+          if (!empty($epigParent)) {
+            $deptAttrs = $epigParent[0]->attributes();
+            if ($deptAttrs && isset($deptAttrs['nombre'])) {
+              $departamento = (string) $deptAttrs['nombre'];
+            }
+            $secParent = $epigParent[0]->xpath('..');
+            if (!empty($secParent)) {
+              $secAttrs = $secParent[0]->attributes();
+              if ($secAttrs && isset($secAttrs['nombre'])) {
+                $seccion = (string) $secAttrs['nombre'];
+              }
+            }
+          }
+        }
+
+        $items[] = [
+          'id' => $id,
+          'titulo' => $titulo,
+          'urlPdf' => $urlPdf,
+          'seccion' => $seccion,
+          'departamento' => $departamento,
+        ];
+      }
+
+      return ['items' => $items];
+    }
+    finally {
+      libxml_use_internal_errors($previousUseErrors);
+    }
+  }
+
+  /**
+   * Parsea la respuesta XML de un documento del BOE.
+   *
+   * @param string $xml
+   *   Cadena XML de la respuesta del documento.
+   *
+   * @return array
+   *   Array con claves: id, titulo, fecha_publicacion, departamento,
+   *   rango, texto. Devuelve array vacio si el XML es invalido o
+   *   si es un error (documento no encontrado).
+   */
+  public function parseDocumentoResponse(string $xml): array {
+    if (empty(trim($xml))) {
+      return [];
+    }
+
+    $previousUseErrors = libxml_use_internal_errors(TRUE);
+
+    try {
+      $simpleXml = simplexml_load_string($xml);
+
+      if ($simpleXml === FALSE) {
+        libxml_clear_errors();
+        return [];
+      }
+
+      // Check if it's an error response.
+      if ($simpleXml->getName() === 'error') {
+        return [];
+      }
+
+      // Extract document ID from attribute.
+      $attributes = $simpleXml->attributes();
+      $id = $attributes && isset($attributes['id']) ? (string) $attributes['id'] : '';
+
+      if (empty($id)) {
+        return [];
+      }
+
+      // Extract metadata.
+      $titulo = '';
+      $fechaPublicacion = '';
+      $departamento = '';
+      $rango = '';
+
+      if (isset($simpleXml->metadatos)) {
+        $meta = $simpleXml->metadatos;
+        $titulo = isset($meta->titulo) ? (string) $meta->titulo : '';
+        $fechaPublicacion = isset($meta->fecha_publicacion) ? (string) $meta->fecha_publicacion : '';
+        $departamento = isset($meta->departamento) ? (string) $meta->departamento : '';
+        $rango = isset($meta->rango) ? (string) $meta->rango : '';
+      }
+
+      // Extract text content.
+      $texto = '';
+      if (isset($simpleXml->texto)) {
+        $texto = strip_tags($simpleXml->texto->asXML() ?: '');
+        $texto = trim($texto);
+      }
+
+      return [
+        'id' => $id,
+        'titulo' => $titulo,
+        'fecha_publicacion' => $fechaPublicacion,
+        'departamento' => $departamento,
+        'rango' => $rango,
+        'texto' => $texto,
+      ];
+    }
+    finally {
+      libxml_use_internal_errors($previousUseErrors);
+    }
+  }
+
+  /**
+   * Obtiene y parsea el sumario del BOE para una fecha dada.
+   *
+   * @param string $fecha
+   *   Fecha en formato YYYYMMDD.
+   *
+   * @return array
+   *   Array con clave 'items' que contiene las normas del sumario.
+   */
+  public function fetchSumario(string $fecha): array {
+    $url = $this->buildUrl('sumario', ['fecha' => $fecha]);
+
+    try {
+      $response = $this->httpClient->request('GET', $url, [
+        'timeout' => $this->getTimeout(),
+      ]);
+
+      $body = (string) $response->getBody();
+
+      return $this->parseSumarioResponse($body);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error obteniendo sumario BOE para fecha @fecha: @error', [
+        '@fecha' => $fecha,
+        '@error' => $e->getMessage(),
+      ]);
+
+      return ['items' => []];
+    }
+  }
+
+  /**
+   * Obtiene y parsea un documento del BOE por su ID.
+   *
+   * @param string $documentId
+   *   Identificador BOE del documento (e.g., 'BOE-A-2025-0001').
+   *
+   * @return array
+   *   Datos del documento parseados o array vacio si no se encuentra.
+   */
+  public function fetchDocumento(string $documentId): array {
+    $url = $this->buildUrl('documento', ['id' => $documentId]);
+
+    try {
+      $response = $this->httpClient->request('GET', $url, [
+        'timeout' => $this->getTimeout(),
+      ]);
+
+      $body = (string) $response->getBody();
+
+      return $this->parseDocumentoResponse($body);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error obteniendo documento BOE @id: @error', [
+        '@id' => $documentId,
+        '@error' => $e->getMessage(),
+      ]);
+
+      return [];
+    }
+  }
+
+  /**
+   * Obtiene la URL base de la API del BOE desde configuracion.
+   *
+   * @return string
+   *   URL base sin barra final.
+   */
+  public function getBaseUrl(): string {
+    $config = $this->configFactory->get('jaraba_legal_knowledge.settings');
+    $baseUrl = $config->get('boe_api_base_url') ?: 'https://www.boe.es/datosabiertos/api';
+
+    return rtrim($baseUrl, '/');
+  }
 
   /**
    * Busca normas en la API del BOE con filtros.
@@ -202,6 +446,19 @@ class BoeApiClient {
   }
 
   /**
+   * Obtiene el timeout configurado para peticiones HTTP.
+   *
+   * @return int
+   *   Timeout en segundos.
+   */
+  protected function getTimeout(): int {
+    $config = $this->configFactory->get('jaraba_legal_knowledge.settings');
+    $timeout = $config->get('boe_timeout');
+
+    return $timeout ? (int) $timeout : self::HTTP_TIMEOUT;
+  }
+
+  /**
    * Realiza una peticion HTTP GET a la API del BOE con reintentos.
    *
    * @param string $endpoint
@@ -260,19 +517,6 @@ class BoeApiClient {
       'BOE API fallo despues de ' . self::MAX_RETRIES . ' intentos: ' .
       ($lastException ? $lastException->getMessage() : 'Error desconocido')
     );
-  }
-
-  /**
-   * Obtiene la URL base de la API del BOE desde configuracion.
-   *
-   * @return string
-   *   URL base sin barra final.
-   */
-  protected function getBaseUrl(): string {
-    $config = $this->configFactory->get('jaraba_legal_knowledge.settings');
-    $baseUrl = $config->get('boe_api_base_url') ?: 'https://www.boe.es/datosabiertos/api';
-
-    return rtrim($baseUrl, '/');
   }
 
 }
