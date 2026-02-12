@@ -1,0 +1,101 @@
+uuid: 700d2af8-3c38-4dea-857e-66064246da25
+langcode: es
+status: true
+dependencies: {  }
+id: social_proof
+label: 'Prueba Social'
+description: 'Muestra indicadores de confianza: usuarios, menciones, premios.'
+category: trust
+twig_template: '@jaraba_page_builder/blocks/trust/social-proof.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+      default: 'Miles confían en nosotros'
+    items:
+      type: array
+      title: Elementos
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+            title: Tipo
+            enum:
+              - users
+              - rating
+              - award
+              - mention
+          value:
+            type: string
+            title: Valor
+          label:
+            type: string
+            title: Etiqueta
+          icon:
+            type: string
+          image:
+            type: string
+            format: image
+    avatars:
+      type: array
+      title: 'Avatares de usuarios'
+      items:
+        type: string
+        format: image
+    avatars_count:
+      type: string
+      title: 'Texto avatares'
+      default: '+5,000 usuarios activos'
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - inline
+        - grid
+        - compact
+      default: inline
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: light
+  required:
+    - items
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'Trusted by Industry Leaders'
+  items:
+    -
+      type: rating
+      value: '4.9'
+      label: 'Average Rating'
+      icon: star
+    -
+      type: users
+      value: '50,000+'
+      label: 'Active Users'
+      icon: users
+    -
+      type: award
+      value: '#1'
+      label: 'ProductHunt 2025'
+      icon: award
+    -
+      type: mention
+      value: 'Featured in'
+      label: 'TechCrunch, Forbes, Wired'
+      icon: newspaper
+  avatars_count: '+50,000 users joined this month'
+  layout: inline
+  background: light
+weight: 0

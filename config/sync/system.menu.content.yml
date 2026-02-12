@@ -1,0 +1,13 @@
+uuid: 955c6776-a32d-4806-9fe1-d29eb5f25e08
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - navigation
+_core:
+  default_config_hash: nqVwm91Uyib_rvFaNPF1MdYqHlmZ38w5rsOVVy4uWDw
+id: content
+label: Contenido
+description: 'Enlaces de tareas de contenido'
+locked: true

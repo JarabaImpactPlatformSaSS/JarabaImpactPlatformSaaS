@@ -1,0 +1,20 @@
+uuid: ebe98cbb-6fc6-40e4-b99b-c4ffeef4f186
+langcode: es
+status: true
+dependencies: {  }
+id: servicios_education
+label: 'Educación & Formación'
+description: 'Para academias, tutores, formadores, centros de idiomas. Aprendizaje, accesibilidad, claridad, motivación.'
+vertical: serviciosconecta
+sector: education
+mood: '["learning", "accessible", "clear", "motivating"]'
+target_audience: 'Academias, tutores, formadores, centros de idiomas'
+color_tokens: '{"primary":"#2563EB","secondary":"#F59E0B","accent":"#10B981","surface":"#EFF6FF","surface-dark":"#1E293B","text-primary":"#1E293B","text-secondary":"#475569","text-muted":"#94A3B8","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Nunito, sans-serif","family-body":"Roboto, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"12px","shadow-md":"0 4px 16px rgba(37,99,235,0.08)","shadow-lg":"0 8px 32px rgba(37,99,235,0.12)"}'
+effect_tokens: '{"glass-bg":"rgba(239,246,255,0.90)","glass-blur":"blur(12px)","glass-border":"1px solid rgba(37,99,235,0.10)","gradient-primary":"linear-gradient(135deg, #2563EB, #F59E0B)"}'
+component_variants: '{"header":"sticky","hero":"centered","cards":"profile-casual","footer":"informative"}'
+animation_config: '{"type":"friendly","speed":"400ms","reveal":"bounce-in"}'
+content_guidelines: '{"photography":"Aulas modernas, alumnos participando, pizarras digitales, ambiente de aprendizaje","copywriting":"Tono motivador y accesible, vocabulario educativo (aprende, crece, descubre)","iconography":"Amigable, colorido, escalable"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap"]'
+weight: 25

@@ -1,0 +1,15 @@
+uuid: 96fb3b31-2137-4783-91ab-9031e8f0c465
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.aceitesdelsur_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_editor_action_aceitesdelsur_jaraba_saas_lndo_site
+label: 'Add editors to the Cooperativa Aceites del Sur domain'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - aceitesdelsur_jaraba_saas_lndo_site

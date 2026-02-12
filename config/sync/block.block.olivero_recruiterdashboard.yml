@@ -1,0 +1,20 @@
+uuid: b1135416-b808-441f-983f-3a6a52c83979
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_job_board
+  theme:
+    - olivero
+id: olivero_recruiterdashboard
+theme: olivero
+region: content
+weight: 0
+provider: null
+plugin: recruiter_dashboard_block
+settings:
+  id: recruiter_dashboard_block
+  label: 'Panel de Reclutador'
+  label_display: visible
+  provider: jaraba_job_board
+visibility: {  }

@@ -1,0 +1,15 @@
+uuid: be740580-2acb-4442-9214-962412619433
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_action_jaraba_saas_lndo_site
+label: 'Add selected content to the Plataforma Principal domain'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - jaraba_saas_lndo_site

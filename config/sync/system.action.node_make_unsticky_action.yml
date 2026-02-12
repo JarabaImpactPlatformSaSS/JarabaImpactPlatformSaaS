@@ -1,0 +1,13 @@
+uuid: b7ba4221-79eb-4d4c-bb7d-7c514f2f8002
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: lDM9mvIGAu8Sw8rt-uCO4Sr7yX5VPrDPxYcawkbKd6k
+id: node_make_unsticky_action
+label: 'Hacer contenido no pegajoso'
+type: node
+plugin: node_make_unsticky_action
+configuration: {  }

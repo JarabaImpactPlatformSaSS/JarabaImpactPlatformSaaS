@@ -1,0 +1,13 @@
+uuid: 8ed665c7-9f25-4dd1-aa04-8d255c34867c
+langcode: es
+status: true
+dependencies:
+  module:
+    - media
+_core:
+  default_config_hash: VVyUA6PIaVeGtcIbgEWqJ6SYDiJdReBeojFswURFpKs
+id: media_save_action
+label: 'Guardar medio'
+type: media
+plugin: 'entity:save_action:media'
+configuration: {  }

@@ -1,0 +1,13 @@
+uuid: 91b46ab5-bdbc-4b20-b75b-6d65dbf2b415
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain
+_core:
+  default_config_hash: DlfMeJotYBEDBKUfJoO_srd8rHic6XNYvF4esU-kJPw
+id: domain_disable_action
+label: 'Desactivar registro de dominio'
+type: domain
+plugin: domain_disable_action
+configuration: {  }

@@ -1,0 +1,33 @@
+uuid: 7691181d-2ccd-48a4-91eb-dc739b266cc3
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_translate
+_core:
+  default_config_hash: lb586EVHI6WS-Ia4BsvNy0ZYV9lPzGdOuJG9Y0qSDrA
+id: ai_translate
+label: 'Indicación de traducción de IA'
+variables:
+  -
+    name: sourceLang
+    help_text: 'ID of source language'
+    required: false
+  -
+    name: sourceLangName
+    help_text: 'Name of source language'
+    required: false
+  -
+    name: destLang
+    help_text: 'ID of destination language'
+    required: false
+  -
+    name: destLangName
+    help_text: 'Name of destination language'
+    required: true
+  -
+    name: inputText
+    help_text: 'The input text to translate'
+    required: true
+tokens: {  }

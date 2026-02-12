@@ -1,0 +1,134 @@
+uuid: 2615b010-23c0-4ce6-b50f-2b4b113e4be9
+langcode: es
+status: true
+dependencies: {  }
+id: map_locations
+label: 'Mapa con Ubicaciones'
+description: 'Mapa interactivo con marcadores de ubicaciones (productores, tiendas, eventos).'
+category: maps
+twig_template: '@jaraba_page_builder/blocks/maps/map-locations.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+      default: Encuéntranos
+    subtitle:
+      type: string
+      title: Subtítulo
+    map_center:
+      type: object
+      title: 'Centro del mapa'
+      properties:
+        lat:
+          type: number
+          title: Latitud
+          default: 40.4168
+        lng:
+          type: number
+          title: Longitud
+          default: -3.7038
+    zoom:
+      type: integer
+      title: 'Zoom inicial'
+      default: 12
+    locations:
+      type: array
+      title: Ubicaciones
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: Nombre
+          address:
+            type: string
+            title: Dirección
+          lat:
+            type: number
+            title: Latitud
+          lng:
+            type: number
+            title: Longitud
+          category:
+            type: string
+            title: Categoría
+          icon:
+            type: string
+            title: Icono
+          url:
+            type: string
+            title: 'URL detalle'
+    show_list:
+      type: boolean
+      title: 'Mostrar listado'
+      default: true
+    filter_by_category:
+      type: boolean
+      title: 'Filtrar por categoría'
+      default: true
+    map_style:
+      type: string
+      title: 'Estilo del mapa'
+      enum:
+        - default
+        - dark
+        - satellite
+      default: default
+    height:
+      type: string
+      title: 'Altura del mapa'
+      enum:
+        - small
+        - medium
+        - large
+      default: medium
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - locations
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'Find Us'
+  subtitle: 'Visit our offices around the world'
+  map_center:
+    lat: 40.4168
+    lng: -3.7038
+  zoom: 5
+  locations:
+    -
+      name: 'Madrid HQ'
+      address: 'Calle Gran Vía 28, Madrid'
+      lat: 40.42
+      lng: -3.7025
+      category: Office
+      icon: building
+    -
+      name: 'Barcelona Office'
+      address: 'Passeig de Gràcia 55, Barcelona'
+      lat: 41.3925
+      lng: 2.165
+      category: Office
+      icon: building
+    -
+      name: 'Valencia Store'
+      address: 'Calle Colón 15, Valencia'
+      lat: 39.4699
+      lng: -0.3763
+      category: Store
+      icon: storefront
+  show_list: true
+  filter_by_category: true
+  map_style: default
+  height: medium
+  background: light
+weight: 0

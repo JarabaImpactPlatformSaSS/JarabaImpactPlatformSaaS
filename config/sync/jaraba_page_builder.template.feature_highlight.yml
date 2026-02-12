@@ -1,0 +1,91 @@
+uuid: 6a1936dc-70ee-44f1-8516-556a6fd20984
+langcode: es
+status: true
+dependencies: {  }
+id: feature_highlight
+label: 'Destacado de Feature'
+description: 'Destaca una característica con imagen y descripción detallada.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/features/feature-highlight.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+    title:
+      type: string
+      title: Título
+    description:
+      type: string
+      title: Descripción
+      format: richtext
+    image:
+      type: string
+      title: Imagen
+      format: image
+    image_position:
+      type: string
+      title: 'Posición imagen'
+      enum:
+        - left
+        - right
+      default: right
+    features:
+      type: array
+      title: Sub-características
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+          description:
+            type: string
+    cta:
+      type: object
+      title: CTA
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - title
+    - image
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'NEW FEATURE'
+  title: 'Powerful Dashboard Analytics'
+  description: 'Monitor your business metrics in real-time with our intuitive analytics dashboard. Make data-driven decisions with confidence.'
+  image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
+  image_position: right
+  features:
+    -
+      icon: fire
+      title: 'Real-time Updates'
+      description: 'See your data refresh instantly'
+    -
+      icon: star
+      title: 'Custom Reports'
+      description: 'Build reports tailored to your needs'
+    -
+      icon: shield
+      title: 'Secure Data'
+      description: 'Enterprise-grade security included'
+  cta:
+    text: 'Try It Free'
+    url: '#'
+  background: light
+weight: 0

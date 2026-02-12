@@ -1,0 +1,21 @@
+uuid: af07c8aa-0a10-4bdf-b6ee-9d1fdd53a670
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_sepe_teleformacion
+    - serialization
+    - user
+_core:
+  default_config_hash: GNUdSe4V415sURK-_Jr1jXVWMQ5YocnHM16C2E2RBlk
+id: sepe_participantes_resource
+plugin_id: sepe_participantes_resource
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie
+    - oauth2

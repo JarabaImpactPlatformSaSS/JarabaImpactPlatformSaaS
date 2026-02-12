@@ -1,0 +1,15 @@
+uuid: aa9bcb95-1038-43c9-ae4c-5eed6170cbd0
+langcode: es
+status: true
+dependencies:
+  config:
+    - group.type.tenant
+    - user.role.administrator
+id: tenant-admin_in
+label: Administrador
+weight: 102
+admin: true
+scope: insider
+global_role: administrator
+group_type: tenant
+permissions: {  }

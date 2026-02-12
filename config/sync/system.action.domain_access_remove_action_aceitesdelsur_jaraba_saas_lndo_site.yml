@@ -1,0 +1,15 @@
+uuid: 568087d6-2723-4f8b-8dc2-f84111d304a5
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.aceitesdelsur_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_remove_action_aceitesdelsur_jaraba_saas_lndo_site
+label: 'Remove selected content from the Cooperativa Aceites del Sur domain'
+type: node
+plugin: domain_access_remove_action
+configuration:
+  domain_id:
+    - aceitesdelsur_jaraba_saas_lndo_site

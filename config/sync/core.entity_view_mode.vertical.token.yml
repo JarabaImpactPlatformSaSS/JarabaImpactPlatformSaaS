@@ -1,0 +1,11 @@
+uuid: 490e1aa2-ec6d-44ed-a13d-02aac5d535df
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+id: vertical.token
+label: Token
+description: null
+targetEntityType: vertical
+cache: true

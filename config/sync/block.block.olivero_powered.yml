@@ -1,0 +1,22 @@
+uuid: f3376d72-f5df-47b6-9b31-e9a5ca558e48
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - olivero
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: olivero_powered
+theme: olivero
+region: footer_bottom
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Desarrollado por Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }

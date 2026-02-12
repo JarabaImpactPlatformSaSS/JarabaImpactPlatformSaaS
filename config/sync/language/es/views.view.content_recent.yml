@@ -1,0 +1,23 @@
+label: 'Contenido reciente'
+description: 'Contenido reciente.'
+display:
+  default:
+    display_title: Predeterminado
+    display_options:
+      title: 'Contenido reciente'
+      fields:
+        changed:
+          separator: ', '
+      exposed_form:
+        options:
+          submit_button: Aplicar
+          reset_button_label: Restablecer
+          exposed_sorts_label: 'Ordena por'
+          sort_asc_label: Ascendente
+          sort_desc_label: Descendente
+      empty:
+        area_text_custom:
+          content: 'No hay contenido disponible.'
+      use_more_text: Más
+  block_1:
+    display_title: Bloque

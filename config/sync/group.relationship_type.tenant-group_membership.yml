@@ -1,0 +1,15 @@
+uuid: 4d18065d-3186-4ae2-be60-c4ff6e754144
+langcode: es
+status: true
+dependencies:
+  config:
+    - group.type.tenant
+  module:
+    - user
+id: tenant-group_membership
+group_type: tenant
+content_plugin: group_membership
+plugin_config:
+  group_cardinality: 0
+  entity_cardinality: 1
+  use_creation_wizard: false

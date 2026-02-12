@@ -1,0 +1,21 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+public_key: ''
+secret_key: ''
+webhook_secret: ''
+mode: test
+product_id: ''
+checkout:
+  success_url: /onboarding/bienvenida
+  cancel_url: /onboarding/seleccionar-plan
+portal:
+  enabled: true
+  allow_cancellation: true
+  allow_plan_change: true
+trial:
+  days: 14
+  require_payment_method: false
+currency: eur

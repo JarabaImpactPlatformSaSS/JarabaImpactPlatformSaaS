@@ -47,6 +47,7 @@ yarn-error.log
 .DS_Store
 Thumbs.db
 Desktop.ini
+NUL
 
 # ----- ENVIRONMENT -----
 .env

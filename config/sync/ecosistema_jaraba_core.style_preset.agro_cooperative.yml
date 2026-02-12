@@ -1,0 +1,20 @@
+uuid: 3c03d247-80ed-4e51-a0a9-7314a6b731f5
+langcode: es
+status: true
+dependencies: {  }
+id: agro_cooperative
+label: 'Cooperativa & Impacto'
+description: 'Para cooperativas agrarias, comercio justo, proyectos de impacto social. Comunidad, transparencia, compromiso social.'
+vertical: agroconecta
+sector: cooperative
+mood: '["community", "transparent", "social", "inclusive"]'
+target_audience: 'Cooperativas agrarias, comercio justo, proyectos de impacto social'
+color_tokens: '{"primary":"#1565C0","secondary":"#43A047","accent":"#FF8F00","surface":"#F0F7FF","surface-dark":"#0D2137","text-primary":"#1A2940","text-secondary":"#546E7A","text-muted":"#90A4AE","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Nunito, sans-serif","family-body":"Open Sans, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"12px","shadow-md":"0 4px 16px rgba(21,101,192,0.08)","shadow-lg":"0 8px 32px rgba(21,101,192,0.12)"}'
+effect_tokens: '{"glass-bg":"rgba(240,247,255,0.85)","glass-blur":"blur(12px)","glass-border":"1px solid rgba(21,101,192,0.10)","gradient-primary":"linear-gradient(135deg, #1565C0, #43A047)"}'
+component_variants: '{"header":"sticky","hero":"centered","cards":"profile-casual","footer":"community"}'
+animation_config: '{"type":"friendly","speed":"500ms","reveal":"fade-up"}'
+content_guidelines: '{"photography":"Personas trabajando juntas, campos comunitarios, recolección colectiva","copywriting":"Tono inclusivo, vocabulario de cooperación (juntos, comunidad, impacto)","iconography":"Redondeado, accesible, optimista"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap"]'
+weight: 3

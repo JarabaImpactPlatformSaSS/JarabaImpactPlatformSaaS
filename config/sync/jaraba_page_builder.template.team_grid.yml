@@ -1,0 +1,140 @@
+uuid: f9464c41-3c56-466a-a392-a2dba4250ddc
+langcode: es
+status: true
+dependencies: {  }
+id: team_grid
+label: 'Equipo en Grid'
+description: 'Grid de miembros del equipo con foto, cargo y redes sociales.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/team/team-grid.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+      default: 'Nuestro Equipo'
+    subtitle:
+      type: string
+      title: Subtítulo
+    members:
+      type: array
+      title: 'Miembros del Equipo'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: Nombre
+          role:
+            type: string
+            title: Cargo
+          photo:
+            type: string
+            title: 'URL Foto'
+            format: image
+          bio:
+            type: string
+            title: 'Biografía Corta'
+          linkedin:
+            type: string
+            title: 'LinkedIn URL'
+          twitter:
+            type: string
+            title: 'Twitter URL'
+          email:
+            type: string
+            title: Email
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - grid-3
+        - grid-4
+        - carousel
+      default: grid-3
+    card_style:
+      type: string
+      title: 'Estilo de Card'
+      enum:
+        - simple
+        - hover-reveal
+        - overlay
+      default: simple
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - title
+    - members
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'OUR TEAM'
+  title: 'Meet Our Experts'
+  subtitle: 'A team of passionate professionals dedicated to your success'
+  members:
+    -
+      name: 'Steven Chilton'
+      role: 'Sales Manager'
+      photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&q=80'
+      bio: 'Expert in enterprise sales with 10+ years experience.'
+      linkedin: 'https://linkedin.com'
+      twitter: 'https://twitter.com'
+    -
+      name: 'David Bosch'
+      role: 'Sales Director'
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80'
+      bio: 'Strategic leader driving global sales growth.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Bukay Expert'
+      role: 'Project Manager'
+      photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80'
+      bio: 'Certified PMP managing complex digital projects.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Michael Custen'
+      role: 'Senior Consultant'
+      photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80'
+      bio: 'Technology advisor for Fortune 500 companies.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Daniel Rohan'
+      role: 'Sales Manager'
+      photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&q=80'
+      bio: 'Driving customer success through innovative solutions.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Maria Hoover'
+      role: 'Project Manager'
+      photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80'
+      bio: 'Delivering projects on time and under budget.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Juanma Martin'
+      role: 'Project Manager'
+      photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&q=80'
+      bio: 'Agile practitioner with startup experience.'
+      linkedin: 'https://linkedin.com'
+    -
+      name: 'Sunny Larona'
+      role: 'Senior Consultant'
+      photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80'
+      bio: 'Business transformation specialist.'
+      linkedin: 'https://linkedin.com'
+  layout: grid-4
+  card_style: simple
+  background: light
+weight: 0

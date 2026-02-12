@@ -1,0 +1,15 @@
+uuid: c6c07fef-0f12-4b67-8bc7-8c1a4e155fe2
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.aceitesdelsur_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_action_aceitesdelsur_jaraba_saas_lndo_site
+label: 'Add selected content to the Cooperativa Aceites del Sur domain'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - aceitesdelsur_jaraba_saas_lndo_site

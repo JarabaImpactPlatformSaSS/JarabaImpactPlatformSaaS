@@ -1,0 +1,15 @@
+uuid: 98187bb8-6055-434a-a27e-f72e3171ed62
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.academia_talento_jaraba_io
+  module:
+    - domain_access
+id: domain_access_add_editor_action_academia_talento_jaraba_io
+label: 'Agregar editores al dominio Academia Talento Digital'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - academia_talento_jaraba_io

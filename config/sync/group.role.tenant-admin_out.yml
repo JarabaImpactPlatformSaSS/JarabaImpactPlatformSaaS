@@ -1,0 +1,15 @@
+uuid: 3571cdc6-8140-4797-8e2d-0ee7e204a009
+langcode: es
+status: true
+dependencies:
+  config:
+    - group.type.tenant
+    - user.role.administrator
+id: tenant-admin_out
+label: Administrador
+weight: 101
+admin: true
+scope: outsider
+global_role: administrator
+group_type: tenant
+permissions: {  }

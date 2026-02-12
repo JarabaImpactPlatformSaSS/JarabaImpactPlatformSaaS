@@ -1,0 +1,11 @@
+uuid: 4deee16b-76b1-4380-8f68-c80cc8561f4f
+langcode: es
+status: true
+dependencies: {  }
+id: academia_talento_jaraba_io
+domain_id: 2769439
+hostname: academia-talento.jaraba.io
+name: 'Academia Talento Digital'
+scheme: https
+weight: 0
+is_default: false

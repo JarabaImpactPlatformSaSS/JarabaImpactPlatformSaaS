@@ -1,0 +1,20 @@
+uuid: 888de814-7fa5-48f9-aec4-88585ce78ba4
+langcode: es
+status: true
+dependencies:
+  theme:
+    - ecosistema_jaraba_theme
+_core:
+  default_config_hash: 6aOgWsNTXjqrDm98TXSAjP6qd2nCijD1xw45MrnbK-Y
+id: ecosistema_jaraba_theme_page_title
+theme: ecosistema_jaraba_theme
+region: header
+weight: -5
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Título de la página'
+  label_display: '0'
+  provider: core
+visibility: {  }

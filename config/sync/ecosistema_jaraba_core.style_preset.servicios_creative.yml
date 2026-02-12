@@ -1,0 +1,20 @@
+uuid: 60b312f1-632b-43ad-8079-41e4ef1ec24e
+langcode: es
+status: true
+dependencies: {  }
+id: servicios_creative
+label: 'Creativo & Bold'
+description: 'Para estudios de diseño, arquitectos, fotógrafos, creativos. Creatividad, boldness, expresión artística.'
+vertical: serviciosconecta
+sector: creative
+mood: '["creative", "bold", "artistic", "expressive"]'
+target_audience: 'Estudios de diseño, arquitectos, fotógrafos, creativos'
+color_tokens: '{"primary":"#0F0F0F","secondary":"#FF3366","accent":"#00D9FF","surface":"#FFFFFF","surface-dark":"#050505","text-primary":"#0F0F0F","text-secondary":"#4A4A4A","text-muted":"#8A8A8A","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Syne, sans-serif","family-body":"Work Sans, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"4px","shadow-md":"0 4px 20px rgba(0,0,0,0.08)","shadow-lg":"0 10px 40px rgba(0,0,0,0.15)"}'
+effect_tokens: '{"glass-bg":"rgba(255,255,255,0.08)","glass-blur":"blur(20px)","glass-border":"1px solid rgba(255,51,102,0.15)","gradient-primary":"linear-gradient(135deg, #FF3366, #00D9FF)"}'
+component_variants: '{"header":"minimal","hero":"video","cards":"service-glass","footer":"minimal"}'
+animation_config: '{"type":"glow","speed":"200ms","reveal":"slide-up"}'
+content_guidelines: '{"photography":"Alto contraste, composiciones arriesgadas, portfolio visual, espacios negativos","copywriting":"Tono directo y bold, frases cortas impactantes, vocabulario creativo","iconography":"Experimental, bold, custom"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap"]'
+weight: 22

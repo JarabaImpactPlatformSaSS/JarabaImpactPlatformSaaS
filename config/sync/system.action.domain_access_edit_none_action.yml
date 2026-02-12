@@ -1,0 +1,13 @@
+uuid: 214ff690-c5b6-4c2f-814c-56cba15a3812
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain_access
+_core:
+  default_config_hash: VEI1wqqkrV2aMO4mVMODRp6u6W0bnJcVKqxRE9IeduM
+id: domain_access_edit_none_action
+label: 'Eliminar editores de todos los afiliados'
+type: user
+plugin: domain_access_edit_none_action
+configuration: {  }

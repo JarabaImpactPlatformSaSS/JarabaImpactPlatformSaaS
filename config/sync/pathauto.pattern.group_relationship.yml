@@ -1,0 +1,18 @@
+uuid: f1541d8d-d3f7-47f0-85f6-0ff028ad7cd6
+langcode: es
+status: true
+dependencies:
+  module:
+    - group
+_core:
+  default_config_hash: 1tEtbHvVBjy2ChRMYjieiOpb_YY3pH9m3ug1UJOvWrg
+id: group_relationship
+label: 'Relación de grupo'
+type: 'canonical_entities:group_relationship'
+pattern: 'group/[group_relationship:group:id]/[group_relationship:pretty-path-key]/[group_relationship:id]'
+selection_criteria: {  }
+selection_logic: and
+weight: -5
+relationships:
+  'group_relationship:langcode:language':
+    label: Idioma

@@ -1,0 +1,13 @@
+uuid: cfc6f5a2-81f4-496a-a821-0aee3b9cee76
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain_access
+_core:
+  default_config_hash: 1JWyzsu7w-WFCcw9q6gjKvOnNQweDxZxjQV8slWRIuI
+id: domain_access_all_action
+label: 'Asignar contenido a todos los afiliados'
+type: node
+plugin: domain_access_all_action
+configuration: {  }

@@ -1,0 +1,16 @@
+certificate_path: /etc/ssl/private/ecosistema-jaraba-sello.p12
+certificate_password: ''
+tsa_url: 'http://tsa.fnmt.es/tsa/tss'
+signature_visible: true
+signature_position:
+  x: 10
+  'y': 260
+  width: 50
+  height: 20
+default_signer_info:
+  name: 'Ecosistema Jaraba - Plataforma de Trazabilidad'
+  location: España
+  reason: 'Certificado de Trazabilidad de Lote'
+  contact: info@jaraba.io
+auto_sign_enabled: true
+output_directory: 'private://certificados'

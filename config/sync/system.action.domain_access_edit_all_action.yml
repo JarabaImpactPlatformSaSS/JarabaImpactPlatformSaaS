@@ -1,0 +1,13 @@
+uuid: fe8cbf65-3ae6-4776-a5aa-adc9162c9f35
+langcode: es
+status: true
+dependencies:
+  module:
+    - domain_access
+_core:
+  default_config_hash: 7j93b7xTUtF_uT4TbFN9poAQ51pf380UhVCK9tVHTzs
+id: domain_access_edit_all_action
+label: 'Asignar editores a todos los afiliados'
+type: user
+plugin: domain_access_edit_all_action
+configuration: {  }

@@ -1,0 +1,20 @@
+uuid: 158acb46-cab1-4d31-8168-9c4198fbd28d
+langcode: es
+status: true
+dependencies: {  }
+id: agro_modern
+label: 'AgTech & Innovación'
+description: 'Para agricultura de precisión, IoT agrícola, startups agtech, hidroponía. Tecnología, innovación, futuro, eficiencia.'
+vertical: agroconecta
+sector: modern
+mood: '["tech", "innovative", "future", "efficient"]'
+target_audience: 'Agricultura de precisión, IoT agrícola, startups agtech, hidroponía'
+color_tokens: '{"primary":"#00BFA5","secondary":"#1A237E","accent":"#76FF03","surface":"#F0FDFA","surface-dark":"#0A1628","text-primary":"#0F2027","text-secondary":"#455A64","text-muted":"#78909C","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Inter, sans-serif","family-body":"IBM Plex Sans, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"6px","shadow-md":"0 4px 20px rgba(0,191,165,0.10)","shadow-lg":"0 10px 40px rgba(0,191,165,0.15)"}'
+effect_tokens: '{"glass-bg":"rgba(240,253,250,0.80)","glass-blur":"blur(16px)","glass-border":"1px solid rgba(0,191,165,0.15)","gradient-primary":"linear-gradient(135deg, #00BFA5, #1A237E)"}'
+component_variants: '{"header":"glass","hero":"gradient","cards":"product-detailed","footer":"minimal"}'
+animation_config: '{"type":"glow","speed":"300ms","reveal":"slide-up"}'
+content_guidelines: '{"photography":"Tecnología en campo, drones, sensores, dashboards agrícolas, hidroponía","copywriting":"Tono técnico pero accesible, datos y métricas, vocabulario de innovación","iconography":"Geométrico, limpio, tech"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"]'
+weight: 4

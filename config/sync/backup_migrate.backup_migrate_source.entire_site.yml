@@ -1,0 +1,11 @@
+uuid: 23a24dd8-bf98-4d89-a487-f6939d9fea6b
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: 3UIiYanpaojRQR_MLcmaOBTXo5mH-T4CGoTEmr7Rv2M
+id: entire_site
+label: 'Todo el sitio (no usar)'
+type: EntireSite
+config:
+  name: 'Entire Site (do not use)'

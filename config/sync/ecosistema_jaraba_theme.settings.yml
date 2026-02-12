@@ -1,0 +1,107 @@
+features:
+  node_user_picture: 1
+  comment_user_picture: 1
+  comment_user_verification: 1
+  favicon: 1
+  name: 0
+  slogan: 0
+logo:
+  use_default: 0
+  path: 'public://EcosistemaJaraba_icono_v6.png'
+favicon:
+  use_default: 0
+  path: 'public://EcosistemaJaraba_icono_v6_0.png'
+  mimetype: image/png
+color_primary: '#ff8c42'
+color_secondary: '#00a9a5'
+color_corporate: '#233d63'
+color_agro: '#556b2f'
+color_success: '#10b981'
+color_warning: '#f59e0b'
+color_danger: '#ef4444'
+color_neutral: '#64748b'
+color_bg_body: '#f8fafc'
+color_bg_surface: '#ffffff'
+color_bg_dark: '#1a1a2e'
+logo_height: '45'
+typography_headings: outfit
+typography_body: inter
+font_size_base: '16'
+color_headings: '#1a1a2e'
+color_body_text: '#334155'
+color_muted: '#64748b'
+header_layout: classic
+color_header_bg: '#ffffff'
+color_header_text: '#1a1a2e'
+header_sticky: 1
+enable_header_cta: 0
+header_cta_text: Empezar
+header_cta_url: /registro
+hero_layout: fullscreen
+hero_overlay_opacity: '60'
+card_style: elevated
+card_border_radius: '12'
+color_card_bg: '#ffffff'
+color_card_border: '#e5e7eb'
+enable_footer: 1
+footer_layout: standard
+footer_copyright: '© [year] Jaraba Impact Platform. Plataforma de Ecosistemas Digitales S.L. Todos los derechos reservados.'
+color_footer_bg: '#1a1a2e'
+color_footer_text: '#94a3b8'
+color_sidebar_bg: '#f8fafc'
+color_sidebar_title: '#1a1a2e'
+color_sidebar_link: '#334155'
+color_sidebar_link_hover: '#ff8c42'
+color_sidebar_link_active: '#ff8c42'
+color_btn_primary_bg: '#ff8c42'
+color_btn_primary_text: '#ffffff'
+color_btn_secondary_bg: '#00a9a5'
+color_btn_secondary_text: '#ffffff'
+btn_border_radius: '8'
+color_input_bg: '#ffffff'
+color_input_border: '#d1d5db'
+color_input_focus: '#ff8c42'
+product_card_layout: classic
+color_product_price: '#ff8c42'
+color_product_badge: '#10b981'
+show_back_to_top: 1
+dark_mode: auto
+enable_preloader: 0
+custom_css: ''
+enable_promo_banner: 0
+promo_banner_text: ''
+promo_banner_url: ''
+color_promo_bg: '#ff8c42'
+color_promo_text: '#ffffff'
+industry_preset: ''
+enable_breadcrumbs: 1
+breadcrumb_style: chevrons
+breadcrumb_icons: 1
+breadcrumb_home_icon: 1
+breadcrumb_schema: 1
+color_breadcrumb_text: '#64748b'
+color_breadcrumb_link: '#ff8c42'
+color_breadcrumb_active: '#1a1a2e'
+footer_widget1_title: 'Sobre Nosotros'
+footer_widget1_content: 'Breve descripción de la empresa o plataforma.'
+footer_widget2_title: 'Enlaces Rápidos'
+footer_widget2_content: "Inicio|/\r\nServicios|/servicios\r\nContacto|/contacto"
+footer_widget3_title: Recursos
+footer_widget3_content: "Blog|/blog\r\nFAQ|/faq\r\nPolítica de Privacidad|/privacidad"
+footer_widget4_title: Contacto
+footer_widget4_content: "📧 info@jaraba.es\r\n📍 Madrid, España\r\n📞 +34 900 000 000"
+footer_social_facebook: ''
+footer_social_twitter: ''
+footer_social_linkedin: ''
+footer_social_instagram: ''
+footer_social_youtube: ''
+footer_show_powered_by: 1
+color_footer_link: '#ff8c42'
+color_footer_link_hover: '#ffffff'
+navigation_items: "Empleo|/empleo\r\nTalento|/talento\r\nEmprender|/emprender\r\nComercio|/comercio\r\nInstituciones|/instituciones"
+footer_nav_col1_title: Plataforma
+footer_nav_col1_links: "Empleabilidad|/empleo\r\nEmprendimiento|/emprender\r\nComercio|/productos\r\nInstituciones|/instituciones"
+footer_nav_col2_title: Empresa
+footer_nav_col2_links: "Sobre nosotros|/about\r\nContacto|/contact\r\nBlog|/blog"
+footer_nav_col3_title: Legal
+footer_nav_col3_links: "Privacidad|/privacy\r\nTérminos|/terms\r\nCookies|/cookies"

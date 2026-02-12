@@ -1,0 +1,123 @@
+uuid: 6ac92a45-2d39-471c-9e74-31e12e47b940
+langcode: es
+status: true
+dependencies: {  }
+id: job_search_hero
+label: 'Hero Búsqueda de Empleo'
+description: 'Hero específico para verticales de empleabilidad con buscador integrado.'
+category: hero
+twig_template: '@jaraba_page_builder/blocks/hero/job-search-hero.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+      default: 'Encuentra tu próximo empleo'
+    subtitle:
+      type: string
+      title: Subtítulo
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - gradient
+        - image
+        - dark
+      default: gradient
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    search_placeholder_keyword:
+      type: string
+      title: 'Placeholder palabras clave'
+      default: 'Desarrollador, Marketing...'
+    search_placeholder_location:
+      type: string
+      title: 'Placeholder ubicación'
+      default: 'Madrid, Barcelona...'
+    search_button_text:
+      type: string
+      title: 'Texto botón buscar'
+      default: 'Buscar empleos'
+    categories_title:
+      type: string
+      title: 'Título categorías populares'
+      default: 'Categorías populares'
+    categories:
+      type: array
+      title: 'Categorías destacadas'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          icon:
+            type: string
+          count:
+            type: integer
+          url:
+            type: string
+    stats:
+      type: array
+      title: Estadísticas
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+          label:
+            type: string
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'FIND YOUR DREAM JOB'
+  title: 'Discover Your Next Career Opportunity'
+  subtitle: 'Join over 50,000 professionals who found their perfect role through our platform.'
+  background: gradient
+  search_placeholder_keyword: 'Job title, skills, or company...'
+  search_placeholder_location: 'City, state, or remote...'
+  search_button_text: 'Search Jobs'
+  categories_title: 'Popular Categories'
+  categories:
+    -
+      name: Technology
+      icon: code
+      count: 2340
+      url: '#'
+    -
+      name: Marketing
+      icon: megaphone
+      count: 1250
+      url: '#'
+    -
+      name: Design
+      icon: star
+      count: 890
+      url: '#'
+    -
+      name: Sales
+      icon: money
+      count: 1560
+      url: '#'
+  stats:
+    -
+      value: 50K+
+      label: 'Active Jobs'
+    -
+      value: 12K+
+      label: Companies
+    -
+      value: 98%
+      label: 'Success Rate'
+weight: 0

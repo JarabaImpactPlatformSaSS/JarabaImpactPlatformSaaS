@@ -1,0 +1,15 @@
+uuid: ce41ba47-0df9-4a0c-a960-e93caaf015e5
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.academia_talento_jaraba_io
+  module:
+    - domain_access
+id: domain_access_add_action_academia_talento_jaraba_io
+label: 'Agregar el contenido seleccionado al dominio Academia Talento Digital'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - academia_talento_jaraba_io

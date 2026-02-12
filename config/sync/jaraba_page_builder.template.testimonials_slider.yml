@@ -1,0 +1,144 @@
+uuid: 3e1b9d93-7461-4585-a4c0-6ed9815d742b
+langcode: es
+status: true
+dependencies: {  }
+id: testimonials_slider
+label: 'Testimonios con Slider'
+description: 'Carrusel de testimonios con fotos y citas de clientes satisfechos.'
+category: social_proof
+twig_template: '@jaraba_page_builder/blocks/testimonials/testimonials-slider.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título de la sección'
+      maxLength: 100
+      default: 'Lo que dicen nuestros usuarios'
+    subtitle:
+      type: text
+      title: Subtítulo
+      rows: 2
+      default: 'Historias reales de éxito de nuestra comunidad.'
+    testimonials:
+      type: array
+      title: Testimonios
+      description: 'Lista de testimonios (mínimo 3 para el slider).'
+      minItems: 3
+      maxItems: 12
+      itemLabel: testimonio
+      items:
+        type: object
+        properties:
+          quote:
+            type: text
+            title: Cita
+            description: 'El testimonio del cliente.'
+            rows: 3
+            minLength: 20
+            maxLength: 500
+          author_name:
+            type: string
+            title: 'Nombre del autor'
+            maxLength: 100
+          author_title:
+            type: string
+            title: 'Cargo / Rol'
+            description: 'Puesto o rol del autor.'
+            maxLength: 100
+          author_company:
+            type: string
+            title: 'Empresa / Organización'
+            maxLength: 100
+          author_image:
+            type: image
+            title: 'Foto del autor'
+            description: 'Imagen cuadrada recomendada (100x100px mínimo).'
+          rating:
+            type: number
+            title: 'Valoración (1-5)'
+            minimum: 1
+            maximum: 5
+            step: 0.5
+            default: 5
+        required:
+          - quote
+          - author_name
+    style:
+      type: select
+      title: 'Estilo visual'
+      enum:
+        - cards
+        - minimal
+        - quotes
+      enumLabels:
+        - 'Tarjetas elevadas'
+        - 'Diseño minimalista'
+        - 'Con comillas grandes'
+      default: cards
+    autoplay:
+      type: boolean
+      title: 'Reproducción automática'
+      default: true
+    autoplay_speed:
+      type: number
+      title: 'Velocidad (segundos)'
+      description: 'Segundos entre cambios automáticos.'
+      minimum: 2
+      maximum: 10
+      default: 5
+    show_rating:
+      type: boolean
+      title: 'Mostrar valoración con estrellas'
+      default: true
+    background:
+      type: select
+      title: Fondo
+      enum:
+        - light
+        - dark
+        - gradient
+      enumLabels:
+        - Claro
+        - Oscuro
+        - Degradado
+      default: light
+  required:
+    - testimonials
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/testimonials-slider.png
+preview_data:
+  title: 'What Our Clients Say'
+  subtitle: 'Real stories from our satisfied customers'
+  testimonials:
+    -
+      quote: 'This platform completely transformed our workflow. The results are incredible!'
+      author_name: 'Sarah J.'
+      author_title: 'Marketing Director'
+      author_company: 'TechCorp Inc.'
+      author_image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80'
+      rating: 5
+    -
+      quote: 'Outstanding support and amazing features. Highly recommended for any team.'
+      author_name: 'Michael R.'
+      author_title: 'Tech Director'
+      author_company: 'Innovation Labs'
+      author_image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80'
+      rating: 5
+    -
+      quote: 'The best investment we made this year. Our productivity increased by 40%.'
+      author_name: 'Emily Chen'
+      author_title: 'Product Manager'
+      author_company: StartupXYZ
+      author_image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80'
+      rating: 5
+  style: cards
+  autoplay: true
+  autoplay_speed: 5
+  show_rating: true
+  background: light
+weight: 30

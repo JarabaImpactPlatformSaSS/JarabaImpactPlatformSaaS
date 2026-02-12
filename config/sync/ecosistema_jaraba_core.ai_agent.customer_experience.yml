@@ -1,0 +1,18 @@
+uuid: 3e51035a-98fc-4074-8af0-8d4d12a1ced0
+langcode: es
+status: true
+dependencies: {  }
+id: customer_experience
+label: 'Customer Experience Agent'
+description: 'Gestiona experiencia del cliente: respuestas a reseñas, emails de seguimiento y respuestas a quejas.'
+service_id: jaraba_ai_agents.customer_experience_agent
+icon: users
+color: '#00bcd4'
+weight: -6
+autonomy_level: 1
+requires_approval: true
+max_daily_auto_actions: 20
+allowed_actions:
+  - review_response
+  - followup_email
+  - complaint_response
