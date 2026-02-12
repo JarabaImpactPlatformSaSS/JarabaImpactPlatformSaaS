@@ -12,6 +12,7 @@ use Drupal\jaraba_crm\Service\ContactService;
 use Drupal\jaraba_crm\Service\CrmForecastingService;
 use Drupal\jaraba_crm\Service\OpportunityService;
 use Drupal\jaraba_crm\Service\PipelineStageService;
+use Drupal\jaraba_crm\Service\SalesPlaybookService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +34,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     protected PipelineStageService $pipelineStageService,
     protected CrmForecastingService $forecastingService,
     protected LoggerInterface $logger,
+    protected SalesPlaybookService $salesPlaybook,
   ) {}
 
   /**
@@ -47,6 +49,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
       $container->get('jaraba_crm.pipeline_stage'),
       $container->get('jaraba_crm.forecasting'),
       $container->get('logger.channel.jaraba_crm'),
+      $container->get('jaraba_crm.sales_playbook'),
     );
   }
 
@@ -837,6 +840,66 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo forecast: @error', ['@error' => $e->getMessage()]);
       return new JsonResponse(['success' => FALSE, 'error' => 'Internal error'], 500);
+    }
+  }
+
+  // ===== SALES PLAYBOOK (Doc 186) =====
+
+  /**
+   * GET /api/v1/crm/opportunities/{id}/playbook — Accion recomendada.
+   */
+  public function getPlaybook(string $id): JsonResponse {
+    try {
+      $opportunity = $this->opportunityService->load((int) $id);
+      if (!$opportunity) {
+        return new JsonResponse(['success' => FALSE, 'error' => 'Opportunity not found'], 404);
+      }
+
+      $recommendation = $this->salesPlaybook->getNextAction($opportunity);
+
+      return new JsonResponse(['success' => TRUE, 'data' => $recommendation]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error obteniendo playbook: @error', ['@error' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Internal error'], 500);
+    }
+  }
+
+  /**
+   * PUT /api/v1/crm/opportunities/{id}/bant — Actualizar BANT.
+   */
+  public function updateBant(string $id, Request $request): JsonResponse {
+    try {
+      $opportunity = $this->opportunityService->load((int) $id);
+      if (!$opportunity) {
+        return new JsonResponse(['success' => FALSE, 'error' => 'Opportunity not found'], 404);
+      }
+
+      $body = json_decode($request->getContent(), TRUE) ?? [];
+      $bantFields = ['bant_budget', 'bant_authority', 'bant_need', 'bant_timeline'];
+
+      foreach ($bantFields as $field) {
+        if (isset($body[$field])) {
+          $opportunity->set($field, $body[$field]);
+        }
+      }
+
+      $opportunity->save();
+
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'bant_score' => $opportunity->getBantScore(),
+          'bant_budget' => $opportunity->get('bant_budget')->value,
+          'bant_authority' => $opportunity->get('bant_authority')->value,
+          'bant_need' => $opportunity->get('bant_need')->value,
+          'bant_timeline' => $opportunity->get('bant_timeline')->value,
+        ],
+      ]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error actualizando BANT: @error', ['@error' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
     }
   }
 

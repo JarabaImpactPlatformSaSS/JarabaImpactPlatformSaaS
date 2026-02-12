@@ -32,11 +32,39 @@ size:
 
 opportunity_stage:
   lead: 'Lead'
-  qualified: 'Cualificado'
+  mql: 'MQL'
+  sql: 'SQL'
+  demo: 'Demo'
   proposal: 'Propuesta'
   negotiation: 'Negociación'
   closed_won: 'Cerrado ganado'
   closed_lost: 'Cerrado perdido'
+
+# BANT Qualification (Doc 186 §3)
+bant_budget:
+  none: 'Sin presupuesto'
+  exploring: 'Explorando opciones'
+  allocated: 'Presupuesto asignado'
+  approved: 'Presupuesto aprobado'
+
+bant_authority:
+  user: 'Usuario final'
+  influencer: 'Influenciador'
+  decision_maker: 'Decisor'
+  champion: 'Champion interno'
+
+bant_need:
+  none: 'Sin necesidad identificada'
+  identified: 'Necesidad identificada'
+  urgent: 'Necesidad urgente'
+  critical: 'Necesidad crítica'
+
+bant_timeline:
+  none: 'Sin plazo definido'
+  12mo: 'Más de 12 meses'
+  6mo: '6-12 meses'
+  3mo: '3-6 meses'
+  immediate: 'Inmediato (< 3 meses)'
 
 activity_type:
   call: 'Llamada'

@@ -1,0 +1,193 @@
+@use 'variables' as *;
+
+// Tax Calculator — BEM
+.tax-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: $legal-spacing-xl;
+
+  &__section {
+    background: var(--ej-color-surface, #ffffff);
+    border: 1px solid var(--ej-color-border, #e0e0e0);
+    border-radius: 8px;
+    padding: $legal-spacing-lg;
+  }
+
+  &__section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-text, #1a1a2e);
+    margin-bottom: $legal-spacing-sm;
+  }
+
+  &__description {
+    color: var(--ej-color-text-muted, #6b7280);
+    font-size: 0.875rem;
+    margin-bottom: $legal-spacing-lg;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $legal-spacing-md;
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $legal-spacing-md;
+
+    @include respond-to('tablet') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to('desktop') {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $legal-spacing-xs;
+  }
+
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-text-muted, #6b7280);
+  }
+
+  &__input,
+  &__select {
+    padding: $legal-spacing-sm $legal-spacing-md;
+    border: 1px solid var(--ej-color-border, #e0e0e0);
+    border-radius: 6px;
+    background: var(--ej-color-surface, #ffffff);
+    color: var(--ej-color-text, #1a1a2e);
+    font-size: 0.875rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #FF8C42);
+      box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+    }
+  }
+
+  &__submit {
+    align-self: flex-start;
+    padding: $legal-spacing-sm $legal-spacing-xl;
+    background: var(--ej-color-primary, #FF8C42);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--ej-color-primary-dark, #e67a30);
+    }
+  }
+
+  // Result display
+  &__result {
+    margin-top: $legal-spacing-lg;
+    padding-top: $legal-spacing-lg;
+    border-top: 1px solid var(--ej-color-border, #e0e0e0);
+  }
+
+  &__result-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-text, #1a1a2e);
+    margin-bottom: $legal-spacing-md;
+  }
+
+  &__result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: $legal-spacing-md;
+    margin-bottom: $legal-spacing-md;
+  }
+
+  &__result-item {
+    background: var(--ej-color-background, #f9fafb);
+    border-radius: 6px;
+    padding: $legal-spacing-md;
+    text-align: center;
+
+    &--highlight {
+      background: var(--ej-color-primary, #FF8C42);
+      color: #ffffff;
+
+      .tax-calculator__result-label {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .tax-calculator__result-value {
+        color: #ffffff;
+      }
+    }
+  }
+
+  &__result-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-color-text-muted, #6b7280);
+    text-transform: uppercase;
+    margin-bottom: $legal-spacing-xs;
+  }
+
+  &__result-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-text, #1a1a2e);
+  }
+
+  // Bracket breakdown table
+  &__brackets-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-color-text, #1a1a2e);
+    margin-bottom: $legal-spacing-sm;
+  }
+
+  &__brackets-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+
+    th, td {
+      padding: $legal-spacing-xs $legal-spacing-sm;
+      text-align: right;
+      border-bottom: 1px solid var(--ej-color-border, #e0e0e0);
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--ej-color-text-muted, #6b7280);
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    td:first-child,
+    th:first-child {
+      text-align: left;
+    }
+  }
+
+  // Disclaimer
+  &__disclaimer {
+    padding: $legal-spacing-md;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid var(--ej-color-warning, #f59e0b);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    color: var(--ej-color-text, #1a1a2e);
+    line-height: 1.5;
+  }
+}
