@@ -27,7 +27,7 @@
   {# Alertas #}
   {% if alerts is not empty %}
     <div class="producer-portal__alerts">
-      <h3 class="producer-portal__alerts-title">⚠️ {{ 'Alertas'|t }} ({{ alerts|length }})</h3>
+      <h3 class="producer-portal__alerts-title">{{ jaraba_icon('general', 'alert', { size: '20px' }) }} {{ 'Alertas'|t }} ({{ alerts|length }})</h3>
       {% for alert in alerts %}
         <div class="producer-portal__alert producer-portal__alert--{{ alert.severity }}">
           <span class="producer-portal__alert-text">{{ alert.message }}</span>
@@ -42,28 +42,28 @@
   {# KPIs #}
   <div class="producer-portal__kpis">
     <div class="producer-portal__kpi-card">
-      <span class="producer-portal__kpi-icon">💰</span>
+      <span class="producer-portal__kpi-icon">{{ jaraba_icon('commerce', 'money', { size: '20px' }) }}</span>
       <div class="producer-portal__kpi-content">
         <span class="producer-portal__kpi-value">{{ kpis.sales_today|number_format(2, ',', '.') }} €</span>
         <span class="producer-portal__kpi-label">{{ 'Ventas Hoy'|t }}</span>
       </div>
     </div>
     <div class="producer-portal__kpi-card">
-      <span class="producer-portal__kpi-icon">📊</span>
+      <span class="producer-portal__kpi-icon">{{ jaraba_icon('business', 'chart-bar', { size: '20px' }) }}</span>
       <div class="producer-portal__kpi-content">
         <span class="producer-portal__kpi-value">{{ kpis.sales_month|number_format(2, ',', '.') }} €</span>
         <span class="producer-portal__kpi-label">{{ 'Este Mes'|t }}</span>
       </div>
     </div>
     <div class="producer-portal__kpi-card">
-      <span class="producer-portal__kpi-icon">📦</span>
+      <span class="producer-portal__kpi-icon">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }}</span>
       <div class="producer-portal__kpi-content">
         <span class="producer-portal__kpi-value">{{ kpis.pending_orders }}</span>
         <span class="producer-portal__kpi-label">{{ 'Pedidos Pendientes'|t }}</span>
       </div>
     </div>
     <div class="producer-portal__kpi-card">
-      <span class="producer-portal__kpi-icon">🛒</span>
+      <span class="producer-portal__kpi-icon">{{ jaraba_icon('commerce', 'cart', { size: '20px' }) }}</span>
       <div class="producer-portal__kpi-content">
         <span class="producer-portal__kpi-value">{{ kpis.total_products }}</span>
         <span class="producer-portal__kpi-label">{{ 'Productos Activos'|t }}</span>
@@ -78,7 +78,7 @@
       {# Pedidos pendientes #}
       <section class="producer-portal__section">
         <div class="producer-portal__section-header">
-          <h2 class="producer-portal__section-title">📦 {{ 'Pedidos Pendientes'|t }}</h2>
+          <h2 class="producer-portal__section-title">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }} {{ 'Pedidos Pendientes'|t }}</h2>
           <a href="/productor/pedidos" class="producer-portal__section-link">{{ 'Ver todos'|t }} →</a>
         </div>
         {% if pending_orders is not empty %}
@@ -107,7 +107,7 @@
 
       {# Gráfico de ventas #}
       <section class="producer-portal__section">
-        <h2 class="producer-portal__section-title">📈 {{ 'Ventas Últimos 7 Días'|t }}</h2>
+        <h2 class="producer-portal__section-title">{{ jaraba_icon('business', 'chart-line', { size: '20px' }) }} {{ 'Ventas Últimos 7 Días'|t }}</h2>
         <canvas id="sales-chart" class="producer-portal__chart" height="200"></canvas>
       </section>
     </div>
@@ -115,7 +115,7 @@
     {# Sidebar: Top productos #}
     <aside class="producer-portal__sidebar">
       <section class="producer-portal__section">
-        <h2 class="producer-portal__section-title">🏆 {{ 'Top Productos'|t }}</h2>
+        <h2 class="producer-portal__section-title">{{ jaraba_icon('general', 'trophy', { size: '20px' }) }} {{ 'Top Productos'|t }}</h2>
         {% if top_products is not empty %}
           {% for product in top_products %}
             <div class="producer-portal__top-product">

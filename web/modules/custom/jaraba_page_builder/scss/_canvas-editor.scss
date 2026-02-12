@@ -1494,7 +1494,7 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
 
     // Indicador de candado en esquina superior derecha
     &::before {
-        content: '🔒';
+        content: '\1F512';
         position: absolute;
         top: 4px;
         right: 4px;
@@ -1537,7 +1537,7 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
 
     // Badge premium sutil
     &::after {
-        content: '✨';
+        content: '\2726';
         position: absolute;
         top: 4px;
         right: 4px;

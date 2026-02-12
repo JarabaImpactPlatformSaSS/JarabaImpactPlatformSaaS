@@ -401,7 +401,7 @@ $diagnostic-danger: #DC3545;
     color: $diagnostic-dark;
 
     &::before {
-        content: '💡';
+        content: '\2139';
         margin-right: 0.5rem;
     }
 }

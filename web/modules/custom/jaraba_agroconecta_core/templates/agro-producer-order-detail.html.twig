@@ -43,7 +43,7 @@
           {% endif %}
           {% if suborder.state in ['confirmed', 'processing'] %}
             <button class="producer-portal__btn producer-portal__btn--primary" data-action="ship">
-              🚚 {{ 'Marcar como Enviado'|t }}
+              {{ jaraba_icon('commerce', 'truck', { size: '20px' }) }} {{ 'Marcar como Enviado'|t }}
             </button>
           {% endif %}
         </div>
@@ -83,7 +83,7 @@
       {# Tracking #}
       {% if suborder.tracking_number %}
         <section class="producer-portal__section">
-          <h2 class="producer-portal__section-title">🚚 {{ 'Información de Envío'|t }}</h2>
+          <h2 class="producer-portal__section-title">{{ jaraba_icon('commerce', 'truck', { size: '20px' }) }} {{ 'Información de Envío'|t }}</h2>
           <div class="producer-portal__tracking">
             <div class="producer-portal__tracking-row">
               <span>{{ 'Nº Seguimiento'|t }}</span>
@@ -116,7 +116,7 @@
     <aside class="producer-portal__sidebar">
       {# Resumen financiero #}
       <section class="producer-portal__section">
-        <h2 class="producer-portal__section-title">💰 {{ 'Resumen Financiero'|t }}</h2>
+        <h2 class="producer-portal__section-title">{{ jaraba_icon('commerce', 'money', { size: '20px' }) }} {{ 'Resumen Financiero'|t }}</h2>
         <div class="producer-portal__finance-summary">
           <div class="producer-portal__finance-row">
             <span>{{ 'Subtotal'|t }}</span>
@@ -142,7 +142,7 @@
       {# Datos del cliente #}
       {% if order %}
         <section class="producer-portal__section">
-          <h2 class="producer-portal__section-title">👤 {{ 'Cliente'|t }}</h2>
+          <h2 class="producer-portal__section-title">{{ jaraba_icon('general', 'user', { size: '20px' }) }} {{ 'Cliente'|t }}</h2>
           <div class="producer-portal__customer-info">
             <div class="producer-portal__info-row">
               <span>{{ 'Email'|t }}</span>

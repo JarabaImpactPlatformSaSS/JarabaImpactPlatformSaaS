@@ -29,7 +29,7 @@
     <h1 class="agro-product-detail__name">{{ product.name.value }}</h1>
 
     {% if product.origin.value %}
-      <p class="agro-product-detail__origin">📍 {{ product.origin.value }}</p>
+      <p class="agro-product-detail__origin">{{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {{ product.origin.value }}</p>
     {% endif %}
 
     {% if product.category.value %}
@@ -78,7 +78,7 @@
         <div>
           <strong>{{ producer.farm_name.value }}</strong>
           {% if producer.location.value %}
-            <p>📍 {{ producer.location.value }}</p>
+            <p>{{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {{ producer.location.value }}</p>
           {% endif %}
           {% if producer.production_type.value %}
             <span class="agro-producer-card__type">{{ producer.production_type.value }}</span>

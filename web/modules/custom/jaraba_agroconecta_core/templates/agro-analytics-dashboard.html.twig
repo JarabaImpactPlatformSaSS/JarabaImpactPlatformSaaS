@@ -18,7 +18,7 @@
   {# === Header === #}
   <div class="agro-analytics__header">
     <div>
-      <h1 class="agro-analytics__title">📊 {% trans %}Analytics Dashboard{% endtrans %}</h1>
+      <h1 class="agro-analytics__title">{{ jaraba_icon('business', 'chart-bar', { size: '20px' }) }} {% trans %}Analytics Dashboard{% endtrans %}</h1>
       <p class="agro-analytics__subtitle">{{ marketplace_name }}</p>
     </div>
     <div class="agro-date-picker">
@@ -69,13 +69,13 @@
   {# === Charts === #}
   <div class="agro-analytics-charts">
     <div class="agro-chart-card">
-      <h2 class="agro-chart-card__title">📈 {% trans %}Evolución de Ventas{% endtrans %}</h2>
+      <h2 class="agro-chart-card__title">{{ jaraba_icon('business', 'chart-line', { size: '20px' }) }} {% trans %}Evolución de Ventas{% endtrans %}</h2>
       <div class="agro-chart-card__canvas" data-chart="sales-trend">
         <canvas></canvas>
       </div>
     </div>
     <div class="agro-chart-card">
-      <h2 class="agro-chart-card__title">🥧 {% trans %}Categorías{% endtrans %}</h2>
+      <h2 class="agro-chart-card__title">{{ jaraba_icon('business', 'chart-pie', { size: '20px' }) }} {% trans %}Categorías{% endtrans %}</h2>
       <div class="agro-chart-card__canvas" data-chart="categories">
         <canvas></canvas>
       </div>
@@ -85,7 +85,7 @@
   {# === Rankings === #}
   <div class="agro-rankings">
     <div class="agro-ranking-card">
-      <h2 class="agro-ranking-card__title">🏆 {% trans %}Top Productos{% endtrans %}</h2>
+      <h2 class="agro-ranking-card__title">{{ jaraba_icon('general', 'trophy', { size: '20px' }) }} {% trans %}Top Productos{% endtrans %}</h2>
       <ul class="agro-ranking-card__list" data-ranking="products">
         <li class="agro-ranking-card__item">
           <span class="agro-ranking-card__name">{% trans %}Cargando...{% endtrans %}</span>
@@ -93,7 +93,7 @@
       </ul>
     </div>
     <div class="agro-ranking-card">
-      <h2 class="agro-ranking-card__title">👨‍🌾 {% trans %}Top Productores{% endtrans %}</h2>
+      <h2 class="agro-ranking-card__title">{{ jaraba_icon('verticals', 'farmer', { size: '20px' }) }} {% trans %}Top Productores{% endtrans %}</h2>
       <ul class="agro-ranking-card__list" data-ranking="producers">
         <li class="agro-ranking-card__item">
           <span class="agro-ranking-card__name">{% trans %}Cargando...{% endtrans %}</span>
@@ -104,7 +104,7 @@
 
   {# === Alerts === #}
   <div class="agro-chart-card">
-    <h2 class="agro-chart-card__title">🔔 {% trans %}Alertas Activas{% endtrans %}</h2>
+    <h2 class="agro-chart-card__title">{{ jaraba_icon('general', 'bell', { size: '20px' }) }} {% trans %}Alertas Activas{% endtrans %}</h2>
     <div class="agro-alerts__list">
       <p style="padding: 1rem; color: var(--ej-color-text-muted);">{% trans %}Cargando alertas...{% endtrans %}</p>
     </div>

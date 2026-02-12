@@ -24,7 +24,7 @@
 
     <div class="agro-search-bar">
       <div class="agro-search-bar__wrapper">
-        <span class="agro-search-bar__icon">🔍</span>
+        <span class="agro-search-bar__icon">{{ jaraba_icon('actions', 'search', { size: '20px' }) }}</span>
         <input type="text"
                id="agro-search-input"
                class="agro-search-bar__input"
@@ -128,7 +128,7 @@
           {% endfor %}
         {% elseif search_query %}
           <div class="agro-search-empty">
-            <span class="agro-search-empty__icon">🔍</span>
+            <span class="agro-search-empty__icon">{{ jaraba_icon('actions', 'search', { size: '20px' }) }}</span>
             <p>{% trans %}No se encontraron productos para "{{ search_query }}".{% endtrans %}</p>
             <p class="agro-search-empty__hint">{% trans %}Prueba con otros términos o explora nuestras categorías.{% endtrans %}</p>
           </div>

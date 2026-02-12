@@ -68,7 +68,7 @@
       {% endfor %}
     {% else %}
       <div class="agro-search-empty">
-        <span class="agro-search-empty__icon">📦</span>
+        <span class="agro-search-empty__icon">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }}</span>
         <p>{% trans %}No hay productos en esta categoría todavía.{% endtrans %}</p>
       </div>
     {% endif %}

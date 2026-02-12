@@ -29,7 +29,7 @@
 
 {# Stats summary #}
 <section class="customer-portal__section">
-  <h2 class="customer-portal__section-title">⭐ {{ 'Opiniones de Clientes'|t }}</h2>
+  <h2 class="customer-portal__section-title">{{ jaraba_icon('general', 'star', { size: '20px' }) }} {{ 'Opiniones de Clientes'|t }}</h2>
 
   <div data-agro-stats data-agro-target-type="{{ target_type }}" data-agro-target-id="{{ target_id }}">
     <div class="agro-reviews__loading">
@@ -48,7 +48,7 @@
 {# Submit form (solo autenticados) #}
 {% if show_form|default(false) %}
   <section class="customer-portal__section">
-    <h3 class="customer-portal__section-title">✍️ {{ 'Escribe tu opinión'|t }}</h3>
+    <h3 class="customer-portal__section-title">{{ jaraba_icon('actions', 'edit', { size: '20px' }) }} {{ 'Escribe tu opinión'|t }}</h3>
 
     <form class="agro-review-form"
           data-agro-review-form

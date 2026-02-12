@@ -102,7 +102,7 @@
                 <ul class="modules-list" hidden>
                   {% for module in phase.modules %}
                     <li class="module-item">
-                      <span class="module-icon">📖</span>
+                      <span class="module-icon">{{ jaraba_icon('general', 'book-open', { size: '20px' }) }}</span>
                       <span class="module-title">{{ module.title }}</span>
                       <span class="module-duration">{{ module.duration_hours }}h</span>
                     </li>
