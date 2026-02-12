@@ -1,0 +1,146 @@
+// Stack Progress Cards — Credenciales Apilables
+// Usa var(--ej-*, fallback) exclusivamente
+
+.stack-progress-card {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E5E7EB);
+  border-radius: var(--ej-border-radius, 12px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.07));
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: var(--ej-focus-ring-width, 3px) solid var(--ej-focus-ring-color, rgba(255, 140, 66, 0.4));
+    outline-offset: var(--ej-focus-ring-offset, 2px);
+  }
+
+  &--completed {
+    border-color: var(--ej-color-success, #10B981);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: 0;
+  }
+
+  &__eqf {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--ej-btn-radius, 8px);
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: var(--ej-text-muted, #64748B);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+    line-height: 1.5;
+  }
+
+  &__progress {
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--ej-border-color, #E5E7EB);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+      var(--ej-color-primary, #FF8C42),
+      var(--ej-color-secondary, #00A9A5)
+    );
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  &__progress-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    min-width: 3rem;
+    text-align: right;
+  }
+
+  &__badges {
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__badge-count {
+    font-size: 0.8125rem;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__bonus {
+    display: flex;
+    gap: var(--ej-spacing-md, 1rem);
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+    padding-top: var(--ej-spacing-sm, 0.5rem);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+  }
+
+  &__bonus-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-body, #334155);
+  }
+
+  &__completed {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-sm, 0.5rem);
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+    border-radius: var(--ej-btn-radius, 8px);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-success, #10B981);
+    width: fit-content;
+  }
+}
+
+// Grid layout for stacks
+.stacks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--ej-spacing-lg, 1.5rem);
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .stack-progress-card {
+    transition: none;
+
+    &__progress-fill {
+      transition: none;
+    }
+  }
+}

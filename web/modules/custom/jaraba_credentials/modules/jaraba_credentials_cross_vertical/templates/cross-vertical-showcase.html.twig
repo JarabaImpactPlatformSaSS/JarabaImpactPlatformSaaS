@@ -1,0 +1,91 @@
+{#
+ # Cross-Vertical Showcase — Credenciales que cruzan verticales.
+ #
+ # Variables:
+ #   - rules: array of cross_vertical_rule data
+ #   - user_progress: array of progress per rule
+ #   - earned_badges: array of earned cross-vertical credentials
+ #}
+{{ attach_library('jaraba_credentials_cross_vertical/cross-vertical') }}
+
+<div class="cross-vertical-showcase" role="main" aria-label="{% trans %}Credenciales Cross-Vertical{% endtrans %}">
+
+  <header class="cross-vertical-showcase__header">
+    <h2 class="cross-vertical-showcase__title">{% trans %}Logros Cross-Vertical{% endtrans %}</h2>
+    <p class="cross-vertical-showcase__subtitle">
+      {% trans %}Credenciales que reconocen tu impacto en múltiples áreas de la plataforma.{% endtrans %}
+    </p>
+  </header>
+
+  {% if earned_badges is not empty %}
+    <section class="cross-vertical-showcase__earned" role="region" aria-label="{% trans %}Badges obtenidos{% endtrans %}">
+      <h3 class="cross-vertical-showcase__section-title">{% trans %}Obtenidos{% endtrans %}</h3>
+      <div class="cross-vertical-showcase__grid">
+        {% for badge in earned_badges %}
+          <article class="cross-vertical-showcase__card cross-vertical-showcase__card--{{ badge.rarity }}"
+                   role="article"
+                   tabindex="0"
+                   aria-label="{{ badge.name }}">
+            <div class="cross-vertical-showcase__card-rarity">{{ badge.rarity|capitalize }}</div>
+            <h4 class="cross-vertical-showcase__card-name">{{ badge.name }}</h4>
+            <div class="cross-vertical-showcase__card-verticals">
+              {% for vertical in badge.verticals %}
+                <span class="cross-vertical-showcase__vertical-tag">{{ vertical|capitalize }}</span>
+              {% endfor %}
+            </div>
+            <div class="cross-vertical-showcase__card-earned-badge">
+              {{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}
+              {% trans %}Obtenido{% endtrans %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="cross-vertical-showcase__available" role="region" aria-label="{% trans %}Badges disponibles{% endtrans %}">
+    <h3 class="cross-vertical-showcase__section-title">{% trans %}En progreso{% endtrans %}</h3>
+    <div class="cross-vertical-showcase__grid">
+      {% for rule in rules %}
+        {% set progress = user_progress[rule.id] ?? null %}
+        {% set percent = progress ? progress.overall_percent : 0 %}
+        <article class="cross-vertical-showcase__card cross-vertical-showcase__card--{{ rule.rarity }}"
+                 role="article"
+                 tabindex="0"
+                 aria-label="{{ rule.name }}">
+          <div class="cross-vertical-showcase__card-rarity">{{ rule.rarity|capitalize }}</div>
+          <h4 class="cross-vertical-showcase__card-name">{{ rule.name }}</h4>
+          {% if rule.description %}
+            <p class="cross-vertical-showcase__card-desc">{{ rule.description }}</p>
+          {% endif %}
+          <div class="cross-vertical-showcase__card-verticals">
+            {% for vertical in rule.verticals %}
+              <span class="cross-vertical-showcase__vertical-tag">{{ vertical|capitalize }}</span>
+            {% endfor %}
+          </div>
+          <div class="cross-vertical-showcase__card-progress"
+               role="progressbar"
+               aria-valuenow="{{ percent }}"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               aria-label="{{ '%name: %percent%'|t({'%name': rule.name, '%percent': percent}) }}">
+            <div class="cross-vertical-showcase__progress-bar">
+              <div class="cross-vertical-showcase__progress-fill" style="width: {{ percent }}%"></div>
+            </div>
+            <span class="cross-vertical-showcase__progress-text">{{ percent }}%</span>
+          </div>
+          {% if rule.bonus_credits > 0 or rule.bonus_xp > 0 %}
+            <div class="cross-vertical-showcase__card-bonus">
+              {% if rule.bonus_credits > 0 %}
+                <span>{{ jaraba_icon('ui', 'coin', { size: '12px', color: 'corporate' }) }} +{{ rule.bonus_credits }}</span>
+              {% endif %}
+              {% if rule.bonus_xp > 0 %}
+                <span>{{ jaraba_icon('ui', 'trophy', { size: '12px', color: 'innovation' }) }} +{{ rule.bonus_xp }} XP</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+</div>

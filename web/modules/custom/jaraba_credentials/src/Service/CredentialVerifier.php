@@ -82,9 +82,9 @@ class CredentialVerifier
         $template = $credential->getTemplate();
         $issuer = $template?->getIssuer();
 
-        // Verificar estado
+        // Verificar estado — incluye consulta a RevocationEntry
         $status = $credential->get('status')->value ?? '';
-        if ($status === IssuedCredential::STATUS_REVOKED) {
+        if ($status === IssuedCredential::STATUS_REVOKED || $this->hasRevocationEntry((int) $credential->id())) {
             return [
                 'is_valid' => FALSE,
                 'message' => t('Esta credencial ha sido revocada.'),
@@ -207,6 +207,30 @@ class CredentialVerifier
             if (is_array($value)) {
                 $this->sortKeysRecursive($value);
             }
+        }
+    }
+
+    /**
+     * Verifica si existe una RevocationEntry para una credencial.
+     *
+     * @param int $credentialId
+     *   ID de la credencial.
+     *
+     * @return bool
+     *   TRUE si existe entrada de revocación.
+     */
+    protected function hasRevocationEntry(int $credentialId): bool {
+        try {
+            $count = $this->entityTypeManager->getStorage('revocation_entry')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('credential_id', $credentialId)
+                ->count()
+                ->execute();
+            return $count > 0;
+        }
+        catch (\Exception $e) {
+            return FALSE;
         }
     }
 

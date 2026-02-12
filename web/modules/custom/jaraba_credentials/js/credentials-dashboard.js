@@ -20,8 +20,57 @@
         attach: function (context) {
             // Inicializar botones de compartir
             once('credential-share', '.credential-item__action--share', context).forEach(initShareButton);
+
+            // WCAG 2.1.1 — Keyboard navigation between credential cards
+            once('credential-keyboard-nav', '.credentials-grid', context).forEach(initKeyboardNavigation);
         }
     };
+
+    /**
+     * Inicializa navegación por teclado entre tarjetas de credenciales.
+     *
+     * @param {HTMLElement} grid
+     *   El contenedor grid de credenciales.
+     */
+    function initKeyboardNavigation(grid) {
+        var cards = grid.querySelectorAll('.credential-item');
+        if (!cards.length) {
+            return;
+        }
+
+        cards.forEach(function (card, index) {
+            card.addEventListener('keydown', function (e) {
+                var target = null;
+                // Estimate columns based on grid (3 desktop, 2 tablet, 1 mobile).
+                var cols = 1;
+                if (window.innerWidth >= 1024) {
+                    cols = 3;
+                } else if (window.innerWidth >= 640) {
+                    cols = 2;
+                }
+
+                if (e.key === 'ArrowRight' && index < cards.length - 1) {
+                    target = cards[index + 1];
+                }
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    target = cards[index - 1];
+                }
+                if (e.key === 'ArrowDown') {
+                    var nextIndex = Math.min(index + cols, cards.length - 1);
+                    target = cards[nextIndex];
+                }
+                if (e.key === 'ArrowUp') {
+                    var prevIndex = Math.max(index - cols, 0);
+                    target = cards[prevIndex];
+                }
+
+                if (target) {
+                    e.preventDefault();
+                    target.focus();
+                }
+            });
+        });
+    }
 
     /**
      * Inicializa un botón de compartir.
@@ -99,6 +148,9 @@
 
         const modal = document.createElement('div');
         modal.className = 'credentials-share-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-label', Drupal.t('Compartir credencial'));
         modal.innerHTML = `
       <div class="credentials-share-modal__backdrop"></div>
       <div class="credentials-share-modal__content">
@@ -165,9 +217,20 @@
             document.body.removeChild(textarea);
         });
 
-        // Añadir animación de entrada
+        // WCAG — Escape key to close modal
+        modal.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                modal.remove();
+            }
+        });
+
+        // Añadir animación de entrada y focus first interactive element
         requestAnimationFrame(function () {
             modal.classList.add('credentials-share-modal--visible');
+            var firstOption = modal.querySelector('.credentials-share-modal__option');
+            if (firstOption) {
+                firstOption.focus();
+            }
         });
     }
 
@@ -180,6 +243,8 @@
     function showToast(message) {
         const toast = document.createElement('div');
         toast.className = 'credentials-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'assertive');
         toast.textContent = message;
         document.body.appendChild(toast);
 

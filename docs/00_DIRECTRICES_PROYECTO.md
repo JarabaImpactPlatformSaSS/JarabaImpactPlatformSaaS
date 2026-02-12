@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 9.0.0 (Avatar Detection + Empleabilidad UI — 7 Fases)
+**Versión:** 14.0.0 (Copilot v2 Gaps Closure — BD Triggers + SSE Streaming + Multi-Provider Optimization + Milestones + Metrics P50/P99)
 
 ---
 
@@ -118,6 +118,25 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - **Cross-módulo**: FeatureAccessService cubre 9 módulos, hook_preprocess_html para todas las rutas frontend
   - `tests/visual/backstop.json`: 10 páginas × 3 viewports (phone/tablet/desktop)
   - CI: 80% coverage threshold enforcement en GitHub Actions
+- **Platform Services v3** ⭐: 10 módulos dedicados transversales (✅ Clase Mundial):
+  - `jaraba_agent_flows` ✅ (nuevo): 3 Content Entities (AgentFlow, AgentFlowExecution, AgentFlowStepLog), 5 Services (Execution, Trigger, Validator, Metrics, Template), 2 Controllers (Dashboard, API). 38 archivos
+  - `jaraba_pwa` ✅ (nuevo): 2 Content Entities (PushSubscription, PendingSyncAction), 5 Services (PlatformPush, PwaSync, Manifest, OfflineData, CacheStrategy), 2 Controllers (Pwa, API). Service Worker avanzado. 32 archivos
+  - `jaraba_onboarding` ✅ (nuevo): 2 Content Entities (OnboardingTemplate, UserOnboardingProgress), 5 Services (Orchestrator, Gamification, Checklist, ContextualHelp, Analytics), 2 Controllers (Dashboard, API). 34 archivos
+  - `jaraba_usage_billing` ✅ (nuevo): 3 Content Entities (UsageEvent, UsageAggregate, PricingRule), 5 Services (Ingestion, Aggregator, Pricing, StripeSync, Alert), QueueWorker, 2 Controllers. 36 archivos
+  - `jaraba_integrations` ✅ (extendido): +4 Services (RateLimiter, AppApproval, ConnectorSdk, MarketplaceSearch), +5 Controllers (Marketplace, DeveloperPortal, ConnectorInstall, AppSubmission, OAuthCallback). 66 archivos total
+  - `jaraba_customer_success` ✅ (extendido): +5 Controllers (NpsSurvey, NpsApi, HealthDetail, ChurnMatrix, ExpansionPipeline), +10 Templates, +5 JS, +5 SCSS. 65 archivos total
+  - `jaraba_tenant_knowledge` ✅ (extendido): +3 Entities (KbArticle, KbCategory, KbVideo), +3 Services (SemanticSearch, ArticleManager, KbAnalytics), Help Center público. 91 archivos total
+  - `jaraba_security_compliance` ✅ (nuevo, migración): 3 Entities (AuditLog migrada, ComplianceAssessment, SecurityPolicy), 4 Services (PolicyEnforcer, ComplianceTracker, DataRetention, AuditLog), SOC 2 readiness. 40 archivos
+  - `jaraba_analytics` ✅ (extendido): +3 Entities (AnalyticsDashboard, ScheduledReport, DashboardWidget), +3 Services (DashboardManager, ReportScheduler, DataService), Dashboard Builder drag-drop. 86 archivos total
+  - `jaraba_whitelabel` ✅ (nuevo, migración): 4 Entities (WhitelabelConfig, CustomDomain, WhitelabelEmailTemplate, WhitelabelReseller), 5 Services (ConfigResolver, DomainManager, EmailRenderer, ResellerManager, BrandedPdf), EventSubscriber (domain resolution). 54 archivos
+  - **Total**: 542 archivos, 32 Content Entities, 42+ Services, 25+ Controllers, ~60 Templates Twig, ~30 JS files, ~25 CSS files, 22 unit test files
+- **Credentials System** ⭐: Open Badge 3.0 completo + Stackable + Cross-Vertical (✅ Clase Mundial):
+  - `jaraba_credentials` ✅: 6 Content Entities (IssuerProfile, CredentialTemplate, IssuedCredential, RevocationEntry, CredentialStack, UserStackProgress), 11 Services (CryptographyService Ed25519, OpenBadgeBuilder JSON-LD, CredentialIssuer, CredentialVerifier, QrCodeGenerator, RevocationService, StackEvaluationService, StackProgressTracker, AccessibilityAuditService, LmsIntegration, PdfGenerator), 3 Controllers (CredentialsApi, StacksApi, Verify). 45+ archivos
+  - `jaraba_credentials_emprendimiento` ✅ (submódulo): 15 credential template YAMLs (12 badges + 3 diplomas progresivos), 3 Services (EmprendimientoCredentialService 15 tipos, ExpertiseService 5 niveles, JourneyTracker 6 fases), 1 Controller API, 1 EventSubscriber. 29 archivos
+  - `jaraba_credentials_cross_vertical` ✅ (submódulo): 2 Content Entities (CrossVerticalRule, CrossVerticalProgress), 2 Services (CrossVerticalEvaluator, VerticalActivityTracker), rareza visual (common/rare/epic/legendary), cron diario. 22 archivos
+  - **WCAG 2.1 AA**: focus-visible, prefers-reduced-motion, keyboard navigation, ARIA completo en todos los templates
+  - **Patrón**: Hooks nativos (NO ECA YAML), anti-recursión via evidence JSON, State API para rate limiting cron
+  - **Total**: 115 archivos, 8 Content Entities, 16 Services, 20 API endpoints, 5 Twig templates, 4 SCSS, 4 JS
 
 ### 1.5 Idioma de Documentación
 - **Documentación**: Español
@@ -606,7 +625,7 @@ Cliente paga €100 → Stripe retiene €3.20 (fees)
 | **Fase 1** | `CopilotInsightsDashboard` | ✅ | Dashboard Admin `/admin/insights/copilot` |
 | **Fase 2** | `EmbeddingService` | ✅ | Pipeline embeddings para jobs/candidates |
 | **Fase 2** | `MatchingService` | ✅ | Matching híbrido rules + Qdrant |
-| **Fase 3** | `OpenBadgeService` | ✅ | Credenciales Open Badges 3.0 |
+| **Fase 3** | `OpenBadgeService` | ✅ | Credenciales Open Badges 3.0 (→ `jaraba_credentials` v2.0: 8 entities, 16 services, 2 submódulos) |
 | **Fase 3** | `GamificationService` | ✅ | XP, rachas (10 niveles), leaderboard |
 | **Fase 4** | `RecommendationService` | ✅ | Collaborative Filtering + Hybrid ML |
 
@@ -654,23 +673,30 @@ Cliente paga €100 → Stripe retiene €3.20 (fees)
 
 ### 2.9 Servicios Q1 2026 - Vertical Emprendimiento Digital
 
-> **Estado**: 🚧 En desarrollo (Plan v3.1 aprobado 2026-01-21)
-> **Módulo**: `jaraba_copilot_v2` (planificado)
+> **Estado**: ✅ Implementado — Clase Mundial (Specs 20260121a-e 100% cerradas + Gaps cerrados)
+> **Módulo**: `jaraba_copilot_v2` (22 API endpoints, 14+ servicios, 3 frontend pages, widget chat SSE, triggers BD, métricas P50/P99)
 > **Programa**: Andalucía +ei v2.0
 
-**Entregables Copiloto v2 (Listos para integración):**
+**Entregables Copiloto v2 (✅ 100% Implementado — Specs 20260121 + Gaps cerrados):**
 
-| Componente | Archivo | Estado |
-|------------|---------|--------|
+| Componente | Archivo/Ubicación | Estado |
+|------------|-------------------|--------|
 | **Prompt Maestro** | `copilot_prompt_master_v2.md` | ✅ |
 | **Catálogo Experimentos** | `experiment_library_catalog.json` (44 exp) | ✅ |
 | **Schema Perfil** | `entrepreneur_profile.schema.json` | ✅ |
 | **OpenAPI** | `openapi_copiloto_v2.yaml` | ✅ |
-| **Migraciones SQL** | `migraciones_sql_copiloto_v2.sql` | ✅ |
-| **Módulo Drupal** | `copilot_integration.module` | ✅ |
-| **Widget React** | `CopilotChatWidget.jsx` | ✅ |
-| **Dashboard BMC** | `BMCValidationDashboard.jsx` | ✅ |
-| **Formularios** | `TestCard.html`, `LearningCard.html` | ✅ |
+| **Módulo Drupal completo** | `web/modules/custom/jaraba_copilot_v2/` | ✅ |
+| **22 API Endpoints REST** | HypothesisApi, ExperimentApi, BmcApi, EntrepreneurApi, History, Knowledge | ✅ |
+| **14+ Servicios Producción** | HypothesisPrioritization, BmcValidation, LearningCard, ModeDetector (BD+fallback), CopilotOrchestrator (métricas), etc. | ✅ |
+| **5 Access Handlers + ListBuilders** | EntrepreneurProfile, Hypothesis, Experiment, Learning, FieldExit | ✅ |
+| **BMC Dashboard Frontend** | `/emprendimiento/bmc` — Grid 5×3 bloques, semáforos, Impact Points | ✅ |
+| **Hypothesis Manager Frontend** | `/emprendimiento/hipotesis` — CRUD modal, filtros, ICE Score | ✅ |
+| **Experiment Lifecycle Frontend** | `/emprendimiento/experimentos/gestion` — Test→Start→Learning Card | ✅ |
+| **Widget Chat SSE** | `copilot-chat-widget.js` + `CopilotStreamController` — Streaming Alpine.js, indicador modo | ✅ |
+| **Triggers BD Configurables** | `copilot_mode_triggers` tabla + `ModeTriggersAdminForm` — 175 triggers, admin UI, cache 1h | ✅ |
+| **Milestones Persistentes** | `entrepreneur_milestone` tabla — Registro hitos con puntos y entidad relacionada | ✅ |
+| **Métricas P50/P99** | `getMetricsSummary()` — Latencia, fallback rate, costes diarios por proveedor | ✅ |
+| **7 Unit Test Suites** | PHPUnit 11 — ICE, semáforos, controllers, constants, ModeDetectorDb, reflection tests | ✅ |
 
 **5 Modos del Copiloto:**
 
@@ -718,7 +744,8 @@ const UNLOCK_MAP = [
 | `jaraba_mentoring` | ✅ Implementado | Perfiles mentor, sesiones, Stripe Connect, 7 ECA hooks |
 | `jaraba_paths` | ✅ Implementado | Itinerarios digitalización, hitos |
 | `jaraba_groups` | ✅ Implementado | Círculos Responsabilidad, discusiones |
-| `jaraba_copilot_v2` | ✅ Implementado | Copiloto IA 5 modos, FeatureUnlockService, 8 servicios |
+| `jaraba_copilot_v2` | ✅ Implementado (Clase Mundial) | Copiloto IA 7 modos, 22 API endpoints REST, 5 Content Entities (Access Handlers + ListBuilders), 14+ servicios (HypothesisPrioritization ICE, BmcValidation semáforos, LearningCard, TestCardGenerator, ModeDetector **175 triggers BD+fallback** con cache 1h, PivotDetector, ContentGrounding, VPC, BusinessPatternDetector, **CopilotOrchestrator multi-proveedor optimizado** Gemini Flash para consultor/landing), 3 páginas frontend + **widget chat SSE** (Alpine.js streaming, indicador modo), Impact Points gamification + **milestones persistentes** (`entrepreneur_milestone`), FeatureUnlockService desbloqueo 12 semanas, **7 suites unit tests** (64 tests, 184 assertions), **métricas P50/P99** latencia+fallback+costes, **Self-Discovery context injection** (SelfDiscoveryContextService como 10o arg nullable) |
+| `jaraba_self_discovery` | ✅ Implementado | Herramientas autoconocimiento: Rueda de Vida (LifeWheelAssessment), Timeline (LifeTimeline, Phase 2/3 Forms), RIASEC (**InterestProfile** Content Entity, 6 scores), Fortalezas VIA (**StrengthAssessment** Content Entity, 24 fortalezas). 4 servicios dedicados (LifeWheelService, TimelineAnalysisService, RiasecService, StrengthAnalysisService). SelfDiscoveryContextService (agregador para Copilot). 5 unit test files. Admin navigation completa |
 
 **Métricas de Éxito UX:**
 
@@ -789,14 +816,20 @@ $response = $this->httpClient->request('POST', 'https://api.anthropic.com/v1/mes
 ]);
 ```
 
-**Especialización por Modo del Copiloto:**
+**Especialización por Modo del Copiloto (Actualizado 2026-02-12):**
 
-| Modo | Proveedor | Modelo | Razón |
-|------|-----------|--------|-------|
-| Coach Emocional | Anthropic | claude-3-5-sonnet | Empatía superior |
+| Modo | Proveedor Primario | Modelo | Razón |
+|------|-------------------|--------|-------|
+| Coach Emocional | Anthropic | claude-sonnet-4-5-20250929 | Empatía superior |
+| Consultor Táctico | **Google Gemini** | **gemini-2.5-flash** | **Alto volumen (~40% tráfico), coste-eficiente** |
+| Sparring Partner | Anthropic | claude-sonnet-4-5-20250929 | Calidad feedback |
 | CFO Sintético | OpenAI | gpt-4o | Mejor en cálculos |
-| Fiscal/Laboral | Anthropic | claude-3-5-sonnet | RAG + Grounding |
-| Detección modo | Anthropic | claude-3-haiku | Económico |
+| Fiscal/Laboral | Anthropic | claude-sonnet-4-5-20250929 | RAG + Grounding |
+| Devil | Anthropic | claude-sonnet-4-5-20250929 | Desafío hipótesis |
+| Landing Copilot | **Google Gemini** | **gemini-2.5-flash** | **Alto volumen landing, coste-eficiente** |
+| Detección modo | Anthropic | claude-haiku-4-5-20251001 | Económico, baja latencia |
+
+> **Optimización coste (2026-02-12):** Consultor y Landing usan Gemini Flash como proveedor primario (~55% ahorro en costes API). Claude se mantiene como fallback y como primario para modos que requieren empatía (coach, sparring, fiscal/laboral).
 
 > **Ver**: [Plan AI Multiproveedor](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan_ai_multiprovider.md)
 
@@ -1165,15 +1198,29 @@ Antes de implementar cualquier feature, verificar:
 
 Si la respuesta a cualquiera es "No" y debería ser "Sí", **refactorizar antes de continuar**.
 
-### 5.8 Reglas Técnicas Descubiertas (2026-02-12 — Avatar + Empleabilidad)
+### 5.8 Reglas Técnicas Descubiertas (2026-02-12)
+
+#### 5.8.1 Reglas Drupal 11 / PHP 8.4
 
 | Regla | ID | Descripción |
 |-------|----|-------------|
-| **PHP 8.4 Property Redeclaration** | DRUPAL11-001 | En PHP 8.4, las clases hijas NO pueden redeclarar propiedades tipadas heredadas de la clase padre (ej: `protected EntityTypeManagerInterface $entityTypeManager` en ControllerBase). Solución: NO usar promoted constructor params para propiedades heredadas; asignar manualmente `$this->entityTypeManager = $param;` en el constructor |
+| **PHP 8.4 Property Redeclaration** | DRUPAL11-001 | En PHP 8.4, las clases hijas NO pueden redeclarar propiedades tipadas heredadas de la clase padre (ej: `protected EntityTypeManagerInterface $entityTypeManager` en ControllerBase). Solución: NO usar promoted constructor params para propiedades heredadas; asignar manualmente `$this->entityTypeManager = $param;` en el constructor. **Propiedades afectadas en ControllerBase**: `$entityTypeManager`, `$entityFormBuilder`, `$currentUser`, `$languageManager`, `$moduleHandler`, `$configFactory` |
 | **Drupal 11 applyUpdates() Removal** | DRUPAL11-002 | `EntityDefinitionUpdateManager::applyUpdates()` fue eliminado en Drupal 11. Para instalar nuevas entidades, usar `$updateManager->installEntityType($entityType)` por cada entidad individual |
 | **Logger Channel Factory** | SERVICE-001 | Todo módulo que use `@logger.channel.{module}` en services.yml DEBE declarar el logger channel en el mismo fichero: `logger.channel.{module}: { class: ..., factory: logger.factory:get, arguments: ['{module}'] }` |
 | **EntityOwnerInterface** | ENTITY-001 | Toda Content Entity que use `EntityOwnerTrait` DEBE declarar `implements EntityOwnerInterface` y `EntityChangedInterface` en la clase. El trait por sí solo NO satisface la interfaz requerida por Drupal |
 | **Dart Sass @use Scoping** | SCSS-001 | Dart Sass `@use` crea scope aislado. Cada parcial SCSS que necesite variables del módulo DEBE incluir `@use '../variables' as *;` al inicio del fichero. NO se heredan del fichero padre que lo importa |
+
+#### 5.8.2 Reglas API y Controllers (2026-02-12 — Copilot v2 Gaps Closure)
+
+| Regla | ID | Descripción |
+|-------|----|-------------|
+| **API POST naming** | API-NAMING-001 | Nunca usar `create()` como nombre de método API en controllers Drupal — colisiona con `ContainerInjectionInterface::create()`. Usar `store()` para POST de creación (convención RESTful) |
+| **Triggers BD con fallback** | COPILOT-DB-001 | Al migrar configuración hardcodeada a BD, mantener siempre el const original como fallback. Patrón: cache → BD query → const PHP |
+| **Unit vs Kernel tests** | KERNEL-TEST-001 | Usar KernelTestBase SOLO cuando el test necesita BD/entidades/DI completa. Para reflection, constantes, y servicios instanciables con `new`, usar TestCase |
+| **SSE con POST** | SSE-001 | `EventSource` solo soporta GET. Para SSE con POST (enviar datos), usar `fetch()` + `ReadableStream` en el frontend |
+| **Tablas custom para logs** | MILESTONE-001 | Para registros append-only de alto volumen (milestones, audit logs), preferir tablas custom vía `hook_update_N()` sobre Content Entities |
+| **Métricas con State API** | METRICS-001 | Para métricas temporales (latencia diaria), usar State API con claves fechadas (`ai_latency_YYYY-MM-DD`). Limitar muestras por día (max 1000) |
+| **Routing multi-proveedor** | PROVIDER-001 | Rutear modos de alto volumen a Gemini Flash (coste-eficiente). Mantener Claude/GPT-4o para modos que requieren calidad superior (empatía, cálculo). Actualizar model IDs cada sprint |
 
 ---
 
@@ -1740,6 +1787,9 @@ El asistente IA debe:
 | 2026-02-02 | 4.9.0 | **Análisis Page Builder Rendering Bug:** Identificada causa raíz (themes dinámicos no registrados en hook_theme). Solución propuesta: registro dinámico de themes leyendo PageTemplate entities. Alternativa: inline_template. Plan 3 fases: arreglar bug (4-6h), onboarding meta-sitio (20-30h), SEO/GEO (15-20h). Documento multi-perspectiva (Negocio, Finanzas, Arquitectura, UX, SEO/GEO, IA) |
 | 2026-02-08 | **5.4.0** | **Elevación Page Builder Clase Mundial:** Diagnóstico exhaustivo cruzando 6 docs + 8 archivos código. 7 gaps identificados (Dual Architecture, Hot-Swap, Tests E2E, Traits Commerce). Plan 4 sprints (21h). Nuevo doc arquitectura + aprendizaje #47. Tareas pendientes actualizadas. Score objetivo 9.2→9.8/10 |
 | 2026-02-08 | **5.5.0** | **Auditoría GrapesJS changeProp + Model Defaults:** 14 componentes auditados. Regla GRAPEJS-001: todo trait `changeProp: true` DEBE tener propiedad model-level en `defaults`. Stats Counter corregido (13 model defaults + título `<h2>` + labels `display:block`). Timeline dots duplicados eliminados. Pricing Toggle ↔ Table desconexión documentada. Aprendizaje `2026-02-08_grapesjs_changeprop_model_defaults_audit.md` |
+| 2026-02-12 | **12.0.0** | **Self-Discovery Content Entities + Services — Specs 20260122-25 100%:** Cierre de 14 gaps de las specs Docs 159-165. 2 Content Entities nuevas (InterestProfile RIASEC con 6 scores + riasec_code + dominant_types + suggested_careers, StrengthAssessment con top_strengths + all_scores 24 fortalezas). 4 servicios dedicados (LifeWheelService, TimelineAnalysisService, RiasecService con fallback user.data, StrengthAnalysisService con fallback user.data). SelfDiscoveryContextService refactorizado como agregador con 4 DI nullable. 2 formularios (TimelinePhase2Form, TimelinePhase3Form). Copilot v2 context injection: SelfDiscoveryContextService como 10o arg nullable en CopilotOrchestratorService + buildSystemPrompt(). Infraestructura Lando: .lando/redis.conf, .env.example, scripts/setup-dev.sh, settings.local.php completado (Qdrant, Tika, AI providers, Xdebug, trusted hosts, dev cache). Admin navigation: 2 collection tabs + 2 structure links + 2 action buttons. 5 unit test files (38 test methods). Dual storage entity + user.data. Reglas: ENTITY-SD-001, SERVICE-SD-001, COPILOT-SD-001, INFRA-SD-001. Aprendizaje #68 |
+| 2026-02-12 | **11.0.0** | **Copilot v2 Gaps Closure — Specs 20260121 100%:** Módulo `jaraba_copilot_v2` completado al 100%. 22 API endpoints REST (Hypothesis CRUD+Prioritize ICE, Experiment Lifecycle con Test/Learning Card, BMC Validation semáforos, Entrepreneur CRUD+DIME, Session History, Knowledge Search). 5 Access Handlers + 5 ListBuilders. 14 servicios (HypothesisPrioritization, BmcValidation, LearningCard, TestCardGenerator, ModeDetector 100+ triggers, PivotDetector, ContentGrounding, VPC, BusinessPatternDetector, ClaudeApi, FaqGenerator, CustomerDiscoveryGamification, CopilotCache). 3 páginas frontend full-width (BMC Dashboard grid 5×3, Hypothesis Manager, Experiment Lifecycle). 4 unit test suites. Impact Points gamification. hook_theme() + hook_page_attachments() + hook_preprocess_html(). Sección 2.9 actualizada: estado "En desarrollo"→"Implementado Clase Mundial". Aprendizaje #67. Maestro v11.0.0 |
+| 2026-02-12 | **10.0.0** | **Platform Services v3 — 10 Módulos Dedicados:** 10 módulos transversales implementados como módulos Drupal 11 independientes. 6 nuevos (jaraba_agent_flows, jaraba_pwa, jaraba_onboarding, jaraba_usage_billing, jaraba_security_compliance, jaraba_whitelabel) + 4 extendidos (jaraba_integrations, jaraba_customer_success, jaraba_tenant_knowledge, jaraba_analytics). 542 archivos totales: 32 Content Entities, 42+ Services, 25+ Controllers REST API, ~60 Templates Twig, ~30 JS Drupal.behaviors, ~25 CSS compilados, 22 unit test files. Patrón: declare(strict_types=1), EntityChangedTrait, tenant_id→group, BEM + var(--ej-*), Drupal.behaviors + once(), slide-panel CRUD. Documento implementación v3 creado. Aprendizaje #66 |
 | 2026-02-12 | **9.0.0** | **Avatar Detection + Empleabilidad UI — 7 Fases:** AvatarDetectionService (cascada 4 niveles Domain→Path/UTM→Group→Rol). EmployabilityDiagnostic entity (14 campos, 5 perfiles). EmployabilityScoringService. EmployabilityCopilotAgent (6 modos BaseAgent). CV PDF (dompdf 2.0.8). Modal system. 4 partials Twig. Activación: 16 entidades, 789 tests (730 pass). 16 controllers PHP 8.4 corregidos. Drupal 11 installEntityType(). 5 reglas: DRUPAL11-001, DRUPAL11-002, SERVICE-001, ENTITY-001, SCSS-001. Aprendizaje #64 |
 | 2026-02-12 | **9.0.0** | **Marketing AI Stack — 9 Módulos 100%:** Auditoría cruzada 16 specs (145-158) vs código existente. 9 módulos completados al 100% (jaraba_crm, jaraba_email, jaraba_ab_testing, jaraba_pixels, jaraba_events, jaraba_social, jaraba_referral, jaraba_ads + jaraba_billing ya clase mundial). ~150+ archivos PHP nuevos. 50 unit test files (~200+ test methods, 100% cobertura servicios). 3 page templates Twig nuevos (page--experimentos, page--referidos, page--ads). Cross-módulo: FeatureAccessService cubre 9 módulos, hook_preprocess_html todas las rutas frontend. Tabla plantillas Twig actualizada (6→11 templates). Aprendizaje #64 |
 | 2026-02-12 | **8.0.0** | **Production Gaps Resolution — 7 Fases:** Cierre gaps críticos producción. Fase 1: 30 skills verticales AI (seed script 1,647 LOC, contenido experto mercado español). Fase 2: Monitoring stack (Prometheus+Grafana+Loki+Promtail+AlertManager, 14 alertas). Fase 3: Go-live runbook (3 scripts ejecutables + documento 6 fases RACI). Fase 4: Security CI daily (Trivy+ZAP+SARIF) + GDPR Drush commands (export/anonymize/report) + playbook incidentes. Fase 5: Catálogo Stripe (40 precios, comisiones marketplace). Fase 6: 24 templates MJML email + TemplateLoaderService. Fase 7: k6 load + BackstopJS visual regression + CI coverage 80%. 44 ficheros creados, 3 modificados. Reglas: SKILLS-001, MONITORING-001, GOLIVE-001, SECURITY-001, STRIPE-001, EMAIL-001, TEST-002. Aprendizaje #63 |
