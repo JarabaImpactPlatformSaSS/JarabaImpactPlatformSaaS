@@ -7,3 +7,17 @@ entity.life_wheel_assessment.settings:
   route_name: entity.life_wheel_assessment.settings
   parent: system.admin_structure
   weight: 50
+
+entity.interest_profile.settings:
+  title: 'Perfil de Intereses RIASEC'
+  description: 'Configurar campos y display de Perfil de Intereses.'
+  route_name: entity.interest_profile.settings
+  parent: system.admin_structure
+  weight: 51
+
+entity.strength_assessment.settings:
+  title: 'Evaluacion de Fortalezas'
+  description: 'Configurar campos y display de Evaluacion de Fortalezas.'
+  route_name: entity.strength_assessment.settings
+  parent: system.admin_structure
+  weight: 52

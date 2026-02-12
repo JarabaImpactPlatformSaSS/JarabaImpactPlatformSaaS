@@ -5,3 +5,15 @@ entity.life_wheel_assessment.add_form:
   route_name: entity.life_wheel_assessment.add_form
   appears_on:
     - entity.life_wheel_assessment.collection
+
+entity.interest_profile.add_form:
+  title: 'Anadir Perfil RIASEC'
+  route_name: entity.interest_profile.add_form
+  appears_on:
+    - entity.interest_profile.collection
+
+entity.strength_assessment.add_form:
+  title: 'Anadir Evaluacion de Fortalezas'
+  route_name: entity.strength_assessment.add_form
+  appears_on:
+    - entity.strength_assessment.collection

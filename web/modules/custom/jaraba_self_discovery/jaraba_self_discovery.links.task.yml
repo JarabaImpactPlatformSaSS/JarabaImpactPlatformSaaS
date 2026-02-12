@@ -6,3 +6,15 @@ entity.life_wheel_assessment.collection:
   route_name: entity.life_wheel_assessment.collection
   base_route: system.admin_content
   weight: 50
+
+entity.interest_profile.collection:
+  title: 'Perfiles RIASEC'
+  route_name: entity.interest_profile.collection
+  base_route: system.admin_content
+  weight: 51
+
+entity.strength_assessment.collection:
+  title: 'Evaluaciones Fortalezas'
+  route_name: entity.strength_assessment.collection
+  base_route: system.admin_content
+  weight: 52

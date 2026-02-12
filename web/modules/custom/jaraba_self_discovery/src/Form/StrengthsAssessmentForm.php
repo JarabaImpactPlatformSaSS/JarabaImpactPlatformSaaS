@@ -285,15 +285,32 @@ class StrengthsAssessmentForm extends FormBase
     }
 
     /**
-     * Guarda los resultados en user data.
+     * Guarda los resultados en user data y en entity StrengthAssessment.
      */
     protected function saveResults(array $results): void
     {
         $user = \Drupal::currentUser();
         if ($user->isAuthenticated()) {
+            // Retrocompatibilidad: guardar en user.data.
             $userData = \Drupal::service('user.data');
             $userData->set('jaraba_self_discovery', $user->id(), 'strengths_top5', $results);
             $userData->set('jaraba_self_discovery', $user->id(), 'strengths_completed', time());
+
+            // Guardar en Content Entity StrengthAssessment.
+            try {
+                $storage = \Drupal::entityTypeManager()->getStorage('strength_assessment');
+                $entity = $storage->create([
+                    'user_id' => $user->id(),
+                    'top_strengths' => json_encode($results),
+                    'all_scores' => json_encode($results),
+                ]);
+                $entity->save();
+            }
+            catch (\Exception $e) {
+                \Drupal::logger('jaraba_self_discovery')->error('Error saving StrengthAssessment entity: @error', [
+                    '@error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 

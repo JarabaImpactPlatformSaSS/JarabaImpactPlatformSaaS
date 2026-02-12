@@ -370,16 +370,49 @@ HTML;
     }
 
     /**
-     * Guarda los resultados en user data.
+     * Guarda los resultados en user data y en entity InterestProfile.
      */
     protected function saveResults(array $scores, string $code): void
     {
         $user = \Drupal::currentUser();
         if ($user->isAuthenticated()) {
+            // Retrocompatibilidad: guardar en user.data.
             $userData = \Drupal::service('user.data');
             $userData->set('jaraba_self_discovery', $user->id(), 'riasec_scores', $scores);
             $userData->set('jaraba_self_discovery', $user->id(), 'riasec_code', $code);
             $userData->set('jaraba_self_discovery', $user->id(), 'riasec_completed', time());
+
+            // Guardar en Content Entity InterestProfile.
+            try {
+                $scoreMapping = [
+                    'R' => 'score_realistic',
+                    'I' => 'score_investigative',
+                    'A' => 'score_artistic',
+                    'S' => 'score_social',
+                    'E' => 'score_enterprising',
+                    'C' => 'score_conventional',
+                ];
+
+                $storage = \Drupal::entityTypeManager()->getStorage('interest_profile');
+                $values = [
+                    'user_id' => $user->id(),
+                    'riasec_code' => $code,
+                    'dominant_types' => json_encode(str_split($code)),
+                    'suggested_careers' => json_encode($this->getCareerSuggestions($code)),
+                ];
+
+                foreach ($scoreMapping as $letter => $field) {
+                    $values[$field] = $scores[$letter] ?? 0;
+                }
+
+                $entity = $storage->create($values);
+                $entity->save();
+            }
+            catch (\Exception $e) {
+                \Drupal::logger('jaraba_self_discovery')->error('Error saving InterestProfile entity: @error', [
+                    '@error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 
