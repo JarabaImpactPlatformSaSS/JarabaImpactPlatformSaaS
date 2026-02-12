@@ -1,0 +1,394 @@
+{#
+/**
+ * @file
+ * Template for Copilot Insights Dashboard.
+ *
+ * Variables:
+ * - metrics: Effectiveness metrics (total, resolved, rate, rating, tokens, cost)
+ * - topics: Array of topics with count
+ * - popular_questions: Array of popular questions
+ * - unresolved_queries: Array of unresolved conversations
+ */
+#}
+
+<div class="copilot-insights-dashboard">
+  {# === Header KPIs === #}
+  <div class="insights-header">
+    <h2 class="insights-title">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }} Análisis de Copilotos IA</h2>
+    <p class="insights-subtitle">Última semana • Datos actualizados cada 5 min</p>
+  </div>
+
+  <div class="insights-kpis">
+    <div class="kpi-card kpi-conversations">
+      <span class="kpi-icon">{{ jaraba_icon('ui', 'message', { variant: 'duotone', color: 'corporate', size: '32px' }) }}</span>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ metrics.total_conversations }}</span>
+        <span class="kpi-label">Conversaciones</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-resolution">
+      <span class="kpi-icon">{{ jaraba_icon('actions', 'check', { color: 'success', size: '32px' }) }}</span>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ metrics.resolution_rate }}%</span>
+        <span class="kpi-label">Tasa Resolución</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-rating">
+      <span class="kpi-icon">{{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '32px' }) }}</span>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ metrics.average_rating ?: 'N/A' }}</span>
+        <span class="kpi-label">Rating Promedio</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-cost">
+      <span class="kpi-icon">{{ jaraba_icon('analytics', 'euro', { variant: 'duotone', color: 'success', size: '32px' }) }}</span>
+      <div class="kpi-content">
+        <span class="kpi-value">${{ metrics.total_cost_usd }}</span>
+        <span class="kpi-label">Costo Total</span>
+      </div>
+    </div>
+  </div>
+
+  {# === Main Content Grid === #}
+  <div class="insights-grid">
+    
+    {# === Topics Chart === #}
+    <div class="insights-card topics-card">
+      <h3 class="card-title">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '20px' }) }} Intents Más Frecuentes</h3>
+      <div class="topics-list">
+        {% for topic in topics %}
+          <div class="topic-item">
+            <span class="topic-name">{{ topic.intent|replace({'_': ' '})|capitalize }}</span>
+            <div class="topic-bar">
+              <div class="topic-fill" style="width: {{ (topic.count / (topics[0].count ?: 1)) * 100 }}%"></div>
+            </div>
+            <span class="topic-count">{{ topic.count }}</span>
+          </div>
+        {% else %}
+          <p class="empty-state">No hay datos suficientes</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# === Popular Questions === #}
+    <div class="insights-card questions-card">
+      <h3 class="card-title">{{ jaraba_icon('ui', 'question', { size: '20px' }) }} Preguntas Más Comunes</h3>
+      <ul class="questions-list">
+        {% for question in popular_questions %}
+          <li class="question-item">
+            <span class="question-text">{{ question.sample|length > 80 ? question.sample|slice(0, 80) ~ '...' : question.sample }}</span>
+            <span class="question-badge">{{ question.count }}x</span>
+          </li>
+        {% else %}
+          <li class="empty-state">Sin datos todavía</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {# === Unresolved Queries (Gaps) === #}
+    <div class="insights-card gaps-card">
+      <h3 class="card-title">{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '20px' }) }} Consultas Sin Resolver</h3>
+      <p class="card-subtitle">Posibles gaps en la base de conocimiento</p>
+      <ul class="gaps-list">
+        {% for query in unresolved_queries %}
+          <li class="gap-item">
+            <div class="gap-header">
+              <span class="gap-type">{{ query.copilot_type|replace({'_': ' '})|capitalize }}</span>
+              <span class="gap-date">{{ query.date }}</span>
+            </div>
+            <span class="gap-question">{{ query.question|length > 100 ? query.question|slice(0, 100) ~ '...' : query.question }}</span>
+            <span class="gap-intent-badge">{{ query.intent }}</span>
+          </li>
+        {% else %}
+          <li class="success-state">{{ jaraba_icon('ui', 'party', { size: '16px' }) }} ¡Todas las consultas fueron resueltas!</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {# === Token Usage === #}
+    <div class="insights-card tokens-card">
+      <h3 class="card-title">{{ jaraba_icon('analytics', 'hash', { size: '20px' }) }} Uso de Tokens</h3>
+      <div class="tokens-stats">
+        <div class="token-stat">
+          <span class="token-label">Input</span>
+          <span class="token-value">{{ metrics.total_tokens_input|number_format }}</span>
+        </div>
+        <div class="token-stat">
+          <span class="token-label">Output</span>
+          <span class="token-value">{{ metrics.total_tokens_output|number_format }}</span>
+        </div>
+      </div>
+      <div class="cost-breakdown">
+        <p>Modelo: Claude 3.5 Sonnet</p>
+        <p>Costo estimado: <strong>${{ metrics.total_cost_usd }}</strong></p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+.copilot-insights-dashboard {
+  font-family: var(--ej-font-family, 'Inter', sans-serif);
+  padding: 24px;
+}
+
+.insights-header {
+  margin-bottom: 24px;
+}
+
+.insights-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.insights-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.insights-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.kpi-icon {
+  font-size: 32px;
+}
+
+.kpi-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.insights-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: -12px 0 16px;
+}
+
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.topic-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 40px;
+  align-items: center;
+  gap: 12px;
+}
+
+.topic-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.topic-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.topic-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.topic-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0ea5e9;
+  text-align: right;
+}
+
+.questions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.question-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.question-text {
+  font-size: 13px;
+  color: #374151;
+  flex: 1;
+}
+
+.question-badge {
+  background: #0ea5e9;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.gaps-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gap-item {
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.08) 100%);
+  border-radius: 10px;
+  border-left: 3px solid #f59e0b;
+}
+
+.gap-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.gap-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  text-transform: uppercase;
+}
+
+.gap-date {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.gap-question {
+  display: block;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.gap-intent-badge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.tokens-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.token-stat {
+  text-align: center;
+  padding: 16px;
+  background: #f3f4f6;
+  border-radius: 12px;
+}
+
+.token-label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.token-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.cost-breakdown {
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border-radius: 8px;
+}
+
+.cost-breakdown p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #065f46;
+}
+
+.empty-state, .success-state {
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.success-state {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+  border-radius: 8px;
+  color: #065f46;
+}
+</style>

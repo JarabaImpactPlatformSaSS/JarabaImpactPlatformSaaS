@@ -1,0 +1,22 @@
+canvas_editor:
+  version: 1.0.0
+  js:
+    js/vendor/sortable.min.js: { minified: true }
+    js/vendor/html2pdf.bundle.min.js: { minified: true }
+    js/canvas-editor.js: {}
+  dependencies:
+    - ecosistema_jaraba_core/global
+    - core/drupal
+    - core/drupal.announce
+    - core/drupalSettings
+    - core/once
+
+entrepreneur_agent_fab:
+  version: 1.0.0
+  js:
+    js/entrepreneur-agent-fab.js: {}
+  dependencies:
+    - ecosistema_jaraba_core/global
+    - core/drupal
+    - core/drupalSettings
+    - core/once

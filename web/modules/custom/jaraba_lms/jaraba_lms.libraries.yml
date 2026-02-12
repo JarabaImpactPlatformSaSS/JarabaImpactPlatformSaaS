@@ -1,0 +1,11 @@
+video-tracking:
+  version: 1.0
+  js:
+    js/video-tracking.js: {}
+  css:
+    theme:
+      css/lesson-video.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.ajax

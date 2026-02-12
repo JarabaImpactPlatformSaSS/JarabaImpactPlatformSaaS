@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Template for Entrepreneur AI Agent FAB (Floating Action Button).
+ *
+ * Available variables:
+ * - agent: Agent configuration with id, name, icon, color, greeting, actions.
+ * - user_name: User's first name for personalization.
+ */
+#}
+<div class="agent-fab-container role-entrepreneur" data-agent="{{ agent.id }}">
+  {# Main FAB Button #}
+  <button class="agent-fab-trigger" 
+          style="background-color: {{ agent.color }};"
+          aria-label="{{ agent.name }}"
+          aria-expanded="false">
+    <span class="fab-icon">{{ jaraba_icon(agent.icon_category, agent.icon_name, { variant: 'duotone', size: '28px' }) }}</span>
+    <span class="fab-pulse"></span>
+  </button>
+
+  {# Agent Panel #}
+  <div class="agent-panel" aria-hidden="true">
+    <div class="agent-header" style="background-color: {{ agent.color }};">
+      <div class="agent-avatar">{{ jaraba_icon(agent.icon_category, agent.icon_name, { variant: 'duotone', size: '32px' }) }}</div>
+      <div class="agent-info">
+        <h3 class="agent-name">{{ agent.name }}</h3>
+        <span class="agent-status">{{ 'IA para tu negocio'|t }}</span>
+      </div>
+      <button class="agent-close" aria-label="{{ 'Cerrar'|t }}">×</button>
+    </div>
+
+    <div class="agent-body">
+      <div class="agent-greeting">
+        <p>{{ agent.greeting }}</p>
+      </div>
+
+      <div class="agent-actions">
+        <p class="actions-label">{{ '¿Cómo puedo ayudarte?'|t }}</p>
+        <div class="actions-grid">
+          {% for action in agent.actions %}
+            <button class="action-button" 
+                    data-action="{{ action.id }}"
+                    data-agent="{{ agent.id }}">
+              <span class="action-icon">{{ jaraba_icon(action.icon_category, action.icon_name, { size: '20px' }) }}</span>
+              <span class="action-label">{{ action.label }}</span>
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# Chat area for AI responses #}
+      <div class="agent-chat" aria-live="polite">
+        <div class="chat-messages"></div>
+      </div>
+    </div>
+
+    <div class="agent-footer">
+      <div class="agent-input-container">
+        <input type="text" 
+               class="agent-input" 
+               placeholder="{{ 'Pregunta sobre tu canvas...'|t }}"
+               aria-label="{{ 'Mensaje al asistente'|t }}">
+        <button class="agent-send" aria-label="{{ 'Enviar'|t }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

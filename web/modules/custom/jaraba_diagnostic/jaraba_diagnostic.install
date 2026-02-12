@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the jaraba_diagnostic module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_diagnostic_install(): void {
+  \Drupal::messenger()->addStatus(t('Módulo Jaraba Diagnostic instalado. Accede a los diagnósticos desde Contenido → Diagnósticos.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_diagnostic_uninstall(): void {
+  // Eliminar configuración del módulo si existe
+  \Drupal::configFactory()->getEditable('jaraba_diagnostic.settings')->delete();
+}

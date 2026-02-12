@@ -1,0 +1,275 @@
+{#
+ # Template: Paso del wizard (sección de preguntas)
+ # /diagnostic/{uuid}/step/{section}
+ #}
+<div class="diagnostic-wizard-step" data-section="{{ section }}">
+  
+  {# Barra de progreso #}
+  <div class="wizard-progress">
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {{ progress_percent }}%"></div>
+    </div>
+    <div class="progress-text">
+      {% trans %}Paso{% endtrans %} {{ current_step }} {% trans %}de{% endtrans %} {{ total_steps }} · {{ section_data.title }}
+    </div>
+  </div>
+
+  {# Header de sección #}
+  <div class="section-header">
+    <div class="section-icon">
+      {% if section_data.icon == 'globe' %}{{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '32px' }) }}
+      {% elseif section_data.icon == 'shopping-cart' %}{{ jaraba_icon('business', 'cart', { variant: 'duotone', size: '32px' }) }}
+      {% elseif section_data.icon == 'megaphone' %}{{ jaraba_icon('business', 'megaphone', { variant: 'duotone', size: '32px' }) }}
+      {% elseif section_data.icon == 'cog' %}{{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '32px' }) }}
+      {% elseif section_data.icon == 'robot' %}{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', size: '32px' }) }}
+      {% endif %}
+    </div>
+    <h2>{{ section_data.title }}</h2>
+    <p class="section-description">{{ section_data.description }}</p>
+  </div>
+
+  {# Formulario de preguntas #}
+  <form class="wizard-questions-form" id="wizard-form">
+    <input type="hidden" name="section" value="{{ section }}">
+    
+    {% for question in section_data.questions %}
+      <div class="question-card" data-question-id="{{ question.id }}">
+        <div class="question-text">
+          <span class="question-number">{{ loop.index }}.</span>
+          {{ question.text }}
+        </div>
+
+        {% if question.type == 'boolean' %}
+          <div class="answer-options boolean-options">
+            <label class="option-card">
+              <input type="radio" name="{{ question.id }}" value="1" 
+                     {% if existing_answers[question.id] == '1' %}checked{% endif %}>
+              <span class="option-content">
+                <span class="option-icon">{{ jaraba_icon('actions', 'check', { color: 'success', size: '16px' }) }}</span>
+                <span class="option-label">{% trans %}Sí{% endtrans %}</span>
+              </span>
+            </label>
+            <label class="option-card">
+              <input type="radio" name="{{ question.id }}" value="0"
+                     {% if existing_answers[question.id] == '0' %}checked{% endif %}>
+              <span class="option-content">
+                <span class="option-icon">{{ jaraba_icon('actions', 'close', { color: 'danger', size: '16px' }) }}</span>
+                <span class="option-label">{% trans %}No{% endtrans %}</span>
+              </span>
+            </label>
+          </div>
+
+        {% elseif question.type == 'scale_5' %}
+          <div class="answer-options scale-options">
+            {% for i in 0..4 %}
+              <label class="scale-option">
+                <input type="radio" name="{{ question.id }}" value="{{ i }}"
+                       {% if existing_answers[question.id] == i %}checked{% endif %}>
+                <span class="scale-content">
+                  <span class="scale-dot"></span>
+                  <span class="scale-label">{{ question.labels[i] }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {# Navegación #}
+    <div class="wizard-navigation">
+      {% if previous_section %}
+        <a href="{{ path('jaraba_diagnostic.wizard.step', {uuid: uuid, section: previous_section}) }}" 
+           class="btn-secondary">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          {% trans %}Anterior{% endtrans %}
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      {% if next_section %}
+        <button type="submit" class="btn-primary" data-next-section="{{ next_section }}">
+          {% trans %}Siguiente{% endtrans %}
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </button>
+      {% else %}
+        <button type="submit" class="btn-success btn-lg" data-finish="true">
+          {% trans %}Ver mis resultados{% endtrans %}
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<script>
+(function() {
+  const form = document.getElementById('wizard-form');
+  
+  /**
+   * Valida que todas las preguntas del paso actual estén respondidas
+   * @returns {Object} { valid: boolean, unanswered: [] }
+   */
+  function validateStep() {
+    const questionCards = form.querySelectorAll('.question-card');
+    const unanswered = [];
+    
+    questionCards.forEach((card, index) => {
+      const questionId = card.dataset.questionId;
+      const checked = card.querySelector('input[type="radio"]:checked');
+      
+      if (!checked) {
+        unanswered.push({
+          id: questionId,
+          index: index + 1,
+          element: card
+        });
+      }
+    });
+    
+    return {
+      valid: unanswered.length === 0,
+      unanswered: unanswered
+    };
+  }
+  
+  /**
+   * Muestra errores de validación en las preguntas no respondidas
+   */
+  function showValidationErrors(unanswered) {
+    // Limpiar errores previos
+    form.querySelectorAll('.question-card--error').forEach(el => {
+      el.classList.remove('question-card--error');
+    });
+    form.querySelectorAll('.validation-message').forEach(el => el.remove());
+    
+    // Marcar preguntas sin responder
+    unanswered.forEach(q => {
+      q.element.classList.add('question-card--error');
+      
+      // Añadir mensaje de error accesible
+      if (!q.element.querySelector('.validation-message')) {
+        const msg = document.createElement('div');
+        msg.className = 'validation-message';
+        msg.setAttribute('role', 'alert');
+        msg.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Esta pregunta es obligatoria';
+        q.element.appendChild(msg);
+      }
+    });
+    
+    // Scroll a la primera pregunta sin responder
+    if (unanswered.length > 0) {
+      unanswered[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    // Mostrar toast de error
+    showToast('Por favor, responde todas las preguntas antes de continuar', 'error');
+  }
+  
+  /**
+   * Muestra un toast de notificación
+   */
+  function showToast(message, type) {
+    const existing = document.querySelector('.wizard-toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'wizard-toast wizard-toast--' + type;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+    
+    requestAnimationFrame(() => {
+      toast.classList.add('wizard-toast--visible');
+    });
+    
+    setTimeout(() => {
+      toast.classList.remove('wizard-toast--visible');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+  
+  // Limpiar error cuando el usuario responde
+  form.querySelectorAll('.question-card').forEach(card => {
+    card.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        card.classList.remove('question-card--error');
+        const msg = card.querySelector('.validation-message');
+        if (msg) msg.remove();
+      });
+    });
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // VALIDACIÓN: Verificar que todas las preguntas estén respondidas
+    const validation = validateStep();
+    
+    if (!validation.valid) {
+      showValidationErrors(validation.unanswered);
+      return; // Bloquear el avance
+    }
+    
+    const formData = new FormData(form);
+    const answers = {};
+    
+    for (let [key, value] of formData.entries()) {
+      if (key !== 'section') {
+        answers[key] = parseInt(value);
+      }
+    }
+    
+    // Deshabilitar botón mientras procesa
+    const submitBtn = form.querySelector('[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('btn--loading');
+    }
+    
+    const settings = drupalSettings.diagnosticWizard || {};
+    
+    fetch(settings.apiEndpoint || '/api/v1/diagnostics/{{ uuid }}/answers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        answers: answers,
+        section: '{{ section }}',
+        complete: form.querySelector('[data-finish]') !== null
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const nextButton = form.querySelector('[data-next-section]');
+      const finishButton = form.querySelector('[data-finish]');
+      
+      if (finishButton) {
+        window.location.href = '/diagnostic/{{ uuid }}/results';
+      } else if (nextButton) {
+        window.location.href = '/diagnostic/{{ uuid }}/step/' + nextButton.dataset.nextSection;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn--loading');
+      }
+      const nextButton = form.querySelector('[data-next-section]');
+      if (nextButton) {
+        window.location.href = '/diagnostic/{{ uuid }}/step/' + nextButton.dataset.nextSection;
+      }
+    });
+  });
+})();
+</script>

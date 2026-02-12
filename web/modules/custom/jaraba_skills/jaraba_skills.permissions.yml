@@ -1,0 +1,14 @@
+# Permisos del módulo jaraba_skills.
+
+administer ai skills:
+  title: 'Administrar Habilidades IA'
+  description: 'Acceso completo a la gestión de AI Skills.'
+  restrict access: true
+
+manage ai skills:
+  title: 'Gestionar Habilidades IA'
+  description: 'Crear, editar y eliminar habilidades IA.'
+
+view ai skills:
+  title: 'Ver Habilidades IA'
+  description: 'Ver el listado de habilidades IA.'

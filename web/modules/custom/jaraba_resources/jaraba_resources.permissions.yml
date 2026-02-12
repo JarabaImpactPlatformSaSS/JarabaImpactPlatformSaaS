@@ -1,0 +1,44 @@
+# Digital Kit permissions
+administer digital kits:
+  title: 'Administer Digital Kits'
+  description: 'Full administrative access to digital kits.'
+  restrict access: true
+
+create digital kit:
+  title: 'Create Digital Kit'
+  description: 'Create new digital kits.'
+
+view digital kits:
+  title: 'View Digital Kits'
+  description: 'View available digital kits.'
+
+edit any digital kit:
+  title: 'Edit any Digital Kit'
+  description: 'Edit any digital kit.'
+
+delete any digital kit:
+  title: 'Delete any Digital Kit'
+  description: 'Delete any digital kit.'
+
+download digital kit:
+  title: 'Download Digital Kit'
+  description: 'Download kit resources (based on plan access).'
+
+# Membership Plan permissions
+administer membership plans:
+  title: 'Administer Membership Plans'
+  description: 'Full administrative access to membership plans.'
+  restrict access: true
+
+view membership plans:
+  title: 'View Membership Plans'
+  description: 'View available membership plans.'
+
+subscribe to plans:
+  title: 'Subscribe to Plans'
+  description: 'Subscribe to membership plans.'
+
+# API access
+access resources api:
+  title: 'Access Resources API'
+  description: 'Access REST API endpoints for resources.'

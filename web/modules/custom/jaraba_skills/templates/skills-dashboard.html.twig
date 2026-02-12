@@ -1,0 +1,243 @@
+{#
+/**
+ * @file
+ * Template para el dashboard de habilidades IA.
+ *
+ * Patrón "frontend-dashboard" con slide-panel para CRUD.
+ * Incluye partículas animadas en header (neural network effect).
+ *
+ * Variables:
+ * - skills: Array agrupado por tipo (core, vertical, agent, tenant)
+ * - statistics: Estadísticas del sistema
+ */
+#}
+{{ attach_library('jaraba_skills/skills.dashboard') }}
+
+<div class="skills-dashboard">
+  {# Header Premium con gradiente corporativo y partículas #}
+  <header class="skills-dashboard__header dashboard-header dashboard-header--premium dashboard-header--corporate">
+    <canvas id="skills-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    <div class="skills-dashboard__header-content">
+      <div class="skills-dashboard__header-info">
+        <h1 class="skills-dashboard__title">
+          <svg class="skills-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="32" height="32">
+            <circle cx="12" cy="12" r="3" fill="rgba(0,169,165,0.3)"/>
+            <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+            <path d="M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+          </svg>
+          {% trans %}Habilidades IA{% endtrans %}
+        </h1>
+        <p class="skills-dashboard__subtitle">
+          {% trans %}Sistema jerárquico de especialización de agentes{% endtrans %}
+        </p>
+      </div>
+      <div class="skills-dashboard__actions">
+        <a href="{{ path('jaraba_skills.analytics') }}"
+           class="btn btn--ghost btn--icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M18 20V10"/>
+            <path d="M12 20V4"/>
+            <path d="M6 20v-6"/>
+          </svg>
+          {% trans %}Analytics{% endtrans %}
+        </a>
+        <a href="{{ path('jaraba_skills.test_console') }}"
+           class="btn btn--secondary btn--icon"
+           data-slide-panel="test-console"
+           data-slide-panel-url="{{ path('jaraba_skills.test_console') }}"
+           data-slide-panel-title="{% trans %}Probar Habilidades{% endtrans %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M22 2L11 13"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+          </svg>
+          {% trans %}Probar{% endtrans %}
+        </a>
+        <a href="{{ path('jaraba_skills.skill.add.ajax') }}"
+           class="btn btn--primary btn--icon"
+           data-slide-panel="skill-form"
+           data-slide-panel-url="{{ path('jaraba_skills.skill.add.ajax') }}"
+           data-slide-panel-title="{% trans %}Nueva Habilidad{% endtrans %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          {% trans %}Nueva Habilidad{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  {# KPI Cards con iconos representativos #}
+  <section class="skills-dashboard__kpis">
+    <div class="kpi-card kpi-card--total">
+      <div class="kpi-card__icon">
+        {# Ícono: múltiples nodos (total skills) #}
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <circle cx="12" cy="5" r="3"/>
+          <circle cx="6" cy="17" r="3"/>
+          <circle cx="18" cy="17" r="3"/>
+          <path d="M12 8v4m-4 2l2-2m6 2l-2-2"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistics.total }}</span>
+        <span class="kpi-card__label">{% trans %}Total Habilidades{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--core">
+      <div class="kpi-card__icon">
+        {# Ícono: globo con núcleo (core skills) #}
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-innovation, #00A9A5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="4" fill="rgba(0,169,165,0.2)"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistics.by_type.core }}</span>
+        <span class="kpi-card__label">{% trans %}Core{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--vertical">
+      <div class="kpi-card__icon">
+        {# Ícono: capas/edificio (vertical/industria) #}
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-impulse, #FF8C42)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,140,66,0.2)"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistics.by_type.vertical }}</span>
+        <span class="kpi-card__label">{% trans %}Vertical{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--active">
+      <div class="kpi-card__icon">
+        {# Ícono: check activo #}
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-success, #10B981)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <circle cx="12" cy="12" r="10" fill="rgba(16,185,129,0.15)"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistics.active }}</span>
+        <span class="kpi-card__label">{% trans %}Activas{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# Guía rápida del sistema de habilidades #}
+  <section class="skills-dashboard__guide">
+
+    <div class="skills-guide">
+      <div class="skills-guide__header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4m0-4h.01"/>
+        </svg>
+        <h3>{% trans %}¿Cómo funciona el Sistema de Habilidades IA?{% endtrans %}</h3>
+      </div>
+      <div class="skills-guide__content">
+        <div class="skills-guide__tier">
+          <strong>Core (Global)</strong>
+          <span>{% trans %}Habilidades base que aplican a todos los agentes de la plataforma.{% endtrans %}</span>
+        </div>
+        <div class="skills-guide__tier">
+          <strong>Vertical (Industria)</strong>
+          <span>{% trans %}Especializaciones por vertical: Empleo, Emprendimiento, Formación...{% endtrans %}</span>
+        </div>
+        <div class="skills-guide__tier">
+          <strong>Agent (Rol)</strong>
+          <span>{% trans %}Instrucciones específicas para cada tipo de agente IA.{% endtrans %}</span>
+        </div>
+        <div class="skills-guide__tier">
+          <strong>Tenant (Cliente)</strong>
+          <span>{% trans %}Personalización exclusiva por organización/tenant.{% endtrans %}</span>
+        </div>
+      </div>
+      <p class="skills-guide__tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        {% trans %}Las habilidades se resuelven jerárquicamente: Tenant > Agent > Vertical > Core{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  {# Skills por tipo - Cards Premium #}
+  <section class="skills-dashboard__sections">
+    {# Definiciones de iconos SVG inline para cada tipo #}
+    {% set skill_icons = {
+      'core': '<svg viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="rgba(0,169,165,0.2)"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+      'vertical': '<svg viewBox="0 0 24 24" fill="none" stroke="#FF8C42" stroke-width="2" width="24" height="24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,140,66,0.2)"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+      'agent': '<svg viewBox="0 0 24 24" fill="none" stroke="#233D63" stroke-width="2" width="24" height="24"><rect x="3" y="11" width="18" height="10" rx="2" fill="rgba(35,61,99,0.15)"/><circle cx="12" cy="5" r="3"/><path d="M12 8v3M7 16h.01M17 16h.01"/></svg>',
+      'tenant': '<svg viewBox="0 0 24 24" fill="none" stroke="#556B2F" stroke-width="2" width="24" height="24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" fill="rgba(85,107,47,0.2)"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+    } %}
+
+    {% set skill_types = {
+      'core': { 'label': 'Core (Global)'|t },
+      'vertical': { 'label': 'Vertical (Industria)'|t },
+      'agent': { 'label': 'Agent (Rol)'|t },
+      'tenant': { 'label': 'Tenant (Cliente)'|t }
+    } %}
+
+    {% for type, config in skill_types %}
+      <div class="skills-section skills-section--{{ type }}">
+        <header class="skills-section__header">
+          <h2 class="skills-section__title">
+            {{ skill_icons[type]|raw }}
+            {{ config.label }}
+          </h2>
+          <span class="skills-section__count">{{ skills[type]|length }}</span>
+        </header>
+
+
+        {% if skills[type]|length > 0 %}
+          <div class="skills-section__grid">
+            {% for skill in skills[type] %}
+              <article class="skill-card premium-card">
+                <header class="skill-card__header">
+                  <h3 class="skill-card__title">{{ skill.label }}</h3>
+                  <span class="skill-card__status skill-card__status--{{ skill.isActive ? 'active' : 'inactive' }}">
+                    {{ skill.isActive ? 'Activo'|t : 'Inactivo'|t }}
+                  </span>
+                </header>
+                <div class="skill-card__content">
+                  <p class="skill-card__preview">
+                    {% set content_text = skill.content.value|default('') %}
+                    {{ content_text|length > 120 ? content_text|slice(0, 120) ~ '...' : content_text }}
+                  </p>
+                </div>
+                <footer class="skill-card__actions">
+                  <a href="{{ path('jaraba_skills.skill.revisions', {'ai_skill': skill.id()}) }}"
+                     class="btn btn--ghost btn--sm"
+                     data-slide-panel="revision-history"
+                     data-slide-panel-title="{% trans %}Historial de Revisiones{% endtrans %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                      <path d="M12 8v4l3 3"/>
+                      <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    {% trans %}Historial{% endtrans %}
+                  </a>
+                  <a href="{{ path('jaraba_skills.skill.edit.ajax', {'ai_skill': skill.id()}) }}"
+                     class="btn btn--outline btn--sm"
+                     data-slide-panel="skill-form"
+                     data-slide-panel-title="{% trans %}Editar Habilidad{% endtrans %}">
+                    {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                    {% trans %}Editar{% endtrans %}
+                  </a>
+                </footer>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="skills-section__empty">
+            <p>{% trans %}No hay habilidades de este tipo configuradas.{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
+</div>
+

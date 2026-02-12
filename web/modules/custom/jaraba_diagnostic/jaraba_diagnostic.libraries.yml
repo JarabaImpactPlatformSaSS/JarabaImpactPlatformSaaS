@@ -1,0 +1,25 @@
+wizard:
+  version: 1.0.0
+  css:
+    theme:
+      # CSS cargado desde el core module compilado
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+results:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+admin_form:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal

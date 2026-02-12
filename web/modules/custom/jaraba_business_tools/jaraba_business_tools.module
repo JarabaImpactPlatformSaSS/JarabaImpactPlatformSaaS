@@ -1,0 +1,381 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Business Tools.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_business_tools_theme(): array {
+  return [
+    'canvas_editor' => [
+      'template' => 'canvas-editor',
+      'variables' => [
+        'canvas' => NULL,
+        'blocks' => [],
+        'is_editable' => TRUE,
+        'show_ai_panel' => TRUE,
+      ],
+    ],
+    'canvas_block_card' => [
+      'template' => 'canvas-block-card',
+      'variables' => [
+        'block_type' => '',
+        'block_label' => '',
+        'items' => [],
+        'notes' => NULL,
+        'is_editable' => TRUE,
+      ],
+    ],
+    'mvp_dashboard' => [
+      'template' => 'mvp-dashboard',
+      'variables' => [
+        'hypotheses' => [],
+        'summary' => [],
+      ],
+    ],
+    'projection_calculator' => [
+      'template' => 'projection-calculator',
+      'variables' => [
+        'projection' => NULL,
+        'cash_flow' => [],
+        'kpis' => [],
+      ],
+    ],
+    'entrepreneur_dashboard' => [
+      'template' => 'entrepreneur-dashboard',
+      'variables' => [
+        'user' => NULL,
+        'diagnostic' => NULL,
+        'canvas' => NULL,
+        'path_progress' => NULL,
+        'upcoming_sessions' => [],
+        'kpis' => [],
+        'next_steps' => [],
+      ],
+    ],
+    'program_dashboard' => [
+      'template' => 'program-dashboard',
+      'variables' => [
+        'cohort_stats' => [],
+        'stage_distribution' => [],
+        'aggregate_progress' => [],
+        'impact_metrics' => [],
+        'recent_activity' => [],
+      ],
+    ],
+    'canvas_list_premium' => [
+      'template' => 'canvas-list-premium',
+      'variables' => [
+        'cards' => [],
+        'stats' => [],
+        'empty_message' => NULL,
+        'add_url' => NULL,
+      ],
+    ],
+    'entrepreneur_agent_fab' => [
+      'template' => 'entrepreneur-agent-fab',
+      'variables' => [
+        'agent' => [],
+        'user_name' => '',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_menu_local_actions_alter().
+ *
+ * Hides the default 'Add canvas' local action on the premium list page,
+ * since we provide our own premium CTA button in the template.
+ */
+function jaraba_business_tools_menu_local_actions_alter(array &$local_actions): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  
+  // Hide the default add action on the canvas collection page.
+  if ($route_name === 'entity.business_model_canvas.collection') {
+    if (isset($local_actions['entity.business_model_canvas.add_form'])) {
+      unset($local_actions['entity.business_model_canvas.add_form']);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function jaraba_business_tools_entity_insert(EntityInterface $entity): void {
+  // BT-001: Auto-create canvas from diagnostic.
+  if ($entity->getEntityTypeId() === 'business_diagnostic') {
+    _jaraba_business_tools_create_canvas_from_diagnostic($entity);
+  }
+  
+  // BT-006: Auto-create 9 blocks when a canvas is created via form.
+  if ($entity->getEntityTypeId() === 'business_model_canvas') {
+    _jaraba_business_tools_ensure_canvas_blocks($entity);
+  }
+}
+
+/**
+ * Ensures all 9 canvas blocks exist for a canvas.
+ */
+function _jaraba_business_tools_ensure_canvas_blocks(EntityInterface $canvas): void {
+  $blockStorage = \Drupal::entityTypeManager()->getStorage('canvas_block');
+  
+  // Check if blocks already exist (e.g., from template or service).
+  $existingBlocks = $blockStorage->loadByProperties(['canvas_id' => $canvas->id()]);
+  if (!empty($existingBlocks)) {
+    return; // Blocks already exist, nothing to do.
+  }
+  
+  // Skip auto-creation for cloned canvases (blocks will be created by cloneCanvas method).
+  // We detect this by checking if template_source_id is set.
+  if ($canvas->get('template_source_id')->target_id) {
+    return;
+  }
+  
+  // Get all 9 block types from the CanvasBlock entity.
+  $blockTypes = \Drupal\jaraba_business_tools\Entity\CanvasBlock::getBlockTypes();
+  
+  // Create empty blocks for each type.
+  foreach (array_keys($blockTypes) as $blockType) {
+    $block = $blockStorage->create([
+      'canvas_id' => $canvas->id(),
+      'block_type' => $blockType,
+      'items' => '[]',
+    ]);
+    $block->save();
+  }
+  
+  \Drupal::logger('jaraba_business_tools')->info('Created 9 blocks for canvas @id', [
+    '@id' => $canvas->id(),
+  ]);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function jaraba_business_tools_entity_update(EntityInterface $entity): void {
+  // Static flag to prevent recursion when we update the canvas ourselves.
+  static $processingUpdate = [];
+  
+  // BT-002: Auto-version canvas on significant changes.
+  if ($entity->getEntityTypeId() === 'business_model_canvas') {
+    $entityId = $entity->id();
+    
+    // Skip if we're already processing this entity (prevents infinite recursion).
+    if (isset($processingUpdate[$entityId])) {
+      return;
+    }
+    
+    $processingUpdate[$entityId] = TRUE;
+    try {
+      _jaraba_business_tools_check_auto_version($entity);
+    } finally {
+      unset($processingUpdate[$entityId]);
+    }
+  }
+  
+  // BT-003: Update MVP hypothesis status based on results.
+  if ($entity->getEntityTypeId() === 'mvp_hypothesis') {
+    _jaraba_business_tools_evaluate_hypothesis($entity);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_business_tools_cron(): void {
+  // BT-004: Daily auto-version for active canvases with changes.
+  _jaraba_business_tools_daily_auto_version();
+  
+  // BT-005: Notify about pending MVP experiments.
+  _jaraba_business_tools_notify_pending_experiments();
+}
+
+/**
+ * Creates a canvas automatically from a completed diagnostic.
+ */
+function _jaraba_business_tools_create_canvas_from_diagnostic(EntityInterface $diagnostic): void {
+  // Only create if diagnostic is complete.
+  if ($diagnostic->get('status')->value !== 'completed') {
+    return;
+  }
+  
+  $canvasService = \Drupal::service('jaraba_business_tools.canvas_service');
+  $templateService = \Drupal::service('jaraba_business_tools.template_service');
+  
+  $sector = $diagnostic->get('sector')->value ?? 'otros';
+  $businessName = $diagnostic->get('business_name')->value ?? 'Mi Negocio';
+  
+  // Find appropriate template.
+  $templates = $canvasService->getTemplates($sector);
+  $templateId = !empty($templates) ? reset($templates)->id() : NULL;
+  
+  // Create canvas linked to diagnostic.
+  $canvas = $canvasService->createCanvas([
+    'title' => $businessName . ' - Business Model Canvas',
+    'sector' => $sector,
+    'business_stage' => $diagnostic->get('business_stage')->value ?? 'idea',
+    'business_diagnostic_id' => $diagnostic->id(),
+    'tenant_id' => $diagnostic->get('tenant_id')->value ?? NULL,
+  ], $templateId);
+  
+  // Pre-populate value proposition from pain points.
+  if ($canvas && method_exists($diagnostic, 'getPainPoints')) {
+    $painPoints = $diagnostic->getPainPoints();
+    if (!empty($painPoints)) {
+      foreach ($painPoints as $pain) {
+        $canvasService->addItemToBlock(
+          $canvas->id(),
+          'value_propositions',
+          'Solución para: ' . $pain,
+          '#E3F2FD'
+        );
+      }
+    }
+  }
+  
+  // Notify user.
+  \Drupal::messenger()->addStatus(t('Se ha creado automáticamente un Business Model Canvas basado en tu diagnóstico.'));
+  
+  \Drupal::logger('jaraba_business_tools')->info('Auto-created canvas @id from diagnostic @diag', [
+    '@id' => $canvas->id(),
+    '@diag' => $diagnostic->id(),
+  ]);
+}
+
+/**
+ * Checks if auto-versioning is needed for a canvas.
+ */
+function _jaraba_business_tools_check_auto_version(EntityInterface $canvas): void {
+  // Get change count from state.
+  $stateKey = 'jaraba_canvas_changes_' . $canvas->id();
+  $state = \Drupal::state();
+  $changeCount = $state->get($stateKey, 0) + 1;
+  
+  // Auto-version after 5 or more changes.
+  if ($changeCount >= 5) {
+    $canvasService = \Drupal::service('jaraba_business_tools.canvas_service');
+    $canvasService->createVersion($canvas->id(), t('Auto-versión tras múltiples cambios'));
+    $state->delete($stateKey);
+  }
+  else {
+    $state->set($stateKey, $changeCount);
+  }
+}
+
+/**
+ * Evaluates an MVP hypothesis result and updates status.
+ */
+function _jaraba_business_tools_evaluate_hypothesis(EntityInterface $hypothesis): void {
+  // Only evaluate if actual result is set and status is pending.
+  $actualResult = $hypothesis->get('actual_result')->value;
+  $status = $hypothesis->get('result_status')->value;
+  
+  if ($actualResult === NULL || $status !== 'pending') {
+    return;
+  }
+  
+  $threshold = $hypothesis->get('min_success_threshold')->value;
+  
+  if ($threshold !== NULL) {
+    $newStatus = $actualResult >= $threshold ? 'validated' : 'invalidated';
+    
+    // Update without triggering another hook.
+    $hypothesis->set('result_status', $newStatus);
+    
+    \Drupal::logger('jaraba_business_tools')->info('Hypothesis @id evaluated: @status', [
+      '@id' => $hypothesis->id(),
+      '@status' => $newStatus,
+    ]);
+  }
+}
+
+/**
+ * Daily auto-versioning for canvases.
+ */
+function _jaraba_business_tools_daily_auto_version(): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('business_model_canvas');
+  $canvasService = \Drupal::service('jaraba_business_tools.canvas_service');
+  $state = \Drupal::state();
+  
+  $lastRun = $state->get('jaraba_canvas_daily_version_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+  
+  // Run once per day.
+  if ($now - $lastRun < 86400) {
+    return;
+  }
+  
+  // Find canvases changed in last 24h that haven't been versioned.
+  $query = $storage->getQuery()
+    ->condition('status', 'active')
+    ->condition('changed', $now - 86400, '>')
+    ->accessCheck(FALSE);
+  
+  $ids = $query->execute();
+  
+  foreach ($ids as $id) {
+    $changeCount = $state->get('jaraba_canvas_changes_' . $id, 0);
+    if ($changeCount > 0) {
+      $canvasService->createVersion($id, t('Auto-versión diaria'));
+      $state->delete('jaraba_canvas_changes_' . $id);
+    }
+  }
+  
+  $state->set('jaraba_canvas_daily_version_last', $now);
+}
+
+/**
+ * Notifies about pending MVP experiments.
+ */
+function _jaraba_business_tools_notify_pending_experiments(): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('mvp_hypothesis');
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  $now = \Drupal::time()->getRequestTime();
+  
+  // Find experiments that ended but have no result.
+  $query = $storage->getQuery()
+    ->condition('result_status', 'pending')
+    ->condition('end_date', date('Y-m-d\TH:i:s', $now), '<')
+    ->accessCheck(FALSE);
+  
+  $ids = $query->execute();
+  
+  foreach ($storage->loadMultiple($ids) as $hypothesis) {
+    $user = $hypothesis->getOwner();
+    if ($user && $user->getEmail()) {
+      $mailManager->mail('jaraba_business_tools', 'experiment_pending', $user->getEmail(), 'es', [
+        'hypothesis' => $hypothesis,
+        'user' => $user,
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_business_tools_mail($key, &$message, $params): void {
+  switch ($key) {
+    case 'experiment_pending':
+      $hypothesis = $params['hypothesis'];
+      $message['subject'] = t('Tu experimento MVP necesita resultados: @title', [
+        '@title' => $hypothesis->getHypothesis(),
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('El experimento "@hypothesis" ha terminado pero no has registrado los resultados.', [
+        '@hypothesis' => $hypothesis->getHypothesis(),
+      ]);
+      $message['body'][] = t('Registra los resultados para validar o invalidar tu hipótesis:');
+      $message['body'][] = 'https://jaraba-saas.lndo.site/mvp/' . $hypothesis->id() . '/edit';
+      break;
+  }
+}

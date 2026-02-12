@@ -1,0 +1,181 @@
+{#
+ # Template: Detalle de Itinerario
+ # /path/{digitalization_path}
+ #}
+<div class="path-detail">
+  
+  {# Hero del itinerario #}
+  <div class="detail-hero">
+    <div class="hero-content">
+      <div class="hero-badges">
+        <span class="badge badge-sector">{{ sector|capitalize }}</span>
+        <span class="badge badge-difficulty badge-{{ difficulty }}">
+          {% if difficulty == 'beginner' %}{% trans %}Principiante{% endtrans %}
+          {% elseif difficulty == 'intermediate' %}{% trans %}Intermedio{% endtrans %}
+          {% else %}{% trans %}Avanzado{% endtrans %}
+          {% endif %}
+        </span>
+      </div>
+      
+      <h1>{{ title }}</h1>
+      <p class="hero-description">{{ description|striptags }}</p>
+      
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ duration_weeks }}</span>
+          <span class="stat-label">{% trans %}semanas{% endtrans %}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ phases_count }}</span>
+          <span class="stat-label">{% trans %}fases{% endtrans %}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ phases|reduce((carry, p) => carry + p.modules_count, 0) }}</span>
+          <span class="stat-label">{% trans %}módulos{% endtrans %}</span>
+        </div>
+      </div>
+      
+      {# CTA de inscripción #}
+      {% if is_enrolled %}
+        <div class="enrollment-status">
+          <div class="progress-indicator">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ enrollment_progress }}%"></div>
+            </div>
+            <span class="progress-text">{{ enrollment_progress }}% {% trans %}completado{% endtrans %}</span>
+          </div>
+          <a href="{{ path('jaraba_paths.my_progress') }}" class="btn-primary btn-lg">
+            {% trans %}Continuar itinerario{% endtrans %}
+          </a>
+        </div>
+      {% else %}
+        <button type="button" class="btn-primary btn-lg" id="btn-enroll">
+          {% trans %}Inscribirme gratis{% endtrans %}
+        </button>
+      {% endif %}
+    </div>
+    
+    {% if image_url %}
+      <div class="hero-image">
+        <img src="{{ image_url }}" alt="{{ title }}">
+      </div>
+    {% endif %}
+  </div>
+
+  {# Qué aprenderás #}
+  <section class="detail-section outcomes-section">
+    <h2>{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '24px' }) }} {% trans %}Qué aprenderás{% endtrans %}</h2>
+    <div class="outcomes-grid">
+      {% for outcome in outcomes %}
+        <div class="outcome-item">
+          <span class="outcome-icon">✓</span>
+          <span class="outcome-text">{{ outcome }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Timeline de fases #}
+  <section class="detail-section phases-section">
+    <h2>{{ jaraba_icon('business', 'diagnostic', { color: 'azul-corporativo', size: '24px' }) }} {% trans %}Contenido del itinerario{% endtrans %}</h2>
+    <div class="phases-timeline">
+      {% for phase in phases %}
+        <div class="phase-item" data-phase="{{ loop.index }}">
+          <div class="phase-marker">
+            <span class="marker-number">{{ loop.index }}</span>
+          </div>
+          <div class="phase-content">
+            <div class="phase-header">
+              <h3>{{ phase.title }}</h3>
+              <span class="phase-duration">{{ phase.duration_days }} {% trans %}días{% endtrans %}</span>
+            </div>
+            <p class="phase-description">{{ phase.description }}</p>
+            
+            {% if phase.modules|length > 0 %}
+              <div class="phase-modules">
+                <button class="modules-toggle" type="button" data-expanded="false">
+                  {% trans %}Ver{% endtrans %} {{ phase.modules_count }} {% trans %}módulos{% endtrans %}
+                  <svg class="toggle-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                </button>
+                <ul class="modules-list" hidden>
+                  {% for module in phase.modules %}
+                    <li class="module-item">
+                      <span class="module-icon">📖</span>
+                      <span class="module-title">{{ module.title }}</span>
+                      <span class="module-duration">{{ module.duration_hours }}h</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# CTA final #}
+  <section class="detail-section cta-section">
+    <div class="cta-card">
+      {% if is_enrolled %}
+        <h3>{% trans %}¡Ya estás inscrito!{% endtrans %}</h3>
+        <p>{% trans %}Continúa tu progreso y completa el itinerario.{% endtrans %}</p>
+        <a href="{{ path('jaraba_paths.my_progress') }}" class="btn-primary btn-lg">
+          {% trans %}Ir a mi progreso{% endtrans %}
+        </a>
+      {% else %}
+        <h3>{% trans %}¿Listo para empezar?{% endtrans %}</h3>
+        <p>{% trans %}Inscríbete gratis y comienza a transformar tu negocio.{% endtrans %}</p>
+        <button type="button" class="btn-primary btn-lg" id="btn-enroll-bottom">
+          {% trans %}Inscribirme ahora{% endtrans %}
+        </button>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  // Toggle de módulos
+  document.querySelectorAll('.modules-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const list = this.nextElementSibling;
+      const isExpanded = this.dataset.expanded === 'true';
+      
+      list.hidden = isExpanded;
+      this.dataset.expanded = !isExpanded;
+      this.querySelector('.toggle-icon').style.transform = isExpanded ? '' : 'rotate(180deg)';
+    });
+  });
+  
+  // Inscripción
+  const enrollButtons = document.querySelectorAll('#btn-enroll, #btn-enroll-bottom');
+  enrollButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const settings = drupalSettings.pathDetail || {};
+      
+      fetch(settings.enrollEndpoint || '/api/v1/paths/' + settings.pathUuid + '/enroll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert(data.error || Drupal.t('Error al inscribirse'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert(Drupal.t('Error de conexión'));
+      });
+    });
+  });
+})();
+</script>

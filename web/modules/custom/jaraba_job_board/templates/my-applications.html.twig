@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Template for user's job applications listing.
+ *
+ * Available variables:
+ * - applications: Array of applications with id, job_title, company, status, applied_at.
+ */
+#}
+<div class="my-applications">
+  {% if applications %}
+    <div class="applications-list">
+      {% for app in applications %}
+        <div class="application-card status-{{ app.status }}">
+          <div class="application-header">
+            <h3 class="job-title">{{ app.job_title }}</h3>
+            <span class="status-badge status-{{ app.status }}">
+              {% if app.status == 'applied' %}
+                {{ 'En revisión'|t }}
+              {% elseif app.status == 'screening' %}
+                {{ 'Evaluando'|t }}
+              {% elseif app.status == 'shortlisted' %}
+                {{ 'Preseleccionado'|t }}
+              {% elseif app.status == 'interviewed' %}
+                {{ 'Entrevistado'|t }}
+              {% elseif app.status == 'offered' %}
+                {{ 'Oferta recibida'|t }}
+              {% elseif app.status == 'hired' %}
+                {{ 'Contratado'|t }}
+              {% elseif app.status == 'rejected' %}
+                {{ 'No seleccionado'|t }}
+              {% else %}
+                {{ app.status|capitalize }}
+              {% endif %}
+            </span>
+          </div>
+          <div class="application-meta">
+            <span class="company">{{ app.company }}</span>
+            <span class="date">{{ app.applied_at|date('d/m/Y') }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {# Empty State Premium #}
+    <div class="empty-state-premium">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">{{ 'Tu historial de candidaturas está vacío'|t }}</h3>
+      <p class="empty-message">{{ 'Cuando apliques a ofertas de empleo, aparecerán aquí para que puedas hacer seguimiento de tu progreso.'|t }}</p>
+      <a href="{{ path('jaraba_job_board.search') }}" class="btn btn-primary btn-large">
+        {{ 'Explorar ofertas de empleo'|t }}
+      </a>
+    </div>
+  {% endif %}
+</div>

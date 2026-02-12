@@ -1,0 +1,11 @@
+administer sepe teleformacion:
+  title: 'Administrar SEPE Teleformación'
+  description: 'Configurar centros, acciones formativas y servicio SOAP.'
+
+view sepe data:
+  title: 'Ver datos SEPE'
+  description: 'Ver información de centros y acciones formativas.'
+
+manage sepe acciones:
+  title: 'Gestionar acciones formativas SEPE'
+  description: 'Crear, editar y comunicar acciones formativas al SEPE.'

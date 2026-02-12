@@ -1,0 +1,246 @@
+{#
+/**
+ * @file
+ * Template for course detail page.
+ *
+ * Variables:
+ * - course: The Course entity.
+ * - modules: Array of course modules/sections.
+ * - enrollment: User's enrollment if exists.
+ * - instructor: The instructor user entity.
+ * - can_enroll: Boolean, whether user can enroll.
+ * - is_enrolled: Boolean, whether user is already enrolled.
+ * - reviews: Array of course reviews.
+ * - schema_org_json_ld: Schema.org JSON-LD script tag (auto-generated).
+ */
+#}
+
+{# Schema.org JSON-LD for Google Rich Results #}
+{% if schema_org_json_ld %}
+  {{ schema_org_json_ld|raw }}
+{% endif %}
+
+<article class="course-detail" itemscope itemtype="https://schema.org/Course">
+  <header class="course-detail__header">
+    {% if course.thumbnail.entity %}
+      <div class="course-detail__image">
+        <img src="{{ file_url(course.thumbnail.entity.fileuri) }}" 
+             alt="{{ course.label }}"
+             itemprop="image">
+      </div>
+    {% endif %}
+
+    <div class="course-detail__header-content">
+      {% if course.level.value %}
+        <span class="course-detail__level-badge">
+          {{ course.level.value }}
+        </span>
+      {% endif %}
+
+      <h1 class="course-detail__title" itemprop="name">{{ course.label }}</h1>
+      
+      {% if course.subtitle.value %}
+        <p class="course-detail__subtitle">{{ course.subtitle.value }}</p>
+      {% endif %}
+
+      <div class="course-detail__meta">
+        {% if instructor %}
+          <div class="course-detail__instructor" itemprop="hasCourseInstance" itemscope itemtype="https://schema.org/CourseInstance">
+            <span itemprop="instructor" itemscope itemtype="https://schema.org/Person">
+              {{ jaraba_icon('ui', 'user', 16) }}
+              <span itemprop="name">{{ instructor.getDisplayName() }}</span>
+            </span>
+          </div>
+        {% endif %}
+
+        {% if course.duration_hours.value %}
+          <span class="course-detail__duration">
+            {{ jaraba_icon('ui', 'clock', 16) }}
+            {{ course.duration_hours.value }} {{ 'horas'|t }}
+          </span>
+        {% endif %}
+
+        {% if course.mode.value %}
+          <span class="course-detail__mode">
+            {{ jaraba_icon('ui', 'monitor', 16) }}
+            {% if course.mode.value == 'online' %}
+              {{ 'Online'|t }}
+            {% elseif course.mode.value == 'presencial' %}
+              {{ 'Presencial'|t }}
+            {% else %}
+              {{ 'Híbrido'|t }}
+            {% endif %}
+          </span>
+        {% endif %}
+
+        {% if reviews %}
+          {% set avg_rating = 0 %}
+          {% for review in reviews %}
+            {% set avg_rating = avg_rating + review.rating %}
+          {% endfor %}
+          {% set avg_rating = (avg_rating / reviews|length)|round(1) %}
+          <span class="course-detail__rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+            {{ jaraba_icon('ui', 'star', 16) }}
+            <span itemprop="ratingValue">{{ avg_rating }}</span>
+            (<span itemprop="reviewCount">{{ reviews|length }}</span> {{ 'valoraciones'|t }})
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <div class="course-detail__body">
+    <main class="course-detail__content">
+      <section class="course-detail__description">
+        <h2>{{ 'Sobre este curso'|t }}</h2>
+        <div itemprop="description">
+          {{ course.description.value|raw }}
+        </div>
+      </section>
+
+      {% if course.learning_objectives.value %}
+        <section class="course-detail__objectives">
+          <h2>{{ '¿Qué aprenderás?'|t }}</h2>
+          <div class="objectives-list">
+            {{ course.learning_objectives.value|raw }}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if modules %}
+        <section class="course-detail__curriculum">
+          <h2>{{ 'Contenido del curso'|t }}</h2>
+          <div class="curriculum-accordion">
+            {% for module in modules %}
+              <details class="curriculum-module">
+                <summary class="curriculum-module__header">
+                  <span class="curriculum-module__title">{{ module.title }}</span>
+                  <span class="curriculum-module__meta">
+                    {{ module.lessons|length }} {{ 'lecciones'|t }}
+                  </span>
+                </summary>
+                <div class="curriculum-module__lessons">
+                  {% for lesson in module.lessons %}
+                    <div class="curriculum-lesson">
+                      {{ jaraba_icon('ui', 'play-circle', 16) }}
+                      <span>{{ lesson.title }}</span>
+                      {% if lesson.duration %}
+                        <span class="curriculum-lesson__duration">{{ lesson.duration }}</span>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </details>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if course.requirements.value %}
+        <section class="course-detail__requirements">
+          <h2>{{ 'Requisitos previos'|t }}</h2>
+          <div>
+            {{ course.requirements.value|raw }}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if instructor %}
+        <section class="course-detail__instructor-bio">
+          <h2>{{ 'Sobre el instructor'|t }}</h2>
+          <div class="instructor-card">
+            {% if instructor.user_picture.entity %}
+              <img src="{{ file_url(instructor.user_picture.entity.fileuri) }}" 
+                   alt="{{ instructor.getDisplayName() }}"
+                   class="instructor-card__avatar">
+            {% endif %}
+            <div class="instructor-card__info">
+              <h3>{{ instructor.getDisplayName() }}</h3>
+              {% if instructor.field_bio.value %}
+                <p>{{ instructor.field_bio.value|striptags|slice(0, 300) }}...</p>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+      {% endif %}
+
+      {% if reviews %}
+        <section class="course-detail__reviews">
+          <h2>{{ 'Valoraciones de estudiantes'|t }}</h2>
+          <div class="reviews-list">
+            {% for review in reviews|slice(0, 5) %}
+              <div class="review-card" itemprop="review" itemscope itemtype="https://schema.org/Review">
+                <div class="review-card__header">
+                  <span class="review-card__author" itemprop="author">{{ review.author }}</span>
+                  <span class="review-card__rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                    {% for i in 1..5 %}
+                      {% if i <= review.rating %}⭐{% else %}☆{% endif %}
+                    {% endfor %}
+                    <meta itemprop="ratingValue" content="{{ review.rating }}">
+                  </span>
+                </div>
+                <p class="review-card__text" itemprop="reviewBody">{{ review.text }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    </main>
+
+    <aside class="course-detail__sidebar">
+      <div class="course-detail__enroll-box">
+        {% if course.price.value is defined and course.price.value > 0 %}
+          <div class="course-detail__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            <span class="price-amount" itemprop="price" content="{{ course.price.value }}">
+              {{ course.price.value|number_format(2, ',', '.') }}
+            </span>
+            <span itemprop="priceCurrency" content="EUR">€</span>
+            <meta itemprop="availability" content="https://schema.org/InStock">
+          </div>
+        {% else %}
+          <div class="course-detail__price course-detail__price--free">
+            {{ 'Gratis'|t }}
+          </div>
+        {% endif %}
+
+        {% if is_enrolled %}
+          <a href="{{ path('jaraba_lms.course_player', {'course': course.id}) }}" 
+             class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+            {{ jaraba_icon('ui', 'play', 18) }}
+            {{ 'Continuar curso'|t }}
+          </a>
+          {% if enrollment %}
+            <div class="course-detail__progress">
+              <div class="progress-bar">
+                <div class="progress-bar__fill" style="width: {{ enrollment.progress ?? 0 }}%"></div>
+              </div>
+              <span>{{ enrollment.progress ?? 0 }}% {{ 'completado'|t }}</span>
+            </div>
+          {% endif %}
+        {% elseif can_enroll %}
+          <a href="{{ path('jaraba_lms.enroll', {'course': course.id}) }}" 
+             class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+            {{ jaraba_icon('ui', 'plus', 18) }}
+            {{ 'Inscribirme'|t }}
+          </a>
+        {% else %}
+          <a href="{{ path('user.login') }}" 
+             class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+            {{ 'Inicia sesión para inscribirte'|t }}
+          </a>
+        {% endif %}
+
+        <div class="course-detail__includes">
+          <h4>{{ 'Este curso incluye:'|t }}</h4>
+          <ul>
+            <li>{{ jaraba_icon('ui', 'video', 16) }} {{ course.duration_hours.value ?? '?' }} {{ 'horas de vídeo'|t }}</li>
+            <li>{{ jaraba_icon('ui', 'file', 16) }} {{ 'Recursos descargables'|t }}</li>
+            <li>{{ jaraba_icon('ui', 'infinity', 16) }} {{ 'Acceso de por vida'|t }}</li>
+            <li>{{ jaraba_icon('ui', 'device-phone', 16) }} {{ 'Acceso móvil'|t }}</li>
+            <li>{{ jaraba_icon('ui', 'certificate', 16) }} {{ 'Certificado de finalización'|t }}</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+</article>

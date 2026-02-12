@@ -1,0 +1,28 @@
+jaraba_sepe_teleformacion.settings:
+  type: config_object
+  label: 'SEPE Teleformación settings'
+  mapping:
+    centro_activo_id:
+      type: integer
+      label: 'ID del centro SEPE activo'
+    soap_enabled:
+      type: boolean
+      label: 'Web Service SOAP habilitado'
+    soap_log_requests:
+      type: boolean
+      label: 'Registrar peticiones SOAP'
+    ws_security_enabled:
+      type: boolean
+      label: 'WS-Security habilitado'
+    certificate_path:
+      type: string
+      label: 'Ruta al certificado X.509'
+    auto_update_interval:
+      type: integer
+      label: 'Intervalo de actualización automática'
+    nota_minima_apto:
+      type: float
+      label: 'Nota mínima para APTO'
+    progreso_minimo_apto:
+      type: integer
+      label: 'Progreso mínimo para APTO'

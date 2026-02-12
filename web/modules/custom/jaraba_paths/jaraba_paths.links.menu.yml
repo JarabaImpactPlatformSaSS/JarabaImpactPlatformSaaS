@@ -1,0 +1,8 @@
+# Links de menú para jaraba_paths
+
+entity.digitalization_path.settings:
+  title: 'Itinerarios de Digitalización'
+  description: 'Configuración de campos de itinerarios.'
+  route_name: entity.digitalization_path.settings
+  parent: system.admin_structure
+  weight: 40

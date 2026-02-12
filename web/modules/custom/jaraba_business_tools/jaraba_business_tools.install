@@ -1,0 +1,186 @@
+<?php
+
+/**
+ * @file
+ * Install and update functions for Jaraba Business Tools.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_business_tools_install(): void {
+  // Create default canvas templates.
+  _jaraba_business_tools_create_default_templates();
+  
+  \Drupal::messenger()->addStatus(t('Jaraba Business Tools instalado correctamente.'));
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Installs all entity types for Business Tools module.
+ */
+function jaraba_business_tools_update_10001(): void {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+  $entityTypes = [
+    'business_model_canvas',
+    'canvas_block',
+    'canvas_version',
+    'mvp_hypothesis',
+    'financial_projection',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    $entityType = $entityTypeManager->getDefinition($entityTypeId);
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+  }
+}
+
+/**
+ * Creates default canvas templates for each sector.
+ */
+function _jaraba_business_tools_create_default_templates(): void {
+  $templates = [
+    [
+      'title' => 'Template: Comercio Local',
+      'sector' => 'comercio',
+      'blocks' => [
+        'customer_segments' => ['Residentes del barrio', 'Turistas', 'Compradores online locales'],
+        'value_propositions' => ['Productos locales de calidad', 'Atención personalizada', 'Entrega rápida'],
+        'channels' => ['Tienda física', 'WhatsApp Business', 'Instagram', 'Marketplaces locales'],
+        'customer_relationships' => ['Atención personal en tienda', 'Comunidad de clientes fieles', 'Programa de fidelización'],
+        'revenue_streams' => ['Venta directa', 'Envíos a domicilio', 'Tarjetas regalo'],
+        'key_resources' => ['Local comercial', 'Stock de productos', 'Presencia digital'],
+        'key_activities' => ['Compras a proveedores', 'Atención al cliente', 'Marketing local'],
+        'key_partners' => ['Proveedores locales', 'Empresas de reparto', 'Asociación de comerciantes'],
+        'cost_structure' => ['Alquiler', 'Stock', 'Personal', 'Marketing digital'],
+      ],
+    ],
+    [
+      'title' => 'Template: Servicios Profesionales',
+      'sector' => 'servicios',
+      'blocks' => [
+        'customer_segments' => ['Pymes locales', 'Autónomos', 'Particulares con necesidad específica'],
+        'value_propositions' => ['Expertise especializado', 'Cercanía y confianza', 'Flexibilidad horaria'],
+        'channels' => ['Web profesional', 'LinkedIn', 'Recomendación boca-oreja', 'Networking'],
+        'customer_relationships' => ['Asistencia personal dedicada', 'Seguimiento post-servicio'],
+        'revenue_streams' => ['Tarifa por hora/proyecto', 'Packs de servicios', 'Retainer mensual'],
+        'key_resources' => ['Conocimiento especializado', 'Herramientas del oficio', 'Red de contactos'],
+        'key_activities' => ['Prestación del servicio', 'Formación continua', 'Prospección'],
+        'key_partners' => ['Otros profesionales complementarios', 'Plataformas de contratación'],
+        'cost_structure' => ['Formación', 'Herramientas/software', 'Marketing', 'Seguros profesionales'],
+      ],
+    ],
+    [
+      'title' => 'Template: Productor Agroalimentario',
+      'sector' => 'agro',
+      'blocks' => [
+        'customer_segments' => ['Consumidores conscientes', 'Restaurantes km0', 'Tiendas gourmet'],
+        'value_propositions' => ['Producto artesanal de calidad', 'Trazabilidad total', 'Historia del productor'],
+        'channels' => ['Venta directa en finca', 'Mercados locales', 'Plataformas de venta directa'],
+        'customer_relationships' => ['Conexión emocional con origen', 'Comunidad de consumidores', 'Visitas a finca'],
+        'revenue_streams' => ['Venta directa', 'Cajas de suscripción', 'Eventos/experiencias'],
+        'key_resources' => ['Tierra y cultivos', 'Know-how tradicional', 'Certificaciones'],
+        'key_activities' => ['Producción', 'Transformación artesanal', 'Comunicación de marca'],
+        'key_partners' => ['Cooperativas', 'Denominaciones de origen', 'Plataformas de distribución'],
+        'cost_structure' => ['Insumos agrícolas', 'Mano de obra', 'Certificaciones', 'Logística'],
+      ],
+    ],
+    [
+      'title' => 'Template: Hostelería',
+      'sector' => 'hosteleria',
+      'blocks' => [
+        'customer_segments' => ['Vecinos del barrio', 'Trabajadores zona', 'Turistas', 'Eventos privados'],
+        'value_propositions' => ['Gastronomía de calidad', 'Ambiente acogedor', 'Producto local'],
+        'channels' => ['Local físico', 'Google Maps', 'Instagram', 'Delivery apps'],
+        'customer_relationships' => ['Trato cercano', 'Fidelización', 'Eventos especiales'],
+        'revenue_streams' => ['Consumo en local', 'Delivery', 'Catering', 'Eventos'],
+        'key_resources' => ['Local y equipamiento', 'Personal cualificado', 'Proveedores de calidad'],
+        'key_activities' => ['Cocina y servicio', 'Gestión de proveedores', 'Marketing local'],
+        'key_partners' => ['Proveedores locales', 'Plataformas delivery', 'Proveedores de bebidas'],
+        'cost_structure' => ['Personal', 'Materia prima', 'Alquiler', 'Suministros'],
+      ],
+    ],
+    [
+      'title' => 'Template: Startup Tech',
+      'sector' => 'tech',
+      'blocks' => [
+        'customer_segments' => ['Early adopters', 'Pymes digitalizadas', 'Empresas B2B'],
+        'value_propositions' => ['Automatización de procesos', 'Ahorro de tiempo', 'Insights con datos'],
+        'channels' => ['Web/SaaS', 'Content marketing', 'LinkedIn', 'Partnerships'],
+        'customer_relationships' => ['Self-service', 'Onboarding guiado', 'Soporte técnico'],
+        'revenue_streams' => ['Suscripción mensual', 'Freemium', 'Enterprise custom'],
+        'key_resources' => ['Equipo de desarrollo', 'Infraestructura cloud', 'Propiedad intelectual'],
+        'key_activities' => ['Desarrollo de producto', 'Soporte al cliente', 'Growth marketing'],
+        'key_partners' => ['Cloud providers', 'Integraciones API', 'Consultoras'],
+        'cost_structure' => ['Personal técnico', 'Infraestructura', 'Marketing', 'Herramientas SaaS'],
+      ],
+    ],
+  ];
+
+  foreach ($templates as $templateData) {
+    _jaraba_business_tools_create_template($templateData);
+  }
+}
+
+/**
+ * Creates a single template canvas.
+ */
+function _jaraba_business_tools_create_template(array $data): void {
+  $canvasStorage = \Drupal::entityTypeManager()->getStorage('business_model_canvas');
+  $blockStorage = \Drupal::entityTypeManager()->getStorage('canvas_block');
+  
+  // Create canvas marked as template.
+  $canvas = $canvasStorage->create([
+    'title' => $data['title'],
+    'sector' => $data['sector'],
+    'business_stage' => 'idea',
+    'user_id' => 1, // Admin.
+    'is_template' => TRUE,
+    'status' => 'active',
+    'completeness_score' => 100,
+  ]);
+  $canvas->save();
+  
+  // Create blocks with items.
+  foreach ($data['blocks'] as $blockType => $items) {
+    $itemsArray = [];
+    foreach ($items as $index => $text) {
+      $itemsArray[] = [
+        'id' => \Drupal::service('uuid')->generate(),
+        'text' => $text,
+        'color' => '#FFE082',
+        'priority' => $index,
+        'validated' => FALSE,
+        'created_at' => date('c'),
+        'position' => ['x' => 0, 'y' => $index * 40],
+      ];
+    }
+    
+    $block = $blockStorage->create([
+      'canvas_id' => $canvas->id(),
+      'block_type' => $blockType,
+      'items' => json_encode($itemsArray),
+    ]);
+    $block->save();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_business_tools_uninstall(): void {
+  // Clean up state variables.
+  $state = \Drupal::state();
+  $state->delete('jaraba_canvas_daily_version_last');
+  
+  // Delete any remaining state for canvas changes.
+  $db = \Drupal::database();
+  $db->delete('key_value')
+    ->condition('name', 'jaraba_canvas_changes_%', 'LIKE')
+    ->execute();
+}

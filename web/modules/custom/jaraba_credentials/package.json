@@ -1,0 +1,22 @@
+{
+    "name": "jaraba-credentials",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo de Credenciales/Certificados de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/_credentials.scss:css/credentials.css --style=compressed",
+        "build:all": "npm run build && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "credentials",
+        "certificates",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

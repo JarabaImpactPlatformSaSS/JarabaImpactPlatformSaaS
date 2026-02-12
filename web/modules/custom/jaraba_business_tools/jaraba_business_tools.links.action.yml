@@ -1,0 +1,20 @@
+# Action links for Business Tools entities
+# "Add" buttons on collection pages
+
+entity.business_model_canvas.add_form:
+  title: 'Añadir canvas'
+  route_name: entity.business_model_canvas.add_form
+  appears_on:
+    - entity.business_model_canvas.collection
+
+entity.mvp_hypothesis.add_form:
+  title: 'Añadir hipótesis'
+  route_name: entity.mvp_hypothesis.add_form
+  appears_on:
+    - entity.mvp_hypothesis.collection
+
+entity.financial_projection.add_form:
+  title: 'Añadir proyección'
+  route_name: entity.financial_projection.add_form
+  appears_on:
+    - entity.financial_projection.collection

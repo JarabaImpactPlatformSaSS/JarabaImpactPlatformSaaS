@@ -1,0 +1,20 @@
+# Action links (botones Add) para jaraba_diagnostic
+
+entity.business_diagnostic.add_form:
+  title: 'Añadir Diagnóstico'
+  route_name: entity.business_diagnostic.add_form
+  appears_on:
+    - entity.business_diagnostic.collection
+
+entity.diagnostic_section.add_form:
+  title: 'Añadir Sección'
+  route_name: entity.diagnostic_section.add_form
+  appears_on:
+    - entity.diagnostic_section.collection
+
+entity.diagnostic_question.add_form:
+  title: 'Añadir Pregunta'
+  route_name: entity.diagnostic_question.add_form
+  appears_on:
+    - entity.diagnostic_question.collection
+

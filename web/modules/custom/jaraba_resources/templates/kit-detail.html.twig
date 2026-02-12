@@ -1,0 +1,257 @@
+{# 
+/**
+ * @file
+ * Template: kit-detail.html.twig
+ * Digital Kit detail page with file downloads and access control.
+ *
+ * Variables:
+ * - kit: The DigitalKit entity
+ * - user_access: Boolean if current user can access this kit
+ * - current_plan: User's current subscription plan type
+ * - files: Array of files attached to the kit
+ * - related_kits: Array of related kits by category
+ */
+#}
+
+<div class="ej-kit-detail">
+  
+  {# Header Section #}
+  <div class="ej-kit-detail__header">
+    {% if kit.image.entity %}
+      <img src="{{ file_url(kit.image.entity.uri.value) }}" 
+           alt="{{ kit.name }}" 
+           class="ej-kit-detail__image">
+    {% else %}
+      <div class="ej-kit-detail__image ej-kit-detail__image--placeholder">
+        {{ jaraba_icon('document', 'duotone', 'primary', '64') }}
+      </div>
+    {% endif %}
+    
+    <div class="ej-kit-detail__info">
+      <span class="ej-kit-card__category">{{ kit.category }}</span>
+      <h1 class="ej-kit-detail__title">{{ kit.name }}</h1>
+      
+      <div class="ej-kit-detail__badges">
+        {# Access Level Badge #}
+        <span class="ej-kit-card__badge ej-kit-card__badge--{{ kit.access_level.value }}">
+          {{ kit.access_level.value|capitalize }}
+        </span>
+        
+        {% if kit.is_new.value %}
+          <span class="ej-kit-card__badge ej-kit-card__badge--new">
+            {{ 'Nuevo'|t }}
+          </span>
+        {% endif %}
+        
+        {% if kit.is_featured.value %}
+          <span class="ej-kit-card__badge ej-kit-card__badge--featured">
+            ⭐ {{ 'Destacado'|t }}
+          </span>
+        {% endif %}
+      </div>
+      
+      <div class="ej-kit-detail__meta">
+        <div class="ej-kit-card__rating">
+          <span>★</span>
+          <span>{{ kit.rating|number_format(1) }}</span>
+          <span class="ej-text-muted">({{ kit.rating_count }} {{ 'valoraciones'|t }})</span>
+        </div>
+        
+        <div class="ej-kit-card__downloads">
+          {{ jaraba_icon('download', 'outline', 'muted', '16') }}
+          <span>{{ kit.download_count }} {{ 'descargas'|t }}</span>
+        </div>
+      </div>
+      
+      {# CTA Button #}
+      {% if user_access %}
+        <a href="#files" class="ej-btn ej-btn--primary ej-btn--lg">
+          {{ jaraba_icon('download', 'outline', 'white', '20') }}
+          <span>{{ 'Descargar Kit'|t }}</span>
+        </a>
+      {% else %}
+        <div class="ej-kit-detail__upgrade">
+          <p class="ej-text-muted">
+            {{ 'Este kit requiere el plan'|t }} <strong>{{ kit.access_level.value|capitalize }}</strong>
+          </p>
+          <a href="{{ path('jaraba_resources.pricing') }}" class="ej-btn ej-btn--primary ej-btn--lg">
+            {{ jaraba_icon('sparkles', 'outline', 'white', '20') }}
+            <span>{{ 'Mejorar Plan'|t }}</span>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  {# Description #}
+  <div class="ej-kit-detail__section">
+    <h2 class="ej-section-title">{{ 'Descripción'|t }}</h2>
+    <div class="ej-kit-detail__description">
+      {{ kit.description.value|raw }}
+    </div>
+  </div>
+  
+  {# Files Section #}
+  {% if user_access and files|length > 0 %}
+    <div id="files" class="ej-kit-detail__section">
+      <h2 class="ej-section-title">
+        {{ jaraba_icon('folder', 'duotone', 'primary', '24') }}
+        {{ 'Archivos del Kit'|t }} ({{ files|length }})
+      </h2>
+      
+      <div class="ej-kit-detail__files">
+        {% for file in files %}
+          <div class="ej-kit-detail__file">
+            <div class="ej-kit-detail__file-icon">
+              {% set extension = file.filename|split('.')|last %}
+              {% if extension in ['pdf'] %}
+                {{ jaraba_icon('file-pdf', 'duotone', 'danger', '24') }}
+              {% elseif extension in ['doc', 'docx'] %}
+                {{ jaraba_icon('file-word', 'duotone', 'info', '24') }}
+              {% elseif extension in ['xls', 'xlsx'] %}
+                {{ jaraba_icon('file-excel', 'duotone', 'success', '24') }}
+              {% elseif extension in ['ppt', 'pptx'] %}
+                {{ jaraba_icon('file-powerpoint', 'duotone', 'warning', '24') }}
+              {% elseif extension in ['zip', 'rar'] %}
+                {{ jaraba_icon('archive', 'duotone', 'muted', '24') }}
+              {% else %}
+                {{ jaraba_icon('document', 'duotone', 'primary', '24') }}
+              {% endif %}
+            </div>
+            
+            <div class="ej-kit-detail__file-info">
+              <span class="ej-kit-detail__file-name">{{ file.filename }}</span>
+              <span class="ej-kit-detail__file-size">{{ file.filesize|format_size }}</span>
+            </div>
+            
+            <a href="{{ path('jaraba_resources.api.kit_download', {kit: kit.id}) }}?file={{ file.fid }}" 
+               class="ej-btn ej-btn--outline ej-btn--sm"
+               download>
+              {{ jaraba_icon('download', 'outline', 'primary', '16') }}
+              {{ 'Descargar'|t }}
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% elseif not user_access %}
+    <div class="ej-kit-detail__section">
+      <div class="ej-alert ej-alert--info">
+        <div class="ej-alert__icon">
+          {{ jaraba_icon('lock', 'duotone', 'info', '24') }}
+        </div>
+        <div class="ej-alert__content">
+          <strong>{{ 'Contenido Premium'|t }}</strong>
+          <p>{{ 'Mejora tu plan para acceder a los archivos de este kit.'|t }}</p>
+        </div>
+        <a href="{{ path('jaraba_resources.pricing') }}" class="ej-btn ej-btn--primary ej-btn--sm">
+          {{ 'Ver Planes'|t }}
+        </a>
+      </div>
+    </div>
+  {% endif %}
+  
+  {# Tags #}
+  {% if kit.tags|length > 0 %}
+    <div class="ej-kit-detail__section">
+      <h2 class="ej-section-title">{{ 'Etiquetas'|t }}</h2>
+      <div class="ej-tag-list">
+        {% for tag in kit.tags %}
+          <span class="ej-tag">{{ tag.value }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  
+  {# Rate This Kit #}
+  {% if user_access and logged_in %}
+    <div class="ej-kit-detail__section">
+      <h2 class="ej-section-title">{{ '¿Te ha sido útil este kit?'|t }}</h2>
+      <div class="ej-kit-detail__rating-form" data-kit-id="{{ kit.id }}">
+        <div class="ej-rating-stars">
+          {% for i in 1..5 %}
+            <button class="ej-rating-star" data-value="{{ i }}" aria-label="{{ 'Valorar con'|t }} {{ i }} {{ 'estrellas'|t }}">
+              ★
+            </button>
+          {% endfor %}
+        </div>
+        <p class="ej-text-muted ej-text-sm">{{ 'Tu valoración ayuda a otros emprendedores'|t }}</p>
+      </div>
+    </div>
+  {% endif %}
+  
+  {# Related Kits #}
+  {% if related_kits|length > 0 %}
+    <div class="ej-kit-detail__section">
+      <h2 class="ej-section-title">{{ 'Kits Relacionados'|t }}</h2>
+      <div class="ej-kit-grid ej-kit-grid--3">
+        {% for related in related_kits|slice(0, 3) %}
+          <article class="ej-kit-card">
+            <a href="{{ path('entity.digital_kit.canonical', {digital_kit: related.id}) }}">
+              {% if related.image.entity %}
+                <div class="ej-kit-card__image-wrapper">
+                  <img src="{{ file_url(related.image.entity.uri.value) }}" 
+                       alt="{{ related.name }}" 
+                       class="ej-kit-card__image">
+                  <span class="ej-kit-card__badge ej-kit-card__badge--{{ related.access_level.value }}">
+                    {{ related.access_level.value|capitalize }}
+                  </span>
+                </div>
+              {% endif %}
+              <div class="ej-kit-card__content">
+                <span class="ej-kit-card__category">{{ related.category }}</span>
+                <h3 class="ej-kit-card__title">{{ related.name }}</h3>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  
+</div>
+
+{# Rating JS #}
+<script>
+(function() {
+  const ratingForm = document.querySelector('.ej-kit-detail__rating-form');
+  if (!ratingForm) return;
+  
+  const kitId = ratingForm.dataset.kitId;
+  const stars = ratingForm.querySelectorAll('.ej-rating-star');
+  
+  stars.forEach(star => {
+    star.addEventListener('click', async function() {
+      const value = this.dataset.value;
+      
+      try {
+        const response = await fetch(`/api/v1/kits/${kitId}/rate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating: parseInt(value) })
+        });
+        
+        if (response.ok) {
+          stars.forEach((s, i) => {
+            s.classList.toggle('active', i < value);
+          });
+          ratingForm.querySelector('p').textContent = '¡Gracias por tu valoración!';
+        }
+      } catch (error) {
+        console.error('Error rating kit:', error);
+      }
+    });
+    
+    star.addEventListener('mouseenter', function() {
+      const value = this.dataset.value;
+      stars.forEach((s, i) => {
+        s.classList.toggle('hover', i < value);
+      });
+    });
+    
+    star.addEventListener('mouseleave', function() {
+      stars.forEach(s => s.classList.remove('hover'));
+    });
+  });
+})();
+</script>

@@ -1,0 +1,8 @@
+# Local tasks para jaraba_diagnostic
+
+# Pestaña Diagnósticos en /admin/content
+entity.business_diagnostic.collection:
+  title: 'Diagnósticos'
+  route_name: entity.business_diagnostic.collection
+  base_route: system.admin_content
+  weight: 30

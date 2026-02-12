@@ -1,0 +1,95 @@
+services:
+  # ============================================================================
+  # SERVICIOS PRINCIPALES DEL LMS
+  # ============================================================================
+
+  jaraba_lms.course:
+    class: Drupal\jaraba_lms\Service\CourseService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+      - '@logger.factory'
+
+  jaraba_lms.enrollment:
+    class: Drupal\jaraba_lms\Service\EnrollmentService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_lms.course'
+      - '@jaraba_lms.progress'
+      - '@logger.factory'
+      - '@event_dispatcher'
+
+  jaraba_lms.progress:
+    class: Drupal\jaraba_lms\Service\ProgressTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  jaraba_lms.learning_path:
+    class: Drupal\jaraba_lms\Service\LearningPathService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_lms.course'
+      - '@logger.factory'
+
+  jaraba_lms.certification:
+    class: Drupal\jaraba_lms\Service\CertificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_lms.enrollment'
+      - '@logger.factory'
+      - '@queue'
+
+  jaraba_lms.xapi:
+    class: Drupal\jaraba_lms\Service\XApiService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  # ============================================================================
+  # AGENTES IA
+  # ============================================================================
+
+  jaraba_lms.agent.learning_tutor:
+    class: Drupal\jaraba_lms\Agent\LearningTutorAgent
+    arguments:
+      - '@jaraba_lms.enrollment'
+      - '@current_user'
+
+  # ============================================================================
+  # SERVICIOS DE BADGES Y GAMIFICACIÓN (Q1 2026)
+  # ============================================================================
+
+  jaraba_lms.open_badge:
+    class: Drupal\jaraba_lms\Service\OpenBadgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_system'
+      - '@logger.factory'
+
+  jaraba_lms.gamification:
+    class: Drupal\jaraba_lms\Service\GamificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  # ============================================================================
+  # DIAGNÓSTICO EXPRESS Y AUTO-ENROLLMENT (ECA-LMS-001)
+  # ============================================================================
+
+  jaraba_lms.diagnostic_enrollment:
+    class: Drupal\jaraba_lms\Service\DiagnosticEnrollmentService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_lms'
+
+  logger.channel.jaraba_lms:
+    parent: logger.channel_base
+    arguments: ['jaraba_lms']
+

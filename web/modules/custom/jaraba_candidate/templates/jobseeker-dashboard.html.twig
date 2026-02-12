@@ -1,0 +1,215 @@
+{#
+/**
+ * @file
+ * JobSeeker Dashboard Template - Premium UX
+ *
+ * Variables:
+ * - profile: Resumen del perfil del candidato
+ * - applications: Lista de aplicaciones activas
+ * - applications_count: Total de aplicaciones
+ * - learning: Cursos en progreso
+ * - recommendations: Ofertas recomendadas
+ * - stats: Estadísticas generales
+ * - quick_actions: Acciones rápidas sugeridas
+ */
+#}
+<div class="jobseeker-dashboard">
+  {# Header con saludo y acciones rápidas #}
+  <header class="dashboard-header">
+    <div class="dashboard-header__greeting">
+      {% if profile %}
+        <h1>{{ 'Welcome back, @name!'|t({'@name': profile.full_name|split(' ')[0]}) }}</h1>
+        {% if profile.availability == 'active' %}
+          <span class="status-badge status-badge--active">{{ 'Actively looking'|t }}</span>
+        {% endif %}
+      {% else %}
+        <h1>{{ 'Welcome to your Dashboard'|t }}</h1>
+      {% endif %}
+    </div>
+    
+    {% if quick_actions|length > 0 %}
+      <div class="dashboard-header__actions">
+        {% for action in quick_actions %}
+          <a href="{{ action.url }}" class="quick-action quick-action--{{ action.priority }}">
+            <span class="quick-action__label">{{ action.label }}</span>
+            {% if action.description %}
+              <span class="quick-action__desc">{{ action.description }}</span>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  {# Grid principal del dashboard #}
+  <div class="dashboard-grid">
+    
+    {# Card: Perfil #}
+    <section class="dashboard-card dashboard-card--profile">
+      <div class="card-header">
+        <h2>{{ 'Your Profile'|t }}</h2>
+        <a href="/my-profile/edit" class="card-action">{{ 'Edit'|t }}</a>
+      </div>
+      
+      {% if profile %}
+        <div class="profile-summary">
+          <div class="profile-summary__avatar">
+            {% if profile.photo_url %}
+              <img src="{{ profile.photo_url }}" alt="{{ profile.full_name }}" />
+            {% else %}
+              <div class="avatar-placeholder">{{ profile.full_name|slice(0,1)|upper }}</div>
+            {% endif %}
+          </div>
+          
+          <div class="profile-summary__info">
+            <h3>{{ profile.full_name }}</h3>
+            <p class="headline">{{ profile.headline|default('Add your professional headline'|t) }}</p>
+          </div>
+          
+          <div class="profile-summary__completion">
+            <div class="completion-ring" data-percent="{{ profile.completion }}">
+              <svg viewBox="0 0 36 36">
+                <path class="completion-ring__bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="completion-ring__progress" stroke-dasharray="{{ profile.completion }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <span class="completion-ring__value">{{ profile.completion }}%</span>
+            </div>
+            <span class="completion-label">{{ 'Profile complete'|t }}</span>
+          </div>
+        </div>
+        
+        {% if profile.missing_sections|length > 0 %}
+          <div class="profile-tips">
+            <p>{{ 'Complete these sections to improve visibility:'|t }}</p>
+            <ul>
+              {% for section in profile.missing_sections|slice(0, 3) %}
+                <li>
+                  <a href="/my-profile/edit#{{ section.section }}">{{ section.label }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="empty-state">
+          <p>{{ 'Create your professional profile to start applying for jobs.'|t }}</p>
+          <a href="/my-profile/edit" class="btn btn--primary">{{ 'Create Profile'|t }}</a>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Card: Aplicaciones #}
+    <section class="dashboard-card dashboard-card--applications">
+      <div class="card-header">
+        <h2>{{ 'Applications'|t }} <span class="badge">{{ applications_count }}</span></h2>
+        <a href="/my-applications" class="card-action">{{ 'View all'|t }}</a>
+      </div>
+      
+      {% if applications|length > 0 %}
+        <ul class="applications-list">
+          {% for app in applications|slice(0, 4) %}
+            <li class="application-item application-item--{{ app.status }}">
+              <div class="application-item__main">
+                <h4>{{ app.job_title }}</h4>
+                <span class="company">{{ app.company }}</span>
+              </div>
+              <div class="application-item__meta">
+                <span class="status">{{ app.status_label }}</span>
+                <span class="date">{{ app.applied_ago }}</span>
+              </div>
+              {% if app.match_score %}
+                <div class="match-badge" title="{{ 'Match score'|t }}">{{ app.match_score|round }}%</div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <p>{{ "You haven't applied to any jobs yet."|t }}</p>
+          <a href="/jobs" class="btn btn--secondary">{{ 'Browse Jobs'|t }}</a>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Card: Estadísticas #}
+    <section class="dashboard-card dashboard-card--stats">
+      <div class="card-header">
+        <h2>{{ 'Your Stats'|t }}</h2>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.total_applications }}</span>
+          <span class="stat-label">{{ 'Applications'|t }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.interviews }}</span>
+          <span class="stat-label">{{ 'Interviews'|t }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.response_rate }}%</span>
+          <span class="stat-label">{{ 'Response rate'|t }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.courses_completed }}</span>
+          <span class="stat-label">{{ 'Courses done'|t }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# Card: Aprendizaje #}
+    <section class="dashboard-card dashboard-card--learning">
+      <div class="card-header">
+        <h2>{{ 'Your Learning'|t }}</h2>
+        <a href="/my-learning" class="card-action">{{ 'View all'|t }}</a>
+      </div>
+      
+      {% if learning|length > 0 %}
+        <ul class="learning-list">
+          {% for course in learning|slice(0, 3) %}
+            <li class="learning-item">
+              <a href="/learn/{{ course.id }}">
+                <h4>{{ course.course_title }}</h4>
+                <div class="progress-bar">
+                  <div class="progress-bar__fill" style="width: {{ course.progress }}%"></div>
+                </div>
+                <span class="progress-text">{{ course.progress|round }}% {{ 'complete'|t }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <p>{{ 'Start learning to boost your profile.'|t }}</p>
+          <a href="/courses" class="btn btn--secondary">{{ 'Browse Courses'|t }}</a>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Card: Recomendaciones #}
+    <section class="dashboard-card dashboard-card--recommendations dashboard-card--wide">
+      <div class="card-header">
+        <h2>{{ 'Recommended for You'|t }}</h2>
+        <a href="/jobseeker/recommendations" class="card-action">{{ 'See more'|t }}</a>
+      </div>
+      
+      {% if recommendations|length > 0 %}
+        <div class="recommendations-carousel">
+          {% for job in recommendations %}
+            <a href="/jobs/{{ job.job_id }}" class="job-recommendation">
+              <h4>{{ job.title }}</h4>
+              <div class="job-meta">
+                <span class="match-score">{{ job.score|round }}% {{ 'match'|t }}</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>{{ 'Complete your profile to get personalized job recommendations.'|t }}</p>
+        </div>
+      {% endif %}
+    </section>
+    
+  </div>
+</div>

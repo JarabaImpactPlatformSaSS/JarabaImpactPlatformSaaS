@@ -1,0 +1,39 @@
+services:
+  jaraba_skills.skill_manager:
+    class: Drupal\jaraba_skills\Service\SkillManager
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_skills'
+      - '@jaraba_skills.usage_service'
+
+  jaraba_skills.skill_embedding:
+    class: Drupal\jaraba_skills\Service\SkillEmbeddingService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_rag.qdrant_client'
+      - '@ai.provider'
+      - '@logger.channel.jaraba_skills'
+
+  logger.channel.jaraba_skills:
+    class: Drupal\Core\Logger\LoggerChannel
+    factory: logger.factory:get
+    arguments: ['jaraba_skills']
+
+  jaraba_skills.revision_service:
+    class: Drupal\jaraba_skills\Service\SkillRevisionService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_skills'
+
+  jaraba_skills.usage_service:
+    class: Drupal\jaraba_skills\Service\SkillUsageService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_skills'
+
+  jaraba_skills.ab_testing:
+    class: Drupal\jaraba_skills\Service\ABTestingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_skills'

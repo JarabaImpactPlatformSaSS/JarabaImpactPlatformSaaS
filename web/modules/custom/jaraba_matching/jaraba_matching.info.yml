@@ -1,0 +1,10 @@
+name: Jaraba Matching Engine
+type: module
+description: 'Job-Candidate matching engine with rule-based and semantic scoring'
+package: Jaraba Empleabilidad
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:views
+  - jaraba_job_board:jaraba_job_board
+  - jaraba_candidate:jaraba_candidate
+  - jaraba_rag:jaraba_rag

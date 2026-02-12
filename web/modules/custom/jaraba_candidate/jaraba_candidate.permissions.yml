@@ -1,0 +1,95 @@
+# ================================================================================
+# PERMISOS DEL MÓDULO JARABA CANDIDATE
+# Perfil de Candidato y CV Builder - Vertical Empleabilidad
+# ================================================================================
+
+# --- Permisos de Administración ---
+administer candidate profiles:
+  title: 'Administer candidate profiles'
+  description: 'Full administration of candidate profiles'
+  restrict access: true
+
+# --- Permisos de Perfil ---
+view own profile:
+  title: 'View own profile'
+  description: 'View own candidate profile'
+
+edit own profile:
+  title: 'Edit own profile'
+  description: 'Edit own candidate profile'
+
+view candidate profiles:
+  title: 'View candidate profiles'
+  description: 'View public candidate profiles (employers)'
+
+# --- Permisos de CV ---
+build own cv:
+  title: 'Build own CV'
+  description: 'Access CV Builder to create and download CV'
+
+download own cv:
+  title: 'Download own CV'
+  description: 'Download generated CV in various formats'
+
+# --- Permisos de Dashboard ---
+access jobseeker dashboard:
+  title: 'Access JobSeeker Dashboard'
+  description: 'Access the job seeker dashboard with recommendations'
+
+# --- Permisos de Skills ---
+manage own skills:
+  title: 'Manage own skills'
+  description: 'Add, edit, and remove own skills'
+
+view skill taxonomy:
+  title: 'View skills taxonomy'
+  description: 'Browse available skills'
+
+# --- Permisos de Experiencia ---
+manage own experience:
+  title: 'Manage own experience'
+  description: 'Add, edit, and remove work experience'
+
+manage own education:
+  title: 'Manage own education'
+  description: 'Add, edit, and remove education records'
+
+# --- Permisos de Importación ---
+import linkedin profile:
+  title: 'Import from LinkedIn'
+  description: 'Import profile data from LinkedIn'
+
+# --- Permisos de Verificación ---
+verify candidate profiles:
+  title: 'Verify profiles'
+  description: 'Mark candidate profiles as verified'
+  restrict access: true
+
+# --- Permisos de Copilot Insights ---
+administer copilot conversations:
+  title: 'Administer copilot conversations'
+  description: 'Full administration of AI copilot conversations and messages'
+  restrict access: true
+
+view copilot insights:
+  title: 'View copilot insights'
+  description: 'Access the copilot analytics dashboard to view user patterns'
+  
+view own copilot history:
+  title: 'View own copilot history'
+  description: 'View own conversation history with AI copilotos'
+
+# --- Permisos de CandidateSkill Entity ---
+administer candidate skills:
+  title: 'Administer candidate skills'
+  description: 'Full administration of candidate skill entities'
+  restrict access: true
+
+view candidate skills:
+  title: 'View candidate skills'
+  description: 'View candidate skill profiles (for employers)'
+
+create own candidate skills:
+  title: 'Create own skills'
+  description: 'Add skills to own profile'
+

@@ -1,0 +1,392 @@
+<?php
+
+/**
+ * @file
+ * Jaraba LMS - Learning Management System.
+ *
+ * Módulo para gestión de formación en el vertical de Empleabilidad.
+ * Implementa el programa "Impulso Empleo" con rutas de aprendizaje
+ * personalizadas según el perfil del Diagnóstico Express.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_lms_theme(): array {
+  return [
+    'course_card' => [
+      'variables' => [
+        'course' => NULL,
+        'enrollment' => NULL,
+        'progress' => 0,
+      ],
+      'template' => 'course-card',
+    ],
+    'learning_path_overview' => [
+      'variables' => [
+        'learning_path' => NULL,
+        'courses' => [],
+        'user_progress' => [],
+      ],
+      'template' => 'learning-path-overview',
+    ],
+    'activity_player' => [
+      'variables' => [
+        'activity' => NULL,
+        'progress_record' => NULL,
+        'can_complete' => TRUE,
+      ],
+      'template' => 'activity-player',
+    ],
+    'lms_dashboard' => [
+      'variables' => [
+        'active_courses' => [],
+        'completed_courses' => [],
+        'stats' => [],
+      ],
+      'template' => 'lms-dashboard',
+    ],
+    'lms_catalog' => [
+      'variables' => [
+        'courses' => [],
+        'filters' => [],
+        'facets' => [],
+      ],
+      'template' => 'lms-catalog',
+    ],
+    // === Open Badges Templates (Q1 2026) ===
+    'badge_verification' => [
+      'variables' => [
+        'badge' => [],
+        'valid' => FALSE,
+      ],
+      'template' => 'badge-verification',
+    ],
+    'badge_verification_error' => [
+      'variables' => [
+        'message' => '',
+      ],
+      'template' => 'badge-verification-error',
+    ],
+    'my_badges' => [
+      'variables' => [
+        'badges' => [],
+      ],
+      'template' => 'my-badges',
+    ],
+    // === Gamification Templates (Q1 2026) ===
+    'gamification_profile' => [
+      'variables' => [
+        'stats' => [],
+        'progress' => [],
+      ],
+      'template' => 'gamification-profile',
+    ],
+    'gamification_leaderboard' => [
+      'variables' => [
+        'leaderboard' => [],
+        'current_user_id' => 0,
+        'user_position' => NULL,
+      ],
+      'template' => 'gamification-leaderboard',
+    ],
+    // === Course Detail (Schema.org Ready) ===
+    'course_detail' => [
+      'variables' => [
+        'course' => NULL,
+        'modules' => [],
+        'enrollment' => NULL,
+        'instructor' => NULL,
+        'can_enroll' => TRUE,
+        'is_enrolled' => FALSE,
+        'reviews' => [],
+      ],
+      'template' => 'course-detail',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_access() for LMS entities.
+ */
+function jaraba_lms_entity_access(EntityInterface $entity, string $operation, AccountInterface $account): \Drupal\Core\Access\AccessResultInterface {
+  // Las entidades LMS usan permisos específicos definidos en permissions.yml
+  return \Drupal\Core\Access\AccessResult::neutral();
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_lms_cron(): void {
+  // TODO: Re-enable when services are fully implemented
+  // Enviar recordatorios de cursos abandonados
+  // $enrollment_service = \Drupal::service('jaraba_lms.enrollment');
+  // $enrollment_service->sendAbandonedCourseReminders();
+  
+  // Procesar certificados pendientes
+  // $certification_service = \Drupal::service('jaraba_lms.certification');
+  // $certification_service->processQueuedCertificates();
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Automatizaciones al actualizar entidades LMS:
+ * - Emitir badge al completar curso (100%)
+ * - Otorgar XP por completar curso
+ */
+function jaraba_lms_entity_update(EntityInterface $entity): void {
+  $entity_type = $entity->getEntityTypeId();
+
+  // Solo procesar enrollments
+  if ($entity_type !== 'enrollment') {
+    return;
+  }
+
+  // Verificar si el progreso llegó a 100%
+  if (!$entity->hasField('progress')) {
+    return;
+  }
+
+  $progress = (int) ($entity->get('progress')->value ?? 0);
+  $originalProgress = 0;
+
+  // Obtener progreso anterior para detectar cambio
+  if (isset($entity->original) && $entity->original->hasField('progress')) {
+    $originalProgress = (int) ($entity->original->get('progress')->value ?? 0);
+  }
+
+  // Solo actuar si pasó de <100 a 100
+  if ($progress >= 100 && $originalProgress < 100) {
+    $userId = $entity->get('user_id')->target_id ?? NULL;
+    $courseId = $entity->get('course_id')->target_id ?? NULL;
+
+    if (!$userId || !$courseId) {
+      return;
+    }
+
+    // 1. Emitir badge automáticamente
+    _jaraba_lms_auto_issue_badge($userId, $courseId);
+
+    // 2. Otorgar XP por completar curso
+    _jaraba_lms_award_course_xp($userId);
+  }
+}
+
+/**
+ * Implements hook_entity_insert() for activity progress.
+ *
+ * Otorga XP al completar una lección.
+ */
+function jaraba_lms_entity_insert(EntityInterface $entity): void {
+  $entity_type = $entity->getEntityTypeId();
+
+  // Solo procesar activity_progress (lecciones completadas)
+  if ($entity_type !== 'activity_progress') {
+    return;
+  }
+
+  $userId = $entity->get('user_id')->target_id ?? NULL;
+  if (!$userId) {
+    return;
+  }
+
+  // Verificar si está completada
+  $completed = $entity->get('completed')->value ?? FALSE;
+  if ($completed) {
+    _jaraba_lms_award_lesson_xp($userId);
+  }
+}
+
+/**
+ * Helper: Emitir badge al completar curso.
+ */
+function _jaraba_lms_auto_issue_badge(int $userId, int $courseId): void {
+  try {
+    if (!\Drupal::hasService('jaraba_lms.open_badge')) {
+      return;
+    }
+
+    $badgeService = \Drupal::service('jaraba_lms.open_badge');
+
+    // Verificar si ya tiene badge para este curso
+    $existingBadges = $badgeService->getUserBadges($userId);
+    foreach ($existingBadges as $badge) {
+      if (($badge['course_id'] ?? 0) == $courseId) {
+        return; // Ya tiene badge
+      }
+    }
+
+    // Emitir nuevo badge
+    $result = $badgeService->issueBadge($courseId, $userId);
+
+    \Drupal::logger('jaraba_lms')->info(
+      'Badge auto-emitido para usuario @user, curso @course',
+      ['@user' => $userId, '@course' => $courseId]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->error(
+      'Error auto-emitiendo badge: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper: Otorgar XP por completar curso.
+ */
+function _jaraba_lms_award_course_xp(int $userId): void {
+  try {
+    if (!\Drupal::hasService('jaraba_lms.gamification')) {
+      return;
+    }
+
+    $gamification = \Drupal::service('jaraba_lms.gamification');
+    $gamification->awardXP($userId, 'complete_course');
+
+    \Drupal::logger('jaraba_lms')->info(
+      'XP otorgado por curso completo a usuario @user',
+      ['@user' => $userId]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->warning(
+      'Error otorgando XP curso: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper: Otorgar XP por completar lección.
+ */
+function _jaraba_lms_award_lesson_xp(int $userId): void {
+  try {
+    if (!\Drupal::hasService('jaraba_lms.gamification')) {
+      return;
+    }
+
+    $gamification = \Drupal::service('jaraba_lms.gamification');
+    $gamification->awardXP($userId, 'complete_lesson');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->warning(
+      'Error otorgando XP lección: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for course_detail.
+ *
+ * Inyecta Schema.org Course JSON-LD automáticamente.
+ */
+function jaraba_lms_preprocess_course_detail(array &$variables): void {
+  $course = $variables['course'] ?? NULL;
+  if (!$course) {
+    return;
+  }
+
+  // Preparar datos para Schema.org.
+  $courseData = [
+    'title' => $course->label() ?? '',
+    'description' => $course->get('description')->value ?? '',
+  ];
+
+  // Precio.
+  if ($course->hasField('price') && !$course->get('price')->isEmpty()) {
+    $courseData['price'] = (float) $course->get('price')->value;
+  }
+
+  // Fechas de instancia.
+  if ($course->hasField('start_date') && !$course->get('start_date')->isEmpty()) {
+    $courseData['start_date'] = $course->get('start_date')->value;
+  }
+  if ($course->hasField('end_date') && !$course->get('end_date')->isEmpty()) {
+    $courseData['end_date'] = $course->get('end_date')->value;
+  }
+
+  // Duración.
+  if ($course->hasField('duration_hours') && !$course->get('duration_hours')->isEmpty()) {
+    $courseData['duration_hours'] = (int) $course->get('duration_hours')->value;
+  }
+
+  // Modo (online, presencial, híbrido).
+  if ($course->hasField('mode') && !$course->get('mode')->isEmpty()) {
+    $courseData['mode'] = $course->get('mode')->value;
+  }
+
+  // Nivel educativo.
+  if ($course->hasField('level') && !$course->get('level')->isEmpty()) {
+    $courseData['level'] = $course->get('level')->value;
+  }
+
+  // Skills que enseña.
+  if ($course->hasField('skills') && !$course->get('skills')->isEmpty()) {
+    $skills = [];
+    foreach ($course->get('skills') as $skill) {
+      $skills[] = $skill->entity ? $skill->entity->label() : $skill->value;
+    }
+    $courseData['skills'] = $skills;
+  }
+
+  // Instructor.
+  $instructor = $variables['instructor'] ?? NULL;
+  if ($instructor) {
+    $courseData['instructor_name'] = $instructor->getDisplayName();
+  }
+
+  // Reviews agregados.
+  $reviews = $variables['reviews'] ?? [];
+  if (!empty($reviews)) {
+    $totalRating = 0;
+    foreach ($reviews as $review) {
+      $totalRating += $review['rating'] ?? 0;
+    }
+    $courseData['review_count'] = count($reviews);
+    $courseData['rating'] = round($totalRating / count($reviews), 1);
+  }
+
+  // Datos del tenant/proveedor.
+  $tenant = [];
+  try {
+    if (\Drupal::hasService('jaraba_page_builder.tenant_resolver')) {
+      $tenantEntity = \Drupal::service('jaraba_page_builder.tenant_resolver')->getCurrentTenant();
+      if ($tenantEntity) {
+        $tenant['name'] = $tenantEntity->label();
+        if ($tenantEntity->hasField('field_website')) {
+          $tenant['url'] = $tenantEntity->get('field_website')->value ?? '';
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Usar valores por defecto.
+  }
+
+  // Generar Schema.org JSON-LD.
+  try {
+    if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
+      $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
+      $jsonLd = $schemaService->generateCourseSchema($courseData, $tenant);
+      
+      if (!empty($jsonLd)) {
+        $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->warning('Error generating Course schema: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+

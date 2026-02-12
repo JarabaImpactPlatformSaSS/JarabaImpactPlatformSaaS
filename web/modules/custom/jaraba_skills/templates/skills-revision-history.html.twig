@@ -1,0 +1,124 @@
+{#
+/**
+ * @file
+ * Template para historial de revisiones de un skill.
+ *
+ * Variables:
+ * - skill: La entidad AiSkill.
+ * - revisions: Array de AiSkillRevision ordenadas por número (más reciente primero).
+ */
+#}
+<div class="revision-history">
+  <div class="revision-history__header">
+    <h3>{{ 'Historial de Revisiones'|t }}</h3>
+    <p class="revision-history__subtitle">
+      {{ 'Skill: @name'|t({'@name': skill.label}) }}
+    </p>
+  </div>
+
+  {% if revisions is empty %}
+    <div class="revision-history__empty">
+      <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 8v4l3 3"/>
+        <circle cx="12" cy="12" r="10"/>
+      </svg>
+      <p>{{ 'No hay revisiones disponibles aún.'|t }}</p>
+      <p class="text-sm text-muted">{{ 'Las revisiones se crean automáticamente al editar la habilidad.'|t }}</p>
+    </div>
+  {% else %}
+    <div class="revision-history__timeline">
+      {% for revision in revisions %}
+        <div class="revision-item {{ loop.first ? 'revision-item--current' : '' }}">
+          <div class="revision-item__indicator">
+            <span class="revision-badge">v{{ revision.getRevisionNumber() }}</span>
+            {% if loop.first %}
+              <span class="revision-current-tag">{{ 'Actual'|t }}</span>
+            {% endif %}
+          </div>
+          
+          <div class="revision-item__content">
+            <div class="revision-item__header">
+              <span class="revision-item__date">
+                {{ revision.getCreatedTime()|date('d/m/Y H:i') }}
+              </span>
+              {% if revision.get('changed_by').entity %}
+                <span class="revision-item__author">
+                  {{ 'por @user'|t({'@user': revision.get('changed_by').entity.getDisplayName()}) }}
+                </span>
+              {% endif %}
+            </div>
+            
+            {% if revision.getChangeSummary() %}
+              <p class="revision-item__summary">{{ revision.getChangeSummary() }}</p>
+            {% endif %}
+            
+            <div class="revision-item__preview">
+              <strong>{{ revision.getName() }}</strong>
+              <p class="text-truncate">{{ revision.getContent()|striptags|slice(0, 150) }}...</p>
+            </div>
+            
+            {% if not loop.first %}
+              <div class="revision-item__actions">
+                <button 
+                  type="button" 
+                  class="btn btn--sm btn--outline revision-restore-btn"
+                  data-revision-id="{{ revision.id() }}"
+                  data-skill-id="{{ skill.id() }}"
+                  data-restore-url="/es/skills/{{ skill.id() }}/restore/{{ revision.id() }}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                  {{ 'Restaurar'|t }}
+                </button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+(function() {
+  document.querySelectorAll('.revision-restore-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      if (!confirm(Drupal.t('¿Restaurar esta versión? Se creará una copia de seguridad del estado actual.'))) {
+        return;
+      }
+      
+      const url = this.dataset.restoreUrl;
+      
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (Drupal.behaviors.slidePanel) {
+            Drupal.behaviors.slidePanel.close();
+            Drupal.behaviors.slidePanel.showSuccessMessage(data.message);
+            Drupal.behaviors.slidePanel.refreshCurrentPage();
+          } else {
+            alert(data.message);
+            location.reload();
+          }
+        } else {
+          alert(data.message || 'Error al restaurar');
+        }
+      })
+      .catch(error => {
+        console.error('Restore error:', error);
+        alert('Error al restaurar la revisión');
+      });
+    });
+  });
+})();
+</script>

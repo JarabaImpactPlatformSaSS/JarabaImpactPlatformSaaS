@@ -1,0 +1,19 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_sepe_teleformacion
+    - rest
+    - serialization
+    - user
+id: sepe_participantes_resource
+plugin_id: sepe_participantes_resource
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie
+    - oauth2

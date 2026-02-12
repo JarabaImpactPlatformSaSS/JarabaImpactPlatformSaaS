@@ -1,0 +1,8 @@
+# Local tasks para jaraba_paths
+
+# Pestaña Itinerarios en /admin/content
+entity.digitalization_path.collection:
+  title: 'Itinerarios'
+  route_name: entity.digitalization_path.collection
+  base_route: system.admin_content
+  weight: 35

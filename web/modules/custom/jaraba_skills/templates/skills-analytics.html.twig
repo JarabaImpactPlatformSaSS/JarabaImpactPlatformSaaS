@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * Template para analytics de AI Skills.
+ *
+ * Variables:
+ * - stats: Estadísticas agregadas (total_invocations, tokens, latency, etc.)
+ * - top_skills: Array de skills más usadas con métricas.
+ * - daily_data: Datos de uso por día para gráficos.
+ */
+#}
+{{ attach_library('jaraba_skills/skills.dashboard') }}
+
+<div class="skills-analytics">
+  {# Header #}
+  <div class="analytics-header">
+    <div class="analytics-header__content">
+      <div class="analytics-header__info">
+        <h3 class="analytics-header__title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"/>
+            <path d="M12 20V4"/>
+            <path d="M6 20v-6"/>
+          </svg>
+          {{ 'Análisis de Uso'|t }}
+        </h3>
+        <p class="analytics-header__subtitle">
+          {{ 'Métricas de invocaciones, tokens y rendimiento de habilidades IA.'|t }}
+        </p>
+      </div>
+      <div class="analytics-header__actions">
+        <a href="{{ path('jaraba_skills.dashboard') }}" class="btn btn--secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5"/>
+            <path d="M12 19l-7-7 7-7"/>
+          </svg>
+          {{ 'Volver al Dashboard'|t }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# KPIs Grid #}
+  <div class="analytics-kpis">
+    <div class="kpi-card kpi-card--primary">
+      <div class="kpi-card__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ stats.total_invocations|default(0)|number_format }}</span>
+        <span class="kpi-card__label">{{ 'Total Invocaciones'|t }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--tokens">
+      <div class="kpi-card__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+          <path d="M16 13H8"/>
+          <path d="M16 17H8"/>
+          <path d="M10 9H8"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ stats.total_tokens|default(0)|number_format }}</span>
+        <span class="kpi-card__label">{{ 'Tokens Totales'|t }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--latency">
+      <div class="kpi-card__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ stats.avg_latency_ms|default(0)|number_format }}ms</span>
+        <span class="kpi-card__label">{{ 'Latencia Promedio'|t }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--success">
+      <div class="kpi-card__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <path d="M22 4L12 14.01l-3-3"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ stats.success_rate|default(100) }}%</span>
+        <span class="kpi-card__label">{{ 'Tasa de Éxito'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Content Grid #}
+  <div class="analytics-content">
+    {# Top Skills #}
+    <div class="analytics-section analytics-section--top-skills">
+      <div class="analytics-section__header">
+        <h4>{{ 'Habilidades Más Usadas'|t }}</h4>
+      </div>
+      <div class="analytics-section__body">
+        {% if top_skills %}
+          <table class="analytics-table">
+            <thead>
+              <tr>
+                <th>{{ 'Habilidad'|t }}</th>
+                <th class="text-right">{{ 'Invocaciones'|t }}</th>
+                <th class="text-right">{{ 'Tokens'|t }}</th>
+                <th class="text-right">{{ 'Latencia'|t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for skill in top_skills %}
+                <tr>
+                  <td>
+                    <span class="skill-name">{{ skill.skill_name }}</span>
+                  </td>
+                  <td class="text-right">
+                    <span class="badge badge--primary">{{ skill.usage_count|number_format }}</span>
+                  </td>
+                  <td class="text-right text-muted">{{ skill.total_tokens|number_format }}</td>
+                  <td class="text-right text-muted">{{ skill.avg_latency_ms }}ms</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="analytics-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+              <path d="M18 20V10"/>
+              <path d="M12 20V4"/>
+              <path d="M6 20v-6"/>
+            </svg>
+            <p>{{ 'No hay datos de uso todavía.'|t }}</p>
+            <p class="text-sm text-muted">{{ 'Los datos aparecerán cuando las habilidades sean invocadas por los agentes IA.'|t }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Stats Summary #}
+    <div class="analytics-section analytics-section--summary">
+      <div class="analytics-section__header">
+        <h4>{{ 'Resumen de Tokens'|t }}</h4>
+      </div>
+      <div class="analytics-section__body">
+        <div class="stats-summary">
+          <div class="stats-summary__item">
+            <span class="stats-summary__label">{{ 'Tokens de Entrada'|t }}</span>
+            <span class="stats-summary__value">{{ stats.total_tokens_input|default(0)|number_format }}</span>
+          </div>
+          <div class="stats-summary__item">
+            <span class="stats-summary__label">{{ 'Tokens de Salida'|t }}</span>
+            <span class="stats-summary__value">{{ stats.total_tokens_output|default(0)|number_format }}</span>
+          </div>
+          <div class="stats-summary__item">
+            <span class="stats-summary__label">{{ 'Invocaciones Exitosas'|t }}</span>
+            <span class="stats-summary__value stats-summary__value--success">{{ stats.successful|default(0)|number_format }}</span>
+          </div>
+          <div class="stats-summary__item">
+            <span class="stats-summary__label">{{ 'Invocaciones Fallidas'|t }}</span>
+            <span class="stats-summary__value stats-summary__value--error">{{ stats.failed|default(0)|number_format }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

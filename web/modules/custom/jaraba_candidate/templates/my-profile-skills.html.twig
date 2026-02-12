@@ -1,0 +1,307 @@
+{#
+/**
+ * @file
+ * Template for My Profile - Skills management section.
+ *
+ * Variables:
+ *   - user_skills: Array of user's current skills with id, name, level, years, verified.
+ *   - categories: Array of skill categories with their child skills.
+ */
+#}
+
+<div class="my-profile-skills">
+  <div class="skills-header">
+    <h2>{% trans %}Mis Habilidades{% endtrans %}</h2>
+    <p class="skills-description">
+      {% trans %}Añade las habilidades que dominas para mejorar tu perfil y recibir mejores recomendaciones de empleo.{% endtrans %}
+    </p>
+  </div>
+
+  {# Current Skills #}
+  <div class="current-skills">
+    <h3>{% trans %}Habilidades añadidas{% endtrans %} <span class="badge">{{ user_skills|length }}</span></h3>
+    
+    {% if user_skills is not empty %}
+      <div class="skills-grid">
+        {% for skill in user_skills %}
+          <div class="skill-card" data-skill-id="{{ skill.id }}">
+            <div class="skill-info">
+              <span class="skill-name">{{ skill.name }}</span>
+              <span class="skill-level skill-level--{{ skill.level }}">
+                {% if skill.level == 'beginner' %}
+                  {% trans %}Principiante{% endtrans %}
+                {% elseif skill.level == 'intermediate' %}
+                  {% trans %}Intermedio{% endtrans %}
+                {% elseif skill.level == 'advanced' %}
+                  {% trans %}Avanzado{% endtrans %}
+                {% elseif skill.level == 'expert' %}
+                  {% trans %}Experto{% endtrans %}
+                {% endif %}
+              </span>
+              {% if skill.years > 0 %}
+                <span class="skill-years">{{ skill.years }} {% trans %}años{% endtrans %}</span>
+              {% endif %}
+              {% if skill.verified %}
+                <span class="skill-verified" title="{% trans %}Verificado{% endtrans %}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                </span>
+              {% endif %}
+            </div>
+            <button type="button" class="btn-remove-skill" data-candidate-skill-id="{{ skill.id }}" title="{% trans %}Eliminar{% endtrans %}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+        <p>{% trans %}Aún no has añadido ninguna habilidad. Explora las categorías debajo para añadir.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Add Skills by Category #}
+  <div class="add-skills-section">
+    <h3>{% trans %}Añadir habilidades{% endtrans %}</h3>
+    
+    <div class="categories-accordion">
+      {% for category in categories %}
+        <div class="category-panel">
+          <button type="button" class="category-header" aria-expanded="false">
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.skills|length }} {% trans %}skills{% endtrans %}</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+            </svg>
+          </button>
+          <div class="category-content" hidden>
+            <div class="skills-list">
+              {% for skill in category.skills %}
+                <button type="button" class="btn-add-skill" data-skill-id="{{ skill.id }}" data-skill-name="{{ skill.name }}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                  </svg>
+                  {{ skill.name }}
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+.my-profile-skills {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.skills-header h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  color: var(--ej-primary, #1a365d);
+}
+
+.skills-description {
+  color: var(--ej-text-muted, #718096);
+  margin-bottom: 2rem;
+}
+
+.current-skills {
+  margin-bottom: 3rem;
+}
+
+.current-skills h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.current-skills .badge {
+  background: var(--ej-accent, #f97316);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.skill-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid var(--ej-border, #e2e8f0);
+  border-radius: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.skill-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.skill-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-name {
+  font-weight: 600;
+  color: var(--ej-primary, #1a365d);
+}
+
+.skill-level {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  background: #e2e8f0;
+}
+
+.skill-level--expert { background: #c6f6d5; color: #22543d; }
+.skill-level--advanced { background: #bee3f8; color: #2a4365; }
+.skill-level--intermediate { background: #feebc8; color: #744210; }
+.skill-level--beginner { background: #fed7e2; color: #702459; }
+
+.skill-years {
+  font-size: 0.75rem;
+  color: var(--ej-text-muted, #718096);
+}
+
+.skill-verified {
+  color: var(--ej-success, #38a169);
+}
+
+.btn-remove-skill {
+  background: none;
+  border: none;
+  color: var(--ej-danger, #e53e3e);
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.btn-remove-skill:hover {
+  opacity: 1;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.empty-state svg {
+  margin-bottom: 1rem;
+}
+
+.add-skills-section h3 {
+  margin-bottom: 1rem;
+}
+
+.categories-accordion {
+  border: 1px solid var(--ej-border, #e2e8f0);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-panel {
+  border-bottom: 1px solid var(--ej-border, #e2e8f0);
+}
+
+.category-panel:last-child {
+  border-bottom: none;
+}
+
+.category-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.category-header:hover {
+  background: #f7fafc;
+}
+
+.category-name {
+  font-weight: 600;
+  color: var(--ej-primary, #1a365d);
+}
+
+.category-count {
+  font-size: 0.875rem;
+  color: var(--ej-text-muted, #718096);
+  margin-right: auto;
+  margin-left: 0.5rem;
+}
+
+.chevron {
+  transition: transform 0.2s;
+}
+
+.category-header[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.category-content {
+  padding: 1rem;
+  background: #f7fafc;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-add-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 1px solid var(--ej-border, #e2e8f0);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.btn-add-skill:hover {
+  background: var(--ej-primary, #1a365d);
+  color: white;
+  border-color: var(--ej-primary, #1a365d);
+}
+
+.btn-add-skill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>

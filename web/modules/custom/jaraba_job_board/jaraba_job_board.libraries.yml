@@ -1,0 +1,36 @@
+admin-badges:
+  version: 1.0
+  css:
+    theme:
+      css/admin-badges.css: {}
+
+contextual_menu:
+  version: 1.0
+  dependencies:
+    - ecosistema_jaraba_core/global
+
+agent_fab:
+  version: 1.1
+  js:
+    js/agent-fab.js: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/global
+
+employer_dashboard:
+  version: 1.0
+  js:
+    js/inline-filters.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+    - core/drupal.dialog.ajax
+
+inline_filters:
+  version: 1.0
+  js:
+    js/inline-filters.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

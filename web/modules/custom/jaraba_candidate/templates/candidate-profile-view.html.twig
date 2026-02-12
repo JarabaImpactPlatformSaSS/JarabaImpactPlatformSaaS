@@ -1,0 +1,231 @@
+{#
+/**
+ * @file
+ * Template for displaying a candidate profile view.
+ *
+ * Variables:
+ *   - profile.full_name: Full name of the candidate.
+ *   - profile.headline: Professional headline.
+ *   - profile.summary: Professional summary.
+ *   - profile.city: City location.
+ *   - profile.experience_years: Years of experience.
+ */
+#}
+
+<article class="candidate-profile-view">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <div class="avatar-placeholder">
+        {{ profile.full_name ? profile.full_name|slice(0,1)|upper : '?' }}
+      </div>
+    </div>
+    
+    <div class="profile-info">
+      <h1 class="profile-name">{{ profile.full_name|default('Perfil en construcción'|t) }}</h1>
+      
+      {% if profile.headline %}
+        <p class="profile-headline">{{ profile.headline }}</p>
+      {% endif %}
+      
+      <div class="profile-meta">
+        {% if profile.city %}
+          <span class="meta-item">
+            <span class="meta-icon">{{ jaraba_icon('ui', 'pin', { size: '16px' }) }}</span>
+            {{ profile.city }}
+          </span>
+        {% endif %}
+        
+        {% if profile.experience_years %}
+          <span class="meta-item">
+            <span class="meta-icon">{{ jaraba_icon('business', 'job', { size: '16px' }) }}</span>
+            {{ profile.experience_years }} {{ 'años de experiencia'|t }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="profile-actions">
+      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-primary">
+        <span class="btn-icon">{{ jaraba_icon('actions', 'edit', { size: '16px' }) }}</span>
+        {{ 'Editar perfil'|t }}
+      </a>
+    </div>
+  </div>
+  
+  {% if profile.summary %}
+    <section class="profile-section">
+      <h2 class="section-title">{{ 'Sobre mí'|t }}</h2>
+      <div class="section-content">
+        {{ profile.summary|nl2br }}
+      </div>
+    </section>
+  {% endif %}
+  
+  <section class="profile-section profile-cta">
+    <div class="cta-content">
+      <h3>{{ '¿Quieres completar tu perfil?'|t }}</h3>
+      <p>{{ 'Un perfil completo aumenta tus posibilidades de encontrar oportunidades.'|t }}</p>
+      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-secondary">
+        {{ 'Completar perfil'|t }}
+      </a>
+    </div>
+  </section>
+</article>
+
+<style>
+.candidate-profile-view {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  color: #1e293b;
+}
+
+.profile-headline {
+  margin: 0 0 1rem;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.profile-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.meta-icon {
+  font-size: 1rem;
+}
+
+.profile-actions {
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: #0ea5e9;
+  border: 2px solid #0ea5e9;
+}
+
+.btn-secondary:hover {
+  background: #0ea5e9;
+  color: white;
+}
+
+.profile-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  color: #1e293b;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.section-content {
+  color: #475569;
+  line-height: 1.7;
+}
+
+.profile-cta {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  text-align: center;
+}
+
+.cta-content h3 {
+  margin: 0 0 0.5rem;
+  color: #0c4a6e;
+}
+
+.cta-content p {
+  margin: 0 0 1rem;
+  color: #0369a1;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .profile-meta {
+    justify-content: center;
+  }
+}
+</style>

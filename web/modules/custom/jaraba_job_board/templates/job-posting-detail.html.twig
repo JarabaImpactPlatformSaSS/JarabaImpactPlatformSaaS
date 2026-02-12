@@ -1,0 +1,196 @@
+{#
+/**
+ * @file
+ * Template for job posting detail page.
+ *
+ * Variables:
+ * - job: The JobPosting entity.
+ * - employer: The employer/company entity.
+ * - similar_jobs: Array of similar job postings.
+ * - can_apply: Boolean, whether user can apply.
+ * - has_applied: Boolean, whether user has already applied.
+ * - schema_org_json_ld: Schema.org JSON-LD script tag (auto-generated).
+ */
+#}
+
+{# Schema.org JSON-LD for Google Job Search #}
+{% if schema_org_json_ld %}
+  {{ schema_org_json_ld|raw }}
+{% endif %}
+
+<article class="job-detail" itemscope itemtype="https://schema.org/JobPosting">
+  <header class="job-detail__header">
+    {% if employer %}
+      <div class="job-detail__employer">
+        {% if employer.user_picture.entity %}
+          <img class="job-detail__employer-logo" 
+               src="{{ file_url(employer.user_picture.entity.fileuri) }}" 
+               alt="{{ employer.label }}"
+               itemprop="hiringOrganization" itemscope itemtype="https://schema.org/Organization">
+        {% endif %}
+        <div class="job-detail__employer-info">
+          <span class="job-detail__company-name" itemprop="name">
+            {{ employer.label ?? employer.getDisplayName() }}
+          </span>
+        </div>
+      </div>
+    {% endif %}
+
+    <h1 class="job-detail__title" itemprop="title">{{ job.title }}</h1>
+    
+    <div class="job-detail__meta">
+      {% if job.location_city.value %}
+        <span class="job-detail__location" itemprop="jobLocation" itemscope itemtype="https://schema.org/Place">
+          {{ jaraba_icon('ui', 'location', 16) }}
+          <span itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+            <span itemprop="addressLocality">{{ job.location_city.value }}</span>
+            {% if job.location_region.value %}
+              , <span itemprop="addressRegion">{{ job.location_region.value }}</span>
+            {% endif %}
+          </span>
+        </span>
+      {% endif %}
+      
+      {% if job.job_type.value %}
+        <span class="job-detail__type" itemprop="employmentType">
+          {{ jaraba_icon('business', 'job', 16) }}
+          {{ job.job_type.value|capitalize }}
+        </span>
+      {% endif %}
+      
+      {% if job.remote_type.value %}
+        <span class="job-detail__remote">
+          {{ jaraba_icon('ui', 'home', 16) }}
+          {% if job.remote_type.value == 'full_remote' %}
+            {{ 'Remoto 100%'|t }}
+          {% elseif job.remote_type.value == 'hybrid' %}
+            {{ 'Híbrido'|t }}
+          {% else %}
+            {{ 'Presencial'|t }}
+          {% endif %}
+        </span>
+      {% endif %}
+
+      {% set salary_range = job.getSalaryRange() %}
+      {% if salary_range.min and salary_range.max %}
+        <span class="job-detail__salary" itemprop="baseSalary" itemscope itemtype="https://schema.org/MonetaryAmount">
+          {{ jaraba_icon('analytics', 'trending-up', 16) }}
+          <span itemprop="currency" content="EUR">€</span>
+          <span itemprop="value" itemscope itemtype="https://schema.org/QuantitativeValue">
+            <span itemprop="minValue">{{ salary_range.min|number_format(0, ',', '.') }}</span> - 
+            <span itemprop="maxValue">{{ salary_range.max|number_format(0, ',', '.') }}</span>
+            <meta itemprop="unitText" content="{{ salary_range.period|upper }}">
+          </span>
+          /{{ salary_range.period }}
+        </span>
+      {% endif %}
+    </div>
+    
+    <meta itemprop="datePosted" content="{{ job.created|date('Y-m-d') }}">
+    {% if job.expires.value %}
+      <meta itemprop="validThrough" content="{{ job.expires.value|date('Y-m-d\\TH:i:sP') }}">
+    {% endif %}
+  </header>
+
+  <div class="job-detail__content">
+    <section class="job-detail__description">
+      <h2>{{ 'Descripción del puesto'|t }}</h2>
+      <div itemprop="description">
+        {{ job.description.value|raw }}
+      </div>
+    </section>
+
+    {% if job.requirements.value %}
+      <section class="job-detail__requirements">
+        <h2>{{ 'Requisitos'|t }}</h2>
+        <div itemprop="qualifications">
+          {{ job.requirements.value|raw }}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if job.responsibilities.value %}
+      <section class="job-detail__responsibilities">
+        <h2>{{ 'Responsabilidades'|t }}</h2>
+        <div itemprop="responsibilities">
+          {{ job.responsibilities.value|raw }}
+        </div>
+      </section>
+    {% endif %}
+
+    {% set skills = job.getSkillsRequired() %}
+    {% if skills %}
+      <section class="job-detail__skills">
+        <h2>{{ 'Habilidades requeridas'|t }}</h2>
+        <div class="skill-tags" itemprop="skills">
+          {% for skill in skills %}
+            <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  <aside class="job-detail__sidebar">
+    <div class="job-detail__apply-box">
+      {% if can_apply and not has_applied %}
+        <a href="{{ path('jaraba_job_board.apply', {'job_posting': job.id}) }}" 
+           class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+          {{ jaraba_icon('ui', 'send', 18) }}
+          {{ 'Aplicar ahora'|t }}
+        </a>
+      {% elseif has_applied %}
+        <div class="job-detail__applied-badge">
+          {{ jaraba_icon('ui', 'check', 18) }}
+          {{ 'Ya has aplicado'|t }}
+        </div>
+        <a href="{{ path('jaraba_job_board.my_applications') }}" class="jaraba-btn jaraba-btn--ghost jaraba-btn--block">
+          {{ 'Ver mi candidatura'|t }}
+        </a>
+      {% else %}
+        <a href="{{ path('user.login') }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+          {{ 'Inicia sesión para aplicar'|t }}
+        </a>
+      {% endif %}
+      
+      <button type="button" class="jaraba-btn jaraba-btn--ghost jaraba-btn--block job-save-btn" 
+              data-job-id="{{ job.id }}">
+        {{ jaraba_icon('ui', 'bookmark', 18) }}
+        {{ 'Guardar oferta'|t }}
+      </button>
+    </div>
+    
+    {% if employer %}
+      <div class="job-detail__company-card">
+        <h3>{{ 'Sobre la empresa'|t }}</h3>
+        {% if employer.field_company_description.value %}
+          <p>{{ employer.field_company_description.value|striptags|slice(0, 200) }}...</p>
+        {% endif %}
+        <a href="{{ path('jaraba_job_board.company_profile', {'user': employer.id}) }}" 
+           class="jaraba-btn jaraba-btn--link">
+          {{ 'Ver perfil de empresa'|t }} →
+        </a>
+      </div>
+    {% endif %}
+  </aside>
+
+  {% if similar_jobs %}
+    <section class="job-detail__similar">
+      <h2>{{ 'Ofertas similares'|t }}</h2>
+      <div class="similar-jobs-grid">
+        {% for similar in similar_jobs %}
+          <article class="job-card job-card--compact">
+            <h3 class="job-card__title">
+              <a href="{{ path('entity.job_posting.canonical', {'job_posting': similar.id}) }}">
+                {{ similar.title }}
+              </a>
+            </h3>
+            {% if similar.location %}
+              <p class="job-card__location">{{ similar.location }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</article>

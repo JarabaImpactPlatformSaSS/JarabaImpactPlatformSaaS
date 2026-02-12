@@ -1,0 +1,35 @@
+catalog:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+detail:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  js:
+    js/path-detail.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+progress:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+
+admin_form:
+  version: 1.0.0
+  css:
+    theme:
+      /modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal
+

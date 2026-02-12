@@ -1,0 +1,363 @@
+{#
+/**
+ * @file
+ * Premium listing for Business Model Canvas entities.
+ *
+ * Variables:
+ * - cards: Array of canvas data for card rendering
+ * - stats: Statistics (total, draft, active, templates)
+ * - empty_message: Message when no canvases exist
+ * - add_url: URL to create new canvas
+ */
+#}
+
+{# Styles are in ecosistema_jaraba_core/scss/_canvas-list.scss #}
+
+<div class="canvas-list-premium">
+  
+  {# Header with stats #}
+  <header class="canvas-list__header">
+    <div class="header-content">
+      <h1>{{ 'Business Model Canvas'|t }}</h1>
+      <p class="header-subtitle">{{ 'Visualiza y diseña tu modelo de negocio'|t }}</p>
+    </div>
+    
+    <a href="{{ add_url }}" class="btn btn-primary btn-lg">
+      {{ jaraba_icon('actions', 'plus', { size: '16px' }) }}
+      {{ 'Crear Canvas'|t }}
+    </a>
+  </header>
+  
+  {# Stats cards (clickeable as filters) #}
+  {% if stats.total > 0 %}
+  <div class="canvas-list__stats">
+    <div class="stat-card stat-card--all stat-card--active-filter" data-filter="all">
+      <span class="stat-value">{{ stats.total }}</span>
+      <span class="stat-label">{{ 'Total'|t }}</span>
+    </div>
+    <div class="stat-card stat-card--active" data-filter="active">
+      <span class="stat-value">{{ stats.active }}</span>
+      <span class="stat-label">{{ 'Activos'|t }}</span>
+    </div>
+    <div class="stat-card stat-card--draft" data-filter="draft">
+      <span class="stat-value">{{ stats.draft }}</span>
+      <span class="stat-label">{{ 'Borradores'|t }}</span>
+    </div>
+    <div class="stat-card stat-card--template" data-filter="template">
+      <span class="stat-value">{{ stats.templates }}</span>
+      <span class="stat-label">{{ 'Plantillas'|t }}</span>
+    </div>
+  </div>
+  
+  {# Search bar #}
+  <div class="canvas-list__search">
+    <div class="search-input-wrapper">
+      {{ jaraba_icon('ui', 'search', { size: '18px', color: 'neutral' }) }}
+      <input type="text" 
+             id="canvas-search" 
+             class="search-input" 
+             placeholder="{{ 'Buscar canvas por título...'|t }}" 
+             autocomplete="off">
+      <button type="button" class="search-clear" id="canvas-search-clear" title="{{ 'Limpiar búsqueda'|t }}">
+        {{ jaraba_icon('actions', 'close', { size: '14px' }) }}
+      </button>
+    </div>
+  </div>
+  {% endif %}
+  
+  {# Cards grid #}
+  {% if cards|length > 0 %}
+  <div class="canvas-list__grid">
+    {% for card in cards %}
+    <article class="canvas-card canvas-card--{{ card.status }}{% if card.is_template %} canvas-card--template{% endif %}">
+      
+      {# Card header with sector badge #}
+      <header class="canvas-card__header">
+        <span class="sector-badge sector-badge--{{ card.sector_key }}">
+          {{ card.sector }}
+        </span>
+        {% if card.is_template %}
+        <span class="template-badge">
+          {{ jaraba_icon('ui', 'clipboard', { size: '14px' }) }}
+          {{ 'Plantilla'|t }}
+        </span>
+        {% endif %}
+      </header>
+      
+      {# Card body #}
+      <div class="canvas-card__body">
+        <h3 class="canvas-card__title">
+          <a href="{{ card.url }}">{{ card.title }}</a>
+        </h3>
+        
+        <div class="canvas-card__meta">
+          <span class="meta-item">
+            {{ jaraba_icon('ui', 'user', { size: '14px', color: 'neutral' }) }}
+            {{ card.owner_name }}
+          </span>
+          <span class="meta-item">
+            {{ jaraba_icon('ui', 'clock', { size: '14px', color: 'neutral' }) }}
+            {{ card.changed }}
+          </span>
+        </div>
+        
+        {# Progress indicators #}
+        <div class="canvas-card__progress">
+          <div class="progress-item">
+            <span class="progress-label">{{ 'Completitud'|t }}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ card.completeness }}%"></div>
+            </div>
+            <span class="progress-value">{{ card.completeness|number_format(0) }}%</span>
+          </div>
+          
+          {% if card.coherence is not null %}
+          <div class="progress-item progress-item--coherence">
+            <span class="progress-label">
+              {{ jaraba_icon('ai', 'brain', { size: '12px' }) }}
+              {{ 'Coherencia IA'|t }}
+            </span>
+            <span class="progress-value progress-value--score">{{ card.coherence|number_format(0) }}</span>
+          </div>
+          {% endif %}
+        </div>
+        
+        {# Stage and Status badges #}
+        <div class="canvas-card__stage">
+          <span class="stage-badge stage-badge--{{ card.stage_key }}">
+            {{ card.stage }}
+          </span>
+          
+          {# Status selector #}
+          <select class="status-select status-select--{{ card.status }}" 
+                  data-canvas-id="{{ card.id }}"
+                  data-current-status="{{ card.status }}"
+                  title="{{ 'Cambiar estado'|t }}">
+            <option value="draft" {{ card.status == 'draft' ? 'selected' : '' }}>{{ 'Borrador'|t }}</option>
+            <option value="active" {{ card.status == 'active' ? 'selected' : '' }}>{{ 'Activo'|t }}</option>
+            <option value="archived" {{ card.status == 'archived' ? 'selected' : '' }}>{{ 'Archivado'|t }}</option>
+          </select>
+          
+          <span class="version-badge">
+            v{{ card.version }}
+          </span>
+        </div>
+      </div>
+      
+      {# Card actions #}
+      <footer class="canvas-card__actions">
+        <a href="{{ card.url }}" class="btn btn-sm btn-secondary">
+          {{ jaraba_icon('ui', 'eye', { size: '14px' }) }}
+          {{ 'Ver'|t }}
+        </a>
+        {% if card.is_template %}
+          {# Template-specific clone button #}
+          <button type="button" 
+                  class="btn btn-sm btn-primary use-template-btn" 
+                  data-template-id="{{ card.id }}"
+                  data-template-title="{{ card.title }}">
+            {{ jaraba_icon('ui', 'clipboard', { size: '14px' }) }}
+            {{ 'Usar plantilla'|t }}
+          </button>
+        {% endif %}
+        <a href="{{ card.edit_url }}" class="btn btn-sm btn-secondary">
+          {{ jaraba_icon('actions', 'edit', { size: '14px' }) }}
+          {{ 'Editar'|t }}
+        </a>
+        <a href="{{ card.delete_url }}" class="btn btn-sm btn-outline-danger">
+          {{ jaraba_icon('actions', 'delete', { size: '14px' }) }}
+          {{ 'Eliminar'|t }}
+        </a>
+      </footer>
+      
+    </article>
+    {% endfor %}
+  </div>
+  
+  {% else %}
+  
+  {# Empty state #}
+  <div class="canvas-list__empty">
+    <div class="empty-state">
+      <div class="empty-icon">
+        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', size: '64px', color: 'neutral' }) }}
+      </div>
+      <h3>{{ 'Aún no tienes ningún Canvas'|t }}</h3>
+      <p>{{ 'El Business Model Canvas te ayuda a visualizar todos los aspectos clave de tu modelo de negocio en una sola página.'|t }}</p>
+      <a href="{{ add_url }}" class="btn btn-primary btn-lg">
+        {{ jaraba_icon('actions', 'plus', { size: '16px' }) }}
+        {{ 'Crear mi primer Canvas'|t }}
+      </a>
+    </div>
+  </div>
+  
+  {% endif %}
+  
+</div>
+
+{# JavaScript for "Usar plantilla" functionality #}
+<script>
+(function() {
+  document.querySelectorAll('.use-template-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var templateId = this.dataset.templateId;
+      var templateTitle = this.dataset.templateTitle;
+      var originalText = this.innerHTML;
+      
+      // Disable button and show loading
+      this.disabled = true;
+      this.innerHTML = '{{ "Creando..."|t }}';
+      
+      // Get CSRF token
+      fetch('/session/token')
+        .then(function(r) { return r.text(); })
+        .then(function(token) {
+          return fetch('/api/v1/canvas/' + templateId + '/clone', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-Token': token
+            },
+            body: JSON.stringify({})
+          });
+        })
+        .then(function(response) {
+          return response.json().then(function(data) {
+            return { ok: response.ok, data: data };
+          });
+        })
+        .then(function(result) {
+          if (result.ok && result.data.data && result.data.data.url) {
+            // Redirect to new canvas
+            window.location.href = result.data.data.url;
+          } else {
+            throw new Error(result.data.error || '{{ "Error al crear canvas"|t }}');
+          }
+        })
+        .catch(function(error) {
+          alert(error.message);
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        });
+    });
+  });
+  
+  // Handle status change
+  document.querySelectorAll('.status-select').forEach(function(select) {
+    select.addEventListener('change', function() {
+      var canvasId = this.dataset.canvasId;
+      var newStatus = this.value;
+      var oldStatus = this.dataset.currentStatus;
+      var selectEl = this;
+      
+      // Get CSRF token
+      fetch('/session/token')
+        .then(function(r) { return r.text(); })
+        .then(function(token) {
+          return fetch('/api/v1/canvas/' + canvasId + '/status', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-Token': token
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('{{ "Error al cambiar estado"|t }}');
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          // Update classes
+          selectEl.classList.remove('status-select--' + oldStatus);
+          selectEl.classList.add('status-select--' + newStatus);
+          selectEl.dataset.currentStatus = newStatus;
+        })
+        .catch(function(error) {
+          alert(error.message);
+          selectEl.value = oldStatus;
+        });
+    });
+  });
+  
+  // =========================================================================
+  // Filter by stat card click
+  // =========================================================================
+  var currentFilter = 'all';
+  document.querySelectorAll('.stat-card[data-filter]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var filter = this.dataset.filter;
+      
+      // Update active state
+      document.querySelectorAll('.stat-card[data-filter]').forEach(function(c) {
+        c.classList.remove('stat-card--active-filter');
+      });
+      this.classList.add('stat-card--active-filter');
+      currentFilter = filter;
+      
+      applyFilters();
+    });
+  });
+  
+  // =========================================================================
+  // Search by title
+  // =========================================================================
+  var searchInput = document.getElementById('canvas-search');
+  var searchClear = document.getElementById('canvas-search-clear');
+  var searchTimeout;
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(applyFilters, 150);
+    });
+  }
+  
+  if (searchClear) {
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      applyFilters();
+      searchInput.focus();
+    });
+  }
+  
+  // =========================================================================
+  // Combined filter function
+  // =========================================================================
+  function applyFilters() {
+    var searchTerm = (searchInput ? searchInput.value.toLowerCase().trim() : '');
+    
+    document.querySelectorAll('.canvas-card').forEach(function(card) {
+      var matchesFilter = true;
+      var matchesSearch = true;
+      
+      // Check status/template filter
+      if (currentFilter !== 'all') {
+        if (currentFilter === 'template') {
+          matchesFilter = card.classList.contains('canvas-card--template');
+        } else {
+          matchesFilter = card.classList.contains('canvas-card--' + currentFilter) && 
+                         !card.classList.contains('canvas-card--template');
+        }
+      }
+      
+      // Check search
+      if (searchTerm) {
+        var title = card.querySelector('.canvas-card__title').textContent.toLowerCase();
+        matchesSearch = title.includes(searchTerm);
+      }
+      
+      // Apply visibility
+      if (matchesFilter && matchesSearch) {
+        card.classList.remove('canvas-card--filtered-out');
+      } else {
+        card.classList.add('canvas-card--filtered-out');
+      }
+    });
+  }
+})();
+</script>

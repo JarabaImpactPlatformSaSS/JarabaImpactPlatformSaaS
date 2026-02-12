@@ -1,0 +1,89 @@
+# ================================================================================
+# PERMISOS DEL MÓDULO JARABA LMS
+# Sistema de Gestión de Aprendizaje - Vertical Empleabilidad
+# ================================================================================
+
+# --- Permisos de Administración ---
+administer lms:
+  title: 'Administer LMS'
+  description: 'Full administration of the Learning Management System'
+  restrict access: true
+
+administer lms courses:
+  title: 'Administer courses'
+  description: 'Create, edit and delete all courses'
+  restrict access: true
+
+administer lms enrollments:
+  title: 'Administer enrollments'
+  description: 'Manage all user enrollments'
+  restrict access: true
+
+# --- Permisos de Cursos ---
+view published courses:
+  title: 'View published courses'
+  description: 'View published course listings and details'
+
+view own enrollments:
+  title: 'View own enrollments'
+  description: 'View own course enrollments and progress'
+
+create courses:
+  title: 'Create courses'
+  description: 'Create new courses'
+
+edit own courses:
+  title: 'Edit own courses'
+  description: 'Edit courses created by oneself'
+
+edit any course:
+  title: 'Edit any course'
+  description: 'Edit any course regardless of author'
+
+delete own courses:
+  title: 'Delete own courses'
+  description: 'Delete courses created by oneself'
+
+delete any course:
+  title: 'Delete any course'
+  description: 'Delete any course'
+
+# --- Permisos de Matrículas ---
+enroll in free courses:
+  title: 'Enroll in free courses'
+  description: 'Self-enroll in free courses'
+
+enroll in paid courses:
+  title: 'Enroll in paid courses'
+  description: 'Purchase and enroll in paid courses'
+
+enroll others:
+  title: 'Enroll other users'
+  description: 'Create enrollments for other users'
+
+# --- Permisos de Progreso ---
+track own progress:
+  title: 'Track own progress'
+  description: 'View and record own learning progress'
+
+view learner progress:
+  title: 'View learner progress'
+  description: 'View progress of enrolled learners (for instructors)'
+
+# --- Permisos de Certificados ---
+view own certificates:
+  title: 'View own certificates'
+  description: 'View own earned certificates'
+
+issue certificates:
+  title: 'Issue certificates'
+  description: 'Manually issue certificates to learners'
+
+# --- Permisos de Learning Paths ---
+view learning paths:
+  title: 'View learning paths'
+  description: 'View available learning paths'
+
+administer learning paths:
+  title: 'Administer learning paths'
+  description: 'Create and manage learning paths'

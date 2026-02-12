@@ -1,0 +1,92 @@
+# ================================================================================
+# PERMISOS DEL MÓDULO JARABA JOB BOARD
+# Portal de Empleo - Vertical Empleabilidad
+# ================================================================================
+
+# --- Permisos de Administración ---
+administer job board:
+  title: 'Administer Job Board'
+  description: 'Full administration of the Job Board'
+  restrict access: true
+
+administer job postings:
+  title: 'Administer job postings'
+  description: 'Manage all job postings'
+  restrict access: true
+
+administer job applications:
+  title: 'Administer applications'
+  description: 'Manage all job applications'
+  restrict access: true
+
+# --- Permisos de Ofertas ---
+view published jobs:
+  title: 'View published jobs'
+  description: 'View published job listings'
+
+create job postings:
+  title: 'Post jobs'
+  description: 'Create new job postings (employers)'
+
+edit own job postings:
+  title: 'Edit own jobs'
+  description: 'Edit own job postings'
+
+edit any job posting:
+  title: 'Edit any job'
+  description: 'Edit any job posting'
+
+delete own job postings:
+  title: 'Delete own jobs'
+  description: 'Delete own job postings'
+
+feature job postings:
+  title: 'Feature jobs'
+  description: 'Mark jobs as featured'
+
+# --- Permisos de Candidatos ---
+apply to jobs:
+  title: 'Apply to jobs'
+  description: 'Submit job applications'
+
+view own applications:
+  title: 'View own applications'
+  description: 'View own job applications'
+
+withdraw applications:
+  title: 'Withdraw applications'
+  description: 'Withdraw own job applications'
+
+save jobs:
+  title: 'Save jobs'
+  description: 'Save jobs for later'
+
+create job alerts:
+  title: 'Create job alerts'
+  description: 'Set up job alert notifications'
+
+# --- Permisos de Empleadores ---
+view job applications:
+  title: 'View job applications'
+  description: 'View applications to own jobs'
+
+manage job applications:
+  title: 'Manage applications'
+  description: 'Update application statuses'
+
+contact applicants:
+  title: 'Contact applicants'
+  description: 'Send messages to applicants'
+
+# --- Permisos de Empresas ---
+create employer profile:
+  title: 'Create employer profile'
+  description: 'Create an employer/company profile'
+
+edit own employer profile:
+  title: 'Edit own employer profile'
+  description: 'Edit own company profile'
+
+view employer profiles:
+  title: 'View employer profiles'
+  description: 'View company profiles'

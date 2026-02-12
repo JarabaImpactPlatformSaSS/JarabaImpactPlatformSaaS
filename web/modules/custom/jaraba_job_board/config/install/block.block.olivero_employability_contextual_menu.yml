@@ -1,0 +1,19 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_job_board
+  theme:
+    - olivero
+id: olivero_employability_contextual_menu
+theme: olivero
+region: sidebar
+weight: -10
+provider: null
+plugin: employability_contextual_menu
+settings:
+  id: employability_contextual_menu
+  label: 'Menú Empleabilidad'
+  label_display: '0'
+  provider: jaraba_job_board
+visibility: {}

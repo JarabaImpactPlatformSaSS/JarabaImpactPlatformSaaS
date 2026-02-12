@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://sepe.es/ws/seguimiento"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             name="SeguimientoTeleformacion"
+             targetNamespace="http://sepe.es/ws/seguimiento">
+
+  <!-- Types -->
+  <types>
+    <xsd:schema targetNamespace="http://sepe.es/ws/seguimiento">
+      
+      <xsd:complexType name="DatosCentro">
+        <xsd:sequence>
+          <xsd:element name="CIF" type="xsd:string"/>
+          <xsd:element name="RazonSocial" type="xsd:string"/>
+          <xsd:element name="CodigoCentro" type="xsd:string"/>
+          <xsd:element name="Direccion" type="xsd:string"/>
+          <xsd:element name="CodigoPostal" type="xsd:string"/>
+          <xsd:element name="Municipio" type="xsd:string"/>
+          <xsd:element name="Provincia" type="xsd:string"/>
+          <xsd:element name="Telefono" type="xsd:string"/>
+          <xsd:element name="Email" type="xsd:string"/>
+          <xsd:element name="URLPlataforma" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="DatosAccion">
+        <xsd:sequence>
+          <xsd:element name="IdAccion" type="xsd:string"/>
+          <xsd:element name="CodigoEspecialidad" type="xsd:string"/>
+          <xsd:element name="Denominacion" type="xsd:string"/>
+          <xsd:element name="Modalidad" type="xsd:string"/>
+          <xsd:element name="NumeroHoras" type="xsd:int"/>
+          <xsd:element name="FechaInicio" type="xsd:date"/>
+          <xsd:element name="FechaFin" type="xsd:date"/>
+          <xsd:element name="NumParticipantes" type="xsd:int"/>
+          <xsd:element name="Estado" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="DatosSeguimiento">
+        <xsd:sequence>
+          <xsd:element name="DNI" type="xsd:string"/>
+          <xsd:element name="Nombre" type="xsd:string"/>
+          <xsd:element name="Apellidos" type="xsd:string"/>
+          <xsd:element name="FechaAlta" type="xsd:date"/>
+          <xsd:element name="FechaBaja" type="xsd:date" minOccurs="0"/>
+          <xsd:element name="HorasConectado" type="xsd:decimal"/>
+          <xsd:element name="PorcentajeProgreso" type="xsd:int"/>
+          <xsd:element name="NumActividadesRealizadas" type="xsd:int"/>
+          <xsd:element name="NotaMedia" type="xsd:decimal" minOccurs="0"/>
+          <xsd:element name="Estado" type="xsd:string"/>
+          <xsd:element name="UltimaConexion" type="xsd:dateTime" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+    </xsd:schema>
+  </types>
+
+  <!-- Messages -->
+  <message name="ObtenerDatosCentroRequest"/>
+  <message name="ObtenerDatosCentroResponse">
+    <part name="datos" type="tns:DatosCentro"/>
+  </message>
+
+  <message name="CrearAccionRequest">
+    <part name="idAccion" type="xsd:string"/>
+  </message>
+  <message name="CrearAccionResponse">
+    <part name="resultado" type="xsd:string"/>
+  </message>
+
+  <message name="ObtenerListaAccionesRequest"/>
+  <message name="ObtenerListaAccionesResponse">
+    <part name="acciones" type="xsd:string"/>
+  </message>
+
+  <message name="ObtenerDatosAccionRequest">
+    <part name="idAccion" type="xsd:string"/>
+  </message>
+  <message name="ObtenerDatosAccionResponse">
+    <part name="datos" type="tns:DatosAccion"/>
+  </message>
+
+  <message name="ObtenerParticipantesRequest">
+    <part name="idAccion" type="xsd:string"/>
+  </message>
+  <message name="ObtenerParticipantesResponse">
+    <part name="participantes" type="tns:DatosSeguimiento"/>
+  </message>
+
+  <message name="ObtenerSeguimientoRequest">
+    <part name="idAccion" type="xsd:string"/>
+    <part name="dni" type="xsd:string"/>
+  </message>
+  <message name="ObtenerSeguimientoResponse">
+    <part name="datos" type="tns:DatosSeguimiento"/>
+  </message>
+
+  <!-- Port Type -->
+  <portType name="SeguimientoPortType">
+    <operation name="ObtenerDatosCentro">
+      <input message="tns:ObtenerDatosCentroRequest"/>
+      <output message="tns:ObtenerDatosCentroResponse"/>
+    </operation>
+    <operation name="CrearAccion">
+      <input message="tns:CrearAccionRequest"/>
+      <output message="tns:CrearAccionResponse"/>
+    </operation>
+    <operation name="ObtenerListaAcciones">
+      <input message="tns:ObtenerListaAccionesRequest"/>
+      <output message="tns:ObtenerListaAccionesResponse"/>
+    </operation>
+    <operation name="ObtenerDatosAccion">
+      <input message="tns:ObtenerDatosAccionRequest"/>
+      <output message="tns:ObtenerDatosAccionResponse"/>
+    </operation>
+    <operation name="ObtenerParticipantes">
+      <input message="tns:ObtenerParticipantesRequest"/>
+      <output message="tns:ObtenerParticipantesResponse"/>
+    </operation>
+    <operation name="ObtenerSeguimiento">
+      <input message="tns:ObtenerSeguimientoRequest"/>
+      <output message="tns:ObtenerSeguimientoResponse"/>
+    </operation>
+  </portType>
+
+  <!-- Binding -->
+  <binding name="SeguimientoBinding" type="tns:SeguimientoPortType">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ObtenerDatosCentro">
+      <soap:operation soapAction="ObtenerDatosCentro"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="CrearAccion">
+      <soap:operation soapAction="CrearAccion"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="ObtenerListaAcciones">
+      <soap:operation soapAction="ObtenerListaAcciones"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="ObtenerDatosAccion">
+      <soap:operation soapAction="ObtenerDatosAccion"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="ObtenerParticipantes">
+      <soap:operation soapAction="ObtenerParticipantes"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="ObtenerSeguimiento">
+      <soap:operation soapAction="ObtenerSeguimiento"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+
+  <!-- Service -->
+  <service name="SeguimientoTeleformacionService">
+    <port name="SeguimientoPort" binding="tns:SeguimientoBinding">
+      <soap:address location="https://plataforma.jarabaimpact.es/sepe/ws/seguimiento"/>
+    </port>
+  </service>
+
+</definitions>

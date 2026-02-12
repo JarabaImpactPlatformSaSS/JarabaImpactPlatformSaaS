@@ -1,0 +1,59 @@
+# Matching API Routes
+
+# Get top candidates for a job
+jaraba_matching.api.job_candidates:
+  path: '/api/v1/match/jobs/{job_id}/candidates'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::getJobCandidates'
+  requirements:
+    _permission: 'access matching api'
+    job_id: '\d+'
+  methods: [GET]
+
+# Get recommended jobs for a candidate
+jaraba_matching.api.candidate_jobs:
+  path: '/api/v1/match/candidates/{profile_id}/jobs'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::getCandidateJobs'
+  requirements:
+    _permission: 'access matching api'
+    profile_id: '\d+'
+  methods: [GET]
+
+# Get specific match score
+jaraba_matching.api.score:
+  path: '/api/v1/match/score'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::getScore'
+  requirements:
+    _permission: 'access matching api'
+  methods: [GET]
+
+# Similar jobs
+jaraba_matching.api.similar_jobs:
+  path: '/api/v1/match/jobs/{job_id}/similar'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::getSimilarJobs'
+  requirements:
+    _permission: 'access matching api'
+    job_id: '\d+'
+  methods: [GET]
+
+# Submit match feedback
+jaraba_matching.api.feedback:
+  path: '/api/v1/match/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::submitFeedback'
+  requirements:
+    _permission: 'create match feedback'
+  methods: [POST]
+
+# Force reindex job
+jaraba_matching.api.reindex:
+  path: '/api/v1/match/reindex/job/{job_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::reindexJob'
+  requirements:
+    _permission: 'administer matching'
+    job_id: '\d+'
+  methods: [POST]

@@ -1,0 +1,10 @@
+name: 'Jaraba Journey Engine'
+type: module
+description: 'Motor de navegación inteligente por avatar con 19 roles y 7 estados de journey.'
+core_version_requirement: ^10 || ^11
+package: Jaraba Core
+dependencies:
+  - drupal:user
+  - drupal:rest
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+

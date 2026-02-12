@@ -1,0 +1,60 @@
+{#
+/**
+ * @file
+ * Template for learner LMS dashboard.
+ *
+ * Available variables:
+ * - active_courses: Array of active enrollments with id, course_id, course_title, progress, status.
+ * - completed_courses: Array of completed enrollments.
+ * - stats: User learning statistics.
+ */
+#}
+<div class="lms-dashboard">
+  <div class="dashboard-header">
+    <h2>{{ 'Mis cursos'|t }}</h2>
+    <p class="dashboard-subtitle">{{ 'Tu progreso de aprendizaje'|t }}</p>
+  </div>
+
+  {% if active_courses %}
+    <section class="active-courses">
+      <h3>{{ 'Cursos en progreso'|t }}</h3>
+      <div class="courses-grid">
+        {% for course in active_courses %}
+          <div class="course-card">
+            <h4>{{ course.course_title }}</h4>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ course.progress }}%"></div>
+            </div>
+            <span class="progress-text">{{ course.progress }}% {{ 'completado'|t }}</span>
+            <a href="{{ path('jaraba_lms.course_player', {'lms_enrollment': course.id}) }}" class="btn btn-primary">
+              {{ 'Continuar'|t }}
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if completed_courses %}
+    <section class="completed-courses">
+      <h3>{{ 'Cursos completados'|t }}</h3>
+      <div class="courses-grid">
+        {% for course in completed_courses %}
+          <div class="course-card completed">
+            <h4>{{ course.course_title }}</h4>
+            <span class="badge badge-success">{{ 'Completado'|t }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if not active_courses and not completed_courses %}
+    <div class="empty-state">
+      <p>{{ 'Aún no estás inscrito en ningún curso.'|t }}</p>
+      <a href="{{ path('jaraba_lms.catalog') }}" class="btn btn-primary">
+        {{ 'Explorar catálogo de cursos'|t }}
+      </a>
+    </div>
+  {% endif %}
+</div>

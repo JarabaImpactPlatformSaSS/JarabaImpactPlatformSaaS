@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Template for Employability contextual menu.
+ *
+ * Available variables:
+ * - items: Array of menu items with id, title, url, icon, is_agent.
+ * - role: User role (candidate, employer, student, anonymous).
+ * - role_label: Human-readable role label.
+ */
+#}
+<nav class="employability-menu role-{{ role }}" aria-label="{{ 'Menú de empleabilidad'|t }}">
+  <div class="menu-header">
+    <span class="role-badge">{{ role_label }}</span>
+  </div>
+  <ul class="menu-items">
+    {% for item in items %}
+      <li class="menu-item {{ item.is_agent ? 'is-agent' : '' }}">
+        <a href="{{ item.url }}" 
+           class="menu-link"
+           {% if item.is_agent %}data-agent="{{ item.id }}"{% endif %}>
+          <span class="menu-icon">{{ jaraba_icon(item.icon_category, item.icon_name, { color: 'azul-corporativo', size: '20px' }) }}</span>
+          <span class="menu-title">{{ item.title }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

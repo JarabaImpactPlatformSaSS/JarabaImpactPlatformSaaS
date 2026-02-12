@@ -1,0 +1,70 @@
+/**
+ * @file
+ * Estilos para badges UX en listados administrativos
+ */
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-published {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-draft {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-closed {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.status-expired {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Completion Badges */
+.completion-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.completion-complete {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.completion-partial {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.completion-incomplete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Mejoras generales de tabla */
+.views-table th,
+.entity-content-list-builder th {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.views-table td,
+.entity-content-list-builder td {
+    vertical-align: middle;
+}

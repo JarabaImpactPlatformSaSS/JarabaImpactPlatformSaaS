@@ -1,0 +1,903 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Job Board - Portal de Empleo.
+ *
+ * Módulo para gestión de ofertas de empleo, candidaturas y matching
+ * entre empresas y talento formado en el ecosistema.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_job_board_theme(): array {
+  return [
+    'job_posting_card' => [
+      'variables' => [
+        'job' => NULL,
+        'employer' => NULL,
+        'is_saved' => FALSE,
+        'match_score' => NULL,
+      ],
+      'template' => 'job-posting-card',
+    ],
+    'job_posting_detail' => [
+      'variables' => [
+        'job' => NULL,
+        'employer' => NULL,
+        'similar_jobs' => [],
+        'can_apply' => TRUE,
+        'has_applied' => FALSE,
+      ],
+      'template' => 'job-posting-detail',
+    ],
+    'application_status' => [
+      'variables' => [
+        'application' => NULL,
+        'job' => NULL,
+        'timeline' => [],
+      ],
+      'template' => 'application-status',
+    ],
+    'employer_dashboard' => [
+      'variables' => [
+        'jobs_count' => 0,
+        'active_jobs' => 0,
+        'pending_applications' => 0,
+        'total_applications' => 0,
+        'total_views' => 0,
+        'conversion_rate' => 0,
+        'recent_jobs' => [],
+        'user' => NULL,
+      ],
+      'template' => 'employer-dashboard',
+    ],
+    'employer_jobs' => [
+      'variables' => [
+        'jobs' => [],
+      ],
+      'template' => 'employer-jobs',
+    ],
+    'recruiter_dashboard' => [
+      'variables' => [
+        'phase_name' => '',
+        'phase_icon_category' => 'business',
+        'phase_icon_name' => 'target',
+        'phase_number' => 1,
+        'health_score' => 0,
+        'metrics' => [],
+        'assistant_message' => '',
+        'gaps' => [],
+        'optimization_paths' => [],
+        'suggested_tools' => [],
+        'quick_actions' => [],
+        'user_name' => '',
+      ],
+      'template' => 'recruiter-dashboard',
+    ],
+    'job_search_results' => [
+      'variables' => [
+        'jobs' => [],
+        'total' => 0,
+        'facets' => [],
+        'current_filters' => [],
+      ],
+      'template' => 'job-search-results',
+    ],
+    'my_applications' => [
+      'variables' => [
+        'applications' => [],
+      ],
+      'template' => 'my-applications',
+    ],
+    'employability_contextual_menu' => [
+      'variables' => [
+        'items' => [],
+        'role' => '',
+        'role_label' => '',
+      ],
+      'template' => 'employability-contextual-menu',
+    ],
+    'employability_agent_fab' => [
+      'variables' => [
+        'agent' => [],
+        'role' => '',
+      ],
+      'template' => 'employability-agent-fab',
+    ],
+    // === My Company Analytics (Q1 2026) ===
+    'my_company_analytics' => [
+      'variables' => [
+        'stats' => [],
+        'jobs' => [],
+      ],
+      'template' => 'my-company-analytics',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Procesa las queues de notificaciones:
+ * - application_notification_mail: Emails de cambio de estado
+ * - job_alert_notification: Alertas de empleo
+ * - job_alert_digest: Digest diario/semanal
+ */
+function jaraba_job_board_cron(): void {
+  // Límite de items por cron run
+  $limit = 50;
+
+  // 1. Procesar emails de notificación de aplicaciones
+  _jaraba_job_board_process_notification_queue('application_notification_mail', $limit);
+
+  // 2. Procesar alertas de empleo
+  _jaraba_job_board_process_alert_queue($limit);
+
+  // 3. Procesar digest (solo a la hora configurada)
+  _jaraba_job_board_process_digest();
+
+  // 4. Cerrar ofertas expiradas (TODO)
+  // $job_service = \Drupal::service('jaraba_job_board.job_posting');
+  // $job_service->closeExpiredJobs();
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Proporciona templates de email para notificaciones de candidaturas.
+ */
+function jaraba_job_board_mail(string $key, array &$message, array $params): void {
+  $context = $params['context'] ?? [];
+
+  switch ($key) {
+    case 'application_submitted':
+      $message['subject'] = t('Tu candidatura ha sido enviada - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('Tu candidatura para el puesto "@job" ha sido enviada correctamente.', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Mantén tu perfil actualizado para aumentar tus posibilidades.');
+      $message['body'][] = '';
+      $message['body'][] = t('¡Mucha suerte!');
+      break;
+
+    case 'application_shortlisted':
+      $message['subject'] = t('¡Enhorabuena! Has sido preseleccionado/a - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('¡Buenas noticias! Tu candidatura para "@job" ha sido preseleccionada.', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('El siguiente paso puede ser una entrevista. Prepárate revisando el perfil de la empresa.');
+      break;
+
+    case 'interview_scheduled':
+      $message['subject'] = t('Entrevista programada - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('Tienes una entrevista programada para el puesto "@job".', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      if (!empty($context['interview_date'])) {
+        $message['body'][] = t('Fecha: @date', ['@date' => $context['interview_date']]);
+      }
+      $message['body'][] = '';
+      $message['body'][] = t('¡Prepárate y da lo mejor de ti!');
+      break;
+
+    case 'offer_received':
+      $message['subject'] = t('¡Has recibido una oferta! - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('¡Felicidades! Has recibido una oferta para el puesto "@job".', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Revisa los detalles de la oferta en tu área de candidaturas.');
+      break;
+
+    case 'application_hired':
+      $message['subject'] = t('¡Felicidades por tu nuevo empleo! - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('¡ENHORABUENA! Has sido contratado/a para el puesto "@job".', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Gracias por usar nuestra plataforma. ¡Te deseamos mucho éxito!');
+      break;
+
+    case 'application_rejected':
+      $message['subject'] = t('Actualización sobre tu candidatura - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('Gracias por tu interés en el puesto "@job".', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('En esta ocasión, la empresa ha decidido continuar con otros candidatos.');
+      $message['body'][] = '';
+      $message['body'][] = t('No te desanimes. Sigue mejorando tu perfil y aplicando a nuevas oportunidades.');
+      break;
+
+    case 'new_application':
+      $message['subject'] = t('Nueva candidatura recibida - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola,');
+      $message['body'][] = '';
+      $message['body'][] = t('Has recibido una nueva candidatura para el puesto "@job".', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Candidato: @name', ['@name' => $context['candidate_name'] ?? '']);
+      if (!empty($context['match_score'])) {
+        $message['body'][] = t('Match Score: @score%', ['@score' => $context['match_score']]);
+      }
+      $message['body'][] = '';
+      $message['body'][] = t('Accede a tu panel de empleador para revisar la candidatura.');
+      break;
+
+    case 'high_match_alert':
+      $message['subject'] = t('⭐ Candidato con alta coincidencia - @job', [
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = t('Hola,');
+      $message['body'][] = '';
+      $message['body'][] = t('Tienes un candidato con @score% de coincidencia para "@job".', [
+        '@score' => $context['match_score'] ?? 0,
+        '@job' => $context['job_title'] ?? '',
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Candidato: @name', ['@name' => $context['candidate_name'] ?? '']);
+      $message['body'][] = '';
+      $message['body'][] = t('¡No dejes pasar esta oportunidad!');
+      break;
+  }
+
+  // Footer común
+  $message['body'][] = '';
+  $message['body'][] = '---';
+  $message['body'][] = t('Jaraba Impact Platform - Empleabilidad Digital');
+}
+
+/**
+ * Implements hook_entity_presave() for job applications.
+ */
+function jaraba_job_board_entity_presave(EntityInterface $entity): void {
+  // TODO: Re-enable when MatchingService is fully implemented
+  // if ($entity->getEntityTypeId() === 'job_application') {
+  //   if ($entity->get('match_score')->isEmpty()) {
+  //     $matching = \Drupal::service('jaraba_job_board.matching');
+  //     $score = $matching->calculateApplicationScore($entity);
+  //     $entity->set('match_score', $score);
+  //   }
+  // }
+}
+
+/**
+ * Implements hook_page_bottom().
+ *
+ * Injects the AI Agent FAB on employability vertical pages.
+ */
+function jaraba_job_board_page_bottom(array &$page_bottom): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Check if we're on an employability vertical route
+  $employability_routes = [
+    'jaraba_job_board.',
+    'jaraba_candidate.',
+    'jaraba_lms.',
+  ];
+
+  $is_employability = FALSE;
+  foreach ($employability_routes as $prefix) {
+    if (str_starts_with($route_name ?? '', $prefix)) {
+      $is_employability = TRUE;
+      break;
+    }
+  }
+
+  if (!$is_employability) {
+    return;
+  }
+
+  // Get the FAB block
+  /** @var \Drupal\jaraba_job_board\Service\EmployabilityMenuService $menu_service */
+  $menu_service = \Drupal::service('jaraba_job_board.employability_menu');
+  $role = $menu_service->detectUserRole();
+
+  if ($role === 'anonymous') {
+    return;
+  }
+
+  // Get agent config
+  $agent_configs = [
+    'candidate' => [
+      'id' => 'career_coach',
+      'name' => t('Coach de Carrera'),
+      'icon_category' => 'business',
+      'icon_name' => 'target',
+      'color' => '#0ea5e9',
+      'greeting' => t('¡Hola! Soy tu Coach de Carrera. ¿En qué puedo ayudarte hoy?'),
+      'actions' => [
+        ['id' => 'analyze_profile', 'label' => t('Analizar mi perfil'), 'icon_category' => 'analytics', 'icon_name' => 'gauge'],
+        ['id' => 'improve_cv', 'label' => t('Mejorar mi CV'), 'icon_category' => 'business', 'icon_name' => 'diagnostic'],
+        ['id' => 'interview_prep', 'label' => t('Preparar entrevista'), 'icon_category' => 'ui', 'icon_name' => 'users'],
+        ['id' => 'suggest_courses', 'label' => t('Recomendar formación'), 'icon_category' => 'ui', 'icon_name' => 'book'],
+        ['id' => 'motivation', 'label' => t('Motivación'), 'icon_category' => 'verticals', 'icon_name' => 'rocket'],
+      ],
+    ],
+    'employer' => [
+      'id' => 'recruiter_assistant',
+      'name' => t('Asistente de Selección'),
+      'icon_category' => 'business',
+      'icon_name' => 'job',
+      'color' => '#059669',
+      'greeting' => t('¡Hola! Soy tu Asistente de Selección. ¿Cómo puedo ayudarte?'),
+      'actions' => [
+        ['id' => 'screen_candidates', 'label' => t('Filtrar candidatos'), 'icon_category' => 'ui', 'icon_name' => 'search'],
+        ['id' => 'rank_applicants', 'label' => t('Rankear postulantes'), 'icon_category' => 'business', 'icon_name' => 'achievement'],
+        ['id' => 'optimize_jd', 'label' => t('Mejorar oferta'), 'icon_category' => 'ai', 'icon_name' => 'sparkle'],
+        ['id' => 'suggest_questions', 'label' => t('Preguntas de entrevista'), 'icon_category' => 'ai', 'icon_name' => 'lightbulb'],
+      ],
+    ],
+    'student' => [
+      'id' => 'learning_tutor',
+      'name' => t('Tutor de Aprendizaje'),
+      'icon_category' => 'ui',
+      'icon_name' => 'book',
+      'color' => '#f59e0b',
+      'greeting' => t('¡Hola! Soy tu Tutor personal. ¿Qué te gustaría aprender?'),
+      'actions' => [
+        ['id' => 'ask_question', 'label' => t('Tengo una duda'), 'icon_category' => 'ai', 'icon_name' => 'lightbulb'],
+        ['id' => 'explain_concept', 'label' => t('Explícame esto'), 'icon_category' => 'ai', 'icon_name' => 'brain'],
+        ['id' => 'suggest_path', 'label' => t('Mi ruta de aprendizaje'), 'icon_category' => 'ui', 'icon_name' => 'map'],
+        ['id' => 'study_tips', 'label' => t('Técnicas de estudio'), 'icon_category' => 'ai', 'icon_name' => 'brain'],
+      ],
+    ],
+  ];
+
+  $agent = $agent_configs[$role] ?? $agent_configs['candidate'];
+
+  $page_bottom['employability_agent_fab'] = [
+    '#theme' => 'employability_agent_fab',
+    '#agent' => $agent,
+    '#role' => $role,
+    '#attached' => [
+      'library' => ['jaraba_job_board/agent_fab'],
+    ],
+    '#cache' => [
+      'contexts' => ['user.roles', 'route'],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Automatizaciones:
+ * - ECA-APP-002: Cambio de estado de candidaturas
+ * - Job Alerts: Notificar cuando se publica una oferta
+ */
+function jaraba_job_board_entity_update(EntityInterface $entity): void {
+  $entityType = $entity->getEntityTypeId();
+
+  // === Job Applications: ECA-APP-002 ===
+  if ($entityType === 'job_application') {
+    _jaraba_job_board_handle_application_update($entity);
+    return;
+  }
+
+  // === Job Postings: Job Alerts ===
+  if ($entityType === 'job_posting') {
+    _jaraba_job_board_handle_job_update($entity);
+    return;
+  }
+}
+
+/**
+ * Maneja cambios en candidaturas.
+ */
+function _jaraba_job_board_handle_application_update(EntityInterface $entity): void {
+  // Detectar cambio de estado
+  if (!$entity->hasField('status')) {
+    return;
+  }
+
+  $newStatus = $entity->get('status')->value ?? '';
+  $oldStatus = '';
+
+  if (isset($entity->original) && $entity->original->hasField('status')) {
+    $oldStatus = $entity->original->get('status')->value ?? '';
+  }
+
+  // Solo actuar si cambió el estado
+  if ($newStatus === $oldStatus || empty($newStatus)) {
+    return;
+  }
+
+  // 1. Enviar notificaciones
+  _jaraba_job_board_notify_status_change($entity, $oldStatus, $newStatus);
+
+  // 2. Otorgar créditos según el nuevo estado
+  _jaraba_job_board_award_status_credits($entity, $newStatus);
+
+  // 3. Registrar feedback para ML si es hired/rejected
+  _jaraba_job_board_record_ml_feedback($entity, $newStatus);
+}
+
+/**
+ * Maneja cambios en ofertas de empleo (triggers de alertas).
+ */
+function _jaraba_job_board_handle_job_update(EntityInterface $entity): void {
+  // Detectar si cambió a estado publicado
+  if (!$entity->hasField('status')) {
+    return;
+  }
+
+  $newStatus = $entity->get('status')->value ?? '';
+  $oldStatus = '';
+
+  if (isset($entity->original) && $entity->original->hasField('status')) {
+    $oldStatus = $entity->original->get('status')->value ?? '';
+  }
+
+  // Solo disparar alertas cuando se publica (draft -> published)
+  if ($newStatus === 'published' && $oldStatus !== 'published') {
+    _jaraba_job_board_process_job_alerts($entity);
+  }
+}
+
+/**
+ * Procesa alertas de empleo para un nuevo job publicado.
+ */
+function _jaraba_job_board_process_job_alerts(EntityInterface $job): void {
+  try {
+    if (!\Drupal::hasService('jaraba_job_board.job_alert')) {
+      return;
+    }
+
+    $alertService = \Drupal::service('jaraba_job_board.job_alert');
+    $alertService->processNewJob($job);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'Error processing job alerts: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Automatizaciones al crear candidatura (ECA-APP-001):
+ * - Notificar al empleador
+ * - Créditos por aplicar
+ */
+function jaraba_job_board_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'job_application') {
+    return;
+  }
+
+  $candidateId = $entity->get('candidate_id')->target_id ?? NULL;
+  if (!$candidateId) {
+    return;
+  }
+
+  // Otorgar créditos por aplicar
+  _jaraba_job_board_award_credits($candidateId, 'apply_job', [
+    'application_id' => $entity->id(),
+    'job_id' => $entity->get('job_id')->target_id ?? NULL,
+  ]);
+
+  // Notificar nueva aplicación
+  _jaraba_job_board_notify_new_application($entity);
+}
+
+/**
+ * Helper: Notificar cambio de estado.
+ */
+function _jaraba_job_board_notify_status_change(EntityInterface $application, string $oldStatus, string $newStatus): void {
+  try {
+    if (!\Drupal::hasService('jaraba_job_board.application_notification')) {
+      return;
+    }
+
+    $notifier = \Drupal::service('jaraba_job_board.application_notification');
+    $notifier->notifyStatusChange($application, $oldStatus, $newStatus);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->error(
+      'Error notifying status change: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper: Otorgar créditos por avance en pipeline.
+ */
+function _jaraba_job_board_award_status_credits(EntityInterface $application, string $status): void {
+  $candidateId = $application->get('candidate_id')->target_id ?? NULL;
+  if (!$candidateId) {
+    return;
+  }
+
+  $creditReasons = [
+    'shortlisted' => 'get_shortlisted',
+    'interviewed' => 'get_interviewed',
+    'hired' => 'get_hired',
+  ];
+
+  if (isset($creditReasons[$status])) {
+    _jaraba_job_board_award_credits($candidateId, $creditReasons[$status], [
+      'application_id' => $application->id(),
+    ]);
+  }
+}
+
+/**
+ * Helper: Registrar feedback para ML.
+ */
+function _jaraba_job_board_record_ml_feedback(EntityInterface $application, string $status): void {
+  // Solo hired y rejected son outcomes finales
+  if (!in_array($status, ['hired', 'rejected'])) {
+    return;
+  }
+
+  try {
+    if (!\Drupal::hasService('jaraba_matching.recommendation_service')) {
+      return;
+    }
+
+    $recommendationService = \Drupal::service('jaraba_matching.recommendation_service');
+    $outcome = $status === 'hired' ? 'hired' : 'rejected_employer';
+    
+    $recommendationService->recordMatchFeedback((int) $application->id(), $outcome, [
+      'recorded_at' => date('Y-m-d H:i:s'),
+    ]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'Error recording ML feedback: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper: Notificar nueva aplicación.
+ */
+function _jaraba_job_board_notify_new_application(EntityInterface $application): void {
+  try {
+    if (!\Drupal::hasService('jaraba_job_board.application_notification')) {
+      return;
+    }
+
+    $notifier = \Drupal::service('jaraba_job_board.application_notification');
+    $notifier->notifyStatusChange($application, '', 'applied');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'Error notifying new application: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Helper: Otorgar créditos de impacto.
+ */
+function _jaraba_job_board_award_credits(int $userId, string $reason, array $metadata = []): void {
+  try {
+    if (!\Drupal::hasService('ecosistema_jaraba_core.impact_credit')) {
+      return;
+    }
+
+    $creditService = \Drupal::service('ecosistema_jaraba_core.impact_credit');
+    $creditService->awardCredits($userId, $reason, NULL, $metadata);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'Error awarding credits: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Procesa queue de notificaciones de email.
+ */
+function _jaraba_job_board_process_notification_queue(string $queueName, int $limit): void {
+  $queue = \Drupal::queue($queueName);
+  $processed = 0;
+
+  while ($processed < $limit && $item = $queue->claimItem(120)) {
+    try {
+      $data = $item->data;
+
+      // Enviar email
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $mailManager->mail(
+        'jaraba_job_board',
+        $data['key'] ?? 'notification',
+        $data['to'] ?? '',
+        $data['langcode'] ?? 'es',
+        ['context' => $data['context'] ?? []],
+        NULL,
+        TRUE
+      );
+
+      $queue->deleteItem($item);
+      $processed++;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_job_board')->error(
+        'Error processing notification queue: @error',
+        ['@error' => $e->getMessage()]
+      );
+      $queue->releaseItem($item);
+    }
+  }
+
+  if ($processed > 0) {
+    \Drupal::logger('jaraba_job_board')->info(
+      'Processed @count notification emails',
+      ['@count' => $processed]
+    );
+  }
+}
+
+/**
+ * Procesa queue de alertas de empleo.
+ */
+function _jaraba_job_board_process_alert_queue(int $limit): void {
+  $queue = \Drupal::queue('job_alert_notification');
+  $processed = 0;
+
+  while ($processed < $limit && $item = $queue->claimItem(120)) {
+    try {
+      $data = $item->data;
+      $userId = $data['user_id'] ?? 0;
+      $matches = $data['matches'] ?? [];
+
+      if ($userId && !empty($matches)) {
+        // Enviar notificación push si está disponible
+        if (\Drupal::hasService('jaraba_job_board.web_push')) {
+          $pushService = \Drupal::service('jaraba_job_board.web_push');
+          $jobCount = count($matches);
+          
+          $pushService->sendToUser($userId, [
+            'title' => "🎯 $jobCount nueva(s) oferta(s)",
+            'body' => 'Ofertas que coinciden con tus alertas',
+            'tag' => 'job-alert-' . time(),
+            'data' => [
+              'url' => '/jobs?from=alert',
+              'job_ids' => array_column($matches, 'job_id'),
+            ],
+          ]);
+        }
+
+        // Crear notificación in-app
+        _jaraba_job_board_create_inapp_notification($userId, $matches);
+      }
+
+      $queue->deleteItem($item);
+      $processed++;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_job_board')->error(
+        'Error processing alert queue: @error',
+        ['@error' => $e->getMessage()]
+      );
+      $queue->releaseItem($item);
+    }
+  }
+}
+
+/**
+ * Procesa digest de alertas.
+ */
+function _jaraba_job_board_process_digest(): void {
+  // Ejecutar solo a las 9:00 AM
+  $currentHour = (int) date('G');
+  if ($currentHour !== 9) {
+    return;
+  }
+
+  // Verificar si ya se ejecutó hoy
+  $lastRun = \Drupal::state()->get('jaraba_job_board.last_digest_run', 0);
+  $today = strtotime('today');
+  
+  if ($lastRun >= $today) {
+    return; // Ya se ejecutó hoy
+  }
+
+  // Marcar como ejecutado
+  \Drupal::state()->set('jaraba_job_board.last_digest_run', time());
+
+  // Obtener usuarios con alertas tipo 'daily'
+  $database = \Drupal::database();
+  if (!$database->schema()->tableExists('job_alert')) {
+    return;
+  }
+
+  $alerts = $database->select('job_alert', 'a')
+    ->fields('a', ['user_id'])
+    ->condition('frequency', 'daily')
+    ->condition('is_active', 1)
+    ->distinct()
+    ->execute()
+    ->fetchCol();
+
+  foreach ($alerts as $userId) {
+    // Queue digest email
+    $queue = \Drupal::queue('job_alert_digest');
+    $queue->createItem([
+      'user_id' => $userId,
+      'type' => 'daily',
+      'queued_at' => time(),
+    ]);
+  }
+
+  \Drupal::logger('jaraba_job_board')->info(
+    'Queued digest for @count users',
+    ['@count' => count($alerts)]
+  );
+}
+
+/**
+ * Crea notificación in-app.
+ */
+function _jaraba_job_board_create_inapp_notification(int $userId, array $matches): void {
+  // Guardar en tabla de notificaciones si existe
+  $database = \Drupal::database();
+  if (!$database->schema()->tableExists('user_notification')) {
+    return;
+  }
+
+  $jobCount = count($matches);
+  $database->insert('user_notification')
+    ->fields([
+      'user_id' => $userId,
+      'type' => 'job_alert',
+      'title' => "$jobCount nueva(s) oferta(s)",
+      'message' => 'Nuevas ofertas que coinciden con tus alertas de empleo',
+      'link' => '/jobs?from=alert',
+      'is_read' => 0,
+      'created' => time(),
+    ])
+    ->execute();
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for job_posting_detail.
+ *
+ * Inyecta Schema.org JobPosting JSON-LD automáticamente.
+ */
+function jaraba_job_board_preprocess_job_posting_detail(array &$variables): void {
+  $job = $variables['job'] ?? NULL;
+  if (!$job) {
+    return;
+  }
+
+  // Preparar datos para Schema.org.
+  $jobData = [
+    'title' => $job->getTitle() ?? '',
+    'description' => $job->get('description')->value ?? '',
+    'date_posted' => $job->getCreatedTime() ? date('Y-m-d', $job->getCreatedTime()) : date('Y-m-d'),
+    'employment_type' => _jaraba_job_board_map_employment_type($job->getJobType() ?? ''),
+  ];
+
+  // Fecha de expiración.
+  if ($job->hasField('expires') && !$job->get('expires')->isEmpty()) {
+    $jobData['valid_through'] = date('Y-m-d\TH:i:sP', $job->get('expires')->value);
+  } else {
+    $jobData['valid_through'] = date('Y-m-d\TH:i:sP', strtotime('+30 days'));
+  }
+
+  // Ubicación.
+  if ($job->hasField('location_city') && !$job->get('location_city')->isEmpty()) {
+    $jobData['city'] = $job->get('location_city')->value;
+  }
+  if ($job->hasField('location_region') && !$job->get('location_region')->isEmpty()) {
+    $jobData['region'] = $job->get('location_region')->value;
+  }
+
+  // Trabajo remoto.
+  if ($job->hasField('remote_type') && $job->getRemoteType() === 'full_remote') {
+    $jobData['remote_work'] = TRUE;
+  }
+
+  // Salario.
+  $salaryRange = $job->getSalaryRange();
+  if (!empty($salaryRange['min']) && !empty($salaryRange['max'])) {
+    $jobData['salary_min'] = $salaryRange['min'];
+    $jobData['salary_max'] = $salaryRange['max'];
+    $jobData['salary_period'] = $salaryRange['period'] ?? 'YEAR';
+  }
+
+  // Skills.
+  $skills = $job->getSkillsRequired();
+  if (!empty($skills)) {
+    $jobData['skills'] = $skills;
+  }
+
+  // Datos del empleador.
+  $tenant = [];
+  $employer = $variables['employer'] ?? NULL;
+  if ($employer) {
+    $tenant['name'] = $employer->label() ?? $employer->getDisplayName() ?? '';
+    if ($employer->hasField('field_website') && !$employer->get('field_website')->isEmpty()) {
+      $tenant['url'] = $employer->get('field_website')->value;
+    }
+    if ($employer->hasField('user_picture') && !$employer->get('user_picture')->isEmpty()) {
+      $file = $employer->get('user_picture')->entity;
+      if ($file) {
+        $tenant['logo'] = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+      }
+    }
+  }
+
+  // Generar Schema.org JSON-LD.
+  try {
+    if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
+      $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
+      $jsonLd = $schemaService->generateJobPostingSchema($jobData, $tenant);
+      
+      if (!empty($jsonLd)) {
+        $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning('Error generating JobPosting schema: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Mapea tipos de empleo a Schema.org employment types.
+ */
+function _jaraba_job_board_map_employment_type(string $type): string {
+  $map = [
+    'full_time' => 'FULL_TIME',
+    'fulltime' => 'FULL_TIME',
+    'part_time' => 'PART_TIME',
+    'parttime' => 'PART_TIME',
+    'contract' => 'CONTRACTOR',
+    'temporary' => 'TEMPORARY',
+    'intern' => 'INTERN',
+    'freelance' => 'OTHER',
+  ];
+
+  return $map[strtolower($type)] ?? 'FULL_TIME';
+}
+
+
+

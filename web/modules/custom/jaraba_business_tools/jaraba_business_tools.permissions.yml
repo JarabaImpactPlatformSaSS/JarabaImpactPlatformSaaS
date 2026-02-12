@@ -1,0 +1,81 @@
+# Business Model Canvas permissions
+administer business model canvas:
+  title: 'Administer Business Model Canvas'
+  description: 'Full administrative access to all canvas entities.'
+  restrict access: true
+
+create business model canvas:
+  title: 'Create Business Model Canvas'
+  description: 'Create new business model canvas.'
+
+view own business model canvas:
+  title: 'View own Business Model Canvas'
+  description: 'View own canvas entries.'
+
+view any business model canvas:
+  title: 'View any Business Model Canvas'
+  description: 'View any canvas entry.'
+  restrict access: true
+
+edit own business model canvas:
+  title: 'Edit own Business Model Canvas'
+  description: 'Edit own canvas entries.'
+
+edit any business model canvas:
+  title: 'Edit any Business Model Canvas'
+  description: 'Edit any canvas entry.'
+  restrict access: true
+
+delete own business model canvas:
+  title: 'Delete own Business Model Canvas'
+  description: 'Delete own canvas entries.'
+
+delete any business model canvas:
+  title: 'Delete any Business Model Canvas'
+  description: 'Delete any canvas entry.'
+  restrict access: true
+
+create business model canvas template:
+  title: 'Create Canvas Templates'
+  description: 'Create reusable canvas templates for programs. Assign to mentors.'
+
+# MVP Hypothesis permissions
+create mvp hypothesis:
+  title: 'Create MVP Hypothesis'
+  description: 'Create new MVP hypotheses for validation.'
+
+view own mvp hypothesis:
+  title: 'View own MVP Hypothesis'
+  description: 'View own MVP hypotheses.'
+
+edit own mvp hypothesis:
+  title: 'Edit own MVP Hypothesis'
+  description: 'Edit own MVP hypotheses.'
+
+# Financial Projection permissions
+create financial projection:
+  title: 'Create Financial Projection'
+  description: 'Create new financial projections.'
+
+view own financial projection:
+  title: 'View own Financial Projection'
+  description: 'View own financial projections.'
+
+edit own financial projection:
+  title: 'Edit own Financial Projection'
+  description: 'Edit own financial projections.'
+
+# API access
+access business tools api:
+  title: 'Access Business Tools API'
+  description: 'Access REST API endpoints for business tools.'
+
+analyze canvas with ai:
+  title: 'Analyze Canvas with AI'
+  description: 'Request AI analysis and suggestions for canvas.'
+
+# Dashboard access
+access entrepreneur dashboard:
+  title: 'Access Entrepreneur Dashboard'
+  description: 'Access the entrepreneur dashboard with KPIs and recommendations.'
+

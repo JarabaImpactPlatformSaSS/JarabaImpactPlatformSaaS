@@ -1,0 +1,205 @@
+{#
+/**
+ * @file
+ * Template for My Badges page.
+ */
+#}
+
+<div class="my-badges">
+  <div class="badges-header">
+    <h2 class="badges-title">{{ jaraba_icon('ui', 'trophy', { variant: 'duotone', color: 'warning', size: '24px' }) }} {{ 'Mis Badges'|t }}</h2>
+    <p class="badges-subtitle">{{ 'Credenciales obtenidas por completar cursos'|t }}</p>
+  </div>
+
+  {% if badges|length > 0 %}
+  <div class="badges-grid">
+    {% for badge in badges %}
+    <div class="badge-card">
+      <div class="badge-image">
+        {% if badge.image %}
+          <img src="{{ badge.image }}" alt="{{ badge.name }}">
+        {% else %}
+          <div class="badge-placeholder">{{ jaraba_icon('ui', 'graduation', { variant: 'duotone', color: 'warning', size: '48px' }) }}</div>
+        {% endif %}
+      </div>
+      <div class="badge-info">
+        <h3 class="badge-name">{{ badge.name }}</h3>
+        <p class="badge-description">{{ badge.description|length > 100 ? badge.description|slice(0, 100) ~ '...' : badge.description }}</p>
+        <p class="badge-date">{{ 'Obtenido:'|t }} {{ badge.issued_date }}</p>
+      </div>
+      <div class="badge-actions">
+        <a href="{{ badge.verify_url }}" class="verify-btn" target="_blank">
+          <span>{{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '14px' }) }}</span> {{ 'Verificar'|t }}
+        </a>
+        <button class="share-btn" onclick="navigator.share({title: '{{ badge.name }}', url: '{{ badge.verify_url }}'})">
+          <span>{{ jaraba_icon('actions', 'share', { size: '14px' }) }}</span> {{ 'Compartir'|t }}
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="badges-empty">
+    <div class="empty-icon">{{ jaraba_icon('ui', 'clipboard', { variant: 'duotone', color: 'neutral', size: '64px' }) }}</div>
+    <h3>{{ 'Aún no tienes badges'|t }}</h3>
+    <p>{{ 'Completa cursos para obtener credenciales verificables.'|t }}</p>
+    <a href="/courses" class="action-btn">
+      <span>{{ jaraba_icon('ui', 'book', { size: '16px' }) }}</span> {{ 'Ver Catálogo de Cursos'|t }}
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+.my-badges {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.badges-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.badges-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.badges-subtitle {
+  color: #64748b;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.badge-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.badge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.badge-image {
+  height: 120px;
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-image img {
+  max-height: 80px;
+  max-width: 80px;
+  object-fit: contain;
+}
+
+.badge-placeholder {
+  font-size: 3rem;
+}
+
+.badge-info {
+  padding: 1.5rem;
+}
+
+.badge-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.badge-description {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge-date {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.badge-actions {
+  display: flex;
+  border-top: 1px solid #f1f5f9;
+}
+
+.verify-btn,
+.share-btn {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.verify-btn {
+  color: #10b981;
+  border-right: 1px solid #f1f5f9;
+}
+
+.share-btn {
+  color: #0ea5e9;
+}
+
+.verify-btn:hover,
+.share-btn:hover {
+  background: #f8fafc;
+}
+
+.badges-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8fafc;
+  border-radius: 16px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.badges-empty h3 {
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.badges-empty p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.action-btn:hover {
+  background: #4f46e5;
+}
+</style>

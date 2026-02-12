@@ -1,0 +1,343 @@
+{#
+/**
+ * @file
+ * Canvas Editor - Business Model Canvas visual editor.
+ *
+ * Variables:
+ * - canvas: Business Model Canvas entity
+ * - blocks: Array of CanvasBlock entities keyed by block_type
+ * - is_editable: Whether the user can edit
+ * - show_ai_panel: Whether to show AI suggestions panel
+ */
+#}
+
+{% set block_labels = {
+  'customer_segments': 'Segmentos de Clientes'|t,
+  'value_propositions': 'Propuesta de Valor'|t,
+  'channels': 'Canales'|t,
+  'customer_relationships': 'Relaciones con Clientes'|t,
+  'revenue_streams': 'Fuentes de Ingresos'|t,
+  'key_resources': 'Recursos Clave'|t,
+  'key_activities': 'Actividades Clave'|t,
+  'key_partners': 'Socios Clave'|t,
+  'cost_structure': 'Estructura de Costes'|t,
+} %}
+
+{% set block_icons = {
+  'customer_segments': {'category': 'ui', 'name': 'users'},
+  'value_propositions': {'category': 'ui', 'name': 'star'},
+  'channels': {'category': 'ui', 'name': 'globe'},
+  'customer_relationships': {'category': 'ui', 'name': 'heartbeat'},
+  'revenue_streams': {'category': 'business', 'name': 'cart'},
+  'key_resources': {'category': 'ui', 'name': 'database'},
+  'key_activities': {'category': 'ui', 'name': 'cog'},
+  'key_partners': {'category': 'ui', 'name': 'users'},
+  'cost_structure': {'category': 'business', 'name': 'target'},
+} %}
+
+<article class="canvas-editor" data-canvas-id="{{ canvas.id }}">
+  {# Header #}
+  <header class="canvas-editor__header">
+    <div class="canvas-editor__title">
+      <h1>{{ canvas.title }}</h1>
+      <p class="canvas-editor__meta">
+        {{ 'Sector:'|t }} {{ canvas.sector }} |
+        {{ 'Versión:'|t }} {{ canvas.version }} |
+        {{ 'Completitud:'|t }} {{ canvas.completeness_score|number_format(0) }}%
+      </p>
+    </div>
+    
+    {% if is_editable %}
+    <div class="canvas-editor__actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+      {# Status selector #}
+      <select class="status-select status-select--{{ canvas.status }}" 
+              data-canvas-id="{{ canvas.id }}"
+              data-current-status="{{ canvas.status }}"
+              title="{{ 'Cambiar estado'|t }}"
+              style="height: 38px;">
+        <option value="draft" {{ canvas.status == 'draft' ? 'selected' : '' }}>{{ 'Borrador'|t }}</option>
+        <option value="active" {{ canvas.status == 'active' ? 'selected' : '' }}>{{ 'Activo'|t }}</option>
+        <option value="archived" {{ canvas.status == 'archived' ? 'selected' : '' }}>{{ 'Archivado'|t }}</option>
+      </select>
+      
+      <button class="btn btn-secondary" data-action="save-version" style="white-space: nowrap; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #ccc; background: #f5f5f5; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+        {{ jaraba_icon('actions', 'refresh', { size: '16px' }) }}
+        <span>{{ 'Guardar versión'|t }}</span>
+      </button>
+      <button class="btn btn-secondary" data-action="export-pdf" style="white-space: nowrap; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #ccc; background: #f5f5f5; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+        {{ jaraba_icon('actions', 'download', { size: '16px' }) }}
+        <span>{{ 'Exportar PDF'|t }}</span>
+      </button>
+      <button class="btn btn-primary" data-action="analyze-ai" style="white-space: nowrap; padding: 0.5rem 1rem; border-radius: 8px; border: none; background: var(--ej-color-primary, #2e7d32); color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+        {{ jaraba_icon('ai', 'brain', { size: '16px' }) }}
+        <span>{{ 'Analizar con IA'|t }}</span>
+      </button>
+    </div>
+    {% endif %}
+  </header>
+  
+  {# Canvas Grid #}
+  <div class="canvas-editor__grid">
+    {% for block_type, block in blocks %}
+      {% set items = block.items|default([]) %}
+      <section class="canvas-block block--{{ block_type|replace({'_': '-'}) }}" 
+               data-block-type="{{ block_type }}">
+        <header class="canvas-block__header">
+          {% set icon = block_icons[block_type] %}
+          {% if icon %}
+            {{ jaraba_icon(icon.category, icon.name, { size: '18px', color: 'primary' }) }}
+          {% endif %}
+          <h3>{{ block_labels[block_type] }}</h3>
+          <span class="item-count">{{ items|length }}</span>
+        </header>
+        
+        <div class="canvas-block__items" data-sortable="true">
+          {% for item in items %}
+            <div class="post-it {{ item.validated ? 'post-it--validated' : '' }}" 
+                 data-item-id="{{ item.id }}"
+                 style="background-color: {{ item.color|default('#FFE082') }}">
+              {{ item.text }}
+              {% if is_editable %}
+                <button class="post-it__delete" data-action="delete-item">×</button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        
+        {% if is_editable %}
+          <button class="canvas-block__add-btn" data-action="add-item">
+            + {{ 'Añadir'|t }}
+          </button>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+  
+  {# AI Panel #}
+  {% if show_ai_panel and canvas.coherence_score is not null %}
+  <aside class="ai-panel">
+    <header class="ai-panel__header">
+      {{ jaraba_icon('ai', 'brain', { variant: 'duotone', size: '24px' }) }}
+      <h3>{{ 'Análisis IA'|t }}</h3>
+    </header>
+    
+    <div class="ai-panel__score">
+      <span class="score-value">{{ canvas.coherence_score|number_format(0) }}</span>
+      <span class="score-label">{{ 'Coherencia'|t }}</span>
+    </div>
+    
+    {% if canvas.ai_suggestions %}
+    <div class="ai-panel__suggestions">
+      <h4>{{ 'Sugerencias'|t }}</h4>
+      {% for suggestion in canvas.ai_suggestions|slice(0, 5) %}
+        <div class="suggestion-item">{{ suggestion }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </aside>
+  {% endif %}
+  
+  {# Completeness Bar #}
+  <footer class="canvas-editor__footer">
+    <div class="completeness-bar">
+      <div class="completeness-bar__progress" 
+           style="width: {{ canvas.completeness_score }}%"></div>
+    </div>
+    <p class="completeness-label">
+      {{ 'Completitud del canvas:'|t }} {{ canvas.completeness_score|number_format(0) }}%
+    </p>
+  </footer>
+</article>
+
+{# Inline Item Add Modal - Premium UX #}
+<dialog id="add-item-modal" class="modal canvas-modal" style="border: none; border-radius: var(--ej-radius-lg, 16px); padding: 0; max-width: 480px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); background: white;">
+  <form method="dialog" class="modal__content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+    <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; margin-bottom: 0.5rem;">
+      <h3 class="modal__title" style="margin: 0; font-size: 1.25rem; font-weight: 600; color: #1f2937;">{{ 'Añadir elemento'|t }}</h3>
+      <button type="button" class="modal__close" value="cancel" formmethod="dialog" 
+              style="background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 50%; color: #9ca3af; font-size: 1.5rem; line-height: 1; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: color 0.2s, background-color 0.2s;" 
+              aria-label="{{ 'Cerrar'|t }}"
+              onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.color='#374151';"
+              onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af';">
+        <span style="font-family: system-ui, sans-serif; font-weight: 300;">×</span>
+      </button>
+    </header>
+    
+    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <label for="item-text" style="font-weight: 500; color: #374151; font-size: 0.875rem;">{{ 'Contenido de la nota'|t }}</label>
+      <textarea id="item-text" name="text" rows="3" required 
+                placeholder="{{ 'Describe el elemento del canvas...'|t }}"
+                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: var(--ej-radius-md, 8px); font-size: 0.95rem; resize: vertical; transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit;"
+      ></textarea>
+    </div>
+    
+    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <label for="item-color" style="font-weight: 500; color: #374151; font-size: 0.875rem;">{{ 'Color de la nota'|t }}</label>
+      <div class="color-picker" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+        {# 9 colores premium para notas #}
+        {% set note_colors = [
+          {'value': '#FFE082', 'name': 'Amarillo'|t, 'class': 'yellow'},
+          {'value': '#FFCC80', 'name': 'Naranja'|t, 'class': 'orange'},
+          {'value': '#EF9A9A', 'name': 'Coral'|t, 'class': 'coral'},
+          {'value': '#F48FB1', 'name': 'Rosa'|t, 'class': 'pink'},
+          {'value': '#CE93D8', 'name': 'Violeta'|t, 'class': 'violet'},
+          {'value': '#90CAF9', 'name': 'Azul'|t, 'class': 'blue'},
+          {'value': '#80DEEA', 'name': 'Cian'|t, 'class': 'cyan'},
+          {'value': '#A5D6A7', 'name': 'Verde'|t, 'class': 'green'},
+          {'value': '#E6EE9C', 'name': 'Lima'|t, 'class': 'lime'},
+        ] %}
+        {% for color in note_colors %}
+          <label class="color-option" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: var(--ej-radius-sm, 6px); cursor: pointer; border: 2px solid transparent; transition: all 0.2s;">
+            <input type="radio" name="color" value="{{ color.value }}" 
+                   style="display: none;"
+                   {{ loop.first ? 'checked' : '' }}>
+            <span class="color-swatch" style="width: 24px; height: 24px; border-radius: 50%; background: {{ color.value }}; border: 2px solid rgba(0,0,0,0.1); flex-shrink: 0;"></span>
+            <span style="font-size: 0.8rem; color: #4b5563;">{{ color.name }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      {# Hidden select for fallback #}
+      <select id="item-color" name="color_fallback" style="display: none;">
+        {% for color in note_colors %}
+          <option value="{{ color.value }}">{{ color.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <footer class="modal__actions" style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; margin-top: 0.5rem; flex-shrink: 0;">
+      <button type="button" class="btn btn-secondary" value="cancel" formmethod="dialog" 
+              style="padding: 0.625rem 1.25rem; border-radius: var(--ej-radius-md, 8px); border: 1px solid #d1d5db; background: white; color: #374151; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+        {{ 'Cancelar'|t }}
+      </button>
+      <button type="submit" class="btn btn-primary" 
+              style="padding: 0.625rem 1.5rem; border-radius: var(--ej-radius-md, 8px); border: none; background: var(--ej-color-primary, #2e7d32); color: white; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+        {{ 'Añadir nota'|t }}
+      </button>
+    </footer>
+  </form>
+</dialog>
+
+<style>
+  /* Modal Premium Styles */
+  .canvas-modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  
+  .canvas-modal textarea:focus {
+    outline: none;
+    border-color: var(--ej-color-primary, #2e7d32);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+  }
+  
+  .canvas-modal .color-option:has(input:checked) {
+    border-color: var(--ej-color-primary, #2e7d32);
+    background: rgba(46, 125, 50, 0.05);
+  }
+  
+  .canvas-modal .color-option:hover {
+    background: #f9fafb;
+  }
+  
+  .canvas-modal .btn-secondary:hover {
+    background: #f3f4f6;
+  }
+  
+  .canvas-modal .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+  
+  /* Canvas Block Cards Premium */
+  .canvas-block {
+    background: white;
+    border-radius: var(--ej-radius-lg, 16px) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+  
+  .canvas-block:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+  }
+  
+  .canvas-block__header {
+    padding: 1rem 1.25rem !important;
+    background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .canvas-block__header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+  
+  .item-count {
+    margin-left: auto;
+    background: var(--ej-color-primary, #2e7d32);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    min-width: 1.5rem;
+    text-align: center;
+  }
+  
+  .canvas-block__content {
+    padding: 1rem 1.25rem;
+    min-height: 120px;
+  }
+  
+  /* Post-it Notes Premium */
+  .post-it {
+    border-radius: var(--ej-radius-md, 8px) !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    position: relative;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .post-it::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+    border-radius: var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0 0;
+  }
+  
+  /* Add Button Premium */
+  .canvas-block .btn-add-item {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px dashed #d1d5db;
+    border-radius: var(--ej-radius-md, 8px);
+    background: transparent;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .canvas-block .btn-add-item:hover {
+    border-color: var(--ej-color-primary, #2e7d32);
+    color: var(--ej-color-primary, #2e7d32);
+    background: rgba(46, 125, 50, 0.05);
+  }
+</style>
+

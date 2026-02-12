@@ -1,0 +1,203 @@
+{#
+/**
+ * @file
+ * Template for public badge verification page.
+ */
+#}
+
+<div class="badge-verification">
+  <div class="verification-card">
+    {# Header con estado #}
+    <div class="verification-header verification-header--{{ valid ? 'valid' : 'invalid' }}">
+      <div class="verification-icon">
+        {{ valid ? jaraba_icon('status', 'check-circle', { size: '48px', color: 'success' }) : jaraba_icon('status', 'x-circle', { size: '48px', color: 'danger' }) }}
+      </div>
+      <h1 class="verification-title">
+        {{ valid ? 'Credencial Verificada'|t : 'Credencial Inválida'|t }}
+      </h1>
+    </div>
+
+    {% if valid %}
+    {# Badge Info #}
+    <div class="badge-info">
+      <div class="badge-image">
+        <div class="badge-placeholder">{{ jaraba_icon('achievement', 'trophy', { size: '48px', color: 'warning' }) }}</div>
+      </div>
+      
+      <h2 class="badge-name">{{ badge.name }}</h2>
+      <p class="badge-description">{{ badge.description }}</p>
+      
+      <div class="badge-details">
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Emisor'|t }}:</span>
+          <span class="detail-value">{{ badge.issuer }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Fecha de Emisión'|t }}:</span>
+          <span class="detail-value">{{ badge.issued_date }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Verificado'|t }}:</span>
+          <span class="detail-value">{{ badge.verified_at }}</span>
+        </div>
+      </div>
+    </div>
+
+    {# Actions #}
+    <div class="verification-actions">
+      <a href="/verify/{{ badge.uuid }}/json" class="action-btn" target="_blank">
+        <span class="action-icon">{{ jaraba_icon('actions', 'clipboard', { size: '18px' }) }}</span>
+        <span>{{ 'Ver JSON-LD'|t }}</span>
+      </a>
+    </div>
+
+    {# Open Badges Standard #}
+    <div class="verification-footer">
+      <p class="standard-info">
+        {{ 'Esta credencial cumple con el estándar Open Badges 3.0'|t }}
+      </p>
+      <div class="standard-logo">{{ jaraba_icon('ui', 'graduation', { size: '16px' }) }} Open Badges 3.0</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.badge-verification {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.verification-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+.verification-header {
+  padding: 2rem;
+  text-align: center;
+  color: #fff;
+}
+
+.verification-header--valid {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.verification-header--invalid {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.verification-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.verification-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.badge-info {
+  padding: 2rem;
+  text-align: center;
+}
+
+.badge-image {
+  margin-bottom: 1.5rem;
+}
+
+.badge-placeholder {
+  font-size: 4rem;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+  border-radius: 50%;
+}
+
+.badge-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.badge-description {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.badge-details {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.verification-actions {
+  padding: 0 2rem 1.5rem;
+  text-align: center;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #e2e8f0;
+}
+
+.verification-footer {
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+}
+
+.standard-info {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.standard-logo {
+  color: #0ea5e9;
+  font-weight: 600;
+}
+</style>

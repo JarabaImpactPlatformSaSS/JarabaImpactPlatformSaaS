@@ -1,0 +1,37 @@
+# Task links (tabs) for Candidate module
+# Adds tabs to /admin/content for Candidate Profiles
+# Field UI generates the other tabs automatically
+
+# Tab for Candidate Profiles in Content section
+entity.candidate_profile.collection:
+  title: 'Candidatos'
+  route_name: entity.candidate_profile.collection
+  base_route: system.admin_content
+  weight: 24
+
+# Tab for Candidate Skills in Content section
+entity.candidate_skill.collection:
+  title: 'Skills'
+  route_name: entity.candidate_skill.collection
+  base_route: system.admin_content
+  weight: 25
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS (Settings page as the default tab)
+# Field UI automatically generates the other tabs (Manage fields, etc.)
+# -----------------------------------------------------------------------------
+
+# Settings (default tab for Candidate Profile)
+entity.candidate_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.candidate_profile.settings
+  base_route: entity.candidate_profile.settings
+  weight: -10
+
+# Settings (default tab for Candidate Skill)
+entity.candidate_skill.settings_tab:
+  title: 'Configuración'
+  route_name: entity.candidate_skill.settings
+  base_route: entity.candidate_skill.settings
+  weight: -10
+

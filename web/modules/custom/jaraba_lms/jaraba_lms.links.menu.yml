@@ -1,0 +1,32 @@
+# Menu links for Jaraba LMS module
+# Content management + Field UI settings routes
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - Field UI Settings
+# Para gestionar campos y visualización
+# ---------------------------------------------------------------------------
+
+entity.lms_course.settings:
+  title: 'Cursos LMS'
+  description: 'Configuración de campos y visualización de cursos'
+  route_name: entity.lms_course.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.lms_enrollment.settings:
+  title: 'Matrículas LMS'
+  description: 'Configuración de campos y visualización de matrículas'
+  route_name: entity.lms_enrollment.settings
+  parent: system.admin_structure
+  weight: 11
+
+# ---------------------------------------------------------------------------
+# MENÚ DE CONFIGURACIÓN
+# ---------------------------------------------------------------------------
+
+jaraba_lms.settings:
+  title: 'Configuración LMS'
+  description: 'Ajustes del sistema de formación'
+  parent: system.admin_config
+  route_name: jaraba_lms.settings
+  weight: 80

@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * Template for job search results.
+ */
+#}
+<div class="job-search-results">
+  <header class="job-search-header">
+    <h1 class="job-search-title">{{ 'Job Search'|t }}</h1>
+    
+    {% if total > 0 %}
+      <p class="job-search-count">{{ total }} {{ 'jobs found'|t }}</p>
+    {% endif %}
+  </header>
+
+  {% if jobs is not empty %}
+    <div class="job-listings">
+      {% for job in jobs %}
+        <article class="job-card">
+          <div class="job-card__content">
+            <h2 class="job-card__title">
+              <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}">
+                {{ job.title }}
+              </a>
+            </h2>
+            
+            {% if job.company %}
+              <p class="job-card__company">{{ job.company }}</p>
+            {% endif %}
+            
+            <div class="job-card__meta">
+              {% if job.location %}
+                <span class="job-card__location">
+                  <svg class="icon" width="16" height="16"><use xlink:href="#icon-location"></use></svg>
+                  {{ job.location }}
+                </span>
+              {% endif %}
+              
+              {% if job.job_type %}
+                <span class="job-card__type">{{ job.job_type }}</span>
+              {% endif %}
+              
+              {% if job.salary_range.min %}
+                <span class="job-card__salary">
+                  {{ job.salary_range.min|number_format(0, ',', '.') }} - 
+                  {{ job.salary_range.max|number_format(0, ',', '.') }} €/{{ job.salary_range.period }}
+                </span>
+              {% endif %}
+            </div>
+            
+            {% if job.match_score %}
+              <div class="job-card__match" data-score="{{ job.match_score }}">
+                <span class="match-score">{{ job.match_score|number_format(0) }}%</span>
+                {{ 'match'|t }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="job-card__actions">
+            <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}" class="btn btn--primary">
+              {{ 'View Details'|t }}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+    
+    {% if pager %}
+      {{ pager }}
+    {% endif %}
+    
+  {% else %}
+    <div class="job-search-empty">
+      <p>{{ 'No jobs found matching your criteria.'|t }}</p>
+      <p>{{ 'Try adjusting your filters or check back later.'|t }}</p>
+    </div>
+  {% endif %}
+</div>

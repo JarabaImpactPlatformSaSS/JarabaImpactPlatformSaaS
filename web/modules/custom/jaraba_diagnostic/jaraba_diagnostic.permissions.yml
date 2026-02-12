@@ -1,0 +1,65 @@
+# Permisos del módulo jaraba_diagnostic
+# Sistema de Diagnóstico Empresarial - Vertical Emprendimiento
+
+# === Administración ===
+administer business diagnostics:
+  title: 'Administrar diagnósticos empresariales'
+  description: 'Acceso completo a la gestión de diagnósticos, secciones y preguntas.'
+  restrict access: true
+
+# === Diagnósticos (business_diagnostic) ===
+create business diagnostic:
+  title: 'Crear diagnóstico empresarial'
+  description: 'Permite iniciar un nuevo diagnóstico de madurez digital.'
+
+view own business diagnostic:
+  title: 'Ver diagnósticos propios'
+  description: 'Permite ver los diagnósticos realizados por el usuario.'
+
+view any business diagnostic:
+  title: 'Ver cualquier diagnóstico'
+  description: 'Permite ver diagnósticos de otros usuarios.'
+  restrict access: true
+
+edit own business diagnostic:
+  title: 'Editar diagnósticos propios'
+  description: 'Permite modificar diagnósticos en progreso.'
+
+edit any business diagnostic:
+  title: 'Editar cualquier diagnóstico'
+  description: 'Permite modificar diagnósticos de otros usuarios.'
+  restrict access: true
+
+delete own business diagnostic:
+  title: 'Eliminar diagnósticos propios'
+  description: 'Permite eliminar diagnósticos propios.'
+
+delete any business diagnostic:
+  title: 'Eliminar cualquier diagnóstico'
+  description: 'Permite eliminar diagnósticos de otros usuarios.'
+  restrict access: true
+
+# === Secciones y Preguntas ===
+manage diagnostic sections:
+  title: 'Gestionar secciones de diagnóstico'
+  description: 'Permite crear, editar y eliminar secciones y preguntas.'
+  restrict access: true
+
+# === Recomendaciones ===
+view diagnostic recommendations:
+  title: 'Ver recomendaciones'
+  description: 'Permite ver las recomendaciones generadas.'
+
+generate diagnostic recommendations:
+  title: 'Generar recomendaciones'
+  description: 'Permite regenerar recomendaciones con IA.'
+
+# === Informes ===
+export diagnostic report:
+  title: 'Exportar informe de diagnóstico'
+  description: 'Permite descargar informes en PDF.'
+
+view diagnostic analytics:
+  title: 'Ver analíticas de diagnósticos'
+  description: 'Permite acceder al dashboard de métricas agregadas.'
+  restrict access: true

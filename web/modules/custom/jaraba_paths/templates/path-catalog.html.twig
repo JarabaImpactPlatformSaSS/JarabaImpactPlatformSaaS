@@ -1,0 +1,241 @@
+{#
+ # Template: Catálogo de Itinerarios
+ # /paths
+ #}
+<div class="path-catalog">
+  
+  {# Hero #}
+  <div class="catalog-hero">
+    <h1>{% trans %}Itinerarios de Digitalización{% endtrans %}</h1>
+    <p class="hero-subtitle">
+      {% trans %}Rutas guiadas para transformar digitalmente tu negocio, paso a paso.{% endtrans %}
+    </p>
+  </div>
+
+  {# Filtros #}
+  <div class="catalog-filters">
+    <div class="filter-group">
+      <label for="filter-sector">{% trans %}Sector{% endtrans %}</label>
+      <select id="filter-sector" class="filter-select">
+        <option value="">{% trans %}Todos los sectores{% endtrans %}</option>
+        {% for key, label in sectors %}
+          <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <label for="filter-difficulty">{% trans %}Dificultad{% endtrans %}</label>
+      <select id="filter-difficulty" class="filter-select">
+        <option value="">{% trans %}Todas{% endtrans %}</option>
+        {% for key, label in difficulties %}
+          <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="filter-stats">
+      <span class="stat-count">{{ total_count }}</span>
+      <span class="stat-label">{% trans %}itinerarios disponibles{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Destacados #}
+  {% if featured_paths|length > 0 %}
+  <section class="catalog-section featured-section">
+    <h2>{{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '24px' }) }} {% trans %}Destacados{% endtrans %}</h2>
+    <div class="paths-grid featured-grid">
+      {% for path in featured_paths %}
+        <div class="path-card featured-card" 
+             data-sector="{{ path.sector }}" 
+             data-difficulty="{{ path.difficulty }}">
+          
+          <div class="card-badge featured">{{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '16px' }) }} {% trans %}Destacado{% endtrans %}</div>
+          
+          <div class="card-header">
+            {% if path.image_url %}
+              <img src="{{ path.image_url }}" alt="{{ path.title }}" class="card-image">
+            {% else %}
+              <div class="card-placeholder">
+                <span class="placeholder-icon">{{ jaraba_icon('ui', 'book', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="card-body">
+            <h3 class="card-title">{{ path.title }}</h3>
+            <p class="card-description">{{ path.description|striptags|slice(0, 120) }}{% if path.description|length > 120 %}...{% endif %}</p>
+            
+            <div class="card-meta">
+              <span class="meta-item" title="{% trans %}Duración{% endtrans %}">
+                {{ jaraba_icon('ui', 'calendar', { color: 'azul-corporativo', size: '16px' }) }} {{ path.duration_weeks }} {% trans %}semanas{% endtrans %}
+              </span>
+              <span class="meta-item" title="{% trans %}Fases{% endtrans %}">
+                {{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '16px' }) }} {{ path.phases_count }} {% trans %}fases{% endtrans %}
+              </span>
+            </div>
+            
+            <div class="card-tags">
+              <span class="tag tag-sector">{{ sectors[path.sector]|default(path.sector) }}</span>
+              <span class="tag tag-difficulty tag-{{ path.difficulty }}">
+                {% if path.difficulty == 'beginner' %}{% trans %}Principiante{% endtrans %}
+                {% elseif path.difficulty == 'intermediate' %}{% trans %}Intermedio{% endtrans %}
+                {% else %}{% trans %}Avanzado{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <a href="{{ path.url }}" class="btn-primary">
+              {% trans %}Ver itinerario{% endtrans %}
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Todos los itinerarios #}
+  <section class="catalog-section">
+    <h2>{% trans %}Todos los itinerarios{% endtrans %}</h2>
+    <div class="paths-grid" id="paths-grid">
+      {% for path in paths %}
+        <div class="path-card" 
+             data-sector="{{ path.sector }}" 
+             data-difficulty="{{ path.difficulty }}">
+          
+          {% if path.is_featured %}
+            <div class="card-badge featured">{{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '16px' }) }} {% trans %}Destacado{% endtrans %}</div>
+          {% endif %}
+          
+          <div class="card-header">
+            {% if path.image_url %}
+              <img src="{{ path.image_url }}" alt="{{ path.title }}" class="card-image">
+            {% else %}
+              <div class="card-placeholder">
+                <span class="placeholder-icon">{{ jaraba_icon('ui', 'book', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="card-body">
+            <h3 class="card-title">{{ path.title }}</h3>
+            <p class="card-description">{{ path.description|striptags|slice(0, 120) }}{% if path.description|length > 120 %}...{% endif %}</p>
+            
+            <div class="card-meta">
+              <span class="meta-item" title="{% trans %}Duración{% endtrans %}">
+                {{ jaraba_icon('ui', 'calendar', { color: 'azul-corporativo', size: '16px' }) }} {{ path.duration_weeks }} {% trans %}semanas{% endtrans %}
+              </span>
+              <span class="meta-item" title="{% trans %}Fases{% endtrans %}">
+                {{ jaraba_icon('analytics', 'chart-bar', { color: 'azul-corporativo', size: '16px' }) }} {{ path.phases_count }} {% trans %}fases{% endtrans %}
+              </span>
+            </div>
+            
+            <div class="card-tags">
+              <span class="tag tag-sector">{{ sectors[path.sector]|default(path.sector) }}</span>
+              <span class="tag tag-difficulty tag-{{ path.difficulty }}">
+                {% if path.difficulty == 'beginner' %}{% trans %}Principiante{% endtrans %}
+                {% elseif path.difficulty == 'intermediate' %}{% trans %}Intermedio{% endtrans %}
+                {% else %}{% trans %}Avanzado{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <a href="{{ path.url }}" class="btn-primary">
+              {% trans %}Ver itinerario{% endtrans %}
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-icon">{{ jaraba_icon('business', 'pathway', { variant: 'duotone', color: 'neutral', size: '48px' }) }}</span>
+          <p>{% trans %}No hay itinerarios disponibles en este momento.{% endtrans %}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# CTA final #}
+  <section class="catalog-cta">
+    <div class="cta-content">
+      <h3>{% trans %}¿No sabes por dónde empezar?{% endtrans %}</h3>
+      <p>{% trans %}Realiza nuestro diagnóstico gratuito y te recomendaremos el itinerario ideal para tu negocio.{% endtrans %}</p>
+      <a href="{{ path('jaraba_diagnostic.wizard.start') }}" class="btn-secondary btn-lg">
+        {% trans %}Hacer diagnóstico{% endtrans %}
+      </a>
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  const sectorFilter = document.getElementById('filter-sector');
+  const difficultyFilter = document.getElementById('filter-difficulty');
+  const pathsGrid = document.getElementById('paths-grid');
+  const statCount = document.querySelector('.stat-count');
+  
+  function filterPaths() {
+    const sector = sectorFilter.value;
+    const difficulty = difficultyFilter.value;
+    const cards = pathsGrid.querySelectorAll('.path-card');
+    let visibleCount = 0;
+    
+    // Remover empty state previo si existe
+    const existingEmpty = pathsGrid.querySelector('.filter-empty-state');
+    if (existingEmpty) existingEmpty.remove();
+    
+    cards.forEach(card => {
+      const cardSector = card.dataset.sector;
+      const cardDifficulty = card.dataset.difficulty;
+      
+      const matchSector = !sector || cardSector === sector;
+      const matchDifficulty = !difficulty || cardDifficulty === difficulty;
+      
+      if (matchSector && matchDifficulty) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    
+    // Actualizar contador
+    if (statCount) {
+      statCount.textContent = visibleCount;
+    }
+    
+    // Mostrar empty state si no hay resultados
+    if (visibleCount === 0) {
+      const emptyState = document.createElement('div');
+      emptyState.className = 'filter-empty-state';
+      emptyState.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">
+            <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" fill="none" stroke-width="1.5">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </span>
+          <p>No hay itinerarios que coincidan con los filtros seleccionados.</p>
+          <button type="button" class="btn-secondary btn-reset-filters" onclick="document.getElementById('filter-sector').value=''; document.getElementById('filter-difficulty').value=''; document.getElementById('filter-sector').dispatchEvent(new Event('change'));">
+            Limpiar filtros
+          </button>
+        </div>
+      `;
+      pathsGrid.appendChild(emptyState);
+    }
+  }
+  
+  sectorFilter.addEventListener('change', filterPaths);
+  difficultyFilter.addEventListener('change', filterPaths);
+})();
+</script>

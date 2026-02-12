@@ -1,0 +1,7 @@
+# Action links para jaraba_paths
+
+entity.digitalization_path.add_form:
+  title: 'Añadir Itinerario'
+  route_name: entity.digitalization_path.add_form
+  appears_on:
+    - entity.digitalization_path.collection
