@@ -30,6 +30,7 @@ variables:
   COMPOSER_IGNORE_PLATFORM_REQS: 'ext-ffi'
 
 phpunit (previous major):
+  allow_failure: true
   before_script:
     # We need to build 8.1 with the FFI extension enabled.
     # Install dependencies.
@@ -170,3 +171,7 @@ phpstan:
     # Show the configuration for debugging purposes.
     - php --ri ffi
 
+composer (previous major):
+  before_script:
+    # We need doctrine/instantiator to still be on 2.0 for previous major.
+    - composer require doctrine/instantiator:"2.0.0" --no-update

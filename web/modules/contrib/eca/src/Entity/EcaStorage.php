@@ -140,6 +140,27 @@ class EcaStorage extends ConfigEntityStorage {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function loadMultiple(?array $ids = NULL): array {
+    if ($ids) {
+      // If ids are provided, load them all.
+      return parent::loadMultiple($ids);
+    }
+
+    // If no ids are provided, only return the ECA models that are no
+    // templates.
+    $entities = [];
+    /** @var \Drupal\eca\Entity\Eca $entity */
+    foreach (parent::loadMultiple() as $entity) {
+      if (!$entity->isTemplate()) {
+        $entities[$entity->id()] = $entity;
+      }
+    }
+    return $entities;
+  }
+
+  /**
    * Rebuilds the list of subscribed events based on the current configuration.
    *
    * @return array
