@@ -1,0 +1,38 @@
+{#
+ # Template: ComercioConecta - Catalogo de Productos
+ # Category: comercioconecta
+ # Type: features
+ #
+ # P2-01: Template vertical especializado para comercios y tiendas.
+ # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ #}
+<section class="pb-section pb-section--features pb-section--comercioconecta"
+         aria-label="{{ title|default('Catalogo de Productos')|t }}">
+  <div class="pb-section__container">
+    {% if title %}
+      <h2 class="pb-section__title">{{ title }}</h2>
+    {% endif %}
+
+    {% if subtitle %}
+      <p class="pb-section__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {% if description %}
+      <div class="pb-section__description">{{ description|raw }}</div>
+    {% endif %}
+
+    {% if image %}
+      <div class="pb-section__media">
+        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+      </div>
+    {% endif %}
+
+    {% if cta_text and cta_url %}
+      <div class="pb-section__actions">
+        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
+          {{ cta_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>

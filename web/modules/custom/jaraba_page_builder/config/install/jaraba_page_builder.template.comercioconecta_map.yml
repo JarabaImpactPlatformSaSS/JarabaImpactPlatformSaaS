@@ -1,0 +1,47 @@
+id: 'comercioconecta_map'
+label: 'ComercioConecta: Ubicaciones de Tienda'
+description: 'Seccion ubicacion y cobertura especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/map.html.twig'
+fields_schema:
+  type: object
+  title: 'Ubicaciones de Tienda'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+weight: 18
+preview_data:
+  title: 'Ubicaciones de Tienda'
+  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
+  description: 'Descripcion de ejemplo para la seccion ubicacion y cobertura.'
+  cta_text: 'Comenzar'
+  cta_url: '/'

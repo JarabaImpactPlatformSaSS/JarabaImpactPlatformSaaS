@@ -1,0 +1,47 @@
+id: 'serviciosconecta_gallery'
+label: 'ServiciosConecta: Portafolio de Proyectos'
+description: 'Seccion galeria visual especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Portafolio de Proyectos'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+weight: 27
+preview_data:
+  title: 'Portafolio de Proyectos'
+  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
+  description: 'Descripcion de ejemplo para la seccion galeria visual.'
+  cta_text: 'Comenzar'
+  cta_url: '/'

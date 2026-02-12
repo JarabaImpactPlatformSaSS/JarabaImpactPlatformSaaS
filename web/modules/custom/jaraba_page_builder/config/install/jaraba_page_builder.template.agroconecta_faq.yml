@@ -1,0 +1,47 @@
+id: 'agroconecta_faq'
+label: 'AgroConecta: Certificacion Organica'
+description: 'Seccion preguntas frecuentes especializada para productores agricolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Certificacion Organica'
+  properties:
+    title:
+      type: string
+      title: 'Titulo'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtitulo'
+      maxLength: 300
+    description:
+      type: string
+      title: 'Descripcion'
+      format: html
+    image:
+      type: string
+      title: 'Imagen'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Boton'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Boton'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+weight: 9
+preview_data:
+  title: 'Certificacion Organica'
+  subtitle: 'Subtitulo de ejemplo para AgroConecta'
+  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
+  cta_text: 'Comenzar'
+  cta_url: '/'
