@@ -11,6 +11,7 @@
 // Usa las variables del tema definidas en _variables.scss.
 // ==============================================
 
+@use 'sass:color';
 @use '../variables' as *;
 
 // ==============================================
@@ -476,7 +477,7 @@ body.has-bottom-nav {
     transition: background $ej-transition-fast;
 
     &:active {
-      background: darken($ej-bg-body, 5%);
+      background: color.adjust($ej-bg-body, $lightness: -5%);
     }
   }
 
