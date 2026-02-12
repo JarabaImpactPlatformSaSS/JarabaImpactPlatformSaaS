@@ -6,6 +6,8 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\ecosistema_jaraba_core\Interface\CopilotMessageInterface;
+use Drupal\ecosistema_jaraba_core\Trait\CopilotMessageTrait;
 
 /**
  * Define la entidad CopilotMessage para persistir mensajes individuales.
@@ -45,10 +47,11 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   },
  * )
  */
-class CopilotMessage extends ContentEntityBase
+class CopilotMessage extends ContentEntityBase implements CopilotMessageInterface
 {
 
     use EntityChangedTrait;
+    use CopilotMessageTrait;
 
     /**
      * {@inheritdoc}

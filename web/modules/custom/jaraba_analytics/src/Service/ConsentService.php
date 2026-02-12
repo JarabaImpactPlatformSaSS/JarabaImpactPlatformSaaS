@@ -62,7 +62,7 @@ class ConsentService
      * @param string $visitor_id
      *   ID único del visitante.
      *
-     * @return \Drupal\jaraba_analytics\Entity\ConsentRecord|null
+     * @return \Drupal\jaraba_pixels\Entity\ConsentRecord|null
      *   Registro de consentimiento o NULL si no existe.
      */
     public function getConsent(string $visitor_id): ?object
@@ -83,7 +83,7 @@ class ConsentService
      * @param int|null $tenant_id
      *   ID del tenant (opcional).
      *
-     * @return \Drupal\jaraba_analytics\Entity\ConsentRecord
+     * @return \Drupal\jaraba_pixels\Entity\ConsentRecord
      *   Registro de consentimiento creado/actualizado.
      */
     public function grantConsent(array $categories, string $visitor_id, ?int $tenant_id = NULL): object

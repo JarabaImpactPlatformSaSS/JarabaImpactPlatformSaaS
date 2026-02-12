@@ -126,6 +126,30 @@ services:
       - '@jaraba_ai_agents.model_router'
       - '@ecosistema_jaraba_core.unified_prompt_builder'
 
+  # Sales Agent (AgroConecta - con Model Routing)
+  jaraba_ai_agents.sales_agent:
+    class: Drupal\jaraba_ai_agents\Agent\SalesAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@jaraba_ai_agents.model_router'
+      - '@ecosistema_jaraba_core.unified_prompt_builder'
+
+  # Merchant Copilot Agent (ComercioConecta - F8 Doc 184)
+  jaraba_ai_agents.merchant_copilot_agent:
+    class: Drupal\jaraba_ai_agents\Agent\MerchantCopilotAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@jaraba_ai_agents.model_router'
+      - '@ecosistema_jaraba_core.unified_prompt_builder'
+
 
   # ========================================
   # Tool Registry - Herramientas Agentic
