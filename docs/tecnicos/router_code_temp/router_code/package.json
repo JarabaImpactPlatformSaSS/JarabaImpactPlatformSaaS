@@ -1,0 +1,45 @@
+{
+  "name": "copiloto-router-inteligente",
+  "version": "2.1.0",
+  "description": "Router inteligente multi-proveedor para el Copiloto Andalucía +ei",
+  "main": "services/CopilotRouter.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest",
+    "lint": "eslint services/",
+    "index:normativa": "node scripts/indexNormativa.js",
+    "health": "node scripts/healthCheck.js"
+  },
+  "keywords": [
+    "copiloto",
+    "ia",
+    "emprendimiento",
+    "router",
+    "rag",
+    "claude",
+    "gemini",
+    "openai"
+  ],
+  "author": "Jaraba Impact Platform",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "pg": "^8.11.0",
+    "redis": "^4.6.0",
+    "dotenv": "^16.3.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaraba-impact/copiloto-router"
+  }
+}

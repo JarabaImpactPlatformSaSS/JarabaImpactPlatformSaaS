@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Card - Ficha de Aprendizaje | Andalucía +ei</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #059669 0%, #10B981 100%); }
+        .card-shadow { box-shadow: 0 10px 40px rgba(5, 150, 105, 0.15); }
+        .input-focus:focus { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .decision-card { transition: all 0.2s ease; }
+        .decision-card:hover { transform: translateY(-2px); }
+        .decision-card.selected { transform: scale(1.02); }
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 no-print">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">📚 Learning Card</h1>
+                    <p class="text-green-100 text-sm mt-1">Ficha de Aprendizaje - Programa Andalucía +ei</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.print()" class="bg-white text-green-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-50 transition">
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <form id="learningCardForm" class="space-y-6">
+            <!-- Referencia al Experimento -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">🔗</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Referencia del Experimento</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Número de Experimento</label>
+                        <input type="text" id="experimentNumber" placeholder="EXP-001" readonly
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de finalización</label>
+                        <input type="date" id="completionDate" 
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Duración real</label>
+                        <input type="text" id="actualDuration" placeholder="Ej: 5 días"
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Hipótesis Original (readonly) -->
+                <div class="mt-4 bg-gray-50 rounded-xl p-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-2">Hipótesis que se estaba validando:</label>
+                    <p id="originalHypothesis" class="text-gray-700 italic">"Creo que las madres trabajadoras de 30-45 años comprarán un servicio de menú semanal personalizado porque no tienen tiempo para planificar las comidas."</p>
+                </div>
+
+                <!-- Criterio de Éxito Original (readonly) -->
+                <div class="mt-4 bg-amber-50 rounded-xl p-4">
+                    <label class="block text-sm font-medium text-amber-700 mb-2">Criterio de éxito definido:</label>
+                    <p id="originalCriteria" class="text-amber-800">"Tengo razón si al menos 7 de 10 entrevistadas mencionan 'falta de tiempo' como su principal frustración."</p>
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">👁️</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Lo que observé</h2>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                    <p class="text-blue-800 text-sm">
+                        <strong>💡 Consejo:</strong> Describe HECHOS objetivos, no interpretaciones. ¿Qué viste? ¿Qué dijeron? ¿Qué números obtuviste?
+                    </p>
+                </div>
+
+                <textarea id="observations" rows="5" placeholder="Ej: De las 10 madres entrevistadas:
+- 8 mencionaron 'falta de tiempo' como frustración principal
+- 6 dijeron que piden comida a domicilio al menos 2 veces por semana
+- 4 mencionaron que su pareja no ayuda en la cocina
+- El rango de edad real fue 32-48 años
+- Todas usaban WhatsApp como canal de comunicación principal"
+                          class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+
+                <!-- Métricas Obtenidas -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Métricas clave obtenidas:</label>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <input type="text" id="metric1Name" placeholder="Nombre métrica" class="w-full text-sm text-gray-500 bg-transparent border-none focus:outline-none mb-1">
+                            <input type="text" id="metric1Value" placeholder="Valor" class="w-full text-2xl font-bold text-gray-800 bg-transparent border-none focus:outline-none">
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <input type="text" id="metric2Name" placeholder="Nombre métrica" class="w-full text-sm text-gray-500 bg-transparent border-none focus:outline-none mb-1">
+                            <input type="text" id="metric2Value" placeholder="Valor" class="w-full text-2xl font-bold text-gray-800 bg-transparent border-none focus:outline-none">
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <input type="text" id="metric3Name" placeholder="Nombre métrica" class="w-full text-sm text-gray-500 bg-transparent border-none focus:outline-none mb-1">
+                            <input type="text" id="metric3Value" placeholder="Valor" class="w-full text-2xl font-bold text-gray-800 bg-transparent border-none focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado vs Criterio -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">⚖️</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Resultado vs Criterio de Éxito</h2>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" onclick="setResult('validated')" data-result="validated" 
+                            class="result-btn flex-1 p-6 border-2 border-gray-200 rounded-xl hover:border-green-500 transition text-center">
+                        <span class="text-4xl block mb-2">✅</span>
+                        <span class="font-semibold text-gray-800">VALIDADA</span>
+                        <p class="text-sm text-gray-500 mt-1">Se cumplió el criterio de éxito</p>
+                    </button>
+                    <button type="button" onclick="setResult('invalidated')" data-result="invalidated" 
+                            class="result-btn flex-1 p-6 border-2 border-gray-200 rounded-xl hover:border-red-500 transition text-center">
+                        <span class="text-4xl block mb-2">❌</span>
+                        <span class="font-semibold text-gray-800">INVALIDADA</span>
+                        <p class="text-sm text-gray-500 mt-1">No se cumplió el criterio</p>
+                    </button>
+                    <button type="button" onclick="setResult('inconclusive')" data-result="inconclusive" 
+                            class="result-btn flex-1 p-6 border-2 border-gray-200 rounded-xl hover:border-amber-500 transition text-center">
+                        <span class="text-4xl block mb-2">🤔</span>
+                        <span class="font-semibold text-gray-800">INCONCLUSIVO</span>
+                        <p class="text-sm text-gray-500 mt-1">Datos insuficientes</p>
+                    </button>
+                </div>
+                <input type="hidden" id="resultStatus" value="">
+            </div>
+
+            <!-- Aprendizajes -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">💡</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Lo que aprendí</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aprendizajes sobre el CLIENTE:</label>
+                        <textarea id="learningsCustomer" rows="3" placeholder="¿Qué aprendiste sobre tu cliente que no sabías antes? ¿Qué te sorprendió?"
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aprendizajes sobre el PROBLEMA:</label>
+                        <textarea id="learningsProblem" rows="3" placeholder="¿El problema es más grande, más pequeño, o diferente de lo que pensabas?"
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aprendizajes sobre la SOLUCIÓN:</label>
+                        <textarea id="learningsSolution" rows="3" placeholder="¿Tu solución propuesta sigue teniendo sentido? ¿Qué ajustes necesita?"
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decisión -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">🎯</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Mi decisión</h2>
+                </div>
+
+                <p class="text-gray-600 mb-4">Basándome en lo aprendido, decido:</p>
+
+                <div class="grid md:grid-cols-5 gap-3">
+                    <button type="button" onclick="setDecision('PERSEVERE')" data-decision="PERSEVERE" 
+                            class="decision-card p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 text-center">
+                        <span class="text-2xl block mb-2">🚀</span>
+                        <span class="font-semibold text-sm text-gray-800">PERSEVERAR</span>
+                        <p class="text-xs text-gray-500 mt-1">Seguir adelante</p>
+                    </button>
+                    <button type="button" onclick="setDecision('PIVOT')" data-decision="PIVOT" 
+                            class="decision-card p-4 border-2 border-gray-200 rounded-xl hover:border-amber-500 text-center">
+                        <span class="text-2xl block mb-2">🔄</span>
+                        <span class="font-semibold text-sm text-gray-800">PIVOTAR</span>
+                        <p class="text-xs text-gray-500 mt-1">Cambiar dirección</p>
+                    </button>
+                    <button type="button" onclick="setDecision('ZOOM_IN')" data-decision="ZOOM_IN" 
+                            class="decision-card p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 text-center">
+                        <span class="text-2xl block mb-2">🔍</span>
+                        <span class="font-semibold text-sm text-gray-800">ZOOM IN</span>
+                        <p class="text-xs text-gray-500 mt-1">Enfocarse más</p>
+                    </button>
+                    <button type="button" onclick="setDecision('ZOOM_OUT')" data-decision="ZOOM_OUT" 
+                            class="decision-card p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 text-center">
+                        <span class="text-2xl block mb-2">🔭</span>
+                        <span class="font-semibold text-sm text-gray-800">ZOOM OUT</span>
+                        <p class="text-xs text-gray-500 mt-1">Ampliar scope</p>
+                    </button>
+                    <button type="button" onclick="setDecision('KILL')" data-decision="KILL" 
+                            class="decision-card p-4 border-2 border-gray-200 rounded-xl hover:border-red-500 text-center">
+                        <span class="text-2xl block mb-2">🛑</span>
+                        <span class="font-semibold text-sm text-gray-800">ABANDONAR</span>
+                        <p class="text-xs text-gray-500 mt-1">Descartar idea</p>
+                    </button>
+                </div>
+                <input type="hidden" id="decisionType" value="">
+
+                <!-- Explicación de decisión -->
+                <div id="decisionExplanation" class="mt-4 hidden">
+                    <div id="decisionHelpText" class="bg-gray-50 rounded-xl p-4 mb-4"></div>
+                </div>
+            </div>
+
+            <!-- Próximos Pasos -->
+            <div class="bg-white rounded-2xl card-shadow p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">📋</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Próximos pasos</h2>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Por lo tanto, voy a...</label>
+                    <textarea id="nextActions" rows="4" placeholder="Describe las acciones concretas que vas a tomar basándote en este aprendizaje. Sé específico: qué, cuándo, cómo."
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nueva hipótesis a validar (si aplica):</label>
+                    <textarea id="newHypothesis" rows="2" placeholder="Si decides pivotar o ajustar, ¿cuál es la nueva hipótesis que necesitas validar?"
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl input-focus focus:border-green-500 focus:outline-none transition resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex gap-4 no-print">
+                <button type="button" onclick="guardarLearningCard()" class="flex-1 gradient-bg text-white py-4 rounded-xl font-semibold hover:opacity-90 transition">
+                    ✅ Guardar Learning Card
+                </button>
+                <button type="button" onclick="crearSiguienteExperimento()" class="flex-1 bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition">
+                    ➡️ Crear siguiente experimento
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 py-6 mt-12 no-print">
+        <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>Learning Card basada en "Testing Business Ideas" de Strategyzer</p>
+            <p class="mt-1">Programa Andalucía +ei | Jaraba Impact Platform</p>
+        </div>
+    </footer>
+
+    <script>
+        const decisionHelp = {
+            'PERSEVERE': {
+                color: 'green',
+                text: '🚀 <strong>PERSEVERAR</strong>: Los datos confirman tu hipótesis. Sigue adelante con la siguiente fase o valida hipótesis adicionales del mismo bloque del Canvas.'
+            },
+            'PIVOT': {
+                color: 'amber',
+                text: '🔄 <strong>PIVOTAR</strong>: La hipótesis no se confirma pero has identificado una oportunidad diferente. Cambia de dirección manteniendo lo aprendido.'
+            },
+            'ZOOM_IN': {
+                color: 'blue',
+                text: '🔍 <strong>ZOOM IN</strong>: Has identificado un segmento más específico que responde mejor. Enfócate en ese nicho antes de ampliar.'
+            },
+            'ZOOM_OUT': {
+                color: 'purple',
+                text: '🔭 <strong>ZOOM OUT</strong>: Tu solución podría servir a un mercado más amplio. Considera expandir el alcance de tu propuesta de valor.'
+            },
+            'KILL': {
+                color: 'red',
+                text: '🛑 <strong>ABANDONAR</strong>: No hay evidencia suficiente de demanda o viabilidad. Es mejor dedicar recursos a otra oportunidad. ¡Esto también es un éxito!'
+            }
+        };
+
+        function setResult(result) {
+            document.getElementById('resultStatus').value = result;
+            document.querySelectorAll('.result-btn').forEach(btn => {
+                btn.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50', 'border-amber-500', 'bg-amber-50');
+                if (btn.dataset.result === result) {
+                    const colors = {
+                        'validated': ['border-green-500', 'bg-green-50'],
+                        'invalidated': ['border-red-500', 'bg-red-50'],
+                        'inconclusive': ['border-amber-500', 'bg-amber-50']
+                    };
+                    btn.classList.add(...colors[result]);
+                }
+            });
+        }
+
+        function setDecision(decision) {
+            document.getElementById('decisionType').value = decision;
+            document.querySelectorAll('.decision-card').forEach(btn => {
+                btn.classList.remove('border-green-500', 'bg-green-50', 'border-amber-500', 'bg-amber-50', 
+                                     'border-blue-500', 'bg-blue-50', 'border-purple-500', 'bg-purple-50',
+                                     'border-red-500', 'bg-red-50', 'selected');
+                if (btn.dataset.decision === decision) {
+                    const colors = {
+                        'PERSEVERE': ['border-green-500', 'bg-green-50'],
+                        'PIVOT': ['border-amber-500', 'bg-amber-50'],
+                        'ZOOM_IN': ['border-blue-500', 'bg-blue-50'],
+                        'ZOOM_OUT': ['border-purple-500', 'bg-purple-50'],
+                        'KILL': ['border-red-500', 'bg-red-50']
+                    };
+                    btn.classList.add(...colors[decision], 'selected');
+                }
+            });
+
+            // Mostrar texto de ayuda
+            const helpDiv = document.getElementById('decisionExplanation');
+            const helpText = document.getElementById('decisionHelpText');
+            const help = decisionHelp[decision];
+            helpText.innerHTML = help.text;
+            helpText.className = `bg-${help.color}-50 border border-${help.color}-200 rounded-xl p-4 text-${help.color}-800`;
+            helpDiv.classList.remove('hidden');
+        }
+
+        function getFormData() {
+            return {
+                experimentNumber: document.getElementById('experimentNumber').value,
+                completionDate: document.getElementById('completionDate').value,
+                actualDuration: document.getElementById('actualDuration').value,
+                observations: document.getElementById('observations').value,
+                metrics: [
+                    { name: document.getElementById('metric1Name').value, value: document.getElementById('metric1Value').value },
+                    { name: document.getElementById('metric2Name').value, value: document.getElementById('metric2Value').value },
+                    { name: document.getElementById('metric3Name').value, value: document.getElementById('metric3Value').value }
+                ],
+                resultStatus: document.getElementById('resultStatus').value,
+                learningsCustomer: document.getElementById('learningsCustomer').value,
+                learningsProblem: document.getElementById('learningsProblem').value,
+                learningsSolution: document.getElementById('learningsSolution').value,
+                decisionType: document.getElementById('decisionType').value,
+                nextActions: document.getElementById('nextActions').value,
+                newHypothesis: document.getElementById('newHypothesis').value
+            };
+        }
+
+        function guardarLearningCard() {
+            const data = getFormData();
+            if (!data.observations || !data.decisionType) {
+                alert('⚠️ Por favor, completa al menos las observaciones y la decisión');
+                return;
+            }
+            console.log('Guardando Learning Card:', data);
+            alert('✅ Learning Card guardada correctamente');
+        }
+
+        function crearSiguienteExperimento() {
+            const data = getFormData();
+            if (!data.newHypothesis && data.decisionType !== 'KILL') {
+                if (!confirm('No has definido una nueva hipótesis. ¿Quieres crear un experimento sin nueva hipótesis?')) {
+                    return;
+                }
+            }
+            // Redirigir a Test Card con datos prellenados
+            console.log('Creando siguiente experimento con:', data);
+            alert('➡️ Redirigiendo a nueva Test Card...');
+            // window.location.href = 'TestCard.html?hypothesis=' + encodeURIComponent(data.newHypothesis);
+        }
+
+        // Inicializar con fecha de hoy
+        window.onload = function() {
+            document.getElementById('completionDate').valueAsDate = new Date();
+        };
+    </script>
+</body>
+</html>

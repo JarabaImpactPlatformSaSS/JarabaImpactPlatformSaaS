@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jaraba Emprendimiento - Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-emp { background: linear-gradient(135deg, #1B5E4F 0%, #9B59B6 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-emp text-white">
+    <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">🚀</span>
+        </div>
+        <span class="text-xl font-bold">Jaraba Emprendimiento</span>
+      </div>
+      <div class="hidden md:flex space-x-6">
+        <a href="#diagnostico" class="hover:text-purple-200">Diagnóstico</a>
+        <a href="#mentoria" class="hover:text-purple-200">Mentoría</a>
+        <a href="#recursos" class="hover:text-purple-200">Recursos</a>
+        <a href="#programas" class="hover:text-purple-200">Programas</a>
+      </div>
+      <div class="flex space-x-3">
+        <button class="px-4 py-2 rounded-lg border border-white hover:bg-white hover:text-purple-700 transition">Entrar</button>
+        <button class="px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-medium hover:bg-yellow-400 transition">Empezar gratis</button>
+      </div>
+    </nav>
+    
+    <!-- Hero -->
+    <div class="max-w-7xl mx-auto px-4 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="bg-white/20 px-4 py-1 rounded-full text-sm">Programa Andalucía Emprende</span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 mb-6">Transforma tu idea en un negocio digital</h1>
+        <p class="text-xl text-purple-100 mb-8">Diagnóstico, mentoría personalizada y herramientas de IA para lanzar y escalar tu emprendimiento.</p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button class="px-6 py-3 bg-yellow-500 text-gray-900 rounded-xl font-semibold text-lg hover:bg-yellow-400 transition">
+            🎯 Hacer diagnóstico gratuito
+          </button>
+          <button class="px-6 py-3 bg-white/20 backdrop-blur rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+            Ver programas
+          </button>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-6">
+            <span class="text-gray-500 text-sm">Tu madurez digital</span>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Diagnóstico Express</span>
+          </div>
+          <div class="relative pt-1 mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-700">Nivel actual</span>
+              <span class="text-sm font-bold text-purple-600">62/100</span>
+            </div>
+            <div class="overflow-hidden h-3 rounded-full bg-gray-200">
+              <div class="w-[62%] h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"></div>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">Presencia online</span>
+              <div class="flex items-center">
+                <div class="w-20 h-2 bg-gray-200 rounded-full mr-2">
+                  <div class="w-[80%] h-full bg-green-500 rounded-full"></div>
+                </div>
+                <span class="text-sm font-medium">80%</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">Procesos digitales</span>
+              <div class="flex items-center">
+                <div class="w-20 h-2 bg-gray-200 rounded-full mr-2">
+                  <div class="w-[45%] h-full bg-yellow-500 rounded-full"></div>
+                </div>
+                <span class="text-sm font-medium">45%</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">Ventas online</span>
+              <div class="flex items-center">
+                <div class="w-20 h-2 bg-gray-200 rounded-full mr-2">
+                  <div class="w-[60%] h-full bg-purple-500 rounded-full"></div>
+                </div>
+                <span class="text-sm font-medium">60%</span>
+              </div>
+            </div>
+          </div>
+          <button class="w-full mt-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition">
+            Ver plan de acción personalizado →
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <section class="py-12 bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-3xl font-bold text-purple-600">+1.200</div>
+        <div class="text-gray-500">Emprendedores activos</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-purple-600">+85</div>
+        <div class="text-gray-500">Mentores expertos</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-purple-600">73%</div>
+        <div class="text-gray-500">Tasa de supervivencia</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-purple-600">€2.4M</div>
+        <div class="text-gray-500">Financiación conseguida</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diagnóstico -->
+  <section id="diagnostico" class="py-16 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-medium">Paso 1</span>
+      <h2 class="text-3xl font-bold text-gray-800 mt-4">Conoce tu punto de partida</h2>
+      <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Nuestro diagnóstico de madurez digital analiza 6 dimensiones clave de tu negocio en menos de 10 minutos.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">🌐</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Presencia Digital</h3>
+        <p class="text-gray-500 text-sm">Web, redes sociales, SEO y visibilidad online</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">⚙️</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Procesos Internos</h3>
+        <p class="text-gray-500 text-sm">Automatización, herramientas y eficiencia</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">🛒</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Ventas Online</h3>
+        <p class="text-gray-500 text-sm">E-commerce, pagos y gestión de pedidos</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">📊</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Datos y Analítica</h3>
+        <p class="text-gray-500 text-sm">Métricas, KPIs y toma de decisiones</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">🤝</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Relación con Cliente</h3>
+        <p class="text-gray-500 text-sm">CRM, comunicación y fidelización</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">🔒</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Seguridad y Legal</h3>
+        <p class="text-gray-500 text-sm">RGPD, ciberseguridad y compliance</p>
+      </div>
+    </div>
+    <div class="text-center mt-10">
+      <button class="px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold text-lg hover:bg-purple-700 transition">
+        Hacer diagnóstico gratuito (10 min)
+      </button>
+    </div>
+  </section>
+
+  <!-- Mentoría -->
+  <section id="mentoria" class="py-16 bg-purple-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-medium">Paso 2</span>
+          <h2 class="text-3xl font-bold text-gray-800 mt-4 mb-6">Mentoría personalizada</h2>
+          <p class="text-gray-600 mb-6">Conectamos tu negocio con mentores expertos en tu sector. Sesiones 1:1, seguimiento de objetivos y apoyo continuo.</p>
+          <ul class="space-y-4">
+            <li class="flex items-start">
+              <span class="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-3 mt-1">✓</span>
+              <div><strong>Matching inteligente</strong> - IA que encuentra el mentor perfecto para ti</div>
+            </li>
+            <li class="flex items-start">
+              <span class="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-3 mt-1">✓</span>
+              <div><strong>Sesiones flexibles</strong> - Videollamada o presencial, tú eliges</div>
+            </li>
+            <li class="flex items-start">
+              <span class="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-3 mt-1">✓</span>
+              <div><strong>Plan de acción</strong> - Objetivos medibles y seguimiento mensual</div>
+            </li>
+          </ul>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="w-14 h-14 bg-gray-200 rounded-full mb-3 flex items-center justify-center text-2xl">👨‍💼</div>
+            <h4 class="font-semibold">Carlos Ruiz</h4>
+            <p class="text-sm text-purple-600">E-commerce & Growth</p>
+            <p class="text-xs text-gray-500 mt-1">Ex-Amazon • +15 años</p>
+            <div class="flex items-center mt-2">
+              <span class="text-yellow-400 text-sm">★★★★★</span>
+              <span class="text-xs text-gray-400 ml-1">(47)</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="w-14 h-14 bg-gray-200 rounded-full mb-3 flex items-center justify-center text-2xl">👩‍💼</div>
+            <h4 class="font-semibold">Ana García</h4>
+            <p class="text-sm text-purple-600">Marketing Digital</p>
+            <p class="text-xs text-gray-500 mt-1">Fundadora 2 startups</p>
+            <div class="flex items-center mt-2">
+              <span class="text-yellow-400 text-sm">★★★★★</span>
+              <span class="text-xs text-gray-400 ml-1">(63)</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="w-14 h-14 bg-gray-200 rounded-full mb-3 flex items-center justify-center text-2xl">👨‍💼</div>
+            <h4 class="font-semibold">Miguel López</h4>
+            <p class="text-sm text-purple-600">Finanzas & Inversión</p>
+            <p class="text-xs text-gray-500 mt-1">Business Angel • CFO</p>
+            <div class="flex items-center mt-2">
+              <span class="text-yellow-400 text-sm">★★★★☆</span>
+              <span class="text-xs text-gray-400 ml-1">(28)</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="w-14 h-14 bg-gray-200 rounded-full mb-3 flex items-center justify-center text-2xl">👩‍💼</div>
+            <h4 class="font-semibold">Laura Martín</h4>
+            <p class="text-sm text-purple-600">Agrotech & Rural</p>
+            <p class="text-xs text-gray-500 mt-1">Ingeniera Agrónoma</p>
+            <div class="flex items-center mt-2">
+              <span class="text-yellow-400 text-sm">★★★★★</span>
+              <span class="text-xs text-gray-400 ml-1">(35)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Herramientas IA -->
+  <section id="recursos" class="py-16 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-medium">Potenciado por IA</span>
+      <h2 class="text-3xl font-bold text-gray-800 mt-4">Tu copiloto de negocio</h2>
+      <p class="text-gray-600 mt-2">Herramientas inteligentes para validar, planificar y ejecutar tu estrategia</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="card-hover bg-white rounded-xl p-6 border">
+        <div class="text-4xl mb-4">📋</div>
+        <h3 class="font-semibold text-lg mb-2">Business Model Canvas</h3>
+        <p class="text-gray-500 text-sm mb-4">Genera tu canvas con ayuda de IA a partir de una descripción de tu idea.</p>
+        <a href="#" class="text-purple-600 font-medium text-sm">Crear canvas →</a>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border">
+        <div class="text-4xl mb-4">💰</div>
+        <h3 class="font-semibold text-lg mb-2">Proyecciones Financieras</h3>
+        <p class="text-gray-500 text-sm mb-4">Previsiones a 3 años con escenarios y análisis de sensibilidad.</p>
+        <a href="#" class="text-purple-600 font-medium text-sm">Calcular →</a>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border">
+        <div class="text-4xl mb-4">🔍</div>
+        <h3 class="font-semibold text-lg mb-2">Análisis Competitivo</h3>
+        <p class="text-gray-500 text-sm mb-4">Mapea tu competencia y encuentra tu diferenciación.</p>
+        <a href="#" class="text-purple-600 font-medium text-sm">Analizar →</a>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border">
+        <div class="text-4xl mb-4">✅</div>
+        <h3 class="font-semibold text-lg mb-2">Validación MVP</h3>
+        <p class="text-gray-500 text-sm mb-4">Framework para validar tu producto mínimo viable.</p>
+        <a href="#" class="text-purple-600 font-medium text-sm">Validar →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Programas -->
+  <section id="programas" class="py-16 gradient-emp text-white">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold">Programas de apoyo</h2>
+        <p class="text-purple-100 mt-2">Accede a financiación y recursos de instituciones públicas</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-3">
+              <span class="text-2xl">🏛️</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Andalucía Emprende</h3>
+              <p class="text-purple-200 text-sm">Junta de Andalucía</p>
+            </div>
+          </div>
+          <p class="text-purple-100 text-sm mb-4">Programa integral de apoyo al emprendimiento con formación, mentoría y acceso a financiación.</p>
+          <div class="flex items-center justify-between">
+            <span class="text-yellow-400 font-bold">Gratuito</span>
+            <button class="px-4 py-2 bg-white/20 rounded-lg text-sm hover:bg-white/30">Más info</button>
+          </div>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-3">
+              <span class="text-2xl">💻</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Kit Digital</h3>
+              <p class="text-purple-200 text-sm">Red.es / Gobierno</p>
+            </div>
+          </div>
+          <p class="text-purple-100 text-sm mb-4">Hasta 12.000€ en bonos para digitalizar tu negocio: web, e-commerce, gestión, etc.</p>
+          <div class="flex items-center justify-between">
+            <span class="text-yellow-400 font-bold">Hasta 12.000€</span>
+            <button class="px-4 py-2 bg-white/20 rounded-lg text-sm hover:bg-white/30">Solicitar</button>
+          </div>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-3">
+              <span class="text-2xl">🌱</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">ENISA</h3>
+              <p class="text-purple-200 text-sm">Ministerio de Industria</p>
+            </div>
+          </div>
+          <p class="text-purple-100 text-sm mb-4">Préstamos participativos para startups y pymes innovadoras sin avales.</p>
+          <div class="flex items-center justify-between">
+            <span class="text-yellow-400 font-bold">25K - 300K€</span>
+            <button class="px-4 py-2 bg-white/20 rounded-lg text-sm hover:bg-white/30">Ver requisitos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">¿Listo para dar el salto?</h2>
+      <p class="text-gray-600 mb-8">Empieza con un diagnóstico gratuito y descubre cómo podemos ayudarte a digitalizar y escalar tu negocio.</p>
+      <button class="px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold text-lg hover:bg-purple-700 transition">
+        Comenzar ahora - Es gratis
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+            <span class="text-lg">🚀</span>
+          </div>
+          <span class="text-white font-bold">Jaraba Emprendimiento</span>
+        </div>
+        <p class="text-sm">Impulsando la transformación digital de emprendedores. Parte del ecosistema Jaraba Impact.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Servicios</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Diagnóstico</a></li>
+          <li><a href="#" class="hover:text-white">Mentoría</a></li>
+          <li><a href="#" class="hover:text-white">Herramientas IA</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Programas</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Andalucía Emprende</a></li>
+          <li><a href="#" class="hover:text-white">Kit Digital</a></li>
+          <li><a href="#" class="hover:text-white">ENISA</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Recursos</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Blog</a></li>
+          <li><a href="#" class="hover:text-white">Guías</a></li>
+          <li><a href="#" class="hover:text-white">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+      © 2026 Jaraba Impact S.L. Todos los derechos reservados.
+    </div>
+  </footer>
+</body>
+</html>

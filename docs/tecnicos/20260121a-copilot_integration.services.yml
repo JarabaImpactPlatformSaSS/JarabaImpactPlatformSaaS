@@ -1,0 +1,137 @@
+services:
+  # =============================================================================
+  # CORE SERVICES
+  # =============================================================================
+  
+  copilot_integration.copilot_engine:
+    class: Drupal\copilot_integration\Service\CopilotEngine
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+      - '@http_client'
+      - '@copilot_integration.context_builder'
+      - '@copilot_integration.prompt_builder'
+    tags:
+      - { name: service }
+
+  copilot_integration.context_builder:
+    class: Drupal\copilot_integration\Service\ContextBuilder
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@copilot_integration.bmc_validation'
+
+  copilot_integration.prompt_builder:
+    class: Drupal\copilot_integration\Service\PromptBuilder
+    arguments:
+      - '@config.factory'
+      - '@copilot_integration.experiment_library'
+
+  # =============================================================================
+  # BMC & VALIDATION SERVICES
+  # =============================================================================
+
+  copilot_integration.bmc_validation:
+    class: Drupal\copilot_integration\Service\BMCValidationService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@event_dispatcher'
+    tags:
+      - { name: service }
+
+  copilot_integration.hypothesis_prioritizer:
+    class: Drupal\copilot_integration\Service\HypothesisPrioritizer
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  # =============================================================================
+  # EXPERIMENT SERVICES
+  # =============================================================================
+
+  copilot_integration.experiment_library:
+    class: Drupal\copilot_integration\Service\ExperimentLibrary
+    arguments:
+      - '@database'
+      - '@cache.default'
+    tags:
+      - { name: service }
+
+  copilot_integration.experiment_suggester:
+    class: Drupal\copilot_integration\Service\ExperimentSuggester
+    arguments:
+      - '@copilot_integration.experiment_library'
+      - '@entity_type.manager'
+      - '@copilot_integration.hypothesis_prioritizer'
+
+  copilot_integration.experiment_processor:
+    class: Drupal\copilot_integration\Service\ExperimentProcessor
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@copilot_integration.bmc_validation'
+      - '@copilot_integration.hypothesis_prioritizer'
+      - '@copilot_integration.gamification'
+      - '@event_dispatcher'
+
+  # =============================================================================
+  # DIME & PROFILE SERVICES
+  # =============================================================================
+
+  copilot_integration.dime_processor:
+    class: Drupal\copilot_integration\Service\DIMEProcessor
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  copilot_integration.gamification:
+    class: Drupal\copilot_integration\Service\GamificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@event_dispatcher'
+
+  # =============================================================================
+  # REST RESOURCES
+  # =============================================================================
+
+  copilot_integration.chat_resource:
+    class: Drupal\copilot_integration\Plugin\rest\resource\CopilotChatResource
+    arguments:
+      - '@copilot_integration.copilot_engine'
+      - '@current_user'
+      - '@logger.factory'
+    tags:
+      - { name: rest_resource }
+
+  copilot_integration.bmc_resource:
+    class: Drupal\copilot_integration\Plugin\rest\resource\BMCValidationResource
+    arguments:
+      - '@copilot_integration.bmc_validation'
+      - '@current_user'
+    tags:
+      - { name: rest_resource }
+
+  # =============================================================================
+  # EVENT SUBSCRIBERS
+  # =============================================================================
+
+  copilot_integration.experiment_subscriber:
+    class: Drupal\copilot_integration\EventSubscriber\ExperimentEventSubscriber
+    arguments:
+      - '@copilot_integration.experiment_processor'
+      - '@logger.factory'
+    tags:
+      - { name: event_subscriber }
+
+  copilot_integration.validation_subscriber:
+    class: Drupal\copilot_integration\EventSubscriber\ValidationEventSubscriber
+    arguments:
+      - '@copilot_integration.bmc_validation'
+      - '@copilot_integration.gamification'
+    tags:
+      - { name: event_subscriber }

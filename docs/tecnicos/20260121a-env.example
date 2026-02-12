@@ -1,0 +1,284 @@
+# =============================================================================
+# COPILOTO DE EMPRENDIMIENTO v2.0 - VARIABLES DE ENTORNO
+# =============================================================================
+# Copiar este archivo como .env y configurar los valores según tu entorno.
+# NUNCA subir el archivo .env a control de versiones.
+# =============================================================================
+
+# =============================================================================
+# BASE DE DATOS
+# =============================================================================
+
+# Host de la base de datos (localhost en desarrollo, nombre del servicio en Docker)
+DB_HOST=localhost
+
+# Puerto de MySQL/MariaDB
+DB_PORT=3306
+
+# Nombre de la base de datos
+DB_NAME=copiloto_ei
+
+# Usuario de la base de datos (crear uno específico para la aplicación)
+DB_USER=copiloto_user
+
+# Contraseña del usuario (usar una contraseña segura en producción)
+DB_PASSWORD=tu_password_muy_seguro_aqui
+
+# Driver de base de datos (mysql o pgsql)
+DB_DRIVER=mysql
+
+# Charset de la base de datos
+DB_CHARSET=utf8mb4
+
+# Collation
+DB_COLLATION=utf8mb4_unicode_ci
+
+# =============================================================================
+# DRUPAL
+# =============================================================================
+
+# URL base de la aplicación (sin slash final)
+DRUPAL_BASE_URL=https://tu-dominio.com
+
+# Hash salt de Drupal (generar uno único y largo)
+# Generar con: php -r "echo bin2hex(random_bytes(32));"
+DRUPAL_HASH_SALT=cambiar_por_hash_aleatorio_muy_largo_y_unico
+
+# Entorno de Drupal (dev, staging, prod)
+DRUPAL_ENV=dev
+
+# Modo debug de Drupal
+DRUPAL_DEBUG=true
+
+# Trusted hosts (separados por coma)
+DRUPAL_TRUSTED_HOSTS=localhost,127.0.0.1,tu-dominio.com
+
+# =============================================================================
+# API DE CLAUDE (ANTHROPIC)
+# =============================================================================
+
+# API Key de Anthropic (obtener en console.anthropic.com)
+# ¡MANTENER SEGURA! No compartir ni subir a repositorios
+ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Modelo de Claude a usar
+# Opciones: claude-3-5-sonnet-20241022, claude-3-opus-20240229, claude-3-haiku-20240307
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+
+# Máximo de tokens en la respuesta
+ANTHROPIC_MAX_TOKENS=4096
+
+# Temperatura del modelo (0.0 = determinístico, 1.0 = creativo)
+ANTHROPIC_TEMPERATURE=0.7
+
+# URL base de la API (normalmente no cambiar)
+ANTHROPIC_API_URL=https://api.anthropic.com/v1
+
+# Timeout de la petición en segundos
+ANTHROPIC_TIMEOUT=60
+
+# =============================================================================
+# CONFIGURACIÓN DEL COPILOTO
+# =============================================================================
+
+# Habilitar streaming de respuestas (recomendado true para mejor UX)
+COPILOT_STREAMING_ENABLED=true
+
+# Máximo de mensajes por conversación antes de resumir
+COPILOT_MAX_CONVERSATION_LENGTH=50
+
+# Timeout de sesión de chat en segundos (1 hora por defecto)
+COPILOT_SESSION_TIMEOUT=3600
+
+# Carril por defecto para nuevos usuarios (IMPULSO o ACELERA)
+COPILOT_DEFAULT_CARRIL=IMPULSO
+
+# Puntuación DIME para cambiar de IMPULSO a ACELERA
+COPILOT_CARRIL_THRESHOLD=10
+
+# Idioma por defecto
+COPILOT_DEFAULT_LANGUAGE=es
+
+# =============================================================================
+# REDIS (Cache - Opcional pero recomendado en producción)
+# =============================================================================
+
+# Habilitar Redis
+REDIS_ENABLED=false
+
+# Host de Redis
+REDIS_HOST=localhost
+
+# Puerto de Redis
+REDIS_PORT=6379
+
+# Contraseña de Redis (dejar vacío si no tiene)
+REDIS_PASSWORD=
+
+# Prefijo para las claves
+REDIS_PREFIX=copiloto_
+
+# Base de datos de Redis (0-15)
+REDIS_DATABASE=0
+
+# =============================================================================
+# EMAIL (Notificaciones)
+# =============================================================================
+
+# Proveedor de email (smtp, sendgrid, mailgun)
+MAIL_PROVIDER=smtp
+
+# Host SMTP
+MAIL_HOST=smtp.tudominio.com
+
+# Puerto SMTP
+MAIL_PORT=587
+
+# Usuario SMTP
+MAIL_USERNAME=noreply@tudominio.com
+
+# Contraseña SMTP
+MAIL_PASSWORD=tu_password_smtp
+
+# Encryption (tls, ssl, null)
+MAIL_ENCRYPTION=tls
+
+# Dirección de remitente
+MAIL_FROM_ADDRESS=noreply@tudominio.com
+
+# Nombre de remitente
+MAIL_FROM_NAME="Copiloto Andalucía +ei"
+
+# =============================================================================
+# ALMACENAMIENTO DE ARCHIVOS
+# =============================================================================
+
+# Driver de almacenamiento (local, s3)
+FILESYSTEM_DRIVER=local
+
+# Ruta de archivos públicos (relativa a web/)
+FILESYSTEM_PUBLIC_PATH=sites/default/files
+
+# Ruta de archivos privados
+FILESYSTEM_PRIVATE_PATH=/var/private/files
+
+# Configuración S3 (si se usa)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=eu-west-1
+AWS_BUCKET=copiloto-files
+
+# =============================================================================
+# SEGURIDAD
+# =============================================================================
+
+# Clave secreta para JWT (generar una larga y aleatoria)
+JWT_SECRET=cambiar_por_clave_jwt_muy_segura_y_larga
+
+# Tiempo de expiración de JWT en segundos (24 horas)
+JWT_EXPIRATION=86400
+
+# Algoritmo JWT
+JWT_ALGORITHM=HS256
+
+# Habilitar CORS
+CORS_ENABLED=true
+
+# Orígenes permitidos para CORS (separados por coma, * para todos)
+CORS_ALLOWED_ORIGINS=https://tu-dominio.com,https://app.tu-dominio.com
+
+# Rate limiting - peticiones por minuto
+RATE_LIMIT_CHAT=60
+RATE_LIMIT_API=100
+
+# =============================================================================
+# LOGGING Y DEBUG
+# =============================================================================
+
+# Nivel de log (debug, info, warning, error, critical)
+LOG_LEVEL=info
+
+# Canal de log (file, syslog, errorlog)
+LOG_CHANNEL=file
+
+# Ruta del archivo de log
+LOG_PATH=/var/log/drupal/copiloto.log
+
+# Debug del Copiloto (muestra prompts completos en logs)
+COPILOT_DEBUG=false
+
+# Guardar prompts enviados a Claude (solo desarrollo)
+COPILOT_LOG_PROMPTS=false
+
+# Guardar respuestas de Claude (solo desarrollo)
+COPILOT_LOG_RESPONSES=false
+
+# =============================================================================
+# GAMIFICACIÓN
+# =============================================================================
+
+# Puntos por acción
+POINTS_EXPERIMENT_STARTED=10
+POINTS_EXPERIMENT_COMPLETED=75
+POINTS_HYPOTHESIS_CREATED=15
+POINTS_HYPOTHESIS_VALIDATED=100
+POINTS_FIRST_SALE=200
+POINTS_BMC_BLOCK_GREEN=100
+POINTS_WEEKLY_ACTIVE=20
+
+# =============================================================================
+# INTEGRACIONES EXTERNAS (Opcionales)
+# =============================================================================
+
+# Google Analytics
+GA_TRACKING_ID=
+
+# Hotjar (para grabación de sesiones)
+HOTJAR_ID=
+
+# Sentry (para monitoreo de errores)
+SENTRY_DSN=
+
+# Slack Webhook (para notificaciones)
+SLACK_WEBHOOK_URL=
+
+# =============================================================================
+# CARACTERÍSTICAS EXPERIMENTALES
+# =============================================================================
+
+# Habilitar búsqueda semántica en conversaciones
+FEATURE_SEMANTIC_SEARCH=false
+
+# Habilitar sugerencias proactivas del Copiloto
+FEATURE_PROACTIVE_SUGGESTIONS=false
+
+# Habilitar modo offline (respuestas cacheadas)
+FEATURE_OFFLINE_MODE=false
+
+# =============================================================================
+# DOCKER / CONTENEDORES
+# =============================================================================
+
+# Puerto expuesto del contenedor web
+DOCKER_WEB_PORT=80
+
+# Puerto expuesto del contenedor HTTPS
+DOCKER_HTTPS_PORT=443
+
+# Nombre del proyecto Docker Compose
+COMPOSE_PROJECT_NAME=copiloto-ei
+
+# =============================================================================
+# FIN DE CONFIGURACIÓN
+# =============================================================================
+# 
+# CHECKLIST ANTES DE PRODUCCIÓN:
+# [ ] Cambiar todas las contraseñas por defecto
+# [ ] Generar nuevos HASH_SALT y JWT_SECRET
+# [ ] Configurar API Key real de Anthropic
+# [ ] Desactivar DEBUG y LOG_PROMPTS
+# [ ] Configurar CORS correctamente
+# [ ] Configurar certificados SSL
+# [ ] Configurar backups de base de datos
+# [ ] Configurar monitoreo (Sentry, logs)
+# =============================================================================

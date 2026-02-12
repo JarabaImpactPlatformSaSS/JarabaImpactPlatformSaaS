@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServiciosConecta - Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-serv { background: linear-gradient(135deg, #1B5E4F 0%, #E74C3C 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-serv text-white">
+    <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">👔</span>
+        </div>
+        <span class="text-xl font-bold">ServiciosConecta</span>
+      </div>
+      <div class="hidden md:flex space-x-6">
+        <a href="#servicios" class="hover:text-red-200">Servicios</a>
+        <a href="#profesionales" class="hover:text-red-200">Profesionales</a>
+        <a href="#funciones" class="hover:text-red-200">Cómo funciona</a>
+      </div>
+      <div class="flex space-x-3">
+        <button class="px-4 py-2 rounded-lg border border-white hover:bg-white hover:text-red-700 transition">Entrar</button>
+        <button class="px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-medium hover:bg-yellow-400 transition">Soy profesional</button>
+      </div>
+    </nav>
+    
+    <!-- Hero -->
+    <div class="max-w-7xl mx-auto px-4 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="bg-white/20 px-4 py-1 rounded-full text-sm">Servicios profesionales verificados</span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 mb-6">Encuentra al profesional que necesitas</h1>
+        <p class="text-xl text-red-100 mb-8">Abogados, asesores, arquitectos, psicólogos... Consulta online o presencial con firma digital y buzón seguro.</p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button class="px-6 py-3 bg-yellow-500 text-gray-900 rounded-xl font-semibold text-lg hover:bg-yellow-400 transition">
+            🔍 Buscar profesional
+          </button>
+          <button class="px-6 py-3 bg-white/20 backdrop-blur rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+            📅 Reservar cita
+          </button>
+        </div>
+        <div class="mt-8 flex items-center space-x-6 text-red-100">
+          <div class="flex items-center"><span class="text-2xl mr-2">✅</span> Verificados</div>
+          <div class="flex items-center"><span class="text-2xl mr-2">🔐</span> Firma digital</div>
+          <div class="flex items-center"><span class="text-2xl mr-2">📹</span> Videoconsulta</div>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-6">
+            <span class="text-gray-500 text-sm">Próxima cita disponible</span>
+            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Hoy 16:30</span>
+          </div>
+          <div class="flex items-start space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-3xl">👩‍⚖️</div>
+            <div>
+              <h3 class="font-bold text-lg text-gray-800">María González López</h3>
+              <p class="text-red-600">Abogada • Derecho Laboral</p>
+              <div class="flex items-center mt-1">
+                <span class="text-yellow-400">★★★★★</span>
+                <span class="text-sm text-gray-400 ml-1">(127 valoraciones)</span>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">📍 Ubicación</span>
+              <span class="font-medium">Sevilla / Online</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">💶 Consulta</span>
+              <span class="font-medium">60€ / 45 min</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">🎓 Colegiada</span>
+              <span class="font-medium text-green-600">Verificado ✓</span>
+            </div>
+          </div>
+          <button class="w-full py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition">
+            Reservar cita →
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <section class="py-12 bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-3xl font-bold text-red-600">+320</div>
+        <div class="text-gray-500">Profesionales verificados</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-red-600">+15.000</div>
+        <div class="text-gray-500">Consultas realizadas</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-red-600">4.8/5</div>
+        <div class="text-gray-500">Valoración media</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-red-600">&lt;24h</div>
+        <div class="text-gray-500">Primera cita disponible</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías -->
+  <section id="servicios" class="py-16 max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">¿Qué necesitas?</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">⚖️</span>
+        <span class="font-medium text-gray-700">Abogados</span>
+        <span class="text-sm text-gray-400 block">78 disponibles</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">📊</span>
+        <span class="font-medium text-gray-700">Asesores</span>
+        <span class="text-sm text-gray-400 block">45 disponibles</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">🏗️</span>
+        <span class="font-medium text-gray-700">Arquitectos</span>
+        <span class="text-sm text-gray-400 block">32 disponibles</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">🧠</span>
+        <span class="font-medium text-gray-700">Psicólogos</span>
+        <span class="text-sm text-gray-400 block">56 disponibles</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">💼</span>
+        <span class="font-medium text-gray-700">Consultores</span>
+        <span class="text-sm text-gray-400 block">42 disponibles</span>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 text-center cursor-pointer border hover:border-red-500">
+        <span class="text-4xl mb-3 block">📝</span>
+        <span class="font-medium text-gray-700">Notarios</span>
+        <span class="text-sm text-gray-400 block">18 disponibles</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Profesionales destacados -->
+  <section id="profesionales" class="py-16 bg-red-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Profesionales destacados</h2>
+        <a href="#" class="text-red-600 hover:text-red-700 font-medium">Ver todos →</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Profesional 1 -->
+        <div class="card-hover bg-white rounded-xl p-6 border">
+          <div class="flex items-start space-x-4 mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-3xl">👨‍💼</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-800">Carlos Martín Ruiz</h3>
+                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Online</span>
+              </div>
+              <p class="text-red-600 text-sm">Asesor Fiscal y Contable</p>
+              <div class="flex items-center mt-1">
+                <span class="text-yellow-400 text-sm">★★★★★</span>
+                <span class="text-xs text-gray-400 ml-1">(89)</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-500 text-sm mb-4">Especialista en autónomos y pymes. Declaraciones, IVA, Renta y asesoramiento continuo.</p>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-gray-800">45€ <span class="font-normal text-gray-500 text-sm">/ consulta</span></span>
+            <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Reservar</button>
+          </div>
+        </div>
+        <!-- Profesional 2 -->
+        <div class="card-hover bg-white rounded-xl p-6 border">
+          <div class="flex items-start space-x-4 mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-3xl">👩‍⚕️</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-800">Ana López García</h3>
+                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Presencial</span>
+              </div>
+              <p class="text-red-600 text-sm">Psicóloga Clínica</p>
+              <div class="flex items-center mt-1">
+                <span class="text-yellow-400 text-sm">★★★★★</span>
+                <span class="text-xs text-gray-400 ml-1">(156)</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-500 text-sm mb-4">Terapia individual y de pareja. Ansiedad, depresión, estrés laboral. Córdoba.</p>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-gray-800">70€ <span class="font-normal text-gray-500 text-sm">/ sesión</span></span>
+            <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Reservar</button>
+          </div>
+        </div>
+        <!-- Profesional 3 -->
+        <div class="card-hover bg-white rounded-xl p-6 border">
+          <div class="flex items-start space-x-4 mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-3xl">👷</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-800">Pedro Fernández</h3>
+                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">Híbrido</span>
+              </div>
+              <p class="text-red-600 text-sm">Arquitecto Técnico</p>
+              <div class="flex items-center mt-1">
+                <span class="text-yellow-400 text-sm">★★★★☆</span>
+                <span class="text-xs text-gray-400 ml-1">(43)</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-500 text-sm mb-4">Proyectos, licencias, ITE, certificados energéticos. Toda Andalucía.</p>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-gray-800">Desde 80€</span>
+            <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Consultar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funciones -->
+  <section id="funciones" class="py-16 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">Plataforma segura</span>
+      <h2 class="text-3xl font-bold text-gray-800 mt-4">Todo lo que necesitas en un solo lugar</h2>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">📹</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Videoconsulta</h3>
+        <p class="text-gray-500 text-sm">Consulta desde cualquier lugar con video HD integrado.</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">✍️</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Firma Digital</h3>
+        <p class="text-gray-500 text-sm">Firma documentos con validez legal (PAdES) desde tu móvil.</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">📁</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Buzón Seguro</h3>
+        <p class="text-gray-500 text-sm">Intercambia documentos con cifrado de extremo a extremo.</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-6 border text-center">
+        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-3xl">🤖</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Triaje con IA</h3>
+        <p class="text-gray-500 text-sm">Describe tu caso y la IA te recomienda el profesional ideal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Profesionales -->
+  <section class="py-16 gradient-serv text-white">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-3xl font-bold mb-4">¿Eres profesional colegiado?</h2>
+        <p class="text-xl text-red-100 mb-6">Únete a ServiciosConecta y llega a miles de clientes potenciales. Gestiona tu agenda, cobra online y digitaliza tu práctica.</p>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center"><span class="mr-3">✓</span> Agenda integrada con Google Calendar</li>
+          <li class="flex items-center"><span class="mr-3">✓</span> Cobro automático pre-consulta</li>
+          <li class="flex items-center"><span class="mr-3">✓</span> Videoconsulta profesional</li>
+          <li class="flex items-center"><span class="mr-3">✓</span> Facturación automática</li>
+          <li class="flex items-center"><span class="mr-3">✓</span> Portal de cliente con documentos</li>
+        </ul>
+        <button class="px-8 py-4 bg-yellow-500 text-gray-900 rounded-xl font-semibold text-lg hover:bg-yellow-400 transition">
+          Crear mi perfil profesional
+        </button>
+      </div>
+      <div class="bg-white/10 backdrop-blur rounded-2xl p-8">
+        <h3 class="text-2xl font-bold mb-6 text-center">Plan Profesional</h3>
+        <div class="text-center mb-6">
+          <span class="text-5xl font-bold">49€</span>
+          <span class="text-red-200">/mes</span>
+        </div>
+        <ul class="space-y-4 mb-6">
+          <li class="flex items-center">
+            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">✓</span>
+            Perfil verificado destacado
+          </li>
+          <li class="flex items-center">
+            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">✓</span>
+            Videoconsultas ilimitadas
+          </li>
+          <li class="flex items-center">
+            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">✓</span>
+            Firma digital incluida
+          </li>
+          <li class="flex items-center">
+            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">✓</span>
+            Buzón seguro 10GB
+          </li>
+          <li class="flex items-center">
+            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">✓</span>
+            0% comisión primeros 3 meses
+          </li>
+        </ul>
+        <button class="w-full py-3 bg-white text-red-600 rounded-xl font-semibold hover:bg-gray-100 transition">
+          Empezar prueba gratuita
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+            <span class="text-lg">👔</span>
+          </div>
+          <span class="text-white font-bold">ServiciosConecta</span>
+        </div>
+        <p class="text-sm">Conectando profesionales con clientes. Parte del ecosistema Jaraba Impact Platform.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Clientes</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Buscar profesional</a></li>
+          <li><a href="#" class="hover:text-white">Cómo funciona</a></li>
+          <li><a href="#" class="hover:text-white">Mis citas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Profesionales</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Registrarse</a></li>
+          <li><a href="#" class="hover:text-white">Tarifas</a></li>
+          <li><a href="#" class="hover:text-white">Centro de ayuda</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">Legal</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Privacidad</a></li>
+          <li><a href="#" class="hover:text-white">Términos</a></li>
+          <li><a href="#" class="hover:text-white">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+      © 2026 Jaraba Impact S.L. Todos los derechos reservados.
+    </div>
+  </footer>
+</body>
+</html>

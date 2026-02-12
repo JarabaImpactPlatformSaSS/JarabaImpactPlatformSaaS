@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-11  
-**Versión:** 5.6.0 (G114-4 FAQ Bot Contextual — Centro de Ayuda Público)  
+**Versión:** 6.7.0 (Config Sync Git-Tracked — Deploy estándar Drupal)  
 **Estado:** Producción (IONOS)  
 **Nivel de Madurez:** 5.0 / 5.0
 
@@ -652,6 +652,29 @@
 │   │   └── AlertRule Entity: Métricas monitoreables + cooldown           │
 │   └── Estado: ✅ Producción (v1.0 - Feb 2026)                            │
 │                                                                         │
+│   📦 jaraba_page_builder ✅ (Constructor Visual GrapesJS)                 │
+│   ├── 6 Entidades: PageContent, PageTemplate, PageType, etc.            │
+│   ├── GrapesJS Canvas Editor: ~202 bloques, 24 categorías               │
+│   │   ├── Template Registry SSoT v5.0 con Feature Flags                 │
+│   │   └── 12+ plugins GrapesJS propios (AI, Marketplace, Multi-Page...) │
+│   ├── Plan v3.1 COMPLETADO (10/10 sprints):                             │
+│   │   ├── A1: Onboarding Tour (Driver.js)                               │
+│   │   ├── A2: SVG Thumbnails (21 categorías, 682 LOC)                   │
+│   │   ├── A3: Drag & Drop Polish                                       │
+│   │   ├── B1: Site Builder Frontend Premium (Dashboard, KPIs)           │
+│   │   ├── B2: SEO Assistant Integrado (6 checks, score 0-100)           │
+│   │   ├── C1: Template Marketplace (slide-panel, filtros, badges)       │
+│   │   ├── C2: Multi-Page Editor (tabs IDE, state Map, Ctrl+Tab/W/S)    │
+│   │   ├── C3: Responsive Preview Mejorado (8 viewports, slider, rotate)│
+│   │   └── C4: IA Asistente Integrada                                   │
+│   │       ├── SeoSuggestionService (SEO IA con fallback heurístico)     │
+│   │       ├── AiTemplateGeneratorService (landing pages con Brand Voice)│
+│   │       ├── Selectores Vertical + Tono + mode toggle                 │
+│   │       └── Prompt-to-Page (generación página completa)               │
+│   ├── API REST: 10+ endpoints (/api/v1/page-builder/*)                  │
+│   ├── Cypress E2E: 12 suites, ~670 líneas                               │
+│   └── Estado: ✅ Producción (Plan v3.1 100%, ~1,200h total)             │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -819,7 +842,8 @@
 │   CAPA 3: DATOS                                                         │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │  • Aislamiento por Group Module                                  │  │
-│   │  • API Keys en Key Module (cifradas)                             │  │
+│   │  • API Keys en Key Module (config sync git-tracked)               │  │
+│   │  • Config Sync: config/sync/ (589 YML, git-tracked)              │  │
 │   │  • Logs sanitizados (sin datos sensibles)                        │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -930,11 +954,23 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
 │   │  Lint   │───▶│  Test   │───▶│  Build  │───▶│ Deploy  │             │
 │   │         │    │         │    │         │    │         │             │
-│   │ PHPStan │    │ PHPUnit │    │Composer │    │  SFTP   │             │
+│   │ PHPStan │    │ PHPUnit │    │Composer │    │  Git    │             │
 │   │ ESLint  │    │ Kernel  │    │  SCSS   │    │  Drush  │             │
 │   └─────────┘    └─────────┘    └─────────┘    └─────────┘             │
-│        │              │              │              │                   │
-│        ▼              ▼              ▼              ▼                   │
+│                                                      │                 │
+│                                        ┌─────────────┘                 │
+│                                        ▼                               │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                     DEPLOY STEPS                                 │  │
+│   │  1. git reset --hard origin/main                                 │  │
+│   │  2. composer install --no-dev                                    │  │
+│   │  3. drush updatedb -y                                            │  │
+│   │  4. UUID sync (config vs site)                                   │  │
+│   │  5. drush config:import -y  ← lee config/sync/ (git-tracked)    │  │
+│   │  6. drush cache:rebuild                                          │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                        │                               │
+│                                        ▼                               │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │                     SLACK NOTIFICATIONS                          │  │
 │   │  ✅ Deploy exitoso a producción                                  │  │
@@ -1018,6 +1054,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 | **Plan v2.1 Falsos Positivos** ⭐ | `docs/planificacion/20260209-Plan_Elevacion_Page_Site_Builder_v2.md` |
 | **Aprendizajes Auditoría** | `docs/tecnicos/aprendizajes/2026-02-06_auditoria_profunda_saas_multidimensional.md` |
 | **Aprendizajes PHPUnit 11** ⭐ | `docs/tecnicos/aprendizajes/2026-02-11_phpunit11_kernel_test_remediation.md` |
+| **Aprendizajes Sprint C4 IA Page Builder** ⭐ | `docs/tecnicos/aprendizajes/2026-02-11_sprint_c4_ia_asistente_page_builder.md` |
 | **Plan ServiciosConecta Fase 1** ⭐ | `docs/implementacion/20260209-Plan_Implementacion_ServiciosConecta_v1.md` |
 | **Aprendizajes ServiciosConecta** | `docs/tecnicos/aprendizajes/2026-02-09_servicios_conecta_fase1_implementation.md` |
 | **Plan Maestro Unificado v3.0** ⭐ | `docs/planificacion/20260123-Plan_Maestro_Unificado_SaaS_v3_Claude.md` |
@@ -1045,5 +1082,5 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ---
 
-> **Versión:** 5.5.0 | **Fecha:** 2026-02-11 | **Autor:** IA Asistente
+> **Versión:** 6.6.0 | **Fecha:** 2026-02-11 | **Autor:** IA Asistente
 

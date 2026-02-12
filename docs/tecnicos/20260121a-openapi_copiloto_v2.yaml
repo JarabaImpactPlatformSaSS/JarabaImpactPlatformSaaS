@@ -1,0 +1,1234 @@
+openapi: 3.0.3
+info:
+  title: Copiloto de Emprendimiento v2.0 API
+  description: |
+    API del sistema de asistencia inteligente para validación de modelos de negocio.
+    
+    ## Autenticación
+    Todas las peticiones requieren autenticación mediante JWT token en el header `Authorization: Bearer {token}`.
+    
+    ## Rate Limiting
+    - Chat API: 60 peticiones/minuto por usuario
+    - Otros endpoints: 100 peticiones/minuto por usuario
+    
+    ## Errores
+    Los errores siguen el formato estándar JSON:API con códigos HTTP apropiados.
+  version: 2.0.0
+  contact:
+    name: Jaraba Impact Platform
+    email: tech@jaraba.io
+  license:
+    name: Proprietary
+    
+servers:
+  - url: https://api.jaraba.io/v2
+    description: Producción
+  - url: https://staging-api.jaraba.io/v2
+    description: Staging
+  - url: http://localhost:8080/v2
+    description: Desarrollo local
+
+tags:
+  - name: Copilot
+    description: Endpoints del chat con el Copiloto
+  - name: Entrepreneurs
+    description: Gestión de perfiles de emprendedores
+  - name: Hypotheses
+    description: Gestión de hipótesis de negocio
+  - name: Experiments
+    description: Gestión de experimentos y resultados
+  - name: BMC Validation
+    description: Estado de validación del Business Model Canvas
+  - name: Experiment Library
+    description: Catálogo de 44 experimentos
+
+paths:
+  # ==================== COPILOT ====================
+  /copilot/chat:
+    post:
+      tags:
+        - Copilot
+      summary: Enviar mensaje al Copiloto
+      description: |
+        Envía un mensaje al Copiloto y recibe una respuesta personalizada.
+        El sistema automáticamente:
+        - Carga el contexto del emprendedor
+        - Detecta el modo apropiado (Coach, Consultor, Sparring, CFO, Abogado)
+        - Detecta emociones si las hay
+        - Sugiere experimentos relevantes
+      operationId: chatWithCopilot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            example:
+              user_id: "550e8400-e29b-41d4-a716-446655440000"
+              session_id: "session-abc-123"
+              message: "No sé si debería cobrar 50€ por hora, me parece caro"
+      responses:
+        '200':
+          description: Respuesta exitosa del Copiloto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              example:
+                response: "Entiendo perfectamente esa sensación, María. Es muy común cuando empezamos..."
+                mode_detected: "CFO_SINTETICO"
+                emotion_detected: "miedo_precio"
+                suggested_actions:
+                  - type: "TOOL"
+                    label: "Abrir Calculadora de la Verdad"
+                    url: "/tools/calculadora-verdad"
+                experiment_suggested:
+                  id: 28
+                  name: "Test A/B de Precio"
+                  reason: "Para validar si el mercado acepta ese precio"
+                tokens_used: 847
+                session_id: "session-abc-123"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /copilot/context/{userId}:
+    get:
+      tags:
+        - Copilot
+      summary: Obtener contexto completo del emprendedor
+      description: Retorna todos los datos del perfil del emprendedor necesarios para personalizar las respuestas del Copiloto.
+      operationId: getCopilotContext
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Contexto del emprendedor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopilotContext'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /copilot/history/{sessionId}:
+    get:
+      tags:
+        - Copilot
+      summary: Obtener historial de conversación
+      description: Retorna los mensajes de una sesión de chat específica.
+      operationId: getChatHistory
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+      responses:
+        '200':
+          description: Historial de mensajes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'
+
+  # ==================== ENTREPRENEURS ====================
+  /entrepreneurs:
+    post:
+      tags:
+        - Entrepreneurs
+      summary: Crear nuevo perfil de emprendedor
+      operationId: createEntrepreneur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntrepreneurCreate'
+      responses:
+        '201':
+          description: Emprendedor creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entrepreneur'
+
+  /entrepreneurs/{id}:
+    get:
+      tags:
+        - Entrepreneurs
+      summary: Obtener perfil de emprendedor
+      operationId: getEntrepreneur
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Perfil del emprendedor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entrepreneur'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    patch:
+      tags:
+        - Entrepreneurs
+      summary: Actualizar perfil de emprendedor
+      operationId: updateEntrepreneur
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntrepreneurUpdate'
+      responses:
+        '200':
+          description: Emprendedor actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entrepreneur'
+
+  /entrepreneurs/{id}/dime:
+    post:
+      tags:
+        - Entrepreneurs
+      summary: Registrar resultados del diagnóstico DIME
+      description: Guarda las respuestas del cuestionario DIME y calcula automáticamente el carril asignado.
+      operationId: submitDIME
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DIMEResponses'
+      responses:
+        '200':
+          description: DIME procesado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dime_score:
+                    type: integer
+                    example: 12
+                  carril:
+                    type: string
+                    enum: [IMPULSO, ACELERA]
+                    example: "ACELERA"
+                  nivel_tecnico:
+                    type: integer
+                    example: 3
+
+  # ==================== HYPOTHESES ====================
+  /hypotheses:
+    get:
+      tags:
+        - Hypotheses
+      summary: Listar hipótesis del emprendedor
+      operationId: listHypotheses
+      parameters:
+        - name: entrepreneur_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: bmc_block
+          in: query
+          schema:
+            type: string
+            enum: [VP, CS, CH, CR, RS, KR, KA, KP, C$]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, TESTING, VALIDATED, INVALIDATED, PIVOTED]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [DESIRABILITY, FEASIBILITY, VIABILITY]
+      responses:
+        '200':
+          description: Lista de hipótesis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hypothesis'
+                  
+    post:
+      tags:
+        - Hypotheses
+      summary: Crear nueva hipótesis
+      operationId: createHypothesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HypothesisCreate'
+      responses:
+        '201':
+          description: Hipótesis creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hypothesis'
+
+  /hypotheses/{id}:
+    get:
+      tags:
+        - Hypotheses
+      summary: Obtener hipótesis
+      operationId: getHypothesis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Hipótesis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hypothesis'
+                
+    patch:
+      tags:
+        - Hypotheses
+      summary: Actualizar hipótesis
+      operationId: updateHypothesis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HypothesisUpdate'
+      responses:
+        '200':
+          description: Hipótesis actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hypothesis'
+
+  /hypotheses/prioritize:
+    post:
+      tags:
+        - Hypotheses
+      summary: Calcular prioridad de hipótesis
+      description: Recalcula el ranking de prioridad de todas las hipótesis pendientes del emprendedor.
+      operationId: prioritizeHypotheses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entrepreneur_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Hipótesis priorizadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hypothesis'
+
+  # ==================== EXPERIMENTS ====================
+  /experiments:
+    get:
+      tags:
+        - Experiments
+      summary: Listar experimentos
+      operationId: listExperiments
+      parameters:
+        - name: hypothesis_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: entrepreneur_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PLANNED, IN_PROGRESS, COMPLETED, ABANDONED]
+      responses:
+        '200':
+          description: Lista de experimentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experiment'
+                  
+    post:
+      tags:
+        - Experiments
+      summary: Crear experimento (Test Card)
+      description: Registra un nuevo experimento planificado vinculado a una hipótesis.
+      operationId: createExperiment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentCreate'
+      responses:
+        '201':
+          description: Experimento creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+
+  /experiments/{id}:
+    get:
+      tags:
+        - Experiments
+      summary: Obtener experimento
+      operationId: getExperiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Experimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+
+  /experiments/{id}/start:
+    post:
+      tags:
+        - Experiments
+      summary: Iniciar experimento
+      description: Cambia el estado del experimento a IN_PROGRESS y registra la fecha de inicio.
+      operationId: startExperiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Experimento iniciado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+
+  /experiments/{id}/result:
+    patch:
+      tags:
+        - Experiments
+      summary: Registrar resultado (Learning Card)
+      description: |
+        Completa el experimento con los resultados obtenidos.
+        Automáticamente:
+        - Actualiza el estado de la hipótesis vinculada
+        - Recalcula el % de validación del bloque BMC
+        - Otorga puntos de impacto al emprendedor
+      operationId: recordExperimentResult
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentResult'
+      responses:
+        '200':
+          description: Resultado registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+
+  # ==================== BMC VALIDATION ====================
+  /bmc/validation/{userId}:
+    get:
+      tags:
+        - BMC Validation
+      summary: Obtener estado de validación del BMC
+      description: Retorna el porcentaje de validación y estado (semáforo) de cada bloque del Business Model Canvas.
+      operationId: getBMCValidation
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Estado de validación del BMC
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BMCValidationState'
+
+  /bmc/pivot-log/{userId}:
+    get:
+      tags:
+        - BMC Validation
+      summary: Obtener historial de pivots
+      description: Retorna el log cronológico de decisiones de pivot y aprendizajes del emprendedor.
+      operationId: getPivotLog
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Historial de pivots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PivotLogEntry'
+
+  # ==================== EXPERIMENT LIBRARY ====================
+  /experiments/library:
+    get:
+      tags:
+        - Experiment Library
+      summary: Obtener catálogo de experimentos
+      description: Retorna el catálogo completo de los 44 tipos de experimentos disponibles.
+      operationId: getExperimentLibrary
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [DISCOVERY, INTEREST, PREFERENCE, COMMITMENT]
+        - name: hypothesis_type
+          in: query
+          schema:
+            type: string
+            enum: [DESIRABILITY, FEASIBILITY, VIABILITY]
+        - name: carril
+          in: query
+          schema:
+            type: string
+            enum: [IMPULSO, ACELERA, BOTH]
+        - name: max_time
+          in: query
+          schema:
+            type: string
+            enum: [HOURS, DAYS, WEEKS]
+        - name: max_cost
+          in: query
+          schema:
+            type: string
+            enum: [FREE, LOW, MEDIUM, HIGH]
+      responses:
+        '200':
+          description: Catálogo de experimentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExperimentType'
+
+  /experiments/library/{id}:
+    get:
+      tags:
+        - Experiment Library
+      summary: Obtener detalle de tipo de experimento
+      operationId: getExperimentType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 44
+      responses:
+        '200':
+          description: Tipo de experimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentType'
+
+  /experiments/suggest:
+    post:
+      tags:
+        - Experiment Library
+      summary: Sugerir experimentos para una hipótesis
+      description: Basándose en la hipótesis, carril del emprendedor y fase actual, sugiere los 3 experimentos más apropiados.
+      operationId: suggestExperiments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - hypothesis_id
+              properties:
+                hypothesis_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Experimentos sugeridos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        experiment_type:
+                          $ref: '#/components/schemas/ExperimentType'
+                        reason:
+                          type: string
+                        priority:
+                          type: integer
+
+# ==================== COMPONENTS ====================
+components:
+  schemas:
+    # Chat
+    ChatRequest:
+      type: object
+      required:
+        - user_id
+        - message
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+        message:
+          type: string
+          maxLength: 4000
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+        mode_detected:
+          type: string
+          enum: [COACH_EMOCIONAL, CONSULTOR_TACTICO, SPARRING_PARTNER, CFO_SINTETICO, ABOGADO_DIABLO]
+        emotion_detected:
+          type: string
+          nullable: true
+        suggested_actions:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [TOOL, EXPERIMENT, HYPOTHESIS, LINK]
+              label:
+                type: string
+              url:
+                type: string
+        experiment_suggested:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            reason:
+              type: string
+        tokens_used:
+          type: integer
+        session_id:
+          type: string
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [USER, ASSISTANT, SYSTEM]
+        content:
+          type: string
+        mode_detected:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CopilotContext:
+      type: object
+      properties:
+        entrepreneur:
+          $ref: '#/components/schemas/Entrepreneur'
+        bmc_validation:
+          $ref: '#/components/schemas/BMCValidationState'
+        pending_hypotheses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hypothesis'
+        recent_milestones:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              description:
+                type: string
+              points:
+                type: integer
+
+    # Entrepreneur
+    Entrepreneur:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drupal_user_id:
+          type: integer
+        nombre:
+          type: string
+        carril:
+          type: string
+          enum: [IMPULSO, ACELERA]
+        dime_score:
+          type: integer
+          minimum: 0
+          maximum: 20
+        dime_responses:
+          $ref: '#/components/schemas/DIMEResponses'
+        sector:
+          type: string
+        idea_descripcion:
+          type: string
+        fase_actual:
+          type: string
+          enum: [INVENTARIO, VALIDACION, MVP, TRACCION]
+        bloqueos_detectados:
+          type: array
+          items:
+            type: string
+            enum: [impostor, miedo_precio, miedo_rechazo, tecnofobia, paralisis, frustracion]
+        nivel_tecnico:
+          type: integer
+          minimum: 1
+          maximum: 5
+        puntos_impacto:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    EntrepreneurCreate:
+      type: object
+      required:
+        - drupal_user_id
+        - nombre
+      properties:
+        drupal_user_id:
+          type: integer
+        nombre:
+          type: string
+
+    EntrepreneurUpdate:
+      type: object
+      properties:
+        sector:
+          type: string
+        idea_descripcion:
+          type: string
+        fase_actual:
+          type: string
+          enum: [INVENTARIO, VALIDACION, MVP, TRACCION]
+        bloqueos_detectados:
+          type: array
+          items:
+            type: string
+
+    DIMEResponses:
+      type: object
+      properties:
+        q1_idea_claridad:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q2_cliente_conocimiento:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q3_validacion_mercado:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q4_competencia:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q5_propuesta_valor:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q6_nivel_tecnico:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q7_experiencia_ventas:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q8_disponibilidad_tiempo:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q9_tolerancia_riesgo:
+          type: integer
+          minimum: 0
+          maximum: 2
+        q10_red_contactos:
+          type: integer
+          minimum: 0
+          maximum: 2
+
+    # Hypothesis
+    Hypothesis:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        entrepreneur_id:
+          type: string
+          format: uuid
+        bmc_block:
+          type: string
+          enum: [VP, CS, CH, CR, RS, KR, KA, KP, C$]
+        type:
+          type: string
+          enum: [DESIRABILITY, FEASIBILITY, VIABILITY]
+        statement:
+          type: string
+        importance_score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        evidence_score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        status:
+          type: string
+          enum: [PENDING, TESTING, VALIDATED, INVALIDATED, PIVOTED]
+        priority_rank:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    HypothesisCreate:
+      type: object
+      required:
+        - entrepreneur_id
+        - bmc_block
+        - type
+        - statement
+        - importance_score
+      properties:
+        entrepreneur_id:
+          type: string
+          format: uuid
+        bmc_block:
+          type: string
+          enum: [VP, CS, CH, CR, RS, KR, KA, KP, C$]
+        type:
+          type: string
+          enum: [DESIRABILITY, FEASIBILITY, VIABILITY]
+        statement:
+          type: string
+        importance_score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        evidence_score:
+          type: integer
+          minimum: 1
+          maximum: 5
+          default: 1
+
+    HypothesisUpdate:
+      type: object
+      properties:
+        statement:
+          type: string
+        importance_score:
+          type: integer
+        evidence_score:
+          type: integer
+        status:
+          type: string
+          enum: [PENDING, TESTING, VALIDATED, INVALIDATED, PIVOTED]
+
+    # Experiment
+    Experiment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        hypothesis_id:
+          type: string
+          format: uuid
+        experiment_type_id:
+          type: integer
+        test_description:
+          type: string
+        metrics_to_measure:
+          type: string
+        success_criteria:
+          type: string
+        failure_criteria:
+          type: string
+        status:
+          type: string
+          enum: [PLANNED, IN_PROGRESS, COMPLETED, ABANDONED]
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        observations:
+          type: string
+        learnings:
+          type: string
+        decision:
+          type: string
+          enum: [PERSEVERE, PIVOT, ZOOM_IN, ZOOM_OUT, KILL]
+        next_actions:
+          type: string
+        evidence_files:
+          type: array
+          items:
+            type: string
+            format: uri
+        created_at:
+          type: string
+          format: date-time
+
+    ExperimentCreate:
+      type: object
+      required:
+        - hypothesis_id
+        - experiment_type_id
+        - test_description
+        - success_criteria
+      properties:
+        hypothesis_id:
+          type: string
+          format: uuid
+        experiment_type_id:
+          type: integer
+          minimum: 1
+          maximum: 44
+        test_description:
+          type: string
+        metrics_to_measure:
+          type: string
+        success_criteria:
+          type: string
+        failure_criteria:
+          type: string
+        planned_start_date:
+          type: string
+          format: date
+        planned_end_date:
+          type: string
+          format: date
+
+    ExperimentResult:
+      type: object
+      required:
+        - observations
+        - decision
+      properties:
+        observations:
+          type: string
+        learnings:
+          type: string
+        decision:
+          type: string
+          enum: [PERSEVERE, PIVOT, ZOOM_IN, ZOOM_OUT, KILL]
+        next_actions:
+          type: string
+        new_hypothesis_statement:
+          type: string
+          description: Si se decide pivotar, la nueva hipótesis a validar
+        evidence_files:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    # BMC Validation
+    BMCValidationState:
+      type: object
+      properties:
+        entrepreneur_id:
+          type: string
+          format: uuid
+        blocks:
+          type: array
+          items:
+            type: object
+            properties:
+              block:
+                type: string
+                enum: [VP, CS, CH, CR, RS, KR, KA, KP, C$]
+              name:
+                type: string
+              validation_percentage:
+                type: integer
+                minimum: 0
+                maximum: 100
+              status:
+                type: string
+                enum: [RED, YELLOW, GREEN]
+              hypotheses_total:
+                type: integer
+              hypotheses_validated:
+                type: integer
+              last_experiment_date:
+                type: string
+                format: date
+        overall_percentage:
+          type: integer
+
+    PivotLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        experiment_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        hypothesis_tested:
+          type: string
+        result:
+          type: string
+          enum: [VALIDATED, INVALIDATED, INCONCLUSIVE]
+        decision:
+          type: string
+          enum: [PERSEVERE, PIVOT, ZOOM_IN, ZOOM_OUT, KILL]
+        new_direction:
+          type: string
+
+    # Experiment Library
+    ExperimentType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name_es:
+          type: string
+        name_en:
+          type: string
+        category:
+          type: string
+          enum: [DISCOVERY, INTEREST, PREFERENCE, COMMITMENT]
+        hypothesis_type:
+          type: string
+          enum: [DESIRABILITY, FEASIBILITY, VIABILITY]
+        time_required:
+          type: string
+          enum: [HOURS, DAYS, WEEKS]
+        cost_level:
+          type: string
+          enum: [FREE, LOW, MEDIUM, HIGH]
+        evidence_strength:
+          type: string
+          enum: [WEAK, MEDIUM, STRONG]
+        description:
+          type: string
+        when_to_use:
+          type: string
+        how_to_execute:
+          type: array
+          items:
+            type: string
+        tools_suggested:
+          type: array
+          items:
+            type: string
+        example_andalucia:
+          type: string
+        carril_recommended:
+          type: string
+          enum: [IMPULSO, ACELERA, BOTH]
+        success_criteria_template:
+          type: string
+        common_mistakes:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequest:
+      description: Petición inválida
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              details:
+                type: array
+                items:
+                  type: string
+
+    Unauthorized:
+      description: No autenticado
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Token inválido o expirado"
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Recurso no encontrado"
+
+    RateLimitExceeded:
+      description: Límite de peticiones excedido
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Has excedido el límite de peticiones. Espera 60 segundos."
+              retry_after:
+                type: integer
+                example: 60
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
