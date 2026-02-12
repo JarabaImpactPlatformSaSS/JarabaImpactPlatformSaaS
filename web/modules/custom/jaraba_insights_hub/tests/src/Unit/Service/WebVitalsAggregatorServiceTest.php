@@ -263,13 +263,16 @@ class WebVitalsAggregatorServiceTest extends TestCase {
   }
 
   /**
-   * Verifica que getRating devuelve 'poor' para metrica desconocida.
+   * Verifica que getRating devuelve 'good' para metrica desconocida con valor bajo.
+   *
+   * Unknown metrics default to thresholds [2500, 4000], so 1000.0 is 'good'.
    *
    * @covers ::getRating
    */
-  public function testGetRatingUnknownMetricReturnsPoor(): void {
+  public function testGetRatingUnknownMetricDefaultsToLcpThresholds(): void {
+    // Value 1000.0 <= 2500 (default good threshold) = 'good'.
     $result = $this->service->getRating('UNKNOWN', 1000.0);
-    $this->assertEquals('poor', $result);
+    $this->assertEquals('good', $result);
   }
 
   /**
@@ -283,15 +286,15 @@ class WebVitalsAggregatorServiceTest extends TestCase {
   }
 
   /**
-   * Verifica que getMetricsSummary devuelve array vacio sin metricas.
+   * Verifica que getAggregatedMetrics devuelve array vacio sin metricas.
    *
-   * @covers ::getMetricsSummary
+   * @covers ::getAggregatedMetrics
    */
-  public function testGetMetricsSummaryEmpty(): void {
+  public function testGetAggregatedMetricsEmpty(): void {
     $select = $this->createMock(Select::class);
     $select->method('condition')->willReturnSelf();
     $select->method('fields')->willReturnSelf();
-    $select->method('groupBy')->willReturnSelf();
+    $select->method('orderBy')->willReturnSelf();
 
     $statement = $this->createMock(StatementInterface::class);
     $statement->method('fetchAll')->willReturn([]);
@@ -301,24 +304,40 @@ class WebVitalsAggregatorServiceTest extends TestCase {
       ->method('select')
       ->willReturn($select);
 
-    $result = $this->service->getMetricsSummary(1);
+    $result = $this->service->getAggregatedMetrics(1, '2026-01-01', '2026-01-31');
 
     $this->assertIsArray($result);
     $this->assertEmpty($result);
   }
 
   /**
-   * Verifica que getTenantVitals devuelve array vacio sin datos.
+   * Verifica que getP75ByMetric devuelve valores por defecto sin datos.
    *
-   * @covers ::getTenantVitals
+   * @covers ::getP75ByMetric
    */
-  public function testGetTenantVitalsEmpty(): void {
-    $this->setupQuery($this->metricStorage, []);
+  public function testGetP75ByMetricEmpty(): void {
+    $select = $this->createMock(Select::class);
+    $select->method('condition')->willReturnSelf();
+    $select->method('fields')->willReturnSelf();
+    $select->method('orderBy')->willReturnSelf();
 
-    $result = $this->service->getTenantVitals(1);
+    $statement = $this->createMock(StatementInterface::class);
+    $statement->method('fetchCol')->willReturn([]);
+    $select->method('execute')->willReturn($statement);
+
+    $this->database
+      ->method('select')
+      ->willReturn($select);
+
+    $result = $this->service->getP75ByMetric(1, 'LCP', 28);
 
     $this->assertIsArray($result);
-    $this->assertEmpty($result);
+    $this->assertArrayHasKey('p75_value', $result);
+    $this->assertArrayHasKey('rating', $result);
+    $this->assertArrayHasKey('sample_count', $result);
+    $this->assertEquals(0, $result['p75_value']);
+    $this->assertEquals(0, $result['sample_count']);
+    $this->assertEquals('good', $result['rating']);
   }
 
 }

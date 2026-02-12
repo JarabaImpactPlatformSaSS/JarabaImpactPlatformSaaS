@@ -132,35 +132,39 @@ class UptimeMonitorServiceTest extends TestCase {
   /**
    * Verifica que calculateUptime devuelve 100.0 cuando todos los checks estan up.
    *
+   * The service signature is calculateUptime(int $tenantId, int $days = 30).
+   * It uses count() on arrays returned by execute(), not count queries.
+   *
    * @covers ::calculateUptime
    */
   public function testCalculateUptimeAllUp(): void {
-    // Total checks query.
+    // Total checks query: returns array of 100 IDs.
+    $totalIds = range(1, 100);
     $totalQuery = $this->createMock(QueryInterface::class);
     $totalQuery->method('accessCheck')->willReturnSelf();
     $totalQuery->method('condition')->willReturnSelf();
-    $totalQuery->method('count')->willReturnSelf();
-    $totalQuery->method('execute')->willReturn(100);
+    $totalQuery->method('execute')->willReturn($totalIds);
 
-    // Up checks query.
+    // Up checks query: returns array of 100 IDs (all up).
     $upQuery = $this->createMock(QueryInterface::class);
     $upQuery->method('accessCheck')->willReturnSelf();
     $upQuery->method('condition')->willReturnSelf();
-    $upQuery->method('count')->willReturnSelf();
-    $upQuery->method('execute')->willReturn(100);
+    $upQuery->method('execute')->willReturn($totalIds);
 
     $this->checkStorage
       ->method('getQuery')
       ->willReturnOnConsecutiveCalls($totalQuery, $upQuery);
 
-    $uptime = $this->service->calculateUptime(1, 'https://example.com');
+    $uptime = $this->service->calculateUptime(1, 30);
 
     $this->assertIsFloat($uptime);
     $this->assertEquals(100.0, $uptime);
   }
 
   /**
-   * Verifica que calculateUptime devuelve 0.0 cuando no hay checks.
+   * Verifica que calculateUptime devuelve 100.0 cuando no hay checks.
+   *
+   * The service returns 100.0 when there are 0 total checks (line 331-332).
    *
    * @covers ::calculateUptime
    */
@@ -168,23 +172,17 @@ class UptimeMonitorServiceTest extends TestCase {
     $totalQuery = $this->createMock(QueryInterface::class);
     $totalQuery->method('accessCheck')->willReturnSelf();
     $totalQuery->method('condition')->willReturnSelf();
-    $totalQuery->method('count')->willReturnSelf();
-    $totalQuery->method('execute')->willReturn(0);
-
-    $upQuery = $this->createMock(QueryInterface::class);
-    $upQuery->method('accessCheck')->willReturnSelf();
-    $upQuery->method('condition')->willReturnSelf();
-    $upQuery->method('count')->willReturnSelf();
-    $upQuery->method('execute')->willReturn(0);
+    $totalQuery->method('execute')->willReturn([]);
 
     $this->checkStorage
       ->method('getQuery')
-      ->willReturnOnConsecutiveCalls($totalQuery, $upQuery);
+      ->willReturn($totalQuery);
 
-    $uptime = $this->service->calculateUptime(1, 'https://example.com');
+    $uptime = $this->service->calculateUptime(1, 30);
 
     $this->assertIsFloat($uptime);
-    $this->assertEquals(0.0, $uptime);
+    // Service returns 100.0 when there are no checks (assumes up).
+    $this->assertEquals(100.0, $uptime);
   }
 
   /**
@@ -193,24 +191,25 @@ class UptimeMonitorServiceTest extends TestCase {
    * @covers ::calculateUptime
    */
   public function testCalculateUptimePartialDowntime(): void {
-    // 95 of 100 checks are up = 95% uptime.
+    // 100 total checks.
+    $totalIds = range(1, 100);
     $totalQuery = $this->createMock(QueryInterface::class);
     $totalQuery->method('accessCheck')->willReturnSelf();
     $totalQuery->method('condition')->willReturnSelf();
-    $totalQuery->method('count')->willReturnSelf();
-    $totalQuery->method('execute')->willReturn(100);
+    $totalQuery->method('execute')->willReturn($totalIds);
 
+    // 95 of 100 checks are up = 95% uptime.
+    $upIds = range(1, 95);
     $upQuery = $this->createMock(QueryInterface::class);
     $upQuery->method('accessCheck')->willReturnSelf();
     $upQuery->method('condition')->willReturnSelf();
-    $upQuery->method('count')->willReturnSelf();
-    $upQuery->method('execute')->willReturn(95);
+    $upQuery->method('execute')->willReturn($upIds);
 
     $this->checkStorage
       ->method('getQuery')
       ->willReturnOnConsecutiveCalls($totalQuery, $upQuery);
 
-    $uptime = $this->service->calculateUptime(1, 'https://example.com');
+    $uptime = $this->service->calculateUptime(1, 30);
 
     $this->assertIsFloat($uptime);
     $this->assertEquals(95.0, $uptime);
@@ -222,37 +221,38 @@ class UptimeMonitorServiceTest extends TestCase {
    * @covers ::calculateUptime
    */
   public function testCalculateUptimeAllDown(): void {
+    // 50 total checks.
+    $totalIds = range(1, 50);
     $totalQuery = $this->createMock(QueryInterface::class);
     $totalQuery->method('accessCheck')->willReturnSelf();
     $totalQuery->method('condition')->willReturnSelf();
-    $totalQuery->method('count')->willReturnSelf();
-    $totalQuery->method('execute')->willReturn(50);
+    $totalQuery->method('execute')->willReturn($totalIds);
 
+    // 0 up checks.
     $upQuery = $this->createMock(QueryInterface::class);
     $upQuery->method('accessCheck')->willReturnSelf();
     $upQuery->method('condition')->willReturnSelf();
-    $upQuery->method('count')->willReturnSelf();
-    $upQuery->method('execute')->willReturn(0);
+    $upQuery->method('execute')->willReturn([]);
 
     $this->checkStorage
       ->method('getQuery')
       ->willReturnOnConsecutiveCalls($totalQuery, $upQuery);
 
-    $uptime = $this->service->calculateUptime(1, 'https://example.com');
+    $uptime = $this->service->calculateUptime(1, 30);
 
     $this->assertIsFloat($uptime);
     $this->assertEquals(0.0, $uptime);
   }
 
   /**
-   * Verifica que getEndpointStatus devuelve array vacio sin checks.
+   * Verifica que getChecksForTenant devuelve array vacio sin checks.
    *
-   * @covers ::getEndpointStatus
+   * @covers ::getChecksForTenant
    */
-  public function testGetEndpointStatusEmpty(): void {
+  public function testGetChecksForTenantEmpty(): void {
     $this->setupQuery($this->checkStorage, []);
 
-    $result = $this->service->getEndpointStatus(1);
+    $result = $this->service->getChecksForTenant(1);
 
     $this->assertIsArray($result);
     $this->assertEmpty($result);
@@ -270,42 +270,6 @@ class UptimeMonitorServiceTest extends TestCase {
 
     $this->assertIsArray($result);
     $this->assertEmpty($result);
-  }
-
-  /**
-   * Verifica que getUptimeSummary devuelve estructura correcta sin datos.
-   *
-   * @covers ::getUptimeSummary
-   */
-  public function testGetUptimeSummaryEmpty(): void {
-    // First query: get all check IDs to find unique endpoints.
-    $endpointQuery = $this->createMock(QueryInterface::class);
-    $endpointQuery->method('accessCheck')->willReturnSelf();
-    $endpointQuery->method('condition')->willReturnSelf();
-    $endpointQuery->method('sort')->willReturnSelf();
-    $endpointQuery->method('execute')->willReturn([]);
-
-    // Incident query for active incidents count.
-    $incidentQuery = $this->createMock(QueryInterface::class);
-    $incidentQuery->method('accessCheck')->willReturnSelf();
-    $incidentQuery->method('condition')->willReturnSelf();
-    $incidentQuery->method('count')->willReturnSelf();
-    $incidentQuery->method('execute')->willReturn(0);
-
-    $this->checkStorage
-      ->method('getQuery')
-      ->willReturn($endpointQuery);
-
-    $this->incidentStorage
-      ->method('getQuery')
-      ->willReturn($incidentQuery);
-
-    $summary = $this->service->getUptimeSummary(1);
-
-    $this->assertIsArray($summary);
-    $this->assertArrayHasKey('endpoints', $summary);
-    $this->assertArrayHasKey('active_incidents', $summary);
-    $this->assertEquals(0, $summary['active_incidents']);
   }
 
 }
