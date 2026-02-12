@@ -78,9 +78,9 @@ class StatisticalEngineServiceTest extends TestCase {
   public function testZScoreToConfidenceAt196(): void {
     $confidence = $this->service->zScoreToConfidence(1.96);
 
-    // z=1.96 corresponde aproximadamente a 95% de confianza.
-    $this->assertGreaterThanOrEqual(0.90, $confidence);
-    $this->assertLessThanOrEqual(1.0, $confidence);
+    // z=1.96 corresponde aproximadamente a 95% de confianza (retornado como porcentaje 0-100).
+    $this->assertGreaterThanOrEqual(90.0, $confidence);
+    $this->assertLessThanOrEqual(100.0, $confidence);
   }
 
   /**

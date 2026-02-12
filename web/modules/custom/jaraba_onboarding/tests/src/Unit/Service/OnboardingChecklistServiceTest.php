@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_onboarding\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_onboarding\Entity\OnboardingTemplate;
 use Drupal\jaraba_onboarding\Entity\UserOnboardingProgress;
 use Drupal\jaraba_onboarding\Service\OnboardingChecklistService;
@@ -75,7 +74,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
     ];
 
     // Progress mock.
-    $templateIdField = $this->createMock(FieldItemListInterface::class);
+    $templateIdField = new \stdClass();
     $templateIdField->target_id = 10;
 
     $progress = $this->createMock(UserOnboardingProgress::class);
@@ -84,7 +83,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
       if ($field === 'template_id') {
         return $templateIdField;
       }
-      $mock = $this->createMock(FieldItemListInterface::class);
+      $mock = new \stdClass();
       $mock->target_id = NULL;
       return $mock;
     });
@@ -138,7 +137,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
       ['id' => 'profile_complete', 'label' => 'Perfil', 'description' => '', 'order' => 2],
     ];
 
-    $templateIdField = $this->createMock(FieldItemListInterface::class);
+    $templateIdField = new \stdClass();
     $templateIdField->target_id = 10;
 
     $progress = $this->createMock(UserOnboardingProgress::class);
@@ -147,7 +146,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
       if ($field === 'template_id') {
         return $templateIdField;
       }
-      $mock = $this->createMock(FieldItemListInterface::class);
+      $mock = new \stdClass();
       $mock->target_id = NULL;
       return $mock;
     });
@@ -190,7 +189,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
       ['id' => 'profile_complete', 'label' => 'Perfil', 'description' => '', 'order' => 2],
     ];
 
-    $templateIdField = $this->createMock(FieldItemListInterface::class);
+    $templateIdField = new \stdClass();
     $templateIdField->target_id = 10;
 
     $progress = $this->createMock(UserOnboardingProgress::class);
@@ -199,7 +198,7 @@ class OnboardingChecklistServiceTest extends UnitTestCase {
       if ($field === 'template_id') {
         return $templateIdField;
       }
-      $mock = $this->createMock(FieldItemListInterface::class);
+      $mock = new \stdClass();
       $mock->target_id = NULL;
       return $mock;
     });

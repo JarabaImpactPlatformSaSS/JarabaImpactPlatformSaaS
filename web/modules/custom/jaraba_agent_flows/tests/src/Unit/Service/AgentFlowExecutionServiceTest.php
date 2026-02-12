@@ -90,7 +90,8 @@ class AgentFlowExecutionServiceTest extends UnitTestCase {
       ->willReturn($storage);
 
     $result = $this->service->getExecutionResult(999);
-    $this->assertEmpty($result);
+    $this->assertArrayHasKey('error', $result);
+    $this->assertEquals('Ejecucion no encontrada.', $result['error']);
   }
 
 }

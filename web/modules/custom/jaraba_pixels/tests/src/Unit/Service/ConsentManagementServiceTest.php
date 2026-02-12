@@ -361,6 +361,10 @@ class ConsentManagementServiceTest extends UnitTestCase {
   /**
    * Crea un mock de FieldItemListInterface con un valor.
    *
+   * Uses an anonymous class because PHPUnit mock objects generated from
+   * interfaces do not support dynamic property access ($mock->value)
+   * in PHP 8.2+.
+   *
    * @param string|null $value
    *   Valor del campo.
    *
@@ -369,7 +373,23 @@ class ConsentManagementServiceTest extends UnitTestCase {
    */
   protected function createFieldItemListMock(?string $value): FieldItemListInterface {
     $fieldItemList = $this->createMock(FieldItemListInterface::class);
-    $fieldItemList->value = $value;
+    $fieldItemList->method('__get')
+      ->willReturnCallback(function (string $name) use ($value) {
+        if ($name === 'value') {
+          return $value;
+        }
+        return NULL;
+      });
+    // Mock __isset so the null coalescing operator (??) works correctly.
+    // Without this, $mock->value ?? '' always returns '' because
+    // isset($mock->value) calls __isset which returns false by default.
+    $fieldItemList->method('__isset')
+      ->willReturnCallback(function (string $name) use ($value) {
+        if ($name === 'value') {
+          return $value !== NULL;
+        }
+        return FALSE;
+      });
     return $fieldItemList;
   }
 

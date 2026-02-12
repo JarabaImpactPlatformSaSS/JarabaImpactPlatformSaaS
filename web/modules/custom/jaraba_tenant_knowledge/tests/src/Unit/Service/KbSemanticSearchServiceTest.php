@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\jaraba_tenant_knowledge\Entity\KbArticle;
 use Drupal\jaraba_tenant_knowledge\Service\KbSemanticSearchService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -249,32 +250,13 @@ class KbSemanticSearchServiceTest extends TestCase {
   /**
    * Creates a mock KB article entity.
    */
-  protected function createMockArticle(int $id, string $title, string $slug, string $summary, string $body): ContentEntityInterface&MockObject {
-    $entity = $this->createMock(ContentEntityInterface::class);
+  protected function createMockArticle(int $id, string $title, string $slug, string $summary, string $body): KbArticle&MockObject {
+    $entity = $this->createMock(KbArticle::class);
     $entity->method('id')->willReturn($id);
-
-    $titleField = $this->createMock(FieldItemListInterface::class);
-    $titleField->value = $title;
-
-    $slugField = $this->createMock(FieldItemListInterface::class);
-    $slugField->value = $slug;
-
-    $summaryField = $this->createMock(FieldItemListInterface::class);
-    $summaryField->value = $summary;
-
-    $bodyField = $this->createMock(FieldItemListInterface::class);
-    $bodyField->value = $body;
-
-    $entity->method('get')->willReturnMap([
-      ['title', $titleField],
-      ['slug', $slugField],
-      ['summary', $summaryField],
-      ['body', $bodyField],
-    ]);
-
-    // Support for method calls used by the service.
-    // Since we cannot call methods on ContentEntityInterface mock directly,
-    // we use the field-based approach to get values.
+    $entity->method('getTitle')->willReturn($title);
+    $entity->method('getSlug')->willReturn($slug);
+    $entity->method('getSummary')->willReturn($summary);
+    $entity->method('getBody')->willReturn($body);
 
     return $entity;
   }
