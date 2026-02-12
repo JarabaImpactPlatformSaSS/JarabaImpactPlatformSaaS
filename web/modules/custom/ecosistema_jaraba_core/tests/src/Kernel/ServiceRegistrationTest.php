@@ -49,29 +49,20 @@ class ServiceRegistrationTest extends KernelTestBase
     }
 
     /**
-     * Verifica que el servicio PlanValidator está registrado y es instanciable.
+     * Verifica que el alias de PlanValidator es condicional.
      *
-     * El PlanValidator es crítico para validar los límites de uso de cada tenant
-     * según su plan de suscripción.
+     * El PlanValidator vive en jaraba_billing y se registra como alias
+     * condicional via EcosistemaJarabaCoreServiceProvider. Sin jaraba_billing
+     * habilitado, el servicio no debe existir en el contenedor.
      */
-    public function testPlanValidatorServiceExists(): void
+    public function testPlanValidatorServiceIsConditional(): void
     {
         $container = \Drupal::getContainer();
 
-        // Verificar que el servicio existe en el contenedor
-        $this->assertTrue(
+        // Sin jaraba_billing habilitado, el alias condicional no se registra.
+        $this->assertFalse(
             $container->has('ecosistema_jaraba_core.plan_validator'),
-            'El servicio plan_validator debe estar registrado en el contenedor'
-        );
-
-        // Verificar que se puede obtener una instancia
-        $service = $container->get('ecosistema_jaraba_core.plan_validator');
-        $this->assertNotNull($service);
-
-        // Verificar que es del tipo correcto
-        $this->assertInstanceOf(
-            \Drupal\ecosistema_jaraba_core\Service\PlanValidator::class,
-            $service
+            'plan_validator no debe existir sin jaraba_billing habilitado'
         );
     }
 
