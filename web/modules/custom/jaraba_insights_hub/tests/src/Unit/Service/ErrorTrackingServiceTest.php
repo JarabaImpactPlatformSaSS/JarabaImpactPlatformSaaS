@@ -7,6 +7,7 @@ namespace Drupal\Tests\jaraba_insights_hub\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_insights_hub\Service\ErrorTrackingService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -41,9 +42,9 @@ class ErrorTrackingServiceTest extends TestCase {
   /**
    * Mock del contexto de tenant.
    *
-   * @var object|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService|\PHPUnit\Framework\MockObject\MockObject
    */
-  protected MockObject $tenantContext;
+  protected TenantContextService|MockObject $tenantContext;
 
   /**
    * Mock del canal de log.
@@ -66,9 +67,7 @@ class ErrorTrackingServiceTest extends TestCase {
     parent::setUp();
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
-    $this->tenantContext = $this->getMockBuilder(\stdClass::class)
-      ->addMethods(['getCurrentTenantId', 'getCurrentTenant'])
-      ->getMock();
+    $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->errorStorage = $this->createMock(EntityStorageInterface::class);
 
@@ -179,47 +178,27 @@ class ErrorTrackingServiceTest extends TestCase {
    * @covers ::getErrorStats
    */
   public function testGetErrorStatsEmptyReturnsStructure(): void {
-    // Setup count queries for open, total, and recent errors.
-    $countQuery1 = $this->createMock(QueryInterface::class);
-    $countQuery1->method('accessCheck')->willReturnSelf();
-    $countQuery1->method('condition')->willReturnSelf();
-    $countQuery1->method('count')->willReturnSelf();
-    $countQuery1->method('execute')->willReturn(0);
-
-    $countQuery2 = $this->createMock(QueryInterface::class);
-    $countQuery2->method('accessCheck')->willReturnSelf();
-    $countQuery2->method('condition')->willReturnSelf();
-    $countQuery2->method('count')->willReturnSelf();
-    $countQuery2->method('execute')->willReturn(0);
-
-    $countQuery3 = $this->createMock(QueryInterface::class);
-    $countQuery3->method('accessCheck')->willReturnSelf();
-    $countQuery3->method('condition')->willReturnSelf();
-    $countQuery3->method('count')->willReturnSelf();
-    $countQuery3->method('execute')->willReturn(0);
-
-    $this->errorStorage
-      ->method('getQuery')
-      ->willReturnOnConsecutiveCalls($countQuery1, $countQuery2, $countQuery3);
+    // The service queries for open error IDs; return empty array.
+    $this->setupQuery($this->errorStorage, []);
 
     $stats = $this->service->getErrorStats(1);
 
     $this->assertIsArray($stats);
-    $this->assertArrayHasKey('open_errors', $stats);
-    $this->assertArrayHasKey('total_errors', $stats);
-    $this->assertEquals(0, $stats['open_errors']);
-    $this->assertEquals(0, $stats['total_errors']);
+    $this->assertArrayHasKey('total_open', $stats);
+    $this->assertArrayHasKey('total_today', $stats);
+    $this->assertEquals(0, $stats['total_open']);
+    $this->assertEquals(0, $stats['total_today']);
   }
 
   /**
-   * Verifica que getRecentErrors devuelve array vacio sin errores.
+   * Verifica que getErrorsForTenant devuelve array vacio sin errores.
    *
-   * @covers ::getRecentErrors
+   * @covers ::getErrorsForTenant
    */
-  public function testGetRecentErrorsEmpty(): void {
+  public function testGetErrorsForTenantEmpty(): void {
     $this->setupQuery($this->errorStorage, []);
 
-    $result = $this->service->getRecentErrors(1);
+    $result = $this->service->getErrorsForTenant(1);
 
     $this->assertIsArray($result);
     $this->assertEmpty($result);
