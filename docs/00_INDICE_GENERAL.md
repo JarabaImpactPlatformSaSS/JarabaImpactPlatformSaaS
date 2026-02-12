@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 25.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
+**Versión:** 26.0.0 (Plan Maestro 7 Fases: Interactive Plugins + Editor CRUD + Training Purchase + Canvas E2E + SCSS Compliance + pepejaraba.com + Test Suites)
 
 > **📦 MÓDULOS 20260201 — INSIGHTS HUB + LEGAL KNOWLEDGE + FUNDING + AGROCONECTA COPILOTS** (2026-02-12)
 > - **3 módulos nuevos**: `jaraba_insights_hub` (52 archivos), `jaraba_legal_knowledge` (54 archivos), `jaraba_funding` (65 archivos) — 171 archivos totales
@@ -15,6 +15,21 @@
 > - **Fase 0 Consolidación**: ConsentRecord unificado (jaraba_pixels canónico), AnalyticsService renombrado a PageBuilderTrackingService, SalesAgent creado en jaraba_ai_agents
 > - **3 page templates nuevos**: page--insights.html.twig, page--legal.html.twig, page--funding.html.twig
 > - **Aprendizaje**: [2026-02-12_insights_legal_funding_agroconecta_copilots.md](./tecnicos/aprendizajes/2026-02-12_insights_legal_funding_agroconecta_copilots.md)
+>
+
+> **🏗️ PLAN MAESTRO CIERRE GAPS SPECS 20260202-20260204 — 7/7 FASES COMPLETADAS** (2026-02-12)
+> - **Plan Maestro**: 15 gaps identificados en 9 documentos tecnicos, 245-310h estimadas, 100% implementado
+> - **FASE 1 — jaraba_interactive Plugins** (P0): 5 plugins PHP (InteractiveVideo, CoursePresentation, BranchingScenario, DragAndDrop, Essay) + CompletionSubscriber + XapiSubscriber. 5 JS players, 5 Twig templates, SCSS tipos. Plugin system via @InteractiveType annotation + InteractiveTypeManager
+> - **FASE 2 — Editor + CRUD APIs**: EditorController (zero-region), 6 sub-editors JS por tipo (content-editor.js orquestador), preview-engine.js. 6 endpoints CRUD REST (/api/v1/interactive/content). SCSS editor
+> - **FASE 3 — Training Purchase + Andalucia +ei**: PurchaseService (Stripe PaymentIntent + enrollment + certificacion). AndaluciaEiApiController slide-panel CRUD. CertificationProgram + exam_content_id referencia
+> - **FASE 4 — Canvas E2E + CacheTagsInvalidator**: 5 Cypress specs (canvas-blocks 16 tests, canvas-responsive 11, canvas-seo 12, canvas-workflow 11, canvas-performance 10). CanvasCacheTagsInvalidator (page_content tag propagation + deduplication)
+> - **FASE 5 — SCSS Compliance + Templates**: Auditoria 14 modulos SCSS, hero_subtitle fix, @import→@use migration, darken()→color.adjust() normalization
+> - **FASE 6 — pepejaraba.com**: Seed script (766 LOC, 17 entities). Domain record + DesignTokenConfig YAML. Nginx vhost produccion. settings.php trusted_host_patterns + .lando.yml proxy. 7 PageContent (Homepage 7 secciones, Sobre, Servicios, Ecosistema, Blog, Recursos, Contacto). SiteMenu + 6 SiteMenuItems
+> - **FASE 7 — Test Suites**: 11 PHPUnit files, 121+ test methods. 6 plugin tests (QuestionSet 15, InteractiveVideo 14, CoursePresentation 13, BranchingScenario 10, DragAndDrop 10, Essay 12). InteractiveTypeManagerTest 7. ScorerTest 9. CompletionSubscriberTest 10. PurchaseServiceTest 10. CanvasCacheTagsInvalidatorTest 11
+> - **Archivos totales**: ~80 archivos creados/modificados. Plan Maestro documento: 2,230 lineas
+> - **Reglas nuevas**: INT-001 (plugin @InteractiveType pattern), INT-002 (EventSubscriber priority 100), PB-002 (CacheTagsInvalidator deduplication), TRN-001 (PurchaseService Stripe flow), SCSS-002 (zero @import enforcement), TEST-003 (PHPUnit\Framework\TestCase not UnitTestCase for pure unit), SEED-001 (idempotent seed scripts)
+> - **Documento implementacion**: [2026-02-12_Plan_Maestro_Cierre_Gaps_Specs_20260202_20260204_v1.md](./implementacion/2026-02-12_Plan_Maestro_Cierre_Gaps_Specs_20260202_20260204_v1.md)
+> - **Aprendizaje**: [2026-02-12_plan_maestro_7_fases_cierre_gaps.md](./tecnicos/aprendizajes/2026-02-12_plan_maestro_7_fases_cierre_gaps.md)
 >
 
 > **🏆 PLAN CIERRE GAPS CLASE MUNDIAL — 12/12 FASES COMPLETADAS** (2026-02-12)

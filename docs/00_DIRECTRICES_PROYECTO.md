@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 17.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
+**Versión:** 18.0.0 (Plan Maestro 7 Fases: Interactive Plugins + Editor CRUD + Training Purchase + Canvas E2E + SCSS Compliance + pepejaraba.com + Test Suites)
 
 ---
 
@@ -153,6 +153,25 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Lenis Integration Premium (F12)** ⭐: Smooth scroll landing pages (✅ Completado):
   - Lenis v1.3.17 CDN (jsDelivr), `lenis-scroll.js` (Drupal.behaviors, once(), prefers-reduced-motion, admin exclusion)
   - Attach: homepage template + hook_preprocess_html landing pages verticales
+- **Interactive Content AI-Powered** ⭐: 6 tipos de contenido interactivo con IA (✅ Clase Mundial):
+  - `jaraba_interactive` ✅: 6 plugins (QuestionSet, InteractiveVideo, CoursePresentation, BranchingScenario, DragAndDrop, Essay), Plugin Manager, Scorer, XApiEmitter, ContentGenerator
+    - Plugin System: @InteractiveType annotation, InteractiveTypeBase, InteractiveTypeInterface (getSchema/validate/render/calculateScore/getXapiVerbs)
+    - Editor Visual: EditorController (zero-region), content-editor.js orquestador, 6 sub-editors JS por tipo, preview-engine.js (iframe)
+    - 6 endpoints CRUD REST: /api/v1/interactive/content (store/update/destroy/duplicate/list/updateStatus)
+    - EventSubscribers: CompletionSubscriber (XP + certificaciones), XapiSubscriber (sentencias xAPI por tipo)
+    - Frontend: 5 JS players, 5 Twig templates, SCSS tipos + editor
+    - Tests: 9 PHPUnit files (6 plugins + manager + scorer + subscriber), 100+ test methods
+- **Training Purchase System** ⭐: Flujo completo de compra formativa (✅ Completado):
+  - `jaraba_training` (extendido): PurchaseService (validacion→Stripe PaymentIntent→enrollment→certificacion)
+    - Tipos: certification_consultant, certification_entity, regional_franchise → UserCertification auto
+    - Fallback: Stripe no configurado → pago pendiente manual
+    - Tests: PurchaseServiceTest (10 tests, reflection protected methods)
+- **pepejaraba.com Tenant** ⭐: Meta-sitio marca personal provisionado (✅ Completado):
+  - Seed script: `scripts/seed_pepejaraba.php` (766 LOC, idempotente)
+  - Entities: Vertical (Marca Personal) + SaasPlan (Personal Brand Premium) + Tenant + 7 PageContent + SiteMenu + 6 SiteMenuItems
+  - Config: domain.record.pepejaraba_com.yml + design_token_config.pepejaraba_tenant.yml
+  - Colores marca: #FF8C42 (naranja) + #00A9A5 (teal) + #233D63 (corporate). Tipografia: Montserrat/Roboto
+  - Infra: Nginx vhost (SSL Let's Encrypt), trusted_host_patterns, Lando proxy
 - **Insights Hub** ⭐: Monitoreo técnico unificado (✅ Nuevo módulo):
   - `jaraba_insights_hub` ✅: 6 Content Entities (SearchConsoleConnection, SearchConsoleData, WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident), 6 Services, 6 Controllers, 1 Form
     - Search Console: OAuth2 + API sync diario
@@ -1857,6 +1876,7 @@ El asistente IA debe:
 | 2026-02-06 | **5.3.0** | **Auditoría Profunda SaaS Multidimensional:** 87 hallazgos (17 críticos, 32 altos, 26 medios, 12 bajos) desde 10 disciplinas. Nuevas directrices: Sección 4.5 (Seguridad Endpoints AI/LLM: rate limiting, sanitización prompts, circuit breaker, env vars, aislamiento Qdrant) y Sección 4.6 (Seguridad Webhooks: HMAC, auth APIs, restricciones rutas). Plan remediación 3 fases |
 | 2026-02-05 | 5.1.0 | **Arquitectura Theming Federated Tokens:** Patrón SSOT para SCSS implementado. 8 módulos satélite con package.json. 10 funciones darken()→color.adjust() migradas. 102 archivos SCSS documentados. Documento maestro: `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` |
 | 2026-02-02 | 5.0.0 | **Frontend Limpio Page Builder (Zero Region Policy):** Template ultra-limpia para PageContent entities. Header inline sin menú ecosistema. Body classes via `hook_preprocess_html()` (`page-page-builder`, `full-width-layout`). SCSS reset grid. Sin breadcrumbs/sidebars heredados. Documento aprendizaje #34 |
+| 2026-02-12 | **18.0.0** | **Plan Maestro 7 Fases Completado:** jaraba_interactive 6 plugins PHP + editor + CRUD API + 5 event subscribers. PurchaseService (jaraba_training). CacheTagsInvalidator (jaraba_page_builder). 5 Cypress E2E specs (60+ tests). SCSS compliance 14 modulos. pepejaraba.com tenant provisionado (7 paginas + menu + design tokens). 11 PHPUnit test files (121+ tests). seed_pepejaraba.php (766 LOC). Nginx vhost produccion. 7 reglas nuevas (INT-001/002, PB-002, TRN-001, SCSS-002, TEST-003, SEED-001) |
 
 ---
 

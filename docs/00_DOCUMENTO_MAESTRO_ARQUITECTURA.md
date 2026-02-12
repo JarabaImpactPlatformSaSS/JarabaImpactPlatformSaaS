@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-12
-**Versión:** 17.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
+**Versión:** 18.0.0 (Plan Maestro 7 Fases: Interactive + Training Purchase + Canvas E2E + pepejaraba.com + 121 Tests)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 5.0 / 5.0
 
@@ -1091,7 +1091,83 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 7.2 Arquitectura de Theming (Federated Design Tokens)
+### 7.2 Interactive Content AI-Powered (jaraba_interactive)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    INTERACTIVE CONTENT SYSTEM                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Plugin Architecture (@InteractiveType)                                │
+│   ├── InteractiveTypeManager (discovery + sorting)                     │
+│   ├── InteractiveTypeBase (abstract: calculatePercentage, validate)    │
+│   └── InteractiveTypeInterface (contract: 8 methods)                   │
+│       ├── QuestionSet (assessment, weight:0)                           │
+│       ├── InteractiveVideo (media, weight:10)                          │
+│       ├── CoursePresentation (interactive, weight:20)                  │
+│       ├── BranchingScenario (interactive, weight:30)                   │
+│       ├── DragAndDrop (assessment, weight:40)                          │
+│       └── Essay (assessment, weight:50)                                │
+│                                                                         │
+│   Services                                                              │
+│   ├── Scorer (delegates to plugin calculateScore)                      │
+│   ├── XApiEmitter (xAPI statements per type)                           │
+│   └── ContentGenerator (AI-powered content creation)                   │
+│                                                                         │
+│   EventSubscribers                                                      │
+│   ├── CompletionSubscriber (XP + certifications, priority:100)         │
+│   └── XapiSubscriber (xAPI emission per type)                          │
+│                                                                         │
+│   Editor System                                                         │
+│   ├── EditorController (zero-region frontend)                          │
+│   ├── content-editor.js (orchestrator)                                 │
+│   ├── preview-engine.js (iframe preview)                               │
+│   └── 6 type-specific editors (JS)                                     │
+│                                                                         │
+│   CRUD API (/api/v1/interactive/content)                               │
+│   ├── POST / (create)                                                  │
+│   ├── GET / (list + filter)                                            │
+│   ├── PUT /{id} (update)                                               │
+│   ├── PATCH /{id}/status (publish/archive)                             │
+│   ├── DELETE /{id} (soft delete)                                       │
+│   └── POST /{id}/duplicate (clone)                                     │
+│                                                                         │
+│   Tests: 9 PHPUnit files, 100+ test methods                           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.3 Tenant Marca Personal (pepejaraba.com)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PEPEJARABA.COM TENANT                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Seed Script: scripts/seed_pepejaraba.php (766 LOC)                   │
+│   ├── Vertical: Marca Personal                                         │
+│   ├── SaasPlan: Personal Brand Premium                                 │
+│   ├── Tenant: Pepe Jaraba - Marca Personal                            │
+│   ├── Domain: pepejaraba.com                                           │
+│   └── Theme: #FF8C42 (orange) + #00A9A5 (teal)                       │
+│                                                                         │
+│   7 PageContent Pages (multiblock mode)                                │
+│   ├── Homepage (/) — 7 sections                                        │
+│   ├── Sobre Mí (/sobre) — 3 sections                                  │
+│   ├── Servicios (/servicios) — 2 sections (pricing table)             │
+│   ├── Ecosistema (/ecosistema) — 2 sections (bento grid)              │
+│   ├── Blog (/blog) — 2 sections                                       │
+│   ├── Recursos (/recursos) — 2 sections                               │
+│   └── Contacto (/contacto) — 3 sections                               │
+│                                                                         │
+│   Navigation: SiteMenu (main) + 6 SiteMenuItems                       │
+│   Config: domain.record + design_token_config YAMLs                    │
+│   Infra: Nginx vhost + SSL Let's Encrypt + trusted_host_patterns      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.4 Arquitectura de Theming (Federated Design Tokens)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
