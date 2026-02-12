@@ -1,0 +1,84 @@
+{#
+ # Template para ejercicio de arrastrar y soltar.
+ #
+ # Estructura: Área de trabajo con zonas de destino e items
+ # arrastrables que el usuario debe colocar correctamente.
+ #
+ # Variables:
+ # - drop_zones: Array de zonas de destino
+ # - draggables: Array de elementos arrastrables
+ # - background_image: Imagen de fondo opcional
+ # - settings: Configuración del ejercicio
+ #}
+
+<div class="drag-and-drop"
+     data-drop-zones="{{ drop_zones|json_encode }}"
+     data-draggables="{{ draggables|json_encode }}"
+     data-settings="{{ settings|json_encode }}">
+
+  {# Instrucciones #}
+  <div class="drag-and-drop__instructions">
+    <p>{% trans %}Arrastra los elementos a su zona correcta.{% endtrans %}</p>
+  </div>
+
+  {# Área de trabajo principal #}
+  <div class="drag-and-drop__workspace"
+       {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+
+    {# Zonas de destino #}
+    <div class="drag-and-drop__zones">
+      {% for zone in drop_zones %}
+        <div class="drag-and-drop__zone"
+             data-zone-id="{{ zone.id }}"
+             {% if zone.accepts_multiple|default(false) %}data-accepts-multiple="true"{% endif %}
+             {% if zone.position is defined %}
+               style="left: {{ zone.position.x|default(0) }}%; top: {{ zone.position.y|default(0) }}%; width: {{ zone.position.width|default(30) }}%; height: {{ zone.position.height|default(20) }}%;"
+             {% endif %}
+             aria-label="{% trans %}Zona: {% endtrans %}{{ zone.label }}">
+          <span class="drag-and-drop__zone-label">{{ zone.label }}</span>
+          {% if zone.hint is defined and zone.hint %}
+            <span class="drag-and-drop__zone-hint">{{ zone.hint }}</span>
+          {% endif %}
+          <div class="drag-and-drop__zone-items"></div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  {# Panel de items arrastrables #}
+  <div class="drag-and-drop__items-panel">
+    <h4 class="drag-and-drop__items-title">{% trans %}Elementos{% endtrans %}</h4>
+    <div class="drag-and-drop__items">
+      {% for item in draggables %}
+        <div class="drag-and-drop__item"
+             draggable="true"
+             data-item-id="{{ item.id }}"
+             data-correct-zones="{{ item.correct_zones|json_encode }}">
+          {% if item.image_url is defined and item.image_url %}
+            <img src="{{ item.image_url }}" alt="{{ item.text|default('') }}" class="drag-and-drop__item-image">
+          {% endif %}
+          {% if item.text is defined and item.text %}
+            <span class="drag-and-drop__item-text">{{ item.text }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Controles #}
+  <div class="drag-and-drop__controls">
+    <button class="drag-and-drop__check-btn" aria-label="{% trans %}Verificar respuestas{% endtrans %}">
+      {{ jaraba_icon('ui/check', 'outline') }}
+      <span>{% trans %}Verificar{% endtrans %}</span>
+    </button>
+    <button class="drag-and-drop__reset-btn" aria-label="{% trans %}Reiniciar{% endtrans %}">
+      {{ jaraba_icon('ui/refresh-cw', 'outline') }}
+      <span>{% trans %}Reiniciar{% endtrans %}</span>
+    </button>
+  </div>
+
+  {# Panel de feedback (oculto) #}
+  <div class="drag-and-drop__feedback" style="display: none;"></div>
+
+</div>

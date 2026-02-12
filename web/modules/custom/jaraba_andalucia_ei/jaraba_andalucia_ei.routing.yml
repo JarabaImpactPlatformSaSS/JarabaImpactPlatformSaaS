@@ -78,3 +78,47 @@ jaraba_andalucia_ei.dashboard:
     _title: 'Andalucía +ei'
   requirements:
     _permission: 'access content'
+
+# === API AJAX PARA SLIDE-PANEL (AND-001) ===
+jaraba_andalucia_ei.api.participant.add_form:
+  path: '/api/v1/andalucia-ei/participant/add'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::addForm'
+  methods: [GET]
+  requirements:
+    _permission: 'create programa participante ei'
+
+jaraba_andalucia_ei.api.participant.edit_form:
+  path: '/api/v1/andalucia-ei/participant/{id}/edit'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::editForm'
+  methods: [GET]
+  requirements:
+    _permission: 'edit programa participante ei'
+    id: '\d+'
+
+jaraba_andalucia_ei.api.participants.list:
+  path: '/api/v1/andalucia-ei/participants'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::listParticipants'
+  methods: [GET]
+  requirements:
+    _permission: 'view programa participante ei'
+
+jaraba_andalucia_ei.api.participant.get:
+  path: '/api/v1/andalucia-ei/participant/{id}'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::getParticipant'
+  methods: [GET]
+  requirements:
+    _permission: 'view programa participante ei'
+    id: '\d+'
+
+jaraba_andalucia_ei.api.participant.delete:
+  path: '/api/v1/andalucia-ei/participant/{id}'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::deleteParticipant'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete programa participante ei'
+    id: '\d+'

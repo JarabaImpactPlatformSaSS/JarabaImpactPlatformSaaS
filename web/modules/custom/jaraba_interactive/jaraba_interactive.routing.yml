@@ -140,9 +140,41 @@ jaraba_interactive.dashboard:
   options:
     _admin_route: FALSE
 
+# Editor frontend (zero-region) — INT-003
+jaraba_interactive.editor:
+  path: '/interactive/edit/{interactive_content}'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\EditorController::render'
+    _title_callback: '\Drupal\jaraba_interactive\Controller\EditorController::getTitle'
+  requirements:
+    _permission: 'edit any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+    _admin_route: FALSE
+
 # =====================================================
 # API REST
 # =====================================================
+
+# --- CRUD API (Sprint 3 — INT-004) ---
+
+jaraba_interactive.api.content.list:
+  path: '/api/v1/interactive/content'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view interactive content'
+
+jaraba_interactive.api.content.store:
+  path: '/api/v1/interactive/content'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'create interactive content'
 
 jaraba_interactive.api.content:
   path: '/api/v1/interactive/content/{interactive_content}'
@@ -151,6 +183,54 @@ jaraba_interactive.api.content:
   methods: [GET]
   requirements:
     _permission: 'view interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+
+jaraba_interactive.api.content.update:
+  path: '/api/v1/interactive/content/{interactive_content}'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::update'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+
+jaraba_interactive.api.content.status:
+  path: '/api/v1/interactive/content/{interactive_content}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::updateStatus'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+
+jaraba_interactive.api.content.delete:
+  path: '/api/v1/interactive/content/{interactive_content}'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::destroy'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+
+jaraba_interactive.api.content.duplicate:
+  path: '/api/v1/interactive/content/{interactive_content}/duplicate'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::duplicate'
+  methods: [POST]
+  requirements:
+    _permission: 'create interactive content'
   options:
     parameters:
       interactive_content:

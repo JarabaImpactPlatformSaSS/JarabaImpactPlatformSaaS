@@ -25,6 +25,9 @@ class AndaluciaEiController extends ControllerBase
     /**
      * Dashboard frontend del programa Andalucía +ei.
      *
+     * Estructura: Renderiza el dashboard con datos del participante y
+     * controles de administracion (slide-panel) si el usuario tiene permisos.
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *   Request HTTP.
      *
@@ -42,12 +45,18 @@ class AndaluciaEiController extends ControllerBase
 
         $participante = reset($participante) ?: NULL;
 
+        // Determinar si el usuario tiene permisos de gestion (AND-001).
+        $isAdmin = $user->hasPermission('create programa participante ei')
+            || $user->hasPermission('administer andalucia ei');
+
         return [
             '#theme' => 'andalucia_ei_dashboard',
             '#participante' => $participante,
+            '#is_admin' => $isAdmin,
             '#attached' => [
                 'library' => [
                     'jaraba_andalucia_ei/dashboard',
+                    'ecosistema_jaraba_theme/slide-panel',
                 ],
             ],
             '#cache' => [

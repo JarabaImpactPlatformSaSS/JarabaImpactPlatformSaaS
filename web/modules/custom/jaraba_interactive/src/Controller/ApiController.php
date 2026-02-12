@@ -249,6 +249,259 @@ class ApiController extends ControllerBase
     }
 
     // =========================================================================
+    // CRUD ENDPOINTS (Sprint 3 — INT-004)
+    // =========================================================================
+
+    /**
+     * Crea un nuevo contenido interactivo.
+     *
+     * Endpoint: POST /api/v1/interactive/content
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con los datos del contenido.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con el contenido creado.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['title'])) {
+            throw new BadRequestHttpException('El campo title es requerido.');
+        }
+
+        $entity = $this->createInteractiveContent(
+            $data['title'],
+            $data['content_type'] ?? 'question_set',
+            $data['content_data'] ?? [],
+            $data['difficulty'] ?? 'intermediate'
+        );
+
+        // Aplicar settings si se proporcionan.
+        if (!empty($data['settings'])) {
+            $entity->set('settings', json_encode($data['settings']));
+            $entity->save();
+        }
+
+        return new JsonResponse([
+            'status' => 'created',
+            'id' => $entity->id(),
+            'uuid' => $entity->uuid(),
+        ], 201);
+    }
+
+    /**
+     * Lista contenidos interactivos con paginacion y filtro de tenant.
+     *
+     * Endpoint: GET /api/v1/interactive/content
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con parametros de paginacion y filtrado.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con la lista paginada de contenidos.
+     */
+    public function list(Request $request): JsonResponse
+    {
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = min(50, max(1, (int) $request->query->get('limit', 20)));
+        $offset = ($page - 1) * $limit;
+        $contentType = $request->query->get('content_type');
+        $status = $request->query->get('status');
+
+        $storage = $this->entityTypeManager()->getStorage('interactive_content');
+
+        // Query con filtros opcionales.
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->sort('changed', 'DESC')
+            ->range($offset, $limit);
+
+        if ($contentType) {
+            $query->condition('content_type', $contentType);
+        }
+
+        if ($status !== NULL) {
+            $query->condition('status', (int) $status);
+        }
+
+        $ids = $query->execute();
+
+        // Query de conteo total.
+        $countQuery = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->count();
+
+        if ($contentType) {
+            $countQuery->condition('content_type', $contentType);
+        }
+        if ($status !== NULL) {
+            $countQuery->condition('status', (int) $status);
+        }
+
+        $total = (int) $countQuery->execute();
+
+        // Cargar entidades y serializar.
+        $items = [];
+        if (!empty($ids)) {
+            $entities = $storage->loadMultiple($ids);
+            foreach ($entities as $entity) {
+                $items[] = [
+                    'id' => $entity->id(),
+                    'uuid' => $entity->uuid(),
+                    'title' => $entity->label(),
+                    'content_type' => $entity->get('content_type')->value ?? 'general',
+                    'difficulty' => $entity->get('difficulty')->value ?? 'intermediate',
+                    'status' => $entity->isPublished(),
+                    'created' => $entity->getCreatedTime(),
+                    'changed' => $entity->getChangedTime(),
+                ];
+            }
+        }
+
+        return new JsonResponse([
+            'items' => $items,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
+            'pages' => (int) ceil($total / $limit),
+        ]);
+    }
+
+    /**
+     * Actualiza un contenido interactivo completo.
+     *
+     * Endpoint: PUT /api/v1/interactive/content/{id}
+     *
+     * @param \Drupal\jaraba_interactive\Entity\InteractiveContent $interactive_content
+     *   La entidad a actualizar.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con los datos actualizados.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON de confirmacion.
+     */
+    public function update(InteractiveContent $interactive_content, Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (isset($data['title'])) {
+            $interactive_content->set('title', $data['title']);
+        }
+
+        if (isset($data['content_data'])) {
+            $interactive_content->set('content_data', json_encode($data['content_data']));
+        }
+
+        if (isset($data['settings'])) {
+            $interactive_content->set('settings', json_encode($data['settings']));
+        }
+
+        if (isset($data['difficulty'])) {
+            $interactive_content->set('difficulty', $data['difficulty']);
+        }
+
+        if (isset($data['content_type'])) {
+            $interactive_content->set('content_type', $data['content_type']);
+        }
+
+        $interactive_content->save();
+
+        return new JsonResponse([
+            'status' => 'updated',
+            'id' => $interactive_content->id(),
+            'changed' => $interactive_content->getChangedTime(),
+        ]);
+    }
+
+    /**
+     * Actualiza el estado de publicacion de un contenido.
+     *
+     * Endpoint: PATCH /api/v1/interactive/content/{id}/status
+     *
+     * @param \Drupal\jaraba_interactive\Entity\InteractiveContent $interactive_content
+     *   La entidad a actualizar.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con el nuevo estado.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON de confirmacion.
+     */
+    public function updateStatus(InteractiveContent $interactive_content, Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (!isset($data['status'])) {
+            throw new BadRequestHttpException('El campo status es requerido.');
+        }
+
+        $interactive_content->set('status', (int) $data['status']);
+        $interactive_content->save();
+
+        return new JsonResponse([
+            'status' => 'updated',
+            'id' => $interactive_content->id(),
+            'published' => (bool) $data['status'],
+        ]);
+    }
+
+    /**
+     * Elimina un contenido interactivo (soft delete via unpublish).
+     *
+     * Endpoint: DELETE /api/v1/interactive/content/{id}
+     *
+     * @param \Drupal\jaraba_interactive\Entity\InteractiveContent $interactive_content
+     *   La entidad a eliminar.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON de confirmacion.
+     */
+    public function destroy(InteractiveContent $interactive_content): JsonResponse
+    {
+        $id = $interactive_content->id();
+
+        // Soft delete: despublicar en lugar de eliminar fisicamente.
+        $interactive_content->set('status', 0);
+        $interactive_content->save();
+
+        \Drupal::logger('jaraba_interactive')->info('Contenido @id marcado como eliminado (soft delete).', [
+            '@id' => $id,
+        ]);
+
+        return new JsonResponse([
+            'status' => 'deleted',
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * Duplica un contenido interactivo.
+     *
+     * Endpoint: POST /api/v1/interactive/content/{id}/duplicate
+     *
+     * @param \Drupal\jaraba_interactive\Entity\InteractiveContent $interactive_content
+     *   La entidad a duplicar.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con la entidad duplicada.
+     */
+    public function duplicate(InteractiveContent $interactive_content): JsonResponse
+    {
+        $clone = $interactive_content->createDuplicate();
+        $clone->set('title', $interactive_content->label() . ' (' . t('copia') . ')');
+        $clone->set('status', 0);
+        $clone->save();
+
+        return new JsonResponse([
+            'status' => 'duplicated',
+            'original_id' => $interactive_content->id(),
+            'new_id' => $clone->id(),
+            'new_uuid' => $clone->uuid(),
+        ], 201);
+    }
+
+    // =========================================================================
     // SMART IMPORT ENDPOINTS (Sprint 5)
     // =========================================================================
 

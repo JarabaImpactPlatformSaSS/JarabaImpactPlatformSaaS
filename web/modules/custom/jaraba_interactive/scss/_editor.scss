@@ -1,0 +1,373 @@
+// ============================================================================
+// SCSS del editor de contenido interactivo.
+//
+// Estructura: Layout del editor con header, sidebar, canvas y
+// panel de preview. Usa CSS Grid para disposicion responsive.
+//
+// Logica: El editor ocupa todo el viewport disponible (zero-region).
+// El sidebar es colapsable y el preview se abre como panel lateral.
+//
+// Sintaxis: BEM con var(--ej-*) y fallbacks inline.
+// ============================================================================
+
+@use 'sass:color';
+
+// ============================================================================
+// LAYOUT PRINCIPAL
+// ============================================================================
+.interactive-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--ej-color-surface, #f8fafc);
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.interactive-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+  background: var(--ej-color-surface, #fff);
+  border-bottom: 1px solid var(--ej-color-border, #e2e8f0);
+  min-height: 56px;
+  z-index: 10;
+}
+
+.interactive-editor__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 8px);
+  flex: 1;
+}
+
+.interactive-editor__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 8px);
+}
+
+.interactive-editor__back {
+  display: flex;
+  align-items: center;
+  padding: var(--ej-spacing-xs, 4px);
+  color: var(--ej-color-text-secondary, #64748b);
+  text-decoration: none;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    color: var(--ej-color-text, #1e293b);
+  }
+}
+
+.interactive-editor__title-input {
+  flex: 1;
+  max-width: 400px;
+  border: 1px solid transparent;
+  padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-sm, 8px);
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 600;
+  background: transparent;
+  border-radius: var(--ej-border-radius-sm, 4px);
+  color: var(--ej-color-text, #1e293b);
+
+  &:focus {
+    outline: none;
+    border-color: var(--ej-color-primary, #3b82f6);
+    background: var(--ej-color-surface, #fff);
+  }
+}
+
+.interactive-editor__type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--ej-color-primary-light, #eff6ff);
+  color: var(--ej-color-primary, #3b82f6);
+  border-radius: var(--ej-border-radius-sm, 4px);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.interactive-editor__difficulty-select {
+  padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-sm, 8px);
+  border: 1px solid var(--ej-color-border, #e2e8f0);
+  border-radius: var(--ej-border-radius-sm, 4px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  background: var(--ej-color-surface, #fff);
+}
+
+.interactive-editor__save-btn,
+.interactive-editor__preview-btn,
+.interactive-editor__publish-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 4px);
+  padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-md, 16px);
+  border-radius: var(--ej-border-radius-md, 8px);
+  border: none;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-color-primary, #3b82f6);
+    outline-offset: 2px;
+  }
+}
+
+.interactive-editor__save-btn {
+  background: var(--ej-color-primary, #3b82f6);
+  color: #fff;
+}
+
+.interactive-editor__preview-btn {
+  background: var(--ej-color-surface-elevated, #f1f5f9);
+  color: var(--ej-color-text, #1e293b);
+  border: 1px solid var(--ej-color-border, #e2e8f0);
+}
+
+.interactive-editor__publish-btn {
+  background: var(--ej-color-surface-elevated, #f1f5f9);
+  color: var(--ej-color-text-secondary, #64748b);
+  border: 1px solid var(--ej-color-border, #e2e8f0);
+
+  &.is-published {
+    background: var(--ej-color-success, #22c55e);
+    color: #fff;
+    border-color: var(--ej-color-success, #22c55e);
+  }
+}
+
+// ============================================================================
+// BODY (SIDEBAR + MAIN + PREVIEW)
+// ============================================================================
+.interactive-editor__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// ============================================================================
+// SIDEBAR
+// ============================================================================
+.interactive-editor__sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--ej-color-surface, #fff);
+  border-right: 1px solid var(--ej-color-border, #e2e8f0);
+  overflow-y: auto;
+  padding: var(--ej-spacing-md, 16px);
+}
+
+.interactive-editor__sidebar-section {
+  margin-bottom: var(--ej-spacing-lg, 24px);
+}
+
+.interactive-editor__sidebar-title {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-text-secondary, #94a3b8);
+  margin-bottom: var(--ej-spacing-sm, 8px);
+}
+
+// ============================================================================
+// MAIN CANVAS
+// ============================================================================
+.interactive-editor__main {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ej-spacing-lg, 24px);
+}
+
+.interactive-editor__canvas {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.interactive-editor__no-editor {
+  text-align: center;
+  padding: var(--ej-spacing-3xl, 64px);
+  color: var(--ej-color-text-secondary, #94a3b8);
+}
+
+// ============================================================================
+// PREVIEW PANEL
+// ============================================================================
+.interactive-editor__preview-panel {
+  width: 480px;
+  min-width: 480px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--ej-color-border, #e2e8f0);
+  background: var(--ej-color-surface, #fff);
+}
+
+.interactive-editor__preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+  border-bottom: 1px solid var(--ej-color-border, #e2e8f0);
+
+  h3 {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    margin: 0;
+  }
+}
+
+.interactive-editor__preview-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ej-color-text-secondary, #64748b);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.interactive-editor__preview-iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+}
+
+// ============================================================================
+// SETTINGS PANEL (en sidebar)
+// ============================================================================
+.interactive-editor__setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ej-spacing-xs, 4px) 0;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text, #1e293b);
+  gap: var(--ej-spacing-sm, 8px);
+
+  input[type='number'],
+  select {
+    width: 80px;
+    padding: 2px 4px;
+    border: 1px solid var(--ej-color-border, #e2e8f0);
+    border-radius: var(--ej-border-radius-sm, 4px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+}
+
+// ============================================================================
+// SUB-EDITOR ITEMS (genericos)
+// ============================================================================
+.editor-item {
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #e2e8f0);
+  border-radius: var(--ej-border-radius-md, 8px);
+  padding: var(--ej-spacing-md, 16px);
+  margin-bottom: var(--ej-spacing-sm, 8px);
+
+  &.is-active {
+    border-color: var(--ej-color-primary, #3b82f6);
+    box-shadow: 0 0 0 2px var(--ej-color-primary-light, rgba(59, 130, 246, 0.1));
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-sm, 8px);
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--ej-spacing-xs, 4px);
+  }
+
+  &__btn {
+    background: none;
+    border: 1px solid var(--ej-color-border, #e2e8f0);
+    border-radius: var(--ej-border-radius-sm, 4px);
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+
+    &:hover {
+      background: var(--ej-color-surface-elevated, #f1f5f9);
+    }
+
+    &--danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--ej-color-error, #ef4444);
+    }
+  }
+}
+
+.editor-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ej-spacing-xs, 4px);
+  width: 100%;
+  padding: var(--ej-spacing-sm, 8px);
+  border: 2px dashed var(--ej-color-border, #cbd5e1);
+  border-radius: var(--ej-border-radius-md, 8px);
+  background: transparent;
+  color: var(--ej-color-text-secondary, #94a3b8);
+  cursor: pointer;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  margin-top: var(--ej-spacing-sm, 8px);
+
+  &:hover {
+    border-color: var(--ej-color-primary, #3b82f6);
+    color: var(--ej-color-primary, #3b82f6);
+  }
+}
+
+.editor-field {
+  margin-bottom: var(--ej-spacing-sm, 8px);
+
+  &__label {
+    display: block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-color-text-secondary, #64748b);
+    margin-bottom: 2px;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-sm, 8px);
+    border: 1px solid var(--ej-color-border, #e2e8f0);
+    border-radius: var(--ej-border-radius-sm, 4px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #3b82f6);
+    }
+  }
+
+  textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+}

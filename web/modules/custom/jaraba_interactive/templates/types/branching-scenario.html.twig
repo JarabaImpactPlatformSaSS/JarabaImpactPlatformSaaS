@@ -1,0 +1,97 @@
+{#
+ # Template para escenario ramificado.
+ #
+ # Estructura: Contenedor del árbol de decisiones con nodos,
+ # opciones de decisión y visualización del camino recorrido.
+ #
+ # Variables:
+ # - start_node: ID del nodo inicial
+ # - nodes: Array de nodos del escenario
+ # - settings: Configuración del escenario
+ #}
+
+<div class="branching-scenario"
+     data-start-node="{{ start_node }}"
+     data-nodes="{{ nodes|json_encode }}"
+     data-settings="{{ settings|json_encode }}">
+
+  {# Visualización del camino recorrido #}
+  {% if settings.show_path_visualization|default(true) %}
+    <div class="branching-scenario__path">
+      <div class="branching-scenario__path-trail"></div>
+    </div>
+  {% endif %}
+
+  {# Contenedor del nodo activo #}
+  <div class="branching-scenario__stage">
+    {% for node in nodes %}
+      <div class="branching-scenario__node {{ node.id == start_node ? 'is-active' : '' }}"
+           data-node-id="{{ node.id }}"
+           {% if node.is_end|default(false) %}data-is-end="true" data-end-type="{{ node.end_type|default('partial') }}"{% endif %}>
+
+        <h3 class="branching-scenario__node-title">{{ node.title }}</h3>
+
+        {% if node.content is defined %}
+          <div class="branching-scenario__node-content">
+            {% if node.content.text is defined %}
+              <p class="branching-scenario__node-text">{{ node.content.text }}</p>
+            {% endif %}
+
+            {% if node.content.image_url is defined and node.content.image_url %}
+              <div class="branching-scenario__node-media">
+                <img src="{{ node.content.image_url }}" alt="{{ node.title }}" loading="lazy">
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {# Nodo terminal: mensaje final #}
+        {% if node.is_end|default(false) %}
+          <div class="branching-scenario__end branching-scenario__end--{{ node.end_type|default('partial') }}">
+            <div class="branching-scenario__end-icon">
+              {% if node.end_type|default('partial') == 'success' %}
+                {{ jaraba_icon('ui/check-circle', 'duotone') }}
+              {% elseif node.end_type|default('partial') == 'failure' %}
+                {{ jaraba_icon('ui/x-circle', 'duotone') }}
+              {% else %}
+                {{ jaraba_icon('ui/info', 'duotone') }}
+              {% endif %}
+            </div>
+            {% if node.end_message is defined and node.end_message %}
+              <p class="branching-scenario__end-message">{{ node.end_message }}</p>
+            {% endif %}
+          </div>
+        {% else %}
+          {# Opciones de decisión #}
+          {% if node.options is defined and node.options|length > 0 %}
+            <div class="branching-scenario__options">
+              {% for option in node.options %}
+                <button class="branching-scenario__option"
+                        data-option-id="{{ option.id }}"
+                        data-target="{{ option.target_node }}"
+                        data-points="{{ option.points|default(0) }}">
+                  <span class="branching-scenario__option-text">{{ option.text }}</span>
+                </button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Controles inferiores #}
+  <div class="branching-scenario__controls">
+    {% if settings.allow_restart|default(true) %}
+      <button class="branching-scenario__restart" style="display: none;" aria-label="{% trans %}Reiniciar{% endtrans %}">
+        {{ jaraba_icon('ui/refresh-cw', 'outline') }}
+        <span>{% trans %}Reiniciar escenario{% endtrans %}</span>
+      </button>
+    {% endif %}
+    <div class="branching-scenario__score" style="display: none;">
+      <span class="branching-scenario__score-label">{% trans %}Puntuación{% endtrans %}:</span>
+      <span class="branching-scenario__score-value">0</span>
+    </div>
+  </div>
+
+</div>

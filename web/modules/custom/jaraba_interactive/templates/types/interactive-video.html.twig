@@ -1,0 +1,83 @@
+{#
+ # Template para el reproductor de video interactivo.
+ #
+ # Estructura: Contenedor del reproductor HTML5 con controles,
+ # capítulos y checkpoints que se activan en timestamps.
+ #
+ # Variables:
+ # - video_url: URL del video (YouTube, Vimeo o directo)
+ # - poster_url: Imagen de portada del video
+ # - chapters: Array de capítulos con start_time
+ # - checkpoints: Array de puntos de interacción
+ # - settings: Configuración del reproductor
+ #}
+
+<div class="interactive-video"
+     data-video-url="{{ video_url }}"
+     data-poster="{{ poster_url }}"
+     data-checkpoints="{{ checkpoints|json_encode }}"
+     data-chapters="{{ chapters|json_encode }}"
+     data-settings="{{ settings|json_encode }}">
+
+  {# Reproductor de video #}
+  <div class="interactive-video__player">
+    <video class="interactive-video__element"
+           poster="{{ poster_url }}"
+           preload="metadata"
+           playsinline>
+      <source src="{{ video_url }}" type="video/mp4">
+      {% trans %}Tu navegador no soporta el elemento de video.{% endtrans %}
+    </video>
+
+    {# Controles personalizados #}
+    <div class="interactive-video__controls">
+      <button class="interactive-video__play-btn" aria-label="{% trans %}Reproducir{% endtrans %}">
+        {{ jaraba_icon('media/play-circle', 'duotone') }}
+      </button>
+      <div class="interactive-video__progress">
+        <div class="interactive-video__progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="interactive-video__progress-fill"></div>
+          {# Marcadores de checkpoints en la barra de progreso #}
+          {% for checkpoint in checkpoints %}
+            <div class="interactive-video__checkpoint-marker"
+                 data-timestamp="{{ checkpoint.timestamp }}"
+                 data-type="{{ checkpoint.type }}"
+                 title="{{ checkpoint.title|default('Checkpoint') }}">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <span class="interactive-video__time">0:00 / 0:00</span>
+      <button class="interactive-video__fullscreen-btn" aria-label="{% trans %}Pantalla completa{% endtrans %}">
+        {{ jaraba_icon('ui/maximize', 'outline') }}
+      </button>
+    </div>
+  </div>
+
+  {# Panel lateral de capítulos #}
+  {% if settings.show_chapters|default(true) and chapters|length > 0 %}
+    <div class="interactive-video__chapters">
+      <h3 class="interactive-video__chapters-title">{% trans %}Capítulos{% endtrans %}</h3>
+      <ul class="interactive-video__chapter-list">
+        {% for chapter in chapters %}
+          <li class="interactive-video__chapter-item"
+              data-start="{{ chapter.start_time }}"
+              data-id="{{ chapter.id }}">
+            <span class="interactive-video__chapter-time">{{ chapter.start_time|number_format(0) }}s</span>
+            <span class="interactive-video__chapter-title">{{ chapter.title }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {# Overlay para checkpoints (oculto por defecto) #}
+  <div class="interactive-video__overlay" style="display: none;">
+    <div class="interactive-video__overlay-content">
+      <h4 class="interactive-video__overlay-title"></h4>
+      <div class="interactive-video__overlay-body"></div>
+      <div class="interactive-video__overlay-actions"></div>
+    </div>
+  </div>
+
+</div>

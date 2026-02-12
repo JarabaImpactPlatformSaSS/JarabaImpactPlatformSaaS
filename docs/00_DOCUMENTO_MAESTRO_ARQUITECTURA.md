@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-12
-**Versión:** 15.0.0 (Heatmaps Nativos + Tracking Automation — Fases 1-5 Implementadas)
+**Versión:** 17.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 5.0 / 5.0
 
@@ -505,8 +505,8 @@
 │   ├── Facebook, Instagram, TikTok, Pinterest                            │
 │   └── Estado: 🔄 Desarrollo                                             │
 │                                                                         │
-│   📦 jaraba_agroconecta_core ✅ (Vertical AgroConecta)                   │
-│   ├── 20 Content Entities, 6 Controllers, 7 Services, 15 Forms         │
+│   📦 jaraba_agroconecta_core ✅ (Vertical AgroConecta + Copilots)        │
+│   ├── 20 Content Entities, 6 Controllers, 17 Services, 15 Forms        │
 │   ├── Fases 1-3: Commerce Core + Orders + Producer/Customer Portal     │
 │   ├── Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)          │
 │   ├── Sprint AC6-2: Partner Document Hub B2B (Doc 82)                  │
@@ -514,8 +514,17 @@
 │   │   ├── PartnerDocumentService: 12+ métodos (CRUD, magic link, CSV)  │
 │   │   ├── 17 API endpoints: 9 productor + 8 portal público (token)     │
 │   │   └── Frontend: _partner-hub.scss, partner-hub.js, 2 Twig          │
+│   ├── Fase 9: Producer Copilot (Doc 67)                                │
+│   │   ├── DemandForecasterService: Predicción demanda histórico+season │
+│   │   ├── MarketSpyService: Inteligencia competitiva                   │
+│   │   └── CopilotConversationInterface + CopilotMessageInterface       │
+│   ├── Fase 10: Sales Agent (Doc 68)                                    │
+│   │   ├── CrossSellEngine: Motor venta cruzada por categoría           │
+│   │   ├── CartRecoveryService: Secuencia recuperación (1h/24h/72h/7d)  │
+│   │   ├── WhatsAppApiService: WhatsApp Business API webhooks           │
+│   │   └── SalesAgentService: Integración con jaraba_ai_agents          │
 │   ├── Patrón: Clean Twig pages + var(--ej-*) + hook_preprocess_html    │
-│   └── Estado: ✅ Producción (Sprint AC6-2, ~720h total)                │
+│   └── Estado: ✅ Producción (Copilots completados, ~900h total)        │
 │                                                                         │
 │   📦 jaraba_agroconecta_traceability 📋                                 │
 │   ├── Entidades: AgroBatch, TraceEvent, TraceCertificate, AgroQR       │
@@ -523,11 +532,14 @@
 │   ├── QR Dinámico: Analytics + lead capture                             │
 │   └── Estado: 📋 Planificado (Fase 5)                                   │
 │                                                                         │
-│   📦 jaraba_agroconecta_ai 📋                                           │
+│   📦 jaraba_agroconecta_ai ✅ (Completado en core + ai_agents)           │
 │   ├── Producer Copilot: SEO, pricing, stock alerts, market spy          │
+│   │   └── Implementado en jaraba_agroconecta_core (Fase 9)             │
 │   ├── Sales Agent: WhatsApp/Web, recommendations, abandoned cart        │
-│   ├── RAG: Colecciones agro_products, agro_producers, agro_regulations │
-│   └── Estado: 📋 Planificado (Fase 6)                                   │
+│   │   └── Implementado en jaraba_agroconecta_core + ai_agents (Fase 10)│
+│   ├── RAG: CopilotConversationInterface, CopilotMessageInterface       │
+│   │   └── Interfaces unificadas en ecosistema_jaraba_core              │
+│   └── Estado: ✅ Completado (Fases 9-10 en módulos existentes)          │
 │                                                                         │
 │   📦 jaraba_servicios_conecta ✅ (Vertical ServiciosConecta)              │
 │   ├── 5 Content Entities, 3 Controllers, 4 Services, 2 Taxonomías     │
@@ -743,7 +755,7 @@
 │   ├── Tests: 53 unitarios (250 assertions)                               │
 │   └── Estado: ✅ Producción (Fases 1-5 completadas, 2026-02-12)          │
 │                                                                         │
-│   📦 jaraba_ai_agents ✅ (Agentic Workflows Framework)                    │
+│   📦 jaraba_ai_agents ✅ (Agentic Workflows + IA Clase Mundial F11)        │
 │   ├── Sistema Agentic: Workflows multi-step con herramientas autónomas  │
 │   ├── Entidades: AgentTool, AiAgentExecution, AiToolExecution            │
 │   ├── ToolRegistryService: Registro dinámico de herramientas IA          │
@@ -751,8 +763,65 @@
 │   ├── AgentOrchestrator: Ejecutor de agentes con LLM router              │
 │   │   └── Proveedores: Anthropic → OpenAI → Google Gemini (failover)     │
 │   ├── AgentExecutionService: Tracking de ejecuciones + costes            │
-│   ├── API REST: /api/v1/agents/*, /api/v1/tools/*                        │
-│   └── Estado: ✅ Producción (v1.0 - Tool Use nativo)                     │
+│   ├── F11 Brand Voice Training:                                          │
+│   │   ├── BrandVoiceTrainerService: Qdrant `jaraba_brand_voice` 1536D   │
+│   │   │   └── Feedback loop (approve/reject/edit) + LLM refinement      │
+│   │   └── BrandVoiceTrainerApiController: 4 endpoints REST              │
+│   ├── F11 Prompt A/B Testing:                                            │
+│   │   ├── PromptExperimentService: type='prompt_variant', auto-eval     │
+│   │   │   └── Integrado con jaraba_ab_testing StatisticalEngine         │
+│   │   └── PromptExperimentApiController: 3 endpoints REST               │
+│   ├── F11 MultiModal Preparation:                                        │
+│   │   ├── Interfaces: MultiModalInputInterface, MultiModalOutputInterface│
+│   │   └── MultiModalBridgeService: Stub para Whisper/ElevenLabs/DALL-E │
+│   ├── Agentes AgroConecta:                                             │
+│   │   ├── SalesAgent: Extiende SmartBaseAgent, Model Routing            │
+│   │   │   └── fast/balanced/premium para ventas + cart recovery         │
+│   │   └── MerchantCopilotAgent: Copilot comerciantes ComercioConecta   │
+│   ├── API REST: /api/v1/agents/*, /api/v1/ai/brand-voice/*,            │
+│   │   /api/v1/ai/prompt-experiments/*, /api/v1/ai/multimodal/*           │
+│   └── Estado: ✅ Producción (v2.0 - IA Clase Mundial F11)               │
+│                                                                         │
+│   📦 jaraba_insights_hub ✅ (Insights Hub — Monitoreo Técnico)           │
+│   ├── 6 Content Entities: SearchConsoleConnection, SearchConsoleData,  │
+│   │   WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident   │
+│   ├── Services: SearchConsoleService, WebVitalsCollectorService,       │
+│   │   WebVitalsAggregatorService, ErrorTrackingService,                │
+│   │   UptimeMonitorService, InsightsAggregatorService                  │
+│   ├── Controllers: InsightsDashboard, InsightsAdmin, SearchConsoleApi, │
+│   │   WebVitalsApi, ErrorTrackingApi, UptimeApi                        │
+│   ├── Frontend: /insights (4 tabs: SEO|Performance|Errors|Uptime)      │
+│   ├── JS: web-vitals-tracker.js, error-tracker.js, insights-dashboard.js│
+│   ├── Hooks: hook_cron (uptime, search_console_sync, web_vitals_agg)  │
+│   └── Estado: ✅ Producción (Spec 179a, Feb 2026)                      │
+│                                                                         │
+│   📦 jaraba_legal_knowledge ✅ (Legal Knowledge — Base Normativa RAG)    │
+│   ├── 4 Content Entities: LegalNorm, LegalChunk, LegalQueryLog,       │
+│   │   NormChangeAlert                                                   │
+│   ├── Pipeline BOE: BoeApiClient → LegalIngestionService →             │
+│   │   LegalChunkingService → LegalEmbeddingService → Qdrant           │
+│   ├── RAG: LegalRagService (query → Qdrant → Claude → citas BOE)      │
+│   ├── Services: LegalCitationService, LegalDisclaimerService,          │
+│   │   LegalAlertService, TaxCalculatorService                          │
+│   ├── Frontend: /legal (consultas) + /legal/calculadoras (IRPF/IVA)   │
+│   ├── QueueWorkers: LegalNormIngestionWorker, AlertNotificationWorker  │
+│   ├── Hooks: hook_cron (BOE sync diario) + hook_mail (alertas)        │
+│   └── Estado: ✅ Producción (Specs 178/178b, Feb 2026)                 │
+│                                                                         │
+│   📦 jaraba_funding ✅ (Funding Intelligence — Subvenciones)             │
+│   ├── 4 Content Entities: FundingCall, FundingSubscription,            │
+│   │   FundingMatch, FundingAlert                                        │
+│   ├── API Clients: BdnsApiClient (BDNS) + BojaApiClient (BOJA)        │
+│   ├── Matching IA: FundingMatchingEngine (5 criterios, scoring 0-100)  │
+│   │   └── Región 20% + Beneficiario 25% + Sector 20% + Tamaño 15%    │
+│   │       + Semántico 20% (Qdrant cosine)                              │
+│   ├── Intelligence: FundingEligibilityCalculator,                      │
+│   │   FundingCopilotService (RAG + intenciones)                        │
+│   ├── Alerts: FundingAlertService + FundingNotificationDispatcher      │
+│   ├── Cache: FundingCacheService (calls 30min, matches 5min)           │
+│   ├── BD: 12 índices, HASH(tenant_id) + RANGE(created) partitioning   │
+│   ├── Frontend: /funding (dashboard + calendario) + /funding/copilot   │
+│   └── Estado: ✅ Producción (Specs 179/179b, Feb 2026)                 │
 │                                                                         │
 │   📦 jaraba_social ✅ (AI Social Manager - Marketing AI Stack)             │
 │   ├── Entidades: SocialAccount, SocialPost, SocialPostVariant            │
@@ -767,16 +836,23 @@
 │   ├── Tests: 3 unit test files (SocialPost, SocialAccount, Calendar)    │
 │   └── Estado: ✅ Producción (v2.0 - Marketing AI Stack 100%)             │
 │                                                                         │
-│   📦 jaraba_crm ✅ (CRM Pipeline + Kanban + Forecasting)                  │
-│   ├── Entidades: Company, Contact, Opportunity, Activity, PipelineStage  │
+│   📦 jaraba_crm ✅ (CRM Pipeline + B2B Sales Flow F9)                     │
+│   ├── Entidades: Company, Contact, Opportunity (+5 BANT), Activity,     │
+│   │   PipelineStage                                                      │
+│   ├── Pipeline B2B 8 etapas: Lead→MQL→SQL→Demo→Proposal→Negotiation→   │
+│   │   Won→Lost (Directriz #20 YAML-based allowed values)                │
+│   ├── BANT Qualification: Budget/Authority/Need/Timeline                 │
+│   │   └── Score 0-4 computado en preSave() (BANT_MAX_VALUES const)      │
+│   ├── SalesPlaybookService: match(stage + BANT) → next action           │
+│   │   └── Prioridad (low→critical) + detalles + bant_details            │
 │   ├── PipelineKanbanController: Vista Kanban drag & drop                 │
-│   │   └── Ruta: /crm/kanban con JS vanilla + SCSS premium                │
 │   ├── CrmDashboardController: Dashboard unificado /crm                   │
-│   ├── CrmApiController: 22 endpoints REST (CRUD + forecast + stages)    │
+│   ├── CrmApiController: 24 endpoints REST (CRUD + forecast + stages     │
+│   │   + playbook GET + bant PUT)                                         │
 │   ├── CrmForecastingService: Forecast, win rate, avg deal size          │
-│   ├── PipelineStageService: Stages por tenant, reordenamiento           │
+│   ├── PipelineStageService: 8 stages B2B por defecto, reordenamiento   │
 │   ├── Tests: 10 unit test files (Company, Contact, Opportunity, etc.)    │
-│   └── Estado: ✅ Producción (v3.0 - Marketing AI Stack 100%)             │
+│   └── Estado: ✅ Producción (v4.0 - B2B Sales Flow F9)                  │
 │                                                                         │
 │   📦 jaraba_email ✅ (Email Marketing + AI + 24 MJML Templates)            │
 │   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate, │
@@ -1393,6 +1469,8 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   FICHEROS:                                                            │
 │   monitoring/docker-compose.monitoring.yml                              │
 │   monitoring/prometheus/prometheus.yml + rules/jaraba_alerts.yml        │
+│   monitoring/prometheus/rules/scaling_alerts.yml (F10)                  │
+│     └── 10 alert rules + 5 recording rules (3 fases escalado)          │
 │   monitoring/loki/loki-config.yml                                      │
 │   monitoring/promtail/promtail-config.yml                              │
 │   monitoring/alertmanager/alertmanager.yml                              │
@@ -1467,7 +1545,37 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 10.6 Testing Infrastructure
+### 10.6 Per-Tenant Backup/Restore (F10 Scaling Infrastructure)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PER-TENANT BACKUP/RESTORE                             │
+│                 scripts/restore_tenant.sh                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   COMANDOS:                                                            │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  ./restore_tenant.sh backup <tenant_id>   → Backup completo    │  │
+│   │  ./restore_tenant.sh restore <tenant_id> <file>  → Restore     │  │
+│   │  ./restore_tenant.sh list <tenant_id>     → Lista backups      │  │
+│   │  ./restore_tenant.sh tables               → Lista tablas       │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   AUTO-DISCOVERY: INFORMATION_SCHEMA query para encontrar 159+         │
+│   tablas con columna tenant_id. Zero hardcoding.                       │
+│                                                                         │
+│   ENTORNOS: ENVIRONMENT=lando (default) | ENVIRONMENT=ionos (prod)    │
+│                                                                         │
+│   ESCALADO HORIZONTAL (3 Fases):                                       │
+│   docs/arquitectura/scaling-horizontal-guide.md                        │
+│   Fase 1: Single Server IONOS L-16 (≤50 tenants)                      │
+│   Fase 2: Separated DB (≤200 tenants)                                  │
+│   Fase 3: Load Balanced HAProxy + Redis Cluster (1000+ tenants)        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.7 Testing Infrastructure
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -1487,6 +1595,12 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   │  Scenarios: smoke (1 VU) → load (50 VUs) → stress (200 VUs)    │  │
 │   │  Endpoints: homepage, login, API skills, checkout               │  │
 │   │  Thresholds: p95 < 500ms, error rate < 1%                      │  │
+│   ├─────────────────────────────────────────────────────────────────┤  │
+│   │  tests/performance/multi_tenant_load_test.js (F10)              │  │
+│   │  4 Scenarios: multi_tenant_api, crm_pipeline, tenant_isolation, │  │
+│   │  scaling_breakpoint (ramp to 100 VUs)                           │  │
+│   │  7 Custom metrics: per-API category + tenant isolation failures │  │
+│   │  Thresholds: crm p95<500ms, isolation failures=0                │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 │   VISUAL REGRESSION (BackstopJS):                                      │
@@ -1554,9 +1668,17 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   Nivel 2: Documentada          ████████████████████████████████  100%  │
 │   Nivel 3: Gestionada           ████████████████████████████████  100%  │
 │   Nivel 4: Optimizada           ████████████████████████████████  100%  │
-│   Nivel 5: Adaptativa           ████████████████░░░░░░░░░░░░░░░░   50%  │
+│   Nivel 5: Adaptativa           ████████████████████████████████  100%  │
 │                                                                         │
-│                         NIVEL ACTUAL: 4.5 / 5.0                         │
+│                         NIVEL ACTUAL: 5.0 / 5.0                         │
+│                                                                         │
+│   Plan Cierre Gaps Clase Mundial: 12/12 Fases Completadas              │
+│   F1-F8: ECA, Freemium, Visitor, Landing, Onboarding, Admin, Elena,   │
+│          Merchant Copilot                                               │
+│   F9: B2B Sales Flow (BANT + SalesPlaybook)                            │
+│   F10: Scaling Infra (restore_tenant + k6 + Prometheus)                │
+│   F11: IA Clase Mundial (Brand Voice + Prompt A/B + MultiModal)        │
+│   F12: Lenis Integration Premium (smooth scroll)                       │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

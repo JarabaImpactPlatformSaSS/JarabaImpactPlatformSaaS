@@ -1,0 +1,132 @@
+{#
+ # Template para el editor de ensayos.
+ #
+ # Estructura: Editor de texto con prompt, rúbrica visible,
+ # contador de palabras y área de escritura.
+ #
+ # Variables:
+ # - prompt: Consigna del ensayo
+ # - instructions: Instrucciones detalladas
+ # - rubric: Array de criterios de evaluación
+ # - settings: Configuración del ensayo
+ #}
+
+<div class="essay"
+     data-rubric="{{ rubric|json_encode }}"
+     data-settings="{{ settings|json_encode }}">
+
+  {# Consigna del ensayo #}
+  <div class="essay__prompt">
+    <h3 class="essay__prompt-title">{% trans %}Consigna{% endtrans %}</h3>
+    <p class="essay__prompt-text">{{ prompt }}</p>
+    {% if instructions %}
+      <div class="essay__instructions">
+        <details>
+          <summary>{% trans %}Instrucciones detalladas{% endtrans %}</summary>
+          <p>{{ instructions }}</p>
+        </details>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Rúbrica de evaluación (visible si configurado) #}
+  {% if settings.show_rubric|default(true) and rubric|length > 0 %}
+    <div class="essay__rubric">
+      <h4 class="essay__rubric-title">{% trans %}Rúbrica de evaluación{% endtrans %}</h4>
+      <div class="essay__rubric-criteria">
+        {% for criterion in rubric %}
+          <div class="essay__criterion" data-criterion-id="{{ criterion.id }}">
+            <div class="essay__criterion-header">
+              <span class="essay__criterion-name">{{ criterion.criterion }}</span>
+              <span class="essay__criterion-max">{{ criterion.max_points|default(10) }} {% trans %}pts{% endtrans %}</span>
+            </div>
+            {% if criterion.description is defined and criterion.description %}
+              <p class="essay__criterion-description">{{ criterion.description }}</p>
+            {% endif %}
+            {% if criterion.levels is defined and criterion.levels|length > 0 %}
+              <div class="essay__criterion-levels">
+                {% for level in criterion.levels %}
+                  <div class="essay__level">
+                    <span class="essay__level-label">{{ level.label }}</span>
+                    <span class="essay__level-points">({{ level.points }} {% trans %}pts{% endtrans %})</span>
+                    {% if level.description is defined %}
+                      <p class="essay__level-desc">{{ level.description }}</p>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Editor de texto #}
+  <div class="essay__editor">
+    <div class="essay__toolbar">
+      <button class="essay__toolbar-btn" data-action="bold" aria-label="{% trans %}Negrita{% endtrans %}">
+        <strong>B</strong>
+      </button>
+      <button class="essay__toolbar-btn" data-action="italic" aria-label="{% trans %}Cursiva{% endtrans %}">
+        <em>I</em>
+      </button>
+      <button class="essay__toolbar-btn" data-action="underline" aria-label="{% trans %}Subrayado{% endtrans %}">
+        <u>U</u>
+      </button>
+    </div>
+    <textarea class="essay__textarea"
+              placeholder="{% trans %}Escribe tu ensayo aquí...{% endtrans %}"
+              rows="15"
+              {% if settings.min_words|default(0) > 0 %}
+                data-min-words="{{ settings.min_words }}"
+              {% endif %}
+              {% if settings.max_words|default(0) > 0 %}
+                data-max-words="{{ settings.max_words }}"
+              {% endif %}>
+    </textarea>
+  </div>
+
+  {# Barra de estado #}
+  <div class="essay__status-bar">
+    {% if settings.show_word_count|default(true) %}
+      <div class="essay__word-count">
+        <span class="essay__word-count-current">0</span> {% trans %}palabras{% endtrans %}
+        {% if settings.min_words|default(0) > 0 or settings.max_words|default(0) > 0 %}
+          <span class="essay__word-count-limits">
+            ({% if settings.min_words|default(0) > 0 %}{% trans %}mín:{% endtrans %} {{ settings.min_words }}{% endif %}{% if settings.min_words|default(0) > 0 and settings.max_words|default(0) > 0 %} — {% endif %}{% if settings.max_words|default(0) > 0 %}{% trans %}máx:{% endtrans %} {{ settings.max_words }}{% endif %})
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if settings.allow_draft|default(true) %}
+      <button class="essay__save-draft" aria-label="{% trans %}Guardar borrador{% endtrans %}">
+        {{ jaraba_icon('ui/save', 'outline') }}
+        <span>{% trans %}Guardar borrador{% endtrans %}</span>
+      </button>
+    {% endif %}
+  </div>
+
+  {# Botón de envío #}
+  <div class="essay__submit">
+    <button class="essay__submit-btn" aria-label="{% trans %}Enviar ensayo{% endtrans %}">
+      {{ jaraba_icon('ui/send', 'outline') }}
+      <span>{% trans %}Enviar ensayo{% endtrans %}</span>
+    </button>
+    <p class="essay__submit-note">
+      {% trans %}Modo de evaluación:{% endtrans %}
+      {% if settings.evaluation_mode|default('ai') == 'ai' %}
+        {% trans %}Evaluación automática con IA{% endtrans %}
+      {% elseif settings.evaluation_mode|default('ai') == 'manual' %}
+        {% trans %}Evaluación manual por instructor{% endtrans %}
+      {% else %}
+        {% trans %}Evaluación híbrida (IA + revisión manual){% endtrans %}
+      {% endif %}
+    </p>
+  </div>
+
+  {# Panel de resultados (oculto) #}
+  <div class="essay__results" style="display: none;"></div>
+
+</div>

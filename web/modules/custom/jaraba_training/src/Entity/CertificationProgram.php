@@ -169,6 +169,18 @@ class CertificationProgram extends ContentEntityBase implements EntityChangedInt
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // Referencia al contenido interactivo para examen (TRN-002).
+        $fields['exam_content_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Examen Interactivo'))
+            ->setDescription(t('Contenido interactivo usado como examen de certificación.'))
+            ->setSetting('target_type', 'interactive_content')
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => 5,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         $fields['min_mentoring_hours'] = BaseFieldDefinition::create('integer')
             ->setLabel(t('Horas Mínimas de Mentoring'))
             ->setDefaultValue(0)

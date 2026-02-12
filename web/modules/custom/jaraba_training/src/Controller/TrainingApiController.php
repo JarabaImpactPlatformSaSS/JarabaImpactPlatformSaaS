@@ -6,8 +6,11 @@ namespace Drupal\jaraba_training\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_training\Service\LadderService;
+use Drupal\jaraba_training\Service\PurchaseService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Controlador para endpoints API REST del módulo Training.
@@ -20,6 +23,7 @@ class TrainingApiController extends ControllerBase
      */
     public function __construct(
         protected LadderService $ladderService,
+        protected PurchaseService $purchaseService,
     ) {
     }
 
@@ -30,6 +34,7 @@ class TrainingApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_training.ladder_service'),
+            $container->get('jaraba_training.purchase_service'),
         );
     }
 
@@ -127,6 +132,35 @@ class TrainingApiController extends ControllerBase
             'success' => TRUE,
             'data' => $data,
         ]);
+    }
+
+    /**
+     * Procesa la compra de un producto formativo.
+     *
+     * POST /api/v1/training/purchase
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con product_id y datos de pago opcionales.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con el resultado de la compra.
+     */
+    public function purchase(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['product_id'])) {
+            throw new BadRequestHttpException('El campo product_id es requerido.');
+        }
+
+        $productId = (int) $data['product_id'];
+        $paymentData = $data['payment'] ?? [];
+
+        $result = $this->purchaseService->purchase($productId, $paymentData);
+
+        $statusCode = $result['success'] ? 200 : 400;
+
+        return new JsonResponse($result, $statusCode);
     }
 
     /**

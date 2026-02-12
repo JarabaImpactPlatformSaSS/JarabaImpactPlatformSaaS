@@ -155,6 +155,18 @@ services:
     calls:
       - [setStringTranslation, ['@string_translation']]
 
+  # Invalidador de cache tags para paginas del Canvas Editor (CV3-001).
+  # Cuando se invalida un tag page_content:N, extiende la invalidacion
+  # a tags de coleccion, sitemap y preview del canvas.
+  # @see docs/implementacion/2026-02-12_Plan_Maestro_Cierre_Gaps_Specs_20260202_20260204_v1.md FASE 4
+  jaraba_page_builder.canvas_cache_tags_invalidator:
+    class: Drupal\jaraba_page_builder\Service\CanvasCacheTagsInvalidator
+    arguments:
+      - '@cache_tags.invalidator'
+      - '@logger.channel.jaraba_page_builder'
+    tags:
+      - { name: cache_tags_invalidator }
+
   # Procesador de publicaciones programadas del Page Builder.
   # P1-05: Ejecuta acciones publish/unpublish cuando llega la fecha.
   # Llamado desde hook_cron() del modulo.
