@@ -1,0 +1,9 @@
+/**
+ * @file
+ * Entry point SCSS del modulo jaraba_copilot_v2.
+ * Usa Federated Design Tokens (var(--ej-*)).
+ */
+
+@use 'bmc-dashboard';
+@use 'hypothesis-manager';
+@use 'experiment-lifecycle';
