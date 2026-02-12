@@ -1,0 +1,169 @@
+# Reglas de alerta Prometheus — Umbrales de Escalado (F10 Doc 187 §2)
+#
+# Alertas para decidir cuando escalar la infraestructura
+# segun las 3 fases: Single Server → Separated DB → Load Balanced.
+
+groups:
+  - name: scaling_thresholds
+    rules:
+      # === FASE 1 → FASE 2: Single Server → Separated DB ===
+
+      - alert: TenantCountScaleUp
+        expr: |
+          count(count by (tenant_id) (http_requests_total{tenant_id!=""})) > 50
+        for: 1h
+        labels:
+          severity: warning
+          phase: "fase_2_trigger"
+        annotations:
+          summary: "Umbral de tenants para Fase 2 alcanzado"
+          description: >
+            Se han superado los 50 tenants activos ({{ $value }}).
+            Considerar migrar a Fase 2 (Separated DB) para mantener rendimiento.
+
+      - alert: DatabaseConnectionsScaleUp
+        expr: |
+          mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.80
+        for: 15m
+        labels:
+          severity: warning
+          phase: "fase_2_trigger"
+        annotations:
+          summary: "Pool de conexiones de BD al 80%"
+          description: >
+            El pool de conexiones esta al {{ $value | humanizePercentage }}.
+            Indicador de necesidad de separar BD del servidor de aplicacion.
+
+      - alert: DiskIOSaturation
+        expr: |
+          rate(node_disk_io_time_seconds_total{device="sda"}[5m]) > 0.85
+        for: 15m
+        labels:
+          severity: warning
+          phase: "fase_2_trigger"
+        annotations:
+          summary: "Disco I/O saturado (>85%)"
+          description: >
+            El disco esta al {{ $value | humanizePercentage }} de utilizacion I/O.
+            La BD y la app compiten por I/O. Considerar separar servidores.
+
+      # === FASE 2 → FASE 3: Separated DB → Load Balanced ===
+
+      - alert: TenantCountLoadBalancer
+        expr: |
+          count(count by (tenant_id) (http_requests_total{tenant_id!=""})) > 200
+        for: 1h
+        labels:
+          severity: warning
+          phase: "fase_3_trigger"
+        annotations:
+          summary: "Umbral de tenants para Fase 3 alcanzado"
+          description: >
+            Se han superado los 200 tenants activos ({{ $value }}).
+            Considerar migrar a Fase 3 (Load Balanced) con multiples servidores de app.
+
+      - alert: CPUSustainedHigh
+        expr: |
+          100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[15m])) * 100) > 75
+        for: 30m
+        labels:
+          severity: warning
+          phase: "fase_3_trigger"
+        annotations:
+          summary: "CPU sostenidamente alto (>75% durante 30min)"
+          description: >
+            El CPU ha estado por encima del 75% durante 30 minutos.
+            Con {{ $value }}% de uso, el servidor necesita load balancing.
+
+      - alert: MemoryPressureHigh
+        expr: |
+          (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.80
+        for: 30m
+        labels:
+          severity: warning
+          phase: "fase_3_trigger"
+        annotations:
+          summary: "Presion de memoria alta (>80% durante 30min)"
+          description: >
+            La memoria esta al {{ $value | humanizePercentage }} durante 30 minutos.
+            Distribuir carga entre multiples servidores de aplicacion.
+
+      # === ALERTAS OPERACIONALES DE ESCALADO ===
+
+      - alert: APIResponseDegradation
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 2
+        for: 5m
+        labels:
+          severity: critical
+          action: "scale_now"
+        annotations:
+          summary: "Degradacion de respuesta API (p95 > 2s)"
+          description: >
+            El percentil 95 de respuesta API es {{ $value | humanizeDuration }}.
+            Se requiere accion inmediata de escalado.
+
+      - alert: TenantConcurrencyHigh
+        expr: |
+          sum by (tenant_id) (rate(http_requests_total[1m])) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Alta concurrencia en tenant {{ $labels.tenant_id }}"
+          description: >
+            El tenant {{ $labels.tenant_id }} genera {{ $value | humanize }} req/s.
+            Verificar si es trafico legitimo o ataque.
+
+      - alert: QueueDepthCritical
+        expr: |
+          drupal_queue_items_total > 1000
+        for: 10m
+        labels:
+          severity: critical
+          action: "scale_workers"
+        annotations:
+          summary: "Cola de procesamiento con >1000 items"
+          description: >
+            La cola tiene {{ $value }} items pendientes.
+            Considerar escalar workers de procesamiento.
+
+      - alert: DatabaseReplicationLagScaling
+        expr: |
+          mysql_slave_status_seconds_behind_master > 60
+        for: 10m
+        labels:
+          severity: critical
+          phase: "fase_3_issue"
+        annotations:
+          summary: "Replication lag critico (>60s)"
+          description: >
+            La replica tiene un retraso de {{ $value }}s.
+            Read replicas no estan manteniendo el ritmo.
+
+  - name: scaling_capacity_planning
+    rules:
+      # Metricas para planificacion de capacidad (recording rules)
+
+      - record: jaraba:tenant_count:active
+        expr: count(count by (tenant_id) (http_requests_total{tenant_id!=""}))
+
+      - record: jaraba:requests_per_tenant:avg_1h
+        expr: |
+          avg by () (
+            sum by (tenant_id) (rate(http_requests_total[1h]))
+          )
+
+      - record: jaraba:db_connections_percent
+        expr: |
+          mysql_global_status_threads_connected / mysql_global_variables_max_connections * 100
+
+      - record: jaraba:memory_usage_percent
+        expr: |
+          (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
+
+      - record: jaraba:cpu_usage_percent
+        expr: |
+          100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)

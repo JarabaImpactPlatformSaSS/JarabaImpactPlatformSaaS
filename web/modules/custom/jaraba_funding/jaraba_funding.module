@@ -1,0 +1,156 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Funding Intelligence module — Inteligencia de subvenciones con matching IA.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_funding_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_funding') {
+    return '<p>' . t('Provides funding intelligence with AI matching, alerts and copilot for the Ecosistema Jaraba.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_funding_cron(): void {
+  $time = \Drupal::time()->getRequestTime();
+  _jaraba_funding_bdns_sync($time);
+  _jaraba_funding_alerts_check($time);
+}
+
+/**
+ * Syncs BDNS data (rate limited via State API, 12h interval, 03:00-05:00 UTC).
+ */
+function _jaraba_funding_bdns_sync(int $time): void {
+  $state = \Drupal::state();
+  $config = \Drupal::config('jaraba_funding.settings');
+  $intervalHours = (int) ($config->get('sync_interval_hours') ?? 12);
+  $lastRun = (int) ($state->get('jaraba_funding.bdns_last_sync') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun < $intervalHours) {
+    return;
+  }
+
+  $currentHour = (int) date('G', $time);
+  if ($currentHour < 3 || $currentHour > 4) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_funding\Service\BdnsSyncService $sync */
+    $sync = \Drupal::service('jaraba_funding.bdns_sync');
+    $sync->syncDaily();
+    $state->set('jaraba_funding.bdns_last_sync', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_funding')->error('BDNS sync failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Checks funding alerts (rate limited via State API, 24h interval).
+ */
+function _jaraba_funding_alerts_check(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_funding.alerts_last_check') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun < 24) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_funding\Service\FundingAlertService $alertService */
+    $alertService = \Drupal::service('jaraba_funding.alert_service');
+    $alertService->processAlerts();
+    $state->set('jaraba_funding.alerts_last_check', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_funding')->error('Funding alerts check failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_funding_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'funding_alert':
+      $message['subject'] = $params['subject'] ?? t('Nueva Convocatoria Matching - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
+    case 'funding_deadline':
+      $message['subject'] = $params['subject'] ?? t('Recordatorio de Plazo de Subvencion - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
+    case 'funding_digest':
+      $message['subject'] = $params['subject'] ?? t('Resumen Periodico de Subvenciones - Ecosistema Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function jaraba_funding_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === 'jaraba_funding.dashboard') {
+    $variables['attributes']['class'][] = 'page-funding';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_funding_theme(): array {
+  return [
+    'page__funding' => [
+      'template' => 'page--funding',
+      'base hook' => 'page',
+    ],
+    'funding_match_card' => [
+      'template' => 'funding-match-card',
+      'variables' => [
+        'match' => NULL,
+        'call' => NULL,
+        'score' => 0,
+        'breakdown' => [],
+      ],
+    ],
+    'funding_header' => [
+      'template' => 'partials/_funding-header',
+      'variables' => ['tenant' => NULL],
+    ],
+    'funding_search_panel' => [
+      'template' => 'partials/_funding-search-panel',
+      'variables' => ['filters' => [], 'results' => []],
+    ],
+    'funding_matches_panel' => [
+      'template' => 'partials/_funding-matches-panel',
+      'variables' => ['matches' => []],
+    ],
+    'funding_calendar_panel' => [
+      'template' => 'partials/_funding-calendar-panel',
+      'variables' => ['deadlines' => []],
+    ],
+    'funding_copilot_widget' => [
+      'template' => 'partials/_funding-copilot-widget',
+      'variables' => ['enabled' => TRUE],
+    ],
+  ];
+}

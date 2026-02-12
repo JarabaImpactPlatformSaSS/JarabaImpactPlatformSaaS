@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Template for the Funding Intelligence dashboard page.
+ *
+ * Zero-region frontend page for funding calls, matches and calendar.
+ *
+ * Variables:
+ * - page: The page render array from the controller.
+ *
+ * @see jaraba_funding_theme()
+ */
+#}
+{% extends "@claro/layout/page.html.twig" %}
+
+{% block content %}
+  <div class="ej-funding">
+    {# Header #}
+    <div class="ej-funding__header">
+      <h1 class="ej-funding__title">{{ 'Inteligencia de Subvenciones'|t }}</h1>
+    </div>
+
+    {# Tabs #}
+    <nav class="ej-funding__tabs" role="tablist">
+      <button class="ej-funding__tab ej-funding__tab--active" data-tab="calls" role="tab" aria-selected="true">
+        {{ 'Convocatorias'|t }}
+      </button>
+      <button class="ej-funding__tab" data-tab="matches" role="tab" aria-selected="false">
+        {{ 'Mis Matches'|t }}
+      </button>
+      <button class="ej-funding__tab" data-tab="calendar" role="tab" aria-selected="false">
+        {{ 'Calendario'|t }}
+      </button>
+    </nav>
+
+    {# Panels #}
+    <div class="funding-panel funding-panel--calls" style="display: block;" role="tabpanel">
+      {% include '@jaraba_funding/partials/_funding-search-panel.html.twig' %}
+    </div>
+
+    <div class="funding-panel funding-panel--matches" style="display: none;" role="tabpanel">
+      {% include '@jaraba_funding/partials/_funding-matches-panel.html.twig' %}
+    </div>
+
+    <div class="funding-panel funding-panel--calendar" style="display: none;" role="tabpanel">
+      {% include '@jaraba_funding/partials/_funding-calendar-panel.html.twig' %}
+    </div>
+
+    {# Copilot Widget #}
+    <div class="ej-funding__copilot-trigger">
+      <button class="ej-funding__copilot-btn" aria-label="{{ 'Abrir Copilot de Subvenciones'|t }}">
+        <span class="ej-funding__copilot-icon">&#128172;</span>
+      </button>
+    </div>
+
+    {{ page.content }}
+  </div>
+{% endblock %}

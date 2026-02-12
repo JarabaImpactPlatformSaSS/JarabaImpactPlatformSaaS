@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Funding Intelligence module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_funding_install(): void {
+  \Drupal::messenger()->addStatus(t('Funding Intelligence module installed. Configure at /admin/config/services/jaraba-funding'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_funding_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_funding.settings')->delete();
+
+  \Drupal::state()->deleteMultiple([
+    'jaraba_funding.bdns_last_sync',
+    'jaraba_funding.alerts_last_check',
+  ]);
+}

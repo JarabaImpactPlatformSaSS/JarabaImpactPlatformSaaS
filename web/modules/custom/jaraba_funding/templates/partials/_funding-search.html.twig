@@ -1,0 +1,112 @@
+{#
+/**
+ * @file
+ * Search form partial for funding calls.
+ *
+ * Text input, filter dropdowns for region, sector, type, status and date range.
+ */
+#}
+<div class="funding-search">
+  <form class="funding-search__form" id="funding-search-form" method="get" action="#">
+    <div class="funding-search__input-wrapper">
+      <label for="funding-search-input" class="visually-hidden">{{ 'Buscar subvenciones'|t }}</label>
+      <input
+        id="funding-search-input"
+        class="funding-search__input"
+        type="text"
+        name="q"
+        placeholder="{{ 'Buscar convocatorias... Ej: Ayudas digitalizacion pymes Andalucia'|t }}"
+        autocomplete="off"
+      />
+      <button type="submit" class="funding-search__submit">
+        {{ 'Buscar convocatorias'|t }}
+      </button>
+    </div>
+
+    <div class="funding-search__filters">
+      <div class="funding-search__filter">
+        <label for="funding-filter-region" class="funding-search__filter-label">{{ 'Region'|t }}</label>
+        <select id="funding-filter-region" name="region" class="funding-search__filter-select">
+          <option value="">{{ 'Todas'|t }}</option>
+          <option value="nacional">{{ 'Nacional'|t }}</option>
+          <option value="europeo">{{ 'Europeo'|t }}</option>
+          <option value="andalucia">{{ 'Andalucia'|t }}</option>
+          <option value="aragon">{{ 'Aragon'|t }}</option>
+          <option value="asturias">{{ 'Asturias'|t }}</option>
+          <option value="baleares">{{ 'Baleares'|t }}</option>
+          <option value="canarias">{{ 'Canarias'|t }}</option>
+          <option value="cantabria">{{ 'Cantabria'|t }}</option>
+          <option value="castilla_la_mancha">{{ 'Castilla-La Mancha'|t }}</option>
+          <option value="castilla_y_leon">{{ 'Castilla y Leon'|t }}</option>
+          <option value="cataluna">{{ 'Cataluna'|t }}</option>
+          <option value="comunidad_valenciana">{{ 'Comunidad Valenciana'|t }}</option>
+          <option value="extremadura">{{ 'Extremadura'|t }}</option>
+          <option value="galicia">{{ 'Galicia'|t }}</option>
+          <option value="la_rioja">{{ 'La Rioja'|t }}</option>
+          <option value="madrid">{{ 'Madrid'|t }}</option>
+          <option value="murcia">{{ 'Murcia'|t }}</option>
+          <option value="navarra">{{ 'Navarra'|t }}</option>
+          <option value="pais_vasco">{{ 'Pais Vasco'|t }}</option>
+        </select>
+      </div>
+
+      <div class="funding-search__filter">
+        <label for="funding-filter-sector" class="funding-search__filter-label">{{ 'Sector'|t }}</label>
+        <select id="funding-filter-sector" name="sector" class="funding-search__filter-select">
+          <option value="">{{ 'Todos'|t }}</option>
+          <option value="agricultura">{{ 'Agricultura'|t }}</option>
+          <option value="comercio">{{ 'Comercio'|t }}</option>
+          <option value="construccion">{{ 'Construccion'|t }}</option>
+          <option value="educacion">{{ 'Educacion'|t }}</option>
+          <option value="industria">{{ 'Industria'|t }}</option>
+          <option value="servicios">{{ 'Servicios'|t }}</option>
+          <option value="tecnologia">{{ 'Tecnologia'|t }}</option>
+          <option value="turismo">{{ 'Turismo'|t }}</option>
+        </select>
+      </div>
+
+      <div class="funding-search__filter">
+        <label for="funding-filter-tipo" class="funding-search__filter-label">{{ 'Tipo'|t }}</label>
+        <select id="funding-filter-tipo" name="tipo" class="funding-search__filter-select">
+          <option value="">{{ 'Todos'|t }}</option>
+          <option value="subvencion">{{ 'Subvencion'|t }}</option>
+          <option value="prestamo">{{ 'Prestamo'|t }}</option>
+          <option value="bonificacion">{{ 'Bonificacion'|t }}</option>
+          <option value="incentivo_fiscal">{{ 'Incentivo fiscal'|t }}</option>
+          <option value="garantia">{{ 'Garantia'|t }}</option>
+        </select>
+      </div>
+
+      <div class="funding-search__filter">
+        <label for="funding-filter-estado" class="funding-search__filter-label">{{ 'Estado'|t }}</label>
+        <select id="funding-filter-estado" name="estado" class="funding-search__filter-select">
+          <option value="">{{ 'Todos'|t }}</option>
+          <option value="abierta">{{ 'Abierta'|t }}</option>
+          <option value="proxima">{{ 'Proxima apertura'|t }}</option>
+          <option value="cerrada">{{ 'Cerrada'|t }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="funding-search__date-range">
+      <div class="funding-search__filter">
+        <label for="funding-filter-desde" class="funding-search__filter-label">{{ 'Plazo desde'|t }}</label>
+        <input
+          id="funding-filter-desde"
+          class="funding-search__filter-date"
+          type="date"
+          name="deadline_from"
+        />
+      </div>
+      <div class="funding-search__filter">
+        <label for="funding-filter-hasta" class="funding-search__filter-label">{{ 'Plazo hasta'|t }}</label>
+        <input
+          id="funding-filter-hasta"
+          class="funding-search__filter-date"
+          type="date"
+          name="deadline_to"
+        />
+      </div>
+    </div>
+  </form>
+</div>

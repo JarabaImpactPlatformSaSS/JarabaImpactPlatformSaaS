@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Servicio de detección de límites de uso y sugerencias de upgrade.
@@ -13,6 +14,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  * PROPÓSITO:
  * Monitorea el uso de recursos por tenant y detecta cuándo se acercan
  * a los límites de su plan para sugerir upgrades oportunos.
+ *
+ * Integra con UpgradeTriggerService y FreemiumVerticalLimit ConfigEntity
+ * para resolver límites contextualizados por vertical y plan (F2 Doc 183).
+ * El PLAN_LIMITS constant se mantiene como fallback de compatibilidad.
  *
  * Q2 2026 - Sprint 7-8: Expansion Loops
  */
@@ -23,6 +28,7 @@ class UsageLimitsService
      * Umbrales de alerta (% del límite).
      */
     protected const THRESHOLD_WARNING = 75;
+    protected const THRESHOLD_UPGRADE_WARNING = 80;
     protected const THRESHOLD_CRITICAL = 90;
     protected const THRESHOLD_REACHED = 100;
 
@@ -66,24 +72,37 @@ class UsageLimitsService
     public function __construct(
         protected Connection $database,
         protected EntityTypeManagerInterface $entityTypeManager,
+        protected ?UpgradeTriggerService $upgradeTriggerService = NULL,
+        protected ?LoggerInterface $logger = NULL,
     ) {
     }
 
     /**
      * Obtiene el resumen de uso de un tenant.
+     *
+     * @param string $tenantId
+     *   ID del tenant.
+     * @param string $planId
+     *   ID del plan (default: starter).
+     * @param string $verticalId
+     *   ID de la vertical (para FreemiumVerticalLimit lookup). Si se pasa,
+     *   se usa UpgradeTriggerService->getLimitValue() en vez de PLAN_LIMITS.
      */
-    public function getUsageSummary(string $tenantId, string $planId = 'starter'): array
+    public function getUsageSummary(string $tenantId, string $planId = 'starter', string $verticalId = ''): array
     {
-        $limits = self::PLAN_LIMITS[$planId] ?? self::PLAN_LIMITS['starter'];
         $usage = $this->getCurrentUsage($tenantId);
 
         $summary = [
             'tenant_id' => $tenantId,
             'plan' => $planId,
+            'vertical' => $verticalId,
             'resources' => [],
             'alerts' => [],
             'upgrade_suggestions' => [],
         ];
+
+        // Resolve limits: FreemiumVerticalLimit > PLAN_LIMITS fallback.
+        $limits = $this->resolveLimits($verticalId, $planId);
 
         foreach ($limits as $resource => $limit) {
             $currentUsage = $usage[$resource] ?? 0;
@@ -95,6 +114,7 @@ class UsageLimitsService
                     'limit' => 'unlimited',
                     'percentage' => 0,
                     'status' => 'ok',
+                    'upgrade_warning' => FALSE,
                 ];
                 continue;
             }
@@ -102,11 +122,15 @@ class UsageLimitsService
             $percentage = $limit > 0 ? round(($currentUsage / $limit) * 100, 1) : 0;
             $status = $this->getStatusFromPercentage($percentage);
 
+            // Flag de advertencia de upgrade al 80%+ (F2 Doc 183).
+            $upgradeWarning = $percentage >= self::THRESHOLD_UPGRADE_WARNING;
+
             $summary['resources'][$resource] = [
                 'current' => $currentUsage,
                 'limit' => $limit,
                 'percentage' => $percentage,
                 'status' => $status,
+                'upgrade_warning' => $upgradeWarning,
             ];
 
             // Generar alertas si es necesario.
@@ -116,7 +140,13 @@ class UsageLimitsService
                     'status' => $status,
                     'message' => $this->getAlertMessage($resource, $status, $percentage),
                     'cta' => $this->getAlertCTA($resource, $status),
+                    'upgrade_warning' => $upgradeWarning,
                 ];
+            }
+
+            // Disparar upgrade trigger cuando se alcanza el limite (F2).
+            if ($status === 'reached') {
+                $this->fireUpgradeTrigger($tenantId, $resource, $currentUsage, $limit);
             }
         }
 
@@ -126,6 +156,88 @@ class UsageLimitsService
         }
 
         return $summary;
+    }
+
+    /**
+     * Resuelve los limites para un plan, con FreemiumVerticalLimit override.
+     *
+     * Cuando verticalId esta presente y UpgradeTriggerService esta inyectado,
+     * consulta FreemiumVerticalLimit ConfigEntity para cada feature key.
+     * Cae al PLAN_LIMITS constant como fallback de compatibilidad.
+     *
+     * @param string $verticalId
+     *   ID de la vertical (vacio = solo usar PLAN_LIMITS).
+     * @param string $planId
+     *   ID del plan.
+     *
+     * @return array
+     *   Mapa feature_key => limit_value.
+     */
+    protected function resolveLimits(string $verticalId, string $planId): array
+    {
+        $fallbackLimits = self::PLAN_LIMITS[$planId] ?? self::PLAN_LIMITS['starter'];
+
+        // Si no hay vertical o no hay UpgradeTriggerService, usar fallback.
+        if (empty($verticalId) || !$this->upgradeTriggerService) {
+            return $fallbackLimits;
+        }
+
+        $resolvedLimits = [];
+        foreach ($fallbackLimits as $featureKey => $fallbackValue) {
+            $resolvedLimits[$featureKey] = $this->upgradeTriggerService->getLimitValue(
+                $verticalId,
+                $planId,
+                $featureKey,
+                $fallbackValue,
+            );
+        }
+
+        return $resolvedLimits;
+    }
+
+    /**
+     * Dispara un trigger de upgrade cuando un recurso alcanza su limite.
+     *
+     * Carga el tenant entity y delega al UpgradeTriggerService. Silencioso
+     * ante errores para no afectar el flujo principal.
+     *
+     * @param string $tenantId
+     *   ID del tenant.
+     * @param string $featureKey
+     *   Clave del recurso que alcanzo el limite.
+     * @param int $currentUsage
+     *   Uso actual.
+     * @param int $limit
+     *   Limite configurado.
+     */
+    protected function fireUpgradeTrigger(string $tenantId, string $featureKey, int $currentUsage, int $limit): void
+    {
+        if (!$this->upgradeTriggerService) {
+            return;
+        }
+
+        try {
+            $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+            if (!$tenant) {
+                return;
+            }
+
+            $this->upgradeTriggerService->fire('limit_reached', $tenant, [
+                'feature_key' => $featureKey,
+                'current_usage' => $currentUsage,
+                'limit_value' => $limit,
+            ]);
+        }
+        catch (\Exception $e) {
+            // Non-blocking: trigger failure should not break usage summary.
+            if ($this->logger) {
+                $this->logger->warning('Failed to fire upgrade trigger for tenant @tenant, feature @feature: @error', [
+                    '@tenant' => $tenantId,
+                    '@feature' => $featureKey,
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
     }
 
     /**
