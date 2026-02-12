@@ -1,0 +1,14 @@
+jaraba_billing.invoice.settings:
+  title: 'Configuración'
+  route_name: jaraba_billing.billing_invoice.settings
+  base_route: jaraba_billing.billing_invoice.settings
+
+jaraba_billing.usage_record.settings:
+  title: 'Configuración'
+  route_name: jaraba_billing.billing_usage_record.settings
+  base_route: jaraba_billing.billing_usage_record.settings
+
+jaraba_billing.payment_method.settings:
+  title: 'Configuración'
+  route_name: jaraba_billing.billing_payment_method.settings
+  base_route: jaraba_billing.billing_payment_method.settings

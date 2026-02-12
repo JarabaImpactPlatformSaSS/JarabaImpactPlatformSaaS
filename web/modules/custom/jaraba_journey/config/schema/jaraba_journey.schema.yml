@@ -1,0 +1,28 @@
+jaraba_journey.settings:
+  type: config_object
+  label: 'Journey Engine settings'
+  mapping:
+    enable_ai_triggers:
+      type: boolean
+      label: 'Enable AI triggers'
+    risk_threshold:
+      type: integer
+      label: 'Risk threshold score (0-100)'
+    max_daily_notifications:
+      type: integer
+      label: 'Maximum daily notifications per user'
+    quiet_hours_start:
+      type: integer
+      label: 'Quiet hours start (0-23)'
+    quiet_hours_end:
+      type: integer
+      label: 'Quiet hours end (0-23)'
+    min_interval_minutes:
+      type: integer
+      label: 'Minimum interval between notifications (minutes)'
+    enable_cohort_tracking:
+      type: boolean
+      label: 'Enable cohort tracking'
+    retention_days:
+      type: integer
+      label: 'Event retention days'

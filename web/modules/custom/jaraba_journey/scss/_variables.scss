@@ -1,0 +1,41 @@
+// Journey Dashboard Design Tokens
+// Uses CSS custom properties from ecosistema_jaraba_core design token system.
+
+$journey-font-family: var(--ej-font-family-body, 'Inter', sans-serif);
+$journey-font-headings: var(--ej-font-family-headings, 'Outfit', sans-serif);
+
+// Colors
+$journey-color-primary: var(--ej-color-primary, #2563eb);
+$journey-color-secondary: var(--ej-color-secondary, #00a9a5);
+$journey-color-accent: var(--ej-color-accent, #f59e0b);
+$journey-color-success: var(--ej-color-success, #16a34a);
+$journey-color-warning: var(--ej-color-warning, #f59e0b);
+$journey-color-danger: var(--ej-color-error, #dc2626);
+$journey-color-info: var(--ej-color-primary, #2563eb);
+
+// Surfaces
+$journey-bg-body: var(--ej-bg-body, #f8fafc);
+$journey-bg-surface: var(--ej-bg-surface, #ffffff);
+$journey-color-text: var(--ej-color-text, #1e293b);
+$journey-color-text-muted: var(--ej-color-text-muted, #64748b);
+
+// Spacing
+$journey-spacing-xs: 0.25rem;
+$journey-spacing-sm: 0.5rem;
+$journey-spacing-md: 1rem;
+$journey-spacing-lg: 1.5rem;
+$journey-spacing-xl: 2rem;
+
+// Borders
+$journey-border-radius: var(--ej-border-radius, 8px);
+$journey-border-color: #e2e8f0;
+
+// Shadows
+$journey-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$journey-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$journey-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+// Breakpoints
+$journey-bp-sm: 640px;
+$journey-bp-md: 768px;
+$journey-bp-lg: 1024px;

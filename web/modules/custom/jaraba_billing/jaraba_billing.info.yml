@@ -7,3 +7,4 @@ php: 8.4
 
 dependencies:
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:views

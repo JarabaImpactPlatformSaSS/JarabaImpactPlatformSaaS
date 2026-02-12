@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Jaraba Journey Engine module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_journey_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Journey Engine instalado. Configure en /admin/config/jaraba/journey/settings.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_journey_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_journey.settings')->delete();
+}

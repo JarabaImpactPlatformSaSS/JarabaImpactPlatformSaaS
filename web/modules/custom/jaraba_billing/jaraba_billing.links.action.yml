@@ -1,0 +1,17 @@
+jaraba_billing.invoice.add:
+  title: 'Crear factura'
+  route_name: entity.billing_invoice.add_form
+  appears_on:
+    - entity.billing_invoice.collection
+
+jaraba_billing.usage.add:
+  title: 'Registrar uso'
+  route_name: entity.billing_usage_record.add_form
+  appears_on:
+    - entity.billing_usage_record.collection
+
+jaraba_billing.payment_method.add:
+  title: 'Añadir método de pago'
+  route_name: entity.billing_payment_method.add_form
+  appears_on:
+    - entity.billing_payment_method.collection
