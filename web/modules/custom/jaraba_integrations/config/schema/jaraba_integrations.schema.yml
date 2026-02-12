@@ -1,0 +1,22 @@
+jaraba_integrations.settings:
+  type: config_object
+  label: 'Jaraba Integrations settings'
+  mapping:
+    webhook_max_retries:
+      type: integer
+      label: 'Maximum webhook delivery retries'
+    webhook_timeout:
+      type: integer
+      label: 'Webhook request timeout in seconds'
+    webhook_disable_after_failures:
+      type: integer
+      label: 'Disable webhook after N consecutive failures'
+    oauth_token_lifetime:
+      type: integer
+      label: 'OAuth access token lifetime in seconds'
+    oauth_refresh_token_lifetime:
+      type: integer
+      label: 'OAuth refresh token lifetime in days'
+    api_rate_limit:
+      type: integer
+      label: 'API rate limit (requests per minute)'
