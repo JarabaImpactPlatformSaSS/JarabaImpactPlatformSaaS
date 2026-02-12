@@ -76,13 +76,14 @@ class PipelineStageService {
    */
   public function createDefaultStages(int $tenantId): array {
     $defaults = [
-      ['name' => 'Lead', 'machine_name' => 'lead', 'color' => '#9E9E9E', 'position' => 0, 'default_probability' => '10.00'],
-      ['name' => 'Contactado', 'machine_name' => 'contacted', 'color' => '#2196F3', 'position' => 1, 'default_probability' => '20.00'],
-      ['name' => 'Calificado', 'machine_name' => 'qualified', 'color' => '#FF9800', 'position' => 2, 'default_probability' => '40.00'],
-      ['name' => 'Propuesta', 'machine_name' => 'proposal', 'color' => '#9C27B0', 'position' => 3, 'default_probability' => '60.00'],
-      ['name' => 'Negociacion', 'machine_name' => 'negotiation', 'color' => '#E91E63', 'position' => 4, 'default_probability' => '80.00'],
-      ['name' => 'Ganada', 'machine_name' => 'won', 'color' => '#4CAF50', 'position' => 5, 'default_probability' => '100.00', 'is_won_stage' => TRUE],
-      ['name' => 'Perdida', 'machine_name' => 'lost', 'color' => '#F44336', 'position' => 6, 'default_probability' => '0.00', 'is_lost_stage' => TRUE],
+      ['name' => 'Lead', 'machine_name' => 'lead', 'color' => '#94A3B8', 'position' => 0, 'default_probability' => '10.00'],
+      ['name' => 'MQL', 'machine_name' => 'mql', 'color' => '#3B82F6', 'position' => 1, 'default_probability' => '20.00'],
+      ['name' => 'SQL', 'machine_name' => 'sql', 'color' => '#F59E0B', 'position' => 2, 'default_probability' => '40.00'],
+      ['name' => 'Demo', 'machine_name' => 'demo', 'color' => '#8B5CF6', 'position' => 3, 'default_probability' => '60.00'],
+      ['name' => 'Propuesta', 'machine_name' => 'proposal', 'color' => '#EC4899', 'position' => 4, 'default_probability' => '70.00'],
+      ['name' => 'Negociacion', 'machine_name' => 'negotiation', 'color' => '#EF4444', 'position' => 5, 'default_probability' => '80.00'],
+      ['name' => 'Ganada', 'machine_name' => 'won', 'color' => '#22C55E', 'position' => 6, 'default_probability' => '100.00', 'is_won_stage' => TRUE],
+      ['name' => 'Perdida', 'machine_name' => 'lost', 'color' => '#6B7280', 'position' => 7, 'default_probability' => '0.00', 'is_lost_stage' => TRUE],
     ];
 
     $stages = [];

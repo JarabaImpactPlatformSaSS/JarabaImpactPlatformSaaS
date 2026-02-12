@@ -27,6 +27,13 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_crm'
 
+  # Sales Playbook — acciones recomendadas por etapa + BANT (Doc 186).
+  jaraba_crm.sales_playbook:
+    class: Drupal\jaraba_crm\Service\SalesPlaybookService
+    arguments:
+      - '@jaraba_crm.opportunity'
+      - '@logger.channel.jaraba_crm'
+
   # Servicio de forecasting y metricas de ventas.
   jaraba_crm.forecasting:
     class: Drupal\jaraba_crm\Service\CrmForecastingService

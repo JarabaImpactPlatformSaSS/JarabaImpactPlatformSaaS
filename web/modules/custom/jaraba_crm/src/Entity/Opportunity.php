@@ -65,12 +65,56 @@ class Opportunity extends ContentEntityBase implements EntityOwnerInterface
     /**
      * {@inheritdoc}
      */
+    /**
+     * Valores BANT que cuentan como "maximo nivel" para el score.
+     */
+    private const BANT_MAX_VALUES = [
+        'bant_budget' => 'approved',
+        'bant_authority' => 'champion',
+        'bant_need' => 'critical',
+        'bant_timeline' => 'immediate',
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
     public function preSave(EntityStorageInterface $storage): void
     {
         parent::preSave($storage);
         if (!$this->getOwnerId()) {
             $this->setOwnerId(\Drupal::currentUser()->id());
         }
+        $this->set('bant_score', $this->computeBantScore());
+    }
+
+    /**
+     * Computa el score BANT (0-4) contando criterios en nivel maximo.
+     */
+    public function computeBantScore(): int
+    {
+        $score = 0;
+        foreach (self::BANT_MAX_VALUES as $field => $maxValue) {
+            if ($this->hasField($field) && $this->get($field)->value === $maxValue) {
+                $score++;
+            }
+        }
+        return $score;
+    }
+
+    /**
+     * Obtiene la etapa actual del pipeline.
+     */
+    public function getStage(): string
+    {
+        return $this->get('stage')->value ?? 'lead';
+    }
+
+    /**
+     * Obtiene el score BANT.
+     */
+    public function getBantScore(): int
+    {
+        return (int) ($this->get('bant_score')->value ?? 0);
     }
 
     /**
@@ -190,6 +234,89 @@ class Opportunity extends ContentEntityBase implements EntityOwnerInterface
                 'weight' => 4,
             ])
             ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // BANT Qualification (Doc 186 §3).
+        $fields['bant_budget'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('BANT: Presupuesto'))
+            ->setDescription(t('Estado del presupuesto del prospecto.'))
+            ->setDefaultValue('none')
+            ->setSetting('allowed_values_function', 'jaraba_crm_get_bant_budget_values')
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'list_default',
+                'weight' => 5,
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 5,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['bant_authority'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('BANT: Autoridad'))
+            ->setDescription(t('Nivel de autoridad del contacto principal.'))
+            ->setDefaultValue('user')
+            ->setSetting('allowed_values_function', 'jaraba_crm_get_bant_authority_values')
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'list_default',
+                'weight' => 6,
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 6,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['bant_need'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('BANT: Necesidad'))
+            ->setDescription(t('Nivel de necesidad identificada.'))
+            ->setDefaultValue('none')
+            ->setSetting('allowed_values_function', 'jaraba_crm_get_bant_need_values')
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'list_default',
+                'weight' => 7,
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 7,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['bant_timeline'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('BANT: Timeline'))
+            ->setDescription(t('Plazo estimado para la decisión de compra.'))
+            ->setDefaultValue('none')
+            ->setSetting('allowed_values_function', 'jaraba_crm_get_bant_timeline_values')
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'list_default',
+                'weight' => 8,
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 8,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['bant_score'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('BANT Score'))
+            ->setDescription(t('Puntuación BANT computada (0-4).'))
+            ->setDefaultValue(0)
+            ->setSetting('min', 0)
+            ->setSetting('max', 4)
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'number_integer',
+                'weight' => 9,
+            ])
+            ->setDisplayConfigurable('form', FALSE)
             ->setDisplayConfigurable('view', TRUE);
 
         $fields['notes'] = BaseFieldDefinition::create('text_long')

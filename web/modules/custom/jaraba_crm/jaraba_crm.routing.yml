@@ -272,6 +272,26 @@ jaraba_crm.api.opportunities.lost:
     _permission: 'edit crm entities'
     id: '\d+'
 
+# --- Sales Playbook (Doc 186) ---
+
+jaraba_crm.api.opportunities.playbook:
+  path: '/api/v1/crm/opportunities/{id}/playbook'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::getPlaybook'
+  methods: [GET]
+  requirements:
+    _permission: 'view crm entities'
+    id: '\d+'
+
+jaraba_crm.api.opportunities.bant:
+  path: '/api/v1/crm/opportunities/{id}/bant'
+  defaults:
+    _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateBant'
+  methods: [PUT]
+  requirements:
+    _permission: 'edit crm entities'
+    id: '\d+'
+
 # --- Pipeline Stages ---
 
 jaraba_crm.api.pipeline_stages.list:

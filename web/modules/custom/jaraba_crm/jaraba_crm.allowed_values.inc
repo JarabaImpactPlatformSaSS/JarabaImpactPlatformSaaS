@@ -108,3 +108,31 @@ function jaraba_crm_get_contact_source_values(?FieldStorageDefinitionInterface $
   return _jaraba_crm_load_allowed_values('contact_source');
 }
 
+/**
+ * Callback para obtener valores de presupuesto BANT.
+ */
+function jaraba_crm_get_bant_budget_values(?FieldStorageDefinitionInterface $definition = NULL): array {
+  return _jaraba_crm_load_allowed_values('bant_budget');
+}
+
+/**
+ * Callback para obtener valores de autoridad BANT.
+ */
+function jaraba_crm_get_bant_authority_values(?FieldStorageDefinitionInterface $definition = NULL): array {
+  return _jaraba_crm_load_allowed_values('bant_authority');
+}
+
+/**
+ * Callback para obtener valores de necesidad BANT.
+ */
+function jaraba_crm_get_bant_need_values(?FieldStorageDefinitionInterface $definition = NULL): array {
+  return _jaraba_crm_load_allowed_values('bant_need');
+}
+
+/**
+ * Callback para obtener valores de timeline BANT.
+ */
+function jaraba_crm_get_bant_timeline_values(?FieldStorageDefinitionInterface $definition = NULL): array {
+  return _jaraba_crm_load_allowed_values('bant_timeline');
+}
+

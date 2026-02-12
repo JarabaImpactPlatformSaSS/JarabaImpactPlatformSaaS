@@ -1,0 +1,27 @@
+// Legal Knowledge — Design Tokens
+// Uses CSS Custom Properties with fallbacks from the Ecosistema Jaraba design system.
+// @see docs/arquitectura/design-system-tokens.md
+
+// No SCSS variables for colors — all via var(--ej-*)
+// Spacing
+$legal-spacing-xs: 0.25rem;
+$legal-spacing-sm: 0.5rem;
+$legal-spacing-md: 1rem;
+$legal-spacing-lg: 1.5rem;
+$legal-spacing-xl: 2rem;
+
+// Breakpoints
+$legal-bp-mobile: 320px;
+$legal-bp-tablet: 768px;
+$legal-bp-desktop: 1024px;
+$legal-bp-wide: 1280px;
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'tablet' {
+    @media (min-width: $legal-bp-tablet) { @content; }
+  } @else if $breakpoint == 'desktop' {
+    @media (min-width: $legal-bp-desktop) { @content; }
+  } @else if $breakpoint == 'wide' {
+    @media (min-width: $legal-bp-wide) { @content; }
+  }
+}
