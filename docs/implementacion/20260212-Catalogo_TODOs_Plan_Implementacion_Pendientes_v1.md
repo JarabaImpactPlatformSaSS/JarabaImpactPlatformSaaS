@@ -1,7 +1,7 @@
 # Plan de Implementacion: Catalogo Completo de TODOs Pendientes
 
 > **Tipo:** Catalogo de Deuda Tecnica y Mejoras Diferidas
-> **Version:** 1.0.0
+> **Version:** 1.2.0
 > **Fecha:** 2026-02-12
 > **Autor:** Equipo Tecnico JarabaImpactPlatformSaaS
 > **Estado:** Consolidado
@@ -52,14 +52,15 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 
 | Tipo | Cantidad |
 |------|----------|
-| **TODOs accionables (PHP servicios/controladores)** | 75 |
+| **TODOs accionables (PHP servicios/controladores/entities)** | 103 |
 | **TODOs accionables (JS)** | 7 |
 | **TODOs accionables (Twig)** | 6 |
-| **Total accionables** | **88** |
-| Boilerplate Drupal entity (`@todo` en definiciones de campo) | ~1,039 |
-| **Gran Total** | ~1,127 |
+| **Total bruto** | **116** |
+| Duplicados cross-module (billing/core) | -4 |
+| **Total unicos accionables** | **112** |
+| Boilerplate Drupal entity (no accionable) | 0 |
 
-> Los TODOs de boilerplate son generados automaticamente por las definiciones de Content Entity de Drupal y no representan deuda tecnica real.
+> **Nota**: No se encontraron boilerplate `@todo` en definiciones de entidad. Todas las Content Entities tienen sus campos y handlers completamente implementados. Se encontraron 4 duplicados entre `jaraba_billing` y `ecosistema_jaraba_core` (ImpactCreditService y ExpansionRevenueService existentes en ambos modulos).
 
 ---
 
@@ -80,30 +81,31 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 
 | Categoria | Cantidad | Porcentaje | Prioridad |
 |-----------|----------|------------|-----------|
-| DATA_INTEGRATION | 22 | 25.0% | Alta |
-| NOTIFICATIONS | 12 | 13.6% | Media |
-| EXTERNAL_API | 11 | 12.5% | Media |
-| TENANT_FILTERING | 10 | 11.4% | Alta |
-| FUTURE_PHASE | 12 | 13.6% | Baja |
-| UX_FRONTEND | 10 | 11.4% | Media |
-| CALCULATIONS | 6 | 6.8% | Media |
-| INFRASTRUCTURE | 5 | 5.7% | Media |
-| **Total** | **88** | **100%** | — |
+| DATA_INTEGRATION | 39 | 33.6% | Alta |
+| NOTIFICATIONS | 13 | 11.2% | Media |
+| EXTERNAL_API | 11 | 9.5% | Media |
+| TENANT_FILTERING | 13 | 11.2% | Alta |
+| FUTURE_PHASE | 15 | 12.9% | Baja |
+| UX_FRONTEND | 8 | 6.9% | Media |
+| CALCULATIONS | 13 | 11.2% | Media |
+| INFRASTRUCTURE | 4 | 3.4% | Media |
+| **Total (bruto)** | **116** | **100%** | — |
+| **Total unico (sin duplicados)** | **112** | — | — |
 
 ### 3.2 Top 10 Modulos por TODOs
 
 | # | Modulo | TODOs |
 |---|--------|-------|
-| 1 | `ecosistema_jaraba_core` | 17 |
-| 2 | `jaraba_job_board` | 8 |
-| 3 | `jaraba_page_builder` | 8 |
-| 4 | `jaraba_candidate` | 6 |
-| 5 | `jaraba_lms` | 6 |
-| 6 | `jaraba_social` | 5 |
-| 7 | `jaraba_rag` | 5 |
-| 8 | `jaraba_billing` | 4 |
-| 9 | `jaraba_foc` | 4 |
-| 10 | `jaraba_tenant_knowledge` | 4 |
+| 1 | `ecosistema_jaraba_core` | 20 |
+| 2 | `jaraba_job_board` | 12 |
+| 3 | `jaraba_page_builder` | 10 |
+| 4 | `jaraba_foc` | 7 |
+| 5 | `jaraba_candidate` | 6 |
+| 6 | `jaraba_lms` | 6 |
+| 7 | `jaraba_social` | 5 |
+| 8 | `jaraba_rag` | 5 |
+| 9 | `jaraba_training` | 5 |
+| 10 | `jaraba_billing` | 4 |
 
 ---
 
@@ -111,7 +113,7 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 
 ### 4.1 DATA_INTEGRATION — Conexion con datos reales
 
-**22 TODOs** — Conectar stubs con entidades y queries reales.
+**39 TODOs** — Conectar stubs con entidades y queries reales.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
@@ -120,27 +122,44 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | 3 | `ecosistema_jaraba_core/src/Service/ExpansionRevenueService.php` | 273 | Obtener datos reales de revenue |
 | 4 | `ecosistema_jaraba_core/src/Service/ExpansionRevenueService.php` | 327 | Obtener de la base de datos |
 | 5 | `ecosistema_jaraba_core/src/Service/MicroAutomationService.php` | 228 | Integrar con datos reales de analytics |
-| 6 | `ecosistema_jaraba_core/src/Service/MicroAutomationService.php` | 313 | Iterar sobre tenants activos |
-| 7 | `ecosistema_jaraba_core/src/Service/TenantContextService.php` | 240 | Calcular uso real mediante file_managed o directorio fisico |
-| 8 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 195 | Obtener lista de tenants activos (duplicado) |
-| 9 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 273 | Obtener datos reales de revenue (duplicado) |
-| 10 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 327 | Obtener de la base de datos (duplicado) |
-| 11 | `jaraba_candidate/src/Controller/DashboardController.php` | 198 | Check experience, education, skills |
-| 12 | `jaraba_candidate/src/Controller/DashboardController.php` | 323 | Integrate with ProgressTrackingService |
+| 6 | `ecosistema_jaraba_core/src/Service/SandboxTenantService.php` | 264 | Crear cuenta real en Drupal |
+| 7 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 195 | Obtener lista de tenants activos (duplicado core) |
+| 8 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 273 | Obtener datos reales de revenue (duplicado core) |
+| 9 | `jaraba_billing/src/Service/ExpansionRevenueService.php` | 327 | Obtener de la base de datos (duplicado core) |
+| 10 | `jaraba_candidate/src/Controller/DashboardController.php` | 198 | Check experience, education, skills |
+| 11 | `jaraba_candidate/src/Controller/DashboardController.php` | 323 | Integrate with ProgressTrackingService |
+| 12 | `jaraba_candidate/src/Controller/DashboardController.php` | 336 | Implement profile view tracking |
 | 13 | `jaraba_candidate/src/Controller/DashboardController.php` | 345 | Aggregate activities from applications, learning, profile |
 | 14 | `jaraba_candidate/src/Service/CvBuilderService.php` | 372 | Load from candidate_language entity |
 | 15 | `jaraba_candidate/src/Service/CandidateProfileService.php` | 94 | Implement skills retrieval from candidate_skill entity |
 | 16 | `jaraba_job_board/src/Controller/JobSearchController.php` | 329 | Load from employer_profile entity |
-| 17 | `jaraba_job_board/src/Service/MatchingService.php` | 353 | Integrate with candidate_profile entity |
-| 18 | `jaraba_job_board/src/Service/MatchingService.php` | 362 | Integrate with candidate_profile entity |
-| 19 | `jaraba_job_board/src/Service/MatchingService.php` | 371 | Integrate with candidate_profile entity |
-| 20 | `jaraba_lms/src/Controller/CatalogController.php` | 244 | Load from lms_lesson table |
-| 21 | `jaraba_matching/src/Service/MatchingService.php` | 566 | Anadir certifications y courses cuando esten implementados |
-| 22 | `jaraba_diagnostic/src/Service/DiagnosticScoringService.php` | 266 | Implementar cuando exista la entidad digitalization_path |
+| 17 | `jaraba_job_board/src/Controller/JobBoardApiController.php` | 141 | Implement employer applications retrieval |
+| 18 | `jaraba_job_board/src/Service/MatchingService.php` | 353 | Integrate with candidate_profile entity |
+| 19 | `jaraba_job_board/src/Service/MatchingService.php` | 362 | Integrate with candidate_profile entity |
+| 20 | `jaraba_job_board/src/Service/MatchingService.php` | 371 | Integrate with candidate_profile entity |
+| 21 | `jaraba_job_board/js/agent-fab.js` | 365 | Send rating to backend |
+| 22 | `jaraba_lms/src/Controller/CatalogController.php` | 244 | Load from lms_lesson table |
+| 23 | `jaraba_lms/src/Controller/LmsApiController.php` | 64 | Implement enrollment logic |
+| 24 | `jaraba_matching/src/Service/MatchingService.php` | 566 | Anadir certifications y courses cuando esten implementados |
+| 25 | `jaraba_diagnostic/src/Controller/DiagnosticApiController.php` | 236 | Implementar cuando se guarden scores por seccion |
+| 26 | `jaraba_diagnostic/src/Service/DiagnosticScoringService.php` | 266 | Implementar cuando exista la entidad digitalization_path |
+| 27 | `jaraba_copilot_v2/src/Service/EntrepreneurContextService.php` | 180 | Implementar cuando exista entidad conversation_log |
+| 28 | `jaraba_agroconecta_core/src/Controller/SalesApiController.php` | 165 | Integrar con CartService real |
+| 29 | `jaraba_agroconecta_core/src/Controller/SalesApiController.php` | 187 | Integrar con CouponService real |
+| 30 | `jaraba_training/src/Entity/TrainingProduct.php` | 217 | Cambiar a 'course' y 'mentoring_package' cuando entities esten instaladas |
+| 31 | `jaraba_training/src/Entity/CertificationProgram.php` | 148 | Cambiar a 'course' cuando jaraba_lms entity este instalada |
+| 32 | `jaraba_training/src/Service/LadderService.php` | 91 | Integrar con sistema de compras/enrollments |
+| 33 | `jaraba_foc/src/Controller/StripeWebhookController.php` | 263 | Actualizar entidad de vendedor en Drupal |
+| 34 | `jaraba_foc/src/Controller/StripeWebhookController.php` | 329 | Mapear transaction_type a termino de taxonomia |
+| 35 | `jaraba_interactive/src/Controller/ApiController.php` | 103 | Store xAPI statement in InteractiveResult entity |
+| 36 | `jaraba_page_builder/src/Controller/TemplatePickerController.php` | 195 | Integrar analytics real (actualmente usa rand()) |
+| 37 | `jaraba_rag/src/Service/JarabaRagService.php` | 167 | Obtener tokens_used del resultado LLM |
+| 38 | `jaraba_mentoring/src/Service/MentorMatchingService.php` | 205 | Check actual availability slots |
+| 39 | `jaraba_business_tools/js/entrepreneur-agent-fab.js` | 413 | Send rating to backend for AI learning |
 
 ### 4.2 NOTIFICATIONS — Alertas y notificaciones
 
-**12 TODOs** — Envio de emails, alertas push, dispatch de eventos.
+**13 TODOs** — Envio de emails, alertas push, dispatch de eventos.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
@@ -148,14 +167,15 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | 2 | `ecosistema_jaraba_core/src/Controller/WebhookController.php` | 381 | Implementar notificaciones por email |
 | 3 | `ecosistema_jaraba_core/src/Controller/WebhookController.php` | 463 | Enviar notificacion al administrador del tenant |
 | 4 | `ecosistema_jaraba_core/src/Controller/WebhookController.php` | 493 | Enviar notificacion de recordatorio |
-| 5 | `jaraba_job_board/src/Service/ApplicationService.php` | 121 | Dispatch application event for ECA (notifications) |
-| 6 | `jaraba_job_board/src/Service/ApplicationService.php` | 261 | Dispatch status change event for notifications |
-| 7 | `jaraba_lms/src/Service/EnrollmentService.php` | 130 | Dispatch enrollment event for ECA |
-| 8 | `jaraba_lms/src/Service/EnrollmentService.php` | 227 | Dispatch completion event for certificate issuance |
-| 9 | `jaraba_lms/src/Service/EnrollmentService.php` | 294 | Queue reminder email |
-| 10 | `jaraba_rag/src/Service/QueryAnalyticsService.php` | 196 | Notificar al admin del tenant via ECA/Brevo |
-| 11 | `jaraba_foc/src/Service/AlertService.php` | 108 | Comparar MRR actual vs anterior para detectar caidas |
-| 12 | `jaraba_foc/src/Controller/FocDashboardController.php` | 279 | Implementar logica de alertas reales |
+| 5 | `ecosistema_jaraba_core/js/pwa-register.js` | 268 | Get VAPID public key from server |
+| 6 | `jaraba_job_board/src/Service/ApplicationService.php` | 121 | Dispatch application event for ECA (notifications) |
+| 7 | `jaraba_job_board/src/Service/ApplicationService.php` | 261 | Dispatch status change event for notifications |
+| 8 | `jaraba_job_board/src/Service/JobAlertService.php` | 66 | Implement alert processing |
+| 9 | `jaraba_lms/src/Service/EnrollmentService.php` | 130 | Dispatch enrollment event for ECA |
+| 10 | `jaraba_lms/src/Service/EnrollmentService.php` | 227 | Dispatch completion event for certificate issuance |
+| 11 | `jaraba_lms/src/Service/EnrollmentService.php` | 294 | Queue reminder email |
+| 12 | `jaraba_rag/src/Service/QueryAnalyticsService.php` | 196 | Notificar al admin del tenant via ECA/Brevo |
+| 13 | `jaraba_foc/src/Controller/FocDashboardController.php` | 279 | Implementar logica de alertas reales |
 
 ### 4.3 EXTERNAL_API — Integraciones externas
 
@@ -169,32 +189,35 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | 4 | `jaraba_social/src/Service/MakeComIntegrationService.php` | 105 | Implementar envio HTTP real al webhook de Make.com |
 | 5 | `jaraba_social/src/Service/MakeComIntegrationService.php` | 262 | Implementar verificacion real de conectividad con Make.com |
 | 6 | `jaraba_funding/src/Service/Intelligence/FundingMatchingEngine.php` | 368 | Conectar con Qdrant para busqueda semantica de embeddings |
-| 7 | `jaraba_matching/src/Controller/MatchingApiController.php` | 195 | Implementar con Qdrant semantic similarity en Fase 2 |
-| 8 | `jaraba_matching/src/Controller/MatchingApiController.php` | 251 | Implementar con Qdrant en Fase 2 |
-| 9 | `jaraba_job_board/src/Service/MatchingService.php` | 380 | Integrate with embedding service (OpenAI, Cohere, etc.) |
-| 10 | `jaraba_pixels/src/Service/TokenVerificationService.php` | 166 | Hacer llamada de prueba a cada plataforma |
-| 11 | `jaraba_training/src/Service/RoyaltyTracker.php` | 15 | INTEGRACION STRIPE CONNECT (Fase Futura) |
+| 7 | `jaraba_job_board/src/Service/MatchingService.php` | 380 | Integrate with embedding service (OpenAI, Cohere, etc.) |
+| 8 | `jaraba_diagnostic/src/Service/DiagnosticReportService.php` | 77 | Implementar con DomPDF o Puppeteer cuando este disponible |
+| 9 | `jaraba_rag/src/Service/GroundingValidator.php` | 315 | Implementar llamada LLM cuando se necesite mayor precision |
+| 10 | `jaraba_rag/src/Service/GroundingValidator.php` | 341 | Llamar al LLM y parsear respuesta |
+| 11 | `jaraba_business_tools/src/Controller/CanvasApiController.php` | 751 | Implement PDF export with Puppeteer |
 
 ### 4.4 TENANT_FILTERING — Filtrado multi-tenant
 
-**10 TODOs** — Segmentacion por tenant_id, Group module.
+**13 TODOs** — Segmentacion por tenant_id, Group module.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
 | 1 | `ecosistema_jaraba_core/src/TenantAccessControlHandler.php` | 84 | Implementar verificacion de membresia via Group module |
 | 2 | `ecosistema_jaraba_core/src/Service/TenantContextService.php` | 275 | Filtrar por grupo cuando gnode este completamente configurado |
 | 3 | `ecosistema_jaraba_core/src/Service/ImpactCreditService.php` | 215 | Filtrar por tenant cuando este integrado |
-| 4 | `jaraba_billing/src/Service/ImpactCreditService.php` | 215 | Filtrar por tenant cuando este integrado (duplicado) |
-| 5 | `jaraba_analytics/src/Controller/AnalyticsDashboardController.php` | 48 | Detectar tenant del contexto |
-| 6 | `jaraba_crm/src/Controller/CrmDashboardController.php` | 52 | Obtener tenant_id del contexto actual |
-| 7 | `jaraba_page_builder/src/PageContentListBuilder.php` | 93 | Filtrar por tenant del usuario actual |
-| 8 | `jaraba_page_builder/src/Controller/CanvasEditorController.php` | 318 | Filtrar premium segun plan del tenant |
-| 9 | `jaraba_integrations/src/Access/ConnectorInstallationAccessControlHandler.php` | 31 | Verificar tenant_id contra membresia Group del usuario |
-| 10 | `jaraba_rag/src/Service/KbIndexerService.php` | 172 | Implementar reindexacion por tenant |
+| 4 | `ecosistema_jaraba_core/src/Service/MicroAutomationService.php` | 313 | Iterar sobre tenants activos |
+| 5 | `jaraba_billing/src/Service/ImpactCreditService.php` | 215 | Filtrar por tenant cuando este integrado (duplicado core) |
+| 6 | `jaraba_analytics/src/Controller/AnalyticsDashboardController.php` | 48 | Detectar tenant del contexto |
+| 7 | `jaraba_crm/src/Controller/CrmDashboardController.php` | 52 | Obtener tenant_id del contexto actual |
+| 8 | `jaraba_page_builder/src/PageContentListBuilder.php` | 93 | Filtrar por tenant del usuario actual |
+| 9 | `jaraba_page_builder/src/Controller/CanvasEditorController.php` | 318 | Filtrar premium segun plan del tenant |
+| 10 | `jaraba_integrations/src/Access/ConnectorInstallationAccessControlHandler.php` | 31 | Verificar tenant_id contra membresia Group del usuario |
+| 11 | `jaraba_rag/src/Service/KbIndexerService.php` | 172 | Implementar reindexacion por tenant |
+| 12 | `jaraba_comercio_conecta/src/Controller/MarketplaceController.php` | 65 | Obtener del TenantContextService cuando este disponible |
+| 13 | `jaraba_content_hub/src/Controller/ContentHubDashboardController.php` | 321 | Create dedicated AI writing assistant route |
 
 ### 4.5 FUTURE_PHASE — Diferidos a fases futuras
 
-**12 TODOs** — Explicitamente marcados para sprints o fases futuras.
+**15 TODOs** — Explicitamente marcados para sprints o fases futuras.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
@@ -204,16 +227,19 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | 4 | `jaraba_tenant_knowledge/src/Controller/KnowledgeDashboardController.php` | 204 | Implementar en Sprint TK4 |
 | 5 | `jaraba_servicios_conecta/src/Controller/ServiceApiController.php` | 209 | Fase 2: Implementar logica completa de creacion de reserva |
 | 6 | `jaraba_servicios_conecta/src/Controller/ServiceApiController.php` | 221 | Fase 2: Implementar actualizacion de estado de reserva |
-| 7 | `jaraba_training/src/Entity/TrainingProduct.php` | 217 | Cambiar a 'course' y 'mentoring_package' cuando entities esten instaladas |
-| 8 | `jaraba_training/src/Entity/CertificationProgram.php` | 148 | Cambiar a 'course' cuando jaraba_lms entity este instalada |
-| 9 | `jaraba_training/src/Service/UpsellEngine.php` | 21 | INTEGRACION COMMERCE (Fase Futura) |
-| 10 | `jaraba_training/src/Service/LadderService.php` | 91 | Integrar con sistema de compras/enrollments |
-| 11 | `jaraba_pixels/src/Service/BatchProcessorService.php` | 188 | Implementar dispatch directo sin entidad en V2.1 |
-| 12 | `jaraba_copilot_v2/src/Service/EntrepreneurContextService.php` | 180 | Implementar cuando exista entidad conversation_log |
+| 7 | `jaraba_training/src/Service/RoyaltyTracker.php` | 15 | INTEGRACION STRIPE CONNECT (Fase Futura) |
+| 8 | `jaraba_training/src/Service/UpsellEngine.php` | 21 | INTEGRACION COMMERCE (Fase Futura) |
+| 9 | `jaraba_pixels/src/Service/BatchProcessorService.php` | 188 | Implementar dispatch directo sin entidad en V2.1 |
+| 10 | `jaraba_pixels/src/Service/TokenVerificationService.php` | 166 | En V2.1, hacer llamada de prueba a cada plataforma |
+| 11 | `jaraba_matching/src/Controller/MatchingApiController.php` | 195 | Implementar con Qdrant semantic similarity en Fase 2 |
+| 12 | `jaraba_matching/src/Controller/MatchingApiController.php` | 251 | Implementar con Qdrant en Fase 2 |
+| 13 | `jaraba_comercio_conecta/src/Service/MerchantDashboardService.php` | 110 | Fase 2: ventas_hoy, ventas_mes, pedidos_pendientes |
+| 14 | `jaraba_comercio_conecta/templates/comercio-merchant-dashboard.html.twig` | 157 | Fase 2: Tabla de pedidos recientes |
+| 15 | `jaraba_comercio_conecta/templates/comercio-product-detail.html.twig` | 223 | Fase 6: Widget de resenas con estrellas |
 
 ### 4.6 UX_FRONTEND — Mejoras de interfaz
 
-**10 TODOs** — Funcionalidades de UI, canvas, editores.
+**8 TODOs** — Funcionalidades de UI, canvas, editores.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
@@ -225,33 +251,37 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | 6 | `jaraba_page_builder/templates/canvas-editor.html.twig` | 177 | i18n-selector temporalmente removido por conflicto de estilos |
 | 7 | `jaraba_page_builder/templates/blocks/pricing/pricing-table.html.twig` | 131 | Implementar tabla de comparacion |
 | 8 | `jaraba_interactive/js/player.js` | 1483 | Implementar vista de revision |
-| 9 | `jaraba_comercio_conecta/templates/comercio-product-detail.html.twig` | 223 | Fase 6: Widget de resenas con estrellas |
-| 10 | `jaraba_comercio_conecta/templates/comercio-merchant-dashboard.html.twig` | 157 | Fase 2: Tabla de pedidos recientes |
 
 ### 4.7 CALCULATIONS — Logica de negocio y metricas
 
-**6 TODOs** — Calculos, puntuaciones, analisis.
+**13 TODOs** — Calculos, puntuaciones, analisis.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
-| 1 | `jaraba_foc/src/Service/EtlService.php` | 245 | Calcular resto de metricas |
-| 2 | `jaraba_foc/src/Service/MetricsCalculatorService.php` | 424 | Calcular CAC real desde transacciones de marketing |
-| 3 | `jaraba_copilot_v2/src/Service/CustomerDiscoveryGamificationService.php` | 237 | Calcular week_streak basado en fechas |
-| 4 | `jaraba_copilot_v2/src/Service/EntrepreneurContextService.php` | 195 | Implementar analisis de patrones con historial |
-| 5 | `jaraba_rag/src/Service/JarabaRagService.php` | 167 | Obtener tokens_used del resultado LLM |
-| 6 | `jaraba_social/src/Service/SocialCalendarService.php` | 214 | Implementar analisis real basado en historico de engagement |
+| 1 | `ecosistema_jaraba_core/src/Service/TenantContextService.php` | 240 | Calcular uso real mediante file_managed o directorio fisico |
+| 2 | `jaraba_foc/src/Service/EtlService.php` | 245 | Calcular resto de metricas |
+| 3 | `jaraba_foc/src/Service/MetricsCalculatorService.php` | 424 | Calcular CAC real desde transacciones de marketing |
+| 4 | `jaraba_foc/src/Service/AlertService.php` | 108 | Comparar MRR actual vs anterior para detectar caidas |
+| 5 | `jaraba_foc/src/Controller/StripeWebhookController.php` | 289 | Actualizar metricas de churn |
+| 6 | `jaraba_copilot_v2/src/Service/CustomerDiscoveryGamificationService.php` | 237 | Calcular week_streak basado en fechas |
+| 7 | `jaraba_copilot_v2/src/Service/EntrepreneurContextService.php` | 195 | Implementar analisis de patrones con historial |
+| 8 | `jaraba_social/src/Service/SocialCalendarService.php` | 214 | Implementar analisis real basado en historico de engagement |
+| 9 | `jaraba_job_board/src/Controller/JobSearchController.php` | 345 | Implement similar jobs logic |
+| 10 | `jaraba_lms/src/Controller/CatalogController.php` | 253 | Implement recommendation logic |
+| 11 | `jaraba_interactive/src/Controller/ApiController.php` | 104 | Process learning analytics |
+| 12 | `jaraba_legal_knowledge/src/Service/TaxCalculatorService.php` | 195 | Implementar escalas autonomicas para cada comunidad |
+| 13 | `jaraba_job_board/src/Service/JobPostingService.php` | 96 | Implement job expiration logic |
 
 ### 4.8 INFRASTRUCTURE — Cron, colas, rendimiento
 
-**5 TODOs** — Tests, arquitectura, infraestructura.
+**4 TODOs** — Tests, arquitectura, infraestructura.
 
 | # | Archivo | Linea | Descripcion |
 |---|---------|-------|-------------|
 | 1 | `ecosistema_jaraba_core/src/Controller/WebhookController.php` | 640 | Implementar entidad WebhookIntegration para procesamiento especifico |
 | 2 | `ecosistema_jaraba_core/src/Service/AgentAutonomyService.php` | 364 | Re-ejecutar la accion con el executor guardado |
-| 3 | `ecosistema_jaraba_core/src/Service/SandboxTenantService.php` | 264 | Crear cuenta real en Drupal |
-| 4 | `ecosistema_jaraba_core/tests/src/Kernel/TenantProvisioningTest.php` | 50 | Migrar tests a Functional (BrowserTestBase) |
-| 5 | `ecosistema_jaraba_core/js/pwa-register.js` | 268 | Get VAPID public key from server |
+| 3 | `ecosistema_jaraba_core/tests/src/Kernel/TenantProvisioningTest.php` | 50 | Migrar tests a Functional (BrowserTestBase) |
+| 4 | `jaraba_integrations/src/Controller/WebhookReceiverController.php` | 51 | Implementar dispatch interno segun tipo de webhook |
 
 ---
 
@@ -261,71 +291,77 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 
 | # | Modulo | Accionables | Categorias principales |
 |---|--------|-------------|----------------------|
-| 1 | `ecosistema_jaraba_core` | 17 | DATA_INTEGRATION (7), NOTIFICATIONS (4), TENANT (2), INFRA (3), EXTERNAL_API (1) |
-| 2 | `jaraba_page_builder` | 8 | UX_FRONTEND (6), TENANT (2) |
-| 3 | `jaraba_job_board` | 8 | DATA_INTEGRATION (4), NOTIFICATIONS (2), EXTERNAL_API (1), UX (1) |
-| 4 | `jaraba_candidate` | 6 | DATA_INTEGRATION (5), UX (1) |
-| 5 | `jaraba_lms` | 6 | DATA_INTEGRATION (1), NOTIFICATIONS (3), FUTURE_PHASE (2) |
-| 6 | `jaraba_social` | 5 | EXTERNAL_API (5) |
-| 7 | `jaraba_rag` | 5 | CALCULATIONS (2), NOTIFICATIONS (1), TENANT (1), DATA_INTEGRATION (1) |
-| 8 | `jaraba_billing` | 4 | DATA_INTEGRATION (3), TENANT (1) |
-| 9 | `jaraba_foc` | 4 | CALCULATIONS (2), NOTIFICATIONS (2) |
-| 10 | `jaraba_tenant_knowledge` | 4 | FUTURE_PHASE (4) |
-| 11 | `jaraba_training` | 5 | FUTURE_PHASE (4), EXTERNAL_API (1) |
-| 12 | `jaraba_copilot_v2` | 3 | CALCULATIONS (2), FUTURE_PHASE (1) |
-| 13 | `jaraba_matching` | 3 | EXTERNAL_API (2), DATA_INTEGRATION (1) |
-| 14 | `jaraba_diagnostic` | 3 | DATA_INTEGRATION (1), FUTURE_PHASE (1), INFRASTRUCTURE (1) |
-| 15 | `jaraba_comercio_conecta` | 2 | UX_FRONTEND (2) |
-| 16 | `jaraba_interactive` | 3 | UX_FRONTEND (1), DATA_INTEGRATION (2) |
-| 17 | `jaraba_servicios_conecta` | 2 | FUTURE_PHASE (2) |
-| 18 | `jaraba_integrations` | 2 | TENANT (1), INFRASTRUCTURE (1) |
-| 19 | `jaraba_pixels` | 2 | EXTERNAL_API (1), FUTURE_PHASE (1) |
-| 20 | `jaraba_legal_knowledge` | 1 | CALCULATIONS (1) |
-| 21 | `jaraba_funding` | 1 | EXTERNAL_API (1) |
+| 1 | `ecosistema_jaraba_core` | 20 | DATA_INTEGRATION (6), NOTIFICATIONS (5), TENANT (4), INFRA (3), EXTERNAL_API (1), CALC (1) |
+| 2 | `jaraba_job_board` | 12 | DATA_INTEGRATION (6), NOTIFICATIONS (3), EXTERNAL_API (1), CALC (2) |
+| 3 | `jaraba_page_builder` | 10 | UX_FRONTEND (7), TENANT (2), DATA_INTEGRATION (1) |
+| 4 | `jaraba_foc` | 7 | CALCULATIONS (4), DATA_INTEGRATION (2), NOTIFICATIONS (1) |
+| 5 | `jaraba_candidate` | 6 | DATA_INTEGRATION (6) |
+| 6 | `jaraba_lms` | 6 | NOTIFICATIONS (3), DATA_INTEGRATION (2), CALCULATIONS (1) |
+| 7 | `jaraba_social` | 5 | EXTERNAL_API (4), CALCULATIONS (1) |
+| 8 | `jaraba_rag` | 5 | EXTERNAL_API (2), NOTIFICATIONS (1), TENANT (1), DATA_INTEGRATION (1) |
+| 9 | `jaraba_training` | 5 | DATA_INTEGRATION (3), FUTURE_PHASE (2) |
+| 10 | `jaraba_billing` | 4 | DATA_INTEGRATION (3), TENANT (1) |
+| 11 | `jaraba_tenant_knowledge` | 4 | FUTURE_PHASE (4) |
+| 12 | `jaraba_comercio_conecta` | 4 | FUTURE_PHASE (3), TENANT (1) |
+| 13 | `jaraba_matching` | 3 | FUTURE_PHASE (2), DATA_INTEGRATION (1) |
+| 14 | `jaraba_copilot_v2` | 3 | CALCULATIONS (2), DATA_INTEGRATION (1) |
+| 15 | `jaraba_interactive` | 3 | DATA_INTEGRATION (1), CALCULATIONS (1), UX_FRONTEND (1) |
+| 16 | `jaraba_diagnostic` | 3 | DATA_INTEGRATION (2), EXTERNAL_API (1) |
+| 17 | `jaraba_integrations` | 2 | TENANT (1), INFRASTRUCTURE (1) |
+| 18 | `jaraba_agroconecta_core` | 2 | DATA_INTEGRATION (2) |
+| 19 | `jaraba_pixels` | 2 | FUTURE_PHASE (2) |
+| 20 | `jaraba_servicios_conecta` | 2 | FUTURE_PHASE (2) |
+| 21 | `jaraba_business_tools` | 2 | EXTERNAL_API (1), DATA_INTEGRATION (1) |
 | 22 | `jaraba_analytics` | 1 | TENANT (1) |
 | 23 | `jaraba_crm` | 1 | TENANT (1) |
-| 24 | `jaraba_agroconecta_core` | 2 | DATA_INTEGRATION (2) |
+| 24 | `jaraba_content_hub` | 1 | TENANT (1) |
+| 25 | `jaraba_legal_knowledge` | 1 | CALCULATIONS (1) |
+| 26 | `jaraba_funding` | 1 | EXTERNAL_API (1) |
+| 27 | `jaraba_mentoring` | 1 | DATA_INTEGRATION (1) |
 
 ---
 
 ## 6. Priorizacion y Roadmap
 
-### 6.1 Sprint Inmediato (Prioridad Alta — 32 TODOs)
+### 6.1 Sprint Inmediato (Prioridad Alta — 48 TODOs unicos)
 
 **Objetivo**: Conexion con datos reales y filtrado multi-tenant.
 
 | Bloque | TODOs | Descripcion |
 |--------|-------|-------------|
-| Tenant Filtering | 10 | Activar filtrado por `tenant_id` en todos los controladores y list builders usando `TenantContextService::getCurrentTenantId()` |
-| Data Integration — Empleabilidad | 9 | Conectar `jaraba_candidate`, `jaraba_job_board` con entidades reales (candidate_profile, employer_profile, candidate_skill) |
-| Data Integration — Core | 7 | Conectar `ExpansionRevenueService`, `MicroAutomationService`, `TenantContextService` con queries BD reales |
-| Data Integration — LMS | 3 | Conectar `CatalogController` con lms_lesson, implementar enrollment logic |
-| Data Integration — Otros | 3 | `DiagnosticScoringService`, `MatchingService`, `AgroConecta SalesApi` |
+| Tenant Filtering | 13 | Activar filtrado por `tenant_id` en todos los controladores y list builders usando `TenantContextService::getCurrentTenantId()` |
+| Data Integration — Empleabilidad | 12 | Conectar `jaraba_candidate`, `jaraba_job_board` con entidades reales (candidate_profile, employer_profile, candidate_skill, agent rating) |
+| Data Integration — Core | 6 | Conectar `ExpansionRevenueService`, `MicroAutomationService`, `SandboxTenantService`, `ApiController` con queries BD reales |
+| Data Integration — LMS/Training | 5 | Conectar `CatalogController` con lms_lesson, enrollment logic, LadderService, TrainingProduct/CertificationProgram entities |
+| Data Integration — Otros | 12 | FOC Stripe webhooks, diagnostico, matching, agroconecta sales, copilot, RAG, interactive xAPI, mentoring |
 
-### 6.2 Sprint Medio (Prioridad Media — 35 TODOs)
+> **Nota**: De los 52 TODOs brutos de DATA_INTEGRATION (39) + TENANT_FILTERING (13), se restan 4 duplicados cross-module (billing/core) para obtener 48 unicos.
+
+### 6.2 Sprint Medio (Prioridad Media — 37 TODOs)
 
 **Objetivo**: Notificaciones, APIs externas, metricas.
 
 | Bloque | TODOs | Descripcion |
 |--------|-------|-------------|
-| Notificaciones email | 12 | Implementar `hook_mail()` + `MailManagerInterface::mail()` para alertas de webhook, enrollment, application status, MRR drops |
-| External APIs — Social | 5 | Implementar clientes OAuth reales para Facebook, Instagram, LinkedIn, Make.com |
-| External APIs — AI/Vector | 4 | Conectar Qdrant para semantic search en funding, matching, job board |
-| External APIs — Otros | 2 | Whisper API transcripcion, Stripe Connect royalties |
-| Calculations | 6 | CAC real, week_streak, tokens_used LLM, engagement historico, MRR comparativo, patrones entrepreneur |
+| Notificaciones | 13 | Implementar `hook_mail()` + `MailManagerInterface::mail()` para alertas de webhook, enrollment, application status, MRR drops, VAPID push |
+| External APIs — Social | 4 | Implementar clientes OAuth reales para Facebook, Instagram, LinkedIn, Make.com |
+| External APIs — AI/Vector | 3 | Conectar Qdrant para semantic search en funding, job board embeddings, LLM grounding |
+| External APIs — Otros | 4 | Whisper API, DomPDF/Puppeteer (x2), plataforma ad pixels verification |
+| Calculations | 13 | CAC real, week_streak, tokens_used LLM, engagement historico, MRR comparativo, churn metrics, job expiration, similar jobs, recommendation logic, escalas autonomicas |
 
-### 6.3 Sprint Diferido (Prioridad Baja — 21 TODOs)
+### 6.3 Sprint Diferido (Prioridad Baja — 27 TODOs)
 
-**Objetivo**: Fases futuras y mejoras de UX.
+**Objetivo**: Fases futuras, mejoras de UX e infraestructura.
 
 | Bloque | TODOs | Descripcion |
 |--------|-------|-------------|
 | Future Phase — Sprints TK | 4 | Knowledge Base Sprints TK2-TK4 |
 | Future Phase — ServiciosConecta | 2 | Fase 2: reservas completas |
-| Future Phase — Training | 4 | Entidades LMS, Commerce integration |
-| Future Phase — Otros | 2 | BatchProcessor V2.1, conversation_log entity |
-| UX Frontend | 10 | Canvas save/publish, accessibility panel, i18n selector, section editor fields, pricing table, reviews widget |
-| Infrastructure | 5 | WebhookIntegration entity, agent re-execution, sandbox account creation, Kernel→Functional tests, VAPID key |
+| Future Phase — ComercioConecta | 3 | Fase 2: pedidos/ventas, Fase 6: resenas |
+| Future Phase — Matching/Pixels | 4 | Qdrant Fase 2, BatchProcessor V2.1, TokenVerification V2.1 |
+| Future Phase — Training | 2 | Stripe Connect royalties, Commerce integration |
+| UX Frontend | 8 | Canvas save/publish, accessibility panel, i18n selector, section editor fields, pricing table, interactive review |
+| Infrastructure | 4 | WebhookIntegration entity, agent re-execution, Kernel→Functional tests, webhook dispatch |
 
 ---
 
@@ -379,3 +415,4 @@ La plataforma JarabaImpactPlatformSaaS se encuentra en **produccion (IONOS)** co
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
 | 2026-02-12 | 1.0.0 | Scan completo inicial: 88 TODOs accionables identificados, clasificados y priorizados en 3 sprints |
+| 2026-02-12 | 1.1.0 | Scan exhaustivo: 116 bruto (112 unicos). Anadidos 4 TODOs faltantes (DiagnosticReportService, WebhookReceiverController, JobPostingService, entrepreneur-agent-fab). Eliminadas 5 duplicaciones cross-categoria. Actualizada tabla modulos (27 modulos) y roadmap (48/37/27 por sprint) |
