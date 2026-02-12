@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Partial: tarjeta de hipotesis con scores y estado.
+ *
+ * Variables:
+ * - hypothesis: Datos de la hipotesis.
+ */
+#}
+
+{% set status_classes = {
+  'PENDING': 'status--pending',
+  'IN_PROGRESS': 'status--progress',
+  'VALIDATED': 'status--validated',
+  'INVALIDATED': 'status--invalidated',
+  'INCONCLUSIVE': 'status--inconclusive',
+} %}
+
+{% set type_labels = {
+  'DESIRABILITY': 'Deseabilidad'|t,
+  'FEASIBILITY': 'Viabilidad Tecnica'|t,
+  'VIABILITY': 'Viabilidad Economica'|t,
+} %}
+
+<div class="hypothesis-card hypothesis-card--{{ hypothesis.validation_status|default('PENDING')|lower }}"
+     data-hypothesis-id="{{ hypothesis.id }}"
+     data-type="{{ hypothesis.hypothesis_type }}"
+     data-status="{{ hypothesis.validation_status }}"
+     data-bmc-block="{{ hypothesis.bmc_block }}">
+
+  <div class="hypothesis-card__header">
+    <span class="hypothesis-card__type badge badge--{{ hypothesis.hypothesis_type|default('DESIRABILITY')|lower }}">
+      {{ type_labels[hypothesis.hypothesis_type]|default(hypothesis.hypothesis_type) }}
+    </span>
+    <span class="hypothesis-card__bmc-block">{{ hypothesis.bmc_block }}</span>
+    <span class="hypothesis-card__status {{ status_classes[hypothesis.validation_status]|default('status--pending') }}">
+      {{ hypothesis.validation_status|default('PENDING') }}
+    </span>
+  </div>
+
+  <div class="hypothesis-card__body">
+    <p class="hypothesis-card__statement">{{ hypothesis.statement }}</p>
+  </div>
+
+  <div class="hypothesis-card__scores">
+    <div class="hypothesis-card__score">
+      <span class="hypothesis-card__score-label">{{ 'Importancia'|t }}</span>
+      <span class="hypothesis-card__score-value">{{ hypothesis.importance_score|default(0) }}/5</span>
+    </div>
+    <div class="hypothesis-card__score">
+      <span class="hypothesis-card__score-label">{{ 'Evidencia'|t }}</span>
+      <span class="hypothesis-card__score-value">{{ hypothesis.evidence_score|default(0) }}/5</span>
+    </div>
+    {% if hypothesis.ice_score is defined %}
+      <div class="hypothesis-card__score hypothesis-card__score--ice">
+        <span class="hypothesis-card__score-label">ICE</span>
+        <span class="hypothesis-card__score-value">{{ hypothesis.ice_score }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="hypothesis-card__actions">
+    <a href="{{ path('entity.hypothesis.edit_form', {'hypothesis': hypothesis.id}) }}"
+       class="use-ajax btn btn--sm btn--secondary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Editar'|t }}
+    </a>
+    <a href="{{ path('entity.experiment.add_form') }}"
+       class="use-ajax btn btn--sm btn--primary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Crear Experimento'|t }}
+    </a>
+  </div>
+</div>

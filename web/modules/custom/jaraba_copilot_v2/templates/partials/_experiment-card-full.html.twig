@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Partial: tarjeta Test Card + Learning Card completa.
+ *
+ * Variables:
+ * - experiment: Datos del experimento.
+ */
+#}
+
+{% set status_classes = {
+  'PLANNED': 'status--planned',
+  'IN_PROGRESS': 'status--progress',
+  'COMPLETED': 'status--completed',
+  'CANCELLED': 'status--cancelled',
+} %}
+
+{% set decision_labels = {
+  'PERSEVERE': 'Perseverar (+100 Pi)'|t,
+  'PIVOT': 'Pivotar (+75 Pi)'|t,
+  'ZOOM_IN': 'Zoom In (+75 Pi)'|t,
+  'ZOOM_OUT': 'Zoom Out (+75 Pi)'|t,
+  'KILL': 'Matar (+50 Pi)'|t,
+} %}
+
+<div class="experiment-card experiment-card--{{ experiment.status|default('PLANNED')|lower }}"
+     data-experiment-id="{{ experiment.id }}"
+     data-status="{{ experiment.status }}">
+
+  <div class="experiment-card__header">
+    <h3 class="experiment-card__title">{{ experiment.title }}</h3>
+    <span class="experiment-card__status {{ status_classes[experiment.status]|default('status--planned') }}">
+      {{ experiment.status|default('PLANNED') }}
+    </span>
+  </div>
+
+  {# Test Card Section #}
+  <div class="experiment-card__test-card">
+    <h4 class="experiment-card__section-title">{{ 'Test Card'|t }}</h4>
+    <div class="experiment-card__field">
+      <span class="experiment-card__field-label">{{ 'Tipo'|t }}:</span>
+      <span class="experiment-card__field-value">{{ experiment.experiment_type }}</span>
+    </div>
+    {% if experiment.plan %}
+      <div class="experiment-card__field">
+        <span class="experiment-card__field-label">{{ 'Plan'|t }}:</span>
+        <span class="experiment-card__field-value">{{ experiment.plan }}</span>
+      </div>
+    {% endif %}
+    {% if experiment.metrics %}
+      <div class="experiment-card__field">
+        <span class="experiment-card__field-label">{{ 'Metricas'|t }}:</span>
+        <span class="experiment-card__field-value">{{ experiment.metrics }}</span>
+      </div>
+    {% endif %}
+    {% if experiment.success_criteria %}
+      <div class="experiment-card__field experiment-card__field--success">
+        <span class="experiment-card__field-label">{{ 'Criterio exito'|t }}:</span>
+        <span class="experiment-card__field-value">{{ experiment.success_criteria }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Learning Card Section (only if completed) #}
+  {% if experiment.status == 'COMPLETED' %}
+    <div class="experiment-card__learning-card">
+      <h4 class="experiment-card__section-title">{{ 'Learning Card'|t }}</h4>
+      {% if experiment.observations %}
+        <div class="experiment-card__field">
+          <span class="experiment-card__field-label">{{ 'Observaciones'|t }}:</span>
+          <span class="experiment-card__field-value">{{ experiment.observations }}</span>
+        </div>
+      {% endif %}
+      {% if experiment.customer_learning %}
+        <div class="experiment-card__field">
+          <span class="experiment-card__field-label">{{ 'Aprendizaje del cliente'|t }}:</span>
+          <span class="experiment-card__field-value">{{ experiment.customer_learning }}</span>
+        </div>
+      {% endif %}
+      {% if experiment.decision %}
+        <div class="experiment-card__decision experiment-card__decision--{{ experiment.decision|lower }}">
+          <span class="experiment-card__decision-label">{{ 'Decision'|t }}:</span>
+          <span class="experiment-card__decision-value">
+            {{ decision_labels[experiment.decision]|default(experiment.decision) }}
+          </span>
+        </div>
+      {% endif %}
+      {% if experiment.points_awarded > 0 %}
+        <div class="experiment-card__points">
+          +{{ experiment.points_awarded }} Pi
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# Actions #}
+  <div class="experiment-card__actions">
+    {% if experiment.status == 'PLANNED' %}
+      <button class="btn btn--primary btn--sm" data-action="start" data-experiment-id="{{ experiment.id }}">
+        {{ 'Iniciar Experimento'|t }}
+      </button>
+    {% elseif experiment.status == 'IN_PROGRESS' %}
+      <button class="btn btn--primary btn--sm" data-action="record-result" data-experiment-id="{{ experiment.id }}">
+        {{ 'Registrar Resultado'|t }}
+      </button>
+    {% endif %}
+    <a href="{{ path('entity.experiment.edit_form', {'experiment': experiment.id}) }}"
+       class="use-ajax btn btn--sm btn--secondary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 700, "dialogClass": "ej-modal"}'>
+      {{ 'Editar'|t }}
+    </a>
+  </div>
+</div>
