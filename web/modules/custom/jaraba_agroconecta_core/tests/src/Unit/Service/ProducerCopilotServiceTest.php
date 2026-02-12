@@ -339,12 +339,9 @@ class ProducerCopilotServiceTest extends TestCase {
     $userMsg = $this->createEntityMock();
     $assistantMsg = $this->createEntityMock();
 
+    // Setup message creation mocks — may not be reached if Drupal container
+    // is not initialized (expected in pure unit tests).
     $this->messageStorage->method('create')
-      ->willReturn($userMsg);
-
-    // We need to return different mocks for the second call.
-    $this->messageStorage->expects($this->exactly(2))
-      ->method('create')
       ->willReturnOnConsecutiveCalls($userMsg, $assistantMsg);
 
     // Mock message query for buildConversationHistory (new conversation = id 0 => empty).
