@@ -32,7 +32,6 @@ class ExperimentApiController extends ControllerBase {
 
   protected ExperimentLibraryService $experimentLibrary;
   protected FeatureUnlockService $featureUnlock;
-  protected EntityTypeManagerInterface $entityTypeManager;
   protected LearningCardService $learningCard;
   protected TestCardGeneratorService $testCardGenerator;
 
@@ -150,7 +149,7 @@ class ExperimentApiController extends ControllerBase {
   /**
    * POST /api/v1/experiments - Crea Test Card vinculada a hipotesis.
    */
-  public function create(Request $request): JsonResponse {
+  public function store(Request $request): JsonResponse {
     try {
       $data = json_decode($request->getContent(), TRUE);
 
@@ -352,6 +351,9 @@ class ExperimentApiController extends ControllerBase {
       // Actualizar puntos en perfil del emprendedor
       $this->awardImpactPoints($experiment, $points);
 
+      // Registrar milestone
+      $this->recordMilestone($experiment, $decision, $points);
+
       // Actualizar estado de la hipotesis vinculada
       $this->updateHypothesisStatus($experiment, $result);
 
@@ -366,6 +368,39 @@ class ExperimentApiController extends ControllerBase {
         'success' => FALSE,
         'error' => $e->getMessage(),
       ], 500);
+    }
+  }
+
+  /**
+   * Registra un milestone en la tabla entrepreneur_milestone.
+   */
+  protected function recordMilestone($experiment, string $decision, int $points): void {
+    try {
+      $profileId = $experiment->get('entrepreneur_profile')->target_id;
+      if (!$profileId) {
+        return;
+      }
+
+      $database = \Drupal::database();
+      if (!$database->schema()->tableExists('entrepreneur_milestone')) {
+        return;
+      }
+
+      $title = $experiment->get('title')->value ?? '';
+      $database->insert('entrepreneur_milestone')
+        ->fields([
+          'entrepreneur_id' => (int) $profileId,
+          'milestone_type' => 'EXPERIMENT_COMPLETED',
+          'description' => "Experimento completado: {$title} (Decision: {$decision})",
+          'points_awarded' => $points,
+          'related_entity_type' => 'experiment',
+          'related_entity_id' => (int) $experiment->id(),
+          'created' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
+    }
+    catch (\Exception $e) {
+      // Log but don't fail the request.
     }
   }
 

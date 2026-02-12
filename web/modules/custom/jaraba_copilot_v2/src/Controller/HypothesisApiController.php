@@ -17,11 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 class HypothesisApiController extends ControllerBase {
 
   /**
-   * Entity type manager.
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
-
-  /**
    * Hypothesis prioritization service.
    */
   protected HypothesisPrioritizationService $prioritization;
@@ -107,7 +102,7 @@ class HypothesisApiController extends ControllerBase {
   /**
    * POST /api/v1/hypotheses - Crea una nueva hipotesis.
    */
-  public function create(Request $request): JsonResponse {
+  public function store(Request $request): JsonResponse {
     try {
       $data = json_decode($request->getContent(), TRUE);
 

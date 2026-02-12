@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Template del widget de chat del Copiloto de Emprendimiento.
+ *
+ * Variables:
+ * - position: Posicion del widget (fab, inline, fullscreen).
+ * - modes: Modos disponibles del copiloto.
+ */
+#}
+
+<div class="copilot-chat copilot-chat--{{ position|default('inline') }}">
+  {# Header #}
+  <div class="copilot-chat__header">
+    <h2 class="copilot-chat__header-title">
+      {{ 'Copiloto de Emprendimiento'|t }}
+    </h2>
+    {% if position|default('inline') == 'fab' %}
+    <button class="copilot-chat__header-close" aria-label="{{ 'Cerrar'|t }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    {% endif %}
+  </div>
+
+  {# Mode Indicator #}
+  <div class="copilot-chat__mode-indicator">
+    <span class="copilot-chat__mode-dot"></span>
+    <span class="copilot-chat__mode-label">{{ 'Detectando modo...'|t }}</span>
+  </div>
+
+  {# Body #}
+  <div class="copilot-chat__body">
+    {# Messages Container #}
+    <div class="copilot-chat__messages" role="log" aria-live="polite" aria-label="{{ 'Mensajes del copiloto'|t }}">
+      {# Los mensajes se renderizan via JS #}
+    </div>
+
+    {# Input Area #}
+    <div class="copilot-chat__input">
+      <textarea
+        class="copilot-chat__input-field"
+        placeholder="{{ 'Escribe tu pregunta al Copiloto...'|t }}"
+        rows="1"
+        aria-label="{{ 'Mensaje para el Copiloto'|t }}"
+      ></textarea>
+      <button class="copilot-chat__send-btn" aria-label="{{ 'Enviar mensaje'|t }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+{% if position|default('inline') == 'fab' %}
+{# FAB Toggle Button #}
+<button class="copilot-chat__toggle" aria-label="{{ 'Abrir Copiloto'|t }}">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+  </svg>
+</button>
+{% endif %}

@@ -142,3 +142,165 @@ function jaraba_copilot_v2_update_10002() {
 
   return implode(' ', $messages) ?: 'Sin cambios necesarios.';
 }
+
+/**
+ * Crea tabla copilot_mode_triggers y la semilla con datos del const PHP.
+ */
+function jaraba_copilot_v2_update_10003() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $messages = [];
+
+  if (!$schema->tableExists('copilot_mode_triggers')) {
+    $schema->createTable('copilot_mode_triggers', [
+      'description' => 'Triggers configurables para deteccion de modo del copiloto.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'not null' => TRUE,
+          'description' => 'Primary Key.',
+        ],
+        'mode' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'description' => 'Modo del copiloto (coach, consultor, sparring, etc.).',
+        ],
+        'trigger_word' => [
+          'type' => 'varchar',
+          'length' => 100,
+          'not null' => TRUE,
+          'description' => 'Palabra o frase trigger.',
+        ],
+        'weight' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 1,
+          'description' => 'Peso del trigger (1-15).',
+        ],
+        'active' => [
+          'type' => 'int',
+          'size' => 'tiny',
+          'not null' => TRUE,
+          'default' => 1,
+          'description' => '0=desactivado, 1=activo.',
+        ],
+        'created' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Timestamp de creacion.',
+        ],
+        'changed' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Timestamp de ultima modificacion.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'idx_mode' => ['mode'],
+        'idx_active_mode' => ['active', 'mode'],
+      ],
+    ]);
+    $messages[] = t('Tabla copilot_mode_triggers creada.');
+
+    // Semilla desde const MODE_TRIGGERS de ModeDetectorService.
+    $triggers = \Drupal\jaraba_copilot_v2\Service\ModeDetectorService::MODE_TRIGGERS;
+    $now = \Drupal::time()->getRequestTime();
+    $count = 0;
+
+    foreach ($triggers as $mode => $modeTriggers) {
+      foreach ($modeTriggers as $trigger) {
+        $database->insert('copilot_mode_triggers')
+          ->fields([
+            'mode' => $mode,
+            'trigger_word' => $trigger['word'],
+            'weight' => $trigger['weight'],
+            'active' => 1,
+            'created' => $now,
+            'changed' => $now,
+          ])
+          ->execute();
+        $count++;
+      }
+    }
+    $messages[] = t('@count triggers sembrados desde configuracion por defecto.', ['@count' => $count]);
+  }
+  else {
+    $messages[] = t('Tabla copilot_mode_triggers ya existia.');
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Crea tabla entrepreneur_milestone para registrar hitos del emprendedor.
+ */
+function jaraba_copilot_v2_update_10004() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $messages = [];
+
+  if (!$schema->tableExists('entrepreneur_milestone')) {
+    $schema->createTable('entrepreneur_milestone', [
+      'description' => 'Hitos del emprendedor con tipo, puntos y entidad relacionada.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'not null' => TRUE,
+          'description' => 'Primary Key.',
+        ],
+        'entrepreneur_id' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'FK a entrepreneur_profile.',
+        ],
+        'milestone_type' => [
+          'type' => 'varchar',
+          'length' => 50,
+          'not null' => TRUE,
+          'description' => 'Tipo: EXPERIMENT_COMPLETED, HYPOTHESIS_VALIDATED, etc.',
+        ],
+        'description' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+          'description' => 'Descripcion legible del hito.',
+        ],
+        'points_awarded' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+          'description' => 'Puntos otorgados por este hito.',
+        ],
+        'related_entity_type' => [
+          'type' => 'varchar',
+          'length' => 50,
+          'not null' => FALSE,
+          'description' => 'Tipo de entidad relacionada (experiment, hypothesis).',
+        ],
+        'related_entity_id' => [
+          'type' => 'int',
+          'not null' => FALSE,
+          'description' => 'ID de la entidad relacionada.',
+        ],
+        'created' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Timestamp de creacion.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'idx_entrepreneur' => ['entrepreneur_id'],
+        'idx_type' => ['milestone_type'],
+      ],
+    ]);
+    $messages[] = t('Tabla entrepreneur_milestone creada correctamente.');
+  }
+  else {
+    $messages[] = t('Tabla entrepreneur_milestone ya existia.');
+  }
+
+  return implode(' ', $messages);
+}

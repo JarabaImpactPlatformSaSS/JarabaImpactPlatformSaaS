@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_copilot_v2\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService;
 use Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,6 +26,7 @@ class CopilotAnalyticsController extends ControllerBase
      */
     public function __construct(
         protected CopilotQueryLoggerService $queryLogger,
+        protected CopilotOrchestratorService $orchestrator,
     ) {
     }
 
@@ -35,6 +37,7 @@ class CopilotAnalyticsController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_copilot_v2.query_logger'),
+            $container->get('jaraba_copilot_v2.copilot_orchestrator'),
         );
     }
 
@@ -77,6 +80,9 @@ class CopilotAnalyticsController extends ControllerBase
         // Obtener preguntas frecuentes
         $frequentQuestions = $this->queryLogger->getFrequentQuestions(30, 10);
 
+        // Obtener metricas de rendimiento avanzadas.
+        $performanceMetrics = $this->orchestrator->getMetricsSummary();
+
         return [
             '#theme' => 'copilot_analytics_dashboard',
             '#attached' => [
@@ -88,6 +94,7 @@ class CopilotAnalyticsController extends ControllerBase
             '#recent_queries' => $recentQueries,
             '#problematic_queries' => $problematicQueries,
             '#frequent_questions' => $frequentQuestions,
+            '#performance_metrics' => $performanceMetrics,
         ];
     }
 

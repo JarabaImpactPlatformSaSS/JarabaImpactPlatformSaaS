@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_copilot_v2\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Database\Connection;
+
 /**
  * Servicio de detección inteligente de modo del Copiloto.
  *
@@ -22,6 +25,24 @@ namespace Drupal\jaraba_copilot_v2\Service;
  */
 class ModeDetectorService
 {
+
+    /**
+     * Database connection.
+     */
+    protected ?Connection $database;
+
+    /**
+     * Cache backend for triggers.
+     */
+    protected ?CacheBackendInterface $triggersCache;
+
+    /**
+     * Constructor.
+     */
+    public function __construct(?Connection $database = NULL, ?CacheBackendInterface $triggersCache = NULL) {
+        $this->database = $database;
+        $this->triggersCache = $triggersCache;
+    }
 
     /**
      * Triggers por modo con pesos asociados.
@@ -267,10 +288,11 @@ class ModeDetectorService
         $messageLower = mb_strtolower($message);
         $scores = [];
 
-        // 1. Calcular puntuación base por triggers
-        foreach (self::MODE_TRIGGERS as $mode => $triggers) {
+        // 1. Calcular puntuación base por triggers (BD con fallback a const)
+        $triggers = $this->loadTriggersFromDb();
+        foreach ($triggers as $mode => $modeTriggers) {
             $scores[$mode] = 0;
-            foreach ($triggers as $trigger) {
+            foreach ($modeTriggers as $trigger) {
                 if (mb_strpos($messageLower, $trigger['word']) !== FALSE) {
                     $scores[$mode] += $trigger['weight'];
                 }
@@ -376,6 +398,59 @@ class ModeDetectorService
     }
 
     /**
+     * Carga triggers desde BD con cache (TTL 1h). Fallback al const si BD vacia.
+     *
+     * @return array
+     *   Triggers agrupados por modo: ['mode' => [['word' => ..., 'weight' => ...], ...]].
+     */
+    public function loadTriggersFromDb(): array {
+        // Intentar cache primero.
+        if ($this->triggersCache) {
+            $cached = $this->triggersCache->get('mode_triggers_all');
+            if ($cached) {
+                return $cached->data;
+            }
+        }
+
+        // Intentar cargar desde BD.
+        if ($this->database) {
+            try {
+                if ($this->database->schema()->tableExists('copilot_mode_triggers')) {
+                    $results = $this->database->select('copilot_mode_triggers', 't')
+                        ->fields('t', ['mode', 'trigger_word', 'weight'])
+                        ->condition('active', 1)
+                        ->orderBy('mode')
+                        ->orderBy('weight', 'DESC')
+                        ->execute()
+                        ->fetchAll();
+
+                    if (!empty($results)) {
+                        $triggers = [];
+                        foreach ($results as $row) {
+                            $triggers[$row->mode][] = [
+                                'word' => $row->trigger_word,
+                                'weight' => (int) $row->weight,
+                            ];
+                        }
+
+                        // Guardar en cache con TTL de 1 hora.
+                        if ($this->triggersCache) {
+                            $this->triggersCache->set('mode_triggers_all', $triggers, time() + 3600);
+                        }
+                        return $triggers;
+                    }
+                }
+            }
+            catch (\Exception $e) {
+                // Fallback silencioso al const.
+            }
+        }
+
+        // Fallback al const hardcodeado.
+        return self::MODE_TRIGGERS;
+    }
+
+    /**
      * Obtiene los triggers disponibles para un modo.
      *
      * @param string $mode
@@ -386,7 +461,8 @@ class ModeDetectorService
      */
     public function getTriggersForMode(string $mode): array
     {
-        return self::MODE_TRIGGERS[$mode] ?? [];
+        $triggers = $this->loadTriggersFromDb();
+        return $triggers[$mode] ?? [];
     }
 
     /**
@@ -397,7 +473,8 @@ class ModeDetectorService
      */
     public function getAvailableModes(): array
     {
-        return array_keys(self::MODE_TRIGGERS);
+        $triggers = $this->loadTriggersFromDb();
+        return array_keys($triggers);
     }
 
 }
