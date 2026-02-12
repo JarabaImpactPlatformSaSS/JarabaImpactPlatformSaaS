@@ -377,8 +377,28 @@ class WebhookController extends ControllerBase
             ['@tenant' => $tenant->getName()]
         );
 
-        // Enviar notificación al administrador del tenant
-        // TODO: Implementar notificaciones por email
+        // Enviar notificación al administrador del tenant.
+        try {
+            $adminUser = $tenant->getAdminUser();
+            if ($adminUser && $adminUser->getEmail()) {
+                \Drupal::service('plugin.manager.mail')->mail(
+                    'ecosistema_jaraba_core',
+                    'payment_failed',
+                    $adminUser->getEmail(),
+                    $adminUser->getPreferredLangcode(),
+                    [
+                        'tenant_name' => $tenant->getName(),
+                        'reason' => 'subscription_cancelled',
+                    ]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send cancellation email for tenant @tenant: @error', [
+                '@tenant' => $tenant->getName(),
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return ['success' => TRUE];
     }
@@ -460,7 +480,29 @@ class WebhookController extends ControllerBase
             ['@tenant' => $tenant->getName()]
         );
 
-        // TODO: Enviar notificación al administrador del tenant
+        // Enviar notificación al administrador del tenant.
+        try {
+            $adminUser = $tenant->getAdminUser();
+            if ($adminUser && $adminUser->getEmail()) {
+                \Drupal::service('plugin.manager.mail')->mail(
+                    'ecosistema_jaraba_core',
+                    'payment_failed',
+                    $adminUser->getEmail(),
+                    $adminUser->getPreferredLangcode(),
+                    [
+                        'tenant_name' => $tenant->getName(),
+                        'amount' => isset($invoice['amount_due']) ? ($invoice['amount_due'] / 100) : 0,
+                        'currency' => strtoupper($invoice['currency'] ?? 'EUR'),
+                    ]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send payment failed email for tenant @tenant: @error', [
+                '@tenant' => $tenant->getName(),
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return ['success' => TRUE];
     }
@@ -490,7 +532,29 @@ class WebhookController extends ControllerBase
             ['@tenant' => $tenant->getName()]
         );
 
-        // TODO: Enviar notificación de recordatorio
+        // Enviar notificación de recordatorio de fin de trial.
+        try {
+            $adminUser = $tenant->getAdminUser();
+            if ($adminUser && $adminUser->getEmail()) {
+                \Drupal::service('plugin.manager.mail')->mail(
+                    'ecosistema_jaraba_core',
+                    'trial_ending_reminder',
+                    $adminUser->getEmail(),
+                    $adminUser->getPreferredLangcode(),
+                    [
+                        'tenant_name' => $tenant->getName(),
+                        'trial_end_date' => date('Y-m-d', $trialEnd),
+                        'upgrade_url' => '/admin/subscription/upgrade',
+                    ]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send trial reminder for tenant @tenant: @error', [
+                '@tenant' => $tenant->getName(),
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return ['success' => TRUE];
     }

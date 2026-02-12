@@ -210,38 +210,148 @@ class SocialCalendarService {
    *   - score: Puntuacion de engagement esperado.
    */
   public function getOptimalTimes(int $tenantId, string $platform): array {
-    try {
-      // TODO: Implementar analisis real basado en historico de engagement.
-      // Por ahora, retornamos horarios optimos genericos por plataforma.
-      $defaults = [
-        'facebook' => [
-          ['day' => 3, 'hour' => 10, 'score' => 0.85],
-          ['day' => 4, 'hour' => 14, 'score' => 0.82],
-          ['day' => 5, 'hour' => 11, 'score' => 0.80],
-        ],
-        'instagram' => [
-          ['day' => 2, 'hour' => 11, 'score' => 0.90],
-          ['day' => 4, 'hour' => 13, 'score' => 0.87],
-          ['day' => 6, 'hour' => 10, 'score' => 0.84],
-        ],
-        'linkedin' => [
-          ['day' => 2, 'hour' => 9, 'score' => 0.88],
-          ['day' => 3, 'hour' => 10, 'score' => 0.86],
-          ['day' => 4, 'hour' => 9, 'score' => 0.83],
-        ],
-        'twitter' => [
-          ['day' => 1, 'hour' => 8, 'score' => 0.82],
-          ['day' => 3, 'hour' => 12, 'score' => 0.80],
-          ['day' => 5, 'hour' => 17, 'score' => 0.78],
-        ],
-        'tiktok' => [
-          ['day' => 2, 'hour' => 19, 'score' => 0.92],
-          ['day' => 4, 'hour' => 20, 'score' => 0.89],
-          ['day' => 6, 'hour' => 18, 'score' => 0.87],
-        ],
-      ];
+    // Generic defaults as fallback when insufficient data is available.
+    $defaults = [
+      'facebook' => [
+        ['day' => 3, 'hour' => 10, 'score' => 0.85],
+        ['day' => 4, 'hour' => 14, 'score' => 0.82],
+        ['day' => 5, 'hour' => 11, 'score' => 0.80],
+      ],
+      'instagram' => [
+        ['day' => 2, 'hour' => 11, 'score' => 0.90],
+        ['day' => 4, 'hour' => 13, 'score' => 0.87],
+        ['day' => 6, 'hour' => 10, 'score' => 0.84],
+      ],
+      'linkedin' => [
+        ['day' => 2, 'hour' => 9, 'score' => 0.88],
+        ['day' => 3, 'hour' => 10, 'score' => 0.86],
+        ['day' => 4, 'hour' => 9, 'score' => 0.83],
+      ],
+      'twitter' => [
+        ['day' => 1, 'hour' => 8, 'score' => 0.82],
+        ['day' => 3, 'hour' => 12, 'score' => 0.80],
+        ['day' => 5, 'hour' => 17, 'score' => 0.78],
+      ],
+      'tiktok' => [
+        ['day' => 2, 'hour' => 19, 'score' => 0.92],
+        ['day' => 4, 'hour' => 20, 'score' => 0.89],
+        ['day' => 6, 'hour' => 18, 'score' => 0.87],
+      ],
+    ];
 
-      return $defaults[$platform] ?? [];
+    try {
+      $storage = $this->entityTypeManager->getStorage('social_post');
+
+      // Query published posts from the last 90 days for the given tenant.
+      $ninetyDaysAgo = new \DateTime('-90 days');
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('tenant_id', $tenantId)
+        ->condition('status', SocialPost::STATUS_PUBLISHED)
+        ->condition('published_at', $ninetyDaysAgo->getTimestamp(), '>=');
+
+      $ids = $query->execute();
+
+      // Fall back to generic defaults if fewer than 10 published posts.
+      if (count($ids) < 10) {
+        return $defaults[$platform] ?? [];
+      }
+
+      $posts = $storage->loadMultiple($ids);
+
+      // Group by day_of_week and hour, calculate average engagement.
+      $timeSlots = [];
+      $postCountForPlatform = 0;
+
+      foreach ($posts as $post) {
+        /** @var \Drupal\jaraba_social\Entity\SocialPost $post */
+        $publishedAt = $post->get('published_at')->value;
+        if (empty($publishedAt)) {
+          continue;
+        }
+
+        // Check if this post was published to the requested platform via its accounts.
+        $accounts = $post->get('accounts')->referencedEntities();
+        $platformMatch = FALSE;
+        foreach ($accounts as $account) {
+          if ($account->get('platform')->value === $platform) {
+            $platformMatch = TRUE;
+            break;
+          }
+        }
+        if (!$platformMatch) {
+          continue;
+        }
+
+        $postCountForPlatform++;
+
+        $dateTime = new \DateTime('@' . $publishedAt);
+        // Day of week: 1 (Monday) through 7 (Sunday) using ISO-8601.
+        $dayOfWeek = (int) $dateTime->format('N');
+        $hour = (int) $dateTime->format('G');
+
+        // Extract engagement rate from metrics map field.
+        $metrics = $post->get('metrics')->getValue();
+        $metricsData = is_array($metrics) ? $metrics : [];
+        // Try platform-specific engagement, then global engagement_rate.
+        $engagementRate = 0.0;
+        if (isset($metricsData[$platform]['engagement_rate'])) {
+          $engagementRate = (float) $metricsData[$platform]['engagement_rate'];
+        }
+        elseif (isset($metricsData['engagement_rate'])) {
+          $engagementRate = (float) $metricsData['engagement_rate'];
+        }
+        else {
+          // Derive engagement from likes + shares + comments if available.
+          $likes = (int) ($metricsData[$platform]['likes'] ?? $metricsData['likes'] ?? 0);
+          $shares = (int) ($metricsData[$platform]['shares'] ?? $metricsData['shares'] ?? 0);
+          $comments = (int) ($metricsData[$platform]['comments'] ?? $metricsData['comments'] ?? 0);
+          $engagementRate = ($likes + $shares + $comments) > 0 ? (float) ($likes + $shares + $comments) : 0.0;
+        }
+
+        $key = $dayOfWeek . '-' . $hour;
+        if (!isset($timeSlots[$key])) {
+          $timeSlots[$key] = [
+            'day' => $dayOfWeek,
+            'hour' => $hour,
+            'total_engagement' => 0.0,
+            'count' => 0,
+          ];
+        }
+        $timeSlots[$key]['total_engagement'] += $engagementRate;
+        $timeSlots[$key]['count']++;
+      }
+
+      // Fall back to generic defaults if fewer than 10 posts matched the platform.
+      if ($postCountForPlatform < 10) {
+        return $defaults[$platform] ?? [];
+      }
+
+      // Calculate average engagement per time slot and normalize scores.
+      $slots = [];
+      foreach ($timeSlots as $slot) {
+        $avgEngagement = $slot['count'] > 0 ? $slot['total_engagement'] / $slot['count'] : 0.0;
+        $slots[] = [
+          'day' => $slot['day'],
+          'hour' => $slot['hour'],
+          'score' => round($avgEngagement, 4),
+        ];
+      }
+
+      // Sort by score descending.
+      usort($slots, fn(array $a, array $b) => $b['score'] <=> $a['score']);
+
+      // Normalize scores to 0-1 range if max score > 0.
+      if (!empty($slots) && $slots[0]['score'] > 0) {
+        $maxScore = $slots[0]['score'];
+        foreach ($slots as &$slot) {
+          $slot['score'] = round($slot['score'] / $maxScore, 2);
+        }
+        unset($slot);
+      }
+
+      // Return top 5 time slots.
+      return array_slice($slots, 0, 5);
     }
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo horarios optimos para tenant @tid, plataforma @platform: @error', [
@@ -249,7 +359,8 @@ class SocialCalendarService {
         '@platform' => $platform,
         '@error' => $e->getMessage(),
       ]);
-      return [];
+      // Graceful fallback to generic defaults on error.
+      return $defaults[$platform] ?? [];
     }
   }
 

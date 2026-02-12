@@ -191,14 +191,132 @@ class MatchingApiController extends ControllerBase
     public function getSimilarJobs(int $job_id, Request $request): JsonResponse
     {
         $limit = (int) $request->query->get('limit', 5);
+        $tenantId = (int) $request->query->get('tenant_id', 0);
 
-        // TODO: Implementar con Qdrant semantic similarity en Fase 2
-        return new JsonResponse([
-            'success' => TRUE,
-            'job_id' => $job_id,
-            'similar' => [],
-            'message' => 'Semantic similarity will be available in Phase 2',
-        ]);
+        try {
+            $job = $this->entityTypeManager()->getStorage('job_posting')->load($job_id);
+            if (!$job) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Job not found',
+                ], 404);
+            }
+
+            // Try Qdrant semantic search first.
+            if (\Drupal::hasService('jaraba_matching.qdrant_client')
+                && \Drupal::hasService('jaraba_matching.embedding_service')) {
+                try {
+                    /** @var \Drupal\jaraba_matching\Service\QdrantMatchingClient $qdrantClient */
+                    $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
+                    /** @var \Drupal\jaraba_matching\Service\EmbeddingService $embeddingService */
+                    $embeddingService = \Drupal::service('jaraba_matching.embedding_service');
+
+                    if ($qdrantClient->isAvailable()) {
+                        $text = $embeddingService->getJobEmbeddingText($job);
+                        $embedding = $embeddingService->generate($text);
+
+                        if (!empty($embedding)) {
+                            $results = $qdrantClient->searchJobsForCandidate(
+                                $embedding,
+                                $tenantId,
+                                $limit + 1, // +1 to exclude self
+                                0.5
+                            );
+
+                            $similarJobs = [];
+                            foreach ($results as $result) {
+                                $resultJobId = $result['job_id'] ?? $result['payload']['entity_id'] ?? NULL;
+                                // Exclude the source job itself.
+                                if ($resultJobId && (int) $resultJobId !== $job_id) {
+                                    $similarJob = $this->entityTypeManager()
+                                        ->getStorage('job_posting')
+                                        ->load($resultJobId);
+                                    if ($similarJob) {
+                                        $similarJobs[] = [
+                                            'id' => (int) $similarJob->id(),
+                                            'title' => $similarJob->label(),
+                                            'similarity_score' => $result['semantic_score'] ?? 0,
+                                        ];
+                                    }
+                                }
+                                if (count($similarJobs) >= $limit) {
+                                    break;
+                                }
+                            }
+
+                            return new JsonResponse([
+                                'success' => TRUE,
+                                'job_id' => $job_id,
+                                'count' => count($similarJobs),
+                                'similar' => $similarJobs,
+                                'meta' => ['method' => 'qdrant_semantic'],
+                            ]);
+                        }
+                    }
+                }
+                catch (\Exception $e) {
+                    // Fall through to tag-based fallback.
+                }
+            }
+
+            // Fallback: tag-based similarity using shared skills.
+            $jobSkills = $this->getFieldValues($job, 'skills_required');
+            $similarJobs = [];
+
+            if (!empty($jobSkills)) {
+                $query = $this->entityTypeManager()->getStorage('job_posting')->getQuery()
+                    ->accessCheck(TRUE)
+                    ->condition('status', 'published')
+                    ->condition('id', $job_id, '<>')
+                    ->range(0, $limit);
+
+                if ($tenantId) {
+                    $query->condition('tenant_id', $tenantId);
+                }
+
+                $candidateIds = $query->execute();
+                $candidateJobs = $this->entityTypeManager()
+                    ->getStorage('job_posting')
+                    ->loadMultiple($candidateIds);
+
+                foreach ($candidateJobs as $candidateJob) {
+                    $candidateSkills = $this->getFieldValues($candidateJob, 'skills_required');
+                    $shared = array_intersect($jobSkills, $candidateSkills);
+                    $total = array_unique(array_merge($jobSkills, $candidateSkills));
+                    $jaccardScore = !empty($total)
+                        ? round((count($shared) / count($total)) * 100, 1)
+                        : 0;
+
+                    if ($jaccardScore > 0) {
+                        $similarJobs[] = [
+                            'id' => (int) $candidateJob->id(),
+                            'title' => $candidateJob->label(),
+                            'similarity_score' => $jaccardScore,
+                        ];
+                    }
+                }
+
+                // Sort by similarity descending.
+                usort($similarJobs, fn($a, $b) => $b['similarity_score'] <=> $a['similarity_score']);
+                $similarJobs = array_slice($similarJobs, 0, $limit);
+            }
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'job_id' => $job_id,
+                'count' => count($similarJobs),
+                'similar' => $similarJobs,
+                'meta' => ['method' => 'fallback_tags'],
+            ]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'job_id' => $job_id,
+                'similar' => [],
+                'meta' => ['error' => 'Similarity search unavailable'],
+            ], 500);
+        }
     }
 
     /**
@@ -248,12 +366,82 @@ class MatchingApiController extends ControllerBase
      */
     public function reindexJob(int $job_id): JsonResponse
     {
-        // TODO: Implementar con Qdrant en Fase 2
-        return new JsonResponse([
-            'success' => TRUE,
-            'job_id' => $job_id,
-            'message' => 'Qdrant indexing will be available in Phase 2',
-        ]);
+        try {
+            $job = $this->entityTypeManager()->getStorage('job_posting')->load($job_id);
+            if (!$job) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Job not found',
+                ], 404);
+            }
+
+            if (!\Drupal::hasService('jaraba_matching.qdrant_client')
+                || !\Drupal::hasService('jaraba_matching.embedding_service')) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Qdrant indexing services not available',
+                ], 503);
+            }
+
+            /** @var \Drupal\jaraba_matching\Service\QdrantMatchingClient $qdrantClient */
+            $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
+            /** @var \Drupal\jaraba_matching\Service\EmbeddingService $embeddingService */
+            $embeddingService = \Drupal::service('jaraba_matching.embedding_service');
+
+            if (!$qdrantClient->isAvailable()) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Qdrant server is not reachable',
+                ], 503);
+            }
+
+            // Generate embedding from job content.
+            $text = $embeddingService->getJobEmbeddingText($job);
+            $embedding = $embeddingService->generate($text);
+
+            if (empty($embedding)) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => 'Failed to generate embedding for job',
+                ], 500);
+            }
+
+            // Build payload with metadata for filtering.
+            $skills = $this->getFieldValues($job, 'skills_required');
+            $payload = [
+                'tenant_id' => (int) ($job->get('tenant_id')->target_id ?? $job->get('tenant_id')->value ?? 0),
+                'status' => $job->get('status')->value ?? 'draft',
+                'title' => $job->label(),
+                'skills' => $skills,
+                'experience_level' => $job->get('experience_level')->value ?? '',
+                'location_city' => $job->hasField('location_city') ? ($job->get('location_city')->value ?? '') : '',
+                'remote_type' => $job->hasField('remote_type') ? ($job->get('remote_type')->value ?? '') : '',
+                'indexed_at' => time(),
+            ];
+
+            // Upsert to Qdrant.
+            $success = $qdrantClient->indexJob($job_id, $embedding, $payload);
+
+            if ($success) {
+                return new JsonResponse([
+                    'success' => TRUE,
+                    'job_id' => $job_id,
+                    'message' => 'Job successfully indexed in Qdrant',
+                    'vector_dimensions' => count($embedding),
+                ]);
+            }
+
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Qdrant upsert failed',
+            ], 500);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'Indexing failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

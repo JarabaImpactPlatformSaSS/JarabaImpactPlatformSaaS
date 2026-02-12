@@ -103,9 +103,44 @@ class AlertService
         $alerts = [];
         $config = $this->getConfig();
 
-        // MRR Drop
-        $mrrDropThreshold = $config->get('alert_mrr_drop_threshold') ?? 10;
-        // TODO: Comparar MRR actual vs anterior para detectar caídas
+        // MRR Drop detection.
+        $mrrDropThreshold = (float) ($config->get('alert_mrr_drop_threshold') ?? 10);
+        try {
+            $currentMrr = (float) $this->metricsCalculator->calculateMRR();
+
+            // Calculate previous period MRR by querying the last snapshot
+            // or by computing MRR for the previous month.
+            $previousMrr = $this->getPreviousPeriodMRR();
+
+            if ($previousMrr > 0) {
+                $mrrChangePercent = (($currentMrr - $previousMrr) / $previousMrr) * 100;
+
+                if ($mrrChangePercent < -$mrrDropThreshold) {
+                    $dropPercent = round(abs($mrrChangePercent), 1);
+                    $severity = $dropPercent > 20
+                        ? FocAlert::SEVERITY_CRITICAL
+                        : FocAlert::SEVERITY_WARNING;
+
+                    $alerts[] = $this->createAlert([
+                        'title' => "Caída de MRR detectada: -{$dropPercent}%",
+                        'alert_type' => 'mrr_drop',
+                        'severity' => $severity,
+                        'message' => "El MRR ha caído un {$dropPercent}% respecto al período anterior "
+                            . "(de €" . number_format($previousMrr, 2, ',', '.') . " a €"
+                            . number_format($currentMrr, 2, ',', '.') . "). "
+                            . "Umbral configurado: {$mrrDropThreshold}%.",
+                        'metric_value' => "-{$dropPercent}%",
+                        'threshold' => "{$mrrDropThreshold}%",
+                        'playbook' => $this->getPlaybook('churn_prevention'),
+                    ]);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Error evaluating MRR drop alert: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         // Gross Margin
         $grossMargin = (float) $this->metricsCalculator->calculateGrossMargin();
@@ -191,6 +226,62 @@ class AlertService
         }
 
         return $alerts;
+    }
+
+    /**
+     * Obtiene el MRR del período anterior (mes pasado).
+     *
+     * Intenta obtener el MRR del snapshot más reciente del mes anterior.
+     * Si no hay snapshot, calcula directamente desde transacciones.
+     *
+     * @return float
+     *   MRR del período anterior, o 0.0 si no hay datos.
+     */
+    protected function getPreviousPeriodMRR(): float
+    {
+        try {
+            // First try: query the latest metric snapshot from the previous month.
+            $storage = $this->entityTypeManager->getStorage('foc_metric_snapshot');
+            $previousMonthStart = date('Y-m-d', strtotime('first day of last month'));
+            $previousMonthEnd = date('Y-m-d', strtotime('last day of last month'));
+
+            $snapshotIds = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('scope_type', 'platform')
+                ->condition('snapshot_date', $previousMonthStart, '>=')
+                ->condition('snapshot_date', $previousMonthEnd, '<=')
+                ->sort('snapshot_date', 'DESC')
+                ->range(0, 1)
+                ->execute();
+
+            if (!empty($snapshotIds)) {
+                $snapshot = $storage->load(reset($snapshotIds));
+                if ($snapshot && $snapshot->hasField('mrr')) {
+                    $mrr = (float) ($snapshot->get('mrr')->value ?? 0);
+                    if ($mrr > 0) {
+                        return $mrr;
+                    }
+                }
+            }
+
+            // Fallback: calculate previous month MRR directly from transactions.
+            // Use the MetricsCalculatorService pattern but with previous month dates.
+            $db = \Drupal::database();
+            $query = $db->select('financial_transaction', 'ft')
+                ->condition('ft.is_recurring', 1)
+                ->condition('ft.transaction_timestamp', strtotime('first day of last month'), '>=')
+                ->condition('ft.transaction_timestamp', strtotime('last day of last month 23:59:59'), '<=');
+            $query->addExpression('SUM(ft.amount)', 'total_mrr');
+            $result = $query->execute()->fetchField();
+
+            return (float) ($result ?: 0);
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Error getting previous period MRR: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+            return 0.0;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

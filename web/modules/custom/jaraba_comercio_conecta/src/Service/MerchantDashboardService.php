@@ -102,12 +102,60 @@ class MerchantDashboardService {
     $average_rating = $merchant ? ($merchant->get('average_rating')->value ?: 0) : 0;
     $total_reviews = $merchant ? ($merchant->get('total_reviews')->value ?: 0) : 0;
 
+    // KPIs de ventas: consultar entidades comercio_order con aggregate queries.
+    $ventas_hoy = 0;
+    $ventas_mes = 0;
+    $pedidos_pendientes = 0;
+
+    try {
+      $order_storage = $this->entityTypeManager->getStorage('comercio_order');
+
+      // Ventas de hoy: SUM(total_price) donde status=completed y created=hoy.
+      $today_start = strtotime('today midnight');
+      $result = $order_storage->getAggregateQuery()
+        ->accessCheck(FALSE)
+        ->aggregate('total_price', 'SUM')
+        ->condition('merchant_id', $merchant_id)
+        ->condition('status', 'completed')
+        ->condition('created', $today_start, '>=')
+        ->execute();
+      $ventas_hoy = (float) ($result[0]['total_price_sum'] ?? 0);
+
+      // Ventas del mes: SUM(total_price) donde status=completed y created>=primer día del mes.
+      $month_start = strtotime('first day of this month midnight');
+      $result = $order_storage->getAggregateQuery()
+        ->accessCheck(FALSE)
+        ->aggregate('total_price', 'SUM')
+        ->condition('merchant_id', $merchant_id)
+        ->condition('status', 'completed')
+        ->condition('created', $month_start, '>=')
+        ->execute();
+      $ventas_mes = (float) ($result[0]['total_price_sum'] ?? 0);
+
+      // Pedidos pendientes: COUNT donde status=pending.
+      $pedidos_pendientes = (int) $order_storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('merchant_id', $merchant_id)
+        ->condition('status', 'pending')
+        ->count()
+        ->execute();
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error calculando KPIs de ventas para merchant @id: @e', [
+        '@id' => $merchant_id,
+        '@e' => $e->getMessage(),
+      ]);
+    }
+
     return [
       'total_products' => (int) $total_products,
       'stock_alert_count' => count($stock_alerts),
       'average_rating' => round((float) $average_rating, 1),
       'total_reviews' => (int) $total_reviews,
-      // TODO Fase 2: ventas_hoy, ventas_mes, pedidos_pendientes, ingresos_mes
+      'ventas_hoy' => round($ventas_hoy, 2),
+      'ventas_mes' => round($ventas_mes, 2),
+      'pedidos_pendientes' => $pedidos_pendientes,
+      'ingresos_mes' => round($ventas_mes, 2),
     ];
   }
 

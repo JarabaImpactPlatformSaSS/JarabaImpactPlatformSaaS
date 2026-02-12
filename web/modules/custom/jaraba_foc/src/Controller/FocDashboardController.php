@@ -276,14 +276,46 @@ class FocDashboardController extends ControllerBase implements ContainerInjectio
      */
     protected function getActiveAlerts(): array
     {
-        // TODO: Implementar lógica de alertas reales
-        return [
-            [
-                'type' => 'warning',
-                'message' => $this->t('Tenant "Demo Corp" con ratio LTV:CAC por debajo del umbral.'),
-                'action' => $this->t('Ver playbook de retención'),
-            ],
-        ];
+        try {
+            if (\Drupal::hasService('jaraba_foc.alerts')) {
+                /** @var \Drupal\jaraba_foc\Service\AlertService $alertService */
+                $alertService = \Drupal::service('jaraba_foc.alerts');
+
+                // Evaluate current platform alerts to catch new issues.
+                $alertService->evaluateAllAlerts();
+
+                // Retrieve open alerts.
+                $openAlerts = $alertService->getOpenAlerts();
+                $formattedAlerts = [];
+
+                foreach ($openAlerts as $alert) {
+                    $severity = $alert->get('severity')->value ?? 'warning';
+                    // Map severity to display type.
+                    $typeMap = [
+                        'critical' => 'danger',
+                        'warning' => 'warning',
+                        'info' => 'info',
+                    ];
+
+                    $formattedAlerts[] = [
+                        'type' => $typeMap[$severity] ?? 'warning',
+                        'message' => $alert->get('message')->value ?? $alert->label(),
+                        'severity' => $severity,
+                        'alert_type' => $alert->get('alert_type')->value ?? '',
+                        'action' => $this->t('Ver playbook'),
+                        'timestamp' => $alert->get('created')->value ?? NULL,
+                        'tenant' => $alert->get('related_tenant')->target_id ?? NULL,
+                    ];
+                }
+
+                return $formattedAlerts;
+            }
+        }
+        catch (\Exception $e) {
+            // Fall through to empty array if alert evaluation fails.
+        }
+
+        return [];
     }
 
 }

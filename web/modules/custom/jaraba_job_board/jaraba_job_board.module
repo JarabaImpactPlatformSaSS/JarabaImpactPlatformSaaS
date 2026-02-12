@@ -286,14 +286,21 @@ function jaraba_job_board_mail(string $key, array &$message, array $params): voi
  * Implements hook_entity_presave() for job applications.
  */
 function jaraba_job_board_entity_presave(EntityInterface $entity): void {
-  // TODO: Re-enable when MatchingService is fully implemented
-  // if ($entity->getEntityTypeId() === 'job_application') {
-  //   if ($entity->get('match_score')->isEmpty()) {
-  //     $matching = \Drupal::service('jaraba_job_board.matching');
-  //     $score = $matching->calculateApplicationScore($entity);
-  //     $entity->set('match_score', $score);
-  //   }
-  // }
+  if ($entity->getEntityTypeId() === 'job_application') {
+    if ($entity->get('match_score')->isEmpty()) {
+      try {
+        $matching = \Drupal::service('jaraba_job_board.matching');
+        $score = $matching->calculateApplicationScore($entity);
+        $entity->set('match_score', $score);
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_job_board')->error(
+          'Failed to calculate match score: @error',
+          ['@error' => $e->getMessage()]
+        );
+      }
+    }
+  }
 }
 
 /**

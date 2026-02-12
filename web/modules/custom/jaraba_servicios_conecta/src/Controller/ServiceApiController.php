@@ -206,22 +206,129 @@ class ServiceApiController extends ControllerBase {
    * POST /api/v1/servicios/bookings - Crear reserva.
    */
   public function createBooking(Request $request): JsonResponse {
-    // TODO Fase 2: Implementar lógica completa de creación de reserva
-    // con validación de disponibilidad, pago anticipado si aplica,
-    // generación de meeting URL para consultas online
+    $data = json_decode($request->getContent(), TRUE);
+
+    // Validate required fields.
+    $required = ['provider_id', 'service_id', 'datetime'];
+    foreach ($required as $field) {
+      if (empty($data[$field])) {
+        return new JsonResponse(['error' => "Missing required field: {$field}"], 400);
+      }
+    }
+
+    $providerId = (int) $data['provider_id'];
+    $serviceId = (int) $data['service_id'];
+    $datetime = $data['datetime'];
+
+    // Load the service offering to get duration.
+    $offering = $this->entityTypeManager()->getStorage('service_offering')->load($serviceId);
+    if (!$offering) {
+      return new JsonResponse(['error' => 'Service offering not found'], 404);
+    }
+
+    $duration = (int) $offering->get('duration_minutes')->value;
+
+    // Verify availability.
+    if (!$this->availabilityService->isSlotAvailable($providerId, $datetime, $duration)) {
+      return new JsonResponse(['error' => 'Selected time slot is not available'], 409);
+    }
+
+    // Create the booking entity.
+    $currentUser = $this->currentUser();
+    try {
+      $booking = $this->entityTypeManager()->getStorage('booking')->create([
+        'provider_id' => $providerId,
+        'service_id' => $serviceId,
+        'client_id' => $currentUser->id(),
+        'datetime' => $datetime,
+        'duration_minutes' => $duration,
+        'status' => 'pending_confirmation',
+        'modality' => $offering->get('modality')->value ?? 'presential',
+        'notes' => $data['notes'] ?? '',
+      ]);
+      $booking->save();
+    }
+    catch (\Exception $e) {
+      return new JsonResponse(['error' => 'Failed to create booking'], 500);
+    }
+
+    // Mark availability slot as booked.
+    $this->availabilityService->markSlotBooked($providerId, $datetime, $duration);
+
+    // Generate meeting URL for online modality.
+    $meetingUrl = NULL;
+    if ($offering->get('modality')->value === 'online') {
+      $meetingUrl = '/meeting/room/' . $booking->id();
+    }
+
     return new JsonResponse([
-      'error' => 'Not implemented yet. Coming in Phase 2.',
-    ], 501);
+      'data' => [
+        'booking_id' => (int) $booking->id(),
+        'status' => 'pending_confirmation',
+        'datetime' => $datetime,
+        'duration_minutes' => $duration,
+        'meeting_url' => $meetingUrl,
+      ],
+    ], 201);
   }
 
   /**
    * PATCH /api/v1/servicios/bookings/{id} - Actualizar reserva.
    */
   public function updateBooking(string $booking, Request $request): JsonResponse {
-    // TODO Fase 2: Implementar actualización de estado de reserva
+    $bookingEntity = $this->entityTypeManager()->getStorage('booking')->load($booking);
+
+    if (!$bookingEntity) {
+      return new JsonResponse(['error' => 'Booking not found'], 404);
+    }
+
+    // Verify the current user has permission (provider or client).
+    $currentUserId = (int) $this->currentUser()->id();
+    $providerId = (int) $bookingEntity->get('provider_id')->target_id;
+    $clientId = (int) $bookingEntity->get('client_id')->target_id;
+
+    if ($currentUserId !== $providerId && $currentUserId !== $clientId) {
+      return new JsonResponse(['error' => 'Access denied'], 403);
+    }
+
+    $data = json_decode($request->getContent(), TRUE);
+    $newStatus = $data['status'] ?? NULL;
+
+    if (!$newStatus) {
+      return new JsonResponse(['error' => 'Missing status field'], 400);
+    }
+
+    // Validate state transition.
+    $currentStatus = $bookingEntity->get('status')->value;
+    $allowedTransitions = [
+      'pending_confirmation' => ['confirmed', 'cancelled'],
+      'confirmed' => ['completed', 'cancelled', 'no_show'],
+    ];
+
+    if (!isset($allowedTransitions[$currentStatus]) || !in_array($newStatus, $allowedTransitions[$currentStatus], TRUE)) {
+      return new JsonResponse(['error' => "Invalid transition: {$currentStatus} -> {$newStatus}"], 422);
+    }
+
+    $bookingEntity->set('status', $newStatus);
+
+    // If cancelled, release the availability slot.
+    if ($newStatus === 'cancelled') {
+      $this->availabilityService->releaseSlot(
+        $providerId,
+        $bookingEntity->get('datetime')->value,
+        (int) $bookingEntity->get('duration_minutes')->value
+      );
+    }
+
+    $bookingEntity->save();
+
     return new JsonResponse([
-      'error' => 'Not implemented yet. Coming in Phase 2.',
-    ], 501);
+      'data' => [
+        'booking_id' => (int) $bookingEntity->id(),
+        'status' => $newStatus,
+        'previous_status' => $currentStatus,
+      ],
+    ]);
   }
 
   /**

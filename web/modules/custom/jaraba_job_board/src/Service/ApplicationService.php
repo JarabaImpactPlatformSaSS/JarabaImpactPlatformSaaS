@@ -118,7 +118,44 @@ class ApplicationService
             '@job' => $job_id,
         ]);
 
-        // TODO: Dispatch application event for ECA (notifications, etc.)
+        // Dispatch application event for ECA (notifications, etc.).
+        $event = new \Symfony\Component\EventDispatcher\GenericEvent($application, [
+            'type' => 'application_created',
+            'job_id' => $job_id,
+            'candidate_id' => $candidate_id,
+            'application_id' => $application->id(),
+        ]);
+        $this->eventDispatcher->dispatch($event, 'jaraba_job_board.application.created');
+
+        // Send notification emails.
+        try {
+            $mailManager = \Drupal::service('plugin.manager.mail');
+            $candidate = $this->entityTypeManager->getStorage('user')->load($candidate_id);
+
+            // Confirmation to candidate.
+            if ($candidate && $candidate->getEmail()) {
+                $mailManager->mail('jaraba_job_board', 'application_submitted', $candidate->getEmail(), $candidate->getPreferredLangcode(), [
+                    'candidate_name' => $candidate->getDisplayName(),
+                    'job_title' => $job->label(),
+                ]);
+            }
+
+            // Notification to employer.
+            $employerId = $job->get('employer_id')->target_id ?? NULL;
+            if ($employerId) {
+                $employer = $this->entityTypeManager->getStorage('user')->load($employerId);
+                if ($employer && $employer->getEmail()) {
+                    $mailManager->mail('jaraba_job_board', 'new_application', $employer->getEmail(), $employer->getPreferredLangcode(), [
+                        'employer_name' => $employer->getDisplayName(),
+                        'job_title' => $job->label(),
+                        'candidate_name' => $candidate ? $candidate->getDisplayName() : 'Candidato',
+                    ]);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send application notifications: @error', ['@error' => $e->getMessage()]);
+        }
 
         return $application;
     }
@@ -258,7 +295,43 @@ class ApplicationService
             '@new' => $status,
         ]);
 
-        // TODO: Dispatch status change event for notifications
+        // Dispatch status change event for notifications.
+        $statusEvent = new \Symfony\Component\EventDispatcher\GenericEvent($application, [
+            'type' => 'application_status_changed',
+            'application_id' => $application_id,
+            'old_status' => $old_status,
+            'new_status' => $status,
+        ]);
+        $this->eventDispatcher->dispatch($statusEvent, 'jaraba_job_board.application.status_changed');
+
+        // Send status notification email to candidate.
+        try {
+            $candidate = $this->entityTypeManager->getStorage('user')->load($application->get('candidate_id')->target_id);
+            $job = $application->getJob();
+            if ($candidate && $candidate->getEmail() && $job) {
+                $statusMailKey = match ($status) {
+                    JobApplication::STATUS_SHORTLISTED => 'application_shortlisted',
+                    JobApplication::STATUS_INTERVIEWED => 'interview_scheduled',
+                    JobApplication::STATUS_OFFERED => 'offer_received',
+                    JobApplication::STATUS_HIRED => 'application_hired',
+                    JobApplication::STATUS_REJECTED => 'application_rejected',
+                    default => NULL,
+                };
+                if ($statusMailKey) {
+                    \Drupal::service('plugin.manager.mail')->mail('jaraba_job_board', $statusMailKey, $candidate->getEmail(), $candidate->getPreferredLangcode(), [
+                        'candidate_name' => $candidate->getDisplayName(),
+                        'job_title' => $job->label(),
+                        'status' => $status,
+                        'interview_date' => $options['interview_date'] ?? NULL,
+                        'salary' => $options['salary'] ?? NULL,
+                        'rejection_feedback' => $options['rejection_feedback'] ?? NULL,
+                    ]);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send status change notification: @error', ['@error' => $e->getMessage()]);
+        }
 
         return $application;
     }

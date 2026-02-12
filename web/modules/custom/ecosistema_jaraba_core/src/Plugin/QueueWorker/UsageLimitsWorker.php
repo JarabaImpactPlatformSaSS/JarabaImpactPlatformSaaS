@@ -112,7 +112,33 @@ class UsageLimitsWorker extends QueueWorkerBase implements ContainerFactoryPlugi
                 '@max' => $max,
             ]
         );
-        // TODO: Send email alert via mail manager.
+        // Send email alert via mail manager.
+        try {
+            $adminUser = $tenant->getAdminUser();
+            if ($adminUser && $adminUser->getEmail()) {
+                $mailKey = $percentage >= 100 ? 'usage_limit_alert' : 'usage_limit_alert';
+                \Drupal::service('plugin.manager.mail')->mail(
+                    'ecosistema_jaraba_core',
+                    $mailKey,
+                    $adminUser->getEmail(),
+                    $adminUser->getPreferredLangcode(),
+                    [
+                        'tenant_name' => $tenant->getName(),
+                        'limit_type' => $type,
+                        'percentage' => $percentage,
+                        'current' => $current,
+                        'max' => $max,
+                        'upgrade_url' => '/admin/subscription/upgrade',
+                    ]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Failed to send usage alert email for tenant @tenant: @error', [
+                '@tenant' => $tenant->getName(),
+                '@error' => $e->getMessage(),
+            ]);
+        }
     }
 
 }

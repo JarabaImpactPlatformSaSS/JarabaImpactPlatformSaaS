@@ -123,14 +123,23 @@ function jaraba_lms_entity_access(EntityInterface $entity, string $operation, Ac
  * Implements hook_cron().
  */
 function jaraba_lms_cron(): void {
-  // TODO: Re-enable when services are fully implemented
-  // Enviar recordatorios de cursos abandonados
-  // $enrollment_service = \Drupal::service('jaraba_lms.enrollment');
-  // $enrollment_service->sendAbandonedCourseReminders();
-  
-  // Procesar certificados pendientes
-  // $certification_service = \Drupal::service('jaraba_lms.certification');
-  // $certification_service->processQueuedCertificates();
+  // Enviar recordatorios de cursos abandonados.
+  try {
+    $enrollment_service = \Drupal::service('jaraba_lms.enrollment');
+    $enrollment_service->sendAbandonedCourseReminders();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->error('Enrollment cron error: @error', ['@error' => $e->getMessage()]);
+  }
+
+  // Procesar certificados pendientes.
+  try {
+    $certification_service = \Drupal::service('jaraba_lms.certification');
+    $certification_service->processQueuedCertificates();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_lms')->error('Certification cron error: @error', ['@error' => $e->getMessage()]);
+  }
 }
 
 /**
@@ -389,4 +398,50 @@ function jaraba_lms_preprocess_course_detail(array &$variables): void {
   }
 }
 
+/**
+ * Implements hook_mail().
+ */
+function jaraba_lms_mail($key, &$message, $params): void {
+  switch ($key) {
+    case 'enrollment_created':
+      $message['subject'] = t('Inscripción confirmada: @course', [
+        '@course' => $params['course_name'],
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user_name']]);
+      $message['body'][] = t('Te has inscrito correctamente en el curso "@course".', [
+        '@course' => $params['course_name'],
+      ]);
+      $message['body'][] = t('Puedes acceder al contenido del curso desde tu panel de formación.');
+      break;
 
+    case 'enrollment_completed':
+      $message['subject'] = t('¡Felicidades! Has completado: @course', [
+        '@course' => $params['course_name'],
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user_name']]);
+      $message['body'][] = t('¡Enhorabuena! Has completado el curso "@course" al 100%.', [
+        '@course' => $params['course_name'],
+      ]);
+      $message['body'][] = t('Tu certificado de finalización está disponible en tu perfil.');
+      break;
+
+    case 'enrollment_reminder':
+      $message['subject'] = t('¿Continúas con tu curso? @course', [
+        '@course' => $params['course_name'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user_name']]);
+      $message['body'][] = t('Hemos notado que llevas un tiempo sin acceder al curso "@course". Tu progreso actual es del @progress%.', [
+        '@course' => $params['course_name'] ?? '',
+        '@progress' => $params['progress'] ?? 0,
+      ]);
+      $message['body'][] = t('¡No pierdas el ritmo! Accede ahora y continúa donde lo dejaste.');
+      break;
+  }
+
+  // Footer común.
+  if (!empty($message['body'])) {
+    $message['body'][] = '';
+    $message['body'][] = '---';
+    $message['body'][] = t('Jaraba Impact Platform - Formación Digital');
+  }
+}

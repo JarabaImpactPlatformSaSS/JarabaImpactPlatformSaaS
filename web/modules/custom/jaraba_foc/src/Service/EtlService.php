@@ -232,17 +232,23 @@ class EtlService
     {
         $storage = $this->entityTypeManager->getStorage('foc_metric_snapshot');
 
+        // Calculate additional metrics.
+        $quickRatio = $this->calculateQuickRatio($scopeId);
+        $revenuePerEmployee = $this->calculateRevenuePerEmployee($scopeId);
+        $grossMarginValue = $this->metricsCalculator->calculateGrossMargin($scopeId);
+
         $snapshot = $storage->create([
             'snapshot_date' => date('Y-m-d'),
             'scope_type' => $scopeType,
             'scope_id' => $scopeId,
             'mrr' => $this->metricsCalculator->calculateMRR($scopeId),
             'arr' => $this->metricsCalculator->calculateARR($scopeId),
-            'gross_margin' => $this->metricsCalculator->calculateGrossMargin($scopeId),
+            'gross_margin' => $grossMarginValue,
             'ltv' => $this->metricsCalculator->calculateLTV($scopeId),
             'ltv_cac_ratio' => $this->metricsCalculator->calculateLTVCACRatio($scopeId),
             'cac_payback_months' => $this->metricsCalculator->calculateCACPayback(),
-            // TODO: Calcular resto de métricas
+            'quick_ratio' => $quickRatio,
+            'revenue_per_employee' => $revenuePerEmployee,
         ]);
 
         $snapshot->save();
@@ -253,6 +259,153 @@ class EtlService
         ]);
 
         return (int) $snapshot->id();
+    }
+
+    /**
+     * Calcula el Quick Ratio (SaaS efficiency metric).
+     *
+     * FORMULA: (New MRR + Expansion MRR) / (Churned MRR + Contraction MRR)
+     * BENCHMARK: >4 es excelente, >2 es saludable, <1 es contracción.
+     *
+     * @param int|null $scopeId
+     *   ID del tenant para filtrar, o NULL para toda la plataforma.
+     *
+     * @return string
+     *   Quick Ratio en formato decimal.
+     */
+    protected function calculateQuickRatio(?int $scopeId = NULL): string
+    {
+        try {
+            $storage = $this->entityTypeManager->getStorage('financial_transaction');
+            $monthStart = strtotime('first day of this month');
+            $monthEnd = strtotime('last day of this month 23:59:59');
+
+            // New MRR: new recurring revenue this month (type = 'new_mrr' or first recurring).
+            $newMrr = $this->sumTransactionsByType(['new_mrr', 'new_subscription'], $monthStart, $monthEnd, $scopeId);
+
+            // Expansion MRR: upgrades and add-ons.
+            $expansionMrr = $this->sumTransactionsByType(['expansion_mrr', 'upgrade'], $monthStart, $monthEnd, $scopeId);
+
+            // Churned MRR: cancellations (stored as negative amounts).
+            $churnMrr = abs((float) $this->sumTransactionsByType(['churn_mrr', 'cancellation'], $monthStart, $monthEnd, $scopeId));
+
+            // Contraction MRR: downgrades.
+            $contractionMrr = abs((float) $this->sumTransactionsByType(['contraction_mrr', 'downgrade'], $monthStart, $monthEnd, $scopeId));
+
+            $denominator = $churnMrr + $contractionMrr;
+            if ($denominator <= 0) {
+                // No churn means infinite quick ratio; cap at a high value.
+                $numerator = (float) $newMrr + (float) $expansionMrr;
+                return $numerator > 0 ? '99.00' : '0.00';
+            }
+
+            $quickRatio = ((float) $newMrr + (float) $expansionMrr) / $denominator;
+
+            return number_format($quickRatio, 2, '.', '');
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Error calculating Quick Ratio: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+            return '0.00';
+        }
+    }
+
+    /**
+     * Calcula Revenue per Employee.
+     *
+     * FORMULA: Total Revenue / Employee Count
+     *
+     * @param int|null $scopeId
+     *   ID del tenant para filtrar, o NULL para toda la plataforma.
+     *
+     * @return string
+     *   Revenue per employee en formato decimal.
+     */
+    protected function calculateRevenuePerEmployee(?int $scopeId = NULL): string
+    {
+        try {
+            $arr = (float) $this->metricsCalculator->calculateARR($scopeId);
+
+            // Get employee count from config or a reasonable default.
+            $employeeCount = 0;
+
+            if ($scopeId !== NULL) {
+                // For a specific tenant, try to load the group entity.
+                $group = $this->entityTypeManager->getStorage('group')->load($scopeId);
+                if ($group && $group->hasField('employees')) {
+                    $employeeCount = (int) ($group->get('employees')->value ?? 0);
+                }
+            }
+
+            // Platform-level: check configuration.
+            if ($employeeCount <= 0) {
+                $config = \Drupal::config('jaraba_foc.settings');
+                $employeeCount = (int) ($config->get('platform_employee_count') ?? 0);
+            }
+
+            if ($employeeCount <= 0) {
+                return '0.00';
+            }
+
+            return number_format($arr / $employeeCount, 2, '.', '');
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Error calculating Revenue per Employee: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+            return '0.00';
+        }
+    }
+
+    /**
+     * Suma transacciones por tipo en un período.
+     *
+     * @param array $types
+     *   Tipos de transacción a sumar.
+     * @param int $startTimestamp
+     *   Inicio del período.
+     * @param int $endTimestamp
+     *   Fin del período.
+     * @param int|null $scopeId
+     *   ID del tenant para filtrar.
+     *
+     * @return string
+     *   Suma total.
+     */
+    protected function sumTransactionsByType(array $types, int $startTimestamp, int $endTimestamp, ?int $scopeId = NULL): string
+    {
+        try {
+            $storage = $this->entityTypeManager->getStorage('financial_transaction');
+            $query = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('transaction_timestamp', $startTimestamp, '>=')
+                ->condition('transaction_timestamp', $endTimestamp, '<=');
+
+            if (!empty($types)) {
+                $query->condition('source_system', $types, 'IN');
+            }
+
+            if ($scopeId !== NULL) {
+                $query->condition('related_tenant', $scopeId);
+            }
+
+            $ids = $query->execute();
+            if (empty($ids)) {
+                return '0.00';
+            }
+
+            $transactions = $storage->loadMultiple($ids);
+            $total = 0.0;
+            foreach ($transactions as $transaction) {
+                $total += (float) ($transaction->get('amount')->value ?? 0);
+            }
+
+            return number_format($total, 2, '.', '');
+        }
+        catch (\Exception $e) {
+            return '0.00';
+        }
     }
 
 }

@@ -140,7 +140,27 @@ function jaraba_comercio_conecta_entity_update(EntityInterface $entity): void {
         'Comerciante @name aprobado (ID: @id)',
         ['@name' => $entity->get('business_name')->value, '@id' => $entity->id()]
       );
-      // TODO Fase 6: Enviar notificación de aprobación al comerciante
+      // Enviar notificación de aprobación al comerciante.
+      try {
+        $userId = $entity->get('user_id')->target_id ?? NULL;
+        if ($userId) {
+          $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+          if ($user && $user->getEmail()) {
+            \Drupal::service('plugin.manager.mail')->mail(
+              'jaraba_comercio_conecta',
+              'merchant_approved',
+              $user->getEmail(),
+              $user->getPreferredLangcode(),
+              [
+                'merchant_name' => $entity->get('shop_name')->value ?? $user->getDisplayName(),
+              ]
+            );
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_comercio_conecta')->error('Error enviando notificación de aprobación: @e', ['@e' => $e->getMessage()]);
+      }
     }
   }
 
@@ -157,7 +177,32 @@ function jaraba_comercio_conecta_entity_update(EntityInterface $entity): void {
           '@threshold' => $threshold,
         ]
       );
-      // TODO Fase 6: Notificación de stock bajo al comerciante
+      // Notificación de stock bajo al comerciante.
+      try {
+        $shopId = $entity->get('shop_id')->target_id ?? NULL;
+        if ($shopId) {
+          $shop = \Drupal::entityTypeManager()->getStorage('merchant_shop')->load($shopId);
+          $ownerId = $shop ? ($shop->get('user_id')->target_id ?? NULL) : NULL;
+          if ($ownerId) {
+            $owner = \Drupal::entityTypeManager()->getStorage('user')->load($ownerId);
+            if ($owner && $owner->getEmail()) {
+              \Drupal::service('plugin.manager.mail')->mail(
+                'jaraba_comercio_conecta',
+                'low_stock_alert',
+                $owner->getEmail(),
+                $owner->getPreferredLangcode(),
+                [
+                  'product_name' => $entity->label(),
+                  'current_stock' => $entity->get('stock_quantity')->value ?? 0,
+                ]
+              );
+            }
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_comercio_conecta')->error('Error enviando alerta de stock bajo: @e', ['@e' => $e->getMessage()]);
+      }
     }
   }
 }
@@ -184,9 +229,175 @@ function jaraba_comercio_conecta_cron(): void {
 
   $state->set('jaraba_comercio_conecta.cron_last_run', $now);
 
-  // TODO Fase 2: Detectar carritos abandonados (>1h sin modificar)
-  // TODO Fase 5: Verificar flash offers expiradas
-  // TODO Fase 7: Reconciliación de stock POS
+  // Detectar carritos abandonados (>1h sin modificar) y enviar recordatorio.
+  try {
+    $cart_storage = \Drupal::entityTypeManager()->getStorage('comercio_cart');
+    $one_hour_ago = $now - 3600;
+    $abandoned_ids = $cart_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'active')
+      ->condition('changed', $one_hour_ago, '<')
+      ->execute();
+
+    if (!empty($abandoned_ids)) {
+      $carts = $cart_storage->loadMultiple($abandoned_ids);
+      foreach ($carts as $cart) {
+        try {
+          $uid = $cart->get('uid')->target_id ?? NULL;
+          if ($uid) {
+            $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
+            if ($user && $user->getEmail()) {
+              \Drupal::service('plugin.manager.mail')->mail(
+                'jaraba_comercio_conecta',
+                'abandoned_cart_reminder',
+                $user->getEmail(),
+                $user->getPreferredLangcode(),
+                [
+                  'customer_name' => $user->getDisplayName(),
+                  'cart_id' => $cart->id(),
+                ]
+              );
+              // Marcar el carrito como notificado para no enviar duplicados.
+              $cart->set('status', 'abandoned_notified');
+              $cart->save();
+            }
+          }
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_comercio_conecta')->error('Error procesando carrito abandonado @id: @e', [
+            '@id' => $cart->id(),
+            '@e' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron carritos abandonados: @e', ['@e' => $e->getMessage()]);
+  }
+
+  // Verificar flash offers expiradas y desactivarlas.
+  try {
+    $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
+    $expired_ids = $product_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('flash_offer_end', $now, '<')
+      ->condition('status', 'active')
+      ->condition('flash_offer_end', NULL, 'IS NOT NULL')
+      ->execute();
+
+    if (!empty($expired_ids)) {
+      $expired_products = $product_storage->loadMultiple($expired_ids);
+      foreach ($expired_products as $product) {
+        try {
+          $product->set('status', 'expired');
+          $product->save();
+          \Drupal::logger('jaraba_comercio_conecta')->notice('Flash offer expirada para producto @title (ID: @id)', [
+            '@title' => $product->label(),
+            '@id' => $product->id(),
+          ]);
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_comercio_conecta')->error('Error expirando flash offer @id: @e', [
+            '@id' => $product->id(),
+            '@e' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron flash offers: @e', ['@e' => $e->getMessage()]);
+  }
+
+  // Reconciliación de stock POS: comparar stock registrado vs POS.
+  try {
+    $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
+    $pos_ids = $product_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('pos_sync_enabled', TRUE)
+      ->condition('status', ['active', 'paused'], 'IN')
+      ->execute();
+
+    if (!empty($pos_ids)) {
+      $pos_products = $product_storage->loadMultiple($pos_ids);
+      foreach ($pos_products as $product) {
+        try {
+          $platform_stock = (int) ($product->get('stock_quantity')->value ?? 0);
+          $pos_stock = (int) ($product->get('pos_stock_quantity')->value ?? 0);
+          if ($platform_stock !== $pos_stock) {
+            \Drupal::logger('jaraba_comercio_conecta')->warning(
+              'Discrepancia de stock POS para producto @title (ID: @id): plataforma=@platform, POS=@pos',
+              [
+                '@title' => $product->label(),
+                '@id' => $product->id(),
+                '@platform' => $platform_stock,
+                '@pos' => $pos_stock,
+              ]
+            );
+          }
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_comercio_conecta')->error('Error reconciliando stock POS para @id: @e', [
+            '@id' => $product->id(),
+            '@e' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron reconciliación POS: @e', ['@e' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Estructura: Plantillas de email del módulo ComercioConecta.
+ *
+ * Lógica: Define subject y body para cada tipo de correo transaccional.
+ *   Los templates usan variables del array $params inyectado desde
+ *   los hooks y servicios que disparan el envío.
+ *
+ * @param string $key
+ *   Identificador de la plantilla de email.
+ * @param array $message
+ *   Array del mensaje (por referencia) con subject y body.
+ * @param array $params
+ *   Parámetros contextuales para el template.
+ */
+function jaraba_comercio_conecta_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'merchant_approved':
+      $message['subject'] = t('¡Tu comercio ha sido aprobado en ComercioConecta!');
+      $message['body'][] = t('Hola @name,', ['@name' => $params['merchant_name'] ?? 'Comerciante']);
+      $message['body'][] = t('Tu perfil de comerciante ha sido verificado y aprobado. Ya puedes publicar productos y recibir pedidos en la plataforma.');
+      $message['body'][] = t('Accede a tu panel de comerciante para empezar a vender.');
+      break;
+
+    case 'low_stock_alert':
+      $message['subject'] = t('Alerta de stock bajo: @product', ['@product' => $params['product_name'] ?? '']);
+      $message['body'][] = t('Hola,');
+      $message['body'][] = t('El producto "@product" tiene un stock bajo de @stock unidades. Te recomendamos reabastecer para no perder ventas.', [
+        '@product' => $params['product_name'] ?? '',
+        '@stock' => $params['current_stock'] ?? 0,
+      ]);
+      break;
+
+    case 'abandoned_cart_reminder':
+      $message['subject'] = t('¡No te olvides de tu carrito en ComercioConecta!');
+      $message['body'][] = t('Hola @name,', ['@name' => $params['customer_name'] ?? 'Cliente']);
+      $message['body'][] = t('Tienes productos esperándote en tu carrito de compra. Completa tu pedido antes de que se agoten.');
+      break;
+  }
+
+  // Footer común para todos los correos del módulo.
+  if (!empty($message['body'])) {
+    $message['body'][] = '';
+    $message['body'][] = '---';
+    $message['body'][] = t('Jaraba Impact Platform - ComercioConecta');
+  }
 }
 
 /**

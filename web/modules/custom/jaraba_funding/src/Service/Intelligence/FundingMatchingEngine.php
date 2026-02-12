@@ -364,9 +364,106 @@ class FundingMatchingEngine {
    *   Puntuacion de 0 a 100 (actualmente siempre 50.0).
    */
   public function calculateSemanticScore(EntityInterface $sub, EntityInterface $call): float {
-    // Stub: retorna valor neutro.
-    // TODO: Conectar con Qdrant para busqueda semantica de embeddings.
-    return 50.0;
+    try {
+      // Check if embedding service is available.
+      if (!\Drupal::hasService('jaraba_matching.embedding_service')) {
+        return 50.0;
+      }
+
+      /** @var \Drupal\jaraba_matching\Service\EmbeddingService $embeddingService */
+      $embeddingService = \Drupal::service('jaraba_matching.embedding_service');
+
+      // Build text representations for subscription and call.
+      $subParts = [];
+      if ($sub->hasField('description') && $sub->get('description')->value) {
+        $subParts[] = strip_tags($sub->get('description')->value);
+      }
+      if ($sub->hasField('sectors') && $sub->get('sectors')->value) {
+        $sectors = is_array($sub->get('sectors')->value) ? $sub->get('sectors')->value : [$sub->get('sectors')->value];
+        $subParts[] = 'Sectors: ' . implode(', ', array_filter($sectors));
+      }
+      if ($sub->hasField('beneficiary_type') && $sub->get('beneficiary_type')->value) {
+        $subParts[] = 'Type: ' . $sub->get('beneficiary_type')->value;
+      }
+
+      $callParts = [];
+      if ($call->hasField('title') && $call->label()) {
+        $callParts[] = $call->label();
+      }
+      if ($call->hasField('description') && $call->get('description')->value) {
+        $callParts[] = strip_tags($call->get('description')->value);
+      }
+      if ($call->hasField('sectors') && $call->get('sectors')->value) {
+        $sectors = is_array($call->get('sectors')->value) ? $call->get('sectors')->value : [$call->get('sectors')->value];
+        $callParts[] = 'Sectors: ' . implode(', ', array_filter($sectors));
+      }
+
+      $subText = implode(' ', $subParts);
+      $callText = implode(' ', $callParts);
+
+      if (empty(trim($subText)) || empty(trim($callText))) {
+        return 50.0;
+      }
+
+      // Generate embeddings.
+      $subEmbedding = $embeddingService->generate($subText);
+      $callEmbedding = $embeddingService->generate($callText);
+
+      if (empty($subEmbedding) || empty($callEmbedding)) {
+        return 50.0;
+      }
+
+      // Calculate cosine similarity.
+      $similarity = $this->cosineSimilarity($subEmbedding, $callEmbedding);
+
+      // Normalize from [-1, 1] range to [0, 100] scale.
+      // Cosine similarity for text embeddings typically falls in [0, 1].
+      $score = max(0.0, min(100.0, $similarity * 100.0));
+
+      return round($score, 2);
+    }
+    catch (\Exception $e) {
+      $this->logger->debug('Semantic score calculation failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return 50.0;
+    }
+  }
+
+  /**
+   * Calcula la similitud coseno entre dos vectores.
+   *
+   * @param array $vectorA
+   *   Primer vector.
+   * @param array $vectorB
+   *   Segundo vector.
+   *
+   * @return float
+   *   Similitud coseno entre -1 y 1.
+   */
+  protected function cosineSimilarity(array $vectorA, array $vectorB): float {
+    if (count($vectorA) !== count($vectorB) || empty($vectorA)) {
+      return 0.0;
+    }
+
+    $dotProduct = 0.0;
+    $normA = 0.0;
+    $normB = 0.0;
+
+    for ($i = 0, $len = count($vectorA); $i < $len; $i++) {
+      $dotProduct += $vectorA[$i] * $vectorB[$i];
+      $normA += $vectorA[$i] * $vectorA[$i];
+      $normB += $vectorB[$i] * $vectorB[$i];
+    }
+
+    $normA = sqrt($normA);
+    $normB = sqrt($normB);
+
+    if ($normA == 0.0 || $normB == 0.0) {
+      return 0.0;
+    }
+
+    return $dotProduct / ($normA * $normB);
   }
 
   /**

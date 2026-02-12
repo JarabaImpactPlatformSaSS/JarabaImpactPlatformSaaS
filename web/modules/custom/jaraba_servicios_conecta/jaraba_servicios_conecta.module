@@ -165,11 +165,34 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
         'Profesional @name aprobado (ID: @id)',
         ['@name' => $entity->get('display_name')->value, '@id' => $entity->id()]
       );
-      // TODO Fase 6: Enviar notificación de aprobación al profesional
+      // Enviar notificación de aprobación al profesional.
+      try {
+        $userId = $entity->get('user_id')->target_id ?? NULL;
+        if ($userId) {
+          $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+          if ($user && $user->getEmail()) {
+            \Drupal::service('plugin.manager.mail')->mail(
+              'jaraba_servicios_conecta',
+              'provider_approved',
+              $user->getEmail(),
+              $user->getPreferredLangcode(),
+              [
+                'provider_name' => $entity->get('display_name')->value,
+              ]
+            );
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_servicios_conecta')->error(
+          'Failed to send approval notification: @error',
+          ['@error' => $e->getMessage()]
+        );
+      }
     }
   }
 
-  // Detectar cambio de estado en Booking (confirmación, cancelación)
+  // Detectar cambio de estado en Booking (confirmación, cancelación).
   if ($entity->getEntityTypeId() === 'booking') {
     $new_status = $entity->get('status')->value;
     $old_status = $entity->original->get('status')->value ?? '';
@@ -182,8 +205,60 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
           '@new' => $new_status,
         ]
       );
-      // TODO Fase 4: Enviar notificación por estado de reserva
-      // TODO Fase 5: Si cancelada, liberar slot de disponibilidad
+
+      // Enviar notificación por estado de reserva.
+      try {
+        $clientId = $entity->get('client_id')->target_id ?? NULL;
+        $providerId = $entity->get('provider_id')->target_id ?? NULL;
+        if ($clientId) {
+          $client = \Drupal::entityTypeManager()->getStorage('user')->load($clientId);
+          if ($client && $client->getEmail()) {
+            $mailKey = match ($new_status) {
+              'confirmed' => 'booking_confirmed',
+              'cancelled' => 'booking_cancelled',
+              'completed' => 'booking_completed',
+              default => NULL,
+            };
+            if ($mailKey) {
+              \Drupal::service('plugin.manager.mail')->mail(
+                'jaraba_servicios_conecta',
+                $mailKey,
+                $client->getEmail(),
+                $client->getPreferredLangcode(),
+                [
+                  'client_name' => $client->getDisplayName(),
+                  'booking_id' => $entity->id(),
+                  'datetime' => $entity->get('datetime')->value ?? '',
+                ]
+              );
+            }
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_servicios_conecta')->error(
+          'Failed to send booking notification: @error',
+          ['@error' => $e->getMessage()]
+        );
+      }
+
+      // Si cancelada, liberar slot de disponibilidad.
+      if ($new_status === 'cancelled') {
+        try {
+          $availability = \Drupal::service('jaraba_servicios_conecta.availability');
+          $availability->releaseSlot(
+            (int) ($entity->get('provider_id')->target_id ?? 0),
+            $entity->get('datetime')->value ?? '',
+            (int) ($entity->get('duration_minutes')->value ?? 60)
+          );
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_servicios_conecta')->error(
+            'Failed to release slot for cancelled booking @id: @error',
+            ['@id' => $entity->id(), '@error' => $e->getMessage()]
+          );
+        }
+      }
     }
   }
 }
@@ -210,10 +285,219 @@ function jaraba_servicios_conecta_cron(): void {
 
   $state->set('jaraba_servicios_conecta.cron_last_run', $now);
 
-  // TODO Fase 2: Detectar reservas pendientes de confirmación (>24h)
-  // TODO Fase 4: Enviar recordatorios de citas (24h y 1h antes)
-  // TODO Fase 5: Detectar no-shows (cita pasada sin check-in)
-  // TODO Fase 5: Limpiar slots de disponibilidad expirados
+  // Fase 2: Auto-cancel pending bookings older than 24h.
+  _jaraba_servicios_conecta_cancel_stale_bookings($now);
+
+  // Fase 4: Send appointment reminders (24h and 1h before).
+  _jaraba_servicios_conecta_send_reminders($now);
+
+  // Fase 5: Detect no-shows (past confirmed booking without check-in).
+  _jaraba_servicios_conecta_detect_no_shows($now);
+
+  // Fase 5: Clean up expired availability slots.
+  _jaraba_servicios_conecta_cleanup_expired_slots($now);
+}
+
+/**
+ * Auto-cancels bookings pending confirmation for more than 24h.
+ */
+function _jaraba_servicios_conecta_cancel_stale_bookings(int $now): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('booking');
+    $threshold = date('Y-m-d\TH:i:s', $now - 86400);
+
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'pending_confirmation')
+      ->condition('created', $threshold, '<')
+      ->range(0, 50)
+      ->execute();
+
+    foreach ($storage->loadMultiple($ids) as $booking) {
+      $booking->set('status', 'cancelled');
+      $booking->save();
+
+      // Release the availability slot.
+      try {
+        \Drupal::service('jaraba_servicios_conecta.availability')->releaseSlot(
+          (int) ($booking->get('provider_id')->target_id ?? 0),
+          $booking->get('datetime')->value ?? '',
+          (int) ($booking->get('duration_minutes')->value ?? 60)
+        );
+      }
+      catch (\Exception $e) {
+        // Slot release is best-effort.
+      }
+
+      \Drupal::logger('jaraba_servicios_conecta')->info(
+        'Auto-cancelled stale booking @id', ['@id' => $booking->id()]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_servicios_conecta')->error(
+      'Error cancelling stale bookings: @error', ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Sends appointment reminders 24h and 1h before.
+ */
+function _jaraba_servicios_conecta_send_reminders(int $now): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('booking');
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $userStorage = \Drupal::entityTypeManager()->getStorage('user');
+
+    // 24h reminders: bookings between now+23h and now+25h.
+    $windows = [
+      ['from' => $now + 82800, 'to' => $now + 90000],
+      ['from' => $now + 3300, 'to' => $now + 3900],
+    ];
+
+    foreach ($windows as $window) {
+      $from = date('Y-m-d\TH:i:s', $window['from']);
+      $to = date('Y-m-d\TH:i:s', $window['to']);
+
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 'confirmed')
+        ->condition('datetime', $from, '>=')
+        ->condition('datetime', $to, '<=')
+        ->execute();
+
+      foreach ($storage->loadMultiple($ids) as $booking) {
+        $clientId = $booking->get('client_id')->target_id ?? NULL;
+        $providerId = $booking->get('provider_id')->target_id ?? NULL;
+
+        foreach ([$clientId, $providerId] as $userId) {
+          if ($userId) {
+            $user = $userStorage->load($userId);
+            if ($user && $user->getEmail()) {
+              $mailManager->mail('jaraba_servicios_conecta', 'booking_reminder', $user->getEmail(), $user->getPreferredLangcode(), [
+                'user_name' => $user->getDisplayName(),
+                'booking_id' => $booking->id(),
+                'datetime' => $booking->get('datetime')->value ?? '',
+              ]);
+            }
+          }
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_servicios_conecta')->error(
+      'Error sending reminders: @error', ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Detects no-shows: confirmed bookings in the past without check-in.
+ */
+function _jaraba_servicios_conecta_detect_no_shows(int $now): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('booking');
+    $pastThreshold = date('Y-m-d\TH:i:s', $now - 3600);
+
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'confirmed')
+      ->condition('datetime', $pastThreshold, '<')
+      ->range(0, 50)
+      ->execute();
+
+    foreach ($storage->loadMultiple($ids) as $booking) {
+      $booking->set('status', 'no_show');
+      $booking->save();
+      \Drupal::logger('jaraba_servicios_conecta')->info(
+        'Marked booking @id as no_show', ['@id' => $booking->id()]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_servicios_conecta')->error(
+      'Error detecting no-shows: @error', ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Cleans up expired availability slots.
+ */
+function _jaraba_servicios_conecta_cleanup_expired_slots(int $now): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('availability_slot');
+    $pastThreshold = date('Y-m-d\TH:i:s', $now);
+
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'booked')
+      ->condition('end_datetime', $pastThreshold, '<')
+      ->range(0, 100)
+      ->execute();
+
+    foreach ($storage->loadMultiple($ids) as $slot) {
+      $slot->set('status', 'expired');
+      $slot->save();
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_servicios_conecta')->error(
+      'Error cleaning expired slots: @error', ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_servicios_conecta_mail($key, &$message, $params): void {
+  switch ($key) {
+    case 'provider_approved':
+      $message['subject'] = t('¡Tu perfil profesional ha sido aprobado!');
+      $message['body'][] = t('Hola @name,', ['@name' => $params['provider_name']]);
+      $message['body'][] = t('Tu perfil profesional ha sido verificado y aprobado. Ya puedes recibir reservas de clientes.');
+      break;
+
+    case 'booking_confirmed':
+      $message['subject'] = t('Reserva confirmada #@id', ['@id' => $params['booking_id']]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['client_name']]);
+      $message['body'][] = t('Tu reserva #@id ha sido confirmada para el @date.', [
+        '@id' => $params['booking_id'],
+        '@date' => $params['datetime'],
+      ]);
+      break;
+
+    case 'booking_cancelled':
+      $message['subject'] = t('Reserva cancelada #@id', ['@id' => $params['booking_id']]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['client_name']]);
+      $message['body'][] = t('Tu reserva #@id ha sido cancelada.', ['@id' => $params['booking_id']]);
+      break;
+
+    case 'booking_completed':
+      $message['subject'] = t('Cita completada #@id', ['@id' => $params['booking_id']]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['client_name']]);
+      $message['body'][] = t('Tu cita #@id se ha completado. ¡Esperamos que haya ido bien!', ['@id' => $params['booking_id']]);
+      $message['body'][] = t('¿Te gustaría dejar una valoración? Accede a tu panel para hacerlo.');
+      break;
+
+    case 'booking_reminder':
+      $message['subject'] = t('Recordatorio: cita próxima #@id', ['@id' => $params['booking_id']]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user_name']]);
+      $message['body'][] = t('Te recordamos que tienes una cita programada para el @date.', [
+        '@date' => $params['datetime'],
+      ]);
+      break;
+  }
+
+  // Footer común.
+  if (!empty($message['body'])) {
+    $message['body'][] = '';
+    $message['body'][] = '---';
+    $message['body'][] = t('Jaraba Impact Platform - ServiciosConecta');
+  }
 }
 
 /**
