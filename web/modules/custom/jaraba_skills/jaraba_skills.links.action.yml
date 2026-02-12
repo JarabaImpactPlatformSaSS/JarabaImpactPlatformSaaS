@@ -1,0 +1,6 @@
+# Botón "+ Añadir Habilidad IA".
+entity.ai_skill.add:
+  title: 'Añadir Habilidad IA'
+  route_name: entity.ai_skill.add_form
+  appears_on:
+    - entity.ai_skill.collection

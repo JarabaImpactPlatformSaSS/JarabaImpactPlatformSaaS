@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * @file
+ * Hooks for the jaraba_diagnostic module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * Calcula scores automáticamente cuando se guarda un diagnóstico.
+ */
+function jaraba_diagnostic_entity_presave(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'business_diagnostic') {
+    return;
+  }
+
+  // Si el diagnóstico tiene respuestas actualizadas, recalcular
+  // Esta lógica se activa cuando se procesan respuestas via API
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Acciones post-creación de diagnóstico.
+ */
+function jaraba_diagnostic_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'business_diagnostic') {
+    return;
+  }
+
+  // Log de nuevo diagnóstico
+  \Drupal::logger('jaraba_diagnostic')->info('Nuevo diagnóstico creado: @name (ID: @id)', [
+    '@name' => $entity->label(),
+    '@id' => $entity->id(),
+  ]);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Acciones cuando se completa un diagnóstico.
+ */
+function jaraba_diagnostic_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'business_diagnostic') {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_diagnostic\Entity\BusinessDiagnosticInterface $entity */
+  $original = $entity->original ?? NULL;
+
+  // Detectar transición a 'completed'
+  if ($original && $original->get('status')->value !== 'completed' && $entity->get('status')->value === 'completed') {
+    jaraba_diagnostic_on_diagnostic_completed($entity);
+  }
+}
+
+/**
+ * Callback cuando un diagnóstico se completa.
+ *
+ * Implementa ECA-DIAG-001: Flujo post-diagnóstico completado.
+ */
+function jaraba_diagnostic_on_diagnostic_completed(EntityInterface $diagnostic): void {
+  /** @var \Drupal\jaraba_diagnostic\Entity\BusinessDiagnosticInterface $diagnostic */
+  
+  // 1. Log del evento
+  \Drupal::logger('jaraba_diagnostic')->info('Diagnóstico completado: @name - Score: @score (@level)', [
+    '@name' => $diagnostic->getBusinessName(),
+    '@score' => $diagnostic->getOverallScore(),
+    '@level' => $diagnostic->getMaturityLevel(),
+  ]);
+
+  // 2. Otorgar créditos de impacto (si el servicio existe)
+  if (\Drupal::hasService('ecosistema_jaraba_core.impact_credit')) {
+    try {
+      $creditService = \Drupal::service('ecosistema_jaraba_core.impact_credit');
+      $creditService->awardCredits(
+        $diagnostic->getOwnerId(),
+        'complete_diagnostic',
+        $diagnostic->id(),
+        ['maturity_level' => $diagnostic->getMaturityLevel()]
+      );
+    }
+    catch (\Exception $e) {
+      // Log pero no bloquear
+    }
+  }
+
+  // 3. TODO: Encolar notificación con itinerario recomendado
+  // $queue = \Drupal::queue('diagnostic_completed_notification');
+  // $queue->createItem(['diagnostic_id' => $diagnostic->id()]);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_diagnostic_theme(): array {
+  return [
+    'diagnostic_wizard_start' => [
+      'variables' => [
+        'sections' => [],
+        'total_questions' => 0,
+        'estimated_time' => '5-7 minutos',
+      ],
+      'template' => 'diagnostic-wizard-start',
+    ],
+    'diagnostic_wizard_step' => [
+      'variables' => [
+        'diagnostic' => NULL,
+        'uuid' => NULL,
+        'section' => NULL,
+        'section_data' => [],
+        'current_step' => 1,
+        'total_steps' => 5,
+        'progress_percent' => 0,
+        'previous_section' => NULL,
+        'next_section' => NULL,
+        'existing_answers' => [],
+      ],
+      'template' => 'diagnostic-wizard-step',
+    ],
+    'diagnostic_results' => [
+      'variables' => [
+        'diagnostic' => NULL,
+        'overall_score' => 0,
+        'maturity_level' => 'basico',
+        'maturity_label' => 'Básico',
+        'estimated_loss' => 0,
+        'section_scores' => [],
+        'sections_config' => [],
+        'priority_gaps' => [],
+        'recommendations' => [],
+        'quick_wins' => [],
+        'recommended_path' => NULL,
+      ],
+      'template' => 'diagnostic-results',
+    ],
+    'diagnostic_report' => [
+      'variables' => [
+        'diagnostic' => NULL,
+        'business_name' => NULL,
+        'sector' => NULL,
+        'overall_score' => NULL,
+        'maturity_level' => NULL,
+        'estimated_loss' => NULL,
+        'priority_gaps' => [],
+        'generated_at' => NULL,
+      ],
+      'template' => 'diagnostic-report',
+    ],
+  ];
+}

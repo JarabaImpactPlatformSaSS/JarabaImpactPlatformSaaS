@@ -1,0 +1,206 @@
+{#
+/**
+ * @file
+ * Pricing Table - Tabla de precios de planes de membresía.
+ *
+ * Variables:
+ * - plans: Array of MembershipPlan entities
+ * - current_plan: Current user's plan type or null
+ * - billing_interval: 'monthly' or 'yearly'
+ */
+#}
+
+{% set interval_labels = {
+  'monthly': 'Mensual'|t,
+  'quarterly': 'Trimestral'|t,
+  'yearly': 'Anual'|t,
+} %}
+
+<section class="pricing-section">
+  <header class="pricing-section__header">
+    <h1>{{ 'Planes y Precios'|t }}</h1>
+    <p class="subtitle">{{ 'Elige el plan que mejor se adapte a tu negocio'|t }}</p>
+    
+    {# Billing Toggle #}
+    <div class="billing-toggle">
+      <button class="toggle-btn {{ billing_interval == 'monthly' ? 'active' : '' }}" data-interval="monthly">
+        {{ 'Mensual'|t }}
+      </button>
+      <button class="toggle-btn {{ billing_interval == 'yearly' ? 'active' : '' }}" data-interval="yearly">
+        {{ 'Anual'|t }}
+        <span class="discount-badge">-20%</span>
+      </button>
+    </div>
+  </header>
+  
+  <div class="pricing-grid">
+    {% for plan in plans %}
+      {% set is_current = current_plan == plan.plan_type %}
+      {% set is_featured = plan.is_featured %}
+      
+      <article class="plan-card {{ is_featured ? 'plan-card--featured' : '' }} {{ is_current ? 'plan-card--current' : '' }}">
+        {% if is_featured %}
+          <span class="featured-badge">{{ 'Más Popular'|t }}</span>
+        {% endif %}
+        
+        {% if is_current %}
+          <span class="current-badge">{{ 'Tu plan actual'|t }}</span>
+        {% endif %}
+        
+        <header class="plan-card__header">
+          <h2 class="plan-card__name">{{ plan.name }}</h2>
+          <p class="plan-card__description">{{ plan.description }}</p>
+        </header>
+        
+        <div class="plan-card__price">
+          {% if plan.price == 0 %}
+            <span class="price-value">{{ 'Gratis'|t }}</span>
+          {% else %}
+            <span class="price-currency">€</span>
+            <span class="price-value">{{ plan.price|number_format(0, ',', '.') }}</span>
+            <span class="price-interval">/{{ interval_labels[plan.billing_interval] }}</span>
+          {% endif %}
+        </div>
+        
+        <ul class="plan-card__features">
+          {% set features = plan.features|default([]) %}
+          {% for feature in features %}
+            <li class="feature-item">
+              {{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}
+              <span>{{ feature }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        
+        <footer class="plan-card__action">
+          {% if is_current %}
+            <button class="btn btn--secondary" disabled>
+              {{ 'Plan Actual'|t }}
+            </button>
+          {% elseif current_plan and plan.plan_type > current_plan %}
+            <button class="btn btn--primary" data-action="upgrade" data-plan-id="{{ plan.id }}">
+              {{ 'Mejorar Plan'|t }}
+            </button>
+          {% elseif plan.plan_type == 'free' %}
+            <span class="free-access">{{ 'Acceso inmediato'|t }}</span>
+          {% else %}
+            <button class="btn btn--primary" data-action="subscribe" data-plan-id="{{ plan.id }}">
+              {% if plan.has_trial %}
+                {{ 'Probar 14 días gratis'|t }}
+              {% else %}
+                {{ 'Suscribirse'|t }}
+              {% endif %}
+            </button>
+          {% endif %}
+        </footer>
+      </article>
+    {% endfor %}
+  </div>
+  
+  {# Features Comparison #}
+  <section class="features-comparison">
+    <h2>{{ 'Comparativa de Funcionalidades'|t }}</h2>
+    
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>{{ 'Funcionalidad'|t }}</th>
+          {% for plan in plans %}
+            <th>{{ plan.name }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ 'Kits Digitales'|t }}</td>
+          {% for plan in plans %}
+            <td>
+              {% if plan.kit_access_level == 'enterprise' %}
+                {{ 'Todos'|t }}
+              {% elseif plan.kit_access_level == 'free' %}
+                {{ 'Gratuitos'|t }}
+              {% else %}
+                {{ plan.kit_access_level|capitalize }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td>{{ 'Sesiones de Mentoría/Mes'|t }}</td>
+          {% for plan in plans %}
+            <td>
+              {% if plan.max_mentoring_sessions is null %}
+                {{ 'Ilimitadas'|t }}
+              {% else %}
+                {{ plan.max_mentoring_sessions }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td>{{ 'Grupos de Colaboración'|t }}</td>
+          {% for plan in plans %}
+            <td>
+              {% if plan.max_groups is null %}
+                {{ 'Ilimitados'|t }}
+              {% else %}
+                {{ plan.max_groups }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td>{{ 'Análisis IA'|t }}</td>
+          {% for plan in plans %}
+            <td>
+              {% if plan.has_ai_features %}
+                {{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}
+              {% else %}
+                {{ jaraba_icon('ui', 'x', { size: '16px', color: 'neutral' }) }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td>{{ 'Soporte Prioritario'|t }}</td>
+          {% for plan in plans %}
+            <td>
+              {% if plan.has_priority_support %}
+                {{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}
+              {% else %}
+                {{ jaraba_icon('ui', 'x', { size: '16px', color: 'neutral' }) }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  
+  {# FAQ #}
+  <section class="pricing-faq">
+    <h2>{{ 'Preguntas Frecuentes'|t }}</h2>
+    
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>{{ '¿Puedo cambiar de plan en cualquier momento?'|t }}</summary>
+        <p>{{ 'Sí, puedes mejorar tu plan en cualquier momento. El cambio se aplicará inmediatamente y se prorrateará el coste.'|t }}</p>
+      </details>
+      
+      <details class="faq-item">
+        <summary>{{ '¿Qué formas de pago aceptan?'|t }}</summary>
+        <p>{{ 'Aceptamos tarjetas de crédito/débito (Visa, Mastercard, American Express) y PayPal. Todos los pagos se procesan de forma segura con Stripe.'|t }}</p>
+      </details>
+      
+      <details class="faq-item">
+        <summary>{{ '¿Puedo cancelar mi suscripción?'|t }}</summary>
+        <p>{{ 'Puedes cancelar en cualquier momento desde tu panel de usuario. Mantendrás acceso hasta el final del período pagado.'|t }}</p>
+      </details>
+      
+      <details class="faq-item">
+        <summary>{{ '¿Ofrecen factura?'|t }}</summary>
+        <p>{{ 'Sí, emitimos factura automática con cada pago. Puedes descargarlas desde tu historial de pagos.'|t }}</p>
+      </details>
+    </div>
+  </section>
+</section>

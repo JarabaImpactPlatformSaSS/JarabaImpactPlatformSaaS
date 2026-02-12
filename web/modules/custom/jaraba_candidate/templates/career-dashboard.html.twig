@@ -1,0 +1,176 @@
+{#
+/**
+ * @file
+ * Premium Career Dashboard template - Framework Lucía.
+ *
+ * Available variables:
+ * - phase_name: Current career phase name.
+ * - phase_emoji: Emoji for the phase.
+ * - phase_number: Phase number (1-5).
+ * - completeness: Profile completeness percentage.
+ * - tutor_message: Natural language message from career coach.
+ * - gaps: Array of detected profile/skill gaps.
+ * - itineraries: Personalized learning itineraries.
+ * - suggested_products: Recommended courses/products.
+ * - next_action_label: Label for the next action CTA.
+ * - next_action_url: URL for the next action.
+ * - next_action_icon: Icon for the next action.
+ * - quick_actions: Quick action links.
+ * - user_name: Current user's display name.
+ */
+#}
+
+<div class="career-dashboard career-dashboard--phase-{{ phase_number }}">
+  {# Glassmorphism Header #}
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="phase-badge phase-badge--{{ phase_number }}">
+        {% set icon_parts = phase_emoji|default('ui:star')|split(':') %}
+        <span class="phase-emoji">{{ jaraba_icon(icon_parts[0]|default('ui'), icon_parts[1]|default('star'), { variant: 'duotone', size: '24px' }) }}</span>
+        <span class="phase-name">{{ phase_name }}</span>
+      </div>
+      <div class="user-greeting">
+        <h2>{{ user_name }}</h2>
+        <p>{{ 'Tu Coach de Carrera'|t }}</p>
+      </div>
+    </div>
+    
+    {# Progress Ring #}
+    <div class="progress-ring-container">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="progress-ring__background" cx="60" cy="60" r="54" />
+        <circle class="progress-ring__progress" cx="60" cy="60" r="54" 
+                style="stroke-dashoffset: calc(339.292 - (339.292 * {{ completeness }}) / 100);" />
+      </svg>
+      <div class="progress-ring__text">
+        <span class="progress-value">{{ completeness }}%</span>
+        <span class="progress-label">{{ 'perfil'|t }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# Tutor Message Card #}
+  {% if tutor_message %}
+  <section class="tutor-card card--glassmorphism">
+    <div class="tutor-avatar">
+      <span class="avatar-icon">{{ jaraba_icon('business', 'target', { color: 'verde-innovacion', size: '32px' }) }}</span>
+      <span class="avatar-badge">{{ 'Coach IA'|t }}</span>
+    </div>
+    <div class="tutor-content">
+      <div class="tutor-message">
+        {{ tutor_message|nl2br }}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# Detected Gaps Section #}
+  {% if gaps is not empty %}
+  <section class="gaps-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ui', 'search', { color: 'azul-corporativo', size: '24px' }) }}</span>
+      <h3>{{ 'Áreas de mejora detectadas'|t }}</h3>
+    </div>
+    <div class="gaps-grid">
+      {% for gap in gaps %}
+      <div class="gap-chip gap-chip--priority-{{ gap.priority }}">
+        <span class="gap-icon">{{ gap.icon }}</span>
+        <span class="gap-name">{{ gap.name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Itineraries Section #}
+  {% if itineraries is not empty %}
+  <section class="itineraries-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ui', 'map', { color: 'corporate', size: '24px' }) }}</span>
+      <h3>{{ 'Tu itinerario personalizado'|t }}</h3>
+    </div>
+    <div class="itineraries-grid">
+      {% for itinerary in itineraries %}
+      <article class="itinerary-card card--glassmorphism" style="--itinerary-color: {{ itinerary.color }};">
+        <div class="itinerary-header">
+          <span class="itinerary-icon">{{ itinerary.icon }}</span>
+          <div class="itinerary-meta">
+            <h4>{{ itinerary.name }}</h4>
+            <span class="duration-badge">{{ itinerary.duration }}</span>
+          </div>
+        </div>
+        <ol class="itinerary-steps">
+          {% for step in itinerary.steps %}
+          <li class="step">
+            <span class="step-number">{{ loop.index }}</span>
+            <span class="step-text">{{ step }}</span>
+          </li>
+          {% endfor %}
+        </ol>
+        {% if itinerary.course %}
+        <a href="{{ itinerary.course.url }}" class="itinerary-cta">
+          <span class="cta-icon">{{ jaraba_icon('ui', 'graduation', { size: '16px' }) }}</span>
+          <span class="cta-text">{{ itinerary.course.title }}</span>
+          <span class="cta-duration">{{ itinerary.course.duration }}</span>
+          <span class="cta-arrow">→</span>
+        </a>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Suggested Products #}
+  {% if suggested_products is not empty %}
+  <section class="products-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ai', 'lightbulb', { color: 'naranja-impulso', size: '24px' }) }}</span>
+      <h3>{{ 'Recomendado para ti'|t }}</h3>
+    </div>
+    <div class="products-grid">
+      {% for product in suggested_products %}
+      <a href="{{ product.url }}" class="product-card {{ product.highlight ? 'product-card--highlight' : '' }}">
+        <div class="product-icon">{{ product.icon }}</div>
+        <div class="product-content">
+          <h4>{{ product.title }}</h4>
+          <p>{{ product.description }}</p>
+          <div class="product-meta">
+            <span class="product-duration">{{ product.duration }}</span>
+            <span class="product-price">{{ product.price }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Quick Actions #}
+  <section class="actions-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '24px' }) }}</span>
+      <h3>{{ 'Acciones rápidas'|t }}</h3>
+    </div>
+    <div class="actions-grid">
+      {% for action in quick_actions %}
+      <a href="{{ action.url }}" class="action-button action-button--{{ action.color }}">
+        {% set action_icon_parts = (action.icon|default('ui:check'))|split(':') %}
+        <span class="action-icon">{{ jaraba_icon(action_icon_parts[0]|default('ui'), action_icon_parts[1]|default('check'), { variant: 'duotone', size: '24px' }) }}</span>
+        <span class="action-label">{{ action.label }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Primary CTA #}
+  {% if next_action_label %}
+  <div class="primary-cta-container">
+    <a href="{{ next_action_url }}" class="primary-cta">
+      {% set cta_icon_parts = (next_action_icon|default('ui:arrow-right'))|split(':') %}
+      <span class="cta-icon">{{ jaraba_icon(cta_icon_parts[0]|default('ui'), cta_icon_parts[1]|default('arrow-right'), { variant: 'duotone', size: '20px' }) }}</span>
+      <span class="cta-label">{{ next_action_label }}</span>
+    </a>
+  </div>
+  {% endif %}
+</div>

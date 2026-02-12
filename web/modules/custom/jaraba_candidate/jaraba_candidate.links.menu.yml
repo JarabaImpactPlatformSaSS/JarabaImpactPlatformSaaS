@@ -1,0 +1,33 @@
+# Menu links for Jaraba Candidate module
+# Content management + Field UI settings routes
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - Field UI Settings
+# Para gestionar campos y visualización
+# ---------------------------------------------------------------------------
+
+entity.candidate_profile.settings:
+  title: 'Perfiles de Candidato'
+  description: 'Configuración de campos y visualización de perfiles'
+  route_name: entity.candidate_profile.settings
+  parent: system.admin_structure
+  weight: 14
+
+entity.candidate_skill.settings:
+  title: 'Skills de Candidato'
+  description: 'Configuración de campos para skills de candidato'
+  route_name: entity.candidate_skill.settings
+  parent: system.admin_structure
+  weight: 15
+
+# ---------------------------------------------------------------------------
+# MENÚ DE CONFIGURACIÓN
+# ---------------------------------------------------------------------------
+
+jaraba_candidate.settings:
+  title: 'Configuración Candidatos'
+  description: 'Ajustes del módulo de perfiles de candidato'
+  parent: system.admin_config
+  route_name: jaraba_candidate.settings
+  weight: 82
+

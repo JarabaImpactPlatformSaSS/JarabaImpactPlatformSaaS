@@ -1,0 +1,34 @@
+# Links de menú admin para jaraba_diagnostic
+
+# Entrada en /admin/config
+jaraba_diagnostic.admin:
+  title: 'Diagnósticos Empresariales'
+  description: 'Configuración del sistema de diagnóstico de madurez digital para emprendedores.'
+  route_name: jaraba_diagnostic.admin
+  parent: system.admin_config
+  weight: 50
+
+# Entrada en /admin/structure para Field UI
+jaraba_diagnostic.settings:
+  title: 'Diagnóstico Empresarial'
+  description: 'Configuración de campos y visualización de diagnósticos.'
+  route_name: entity.business_diagnostic.settings
+  parent: system.admin_structure
+  weight: 30
+
+# Secciones de diagnóstico
+entity.diagnostic_section.collection:
+  title: 'Secciones de Diagnóstico'
+  description: 'Gestionar las secciones de evaluación del diagnóstico.'
+  route_name: entity.diagnostic_section.collection
+  parent: system.admin_structure
+  weight: 31
+
+# Preguntas de diagnóstico
+entity.diagnostic_question.collection:
+  title: 'Preguntas de Diagnóstico'
+  description: 'Gestionar las preguntas del diagnóstico empresarial.'
+  route_name: entity.diagnostic_question.collection
+  parent: system.admin_structure
+  weight: 32
+

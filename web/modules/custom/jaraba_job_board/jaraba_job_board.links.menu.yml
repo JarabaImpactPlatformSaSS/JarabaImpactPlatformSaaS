@@ -1,0 +1,32 @@
+# Menu links for Jaraba Job Board module
+# Content management + Field UI settings routes
+
+# ---------------------------------------------------------------------------
+# MENÚ DE ESTRUCTURA - Field UI Settings
+# Para gestionar campos y visualización
+# ---------------------------------------------------------------------------
+
+entity.job_posting.settings:
+  title: 'Ofertas de Empleo'
+  description: 'Configuración de campos y visualización de ofertas'
+  route_name: entity.job_posting.settings
+  parent: system.admin_structure
+  weight: 12
+
+entity.job_application.settings:
+  title: 'Candidaturas'
+  description: 'Configuración de campos y visualización de candidaturas'
+  route_name: entity.job_application.settings
+  parent: system.admin_structure
+  weight: 13
+
+# ---------------------------------------------------------------------------
+# MENÚ DE CONFIGURACIÓN
+# ---------------------------------------------------------------------------
+
+jaraba_job_board.settings:
+  title: 'Configuración Job Board'
+  description: 'Ajustes del portal de empleo'
+  parent: system.admin_config
+  route_name: jaraba_job_board.settings
+  weight: 81

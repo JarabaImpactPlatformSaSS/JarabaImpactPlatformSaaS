@@ -1,0 +1,235 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Módulo principal para el Sistema de Habilidades IA.
+ *
+ * Implementa un sistema jerárquico de habilidades: Core → Vertical → Agent → Tenant.
+ * Las habilidades se inyectan en los prompts de los agentes IA para
+ * especializar su comportamiento según contexto.
+ *
+ * @see jaraba_ai_agents_architecture KI
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_skills_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_skills') {
+    return '<p>' . t('Sistema de Habilidades IA para especialización de agentes. Jerarquía: Core → Vertical → Agent → Tenant.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_skills_theme(): array {
+  return [
+    'skills_dashboard' => [
+      'variables' => [
+        'skills' => [],
+        'statistics' => [],
+      ],
+      'template' => 'skills-dashboard',
+    ],
+    'skills_test_console' => [
+      'variables' => [
+        'skills' => [],
+        'suggested_prompts' => [],
+      ],
+      'template' => 'skills-test-console',
+    ],
+    'skills_revision_history' => [
+      'variables' => [
+        'skill' => NULL,
+        'revisions' => [],
+      ],
+      'template' => 'skills-revision-history',
+    ],
+    'skills_analytics' => [
+      'variables' => [
+        'stats' => [],
+        'top_skills' => [],
+        'daily_data' => [],
+      ],
+      'template' => 'skills-analytics',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body para el dashboard de skills (frontend page pattern).
+ */
+function jaraba_skills_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if ($route === 'jaraba_skills.dashboard') {
+    $variables['attributes']['class'][] = 'skills-page';
+    $variables['attributes']['class'][] = 'page-skills';
+    $variables['attributes']['class'][] = 'frontend-dashboard';
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Limpia formularios de skill para slide-panel (oculta ruido de Drupal).
+ */
+function jaraba_skills_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  if (str_contains($form_id, 'ai_skill')) {
+    // Ocultar guías de formato recursivamente.
+    _jaraba_skills_hide_format_guidelines($form);
+    
+    // Ocultar el formato del campo content directamente.
+    if (isset($form['content']['widget'][0]['format'])) {
+      $form['content']['widget'][0]['format']['#access'] = FALSE;
+    }
+    
+    // Añadir clase al submit para estilos premium.
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#attributes']['class'][] = 'btn--premium';
+    }
+  }
+}
+
+/**
+ * Oculta recursivamente las guías de formato de campos text.
+ */
+function _jaraba_skills_hide_format_guidelines(array &$element): void {
+  // Ocultar wrapper de formato si existe.
+  if (isset($element['format'])) {
+    $element['format']['#access'] = FALSE;
+  }
+  
+  // Ocultar tips de filtro.
+  if (isset($element['format']['format'])) {
+    $element['format']['format']['#access'] = FALSE;
+  }
+  if (isset($element['format']['guidelines'])) {
+    $element['format']['guidelines']['#access'] = FALSE;
+  }
+  if (isset($element['format']['help'])) {
+    $element['format']['help']['#access'] = FALSE;
+  }
+
+  // Procesar hijos recursivamente.
+  foreach (array_keys($element) as $key) {
+    if (is_array($element[$key]) && !str_starts_with((string) $key, '#')) {
+      _jaraba_skills_hide_format_guidelines($element[$key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * PROPÓSITO:
+ * 1. Crea una revisión automática (snapshot) antes de guardar cambios.
+ * 2. Regenera el embedding cuando se guarda una skill.
+ * Esto mantiene el índice Qdrant y el historial sincronizados.
+ *
+ * LÓGICA:
+ * - Solo procesa entidades ai_skill
+ * - Crea revisión si la skill ya existe (no en creación)
+ * - El servicio de embeddings detecta cambios vía hash MD5
+ */
+function jaraba_skills_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'ai_skill') {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_skills\Entity\AiSkill $entity */
+
+  // PASO 1: Crear revisión automática (solo si es edición, no creación).
+  // Verificar si debemos saltar la creación de revisión (usado por restoreRevision).
+  if (!isset($entity->__jaraba_skip_revision) && !$entity->isNew()) {
+    try {
+      /** @var \Drupal\jaraba_skills\Service\SkillRevisionService $revisionService */
+      $revisionService = \Drupal::service('jaraba_skills.revision_service');
+      $revisionService->createRevision($entity);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_skills')->warning('Error creando revisión para skill @id: @error', [
+        '@id' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // PASO 2: Solo regenerar embedding si la skill está activa.
+  if (!$entity->isActive()) {
+    return;
+  }
+
+  // Encolar regeneración de embedding.
+  // Usamos shutdown function para no bloquear el save.
+  drupal_register_shutdown_function(
+    '_jaraba_skills_regenerate_embedding',
+    $entity->id()
+  );
+}
+
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * PROPÓSITO:
+ * Elimina el embedding de Qdrant cuando se borra una skill.
+ * Mantiene el índice vectorial consistente con la base de datos.
+ */
+function jaraba_skills_entity_delete(\Drupal\Core\Entity\EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'ai_skill') {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_skills\Service\SkillEmbeddingService $embeddingService */
+    $embeddingService = \Drupal::service('jaraba_skills.skill_embedding');
+    $embeddingService->deleteEmbedding($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_skills')->error('Error eliminando embedding para skill @id: @error', [
+      '@id' => $entity->id(),
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Función de shutdown para regenerar embedding.
+ *
+ * Se ejecuta después del save para no bloquear la respuesta.
+ *
+ * @param int $skillId
+ *   ID de la skill a procesar.
+ */
+function _jaraba_skills_regenerate_embedding(int $skillId): void {
+  try {
+    $skill = \Drupal::entityTypeManager()
+      ->getStorage('ai_skill')
+      ->load($skillId);
+
+    if (!$skill) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_skills\Service\SkillEmbeddingService $embeddingService */
+    $embeddingService = \Drupal::service('jaraba_skills.skill_embedding');
+    $embeddingService->generateAndStore($skill);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_skills')->error('Error regenerando embedding para skill @id: @error', [
+      '@id' => $skillId,
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}

@@ -1,0 +1,49 @@
+# Links de menú admin para jaraba_resources
+
+# Entrada en /admin/structure para Field UI - Kits
+entity.digital_kit.settings:
+  title: 'Kits Digitales'
+  description: 'Configuración de campos de kits digitales.'
+  route_name: entity.digital_kit.settings
+  parent: system.admin_structure
+  weight: 60
+
+# Entrada en /admin/structure para Field UI - Planes
+entity.membership_plan.settings:
+  title: 'Planes de Membresía'
+  description: 'Configuración de campos de planes.'
+  route_name: entity.membership_plan.settings
+  parent: system.admin_structure
+  weight: 61
+
+# Entrada en /admin/structure para Field UI - Suscripciones
+entity.user_subscription.settings:
+  title: 'Suscripciones'
+  description: 'Configuración de campos de suscripciones.'
+  route_name: entity.user_subscription.settings
+  parent: system.admin_structure
+  weight: 62
+
+# Entrada en /admin/content - Kits
+entity.digital_kit.collection:
+  title: 'Kits Digitales'
+  description: 'Gestionar kits de herramientas digitales.'
+  route_name: entity.digital_kit.collection
+  parent: system.admin_content
+  weight: 60
+
+# Entrada en /admin/content - Planes
+entity.membership_plan.collection:
+  title: 'Planes de Membresía'
+  description: 'Gestionar planes de suscripción.'
+  route_name: entity.membership_plan.collection
+  parent: system.admin_content
+  weight: 61
+
+# Entrada en /admin/content - Suscripciones
+entity.user_subscription.collection:
+  title: 'Suscripciones'
+  description: 'Gestionar suscripciones de usuarios.'
+  route_name: entity.user_subscription.collection
+  parent: system.admin_content
+  weight: 62

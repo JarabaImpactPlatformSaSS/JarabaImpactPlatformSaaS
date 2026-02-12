@@ -1,0 +1,22 @@
+# Matching Engine Permissions
+
+administer matching:
+  title: 'Administer Matching Engine'
+  description: 'Full administration access to matching configuration'
+  restrict access: true
+
+view match results:
+  title: 'View match results'
+  description: 'View job-candidate matching results'
+
+view own match results:
+  title: 'View own match results'
+  description: 'Candidates can view their job matches'
+
+create match feedback:
+  title: 'Create match feedback'
+  description: 'Provide feedback on match quality (hired/rejected)'
+
+access matching api:
+  title: 'Access Matching API'
+  description: 'Access REST API endpoints for matching'

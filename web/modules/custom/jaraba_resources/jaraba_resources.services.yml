@@ -1,0 +1,15 @@
+services:
+  jaraba_resources.subscription_service:
+    class: Drupal\jaraba_resources\Service\SubscriptionService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_resources.kit_service:
+    class: Drupal\jaraba_resources\Service\KitService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_resources.subscription_service'
+

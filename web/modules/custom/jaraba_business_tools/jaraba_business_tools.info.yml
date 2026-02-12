@@ -1,0 +1,9 @@
+name: 'Jaraba Business Tools'
+type: module
+description: 'Business planning tools for entrepreneurs: Business Model Canvas, MVP Validation, and Financial Projections.'
+package: Jaraba Emprendimiento
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - jaraba_diagnostic:jaraba_diagnostic
+  - jaraba_paths:jaraba_paths

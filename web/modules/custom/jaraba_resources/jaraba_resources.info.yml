@@ -1,0 +1,8 @@
+name: 'Jaraba Resources'
+type: module
+description: 'Digital kits, membership plans, and downloadable resources for entrepreneurs.'
+package: Jaraba Emprendimiento
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:user
+  - drupal:file

@@ -1,0 +1,49 @@
+# Links de menú admin para jaraba_business_tools
+
+# Entrada en /admin/structure para Field UI - Canvas
+entity.business_model_canvas.settings:
+  title: 'Canvas de Modelo de Negocio'
+  description: 'Configuración de campos y visualización de canvas.'
+  route_name: entity.business_model_canvas.settings
+  parent: system.admin_structure
+  weight: 40
+
+# Entrada en /admin/structure para Field UI - MVP
+entity.mvp_hypothesis.settings:
+  title: 'Hipótesis MVP'
+  description: 'Configuración de campos de hipótesis de validación.'
+  route_name: entity.mvp_hypothesis.settings
+  parent: system.admin_structure
+  weight: 41
+
+# Entrada en /admin/structure para Field UI - Proyecciones
+entity.financial_projection.settings:
+  title: 'Proyecciones Financieras'
+  description: 'Configuración de campos de proyecciones.'
+  route_name: entity.financial_projection.settings
+  parent: system.admin_structure
+  weight: 42
+
+# Entrada en /admin/content - Canvas
+entity.business_model_canvas.collection:
+  title: 'Canvas de Negocio'
+  description: 'Gestionar los Business Model Canvas de emprendedores.'
+  route_name: entity.business_model_canvas.collection
+  parent: system.admin_content
+  weight: 40
+
+# Entrada en /admin/content - MVP
+entity.mvp_hypothesis.collection:
+  title: 'Hipótesis MVP'
+  description: 'Gestionar las hipótesis de validación MVP.'
+  route_name: entity.mvp_hypothesis.collection
+  parent: system.admin_content
+  weight: 41
+
+# Entrada en /admin/content - Proyecciones
+entity.financial_projection.collection:
+  title: 'Proyecciones Financieras'
+  description: 'Gestionar las proyecciones financieras.'
+  route_name: entity.financial_projection.collection
+  parent: system.admin_content
+  weight: 42

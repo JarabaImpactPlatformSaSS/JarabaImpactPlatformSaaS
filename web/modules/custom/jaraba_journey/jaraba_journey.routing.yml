@@ -1,0 +1,84 @@
+# Journey Engine API Routes
+# Doc 103: UX Journey Specifications
+
+# GET state
+jaraba_journey.api.state:
+  path: '/api/v1/journey/{user_id}/state'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::getState'
+  methods: [GET]
+  requirements:
+    _permission: 'access journey api'
+    user_id: \d+
+
+# POST event
+jaraba_journey.api.event:
+  path: '/api/v1/journey/{user_id}/event'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::recordEvent'
+  methods: [POST]
+  requirements:
+    _permission: 'access journey api'
+    user_id: \d+
+
+# GET next-actions
+jaraba_journey.api.next_actions:
+  path: '/api/v1/journey/{user_id}/next-actions'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::getNextActions'
+  methods: [GET]
+  requirements:
+    _permission: 'access journey api'
+    user_id: \d+
+
+# POST trigger
+jaraba_journey.api.trigger:
+  path: '/api/v1/journey/{user_id}/trigger'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::fireTrigger'
+  methods: [POST]
+  requirements:
+    _permission: 'administer journey states'
+    user_id: \d+
+
+# GET kpis
+jaraba_journey.api.kpis:
+  path: '/api/v1/journey/{user_id}/kpis'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::getKpis'
+  methods: [GET]
+  requirements:
+    _permission: 'access journey api'
+    user_id: \d+
+
+# GET cohort analytics
+jaraba_journey.api.cohort:
+  path: '/api/v1/journey/cohort/{avatar}/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyApiController::getCohortAnalytics'
+  methods: [GET]
+  requirements:
+    _permission: 'administer journey states'
+
+# Admin Dashboard
+jaraba_journey.dashboard:
+  path: '/admin/config/jaraba/journey'
+  defaults:
+    _controller: '\Drupal\jaraba_journey\Controller\JourneyDashboardController::dashboard'
+    _title: 'Journey Engine Dashboard'
+  requirements:
+    _permission: 'administer journey states'
+  options:
+    _admin_route: TRUE
+
+# Settings Form
+jaraba_journey.settings:
+  path: '/admin/config/jaraba/journey/settings'
+  defaults:
+    _form: '\Drupal\jaraba_journey\Form\JourneySettingsForm'
+    _title: 'Journey Engine Settings'
+  requirements:
+    _permission: 'administer journey states'
+  options:
+    _admin_route: TRUE
+

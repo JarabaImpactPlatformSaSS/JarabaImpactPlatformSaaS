@@ -1,0 +1,19 @@
+name: Jaraba Diagnostic
+type: module
+description: 'Sistema de Diagnóstico Empresarial para el vertical de Emprendimiento Digital. Implementa evaluaciones multidimensionales de madurez digital con scoring por sector y recomendaciones automáticas.'
+package: Jaraba Emprendimiento
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+# Entidades custom del módulo (Spec 25-27):
+# - business_diagnostic: Diagnóstico empresarial completo
+# - diagnostic_section: Secciones de evaluación (presencia, operaciones, ventas, etc.)
+# - diagnostic_question: Preguntas con lógica condicional
+# - diagnostic_answer: Respuestas almacenadas
+# - diagnostic_recommendation: Recomendaciones generadas
+
+configure: admin/config/emprendimiento/diagnostic

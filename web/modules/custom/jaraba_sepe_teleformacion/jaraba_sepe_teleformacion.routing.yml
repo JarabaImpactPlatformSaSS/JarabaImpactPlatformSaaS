@@ -1,0 +1,44 @@
+# SOAP Web Service endpoint
+jaraba_sepe_teleformacion.soap:
+  path: '/sepe/ws/seguimiento'
+  defaults:
+    _controller: '\Drupal\jaraba_sepe_teleformacion\Controller\SepeSoapController::handle'
+  methods: [POST, GET]
+  requirements:
+    _permission: 'access content'
+
+# WSDL endpoint
+jaraba_sepe_teleformacion.wsdl:
+  path: '/sepe/ws/seguimiento/wsdl'
+  defaults:
+    _controller: '\Drupal\jaraba_sepe_teleformacion\Controller\SepeSoapController::wsdl'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+# Admin settings
+jaraba_sepe_teleformacion.settings:
+  path: '/admin/config/jaraba/sepe'
+  defaults:
+    _form: '\Drupal\jaraba_sepe_teleformacion\Form\SepeSettingsForm'
+    _title: 'Configuración SEPE Teleformación'
+  requirements:
+    _permission: 'administer sepe teleformacion'
+
+# Centro admin
+entity.sepe_centro.collection:
+  path: '/admin/content/sepe-centros'
+  defaults:
+    _entity_list: 'sepe_centro'
+    _title: 'Centros SEPE'
+  requirements:
+    _permission: 'administer sepe teleformacion'
+
+# Acciones formativas admin
+entity.sepe_accion_formativa.collection:
+  path: '/admin/content/sepe-acciones'
+  defaults:
+    _entity_list: 'sepe_accion_formativa'
+    _title: 'Acciones Formativas SEPE'
+  requirements:
+    _permission: 'administer sepe teleformacion'

@@ -1,0 +1,419 @@
+# ================================================================================
+# RUTAS DEL MÓDULO JARABA CANDIDATE
+# Perfil de Candidato y CV Builder - Vertical Empleabilidad
+# ================================================================================
+
+# --- Rutas de Perfil Público ---
+jaraba_candidate.profile_view:
+  path: '/profile/{candidate_profile}'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::view'
+    _title_callback: '\Drupal\jaraba_candidate\Controller\ProfileController::profileTitle'
+  requirements:
+    _permission: 'view candidate profiles'
+  options:
+    parameters:
+      candidate_profile:
+        type: entity:candidate_profile
+
+# --- Rutas de Mi Perfil ---
+jaraba_candidate.my_profile:
+  path: '/my-profile'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::myProfile'
+    _title: 'Mi perfil'
+  requirements:
+    _permission: 'view own profile'
+
+jaraba_candidate.my_profile.edit:
+  path: '/my-profile/edit'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::editProfile'
+    _title: 'Editar perfil'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.my_profile.experience:
+  path: '/my-profile/experience'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::experienceSection'
+    _title: 'Experiencia laboral'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.my_profile.education:
+  path: '/my-profile/education'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::educationSection'
+    _title: 'Educación'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.my_profile.skills:
+  path: '/my-profile/skills'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::skillsSection'
+    _title: 'Habilidades'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.my_profile.privacy:
+  path: '/my-profile/privacy'
+  defaults:
+    _form: '\Drupal\jaraba_candidate\Form\PrivacySettingsForm'
+    _title: 'Configuración de privacidad'
+  requirements:
+    _permission: 'edit own profile'
+
+# --- Rutas de CV Builder ---
+jaraba_candidate.cv_builder:
+  path: '/my-profile/cv'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CvController::builder'
+    _title: 'CV Builder'
+  requirements:
+    _permission: 'build own cv'
+
+jaraba_candidate.cv_preview:
+  path: '/my-profile/cv/preview/{template}'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CvController::preview'
+    _title: 'Preview CV'
+    template: 'modern'
+  requirements:
+    _permission: 'build own cv'
+
+jaraba_candidate.cv_download:
+  path: '/my-profile/cv/download/{format}'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CvController::download'
+    format: 'pdf'
+  requirements:
+    _permission: 'build own cv'
+  methods: [GET]
+
+jaraba_candidate.cv_generate:
+  path: '/my-profile/cv/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CvController::generate'
+  requirements:
+    _permission: 'build own cv'
+  methods: [POST]
+
+# --- Rutas de JobSeeker Dashboard ---
+jaraba_candidate.dashboard:
+  path: '/jobseeker'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::index'
+    _title: 'JobSeeker Dashboard'
+  requirements:
+    _permission: 'access jobseeker dashboard'
+
+jaraba_candidate.dashboard.recommendations:
+  path: '/jobseeker/recommendations'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::recommendations'
+    _title: 'Recommended Jobs'
+  requirements:
+    _permission: 'access jobseeker dashboard'
+
+jaraba_candidate.dashboard.stats:
+  path: '/jobseeker/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::stats'
+    _title: 'My Statistics'
+  requirements:
+    _permission: 'access jobseeker dashboard'
+
+# --- Rutas de API REST ---
+jaraba_candidate.api.profile:
+  path: '/api/v1/profile'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::getProfile'
+  requirements:
+    _permission: 'view own profile'
+  methods: [GET]
+
+jaraba_candidate.api.profile.update:
+  path: '/api/v1/profile'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::updateProfile'
+  requirements:
+    _permission: 'edit own profile'
+  methods: [PATCH]
+
+jaraba_candidate.api.experience:
+  path: '/api/v1/profile/experience'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::getExperiences'
+  requirements:
+    _permission: 'view own profile'
+  methods: [GET]
+
+jaraba_candidate.api.experience.add:
+  path: '/api/v1/profile/experience'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::addExperience'
+  requirements:
+    _permission: 'edit own profile'
+  methods: [POST]
+
+jaraba_candidate.api.skills:
+  path: '/api/v1/profile/skills'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::getSkills'
+  requirements:
+    _permission: 'view own profile'
+  methods: [GET]
+
+jaraba_candidate.api.skills.add:
+  path: '/api/v1/profile/skills'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::addSkill'
+  requirements:
+    _permission: 'edit own profile'
+  methods: [POST]
+
+jaraba_candidate.api.skills.delete:
+  path: '/api/v1/profile/skills/{skill_entity_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::deleteSkill'
+  requirements:
+    _permission: 'edit own profile'
+    skill_entity_id: \d+
+  methods: [DELETE]
+
+
+jaraba_candidate.api.cv:
+  path: '/api/v1/cv'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::getCv'
+  requirements:
+    _permission: 'build own cv'
+  methods: [GET]
+
+jaraba_candidate.api.cv.generate:
+  path: '/api/v1/cv/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::generateCv'
+  requirements:
+    _permission: 'build own cv'
+  methods: [POST]
+
+jaraba_candidate.api.completion:
+  path: '/api/v1/profile/completion'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::getCompletion'
+  requirements:
+    _permission: 'view own profile'
+  methods: [GET]
+
+jaraba_candidate.api.import_linkedin:
+  path: '/api/v1/profile/import/linkedin'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::importLinkedIn'
+  requirements:
+    _permission: 'edit own profile'
+  methods: [POST]
+
+# --- Rutas de Administración ---
+# Settings stay in /admin/config
+jaraba_candidate.settings:
+  path: '/admin/config/empleabilidad/candidate'
+  defaults:
+    _form: '\Drupal\Core\Form\ConfigFormBase'
+    _title: 'Configuración Candidatos'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity collection routes - Content Entities go in /admin/content
+entity.candidate_profile.collection:
+  path: '/admin/content/candidates'
+  defaults:
+    _entity_list: 'candidate_profile'
+    _title: 'Perfiles de Candidato'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity form routes
+entity.candidate_profile.add_form:
+  path: '/admin/content/candidates/add'
+  defaults:
+    _entity_form: 'candidate_profile.default'
+    _title: 'Add Candidate Profile'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.candidate_profile.canonical:
+  path: '/admin/content/candidate/{candidate_profile}'
+  defaults:
+    _entity_view: 'candidate_profile.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      candidate_profile:
+        type: entity:candidate_profile
+
+entity.candidate_profile.edit_form:
+  path: '/admin/content/candidate/{candidate_profile}/edit'
+  defaults:
+    _entity_form: 'candidate_profile.default'
+    _title: 'Edit Profile'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      candidate_profile:
+        type: entity:candidate_profile
+
+entity.candidate_profile.delete_form:
+  path: '/admin/content/candidate/{candidate_profile}/delete'
+  defaults:
+    _entity_form: 'candidate_profile.delete'
+    _title: 'Delete Profile'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      candidate_profile:
+        type: entity:candidate_profile
+
+# Field UI Settings Route
+entity.candidate_profile.settings:
+  path: '/admin/structure/candidate-profile'
+  defaults:
+    _form: '\Drupal\jaraba_candidate\Form\CandidateProfileSettingsForm'
+    _title: 'Candidate Profile Settings'
+  requirements:
+    _permission: 'administer candidate profiles'
+
+# ================================================================================
+# RUTAS DE COPILOT INSIGHTS (AUTOAPRENDIZAJE IA)
+# ================================================================================
+
+jaraba_candidate.copilot_insights:
+  path: '/admin/insights/copilot'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsController::dashboard'
+    _title: 'Análisis de Copilotos IA'
+  requirements:
+    _permission: 'view copilot insights'
+
+# --- APIs de Insights ---
+jaraba_candidate.api.copilot.conversations:
+  path: '/api/v1/copilot/conversations'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::createConversation'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+
+jaraba_candidate.api.copilot.messages:
+  path: '/api/v1/copilot/messages'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::trackMessage'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+
+jaraba_candidate.api.copilot.feedback:
+  path: '/api/v1/copilot/messages/{message_id}/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::submitFeedback'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+
+jaraba_candidate.api.insights.summary:
+  path: '/api/v1/insights/copilot/summary'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::getSummary'
+  requirements:
+    _permission: 'view copilot insights'
+  methods: [GET]
+
+jaraba_candidate.api.insights.topics:
+  path: '/api/v1/insights/copilot/topics'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::getTopics'
+  requirements:
+    _permission: 'view copilot insights'
+  methods: [GET]
+
+# --- Entity Routes for CopilotConversation ---
+entity.copilot_conversation.collection:
+  path: '/admin/content/copilot-conversations'
+  defaults:
+    _entity_list: 'copilot_conversation'
+    _title: 'Conversaciones Copilot'
+  requirements:
+    _permission: 'administer copilot conversations'
+
+# ================================================================================
+# RUTAS DE CANDIDATE SKILL ENTITY
+# ================================================================================
+
+# Content Entity collection in /admin/content
+entity.candidate_skill.collection:
+  path: '/admin/content/candidate-skills'
+  defaults:
+    _entity_list: 'candidate_skill'
+    _title: 'Candidate Skills'
+  requirements:
+    _permission: 'administer candidate skills'
+
+entity.candidate_skill.add_form:
+  path: '/admin/content/candidate-skills/add'
+  defaults:
+    _entity_form: 'candidate_skill.default'
+    _title: 'Add Candidate Skill'
+  requirements:
+    _permission: 'administer candidate skills'
+
+entity.candidate_skill.canonical:
+  path: '/admin/content/candidate-skill/{candidate_skill}'
+  defaults:
+    _entity_view: 'candidate_skill.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'administer candidate skills'
+  options:
+    parameters:
+      candidate_skill:
+        type: entity:candidate_skill
+
+entity.candidate_skill.edit_form:
+  path: '/admin/content/candidate-skill/{candidate_skill}/edit'
+  defaults:
+    _entity_form: 'candidate_skill.default'
+    _title: 'Edit Candidate Skill'
+  requirements:
+    _permission: 'administer candidate skills'
+  options:
+    parameters:
+      candidate_skill:
+        type: entity:candidate_skill
+
+entity.candidate_skill.delete_form:
+  path: '/admin/content/candidate-skill/{candidate_skill}/delete'
+  defaults:
+    _entity_form: 'candidate_skill.delete'
+    _title: 'Delete Candidate Skill'
+  requirements:
+    _permission: 'administer candidate skills'
+  options:
+    parameters:
+      candidate_skill:
+        type: entity:candidate_skill
+
+# Field UI Settings Route in /admin/structure
+entity.candidate_skill.settings:
+  path: '/admin/structure/candidate-skill'
+  defaults:
+    _form: '\Drupal\jaraba_candidate\Form\CandidateSkillSettingsForm'
+    _title: 'Candidate Skill Settings'
+  requirements:
+    _permission: 'administer candidate skills'
+

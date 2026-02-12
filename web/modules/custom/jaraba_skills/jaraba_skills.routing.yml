@@ -1,0 +1,203 @@
+# Rutas del módulo jaraba_skills.
+
+# === ADMIN STRUCTURE ===
+jaraba_skills.settings:
+  path: '/admin/structure/ai-skills/settings'
+  defaults:
+    _form: '\Drupal\jaraba_skills\Form\SkillsSettingsForm'
+    _title: 'Configuración AI Skills'
+  requirements:
+    _permission: 'administer ai skills'
+
+entity.ai_skill.collection:
+  path: '/admin/content/ai-skills'
+  defaults:
+    _entity_list: 'ai_skill'
+    _title: 'Habilidades IA'
+  requirements:
+    _permission: 'manage ai skills'
+
+entity.ai_skill.add_form:
+  path: '/admin/content/ai-skills/add'
+  defaults:
+    _entity_form: 'ai_skill.add'
+    _title: 'Añadir Habilidad IA'
+  requirements:
+    _permission: 'manage ai skills'
+
+entity.ai_skill.edit_form:
+  path: '/admin/content/ai-skills/{ai_skill}/edit'
+  defaults:
+    _entity_form: 'ai_skill.edit'
+    _title: 'Editar Habilidad IA'
+  requirements:
+    _permission: 'manage ai skills'
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+entity.ai_skill.delete_form:
+  path: '/admin/content/ai-skills/{ai_skill}/delete'
+  defaults:
+    _entity_form: 'ai_skill.delete'
+    _title: 'Eliminar Habilidad IA'
+  requirements:
+    _permission: 'manage ai skills'
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+entity.ai_skill.canonical:
+  path: '/admin/content/ai-skills/{ai_skill}'
+  defaults:
+    _entity_view: 'ai_skill'
+    _title: 'Detalle Habilidad IA'
+  requirements:
+    _permission: 'view ai skills'
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+# === STRUCTURE ROUTES (Field UI) ===
+entity.ai_skill.admin_form:
+  path: '/admin/structure/ai-skills'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'AI Skills'
+  requirements:
+    _permission: 'administer ai skills'
+
+# === API REST ===
+jaraba_skills.api.resolve:
+  path: '/api/v1/skills/resolve'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsApiController::resolve'
+  requirements:
+    _permission: 'view ai skills'
+  methods: [GET, POST]
+
+jaraba_skills.api.search:
+  path: '/api/v1/skills/search'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsApiController::search'
+  requirements:
+    _permission: 'view ai skills'
+  methods: [GET]
+
+# === FRONTEND DASHBOARD ===
+jaraba_skills.dashboard:
+  path: '/skills'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::dashboard'
+    _title: 'Habilidades IA'
+  requirements:
+    _permission: 'view ai skills'
+
+# === AJAX para SLIDE-PANEL ===
+jaraba_skills.skill.add.ajax:
+  path: '/skills/add'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::add'
+    _title: 'Nueva Habilidad'
+  requirements:
+    _permission: 'manage ai skills'
+
+jaraba_skills.skill.edit.ajax:
+  path: '/skills/{ai_skill}/edit'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::edit'
+    _title: 'Editar Habilidad'
+  requirements:
+    _permission: 'manage ai skills'
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+# === ANALYTICS ===
+jaraba_skills.analytics:
+  path: '/skills/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::analytics'
+    _title: 'Análisis de Uso'
+  requirements:
+    _permission: 'manage ai skills'
+
+jaraba_skills.analytics.data:
+  path: '/skills/analytics/data'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::analyticsData'
+  requirements:
+    _permission: 'manage ai skills'
+  methods: [GET]
+
+# === TEST CONSOLE ===
+jaraba_skills.test_console:
+  path: '/skills/test'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::testConsole'
+    _title: 'Probar Habilidades IA'
+  requirements:
+    _permission: 'manage ai skills'
+
+jaraba_skills.test_console.process:
+  path: '/skills/test/process'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::processTest'
+  requirements:
+    _permission: 'manage ai skills'
+  methods: [POST]
+
+# === REVISION HISTORY ===
+jaraba_skills.skill.revisions:
+  path: '/skills/{ai_skill}/revisions'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::revisionHistory'
+    _title: 'Historial de Revisiones'
+  requirements:
+    _permission: 'manage ai skills'
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+jaraba_skills.skill.restore:
+  path: '/skills/{ai_skill}/restore/{ai_skill_revision}'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsDashboardController::restoreRevision'
+    _title: 'Restaurar Revisión'
+  requirements:
+    _permission: 'manage ai skills'
+  methods: [POST]
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+      ai_skill_revision:
+        type: entity:ai_skill_revision
+
+# === API REVISIONES ===
+jaraba_skills.api.revisions:
+  path: '/api/v1/skills/{ai_skill}/revisions'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsApiController::getRevisions'
+  requirements:
+    _permission: 'view ai skills'
+  methods: [GET]
+  options:
+    parameters:
+      ai_skill:
+        type: entity:ai_skill
+
+jaraba_skills.api.compare:
+  path: '/api/v1/skills/revisions/compare'
+  defaults:
+    _controller: '\Drupal\jaraba_skills\Controller\SkillsApiController::compareRevisions'
+  requirements:
+    _permission: 'view ai skills'
+  methods: [GET]
+
+

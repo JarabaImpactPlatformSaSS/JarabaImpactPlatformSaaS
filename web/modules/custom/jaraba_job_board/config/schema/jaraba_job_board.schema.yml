@@ -1,0 +1,31 @@
+jaraba_job_board.push_settings:
+  type: config_object
+  label: 'Job Board Push Settings'
+  mapping:
+    vapid_public_key:
+      type: string
+      label: 'VAPID Public Key'
+    vapid_private_key:
+      type: string
+      label: 'VAPID Private Key'
+    vapid_subject:
+      type: string
+      label: 'VAPID Subject'
+    activecampaign_webhook_url:
+      type: uri
+      label: 'ActiveCampaign Webhook URL'
+    activecampaign_api_key:
+      type: string
+      label: 'ActiveCampaign API Key'
+    activecampaign_account_id:
+      type: string
+      label: 'ActiveCampaign Account ID'
+    email_from_name:
+      type: string
+      label: 'Email From Name'
+    email_from_email:
+      type: email
+      label: 'Email From Address'
+    email_use_html:
+      type: boolean
+      label: 'Use HTML Email'

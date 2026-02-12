@@ -1,0 +1,328 @@
+# ================================================================================
+# RUTAS DEL MÓDULO JARABA JOB BOARD
+# Portal de Empleo - Vertical Empleabilidad
+# ================================================================================
+
+# --- Rutas Públicas de Búsqueda ---
+jaraba_job_board.search:
+  path: '/jobs'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobSearchController::index'
+    _title: 'Ofertas de empleo'
+  requirements:
+    _permission: 'view published jobs'
+
+jaraba_job_board.job_detail:
+  path: '/jobs/{job_posting}'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobSearchController::detail'
+    _title_callback: '\Drupal\jaraba_job_board\Controller\JobSearchController::jobTitle'
+  requirements:
+    _permission: 'view published jobs'
+  options:
+    parameters:
+      job_posting:
+        type: entity:job_posting
+
+# --- Rutas de Candidatos ---
+jaraba_job_board.my_applications:
+  path: '/my-applications'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\CandidateController::applications'
+    _title: 'Mis candidaturas'
+  requirements:
+    _permission: 'view own applications'
+
+jaraba_job_board.saved_jobs:
+  path: '/my-jobs/saved'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\CandidateController::savedJobs'
+    _title: 'Ofertas guardadas'
+  requirements:
+    _permission: 'save jobs'
+
+jaraba_job_board.job_alerts:
+  path: '/my-jobs/alerts'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\CandidateController::alerts'
+    _title: 'Alertas de empleo'
+  requirements:
+    _permission: 'create job alerts'
+
+jaraba_job_board.apply:
+  path: '/jobs/{job_posting}/apply'
+  defaults:
+    _form: '\Drupal\jaraba_job_board\Form\JobApplicationForm'
+    _title: 'Aplicar'
+  requirements:
+    _permission: 'apply to jobs'
+  methods: [GET, POST]
+
+# --- Rutas de Empleadores ---
+jaraba_job_board.employer_dashboard:
+  path: '/employer'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::dashboard'
+    _title: 'Panel del empleador'
+  requirements:
+    _permission: 'create job postings'
+
+jaraba_job_board.employer_jobs:
+  path: '/employer/jobs'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::jobs'
+    _title: 'Mis ofertas de empleo'
+  requirements:
+    _permission: 'create job postings'
+
+jaraba_job_board.employer_applications:
+  path: '/employer/applications'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::applications'
+    _title: 'Candidaturas recibidas'
+  requirements:
+    _permission: 'view job applications'
+
+jaraba_job_board.job_applications:
+  path: '/employer/jobs/{job_posting}/applications'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::jobApplications'
+    _title: 'Applications'
+  requirements:
+    _permission: 'view job applications'
+
+# --- Rutas /my-company (alias para empleadores) ---
+jaraba_job_board.my_company:
+  path: '/my-company'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::dashboard'
+    _title: 'Mi Empresa'
+  requirements:
+    _permission: 'create job postings'
+
+jaraba_job_board.my_company_analytics:
+  path: '/my-company/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::analytics'
+    _title: 'Estadísticas de Mi Empresa'
+  requirements:
+    _permission: 'create job postings'
+
+jaraba_job_board.my_company_jobs:
+  path: '/my-company/jobs'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::jobs'
+    _title: 'Mis Ofertas'
+  requirements:
+    _permission: 'create job postings'
+
+jaraba_job_board.application_detail:
+  path: '/employer/applications/{job_application}'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::applicationDetail'
+    _title: 'Application Details'
+  requirements:
+    _permission: 'view job applications'
+
+jaraba_job_board.update_application_status:
+  path: '/employer/applications/{job_application}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::updateStatus'
+  requirements:
+    _permission: 'manage job applications'
+  methods: [POST]
+
+# --- Rutas de API REST ---
+jaraba_job_board.api.jobs:
+  path: '/api/v1/jobs'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::listJobs'
+  requirements:
+    _permission: 'view published jobs'
+  methods: [GET]
+
+jaraba_job_board.api.job:
+  path: '/api/v1/jobs/{job_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::getJob'
+  requirements:
+    _permission: 'view published jobs'
+    job_id: '\d+'
+  methods: [GET]
+
+jaraba_job_board.api.apply:
+  path: '/api/v1/jobs/{job_id}/apply'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::apply'
+  requirements:
+    _permission: 'apply to jobs'
+    job_id: '\d+'
+  methods: [POST]
+
+jaraba_job_board.api.applications:
+  path: '/api/v1/applications'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::getUserApplications'
+  requirements:
+    _permission: 'view own applications'
+  methods: [GET]
+
+jaraba_job_board.api.employer_applications:
+  path: '/api/v1/employer/applications'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::getEmployerApplications'
+  requirements:
+    _permission: 'view job applications'
+  methods: [GET]
+
+jaraba_job_board.api.match:
+  path: '/api/v1/jobs/{job_id}/match'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::getMatchScore'
+  requirements:
+    _permission: 'view published jobs'
+    job_id: '\d+'
+  methods: [GET]
+
+jaraba_job_board.api.recommendations:
+  path: '/api/v1/jobs/recommendations'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::getRecommendations'
+  requirements:
+    _permission: 'view published jobs'
+  methods: [GET]
+
+# --- Rutas de Administración ---
+# Settings stay in /admin/config
+jaraba_job_board.settings:
+  path: '/admin/config/empleabilidad/job-board'
+  defaults:
+    _form: '\Drupal\Core\Form\ConfigFormBase'
+    _title: 'Configuración Job Board'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity collection routes - Content Entities go in /admin/content
+entity.job_posting.collection:
+  path: '/admin/content/jobs'
+  defaults:
+    _entity_list: 'job_posting'
+    _title: 'Ofertas de Empleo'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.job_application.collection:
+  path: '/admin/content/applications'
+  defaults:
+    _entity_list: 'job_application'
+    _title: 'Candidaturas'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity form routes
+entity.job_posting.add_form:
+  path: '/admin/content/jobs/add'
+  defaults:
+    _entity_form: 'job_posting.default'
+    _title: 'Add Job Posting'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.job_posting.canonical:
+  path: '/admin/content/job/{job_posting}'
+  defaults:
+    _entity_view: 'job_posting.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      job_posting:
+        type: entity:job_posting
+
+entity.job_posting.edit_form:
+  path: '/admin/content/job/{job_posting}/edit'
+  defaults:
+    _entity_form: 'job_posting.default'
+    _title: 'Edit Job Posting'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      job_posting:
+        type: entity:job_posting
+
+entity.job_posting.delete_form:
+  path: '/admin/content/job/{job_posting}/delete'
+  defaults:
+    _entity_form: 'job_posting.delete'
+    _title: 'Delete Job Posting'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      job_posting:
+        type: entity:job_posting
+
+# Field UI Settings Routes
+entity.job_posting.settings:
+  path: '/admin/structure/job-posting'
+  defaults:
+    _form: '\Drupal\jaraba_job_board\Form\JobPostingSettingsForm'
+    _title: 'Job Posting Settings'
+  requirements:
+    _permission: 'administer job postings'
+
+entity.job_application.settings:
+  path: '/admin/structure/job-application'
+  defaults:
+    _form: '\Drupal\jaraba_job_board\Form\JobApplicationSettingsForm'
+    _title: 'Job Application Settings'
+  requirements:
+    _permission: 'administer job applications'
+
+# --- Configuración de Notificaciones ---
+jaraba_job_board.notification_settings:
+  path: '/admin/config/jaraba/job-board/notifications'
+  defaults:
+    _form: '\Drupal\jaraba_job_board\Form\NotificationSettingsForm'
+    _title: 'Notification Settings'
+  requirements:
+    _permission: 'administer job postings'
+  options:
+    _admin_route: TRUE
+
+# --- API Web Push ---
+jaraba_job_board.api.push_subscribe:
+  path: '/api/v1/push/subscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::subscribe'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_job_board.api.push_unsubscribe:
+  path: '/api/v1/push/unsubscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::unsubscribe'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_job_board.api.push_vapid:
+  path: '/api/v1/push/vapid-key'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::getVapidKey'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_job_board.api.push_test:
+  path: '/api/v1/push/test'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::testPush'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+

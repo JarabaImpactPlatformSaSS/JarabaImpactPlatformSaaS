@@ -1,0 +1,24 @@
+services:
+  jaraba_sepe_teleformacion.soap_service:
+    class: Drupal\jaraba_sepe_teleformacion\Service\SepeSoapService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_sepe_teleformacion.data_mapper'
+      - '@config.factory'
+      - '@logger.factory'
+
+  jaraba_sepe_teleformacion.data_mapper:
+    class: Drupal\jaraba_sepe_teleformacion\Service\SepeDataMapper
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_sepe_teleformacion.seguimiento_calculator'
+
+  jaraba_sepe_teleformacion.seguimiento_calculator:
+    class: Drupal\jaraba_sepe_teleformacion\Service\SepeSeguimientoCalculator
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  logger.channel.sepe_teleformacion:
+    parent: logger.channel_base
+    arguments: ['sepe_teleformacion']

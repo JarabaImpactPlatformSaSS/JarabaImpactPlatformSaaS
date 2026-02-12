@@ -1,0 +1,95 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for jaraba_matching module.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Indexa automáticamente jobs y candidates al crearlos.
+ */
+function jaraba_matching_entity_insert(EntityInterface $entity): void {
+  jaraba_matching_handle_entity_change($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Re-indexa jobs y candidates al actualizarlos.
+ */
+function jaraba_matching_entity_update(EntityInterface $entity): void {
+  jaraba_matching_handle_entity_change($entity);
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Elimina del índice jobs y candidates al borrarlos.
+ */
+function jaraba_matching_entity_delete(EntityInterface $entity): void {
+  $entity_type = $entity->getEntityTypeId();
+  
+  if (!in_array($entity_type, ['job_posting', 'candidate_profile'])) {
+    return;
+  }
+
+  try {
+    $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
+    
+    if ($entity_type === 'job_posting') {
+      $qdrantClient->deleteJob((int) $entity->id());
+    }
+    elseif ($entity_type === 'candidate_profile') {
+      $qdrantClient->deleteCandidate((int) $entity->id());
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_matching')->error(
+      'Failed to delete @type @id from index: @error',
+      [
+        '@type' => $entity_type,
+        '@id' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
+/**
+ * Helper para manejar cambios en entidades.
+ */
+function jaraba_matching_handle_entity_change(EntityInterface $entity): void {
+  $entity_type = $entity->getEntityTypeId();
+  
+  if (!in_array($entity_type, ['job_posting', 'candidate_profile'])) {
+    return;
+  }
+
+  try {
+    $indexingService = \Drupal::service('jaraba_matching.indexing_service');
+    
+    if ($entity_type === 'job_posting') {
+      $indexingService->reindexJob((int) $entity->id());
+    }
+    elseif ($entity_type === 'candidate_profile') {
+      $indexingService->reindexCandidate((int) $entity->id());
+    }
+  }
+  catch (\Exception $e) {
+    // Log pero no bloquear - la indexación puede fallar sin romper la operación principal
+    \Drupal::logger('jaraba_matching')->warning(
+      'Failed to index @type @id: @error',
+      [
+        '@type' => $entity_type,
+        '@id' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}

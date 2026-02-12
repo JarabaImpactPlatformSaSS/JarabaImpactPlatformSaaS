@@ -1,0 +1,6 @@
+# Pestaña en /admin/content.
+entity.ai_skill.collection:
+  title: 'Habilidades IA'
+  route_name: entity.ai_skill.collection
+  base_route: system.admin_content
+  weight: 25

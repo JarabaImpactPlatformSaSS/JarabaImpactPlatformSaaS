@@ -1,0 +1,392 @@
+# Canvas API Routes
+jaraba_business_tools.api.canvas.list:
+  path: '/api/v1/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.create:
+  path: '/api/v1/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::createCanvas'
+  methods: [POST]
+  requirements:
+    _permission: 'create business model canvas'
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.get:
+  path: '/api/v1/canvas/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.update:
+  path: '/api/v1/canvas/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.status:
+  path: '/api/v1/canvas/{id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::updateStatus'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.delete:
+  path: '/api/v1/canvas/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::delete'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.blocks:
+  path: '/api/v1/canvas/{id}/blocks'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::getBlocks'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.block.update:
+  path: '/api/v1/canvas/{id}/blocks/{type}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::updateBlock'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.block.add_item:
+  path: '/api/v1/canvas/{id}/blocks/{type}/items'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::addItem'
+  methods: [POST]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.block.remove_item:
+  path: '/api/v1/canvas/{id}/blocks/{type}/items/{itemId}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::removeItem'
+  methods: [DELETE]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.block.update_item:
+  path: '/api/v1/canvas/{id}/blocks/{type}/items/{itemId}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::updateItem'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.analyze:
+  path: '/api/v1/canvas/{id}/analyze'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::analyze'
+  methods: [POST]
+  requirements:
+    _permission: 'analyze canvas with ai'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.suggestions:
+  path: '/api/v1/canvas/{id}/suggestions'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::getSuggestions'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.versions:
+  path: '/api/v1/canvas/{id}/versions'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::listVersions'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.version.create:
+  path: '/api/v1/canvas/{id}/version'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::createVersion'
+  methods: [POST]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.version.get:
+  path: '/api/v1/canvas/{id}/versions/{version}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::getVersion'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+    version: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.version.restore:
+  path: '/api/v1/canvas/{id}/versions/{version}/restore'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::restoreVersion'
+  methods: [POST]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+    version: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.export_pdf:
+  path: '/api/v1/canvas/{id}/export/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::exportPdf'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.share:
+  path: '/api/v1/canvas/{id}/share'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::share'
+  methods: [POST]
+  requirements:
+    _permission: 'edit own business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.templates:
+  path: '/api/v1/canvas/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::listTemplates'
+  methods: [GET]
+  requirements:
+    _permission: 'access business tools api'
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.clone:
+  path: '/api/v1/canvas/{id}/clone'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::cloneCanvas'
+  methods: [POST]
+  requirements:
+    _permission: 'create business model canvas'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.canvas.generate:
+  path: '/api/v1/canvas/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::generateCanvas'
+  methods: [POST]
+  requirements:
+    _permission: 'create business model canvas'
+  options:
+    _format: json
+
+# MVP Hypothesis API Routes
+jaraba_business_tools.api.mvp.list:
+  path: '/api/v1/mvp'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\MvpApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view own mvp hypothesis'
+  options:
+    _format: json
+
+jaraba_business_tools.api.mvp.create:
+  path: '/api/v1/mvp'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\MvpApiController::createHypothesis'
+  methods: [POST]
+  requirements:
+    _permission: 'create mvp hypothesis'
+  options:
+    _format: json
+
+jaraba_business_tools.api.mvp.get:
+  path: '/api/v1/mvp/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\MvpApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'view own mvp hypothesis'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.mvp.update:
+  path: '/api/v1/mvp/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\MvpApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own mvp hypothesis'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.mvp.record_result:
+  path: '/api/v1/mvp/{id}/result'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\MvpApiController::recordResult'
+  methods: [POST]
+  requirements:
+    _permission: 'edit own mvp hypothesis'
+    id: \d+
+  options:
+    _format: json
+
+# Financial Projection API Routes
+jaraba_business_tools.api.projections.list:
+  path: '/api/v1/projections'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProjectionApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view own financial projection'
+  options:
+    _format: json
+
+jaraba_business_tools.api.projections.create:
+  path: '/api/v1/projections'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProjectionApiController::createProjection'
+  methods: [POST]
+  requirements:
+    _permission: 'create financial projection'
+  options:
+    _format: json
+
+jaraba_business_tools.api.projections.get:
+  path: '/api/v1/projections/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProjectionApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'view own financial projection'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.projections.update:
+  path: '/api/v1/projections/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProjectionApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own financial projection'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_business_tools.api.projections.calculate:
+  path: '/api/v1/projections/{id}/calculate'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProjectionApiController::calculate'
+  methods: [POST]
+  requirements:
+    _permission: 'view own financial projection'
+    id: \d+
+  options:
+    _format: json
+
+# Field UI Settings Routes
+entity.business_model_canvas.settings:
+  path: '/admin/structure/canvas/settings'
+  defaults:
+    _form: '\Drupal\jaraba_business_tools\Form\BusinessModelCanvasSettingsForm'
+    _title: 'Business Model Canvas Settings'
+  requirements:
+    _permission: 'administer business model canvas'
+
+entity.mvp_hypothesis.settings:
+  path: '/admin/structure/mvp-hypothesis/settings'
+  defaults:
+    _form: '\Drupal\jaraba_business_tools\Form\MvpHypothesisSettingsForm'
+    _title: 'MVP Hypothesis Settings'
+  requirements:
+    _permission: 'administer business model canvas'
+
+entity.financial_projection.settings:
+  path: '/admin/structure/financial-projection/settings'
+  defaults:
+    _form: '\Drupal\jaraba_business_tools\Form\FinancialProjectionSettingsForm'
+    _title: 'Financial Projection Settings'
+  requirements:
+    _permission: 'administer business model canvas'
+
+# Frontend Dashboard Routes
+jaraba_business_tools.entrepreneur_dashboard:
+  path: '/entrepreneur/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\EntrepreneurDashboardController::dashboard'
+    _title: 'Mi Panel de Emprendedor'
+  requirements:
+    _permission: 'access entrepreneur dashboard'
+
+jaraba_business_tools.program_dashboard:
+  path: '/admin/programs/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\ProgramDashboardController::dashboard'
+    _title: 'Panel de Programa'
+  requirements:
+    _permission: 'administer business model canvas'
+
+

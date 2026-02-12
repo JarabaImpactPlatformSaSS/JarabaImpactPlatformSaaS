@@ -1,0 +1,7 @@
+# Journey Engine Admin Links
+jaraba_journey.admin:
+  title: 'Journey Engine'
+  description: 'Gestiona la navegación inteligente por avatares'
+  parent: system.admin_config_jaraba
+  route_name: jaraba_journey.dashboard
+  weight: 25

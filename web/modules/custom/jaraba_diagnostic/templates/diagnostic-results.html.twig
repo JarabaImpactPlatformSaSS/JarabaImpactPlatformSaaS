@@ -1,0 +1,340 @@
+{#
+ # Template: Resultados del diagnóstico
+ # /diagnostic/{uuid}/results
+ #}
+<div class="diagnostic-results">
+  
+  {# Hero con score principal #}
+  <div class="results-hero">
+    <div class="score-gauge">
+      <svg viewBox="0 0 200 120" class="gauge-svg">
+        {# Fondo del arco #}
+        <path d="M 20 100 A 80 80 0 0 1 180 100" 
+              fill="none" stroke="#E5E7EB" stroke-width="20" stroke-linecap="round"/>
+        {# Arco de progreso #}
+        <path d="M 20 100 A 80 80 0 0 1 180 100" 
+              fill="none" 
+              stroke="{% if overall_score < 30 %}#EF4444{% elseif overall_score < 60 %}#F59E0B{% elseif overall_score < 80 %}#10B981{% else %}#4F46E5{% endif %}" 
+              stroke-width="20" 
+              stroke-linecap="round"
+              stroke-dasharray="{{ (overall_score / 100) * 251.3 }} 251.3"
+              class="gauge-progress"/>
+        {# Texto del score #}
+        <text x="100" y="85" text-anchor="middle" class="gauge-score">{{ overall_score|round }}</text>
+        <text x="100" y="105" text-anchor="middle" class="gauge-label">{% trans %}puntos{% endtrans %}</text>
+      </svg>
+    </div>
+    
+    <div class="maturity-badge maturity-{{ maturity_level }}">
+      <span class="badge-icon">
+        {% if maturity_level == 'analogico' %}{{ jaraba_icon('analytics', 'trend-down', { variant: 'duotone', size: '24px' }) }}
+        {% elseif maturity_level == 'basico' %}{{ jaraba_icon('ai', 'automation', { variant: 'duotone', size: '24px' }) }}
+        {% elseif maturity_level == 'conectado' %}{{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '24px' }) }}
+        {% elseif maturity_level == 'digitalizado' %}{{ jaraba_icon('ai', 'brain', { variant: 'duotone', size: '24px' }) }}
+        {% elseif maturity_level == 'inteligente' %}{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', size: '24px' }) }}
+        {% endif %}
+      </span>
+      <span class="badge-label">{% trans %}Nivel{% endtrans %}: {{ maturity_label }}</span>
+    </div>
+
+    {% if estimated_loss > 0 %}
+    <div class="loss-warning">
+      <span class="warning-icon">{{ jaraba_icon('ui', 'warning', { color: 'warning', size: '20px' }) }}</span>
+      <span class="warning-text">
+        {% trans %}Pérdida potencial estimada{% endtrans %}: 
+        <strong>{{ estimated_loss|number_format(0, ',', '.') }}€/{% trans %}año{% endtrans %}</strong>
+      </span>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Radar Chart + Grid de áreas #}
+  <div class="results-section">
+    <h3>{% trans %}Desglose por áreas{% endtrans %}</h3>
+    
+    <div class="radar-container">
+      {# Radar Chart SVG - Premium Design #}
+      <div class="radar-chart-wrapper" style="display:flex;justify-content:center;padding:1.5rem;background:linear-gradient(135deg,#fafbfc 0%,#f1f5f9 100%);border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+        <svg viewBox="0 0 400 350" class="radar-chart" style="max-width:400px;width:100%;">
+          <defs>
+            <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.35"/>
+              <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.2"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          
+          {# Background circles - centered at 200,175 #}
+          <g class="radar-grid">
+            <circle cx="200" cy="175" r="100" style="fill:none;stroke:#cbd5e1;stroke-width:1;stroke-dasharray:4,4"/>
+            <circle cx="200" cy="175" r="75" style="fill:none;stroke:#e2e8f0;stroke-width:1"/>
+            <circle cx="200" cy="175" r="50" style="fill:none;stroke:#e2e8f0;stroke-width:1"/>
+            <circle cx="200" cy="175" r="25" style="fill:none;stroke:#e2e8f0;stroke-width:1"/>
+          </g>
+          
+          {# Axis lines - from center (200,175) with radius 100 #}
+          <g class="radar-axes">
+            <line x1="200" y1="175" x2="200" y2="75" style="stroke:#cbd5e1;stroke-width:1"/>
+            <line x1="200" y1="175" x2="295" y2="138" style="stroke:#cbd5e1;stroke-width:1"/>
+            <line x1="200" y1="175" x2="259" y2="256" style="stroke:#cbd5e1;stroke-width:1"/>
+            <line x1="200" y1="175" x2="141" y2="256" style="stroke:#cbd5e1;stroke-width:1"/>
+            <line x1="200" y1="175" x2="105" y2="138" style="stroke:#cbd5e1;stroke-width:1"/>
+          </g>
+          
+          {# Data polygon - will be populated by JS #}
+          <polygon id="radar-polygon" class="radar-data" points="" style="fill:url(#radarGradient);stroke:#4F46E5;stroke-width:2.5;filter:url(#glow)">
+          </polygon>
+          
+          {# Data points #}
+          <g id="radar-points" class="radar-points"></g>
+          
+          {# Labels - positioned outside with full text #}
+          <g class="radar-labels">
+            <text x="200" y="55" text-anchor="middle" style="font-size:13px;font-weight:600;fill:#334155;">{% trans %}Presencia Online{% endtrans %}</text>
+            <text x="320" y="130" text-anchor="start" style="font-size:13px;font-weight:600;fill:#334155;">{% trans %}Ventas{% endtrans %}</text>
+            <text x="280" y="285" text-anchor="start" style="font-size:13px;font-weight:600;fill:#334155;">{% trans %}Marketing{% endtrans %}</text>
+            <text x="120" y="285" text-anchor="end" style="font-size:13px;font-weight:600;fill:#334155;">{% trans %}Procesos{% endtrans %}</text>
+            <text x="80" y="130" text-anchor="end" style="font-size:13px;font-weight:600;fill:#334155;">{% trans %}IA{% endtrans %}</text>
+          </g>
+          
+          {# Scale labels #}
+          <g class="scale-labels" style="font-size:10px;fill:#94a3b8;">
+            <text x="200" y="90" text-anchor="middle">100%</text>
+            <text x="200" y="115" text-anchor="middle">75%</text>
+            <text x="200" y="140" text-anchor="middle">50%</text>
+            <text x="200" y="165" text-anchor="middle">25%</text>
+          </g>
+        </svg>
+      </div>
+      
+      {# Areas Grid #}
+      <div class="areas-grid">
+        {% for key, section in sections_config %}
+          {% set score = section_scores[key]|default(0) %}
+          <div class="area-card" data-section="{{ key }}" data-score="{{ score }}">
+            <div class="area-header">
+              <span class="area-icon">
+                {% if section.icon == 'globe' %}{{ jaraba_icon('ui', 'globe', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+                {% elseif section.icon == 'shopping-cart' %}{{ jaraba_icon('business', 'cart', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+                {% elseif section.icon == 'megaphone' %}{{ jaraba_icon('business', 'megaphone', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+                {% elseif section.icon == 'cog' %}{{ jaraba_icon('ui', 'settings', { variant: 'duotone', color: 'azul-verdoso', size: '28px' }) }}
+                {% elseif section.icon == 'robot' %}{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+                {% endif %}
+              </span>
+              <span class="area-title">{{ section.title }}</span>
+            </div>
+            <div class="area-progress">
+              <div class="progress-bar">
+                <div class="progress-fill 
+                  {% if score < 30 %}fill-red{% elseif score < 60 %}fill-yellow{% else %}fill-green{% endif %}" 
+                     style="--target-width: {{ score }}%" data-score="{{ score }}"></div>
+              </div>
+              <span class="progress-value">{{ score }}%</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    // Radar chart configuration - matches SVG viewBox (400x350, center 200,175, radius 100)
+    const cx = 200, cy = 175, maxR = 100;
+    const angles = [-90, -18, 54, 126, 198].map(a => a * Math.PI / 180);
+    const areaNames = ['Presencia Online', 'Ventas Digitales', 'Marketing Digital', 'Operaciones Digitales', 'IA & Automatización'];
+    
+    // Get scores from area cards
+    const sections = document.querySelectorAll('.area-card[data-score]');
+    const scores = Array.from(sections).map(el => parseFloat(el.dataset.score) || 0);
+    
+    // Calculate final polygon points
+    const finalPoints = scores.map((score, i) => {
+      const r = (score / 100) * maxR;
+      return { x: cx + r * Math.cos(angles[i]), y: cy + r * Math.sin(angles[i]), score };
+    });
+    
+    // Animate polygon from center outward
+    const polygon = document.getElementById('radar-polygon');
+    if (polygon) {
+      // Start from center
+      polygon.setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy}`);
+      
+      // Animate to final position
+      setTimeout(() => {
+        polygon.style.transition = 'all 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        polygon.setAttribute('points', finalPoints.map(p => `${p.x},${p.y}`).join(' '));
+      }, 200);
+    }
+    
+    // Add interactive data points with tooltips
+    const pointsGroup = document.getElementById('radar-points');
+    const svg = document.querySelector('.radar-chart');
+    
+    if (pointsGroup && svg) {
+      // Create tooltip element
+      const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      tooltip.id = 'radar-tooltip';
+      tooltip.style.opacity = '0';
+      tooltip.style.transition = 'opacity 0.2s';
+      tooltip.innerHTML = `
+        <rect x="0" y="0" width="120" height="36" rx="6" fill="#1e293b" opacity="0.95"/>
+        <text x="60" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="600" id="tooltip-label"></text>
+        <text x="60" y="30" text-anchor="middle" fill="#10b981" font-size="12" font-weight="700" id="tooltip-value"></text>
+      `;
+      svg.appendChild(tooltip);
+      
+      // Create animated data points
+      finalPoints.forEach((p, i) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', '0');
+        circle.setAttribute('data-index', i);
+        circle.style.fill = '#4F46E5';
+        circle.style.stroke = '#fff';
+        circle.style.strokeWidth = '3';
+        circle.style.cursor = 'pointer';
+        circle.style.transition = 'all 0.3s ease, r 0.2s ease';
+        
+        // Animate to position
+        setTimeout(() => {
+          circle.setAttribute('cx', p.x);
+          circle.setAttribute('cy', p.y);
+          circle.setAttribute('r', '7');
+        }, 400 + i * 100);
+        
+        // Hover effects
+        circle.addEventListener('mouseenter', (e) => {
+          circle.setAttribute('r', '10');
+          circle.style.fill = '#7C3AED';
+          
+          // Position and show tooltip
+          const tx = Math.min(Math.max(p.x - 60, 10), 280);
+          const ty = p.y < 100 ? p.y + 20 : p.y - 50;
+          tooltip.setAttribute('transform', `translate(${tx}, ${ty})`);
+          document.getElementById('tooltip-label').textContent = areaNames[i];
+          document.getElementById('tooltip-value').textContent = `${scores[i]}%`;
+          tooltip.style.opacity = '1';
+        });
+        
+        circle.addEventListener('mouseleave', () => {
+          circle.setAttribute('r', '7');
+          circle.style.fill = '#4F46E5';
+          tooltip.style.opacity = '0';
+        });
+        
+        pointsGroup.appendChild(circle);
+      });
+    }
+    
+    // Animate progress bars with stagger
+    document.querySelectorAll('.progress-fill[data-score]').forEach((bar, i) => {
+      bar.style.width = '0';
+      bar.style.transition = 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+      setTimeout(() => {
+        bar.style.width = bar.dataset.score + '%';
+      }, 600 + i * 150);
+    });
+    
+    // Animate gauge on scroll into view
+    const gauge = document.querySelector('.gauge-progress');
+    if (gauge) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            gauge.style.animation = 'gaugeProgress 1.5s ease forwards';
+            observer.disconnect();
+          }
+        });
+      });
+      observer.observe(gauge);
+    }
+  })();
+  </script>
+
+  {# Quick Wins #}
+  {% if quick_wins %}
+  <div class="results-section">
+    <h3>{{ jaraba_icon('verticals', 'rocket', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }} {% trans %}Quick Wins - Empieza hoy{% endtrans %}</h3>
+    <p class="section-subtitle">{% trans %}Acciones rápidas que puedes implementar esta semana{% endtrans %}</p>
+    <div class="quick-wins-list">
+      {% for win in quick_wins %}
+        <div class="quick-win-card">
+          <span class="win-icon">{{ jaraba_icon('ai', 'automation', { color: 'naranja-impulso', size: '20px' }) }}</span>
+          <span class="win-action">{{ win.action }}</span>
+          <span class="win-area badge-{{ win.area }}">{{ win.area|replace({'_': ' '})|capitalize }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Recomendaciones principales #}
+  {% if recommendations %}
+  <div class="results-section">
+    <h3>{{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }} {% trans %}Recomendaciones personalizadas{% endtrans %}</h3>
+    <div class="recommendations-list">
+      {% for rec in recommendations %}
+        <div class="recommendation-card priority-{{ rec.level }}">
+          <div class="rec-header">
+            <span class="rec-badge">{{ rec.level == 'low' ? 'Prioritario'|trans : 'Mejora'|trans }}</span>
+            <span class="rec-area">{{ rec.area|replace({'_': ' '})|capitalize }}</span>
+          </div>
+          <h4 class="rec-title">{{ rec.title }}</h4>
+          <p class="rec-description">{{ rec.description }}</p>
+          <div class="rec-action">
+            <strong>{% trans %}Acción{% endtrans %}:</strong> {{ rec.action }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Path recomendado #}
+  {% if recommended_path %}
+  <div class="results-section cta-section">
+    <div class="path-recommendation-card">
+      <div class="path-badge">{{ jaraba_icon('ai', 'sparkle', { color: 'naranja-impulso', size: '18px' }) }} {% trans %}Itinerario recomendado para ti{% endtrans %}</div>
+      <h3>{{ recommended_path.getTitle() }}</h3>
+      <p>{{ recommended_path.get('description').value|striptags|slice(0, 200) }}...</p>
+      <div class="path-meta">
+        <span>{{ jaraba_icon('ui', 'calendar', { size: '16px' }) }} {{ recommended_path.getEstimatedWeeks() }} {% trans %}semanas{% endtrans %}</span>
+        <span>{{ jaraba_icon('analytics', 'gauge', { size: '16px' }) }} {{ recommended_path.get('difficulty_level').value|capitalize }}</span>
+      </div>
+      <a href="{{ path('jaraba_paths.detail', {digitalization_path: recommended_path.id()}) }}" 
+         class="btn-primary btn-lg">
+        {% trans %}Ver itinerario completo{% endtrans %}
+      </a>
+    </div>
+  </div>
+  {% else %}
+  <div class="results-section cta-section">
+    <div class="path-recommendation-card">
+      <h3>{% trans %}¿Listo para mejorar?{% endtrans %}</h3>
+      <p>{% trans %}Explora nuestros itinerarios de digitalización personalizados para tu sector.{% endtrans %}</p>
+      <a href="{{ path('jaraba_paths.catalog') }}" class="btn-primary btn-lg">
+        {% trans %}Ver itinerarios disponibles{% endtrans %}
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  {# Acciones finales #}
+  <div class="results-actions">
+    <a href="{{ path('jaraba_diagnostic.api.report', {uuid: diagnostic.uuid.value}) }}" 
+       class="btn-secondary" target="_blank">
+      {{ jaraba_icon('actions', 'download', { size: '18px' }) }} {% trans %}Descargar informe{% endtrans %}
+    </a>
+    <a href="{{ path('jaraba_diagnostic.wizard.start') }}" class="btn-outline">
+      {{ jaraba_icon('actions', 'refresh', { size: '18px' }) }} {% trans %}Hacer otro diagnóstico{% endtrans %}
+    </a>
+  </div>
+</div>

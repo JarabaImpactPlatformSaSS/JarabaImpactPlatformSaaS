@@ -1,0 +1,33 @@
+services:
+  # Journey Engine - Servicio principal
+  jaraba_journey.engine:
+    class: Drupal\jaraba_journey\Service\JourneyEngineService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_journey'
+
+  # Journey Context - Análisis de contexto del usuario
+  jaraba_journey.context:
+    class: Drupal\jaraba_journey\Service\JourneyContextService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_journey'
+
+  # Journey Trigger - Intervenciones IA
+  jaraba_journey.trigger:
+    class: Drupal\jaraba_journey\Service\JourneyTriggerService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_journey.engine'
+      - '@logger.channel.jaraba_journey'
+
+  # Journey Definition Loader - Definiciones por vertical
+  jaraba_journey.definition_loader:
+    class: Drupal\jaraba_journey\Service\JourneyDefinitionLoader
+
+  # Logger channel
+  logger.channel.jaraba_journey:
+    parent: logger.channel_base
+    arguments: ['jaraba_journey']

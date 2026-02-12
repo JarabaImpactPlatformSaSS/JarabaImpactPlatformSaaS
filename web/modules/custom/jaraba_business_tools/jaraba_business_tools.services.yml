@@ -1,0 +1,53 @@
+services:
+  jaraba_business_tools.canvas_service:
+    class: Drupal\jaraba_business_tools\Service\CanvasService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_business_tools.canvas_ai_service:
+    class: Drupal\jaraba_business_tools\Service\CanvasAiService
+    arguments:
+      - '@config.factory'
+      - '@http_client'
+      - '@logger.factory'
+
+  jaraba_business_tools.mvp_validation_service:
+    class: Drupal\jaraba_business_tools\Service\MvpValidationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_business_tools.projection_service:
+    class: Drupal\jaraba_business_tools\Service\ProjectionService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_business_tools.template_service:
+    class: Drupal\jaraba_business_tools\Service\CanvasTemplateService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+
+  jaraba_business_tools.sroi_calculator:
+    class: Drupal\jaraba_business_tools\Service\SroiCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  jaraba_business_tools.competitor_analysis:
+    class: Drupal\jaraba_business_tools\Service\CompetitorAnalysisService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client_factory'
+
+  jaraba_business_tools.business_copilot:
+    class: Drupal\jaraba_business_tools\Agent\BusinessCopilotAgent
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+

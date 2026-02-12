@@ -1,0 +1,191 @@
+{#
+/**
+ * @file
+ * Template for gamification leaderboard.
+ */
+#}
+
+<div class="gamification-leaderboard">
+  <div class="leaderboard-header">
+    <h2 class="leaderboard-title">{{ jaraba_icon('ui', 'trophy', { variant: 'duotone', color: 'warning', size: '24px' }) }} {{ 'Ranking Semanal'|t }}</h2>
+    <p class="leaderboard-subtitle">{{ 'Los usuarios más activos de esta semana'|t }}</p>
+  </div>
+
+  {% if user_position %}
+  <div class="user-position-banner">
+    <span class="position-icon">{{ jaraba_icon('ui', 'pin', { color: 'corporate', size: '16px' }) }}</span>
+    <span>{{ 'Tu posición:'|t }} <strong>#{{ user_position }}</strong></span>
+  </div>
+  {% endif %}
+
+  {% if leaderboard|length > 0 %}
+  <div class="leaderboard-table-wrapper">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th class="col-position">#</th>
+          <th class="col-user">{{ 'Usuario'|t }}</th>
+          <th class="col-level">{{ 'Nivel'|t }}</th>
+          <th class="col-xp">{{ 'XP Semanal'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in leaderboard %}
+        <tr class="{{ entry.user_id == current_user_id ? 'is-current-user' : '' }} {{ entry.position <= 3 ? 'is-top-three' : '' }}">
+          <td class="col-position">
+            {% if entry.position == 1 %}
+              <span class="medal medal--gold">{{ jaraba_icon('ui', 'medal', { color: 'warning', size: '28px' }) }}</span>
+            {% elseif entry.position == 2 %}
+              <span class="medal medal--silver">{{ jaraba_icon('ui', 'medal', { color: 'neutral', size: '28px' }) }}</span>
+            {% elseif entry.position == 3 %}
+              <span class="medal medal--bronze">{{ jaraba_icon('ui', 'medal', { color: 'impulse', size: '28px' }) }}</span>
+            {% else %}
+              <span class="position-number">{{ entry.position }}</span>
+            {% endif %}
+          </td>
+          <td class="col-user">
+            <span class="username">{{ entry.username }}</span>
+          </td>
+          <td class="col-level">
+            <span class="level-badge">{{ entry.level_name }}</span>
+          </td>
+          <td class="col-xp">
+            <span class="xp-value">{{ entry.weekly_xp }}</span>
+            <span class="xp-label">XP</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="leaderboard-empty">
+    <p>{{ 'No hay actividad esta semana todavía.'|t }}</p>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+.gamification-leaderboard {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.leaderboard-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard-subtitle {
+  color: #64748b;
+}
+
+.user-position-banner {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #1e40af;
+  font-size: 1.125rem;
+}
+
+.leaderboard-table-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.leaderboard-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s;
+}
+
+.leaderboard-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.leaderboard-table tbody tr.is-current-user {
+  background: #eff6ff;
+}
+
+.leaderboard-table tbody tr.is-top-three {
+  font-weight: 600;
+}
+
+.col-position {
+  width: 60px;
+  text-align: center;
+}
+
+.medal {
+  font-size: 1.5rem;
+}
+
+.position-number {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.username {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.xp-value {
+  font-weight: 700;
+  color: #f59e0b;
+  font-size: 1.125rem;
+}
+
+.xp-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.leaderboard-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+</style>

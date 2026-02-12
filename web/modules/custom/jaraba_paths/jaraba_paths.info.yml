@@ -1,0 +1,20 @@
+name: Jaraba Paths
+type: module
+description: 'Sistema de Itinerarios de Digitalización para el vertical de Emprendimiento Digital. Gestiona rutas de aprendizaje personalizadas con fases del Método Jaraba, módulos, pasos de acción y tracking de progreso.'
+package: Jaraba Emprendimiento
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_diagnostic:jaraba_diagnostic
+
+# Entidades custom del módulo (Spec 28-30):
+# - digitalization_path: Itinerario completo de digitalización
+# - path_phase: Fases del Método Jaraba (Diagnóstico, Acción, Optimización)
+# - path_module: Módulos dentro de cada fase
+# - path_step: Pasos de acción individuales
+# - path_enrollment: Inscripciones y progreso de usuarios
+
+configure: admin/config/emprendimiento/paths

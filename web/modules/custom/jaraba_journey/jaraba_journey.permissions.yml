@@ -1,0 +1,15 @@
+administer journey states:
+  title: 'Administrar Journey States'
+  description: 'Gestionar configuración y estados de journey de usuarios.'
+
+access journey api:
+  title: 'Acceso a Journey API'
+  description: 'Permite acceder a los endpoints REST del Journey Engine.'
+
+view own journey:
+  title: 'Ver propio journey'
+  description: 'Permite ver el estado del journey propio del usuario.'
+
+view any journey:
+  title: 'Ver cualquier journey'
+  description: 'Permite ver el estado del journey de cualquier usuario.'

@@ -1,0 +1,102 @@
+# Rutas del módulo jaraba_paths
+
+# === Field UI Settings ===
+entity.digitalization_path.settings:
+  path: '/admin/structure/digitalization-path'
+  defaults:
+    _title: 'Configuración de Itinerarios'
+    _form: '\Drupal\jaraba_paths\Form\DigitalizationPathSettingsForm'
+  requirements:
+    _permission: 'administer digitalization paths'
+
+# === API REST ===
+jaraba_paths.api.list:
+  path: '/api/v1/paths'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::listPaths'
+    _title: 'List Paths'
+  methods: [GET]
+  requirements:
+    _permission: 'view any digitalization path'
+  options:
+    _format: json
+
+jaraba_paths.api.get:
+  path: '/api/v1/paths/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::getPath'
+  methods: [GET]
+  requirements:
+    _permission: 'view any digitalization path'
+    uuid: '[a-f0-9\-]+'
+  options:
+    _format: json
+
+jaraba_paths.api.enroll:
+  path: '/api/v1/paths/{uuid}/enroll'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::enroll'
+  methods: [POST]
+  requirements:
+    _permission: 'enroll in path'
+    uuid: '[a-f0-9\-]+'
+  options:
+    _format: json
+
+jaraba_paths.api.progress:
+  path: '/api/v1/enrollments/{uuid}/progress'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::getProgress'
+  methods: [GET]
+  requirements:
+    _permission: 'view own enrollment'
+    uuid: '[a-f0-9\-]+'
+  options:
+    _format: json
+
+jaraba_paths.api.complete_step:
+  path: '/api/v1/enrollments/{enrollment_uuid}/steps/{step_id}/complete'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::completeStep'
+  methods: [POST]
+  requirements:
+    _permission: 'track own progress'
+    enrollment_uuid: '[a-f0-9\-]+'
+    step_id: '\d+'
+  options:
+    _format: json
+
+jaraba_paths.api.recommendations:
+  path: '/api/v1/paths/recommendations'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathApiController::getRecommendations'
+  methods: [GET]
+  requirements:
+    _permission: 'view any digitalization path'
+  options:
+    _format: json
+
+# === Frontend Routes ===
+jaraba_paths.catalog:
+  path: '/paths'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathFrontendController::catalog'
+    _title: 'Itinerarios de Digitalización'
+  requirements:
+    _permission: 'view any digitalization path'
+
+jaraba_paths.detail:
+  path: '/path/{digitalization_path}'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathFrontendController::detail'
+    _title: 'Detalle del Itinerario'
+  requirements:
+    _permission: 'view any digitalization path'
+
+jaraba_paths.my_progress:
+  path: '/my-progress'
+  defaults:
+    _controller: '\Drupal\jaraba_paths\Controller\PathFrontendController::myProgress'
+    _title: 'Mi Progreso'
+  requirements:
+    _permission: 'view own enrollment'

@@ -1,0 +1,191 @@
+{#
+/**
+ * @file
+ * Kit Catalog - Catálogo de kits digitales.
+ *
+ * Variables:
+ * - kits: Array of DigitalKit entities
+ * - categories: Available categories
+ * - user_plan_type: Current user's plan type
+ * - filters: Active filters
+ */
+#}
+
+{% set category_labels = {
+  'business_plan': 'Plan de Negocio'|t,
+  'marketing': 'Marketing'|t,
+  'finance': 'Finanzas'|t,
+  'legal': 'Legal'|t,
+  'operations': 'Operaciones'|t,
+  'digital': 'Digital'|t,
+  'hr': 'RRHH'|t,
+} %}
+
+{% set access_labels = {
+  'free': 'Gratuito'|t,
+  'starter': 'Starter'|t,
+  'professional': 'Pro'|t,
+  'enterprise': 'Enterprise'|t,
+} %}
+
+<section class="kit-catalog">
+  <header class="kit-catalog__header">
+    <div class="header-content">
+      <h1>{{ 'Kits Digitales'|t }}</h1>
+      <p class="subtitle">{{ 'Plantillas, guías y herramientas para impulsar tu negocio'|t }}</p>
+    </div>
+    
+    <div class="kit-catalog__stats">
+      <span class="stat">
+        {{ jaraba_icon('ui', 'folder', { size: '20px' }) }}
+        {{ '%count kits disponibles'|t({'%count': kits|length}) }}
+      </span>
+    </div>
+  </header>
+  
+  {# Filters #}
+  <aside class="kit-catalog__filters">
+    <div class="filter-group">
+      <label>{{ 'Categoría'|t }}</label>
+      <select id="filter-category" class="filter-select">
+        <option value="">{{ 'Todas'|t }}</option>
+        {% for cat_id, cat_label in category_labels %}
+          <option value="{{ cat_id }}" {{ filters.category == cat_id ? 'selected' : '' }}>
+            {{ cat_label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <label>{{ 'Acceso'|t }}</label>
+      <select id="filter-access" class="filter-select">
+        <option value="">{{ 'Todos'|t }}</option>
+        {% for access_id, access_label in access_labels %}
+          <option value="{{ access_id }}" {{ filters.access == access_id ? 'selected' : '' }}>
+            {{ access_label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <label>{{ 'Ordenar por'|t }}</label>
+      <select id="filter-sort" class="filter-select">
+        <option value="featured">{{ 'Destacados'|t }}</option>
+        <option value="downloads">{{ 'Más descargados'|t }}</option>
+        <option value="rating">{{ 'Mejor valorados'|t }}</option>
+        <option value="newest">{{ 'Más recientes'|t }}</option>
+      </select>
+    </div>
+    
+    <div class="filter-group filter-group--search">
+      <input type="search" id="filter-search" placeholder="{{ 'Buscar kits...'|t }}" class="filter-input">
+    </div>
+  </aside>
+  
+  {# Kit Grid #}
+  <div class="kit-catalog__grid">
+    {% if kits %}
+      {% for kit in kits %}
+        {% set can_access = kit.access_level == 'free' or kit.access_level <= user_plan_type %}
+        
+        <article class="kit-card {{ kit.is_featured ? 'kit-card--featured' : '' }} {{ not can_access ? 'kit-card--locked' : '' }}">
+          {# Badges #}
+          <div class="kit-card__badges">
+            {% if kit.is_new %}
+              <span class="badge badge--new">{{ 'Nuevo'|t }}</span>
+            {% endif %}
+            {% if kit.is_featured %}
+              <span class="badge badge--featured">{{ 'Destacado'|t }}</span>
+            {% endif %}
+            <span class="badge badge--access badge--{{ kit.access_level }}">
+              {{ access_labels[kit.access_level] }}
+            </span>
+          </div>
+          
+          {# Image #}
+          <div class="kit-card__image">
+            {% if kit.image_url %}
+              <img src="{{ kit.image_url }}" alt="{{ kit.name }}" loading="lazy">
+            {% else %}
+              <div class="kit-card__placeholder">
+                {{ jaraba_icon('business', 'toolkit', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+              </div>
+            {% endif %}
+            
+            {% if not can_access %}
+              <div class="kit-card__lock-overlay">
+                {{ jaraba_icon('ui', 'lock', { size: '32px' }) }}
+                <span>{{ 'Requiere plan %plan'|t({'%plan': access_labels[kit.access_level]}) }}</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          {# Content #}
+          <div class="kit-card__content">
+            <span class="kit-card__category">
+              {{ category_labels[kit.category] }}
+            </span>
+            
+            <h3 class="kit-card__title">
+              <a href="/kits/{{ kit.id }}">{{ kit.name }}</a>
+            </h3>
+            
+            <div class="kit-card__meta">
+              <span class="meta-item" title="{{ 'Descargas'|t }}">
+                {{ jaraba_icon('actions', 'download', { size: '14px' }) }}
+                {{ kit.download_count }}
+              </span>
+              
+              {% if kit.rating > 0 %}
+                <span class="meta-item rating" title="{{ 'Valoración'|t }}">
+                  {{ jaraba_icon('ui', 'star', { size: '14px', color: 'warning' }) }}
+                  {{ kit.rating|number_format(1, ',', '.') }}
+                </span>
+              {% endif %}
+              
+              <span class="meta-item" title="{{ 'Archivos'|t }}">
+                {{ jaraba_icon('ui', 'file', { size: '14px' }) }}
+                {{ kit.file_count }} {{ 'archivos'|t }}
+              </span>
+            </div>
+          </div>
+          
+          {# Action #}
+          <footer class="kit-card__footer">
+            {% if can_access %}
+              <a href="/kits/{{ kit.id }}" class="btn btn--primary btn--sm">
+                {{ 'Ver Kit'|t }}
+              </a>
+            {% else %}
+              <a href="/pricing" class="btn btn--secondary btn--sm">
+                {{ 'Mejorar Plan'|t }}
+              </a>
+            {% endif %}
+          </footer>
+        </article>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        {{ jaraba_icon('ui', 'search', { size: '48px', color: 'neutral' }) }}
+        <h3>{{ 'No se encontraron kits'|t }}</h3>
+        <p>{{ 'Prueba con otros filtros o contacta con soporte.'|t }}</p>
+      </div>
+    {% endif %}
+  </div>
+  
+  {# CTA for non-subscribers #}
+  {% if user_plan_type == 'free' %}
+  <aside class="kit-catalog__cta">
+    <div class="cta-card">
+      {{ jaraba_icon('actions', 'rocket', { variant: 'duotone', size: '48px', color: 'impulse' }) }}
+      <h3>{{ 'Desbloquea todos los kits'|t }}</h3>
+      <p>{{ 'Con el plan Starter o superior tendrás acceso a plantillas premium, guías especializadas y herramientas exclusivas.'|t }}</p>
+      <a href="/pricing" class="btn btn--primary">
+        {{ 'Ver Planes'|t }}
+      </a>
+    </div>
+  </aside>
+  {% endif %}
+</section>

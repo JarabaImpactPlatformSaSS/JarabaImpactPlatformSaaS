@@ -1,0 +1,256 @@
+<?php
+
+/**
+ * @file
+ * Jaraba SEPE Teleformación module.
+ *
+ * Web Service SOAP para seguimiento de acciones formativas SEPE.
+ * Conforme a Orden TMS/369/2019.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_sepe_teleformacion_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_sepe_teleformacion') {
+    return '<p>' . t('Web Service SOAP para seguimiento de acciones formativas del SEPE. Implementa las 6 operaciones requeridas por la Orden TMS/369/2019 para homologación de centros de teleformación.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * ECA-SEPE-001: Alta de Participante en Acción SEPE.
+ * Cuando se crea un enrollment vinculado a un curso con acción SEPE,
+ * se crea automáticamente el registro sepe_participante.
+ */
+function jaraba_sepe_teleformacion_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'enrollment') {
+    return;
+  }
+
+  _jaraba_sepe_teleformacion_handle_enrollment_created($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * ECA-SEPE-002: Actualización de Seguimiento.
+ * Cuando se actualiza un progress_record, se actualizan las métricas
+ * del participante SEPE asociado.
+ */
+function jaraba_sepe_teleformacion_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'progress_record') {
+    return;
+  }
+
+  _jaraba_sepe_teleformacion_handle_progress_updated($entity);
+}
+
+/**
+ * Procesa la creación de un enrollment.
+ */
+function _jaraba_sepe_teleformacion_handle_enrollment_created(EntityInterface $enrollment): void {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $enrollment */
+  if (!$enrollment->hasField('course_id')) {
+    return;
+  }
+
+  $course_id = $enrollment->get('course_id')->target_id;
+  if (!$course_id) {
+    return;
+  }
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // Verificar si el curso está vinculado a una acción SEPE activa.
+  $acciones = $entityTypeManager
+    ->getStorage('sepe_accion_formativa')
+    ->loadByProperties([
+      'course_id' => $course_id,
+    ]);
+
+  if (empty($acciones)) {
+    return;
+  }
+
+  $accion = reset($acciones);
+  $estado = $accion->get('estado')->value;
+  if (!in_array($estado, ['en_curso', 'autorizada'])) {
+    return;
+  }
+
+  // Obtener datos del usuario.
+  $user_id = $enrollment->get('user_id')->target_id ?? NULL;
+  if (!$user_id) {
+    return;
+  }
+
+  $user = $entityTypeManager->getStorage('user')->load($user_id);
+  if (!$user) {
+    return;
+  }
+
+  // Obtener DNI del perfil.
+  $dni = '';
+  if ($user->hasField('field_dni')) {
+    $dni = $user->get('field_dni')->value ?? '';
+  }
+
+  if (empty($dni)) {
+    \Drupal::logger('sepe_teleformacion')->warning(
+      'Enrollment @id: usuario sin DNI, no se crea participante SEPE.',
+      ['@id' => $enrollment->id()]
+    );
+    return;
+  }
+
+  // Verificar si ya existe un participante para este enrollment.
+  $existentes = $entityTypeManager
+    ->getStorage('sepe_participante')
+    ->loadByProperties(['enrollment_id' => $enrollment->id()]);
+
+  if (!empty($existentes)) {
+    return;
+  }
+
+  // Crear el participante SEPE.
+  $nombre = $user->hasField('field_nombre') ? $user->get('field_nombre')->value : $user->getDisplayName();
+  $apellidos = $user->hasField('field_apellidos') ? $user->get('field_apellidos')->value : '';
+
+  $participante = $entityTypeManager
+    ->getStorage('sepe_participante')
+    ->create([
+      'accion_id' => $accion->id(),
+      'enrollment_id' => $enrollment->id(),
+      'dni' => $dni,
+      'nombre' => $nombre,
+      'apellidos' => $apellidos,
+      'fecha_alta' => date('Y-m-d'),
+      'estado' => 'activo',
+    ]);
+
+  $participante->save();
+
+  \Drupal::logger('sepe_teleformacion')->info(
+    'Participante SEPE creado: DNI @dni en acción @accion.',
+    [
+      '@dni' => $dni,
+      '@accion' => $accion->get('id_accion_sepe')->value,
+    ]
+  );
+}
+
+/**
+ * Procesa la actualización de un progress_record.
+ */
+function _jaraba_sepe_teleformacion_handle_progress_updated(EntityInterface $progressRecord): void {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $progressRecord */
+  if (!$progressRecord->hasField('enrollment_id')) {
+    return;
+  }
+
+  $enrollment_id = $progressRecord->get('enrollment_id')->target_id;
+  if (!$enrollment_id) {
+    return;
+  }
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // Buscar el participante SEPE vinculado.
+  $participantes = $entityTypeManager
+    ->getStorage('sepe_participante')
+    ->loadByProperties([
+      'enrollment_id' => $enrollment_id,
+      'estado' => 'activo',
+    ]);
+
+  if (empty($participantes)) {
+    return;
+  }
+
+  $participante = reset($participantes);
+
+  // Actualizar métricas usando el calculador.
+  /** @var \Drupal\jaraba_sepe_teleformacion\Service\SepeSeguimientoCalculator $calculator */
+  $calculator = \Drupal::service('jaraba_sepe_teleformacion.seguimiento_calculator');
+  $calculator->actualizarSeguimientoParticipante((int) $participante->id());
+
+  // Reload participante para obtener valores actualizados.
+  $participante = $entityTypeManager->getStorage('sepe_participante')->load($participante->id());
+
+  // Verificar si ha completado el curso.
+  $config = \Drupal::config('jaraba_sepe_teleformacion.settings');
+  $progreso_minimo = $config->get('progreso_minimo_apto') ?? 75;
+  $nota_minima = $config->get('nota_minima_apto') ?? 5;
+
+  $progreso = (int) $participante->get('porcentaje_progreso')->value;
+  $nota = (float) ($participante->get('nota_media')->value ?? 0);
+
+  if ($progreso >= $progreso_minimo && $nota >= $nota_minima && $participante->get('estado')->value === 'activo') {
+    $participante->set('estado', 'finalizado');
+    $participante->set('apto', TRUE);
+    $participante->set('fecha_finalizacion', date('c'));
+    $participante->save();
+
+    \Drupal::logger('sepe_teleformacion')->info(
+      'Participante @dni finalizado como APTO (progreso: @progreso%, nota: @nota).',
+      [
+        '@dni' => $participante->get('dni')->value,
+        '@progreso' => $progreso,
+        '@nota' => $nota,
+      ]
+    );
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_sepe_teleformacion_cron(): void {
+  $config = \Drupal::config('jaraba_sepe_teleformacion.settings');
+  $interval = $config->get('auto_update_interval') ?? 0;
+
+  if ($interval <= 0) {
+    return;
+  }
+
+  $state = \Drupal::state();
+  $last_run = $state->get('jaraba_sepe_teleformacion.last_seguimiento_update', 0);
+  $current_time = \Drupal::time()->getRequestTime();
+
+  if (($current_time - $last_run) >= $interval) {
+    /** @var \Drupal\jaraba_sepe_teleformacion\Service\SepeSeguimientoCalculator $calculator */
+    $calculator = \Drupal::service('jaraba_sepe_teleformacion.seguimiento_calculator');
+    $storage = \Drupal::entityTypeManager()->getStorage('sepe_participante');
+
+    $ids = $storage->getQuery()
+      ->condition('estado', 'activo')
+      ->accessCheck(FALSE)
+      ->execute();
+
+    foreach ($ids as $id) {
+      try {
+        $calculator->actualizarSeguimientoParticipante((int) $id);
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('sepe_teleformacion')->error(
+          'Error actualizando seguimiento @id: @message',
+          ['@id' => $id, '@message' => $e->getMessage()]
+        );
+      }
+    }
+
+    $state->set('jaraba_sepe_teleformacion.last_seguimiento_update', $current_time);
+    \Drupal::logger('sepe_teleformacion')->info(
+      'Actualización automática: @count participantes procesados.',
+      ['@count' => count($ids)]
+    );
+  }
+}

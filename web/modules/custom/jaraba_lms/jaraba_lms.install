@@ -1,0 +1,618 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Jaraba LMS module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_schema().
+ *
+ * Define tablas adicionales que no son entidades completas.
+ */
+function jaraba_lms_schema(): array {
+  $schema = [];
+
+  // Tabla de progreso granular por actividad
+  $schema['lms_progress_record'] = [
+    'description' => 'Stores progress records for each activity within an enrollment.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key.',
+      ],
+      'enrollment_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Foreign key to lms_enrollment.id.',
+      ],
+      'activity_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Foreign key to lms_activity.id.',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'not_started',
+        'description' => 'Activity status: not_started, in_progress, completed, failed.',
+      ],
+      'score' => [
+        'type' => 'numeric',
+        'precision' => 5,
+        'scale' => 2,
+        'description' => 'Score achieved (0-100).',
+      ],
+      'attempts' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Number of attempts.',
+      ],
+      'time_spent_seconds' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Total time spent in seconds.',
+      ],
+      'first_access' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'First access timestamp.',
+      ],
+      'last_access' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'Last access timestamp.',
+      ],
+      'completed_at' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'Completion timestamp.',
+      ],
+      'xapi_statement_id' => [
+        'type' => 'varchar',
+        'length' => 36,
+        'description' => 'xAPI statement UUID for LRS sync.',
+      ],
+      'response_data' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'description' => 'JSON with quiz answers or H5P responses.',
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'description' => 'Additional JSON metadata.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'enrollment_activity' => ['enrollment_id', 'activity_id'],
+    ],
+    'indexes' => [
+      'enrollment' => ['enrollment_id'],
+      'activity' => ['activity_id'],
+      'status' => ['status'],
+      'last_access' => ['last_access'],
+    ],
+  ];
+
+  // Tabla de lecciones
+  $schema['lms_lesson'] = [
+    'description' => 'Stores lessons within courses.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+      ],
+      'course_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'description' => [
+        'type' => 'text',
+        'size' => 'medium',
+      ],
+      'weight' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'duration_minutes' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 30,
+      ],
+      'is_preview' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'unlock_after_days' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'completion_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'all_activities',
+      ],
+      'minimum_score' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 70,
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'draft',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'changed' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+    'indexes' => [
+      'course' => ['course_id'],
+      'weight' => ['course_id', 'weight'],
+    ],
+  ];
+
+  // Tabla de actividades
+  $schema['lms_activity'] = [
+    'description' => 'Stores activities within lessons.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+      ],
+      'lesson_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'activity_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+      'weight' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'duration_minutes' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 5,
+      ],
+      'content_body' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'video_url' => [
+        'type' => 'varchar',
+        'length' => 512,
+      ],
+      'video_provider' => [
+        'type' => 'varchar',
+        'length' => 32,
+      ],
+      'h5p_content_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'file_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'external_url' => [
+        'type' => 'varchar',
+        'length' => 512,
+      ],
+      'is_required' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+      'xapi_verb' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => 'completed',
+      ],
+      'passing_score' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 70,
+      ],
+      'max_attempts' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+    'indexes' => [
+      'lesson' => ['lesson_id'],
+      'weight' => ['lesson_id', 'weight'],
+      'type' => ['activity_type'],
+    ],
+  ];
+
+  // Tabla de learning paths
+  $schema['lms_learning_path'] = [
+    'description' => 'Stores learning paths that group courses.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'machine_name' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'description' => [
+        'type' => 'text',
+        'size' => 'medium',
+      ],
+      'target_profile' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'description' => 'Profile from Diagnostic Express.',
+      ],
+      'target_gap' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'description' => 'Primary gap to address.',
+      ],
+      'courses' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'JSON array of course IDs.',
+      ],
+      'estimated_duration_hours' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'total_credits' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'is_active' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'changed' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+      'machine_name' => ['machine_name'],
+    ],
+    'indexes' => [
+      'target_profile' => ['target_profile'],
+      'target_gap' => ['target_gap'],
+      'active' => ['is_active'],
+    ],
+  ];
+
+  // Tabla de progreso por lección (para Video LMS)
+  $schema['lms_lesson_progress'] = [
+    'description' => 'Stores lesson progress for each user',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'User ID',
+      ],
+      'lesson_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Lesson entity ID',
+      ],
+      'progress' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Progress percentage (0-100)',
+      ],
+      'completed' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Whether lesson is completed',
+      ],
+      'completed_at' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'Timestamp when completed',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp when record was created',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'user_lesson' => ['uid', 'lesson_id'],
+    ],
+    'indexes' => [
+      'uid' => ['uid'],
+      'lesson_id' => ['lesson_id'],
+      'completed' => ['completed'],
+    ],
+  ];
+
+  // Tabla para almacenar xAPI statements
+  $schema['lms_xapi_statements'] = [
+    'description' => 'Stores xAPI statements for video tracking',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'User ID',
+      ],
+      'lesson_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Lesson entity ID',
+      ],
+      'verb' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'xAPI verb (played, paused, completed, etc)',
+      ],
+      'progress' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'description' => 'Progress at time of event (0-100)',
+      ],
+      'timestamp' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'description' => 'ISO 8601 timestamp from client',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Server timestamp when recorded',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'uid' => ['uid'],
+      'lesson_id' => ['lesson_id'],
+      'verb' => ['verb'],
+      'created' => ['created'],
+    ],
+  ];
+
+  // === TABLAS DE GAMIFICACIÓN (Q1 2026) ===
+
+  // Tabla de log de XP
+  $schema['gamification_xp_log'] = [
+    'description' => 'Log of XP transactions for gamification',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'User ID',
+      ],
+      'action' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Action type (e.g., complete_lesson)',
+      ],
+      'xp_amount' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'XP points awarded',
+      ],
+      'context_data' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'description' => 'JSON with context data',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp of the action',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_id' => ['user_id'],
+      'action' => ['action'],
+      'created' => ['created'],
+    ],
+  ];
+
+  // Tabla de stats de usuario
+  $schema['gamification_user_stats'] = [
+    'description' => 'User gamification stats',
+    'fields' => [
+      'user_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'User ID',
+      ],
+      'total_xp' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Total XP accumulated',
+      ],
+      'current_level' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Current level (1-10)',
+      ],
+      'streak_days' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Current login streak in days',
+      ],
+      'longest_streak' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Longest streak ever achieved',
+      ],
+      'last_activity_date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'description' => 'Last activity date (YYYY-MM-DD)',
+      ],
+      'updated' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'Last update timestamp',
+      ],
+    ],
+    'primary key' => ['user_id'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_lms_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba LMS module installed successfully. Configure at /admin/config/empleabilidad/lms'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_lms_uninstall(): void {
+  // Clean up any configuration
+  \Drupal::configFactory()->getEditable('jaraba_lms.settings')->delete();
+}

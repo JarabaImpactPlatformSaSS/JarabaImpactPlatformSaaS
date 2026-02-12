@@ -1,0 +1,10 @@
+name: 'Jaraba SEPE Teleformación'
+type: module
+description: 'Web Service SOAP para seguimiento SEPE de acciones formativas'
+package: 'Jaraba Impact Platform'
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+dependencies:
+  - drupal:rest
+  - drupal:serialization
+configure: jaraba_sepe_teleformacion.settings

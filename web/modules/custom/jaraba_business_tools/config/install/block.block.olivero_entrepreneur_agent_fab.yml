@@ -1,0 +1,23 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_business_tools
+  theme:
+    - olivero
+id: olivero_entrepreneur_agent_fab
+theme: olivero
+region: content_below
+weight: 100
+provider: null
+plugin: entrepreneur_agent_fab
+settings:
+  id: entrepreneur_agent_fab
+  label: 'FAB Asistente IA Canvas'
+  label_display: '0'
+  provider: jaraba_business_tools
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/admin/content/business-canvas\r\n/admin/content/business-canvas/*"

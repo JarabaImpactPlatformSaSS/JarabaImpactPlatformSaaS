@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Candidate - Perfil de Candidato y CV Builder.
+ *
+ * Módulo para gestión del perfil profesional del candidato
+ * en el vertical de Empleabilidad.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_candidate_theme(): array {
+  return [
+    'my_profile_empty' => [
+      'variables' => [],
+      'template' => 'my-profile-empty',
+    ],
+    'candidate_profile_view' => [
+      'variables' => [
+        'profile' => NULL,
+      ],
+      'template' => 'candidate-profile-view',
+    ],
+    'career_dashboard' => [
+      'variables' => [
+        'phase_name' => '',
+        'phase_emoji' => '',  // SVG icon handled in template
+        'phase_number' => 1,
+        'completeness' => 0,
+        'tutor_message' => '',
+        'gaps' => [],
+        'itineraries' => [],
+        'suggested_products' => [],
+        'next_action_label' => '',
+        'next_action_url' => '',
+        'next_action_icon' => '',
+        'quick_actions' => [],
+        'user_name' => '',
+      ],
+      'template' => 'career-dashboard',
+    ],
+    // === Copilot Insights Dashboard (Autoaprendizaje IA) ===
+    'copilot_insights_dashboard' => [
+      'variables' => [
+        'metrics' => [],
+        'topics' => [],
+        'popular_questions' => [],
+        'unresolved_queries' => [],
+      ],
+      'template' => 'copilot-insights-dashboard',
+    ],
+    // === My Profile - Skills Management ===
+    'my_profile_skills' => [
+      'variables' => [
+        'user_skills' => [],
+        'categories' => [],
+      ],
+      'template' => 'my-profile-skills',
+    ],
+    // === JobSeeker Dashboard ===
+    'jobseeker_dashboard' => [
+      'variables' => [
+        'profile' => NULL,
+        'applications' => [],
+        'applications_count' => 0,
+        'learning' => [],
+        'recommendations' => [],
+        'stats' => [],
+        'quick_actions' => [],
+      ],
+      'template' => 'jobseeker-dashboard',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * Geocodes the candidate's location using OpenStreetMap/Nominatim.
+ */
+function jaraba_candidate_entity_presave(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'candidate_profile') {
+    return;
+  }
+
+  // Check if city or country changed.
+  $city = $entity->get('city')->value ?? '';
+  $country = $entity->get('country')->value ?? '';
+
+  if (empty($city) || empty($country)) {
+    return;
+  }
+
+  // Skip if location already set and city/country haven't changed.
+  $original = $entity->original ?? NULL;
+  if ($original) {
+    $originalCity = $original->get('city')->value ?? '';
+    $originalCountry = $original->get('country')->value ?? '';
+    $hasLocation = !$entity->get('location')->isEmpty();
+    
+    if ($hasLocation && $originalCity === $city && $originalCountry === $country) {
+      return;
+    }
+  }
+
+  // Map country codes to names for better geocoding.
+  $countryNames = [
+    'ES' => 'Spain',
+    'PT' => 'Portugal',
+    'FR' => 'France',
+    'DE' => 'Germany',
+    'IT' => 'Italy',
+    'GB' => 'United Kingdom',
+    'US' => 'United States',
+    'MX' => 'Mexico',
+    'AR' => 'Argentina',
+    'CO' => 'Colombia',
+    'CL' => 'Chile',
+    'PE' => 'Peru',
+    'BR' => 'Brazil',
+  ];
+
+  $countryName = $countryNames[$country] ?? $country;
+  $address = "$city, $countryName";
+
+  try {
+    /** @var \Drupal\geocoder\GeocoderInterface $geocoder */
+    $geocoder = \Drupal::service('geocoder');
+    
+    // Use OpenStreetMap/Nominatim provider (free, no API key needed).
+    $result = $geocoder->geocode($address, ['nominatim']);
+    
+    if ($result && !$result->isEmpty()) {
+      $coordinates = $result->first()->getCoordinates();
+      $entity->set('location', [
+        'lat' => $coordinates->getLatitude(),
+        'lon' => $coordinates->getLongitude(),
+      ]);
+      
+      \Drupal::logger('jaraba_candidate')->info(
+        'Geocoded @address to @lat, @lon',
+        [
+          '@address' => $address,
+          '@lat' => $coordinates->getLatitude(),
+          '@lon' => $coordinates->getLongitude(),
+        ]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_candidate')->warning(
+      'Failed to geocode @address: @error',
+      ['@address' => $address, '@error' => $e->getMessage()]
+    );
+  }
+}

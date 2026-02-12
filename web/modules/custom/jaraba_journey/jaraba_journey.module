@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Journey Engine.
+ *
+ * Motor de navegación inteligente por avatar según Doc 103:
+ * - 19 avatares en 7 verticales
+ * - 7 estados de journey (Discovery → Advocacy + At-Risk)
+ * - 3 capas: Context Engine, Decision Engine, Presentation Engine
+ *
+ * @see https://docs/tecnicos/20260117f-103_UX_Journey_Specifications_Avatar_v1_Claude.md
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_journey_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.jaraba_journey':
+      return '<p>' . t('Journey Engine: Navegación inteligente por avatar con intervenciones IA proactivas.') . '</p>';
+  }
+}

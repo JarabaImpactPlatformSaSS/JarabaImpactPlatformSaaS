@@ -1,0 +1,14 @@
+# Action links for LMS entities
+# "Add" buttons on collection pages
+
+entity.lms_course.add_form:
+  title: 'Add Course'
+  route_name: entity.lms_course.add_form
+  appears_on:
+    - entity.lms_course.collection
+
+entity.lms_enrollment.add_form:
+  title: 'Add Enrollment'
+  route_name: entity.lms_enrollment.add_form
+  appears_on:
+    - entity.lms_enrollment.collection

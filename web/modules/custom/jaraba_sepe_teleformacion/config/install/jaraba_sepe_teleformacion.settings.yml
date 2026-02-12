@@ -1,0 +1,8 @@
+centro_activo_id: null
+soap_enabled: true
+soap_log_requests: true
+ws_security_enabled: false
+certificate_path: ''
+auto_update_interval: 21600
+nota_minima_apto: 5.0
+progreso_minimo_apto: 75

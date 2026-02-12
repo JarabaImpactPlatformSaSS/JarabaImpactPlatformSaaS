@@ -1,0 +1,20 @@
+name: Jaraba LMS
+type: module
+description: 'Learning Management System para el vertical de Empleabilidad Digital. Gestiona cursos, lecciones, actividades, matrículas y seguimiento de progreso con integración H5P y xAPI.'
+package: Jaraba Empleabilidad
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+# Entidades custom del módulo
+# - course: Curso o programa formativo
+# - lesson: Lección dentro de un curso
+# - activity: Actividad atómica (video, quiz, reading)
+# - enrollment: Matrícula de usuario a curso
+# - progress_record: Registro granular de progreso
+# - learning_path: Ruta de aprendizaje personalizada
+
+configure: admin/config/empleabilidad/lms

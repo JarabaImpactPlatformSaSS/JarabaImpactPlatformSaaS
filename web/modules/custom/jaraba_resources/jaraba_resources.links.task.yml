@@ -1,0 +1,45 @@
+# Task links (tabs) for Resources module
+# Adds tabs to /admin/content for Kits, Plans and Subscriptions
+
+# Tab for Digital Kits in Content section
+entity.digital_kit.collection:
+  title: 'Kits Digitales'
+  route_name: entity.digital_kit.collection
+  base_route: system.admin_content
+  weight: 38
+
+# Tab for Membership Plans in Content section
+entity.membership_plan.collection:
+  title: 'Planes'
+  route_name: entity.membership_plan.collection
+  base_route: system.admin_content
+  weight: 39
+
+# Tab for User Subscriptions in Content section
+entity.user_subscription.collection:
+  title: 'Suscripciones'
+  route_name: entity.user_subscription.collection
+  base_route: system.admin_content
+  weight: 40
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS
+# -----------------------------------------------------------------------------
+
+entity.digital_kit.settings_tab:
+  title: 'Configuración'
+  route_name: entity.digital_kit.settings
+  base_route: entity.digital_kit.settings
+  weight: -10
+
+entity.membership_plan.settings_tab:
+  title: 'Configuración'
+  route_name: entity.membership_plan.settings
+  base_route: entity.membership_plan.settings
+  weight: -10
+
+entity.user_subscription.settings_tab:
+  title: 'Configuración'
+  route_name: entity.user_subscription.settings
+  base_route: entity.user_subscription.settings
+  weight: -10

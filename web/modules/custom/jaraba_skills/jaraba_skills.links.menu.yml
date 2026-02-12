@@ -1,0 +1,7 @@
+# Entrada en menú de Estructura.
+jaraba_skills.admin:
+  title: 'AI Skills'
+  description: 'Gestión de habilidades IA para especialización de agentes.'
+  route_name: entity.ai_skill.admin_form
+  parent: system.admin_structure
+  weight: 50

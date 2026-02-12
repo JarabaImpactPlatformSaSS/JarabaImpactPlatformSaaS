@@ -1,0 +1,190 @@
+{#
+/**
+ * @file
+ * Employer Jobs List - Premium Template with Filters.
+ *
+ * Variables:
+ * - jobs: Array of job postings
+ * - filters: Active filters (status, search, sort)
+ * - status_counts: Count per status for filter chips
+ */
+#}
+{{ attach_library('jaraba_job_board/employer_dashboard') }}
+
+<div class="employer-jobs">
+  
+  {# Header Premium #}
+  <header class="jobs-page-header">
+    <div class="jobs-page-header__content">
+      <h1 class="jobs-page-header__title">{{ 'Mis Ofertas de Empleo'|t }}</h1>
+      <p class="jobs-page-header__subtitle">{{ 'Gestiona, filtra y edita tus ofertas publicadas.'|t }}</p>
+    </div>
+    <a href="{{ path('entity.job_posting.add_form') }}" 
+       class="cta-button cta-button--glow use-ajax" 
+       data-dialog-type="modal" 
+       data-dialog-options='{"width":"900","dialogClass":"job-posting-modal"}'>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      <span>{{ 'Nueva Oferta'|t }}</span>
+    </a>
+  </header>
+
+  {# Barra de Filtros #}
+  <div class="jobs-filters">
+    {# Buscador #}
+    <form class="filter-search" method="get" action="">
+      <input type="hidden" name="status" value="{{ filters.status }}">
+      <input type="hidden" name="sort" value="{{ filters.sort }}">
+      <div class="filter-search__input-wrapper">
+        <svg class="filter-search__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" 
+               name="search" 
+               class="filter-search__input" 
+               placeholder="{{ 'Buscar por título...'|t }}"
+               value="{{ filters.search }}"
+               aria-label="{{ 'Buscar ofertas'|t }}">
+        {% if filters.search %}
+          <a href="{{ path('jaraba_job_board.employer_jobs') }}" class="filter-search__clear" title="{{ 'Limpiar búsqueda'|t }}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+      <button type="submit" class="filter-search__submit">{{ 'Buscar'|t }}</button>
+    </form>
+
+    {# Chips de Estado #}
+    <div class="filter-chips">
+      <a href="{{ path('jaraba_job_board.employer_jobs', {'search': filters.search, 'sort': filters.sort}) }}" 
+         class="filter-chip {{ filters.status == '' ? 'filter-chip--active' : '' }}">
+        {{ 'Todas'|t }} <span class="filter-chip__count">{{ status_counts.all }}</span>
+      </a>
+      <a href="{{ path('jaraba_job_board.employer_jobs', {'status': 'published', 'search': filters.search, 'sort': filters.sort}) }}" 
+         class="filter-chip filter-chip--published {{ filters.status == 'published' ? 'filter-chip--active' : '' }}">
+        {{ 'Publicadas'|t }} <span class="filter-chip__count">{{ status_counts.published }}</span>
+      </a>
+      <a href="{{ path('jaraba_job_board.employer_jobs', {'status': 'draft', 'search': filters.search, 'sort': filters.sort}) }}" 
+         class="filter-chip filter-chip--draft {{ filters.status == 'draft' ? 'filter-chip--active' : '' }}">
+        {{ 'Borradores'|t }} <span class="filter-chip__count">{{ status_counts.draft }}</span>
+      </a>
+      <a href="{{ path('jaraba_job_board.employer_jobs', {'status': 'paused', 'search': filters.search, 'sort': filters.sort}) }}" 
+         class="filter-chip filter-chip--paused {{ filters.status == 'paused' ? 'filter-chip--active' : '' }}">
+        {{ 'Pausadas'|t }} <span class="filter-chip__count">{{ status_counts.paused }}</span>
+      </a>
+      <a href="{{ path('jaraba_job_board.employer_jobs', {'status': 'closed', 'search': filters.search, 'sort': filters.sort}) }}" 
+         class="filter-chip filter-chip--closed {{ filters.status == 'closed' ? 'filter-chip--active' : '' }}">
+        {{ 'Cerradas'|t }} <span class="filter-chip__count">{{ status_counts.closed }}</span>
+      </a>
+    </div>
+
+    {# Ordenación #}
+    <form class="filter-sort" method="get" action="">
+      <input type="hidden" name="status" value="{{ filters.status }}">
+      <input type="hidden" name="search" value="{{ filters.search }}">
+      <label for="sort-select">{{ 'Ordenar:'|t }}</label>
+      <select name="sort" id="sort-select" onchange="this.form.submit()">
+        <option value="newest" {{ filters.sort == 'newest' ? 'selected' : '' }}>{{ 'Más recientes'|t }}</option>
+        <option value="oldest" {{ filters.sort == 'oldest' ? 'selected' : '' }}>{{ 'Más antiguas'|t }}</option>
+        <option value="title" {{ filters.sort == 'title' ? 'selected' : '' }}>{{ 'Título A-Z'|t }}</option>
+        <option value="applications" {{ filters.sort == 'applications' ? 'selected' : '' }}>{{ 'Más candidaturas'|t }}</option>
+      </select>
+    </form>
+  </div>
+
+  {# Lista de Ofertas #}
+  {% if jobs %}
+    <div class="jobs-grid">
+      {% for job in jobs %}
+        <article class="job-card job-card--{{ job.status }}">
+          <div class="job-card__header">
+            <h3 class="job-card__title">{{ job.title }}</h3>
+            <span class="status-badge status-badge--{{ job.status }}">{{ job.status_label }}</span>
+          </div>
+          
+          <div class="job-card__stats">
+            <div class="job-card__stat">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+              </svg>
+              <span>{{ job.applications_count }} {{ 'candidaturas'|t }}</span>
+            </div>
+            {% if job.published_at %}
+              <div class="job-card__stat">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>{{ job.published_at|date('d/m/Y') }}</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="job-card__actions">
+            <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}" 
+               class="job-card__action job-card__action--view use-ajax"
+               data-dialog-type="modal"
+               data-dialog-options='{"width":"1000","dialogClass":"job-view-modal"}'
+               title="{{ 'Ver oferta'|t }}">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              {{ 'Ver'|t }}
+            </a>
+            <a href="{{ path('entity.job_posting.edit_form', {'job_posting': job.id}) }}" 
+               class="job-card__action job-card__action--edit use-ajax"
+               data-dialog-type="modal"
+               data-dialog-options='{"width":"900","dialogClass":"job-edit-modal"}'
+               title="{{ 'Editar oferta'|t }}">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              {{ 'Editar'|t }}
+            </a>
+            <a href="{{ path('jaraba_job_board.job_applications', {'job_posting': job.id}) }}" 
+               class="job-card__action job-card__action--applications"
+               title="{{ 'Ver candidaturas'|t }}">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                <path d="M16 3.13a4 4 0 010 7.75"/>
+              </svg>
+              {{ 'Candidaturas'|t }}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+        <rect x="2" y="7" width="20" height="14" rx="2"/>
+        <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+      </svg>
+      {% if filters.search or filters.status %}
+        <h3>{{ 'No se encontraron ofertas'|t }}</h3>
+        <p>{{ 'Prueba ajustando los filtros de búsqueda.'|t }}</p>
+        <a href="{{ path('jaraba_job_board.employer_jobs') }}" class="btn btn--secondary">{{ 'Limpiar filtros'|t }}</a>
+      {% else %}
+        <h3>{{ 'Aún no has publicado ninguna oferta'|t }}</h3>
+        <p>{{ 'Crea tu primera oferta para empezar a recibir candidaturas.'|t }}</p>
+        <a href="{{ path('entity.job_posting.add_form') }}" 
+           class="btn btn--primary use-ajax"
+           data-dialog-type="modal"
+           data-dialog-options='{"width":"900","dialogClass":"job-posting-modal"}'>
+          {{ 'Publicar mi primera oferta'|t }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

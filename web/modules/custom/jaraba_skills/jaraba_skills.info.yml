@@ -1,0 +1,10 @@
+name: Jaraba AI Skills
+type: module
+description: 'Sistema de habilidades IA para especialización de agentes. Jerarquía: Core → Vertical → Agent → Tenant.'
+package: Jaraba AI
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:field
+  - drupal:options
+  - drupal:user
+configure: jaraba_skills.settings

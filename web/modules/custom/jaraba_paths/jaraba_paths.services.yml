@@ -1,0 +1,26 @@
+services:
+  # Servicio de inscripciones (reutiliza patrón de jaraba_lms)
+  jaraba_paths.enrollment:
+    class: Drupal\jaraba_paths\Service\PathEnrollmentService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.default'
+
+  # Servicio de tracking de progreso
+  jaraba_paths.progress:
+    class: Drupal\jaraba_paths\Service\PathProgressService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
+  # Servicio de recomendación de paths
+  jaraba_paths.recommendation:
+    class: Drupal\jaraba_paths\Service\PathRecommendationService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_diagnostic.scoring'
+      - '@logger.channel.default'
+

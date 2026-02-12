@@ -1,0 +1,124 @@
+{#
+/**
+ * @file
+ * Template para la consola de test de skills.
+ *
+ * Variables:
+ * - skills: Array de entidades AiSkill activas.
+ */
+#}
+<div class="test-console">
+  <div class="test-console__header">
+    <h3>{{ 'Probar Habilidades IA'|t }}</h3>
+    <p class="test-console__subtitle">
+      {{ 'Envía un mensaje de prueba para verificar el comportamiento de una habilidad.'|t }}
+    </p>
+  </div>
+
+  <form class="test-console__form" id="skill-test-form">
+    <div class="form-group">
+      <label for="skill-select">{{ 'Seleccionar Habilidad'|t }}</label>
+      <select id="skill-select" name="skill_id" class="form-select" required>
+        <option value="">{{ '-- Selecciona una habilidad --'|t }}</option>
+        {% for skill in skills %}
+          <option value="{{ skill.id() }}">
+            {{ skill.label }} ({{ skill.getSkillType() }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="test-message">{{ 'Mensaje de Prueba'|t }}</label>
+      <textarea 
+        id="test-message" 
+        name="message" 
+        class="form-textarea" 
+        rows="4" 
+        placeholder="{{ 'Escribe un mensaje para probar cómo responde la IA con esta habilidad activa...'|t }}"
+        required></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary" id="test-submit-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+        </svg>
+        {{ 'Enviar Prueba'|t }}
+      </button>
+    </div>
+  </form>
+
+  <div class="test-console__response" id="test-response" style="display: none;">
+    <div class="response-header">
+      <h4>{{ 'Respuesta de la IA'|t }}</h4>
+      <span class="response-tokens" id="response-tokens"></span>
+    </div>
+    <div class="response-content" id="response-content"></div>
+  </div>
+</div>
+
+
+<script>
+(function() {
+  const form = document.getElementById('skill-test-form');
+  const responseContainer = document.getElementById('test-response');
+  const responseContent = document.getElementById('response-content');
+  const responseTokens = document.getElementById('response-tokens');
+  const submitBtn = document.getElementById('test-submit-btn');
+
+  if (!form) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const skillId = document.getElementById('skill-select').value;
+    const message = document.getElementById('test-message').value;
+
+    if (!skillId || !message) return;
+
+    // Show loading state.
+    responseContainer.style.display = 'block';
+    responseContent.className = 'response-content loading';
+    responseContent.innerHTML = '<div class="loader-spinner"></div> Procesando...';
+    responseTokens.textContent = '';
+    submitBtn.disabled = true;
+
+    fetch('/es/skills/test/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        skill_id: skillId,
+        message: message
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      submitBtn.disabled = false;
+      
+      if (data.success) {
+        responseContent.className = 'response-content' + (data.simulated ? ' simulated' : '');
+        responseContent.textContent = data.response;
+        
+        if (data.tokens_used) {
+          responseTokens.textContent = data.tokens_used + ' tokens';
+        } else {
+          responseTokens.textContent = data.simulated ? '(Simulado)' : '';
+        }
+      } else {
+        responseContent.className = 'response-content error';
+        responseContent.textContent = data.message || 'Error desconocido';
+      }
+    })
+    .catch(error => {
+      submitBtn.disabled = false;
+      responseContent.className = 'response-content error';
+      responseContent.textContent = 'Error de conexión: ' + error.message;
+    });
+  });
+})();
+</script>

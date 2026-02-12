@@ -1,0 +1,350 @@
+# ================================================================================
+# RUTAS DEL MÓDULO JARABA LMS
+# Sistema de Gestión de Aprendizaje - Vertical Empleabilidad
+# ================================================================================
+
+# --- Rutas Públicas de Catálogo ---
+jaraba_lms.catalog:
+  path: '/courses'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\CatalogController::index'
+    _title: 'Catálogo de cursos'
+  requirements:
+    _permission: 'access content'
+
+jaraba_lms.course_detail:
+  path: '/course/{lms_course}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\CatalogController::detail'
+    _title_callback: '\Drupal\jaraba_lms\Controller\CatalogController::courseTitle'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      lms_course:
+        type: entity:lms_course
+
+# --- Rutas de Aprendizaje del Usuario ---
+jaraba_lms.my_learning:
+  path: '/my-learning'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
+    _title: 'Mis cursos'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Alias para /my-courses (users may expect this route)
+jaraba_lms.my_courses:
+  path: '/my-courses'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
+    _title: 'Mis cursos'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_lms.course_player:
+  path: '/learn/{lms_enrollment}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LearnerController::player'
+    _title_callback: '\Drupal\jaraba_lms\Controller\LearnerController::playerTitle'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    parameters:
+      lms_enrollment:
+        type: entity:lms_enrollment
+
+jaraba_lms.my_certificates:
+  path: '/my-learning/certificates'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LearnerController::certificates'
+    _title: 'Mis certificados'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# --- Rutas de API REST ---
+jaraba_lms.api.courses:
+  path: '/api/v1/courses'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::listCourses'
+  requirements:
+    _permission: 'access content'
+  methods: [GET]
+
+jaraba_lms.api.course:
+  path: '/api/v1/courses/{course_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getCourse'
+  requirements:
+    _permission: 'access content'
+    course_id: '\d+'
+  methods: [GET]
+
+jaraba_lms.api.enroll:
+  path: '/api/v1/courses/{course_id}/enroll'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::enroll'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    course_id: '\d+'
+  methods: [POST]
+
+jaraba_lms.api.user_enrollments:
+  path: '/api/v1/enrollments'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getUserEnrollments'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+jaraba_lms.api.progress:
+  path: '/api/v1/progress/{enrollment_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getProgress'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    enrollment_id: '\d+'
+  methods: [GET]
+
+jaraba_lms.api.record_progress:
+  path: '/api/v1/progress/{enrollment_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::recordProgress'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    enrollment_id: '\d+'
+  methods: [POST]
+
+jaraba_lms.api.learning_paths:
+  path: '/api/v1/learning-paths'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::listLearningPaths'
+  requirements:
+    _permission: 'access content'
+  methods: [GET]
+
+jaraba_lms.api.recommend_paths:
+  path: '/api/v1/learning-paths/recommend'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getRecommendedPaths'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]
+
+# --- Rutas de Administración ---
+# Settings en /admin/config (no content entities)
+jaraba_lms.settings:
+  path: '/admin/config/empleabilidad/lms'
+  defaults:
+    _form: '\Drupal\Core\Form\ConfigFormBase'
+    _title: 'Configuración LMS'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity collection routes - Content Entities go in /admin/content
+entity.lms_course.collection:
+  path: '/admin/content/courses'
+  defaults:
+    _entity_list: 'lms_course'
+    _title: 'Cursos LMS'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.lms_enrollment.collection:
+  path: '/admin/content/enrollments'
+  defaults:
+    _entity_list: 'lms_enrollment'
+    _title: 'Matrículas'
+  requirements:
+    _permission: 'access administration pages'
+
+# Entity form routes
+entity.lms_course.add_form:
+  path: '/admin/content/courses/add'
+  defaults:
+    _entity_form: 'lms_course.default'
+    _title: 'Add Course'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.lms_course.canonical:
+  path: '/admin/content/course/{lms_course}'
+  defaults:
+    _entity_view: 'lms_course.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_course:
+        type: entity:lms_course
+
+entity.lms_course.edit_form:
+  path: '/admin/content/course/{lms_course}/edit'
+  defaults:
+    _entity_form: 'lms_course.default'
+    _title: 'Edit Course'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_course:
+        type: entity:lms_course
+
+entity.lms_course.delete_form:
+  path: '/admin/content/course/{lms_course}/delete'
+  defaults:
+    _entity_form: 'lms_course.delete'
+    _title: 'Delete Course'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_course:
+        type: entity:lms_course
+
+# --- Field UI Settings Routes ---
+entity.lms_course.settings:
+  path: '/admin/structure/lms-course'
+  defaults:
+    _form: '\Drupal\jaraba_lms\Form\CourseSettingsForm'
+    _title: 'Course Settings'
+  requirements:
+    _permission: 'administer lms courses'
+
+entity.lms_enrollment.settings:
+  path: '/admin/structure/lms-enrollment'
+  defaults:
+    _form: '\Drupal\jaraba_lms\Form\EnrollmentSettingsForm'
+    _title: 'Enrollment Settings'
+  requirements:
+    _permission: 'administer lms enrollments'
+
+# Enrollment entity routes
+entity.lms_enrollment.add_form:
+  path: '/admin/content/enrollments/add'
+  defaults:
+    _entity_form: 'lms_enrollment.default'
+    _title: 'Add Enrollment'
+  requirements:
+    _permission: 'access administration pages'
+
+entity.lms_enrollment.canonical:
+  path: '/admin/content/enrollment/{lms_enrollment}'
+  defaults:
+    _entity_view: 'lms_enrollment.full'
+    _title: 'Enrollment'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_enrollment:
+        type: entity:lms_enrollment
+
+entity.lms_enrollment.edit_form:
+  path: '/admin/content/enrollment/{lms_enrollment}/edit'
+  defaults:
+    _entity_form: 'lms_enrollment.default'
+    _title: 'Edit Enrollment'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_enrollment:
+        type: entity:lms_enrollment
+
+entity.lms_enrollment.delete_form:
+  path: '/admin/content/enrollment/{lms_enrollment}/delete'
+  defaults:
+    _entity_form: 'lms_enrollment.delete'
+    _title: 'Delete Enrollment'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    parameters:
+      lms_enrollment:
+        type: entity:lms_enrollment
+
+# --- Lesson Routes ---
+entity.lms_lesson.settings:
+  path: '/admin/structure/lms-lesson'
+  defaults:
+    _form: '\Drupal\jaraba_lms\Form\LessonSettingsForm'
+    _title: 'Lesson Settings'
+  requirements:
+    _permission: 'administer lms courses'
+
+# Lesson complete API endpoint
+jaraba_lms.lesson.complete:
+  path: '/api/v1/lms/lessons/{lesson_id}/complete'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\LessonController::markComplete'
+  requirements:
+    _permission: 'access lms courses'
+    lesson_id: '\d+'
+  methods: [POST]
+
+# xAPI statements endpoint
+jaraba_lms.xapi.statements:
+  path: '/api/v1/xapi/statements'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\XapiController::recordStatement'
+  requirements:
+    _permission: 'access lms courses'
+  methods: [POST]
+
+# ================================================================================
+# RUTAS DE OPEN BADGES (Q1 2026)
+# ================================================================================
+
+jaraba_lms.badge.verify:
+  path: '/verify/{badge_uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\BadgeController::verify'
+    _title: 'Verificar Credencial'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_lms.badge.json:
+  path: '/verify/{badge_uuid}/json'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\BadgeController::getJson'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_lms.my_badges:
+  path: '/my-learning/badges'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\BadgeController::myBadges'
+    _title: 'Mis Badges'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# ================================================================================
+# RUTAS DE GAMIFICACIÓN (Q1 2026)
+# ================================================================================
+
+jaraba_lms.gamification.profile:
+  path: '/my-learning/gamification'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\GamificationController::profile'
+    _title: 'Mi Progreso y Nivel'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_lms.gamification.leaderboard:
+  path: '/leaderboard'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\GamificationController::leaderboard'
+    _title: 'Ranking Semanal'
+  requirements:
+    _permission: 'access content'
+
+jaraba_lms.api.gamification.stats:
+  path: '/api/v1/gamification/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\GamificationController::apiStats'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [GET]

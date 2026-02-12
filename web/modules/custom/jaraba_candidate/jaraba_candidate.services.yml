@@ -1,0 +1,64 @@
+services:
+  # ============================================================================
+  # SERVICIOS PRINCIPALES DE CANDIDATO
+  # ============================================================================
+
+  jaraba_candidate.profile:
+    class: Drupal\jaraba_candidate\Service\CandidateProfileService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+      - '@logger.factory'
+
+  jaraba_candidate.cv_builder:
+    class: Drupal\jaraba_candidate\Service\CvBuilderService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_candidate.profile'
+      - '@renderer'
+      - '@file_system'
+      - '@logger.factory'
+
+  jaraba_candidate.skills:
+    class: Drupal\jaraba_candidate\Service\SkillsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  jaraba_candidate.profile_completion:
+    class: Drupal\jaraba_candidate\Service\ProfileCompletionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_candidate.profile'
+      - '@logger.factory'
+
+  jaraba_candidate.import:
+    class: Drupal\jaraba_candidate\Service\LinkedInImportService
+    arguments:
+      - '@http_client'
+      - '@jaraba_candidate.profile'
+      - '@logger.factory'
+
+  # ============================================================================
+  # AGENTES IA
+  # ============================================================================
+
+  jaraba_candidate.agent.career_coach:
+    class: Drupal\jaraba_candidate\Agent\CareerCoachAgent
+    arguments:
+      - '@jaraba_candidate.profile'
+      - '@current_user'
+
+  # ============================================================================
+  # SERVICIO DE INSIGHTS DE COPILOT (AUTOAPRENDIZAJE IA)
+  # ============================================================================
+
+  jaraba_candidate.copilot_insights:
+    class: Drupal\jaraba_candidate\Service\CopilotInsightsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@current_user'
+      - '@logger.factory'

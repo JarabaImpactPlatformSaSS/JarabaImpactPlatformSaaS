@@ -1,0 +1,57 @@
+services:
+  jaraba_matching.matching_service:
+    class: Drupal\jaraba_matching\Service\MatchingService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@cache.default'
+      - '@logger.factory'
+
+  jaraba_matching.embedding_service:
+    class: Drupal\jaraba_matching\Service\EmbeddingService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  jaraba_matching.qdrant_client:
+    class: Drupal\jaraba_matching\Service\QdrantMatchingClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  jaraba_matching.indexing_service:
+    class: Drupal\jaraba_matching\Service\IndexingService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_matching.embedding_service'
+      - '@jaraba_matching.qdrant_client'
+      - '@logger.factory'
+
+  jaraba_matching.commands:
+    class: Drupal\jaraba_matching\Commands\MatchingCommands
+    arguments:
+      - '@jaraba_matching.indexing_service'
+    tags:
+      - { name: drush.command }
+
+  # Fase 4: Recommendation ML (Q1 2026)
+  jaraba_matching.recommendation_service:
+    class: Drupal\jaraba_matching\Service\RecommendationService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  # Telemetría de embeddings y matching (Best Practices Gap)
+  jaraba_matching.embedding_telemetry:
+    class: Drupal\jaraba_matching\Service\EmbeddingTelemetryService
+    arguments:
+      - '@state'
+      - '@logger.channel.jaraba_matching'
+
+  logger.channel.jaraba_matching:
+    parent: logger.channel_base
+    arguments: ['jaraba_matching']
+

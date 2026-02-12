@@ -1,0 +1,127 @@
+{#
+/**
+ * @file
+ * Template for video lessons with responsive YouTube/Vimeo embed.
+ *
+ * Available variables:
+ * - lesson: The Lesson entity
+ * - video_id: Extracted video ID (YouTube/Vimeo)
+ * - video_provider: youtube, vimeo, bunny, self_hosted
+ * - h5p_content_id: ID for H5P interactive content (if applicable)
+ * - xapi_endpoint: Endpoint for xAPI statements
+ */
+#}
+
+<article{{ attributes.addClass('lesson', 'lesson--video') }}>
+  {# Lesson Header #}
+  <header class="lesson__header">
+    <h1 class="lesson__title">{{ lesson.title.value }}</h1>
+    {% if lesson.video_duration.value %}
+      <span class="lesson__duration">
+        <svg class="icon-clock" width="16" height="16" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+        {{ lesson.formattedDuration }}
+      </span>
+    {% endif %}
+  </header>
+
+  {# Video Container #}
+  <div class="lesson__video-container">
+    {% if video_provider == 'youtube' and video_id %}
+      {# YouTube Embed with JS API enabled for tracking #}
+      {% if h5p_content_id %}
+        {# H5P Interactive Video wraps YouTube #}
+        <div class="lesson__h5p-wrapper">
+          {{ drupal_entity('h5p_content', h5p_content_id) }}
+        </div>
+      {% else %}
+        {# Standard responsive YouTube embed #}
+        <div class="video-wrapper video-wrapper--youtube"
+             data-video-id="{{ video_id }}"
+             data-lesson-id="{{ lesson.id.value }}"
+             data-xapi-endpoint="{{ xapi_endpoint|default('/api/v1/xapi/statements') }}"
+             data-completion-threshold="{{ lesson.completion_threshold.value|default(90) }}">
+          <iframe 
+            id="youtube-player-{{ lesson.id.value }}"
+            src="https://www.youtube.com/embed/{{ video_id }}?enablejsapi=1&origin={{ base_url }}&rel=0&modestbranding=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+      {% endif %}
+
+    {% elseif video_provider == 'vimeo' and video_id %}
+      {# Vimeo Embed #}
+      <div class="video-wrapper video-wrapper--vimeo"
+           data-video-id="{{ video_id }}"
+           data-lesson-id="{{ lesson.id.value }}">
+        <iframe 
+          src="https://player.vimeo.com/video/{{ video_id }}?title=0&byline=0&portrait=0"
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+
+    {% elseif video_provider == 'bunny' %}
+      {# Bunny.net Stream #}
+      <div class="video-wrapper video-wrapper--bunny"
+           data-lesson-id="{{ lesson.id.value }}">
+        <iframe 
+          src="{{ lesson.video_url.value }}"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+
+    {% elseif video_provider == 'self_hosted' %}
+      {# Self-hosted HTML5 Video #}
+      <div class="video-wrapper video-wrapper--native"
+           data-lesson-id="{{ lesson.id.value }}">
+        <video controls preload="metadata">
+          <source src="{{ lesson.video_url.value }}" type="video/mp4">
+          {{ 'Your browser does not support the video tag.'|t }}
+        </video>
+      </div>
+
+    {% else %}
+      {# Fallback for missing video #}
+      <div class="video-wrapper video-wrapper--placeholder">
+        <div class="video-placeholder">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <p>{{ 'Video not available'|t }}</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Progress Indicator #}
+  <div class="lesson__progress" 
+       id="lesson-progress-{{ lesson.id.value }}"
+       data-lesson-id="{{ lesson.id.value }}">
+    <div class="progress-bar">
+      <div class="progress-bar__fill" style="width: 0%"></div>
+    </div>
+    <span class="progress-bar__label">{{ 'Not started'|t }}</span>
+  </div>
+
+  {# Lesson Content (if any supplementary text) #}
+  {% if lesson.content.value %}
+    <div class="lesson__content">
+      {{ lesson.content.value|raw }}
+    </div>
+  {% endif %}
+
+</article>
+
+{# Attach video tracking library #}
+{{ attach_library('jaraba_lms/video-tracking') }}

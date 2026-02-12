@@ -1,0 +1,160 @@
+{#
+/**
+ * @file
+ * Program Dashboard - Admin view for program managers.
+ *
+ * Variables:
+ * - cohort_stats: Array of cohort statistics
+ * - stage_distribution: Array of entrepreneurs by stage
+ * - aggregate_progress: Array of aggregate progress metrics
+ * - impact_metrics: Array of impact KPIs
+ * - recent_activity: Array of recent activities
+ */
+#}
+
+<div class="program-dashboard">
+  {# Header #}
+  <header class="program-dashboard__header">
+    <h1>{{ 'Panel de Programa de Emprendimiento'|t }}</h1>
+    <p class="subtitle">{{ 'Vista agregada del progreso de emprendedores'|t }}</p>
+  </header>
+
+  {# KPIs Grid #}
+  <section class="program-dashboard__kpis">
+    <article class="kpi-card">
+      <div class="kpi-card__icon">
+        {{ jaraba_icon('users', 'group', { variant: 'duotone', color: 'innovation', size: '32px' }) }}
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ cohort_stats.total_entrepreneurs|default(0) }}</span>
+        <span class="kpi-card__label">{{ 'Emprendedores'|t }}</span>
+      </div>
+    </article>
+
+    <article class="kpi-card">
+      <div class="kpi-card__icon">
+        {{ jaraba_icon('analytics', 'check-circle', { variant: 'duotone', color: 'success', size: '32px' }) }}
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ cohort_stats.completed_diagnostics|default(0) }}</span>
+        <span class="kpi-card__label">{{ 'Diagnósticos Completados'|t }}</span>
+      </div>
+    </article>
+
+    <article class="kpi-card">
+      <div class="kpi-card__icon">
+        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'corporate', size: '32px' }) }}
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ cohort_stats.active_canvases|default(0) }}</span>
+        <span class="kpi-card__label">{{ 'Canvas Activos'|t }}</span>
+      </div>
+    </article>
+
+    <article class="kpi-card">
+      <div class="kpi-card__icon">
+        {{ jaraba_icon('ui', 'path', { variant: 'duotone', color: 'innovation', size: '32px' }) }}
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ cohort_stats.active_paths|default(0) }}</span>
+        <span class="kpi-card__label">{{ 'Itinerarios Activos'|t }}</span>
+      </div>
+    </article>
+  </section>
+
+  {# Main Content Grid #}
+  <div class="program-dashboard__grid">
+    {# Stage Distribution #}
+    <section class="dashboard-section stage-distribution">
+      <header class="dashboard-section__header">
+        <h2>{{ 'Distribución por Fase'|t }}</h2>
+      </header>
+      <div class="dashboard-section__content">
+        <div class="stage-bars">
+          {% for stage, count in stage_distribution %}
+            <div class="stage-bar">
+              <span class="stage-bar__label">{{ stage|capitalize }}</span>
+              <div class="stage-bar__track">
+                <div class="stage-bar__fill stage-bar__fill--{{ stage }}" 
+                     style="width: {{ (count / max(1, cohort_stats.total_entrepreneurs|default(1))) * 100 }}%">
+                </div>
+              </div>
+              <span class="stage-bar__count">{{ count }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    {# Aggregate Progress #}
+    <section class="dashboard-section aggregate-progress">
+      <header class="dashboard-section__header">
+        <h2>{{ 'Progreso Agregado'|t }}</h2>
+      </header>
+      <div class="dashboard-section__content">
+        <div class="progress-metric">
+          <span class="progress-metric__label">{{ 'Completitud Media Canvas'|t }}</span>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" style="width: {{ aggregate_progress.avg_canvas_completeness|default(0) }}%"></div>
+          </div>
+          <span class="progress-metric__value">{{ aggregate_progress.avg_canvas_completeness|default(0) }}%</span>
+        </div>
+        
+        <div class="progress-metric">
+          <span class="progress-metric__label">{{ 'Progreso Medio Itinerarios'|t }}</span>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" style="width: {{ aggregate_progress.avg_path_progress|default(0) }}%"></div>
+          </div>
+          <span class="progress-metric__value">{{ aggregate_progress.avg_path_progress|default(0) }}%</span>
+        </div>
+      </div>
+    </section>
+
+    {# Impact Metrics #}
+    <section class="dashboard-section impact-metrics">
+      <header class="dashboard-section__header">
+        <h2>{{ 'Métricas de Impacto'|t }}</h2>
+      </header>
+      <div class="dashboard-section__content">
+        <div class="impact-grid">
+          <div class="impact-item">
+            <span class="impact-item__value">{{ impact_metrics.businesses_created|default(0) }}</span>
+            <span class="impact-item__label">{{ 'Negocios Creados'|t }}</span>
+          </div>
+          <div class="impact-item">
+            <span class="impact-item__value">{{ impact_metrics.jobs_created|default(0) }}</span>
+            <span class="impact-item__label">{{ 'Empleos Generados'|t }}</span>
+          </div>
+          <div class="impact-item">
+            <span class="impact-item__value">{{ impact_metrics.total_revenue_generated|default(0)|number_format(0, ',', '.') }}€</span>
+            <span class="impact-item__label">{{ 'Facturación Generada'|t }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# Recent Activity #}
+    <section class="dashboard-section recent-activity">
+      <header class="dashboard-section__header">
+        <h2>{{ 'Actividad Reciente'|t }}</h2>
+      </header>
+      <div class="dashboard-section__content">
+        {% if recent_activity %}
+          <ul class="activity-list">
+            {% for activity in recent_activity %}
+              <li class="activity-item">
+                <span class="activity-item__icon">
+                  {{ jaraba_icon('actions', 'check', { size: '16px', color: 'success' }) }}
+                </span>
+                <span class="activity-item__text">{{ activity.label }}</span>
+                <span class="activity-item__date">{{ activity.date|date('d/m/Y') }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">{{ 'No hay actividad reciente.'|t }}</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+# Action links for Candidate entities
+
+entity.candidate_profile.add_form:
+  title: 'Add Profile'
+  route_name: entity.candidate_profile.add_form
+  appears_on:
+    - entity.candidate_profile.collection
+
+entity.candidate_skill.add_form:
+  title: 'Add Skill'
+  route_name: entity.candidate_skill.add_form
+  appears_on:
+    - entity.candidate_skill.collection
+

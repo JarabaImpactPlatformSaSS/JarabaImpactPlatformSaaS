@@ -1,0 +1,168 @@
+{#
+/**
+ * @file
+ * Premium Recruiter Dashboard template.
+ *
+ * Available variables:
+ * - phase_name: Current recruiting phase name.
+ * - phase_emoji: Emoji for the phase.
+ * - phase_number: Phase number (1-5).
+ * - health_score: Overall recruiting health score.
+ * - metrics: Array of key metrics (active_jobs, pending_applications, etc).
+ * - assistant_message: Natural language message from recruiter assistant.
+ * - gaps: Array of detected recruiting gaps.
+ * - optimization_paths: Personalized optimization paths.
+ * - suggested_tools: Recommended tools/products.
+ * - quick_actions: Quick action links.
+ * - user_name: Current user's display name.
+ */
+#}
+
+<div class="recruiter-dashboard recruiter-dashboard--phase-{{ phase_number }}">
+  {# Header with KPIs #}
+  <header class="dashboard-header dashboard-header--recruiter">
+    <div class="header-content">
+      <div class="phase-badge phase-badge--{{ phase_number }}">
+        <span class="phase-emoji">{{ jaraba_icon(phase_icon_category, phase_icon_name, { variant: 'duotone', size: '28px' }) }}</span>
+        <span class="phase-name">{{ phase_name }}</span>
+      </div>
+      <div class="user-greeting">
+        <h2>{{ user_name }}</h2>
+        <p>{{ 'Tu Asistente de Selección'|t }}</p>
+      </div>
+    </div>
+    
+    {# KPI Cards #}
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-icon">{{ jaraba_icon('business', 'diagnostic', { color: 'azul-corporativo', size: '24px' }) }}</span>
+        <span class="kpi-value">{{ metrics.active_jobs|default(0) }}</span>
+        <span class="kpi-label">{{ 'Ofertas'|t }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-icon">{{ jaraba_icon('ui', 'users', { color: 'verde-innovacion', size: '24px' }) }}</span>
+        <span class="kpi-value">{{ metrics.pending_applications|default(0) }}</span>
+        <span class="kpi-label">{{ 'Pendientes'|t }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-icon">{{ jaraba_icon('ui', 'clock', { color: 'naranja-impulso', size: '24px' }) }}</span>
+        <span class="kpi-value">{{ metrics.avg_response_time|default('--') }}</span>
+        <span class="kpi-label">{{ 'Respuesta'|t }}</span>
+      </div>
+      <div class="kpi-card kpi-card--highlight">
+        <span class="kpi-icon">{{ jaraba_icon('analytics', 'chart-line', { color: 'success', size: '24px' }) }}</span>
+        <span class="kpi-value">{{ metrics.conversion_rate|default(0) }}%</span>
+        <span class="kpi-label">{{ 'Conversión'|t }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# Assistant Message Card #}
+  {% if assistant_message %}
+  <section class="assistant-card card--glassmorphism">
+    <div class="assistant-avatar">
+      <span class="avatar-icon">{{ jaraba_icon('business', 'job', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}</span>
+      <span class="avatar-badge">{{ 'Asistente IA'|t }}</span>
+    </div>
+    <div class="assistant-content">
+      <div class="assistant-message">
+        {{ assistant_message|nl2br }}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# Detected Gaps Section #}
+  {% if gaps is not empty %}
+  <section class="gaps-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ui', 'search', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}</span>
+      <h3>{{ 'Oportunidades de mejora'|t }}</h3>
+    </div>
+    <div class="gaps-grid">
+      {% for gap in gaps %}
+      <div class="gap-chip gap-chip--priority-{{ gap.priority }}">
+        <span class="gap-icon">{{ gap.icon }}</span>
+        <span class="gap-name">{{ gap.name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Optimization Paths Section #}
+  {% if optimization_paths is not empty %}
+  <section class="paths-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ui', 'map', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}</span>
+      <h3>{{ 'Tu plan de acción'|t }}</h3>
+    </div>
+    <div class="paths-grid">
+      {% for path in optimization_paths %}
+      <article class="path-card card--glassmorphism" style="--path-color: {{ path.color }};">
+        <div class="path-header">
+          <span class="path-icon">{{ path.icon }}</span>
+          <div class="path-meta">
+            <h4>{{ path.name }}</h4>
+            <span class="duration-badge">{{ path.duration }}</span>
+          </div>
+        </div>
+        <ol class="path-steps">
+          {% for step in path.steps %}
+          <li class="step">
+            <span class="step-number">{{ loop.index }}</span>
+            <span class="step-text">{{ step }}</span>
+          </li>
+          {% endfor %}
+        </ol>
+        {% if path.action %}
+        <a href="{{ path.action.url }}" class="path-cta">
+          <span class="cta-icon">{{ path.action.icon }}</span>
+          <span class="cta-text">{{ path.action.label }}</span>
+          <span class="cta-arrow">→</span>
+        </a>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Suggested Tools #}
+  {% if suggested_tools is not empty %}
+  <section class="tools-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ui', 'tools', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}</span>
+      <h3>{{ 'Herramientas recomendadas'|t }}</h3>
+    </div>
+    <div class="tools-grid">
+      {% for tool in suggested_tools %}
+      <a href="{{ tool.url }}" class="tool-card {{ tool.highlight ? 'tool-card--highlight' : '' }}">
+        <div class="tool-icon">{{ tool.icon }}</div>
+        <div class="tool-content">
+          <h4>{{ tool.title }}</h4>
+          <p>{{ tool.description }}</p>
+          <span class="tool-price">{{ tool.price }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Quick Actions #}
+  <section class="actions-section">
+    <div class="section-header">
+      <span class="section-icon">{{ jaraba_icon('ai', 'automation', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}</span>
+      <h3>{{ 'Acciones rápidas'|t }}</h3>
+    </div>
+    <div class="actions-grid">
+      {% for action in quick_actions %}
+      <a href="{{ action.url }}" class="action-button action-button--{{ action.color }}">
+        <span class="action-icon">{{ jaraba_icon(action.icon_category, action.icon_name, { variant: 'duotone', size: '24px' }) }}</span>
+        <span class="action-label">{{ action.label }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>

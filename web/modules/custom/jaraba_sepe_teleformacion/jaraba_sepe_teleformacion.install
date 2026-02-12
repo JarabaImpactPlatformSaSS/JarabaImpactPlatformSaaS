@@ -1,0 +1,179 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_sepe_teleformacion.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_sepe_teleformacion_install(): void {
+  // Mensaje de instalación.
+  \Drupal::messenger()->addMessage(t('Módulo SEPE Teleformación instalado correctamente.'));
+  
+  // Log de instalación.
+  \Drupal::logger('sepe_teleformacion')->notice('Módulo SEPE Teleformación instalado.');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_sepe_teleformacion_uninstall(): void {
+  // Limpiar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_sepe_teleformacion.settings')->delete();
+  
+  // Log de desinstalación.
+  \Drupal::logger('sepe_teleformacion')->notice('Módulo SEPE Teleformación desinstalado.');
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_sepe_teleformacion_requirements(string $phase): array {
+  $requirements = [];
+  
+  if ($phase === 'runtime') {
+    // Verificar que SOAP esté disponible.
+    if (!extension_loaded('soap')) {
+      $requirements['sepe_soap'] = [
+        'title' => t('SEPE SOAP Extension'),
+        'value' => t('Missing'),
+        'description' => t('The PHP SOAP extension is required for SEPE web services.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+    else {
+      $requirements['sepe_soap'] = [
+        'title' => t('SEPE SOAP Extension'),
+        'value' => t('Enabled'),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    
+    // Verificar configuración del centro.
+    $config = \Drupal::config('jaraba_sepe_teleformacion.settings');
+    $centro_id = $config->get('centro_activo_id');
+    
+    if (empty($centro_id)) {
+      $requirements['sepe_centro'] = [
+        'title' => t('SEPE Centro Configurado'),
+        'value' => t('No configurado'),
+        'description' => t('Debe configurar un centro SEPE activo en <a href=":url">Configuración SEPE</a>.', [
+          ':url' => '/admin/config/jaraba/sepe',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      // Verificar que el centro existe.
+      $centro = \Drupal::entityTypeManager()->getStorage('sepe_centro')->load($centro_id);
+      if ($centro) {
+        $requirements['sepe_centro'] = [
+          'title' => t('SEPE Centro Configurado'),
+          'value' => $centro->label(),
+          'severity' => REQUIREMENT_OK,
+        ];
+      }
+      else {
+        $requirements['sepe_centro'] = [
+          'title' => t('SEPE Centro Configurado'),
+          'value' => t('Centro ID @id no encontrado', ['@id' => $centro_id]),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+    }
+  }
+  
+  return $requirements;
+}
+
+/**
+ * Implements hook_schema().
+ *
+ * Las entidades ContentEntity crean sus tablas automáticamente via
+ * baseFieldDefinitions(). Este hook es solo para tablas auxiliares.
+ */
+function jaraba_sepe_teleformacion_schema(): array {
+  // Tabla para log de peticiones SOAP (auditoría).
+  $schema['sepe_soap_log'] = [
+    'description' => 'Log de peticiones SOAP al/desde SEPE.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'operation' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Nombre de la operación SOAP.',
+      ],
+      'direction' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => 'inbound',
+        'description' => 'Dirección: inbound (SEPE→Plataforma) o outbound.',
+      ],
+      'request_ip' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'description' => 'IP de origen de la petición.',
+      ],
+      'request_body' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'description' => 'Cuerpo de la petición SOAP (XML).',
+      ],
+      'response_body' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'description' => 'Cuerpo de la respuesta SOAP (XML).',
+      ],
+      'response_code' => [
+        'type' => 'int',
+        'size' => 'small',
+        'description' => 'Código HTTP de respuesta.',
+      ],
+      'duration_ms' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => 'Duración en milisegundos.',
+      ],
+      'error_message' => [
+        'type' => 'varchar',
+        'length' => 500,
+        'description' => 'Mensaje de error si aplica.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp de creación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'operation' => ['operation'],
+      'created' => ['created'],
+      'direction' => ['direction'],
+    ],
+  ];
+  
+  return $schema;
+}
+
+/**
+ * Create sepe_soap_log table for SOAP audit logging.
+ */
+function jaraba_sepe_teleformacion_update_10001(): void {
+  $schema = jaraba_sepe_teleformacion_schema();
+  $database = \Drupal::database();
+  
+  if (!$database->schema()->tableExists('sepe_soap_log')) {
+    $database->schema()->createTable('sepe_soap_log', $schema['sepe_soap_log']);
+  }
+}

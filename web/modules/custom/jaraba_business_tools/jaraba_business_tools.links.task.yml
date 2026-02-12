@@ -1,0 +1,47 @@
+# Task links (tabs) for Business Tools module
+# Adds tabs to /admin/content for Canvas, MVP, and Projections
+# Field UI generates the other tabs automatically
+
+# Tab for Business Canvas in Content section
+entity.business_model_canvas.collection:
+  title: 'Canvas'
+  route_name: entity.business_model_canvas.collection
+  base_route: system.admin_content
+  weight: 30
+
+# Tab for MVP Hypothesis in Content section
+entity.mvp_hypothesis.collection:
+  title: 'Hipótesis MVP'
+  route_name: entity.mvp_hypothesis.collection
+  base_route: system.admin_content
+  weight: 31
+
+# Tab for Financial Projection in Content section
+entity.financial_projection.collection:
+  title: 'Proyecciones'
+  route_name: entity.financial_projection.collection
+  base_route: system.admin_content
+  weight: 32
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS (Settings page as the default tab)
+# Field UI automatically generates the other tabs (Manage fields, etc.)
+# -----------------------------------------------------------------------------
+
+entity.business_model_canvas.settings_tab:
+  title: 'Configuración'
+  route_name: entity.business_model_canvas.settings
+  base_route: entity.business_model_canvas.settings
+  weight: -10
+
+entity.mvp_hypothesis.settings_tab:
+  title: 'Configuración'
+  route_name: entity.mvp_hypothesis.settings
+  base_route: entity.mvp_hypothesis.settings
+  weight: -10
+
+entity.financial_projection.settings_tab:
+  title: 'Configuración'
+  route_name: entity.financial_projection.settings
+  base_route: entity.financial_projection.settings
+  weight: -10

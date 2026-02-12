@@ -1,0 +1,13 @@
+# Action links for Job Board entities
+
+entity.job_posting.add_form:
+  title: 'Add Job Posting'
+  route_name: entity.job_posting.add_form
+  appears_on:
+    - entity.job_posting.collection
+
+entity.job_application.add_form:
+  title: 'Add Application'
+  route_name: entity.job_application.add_form
+  appears_on:
+    - entity.job_application.collection

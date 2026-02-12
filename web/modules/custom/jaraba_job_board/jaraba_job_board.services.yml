@@ -1,0 +1,101 @@
+services:
+  # ============================================================================
+  # SERVICIOS PRINCIPALES DEL JOB BOARD
+  # ============================================================================
+
+  jaraba_job_board.job_posting:
+    class: Drupal\jaraba_job_board\Service\JobPostingService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+      - '@logger.factory'
+      - '@event_dispatcher'
+
+  jaraba_job_board.application:
+    class: Drupal\jaraba_job_board\Service\ApplicationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_job_board.job_posting'
+      - '@logger.factory'
+      - '@event_dispatcher'
+
+  jaraba_job_board.employer:
+    class: Drupal\jaraba_job_board\Service\EmployerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.factory'
+
+  jaraba_job_board.matching:
+    class: Drupal\jaraba_job_board\Service\MatchingService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+
+  jaraba_job_board.job_alert:
+    class: Drupal\jaraba_job_board\Service\JobAlertMatchingService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@queue'
+      - '@logger.channel.jaraba_job_board'
+
+  jaraba_job_board.search:
+    class: Drupal\jaraba_job_board\Service\JobSearchService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+
+  jaraba_job_board.employability_menu:
+    class: Drupal\jaraba_job_board\Service\EmployabilityMenuService
+    arguments:
+      - '@current_user'
+
+  # ============================================================================
+  # SERVICIO DE NOTIFICACIONES (ECA-APP-001/002)
+  # ============================================================================
+
+  jaraba_job_board.application_notification:
+    class: Drupal\jaraba_job_board\Service\ApplicationNotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@http_client'
+      - '@config.factory'
+      - '@queue'
+      - '@logger.channel.jaraba_job_board'
+
+  logger.channel.jaraba_job_board:
+    parent: logger.channel_base
+    arguments: ['jaraba_job_board']
+
+  # ============================================================================
+  # AGENTES IA
+  # ============================================================================
+
+  jaraba_job_board.agent.recruiter_assistant:
+    class: Drupal\jaraba_job_board\Agent\RecruiterAssistantAgent
+    arguments:
+      - '@jaraba_job_board.job_posting'
+      - '@jaraba_job_board.application'
+      - '@current_user'
+
+  # ============================================================================
+  # WEB PUSH NOTIFICATIONS
+  # ============================================================================
+
+  jaraba_job_board.web_push:
+    class: Drupal\jaraba_job_board\Service\WebPushService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_job_board'
+
+

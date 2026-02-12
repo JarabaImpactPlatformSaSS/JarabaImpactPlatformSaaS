@@ -1,0 +1,114 @@
+{#
+ # Template: Inicio del Wizard de Diagnóstico
+ # /diagnostic/start
+ #}
+<div class="diagnostic-wizard-start">
+  <div class="wizard-hero">
+    <div class="hero-icon">
+      <svg viewBox="0 0 64 64" width="80" height="80">
+        <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M32 18v28M18 32h28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1 class="hero-title">{% trans %}Diagnóstico de Madurez Digital{% endtrans %}</h1>
+    <p class="hero-subtitle">
+      {% trans %}Descubre el nivel de digitalización de tu negocio y recibe recomendaciones personalizadas para crecer.{% endtrans %}
+    </p>
+  </div>
+
+  <div class="wizard-stats">
+    <div class="stat-item">
+      <span class="stat-icon">{{ jaraba_icon('business', 'diagnostic', { color: 'azul-corporativo', size: '24px' }) }}</span>
+      <span class="stat-value">{{ total_questions }}</span>
+      <span class="stat-label">{% trans %}preguntas{% endtrans %}</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">{{ jaraba_icon('ui', 'clock', { color: 'naranja-impulso', size: '24px' }) }}</span>
+      <span class="stat-value">{{ estimated_time }}</span>
+      <span class="stat-label">{% trans %}estimado{% endtrans %}</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">{{ jaraba_icon('business', 'target', { color: 'verde-innovacion', size: '24px' }) }}</span>
+      <span class="stat-value">5</span>
+      <span class="stat-label">{% trans %}áreas{% endtrans %}</span>
+    </div>
+  </div>
+
+  <div class="wizard-sections-preview">
+    <h3>{% trans %}Áreas que evaluaremos{% endtrans %}:</h3>
+    <div class="sections-grid">
+      {% for key, section in sections %}
+        <div class="section-card">
+          <div class="section-icon" data-icon="{{ section.icon }}">
+            {% if section.icon == 'globe' %}{{ jaraba_icon('ui', 'globe', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+            {% elseif section.icon == 'shopping-cart' %}{{ jaraba_icon('business', 'cart', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+            {% elseif section.icon == 'megaphone' %}{{ jaraba_icon('business', 'megaphone', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+            {% elseif section.icon == 'cog' %}{{ jaraba_icon('ui', 'settings', { variant: 'duotone', color: 'azul-verdoso', size: '28px' }) }}
+            {% elseif section.icon == 'robot' %}{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+            {% endif %}
+          </div>
+          <h4>{{ section.title }}</h4>
+          <p>{{ section.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form method="post" action="{{ path('jaraba_diagnostic.wizard.create') }}" class="wizard-start-form">
+    <h3>{% trans %}Datos de tu negocio{% endtrans %}</h3>
+    
+    <div class="form-group">
+      <label for="business_name">{% trans %}Nombre del negocio{% endtrans %}</label>
+      <input type="text" id="business_name" name="business_name" required 
+             placeholder="{% trans %}Ej: Mi Tienda Online{% endtrans %}" class="form-control">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="business_sector">{% trans %}Sector{% endtrans %}</label>
+        <select id="business_sector" name="business_sector" required class="form-control">
+          <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+          <option value="comercio">{% trans %}Comercio{% endtrans %}</option>
+          <option value="servicios">{% trans %}Servicios{% endtrans %}</option>
+          <option value="hosteleria">{% trans %}Hostelería{% endtrans %}</option>
+          <option value="agro">{% trans %}Agroalimentación{% endtrans %}</option>
+          <option value="industria">{% trans %}Industria{% endtrans %}</option>
+          <option value="tech">{% trans %}Tecnología{% endtrans %}</option>
+          <option value="otros">{% trans %}Otros{% endtrans %}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="business_size">{% trans %}Tamaño{% endtrans %}</label>
+        <select id="business_size" name="business_size" required class="form-control">
+          <option value="solo">{% trans %}Autónomo / Solo{% endtrans %}</option>
+          <option value="micro">{% trans %}Micro (1-9 empleados){% endtrans %}</option>
+          <option value="pequena">{% trans %}Pequeña (10-49){% endtrans %}</option>
+          <option value="mediana">{% trans %}Mediana (50-249){% endtrans %}</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-primary btn-lg">
+      {% trans %}Comenzar Diagnóstico{% endtrans %}
+      <svg viewBox="0 0 24 24" width="20" height="20" style="margin-left: 8px;">
+        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </button>
+  </form>
+
+  <div class="wizard-benefits">
+    <div class="benefit-item">
+      <span class="benefit-icon">{{ jaraba_icon('actions', 'check', { color: 'success', size: '20px' }) }}</span>
+      <span>{% trans %}100% gratuito{% endtrans %}</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">{{ jaraba_icon('ui', 'lock', { color: 'azul-corporativo', size: '20px' }) }}</span>
+      <span>{% trans %}Datos confidenciales{% endtrans %}</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">{{ jaraba_icon('analytics', 'gauge', { color: 'naranja-impulso', size: '20px' }) }}</span>
+      <span>{% trans %}Informe personalizado{% endtrans %}</span>
+    </div>
+  </div>
+</div>

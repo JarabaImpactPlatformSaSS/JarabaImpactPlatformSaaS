@@ -1,0 +1,313 @@
+{#
+/**
+ * @file
+ * Employer Dashboard Template - Premium UX.
+ *
+ * Variables:
+ * - jobs_count: Total job postings
+ * - active_jobs: Published jobs
+ * - pending_applications: Applications awaiting review
+ * - total_applications: All applications received
+ * - total_views: Total job views
+ * - conversion_rate: Views to applications percentage
+ * - recent_jobs: Latest job postings with stats
+ * - user: Current user entity
+ *
+ * DIRECTRICES:
+ * - Iconos: SVG via jaraba_icon() en lugar de emojis
+ * - Colores: Variables CSS var(--ej-*)
+ * - i18n: Textos traducibles con |t
+ */
+#}
+{{ attach_library('jaraba_job_board/employer_dashboard') }}
+
+<div class="employer-dashboard">
+  
+  {# Header Premium con saludo y CTA principal #}
+  <header class="dashboard-header">
+    <div class="dashboard-header__content">
+      {# Badge de bienvenida #}
+      <span class="dashboard-header__badge">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        {{ 'Portal Empleador'|t }}
+      </span>
+      
+      {# Título principal con alto contraste #}
+      <h1 class="dashboard-header__title">{{ 'Panel de Reclutador'|t }}</h1>
+      
+      {# Subtítulo en línea separada #}
+      <p class="dashboard-header__subtitle">{{ 'Gestiona tus ofertas de empleo y encuentra el mejor talento para tu empresa.'|t }}</p>
+    </div>
+    
+    {# CTA Flotante - Abre en Modal #}
+    <a href="{{ path('entity.job_posting.add_form') }}" class="cta-button cta-button--glow use-ajax" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"job-posting-modal"}'>
+      <svg class="cta-button__icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      <span class="cta-button__text">{{ 'Publicar Oferta'|t }}</span>
+    </a>
+  </header>
+
+  {# Grid de contenido #}
+  <div class="dashboard-grid">
+    
+    {# ========================================
+       KPI STATS - Tarjetas Clickeables
+       ======================================== #}
+    <section class="dashboard-card dashboard-card--stats">
+      <div class="card-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/>
+            <path d="M18 17V9M13 17V5M8 17v-3"/>
+          </svg>
+          {{ 'Resumen'|t }}
+        </h2>
+      </div>
+      
+      <div class="stats-grid">
+        {# Ofertas Activas - Click → Ver mis ofertas #}
+        <a href="{{ path('jaraba_job_board.employer_jobs') }}" class="employer-stat-item employer-stat-item--primary employer-stat-item--clickable" title="{{ 'Ver ofertas activas'|t }}">
+          <span class="employer-stat-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+            </svg>
+          </span>
+          <span class="employer-stat-value">{{ active_jobs|default(0) }}</span>
+          <span class="employer-stat-label">{{ 'Ofertas activas'|t }}</span>
+          <span class="employer-stat-arrow">→</span>
+        </a>
+        
+        {# Total Candidaturas - Click → Ver candidaturas #}
+        <a href="{{ path('jaraba_job_board.employer_applications') }}" class="employer-stat-item employer-stat-item--clickable" title="{{ 'Ver todas las candidaturas'|t }}">
+          <span class="employer-stat-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </span>
+          <span class="employer-stat-value">{{ total_applications|default(0) }}</span>
+          <span class="employer-stat-label">{{ 'Candidaturas'|t }}</span>
+          <span class="employer-stat-arrow">→</span>
+        </a>
+        
+        {# Pendientes por revisar - Highlight #}
+        <a href="{{ path('jaraba_job_board.employer_applications') }}?status=pending" class="employer-stat-item employer-stat-item--highlight employer-stat-item--clickable" title="{{ 'Ver candidaturas pendientes'|t }}">
+          <span class="employer-stat-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </span>
+          <span class="employer-stat-value">{{ pending_applications|default(0) }}</span>
+          <span class="employer-stat-label">{{ 'Por revisar'|t }}</span>
+          <span class="employer-stat-arrow">→</span>
+        </a>
+        
+        {# Tasa de Conversión #}
+        <div class="employer-stat-item" title="{{ 'Candidaturas / Vistas de ofertas'|t }}">
+          <span class="employer-stat-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+          </span>
+          <span class="employer-stat-value">{{ conversion_rate|default(0) }}%</span>
+          <span class="employer-stat-label">{{ 'Conversión'|t }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# ========================================
+       MIS OFERTAS - Lista Moderna
+       ======================================== #}
+    <section class="dashboard-card dashboard-card--jobs">
+      <div class="card-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          {{ 'Mis Ofertas'|t }} 
+          <span class="badge">{{ jobs_count|default(0) }}</span>
+        </h2>
+        <a href="{{ path('jaraba_job_board.employer_jobs') }}" class="card-action">{{ 'Ver todas'|t }} →</a>
+      </div>
+      
+      {# Filtros inline #}
+      <div class="inline-filters" id="jobsInlineFilters">
+        <div class="inline-filters__search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input type="text" 
+                 id="jobSearchInput" 
+                 placeholder="{{ 'Buscar...'|t }}" 
+                 aria-label="{{ 'Buscar ofertas'|t }}">
+        </div>
+        <div class="inline-filters__chips">
+          <button type="button" class="inline-chip inline-chip--active" data-filter="all">{{ 'Todas'|t }}</button>
+          <button type="button" class="inline-chip inline-chip--published" data-filter="published">{{ 'Publicadas'|t }}</button>
+          <button type="button" class="inline-chip inline-chip--draft" data-filter="draft">{{ 'Borradores'|t }}</button>
+          <button type="button" class="inline-chip inline-chip--paused" data-filter="paused">{{ 'Pausadas'|t }}</button>
+        </div>
+      </div>
+
+      {% if recent_jobs|length > 0 %}
+        <ul class="jobs-list" id="jobsList">
+          {% for job in recent_jobs %}
+            <li class="job-item job-item--{{ job.status }}">
+              <div class="job-item__main">
+                <h4>{{ job.title }}</h4>
+                <span class="job-meta">
+                  <span class="status-badge status-badge--{{ job.status }}">{{ job.status_label }}</span>
+                </span>
+              </div>
+              <div class="job-item__stats">
+                <span class="job-stat" title="{{ 'Candidaturas'|t }}" aria-label="{{ 'Candidaturas'|t }}: {{ job.applications_count }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  {{ job.applications_count }}
+                </span>
+                <span class="job-stat" title="{{ 'Vistas'|t }}" aria-label="{{ 'Vistas'|t }}: {{ job.views }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  {{ job.views }}
+                </span>
+              </div>
+              <div class="job-item__actions">
+                {# Ver oferta en modal #}
+                <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}" 
+                   class="job-action job-action--view use-ajax" 
+                   data-dialog-type="modal" 
+                   data-dialog-options='{"width":"1000","dialogClass":"job-view-modal"}'
+                   title="{{ 'Ver oferta'|t }}"
+                   aria-label="{{ 'Ver oferta'|t }}: {{ job.title }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </a>
+                {# Editar oferta en modal #}
+                <a href="{{ path('entity.job_posting.edit_form', {'job_posting': job.id}) }}" 
+                   class="job-action job-action--edit use-ajax" 
+                   data-dialog-type="modal" 
+                   data-dialog-options='{"width":"900","dialogClass":"job-edit-modal"}'
+                   title="{{ 'Editar oferta'|t }}"
+                   aria-label="{{ 'Editar oferta'|t }}: {{ job.title }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+          </svg>
+          <p>{{ 'Aún no tienes ofertas publicadas.'|t }}</p>
+          <a href="{{ path('entity.job_posting.add_form') }}" class="btn btn--primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"job-posting-modal"}'>{{ 'Crear primera oferta'|t }}</a>
+        </div>
+      {% endif %}
+    </section>
+
+    {# ========================================
+       ACCIONES RÁPIDAS
+       ======================================== #}
+    <section class="dashboard-card dashboard-card--actions">
+      <div class="card-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          {{ 'Acciones Rápidas'|t }}
+        </h2>
+      </div>
+      
+      <div class="actions-list">
+        <a href="{{ path('jaraba_job_board.employer_applications') }}" class="action-link">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+          </span>
+          <span class="action-text">{{ 'Ver candidaturas'|t }}</span>
+        </a>
+        <a href="{{ path('jaraba_job_board.employer_jobs') }}" class="action-link">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"/>
+              <path d="M18 17V9M13 17V5M8 17v-3"/>
+            </svg>
+          </span>
+          <span class="action-text">{{ 'Analytics'|t }}</span>
+        </a>
+        <a href="{{ path('entity.job_posting.add_form') }}" class="action-link action-link--primary use-ajax" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"job-posting-modal"}'>
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v8M8 12h8"/>
+            </svg>
+          </span>
+          <span class="action-text">{{ 'Nueva oferta'|t }}</span>
+        </a>
+      </div>
+    </section>
+
+    {# ========================================
+       TIPS PARA RECLUTADORES
+       ======================================== #}
+    <section class="dashboard-card dashboard-card--tips">
+      <div class="card-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+          </svg>
+          {{ 'Mejora tus resultados'|t }}
+        </h2>
+      </div>
+      
+      <div class="tips-content">
+        <ul class="tips-list">
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ej-color-impulse, #FF8C42)" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ 'Añade descripción detallada para atraer mejor talento'|t }}
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ej-color-impulse, #FF8C42)" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ 'Responde en menos de 48h para mantener candidatos interesados'|t }}
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ej-color-impulse, #FF8C42)" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ 'Usa el copiloto IA para filtrar candidatos automáticamente'|t }}
+          </li>
+        </ul>
+      </div>
+    </section>
+    
+  </div>
+</div>

@@ -1,0 +1,25 @@
+# Settings routes for Field UI integration
+
+entity.business_model_canvas.settings:
+  path: '/admin/structure/business-canvas'
+  defaults:
+    _form: 'Drupal\jaraba_business_tools\Form\BusinessModelCanvasSettingsForm'
+    _title: 'Configuración de Canvas de Modelo de Negocio'
+  requirements:
+    _permission: 'administer business model canvas'
+
+entity.mvp_hypothesis.settings:
+  path: '/admin/structure/mvp-hypothesis'
+  defaults:
+    _form: 'Drupal\jaraba_business_tools\Form\MvpHypothesisSettingsForm'
+    _title: 'Configuración de Hipótesis MVP'
+  requirements:
+    _permission: 'administer business model canvas'
+
+entity.financial_projection.settings:
+  path: '/admin/structure/financial-projection'
+  defaults:
+    _form: 'Drupal\jaraba_business_tools\Form\FinancialProjectionSettingsForm'
+    _title: 'Configuración de Proyecciones Financieras'
+  requirements:
+    _permission: 'administer business model canvas'

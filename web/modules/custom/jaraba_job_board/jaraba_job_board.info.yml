@@ -1,0 +1,20 @@
+name: Jaraba Job Board
+type: module
+description: 'Portal de Empleo y Bolsa de Trabajo para el vertical de Empleabilidad Digital. Conecta PYMEs digitalizadas con talento formado en el programa Impulso Empleo.'
+package: Jaraba Empleabilidad
+core_version_requirement: ^10 || ^11
+php: 8.1
+
+dependencies:
+  - drupal:user
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_lms:jaraba_lms
+
+# Entidades custom del módulo
+# - job_posting: Oferta de empleo
+# - job_application: Candidatura a una oferta
+# - employer_profile: Perfil de empresa empleadora
+# - saved_job: Ofertas guardadas por candidatos
+# - job_alert: Alertas de empleo configuradas
+
+configure: admin/config/empleabilidad/job-board

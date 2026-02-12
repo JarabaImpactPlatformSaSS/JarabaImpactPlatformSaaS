@@ -1,0 +1,52 @@
+# Permisos del módulo jaraba_paths
+# Itinerarios de Digitalización - Vertical Emprendimiento
+
+# === Administración ===
+administer digitalization paths:
+  title: 'Administrar itinerarios de digitalización'
+  description: 'Acceso completo a la gestión de paths, fases, módulos y pasos.'
+  restrict access: true
+
+# === Paths (digitalization_path) ===
+create digitalization path:
+  title: 'Crear itinerario'
+  description: 'Permite crear nuevos itinerarios de digitalización.'
+  restrict access: true
+
+view any digitalization path:
+  title: 'Ver cualquier itinerario'
+  description: 'Permite ver todos los itinerarios disponibles.'
+
+edit any digitalization path:
+  title: 'Editar cualquier itinerario'
+  description: 'Permite modificar itinerarios.'
+  restrict access: true
+
+# === Enrollments ===
+enroll in path:
+  title: 'Inscribirse en itinerario'
+  description: 'Permite a usuarios inscribirse en itinerarios.'
+
+view own enrollment:
+  title: 'Ver inscripciones propias'
+  description: 'Permite ver el progreso en itinerarios inscritos.'
+
+view any enrollment:
+  title: 'Ver cualquier inscripción'
+  description: 'Permite ver inscripciones de otros usuarios.'
+  restrict access: true
+
+# === Progreso ===
+track own progress:
+  title: 'Registrar progreso propio'
+  description: 'Permite marcar pasos como completados.'
+
+track any progress:
+  title: 'Registrar progreso de otros'
+  description: 'Permite gestionar el progreso de otros usuarios.'
+  restrict access: true
+
+view progress reports:
+  title: 'Ver informes de progreso'
+  description: 'Permite acceder a analíticas de progreso.'
+  restrict access: true

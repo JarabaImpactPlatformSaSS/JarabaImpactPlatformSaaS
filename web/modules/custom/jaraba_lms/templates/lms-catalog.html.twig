@@ -1,0 +1,141 @@
+{#
+/**
+ * @file
+ * Template for course catalog listing with premium search and filters.
+ *
+ * Available variables:
+ * - courses: Array of courses with title, summary, duration, difficulty, etc.
+ * - filters: Current applied filters.
+ * - facets: Available filter facets.
+ */
+#}
+<div class="lms-catalog">
+  {# ===== Search & Filter Header ===== #}
+  <div class="catalog-header">
+    <div class="search-container">
+      <form action="" method="get" class="search-form">
+        <div class="search-input-wrapper">
+          <span class="search-icon">{{ jaraba_icon('actions', 'search', { size: '20px' }) }}</span>
+          <input 
+            type="text" 
+            name="q" 
+            placeholder="{{ 'Buscar cursos...'|t }}"
+            value="{{ filters.search }}"
+            class="search-input"
+            autocomplete="off"
+          >
+          {% if filters.search %}
+            <a href="{{ path('jaraba_lms.catalog') }}" class="search-clear" title="{{ 'Limpiar'|t }}">✕</a>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary search-btn">{{ 'Buscar'|t }}</button>
+      </form>
+    </div>
+    
+    <div class="filter-bar">
+      <span class="filter-label">{{ 'Filtrar por:'|t }}</span>
+      <div class="filter-chips">
+        {% for level, data in facets.difficulty.options %}
+          {% set is_active = filters.difficulty == level %}
+          <a 
+            href="?difficulty={{ is_active ? '' : level }}{% if filters.search %}&q={{ filters.search }}{% endif %}" 
+            class="filter-chip {% if is_active %}active{% endif %}"
+          >
+            {{ data.label }} <span class="chip-count">({{ data.count }})</span>
+          </a>
+        {% endfor %}
+        
+        {# Filter for free courses #}
+        <a 
+          href="?free=1{% if filters.search %}&q={{ filters.search }}{% endif %}" 
+          class="filter-chip {% if filters.free %}active{% endif %}"
+        >
+          {{ 'Gratis'|t }} {{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '14px' }) }}
+        </a>
+      </div>
+      
+      {% if filters.difficulty or filters.search or filters.free %}
+        <a href="{{ path('jaraba_lms.catalog') }}" class="clear-filters">
+          {{ 'Limpiar filtros'|t }} ✕
+        </a>
+      {% endif %}
+    </div>
+    
+    <div class="results-count">
+      {% if courses|length == 1 %}
+        {{ '1 curso encontrado'|t }}
+      {% else %}
+        {{ '@count cursos encontrados'|t({'@count': courses|length}) }}
+      {% endif %}
+    </div>
+  </div>
+
+  {# ===== Course Grid ===== #}
+  {% if courses %}
+    <div class="catalog-grid">
+      {% for course in courses %}
+        <div class="course-card {% if course.is_enrolled %}enrolled{% endif %}">
+          <div class="course-thumbnail">
+            {% if course.thumbnail_url %}
+              <img src="{{ course.thumbnail_url }}" alt="{{ course.title }}" loading="lazy">
+            {% endif %}
+            {% if course.is_premium %}
+              <span class="premium-badge">{{ 'Premium'|t }}</span>
+            {% endif %}
+            {% if course.price == 0 %}
+              <span class="free-badge">{{ 'Gratis'|t }}</span>
+            {% endif %}
+          </div>
+          <div class="course-content">
+            <span class="difficulty-badge difficulty-{{ course.difficulty }}">
+              {{ course.difficulty_label }}
+            </span>
+            <h3 class="course-title">
+              <a href="{{ course.url }}">{{ course.title }}</a>
+            </h3>
+            <p class="course-summary">{{ course.summary|striptags|slice(0, 100) }}...</p>
+            <div class="course-meta">
+              <span class="duration">{{ jaraba_icon('ui', 'clock', { size: '14px' }) }} {{ course.duration_formatted }}</span>
+              {% if course.price > 0 %}
+                <span class="price">{{ course.price }} €</span>
+              {% else %}
+                <span class="price free">{{ 'Gratis'|t }}</span>
+              {% endif %}
+            </div>
+            {% if course.is_enrolled %}
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ course.progress }}%"></div>
+              </div>
+              <a href="{{ course.url }}" class="btn btn-secondary">{{ 'Continuar'|t }} ({{ course.progress }}%)</a>
+            {% else %}
+              <a href="{{ course.url }}" class="btn btn-primary">{{ 'Ver curso'|t }}</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {# Empty State Premium #}
+    <div class="empty-state-premium">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+      {% if filters.search or filters.difficulty %}
+        <h3 class="empty-title">{{ 'No hay resultados para tu búsqueda'|t }}</h3>
+        <p class="empty-message">{{ 'Intenta con otros términos o limpia los filtros.'|t }}</p>
+        <a href="{{ path('jaraba_lms.catalog') }}" class="btn btn-primary btn-large">
+          {{ 'Ver todos los cursos'|t }}
+        </a>
+      {% else %}
+        <h3 class="empty-title">{{ 'Estamos preparando cursos para ti'|t }}</h3>
+        <p class="empty-message">{{ 'Próximamente encontrarás formación adaptada a tu perfil profesional y objetivos de carrera.'|t }}</p>
+        <a href="{{ path('jaraba_lms.my_learning') }}" class="btn btn-primary btn-large">
+          {{ 'Ir a mi dashboard'|t }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

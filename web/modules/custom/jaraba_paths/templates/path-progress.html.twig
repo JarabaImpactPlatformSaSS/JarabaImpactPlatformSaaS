@@ -1,0 +1,141 @@
+{#
+ # Template: Mi Progreso
+ # /my-progress
+ #}
+<div class="path-progress">
+  
+  {% if requires_login %}
+    {# Estado: No autenticado #}
+    <div class="login-required">
+      <div class="login-icon">{{ jaraba_icon('ui', 'lock', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</div>
+      <h2>{% trans %}Inicia sesión para ver tu progreso{% endtrans %}</h2>
+      <p>{% trans %}Accede a tu cuenta para ver tus itinerarios activos y continuar aprendiendo.{% endtrans %}</p>
+      <a href="{{ path('user.login') }}" class="btn-primary btn-lg">
+        {% trans %}Iniciar sesión{% endtrans %}
+      </a>
+    </div>
+  {% elseif enrollments|length == 0 %}
+    {# Estado: Sin inscripciones #}
+    <div class="empty-progress">
+      <div class="empty-icon">{{ jaraba_icon('business', 'pathway', { variant: 'duotone', color: 'naranja-impulso', size: '48px' }) }}</div>
+      <h2>{% trans %}Aún no tienes itinerarios activos{% endtrans %}</h2>
+      <p>{% trans %}Explora nuestro catálogo y encuentra el itinerario perfecto para tu negocio.{% endtrans %}</p>
+      <a href="{{ path('jaraba_paths.catalog') }}" class="btn-primary btn-lg">
+        {% trans %}Ver itinerarios{% endtrans %}
+      </a>
+    </div>
+  {% else %}
+    {# Header con estadísticas #}
+    <div class="progress-header">
+      <h1>{% trans %}Mi Progreso{% endtrans %}</h1>
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value">{{ stats.in_progress }}</span>
+          <span class="stat-label">{% trans %}En curso{% endtrans %}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value">{{ stats.completed }}</span>
+          <span class="stat-label">{% trans %}Completados{% endtrans %}</span>
+        </div>
+        <div class="stat-card stat-xp">
+          <span class="stat-value">{{ stats.total_xp }}</span>
+          <span class="stat-label">{% trans %}XP obtenidos{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+
+    {# Itinerario activo principal #}
+    {% if active_enrollment %}
+      <section class="active-section">
+        <h2>{{ jaraba_icon('ui', 'map', { color: 'verde-innovacion', size: '24px' }) }} {% trans %}Continuar donde lo dejaste{% endtrans %}</h2>
+        <div class="active-card">
+          <div class="active-content">
+            <h3>{{ active_enrollment.path_title }}</h3>
+            <div class="progress-visual">
+              <div class="progress-bar large">
+                <div class="progress-fill" style="width: {{ active_enrollment.progress }}%"></div>
+              </div>
+              <span class="progress-percent">{{ active_enrollment.progress }}%</span>
+            </div>
+            
+            {% if active_enrollment.next_step %}
+              <div class="next-step">
+                <span class="step-label">{% trans %}Siguiente paso{% endtrans %}:</span>
+                <span class="step-title">{{ active_enrollment.next_step.title }}</span>
+              </div>
+            {% endif %}
+          </div>
+          <div class="active-actions">
+            <a href="{{ active_enrollment.path_url }}" class="btn-primary btn-lg">
+              {% trans %}Continuar{% endtrans %}
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    {# Lista de inscripciones #}
+    <section class="enrollments-section">
+      <h2>{{ jaraba_icon('ui', 'book', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }} {% trans %}Mis itinerarios{% endtrans %}</h2>
+      <div class="enrollments-grid">
+        {% for enrollment in enrollments %}
+          <div class="enrollment-card status-{{ enrollment.status }}">
+            <div class="card-header">
+              {% if enrollment.status == 'completed' %}
+                <span class="status-badge completed">✓ {% trans %}Completado{% endtrans %}</span>
+              {% elseif enrollment.status == 'paused' %}
+                <span class="status-badge paused">⏸ {% trans %}Pausado{% endtrans %}</span>
+              {% else %}
+                <span class="status-badge active">{% trans %}En curso{% endtrans %}</span>
+              {% endif %}
+            </div>
+            
+            <div class="card-body">
+              <h3>{{ enrollment.path_title }}</h3>
+              
+              <div class="progress-bar">
+                <div class="progress-fill 
+                  {% if enrollment.progress < 30 %}fill-red{% elseif enrollment.progress < 70 %}fill-yellow{% else %}fill-green{% endif %}" 
+                     style="width: {{ enrollment.progress }}%"></div>
+              </div>
+              <span class="progress-text">{{ enrollment.progress }}% {% trans %}completado{% endtrans %}</span>
+              
+              <div class="card-meta">
+                <span class="meta-item">
+                  {{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '16px' }) }} {{ enrollment.xp_earned }} XP
+                </span>
+                <span class="meta-item">
+                  {{ jaraba_icon('ui', 'clock', { color: 'neutral', size: '16px' }) }} {% trans %}Última actividad{% endtrans %}: {{ enrollment.last_activity|date('d/m/Y') }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <a href="{{ enrollment.path_url }}" class="btn-secondary">
+                {% if enrollment.status == 'completed' %}
+                  {% trans %}Revisar{% endtrans %}
+                {% else %}
+                  {% trans %}Continuar{% endtrans %}
+                {% endif %}
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {# CTA para más itinerarios #}
+    <section class="more-section">
+      <div class="more-card">
+        <h3>{% trans %}¿Quieres seguir aprendiendo?{% endtrans %}</h3>
+        <p>{% trans %}Descubre más itinerarios para continuar tu transformación digital.{% endtrans %}</p>
+        <a href="{{ path('jaraba_paths.catalog') }}" class="btn-outline">
+          {% trans %}Explorar catálogo{% endtrans %}
+        </a>
+      </div>
+    </section>
+  {% endif %}
+</div>

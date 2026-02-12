@@ -1,0 +1,36 @@
+# Task links (tabs) for Job Board module
+# Adds tabs to /admin/content for Jobs and Applications
+# Field UI generates the other tabs automatically
+
+# Tab for Job Postings in Content section
+entity.job_posting.collection:
+  title: 'Empleos'
+  route_name: entity.job_posting.collection
+  base_route: system.admin_content
+  weight: 22
+
+# Tab for Job Applications in Content section
+entity.job_application.collection:
+  title: 'Candidaturas'
+  route_name: entity.job_application.collection
+  base_route: system.admin_content
+  weight: 23
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS (Settings page as the default tab)
+# Field UI automatically generates the other tabs (Manage fields, etc.)
+# -----------------------------------------------------------------------------
+
+# Settings (default tab for Job Posting)
+entity.job_posting.settings_tab:
+  title: 'Configuración'
+  route_name: entity.job_posting.settings
+  base_route: entity.job_posting.settings
+  weight: -10
+
+# Settings (default tab for Job Application)
+entity.job_application.settings_tab:
+  title: 'Configuración'
+  route_name: entity.job_application.settings
+  base_route: entity.job_application.settings
+  weight: -10

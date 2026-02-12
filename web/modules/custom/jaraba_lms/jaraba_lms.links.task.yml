@@ -1,0 +1,36 @@
+# Task links (tabs) for LMS module
+# Adds tabs to /admin/content for Courses and Enrollments
+# Field UI generates the other tabs automatically
+
+# Tab for Courses in Content section
+entity.lms_course.collection:
+  title: 'Cursos'
+  route_name: entity.lms_course.collection
+  base_route: system.admin_content
+  weight: 20
+
+# Tab for Enrollments in Content section
+entity.lms_enrollment.collection:
+  title: 'Matrículas'
+  route_name: entity.lms_enrollment.collection
+  base_route: system.admin_content
+  weight: 21
+
+# -----------------------------------------------------------------------------
+# FIELD UI BASE TABS (Settings page as the default tab)
+# Field UI automatically generates the other tabs (Manage fields, etc.)
+# -----------------------------------------------------------------------------
+
+# Settings (default tab for Course)
+entity.lms_course.settings_tab:
+  title: 'Configuración'
+  route_name: entity.lms_course.settings
+  base_route: entity.lms_course.settings
+  weight: -10
+
+# Settings (default tab for Enrollment)
+entity.lms_enrollment.settings_tab:
+  title: 'Configuración'
+  route_name: entity.lms_enrollment.settings
+  base_route: entity.lms_enrollment.settings
+  weight: -10

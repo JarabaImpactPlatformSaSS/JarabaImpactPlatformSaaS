@@ -1,0 +1,25 @@
+services:
+  # Servicio principal de scoring de diagnósticos
+  jaraba_diagnostic.scoring:
+    class: Drupal\jaraba_diagnostic\Service\DiagnosticScoringService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
+  # Servicio de generación de recomendaciones
+  jaraba_diagnostic.recommendation:
+    class: Drupal\jaraba_diagnostic\Service\RecommendationEngineService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
+  # Servicio de generación de informes PDF
+  jaraba_diagnostic.report:
+    class: Drupal\jaraba_diagnostic\Service\DiagnosticReportService
+    arguments:
+      - '@entity_type.manager'
+      - '@renderer'
+      - '@logger.channel.default'
+

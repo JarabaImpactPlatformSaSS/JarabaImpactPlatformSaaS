@@ -1,0 +1,305 @@
+{#
+/**
+ * @file
+ * Template for My Company Analytics dashboard.
+ * Shows employer's job posting statistics and performance.
+ */
+#}
+
+<div class="my-company-analytics">
+  {# Header #}
+  <div class="analytics-header">
+    <h2 class="analytics-title">{{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }} {{ 'Estadísticas de Mi Empresa'|t }}</h2>
+    <p class="analytics-subtitle">{{ 'Rendimiento de tus ofertas de empleo'|t }}</p>
+  </div>
+
+  {# KPIs Grid #}
+  <div class="analytics-kpis">
+    <div class="kpi-card kpi-card--primary">
+      <div class="kpi-icon">{{ jaraba_icon('verticals', 'briefcase', { color: 'azul-corporativo', size: '24px' }) }}</div>
+      <div class="kpi-value">{{ stats.total_jobs }}</div>
+      <div class="kpi-label">{{ 'Ofertas Totales'|t }}</div>
+    </div>
+
+    <div class="kpi-card kpi-card--success">
+      <div class="kpi-icon">{{ jaraba_icon('actions', 'check', { color: 'success', size: '24px' }) }}</div>
+      <div class="kpi-value">{{ stats.active_jobs }}</div>
+      <div class="kpi-label">{{ 'Ofertas Activas'|t }}</div>
+    </div>
+
+    <div class="kpi-card kpi-card--info">
+      <div class="kpi-icon">{{ jaraba_icon('actions', 'check', { color: 'azul-verdoso', size: '24px' }) }}</div>
+      <div class="kpi-value">{{ stats.total_applications }}</div>
+      <div class="kpi-label">{{ 'Candidaturas Recibidas'|t }}</div>
+    </div>
+
+    <div class="kpi-card kpi-card--warning">
+      <div class="kpi-icon">{{ jaraba_icon('ui', 'eye', { color: 'naranja-impulso', size: '24px' }) }}</div>
+      <div class="kpi-value">{{ stats.total_views }}</div>
+      <div class="kpi-label">{{ 'Visualizaciones'|t }}</div>
+    </div>
+
+    <div class="kpi-card kpi-card--accent">
+      <div class="kpi-icon">{{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}</div>
+      <div class="kpi-value">{{ stats.conversion_rate }}%</div>
+      <div class="kpi-label">{{ 'Tasa de Conversión'|t }}</div>
+    </div>
+  </div>
+
+  {# Jobs Performance Table #}
+  {% if jobs|length > 0 %}
+  <div class="analytics-section">
+    <h3 class="section-title">{{ 'Rendimiento por Oferta'|t }}</h3>
+    <div class="table-responsive">
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>{{ 'Oferta'|t }}</th>
+            <th>{{ 'Estado'|t }}</th>
+            <th class="text-center">{{ 'Visualizaciones'|t }}</th>
+            <th class="text-center">{{ 'Candidaturas'|t }}</th>
+            <th class="text-center">{{ 'Conversión'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td>
+              <a href="/employer/jobs/{{ job.id }}/applications" class="job-link">{{ job.title }}</a>
+            </td>
+            <td>
+              <span class="status-badge status-badge--{{ job.status }}">
+                {{ job.status == 'published' ? 'Activa'|t : (job.status == 'draft' ? 'Borrador'|t : 'Cerrada'|t) }}
+              </span>
+            </td>
+            <td class="text-center">{{ job.views }}</td>
+            <td class="text-center">{{ job.applications }}</td>
+            <td class="text-center">
+              {% set conversion = job.views > 0 ? ((job.applications / job.views) * 100)|round(1) : 0 %}
+              {{ conversion }}%
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="analytics-empty">
+    <div class="empty-icon">{{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</div>
+    <p class="empty-message">{{ 'No tienes ofertas de empleo todavía.'|t }}</p>
+    <a href="/employer/jobs/add" class="btn btn--primary">
+      {{ 'Publicar Primera Oferta'|t }}
+    </a>
+  </div>
+  {% endif %}
+
+  {# Quick Actions #}
+  <div class="analytics-actions">
+    <a href="/employer/jobs" class="action-btn">
+      <span class="action-icon">{{ jaraba_icon('business', 'diagnostic', { size: '20px' }) }}</span>
+      <span>{{ 'Gestionar Ofertas'|t }}</span>
+    </a>
+    <a href="/employer/applications" class="action-btn">
+      <span class="action-icon">{{ jaraba_icon('ui', 'users', { size: '20px' }) }}</span>
+      <span>{{ 'Ver Candidaturas'|t }}</span>
+    </a>
+    <a href="/employer/jobs/add" class="action-btn action-btn--primary">
+      <span class="action-icon">{{ jaraba_icon('actions', 'plus', { size: '20px' }) }}</span>
+      <span>{{ 'Nueva Oferta'|t }}</span>
+    </a>
+  </div>
+</div>
+
+<style>
+.my-company-analytics {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.analytics-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.analytics-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.analytics-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.analytics-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 4px solid #e2e8f0;
+}
+
+.kpi-card--primary { border-left-color: #0ea5e9; }
+.kpi-card--success { border-left-color: #10b981; }
+.kpi-card--info { border-left-color: #6366f1; }
+.kpi-card--warning { border-left-color: #f59e0b; }
+.kpi-card--accent { border-left-color: #ec4899; }
+
+.kpi-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.kpi-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.analytics-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.analytics-table th,
+.analytics-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.analytics-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.text-center { text-align: center; }
+
+.job-link {
+  color: #0ea5e9;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.job-link:hover {
+  text-decoration: underline;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge--published { background: #dcfce7; color: #166534; }
+.status-badge--draft { background: #fef3c7; color: #92400e; }
+.status-badge--closed { background: #f1f5f9; color: #64748b; }
+
+.analytics-empty {
+  text-align: center;
+  padding: 3rem;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-message {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.action-btn--primary {
+  background: #0ea5e9;
+  border-color: #0ea5e9;
+  color: #fff;
+}
+
+.action-btn--primary:hover {
+  background: #0284c7;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn--primary {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: #0284c7;
+}
+</style>

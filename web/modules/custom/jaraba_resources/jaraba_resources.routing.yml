@@ -1,0 +1,120 @@
+# Kits API Routes
+jaraba_resources.api.kits.list:
+  path: '/api/v1/kits'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::listKits'
+  methods: [GET]
+  requirements:
+    _permission: 'access resources api'
+  options:
+    _format: json
+
+jaraba_resources.api.kits.categories:
+  path: '/api/v1/kits/categories'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::listCategories'
+  methods: [GET]
+  requirements:
+    _permission: 'access resources api'
+  options:
+    _format: json
+
+jaraba_resources.api.kits.get:
+  path: '/api/v1/kits/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::getKit'
+  methods: [GET]
+  requirements:
+    _permission: 'view digital kits'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_resources.api.kits.download:
+  path: '/api/v1/kits/{id}/download'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::downloadKit'
+  methods: [POST]
+  requirements:
+    _permission: 'download digital kit'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_resources.api.kits.rate:
+  path: '/api/v1/kits/{id}/rate'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::rateKit'
+  methods: [POST]
+  requirements:
+    _permission: 'view digital kits'
+    id: \d+
+  options:
+    _format: json
+
+# Plans API Routes
+jaraba_resources.api.plans.list:
+  path: '/api/v1/plans'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::listPlans'
+  methods: [GET]
+  requirements:
+    _permission: 'view membership plans'
+  options:
+    _format: json
+
+# Subscription API Routes
+jaraba_resources.api.subscription.get:
+  path: '/api/v1/subscription'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::getSubscription'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _format: json
+
+jaraba_resources.api.subscription.trial:
+  path: '/api/v1/subscription/trial'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::startTrial'
+  methods: [POST]
+  requirements:
+    _permission: 'subscribe to plans'
+  options:
+    _format: json
+
+jaraba_resources.api.subscription.cancel:
+  path: '/api/v1/subscription/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::cancelSubscription'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _format: json
+
+# Settings routes for Field UI
+entity.digital_kit.settings:
+  path: '/admin/structure/digital-kit'
+  defaults:
+    _form: 'Drupal\jaraba_resources\Form\DigitalKitSettingsForm'
+    _title: 'Configuración de Kits Digitales'
+  requirements:
+    _permission: 'administer digital kits'
+
+entity.membership_plan.settings:
+  path: '/admin/structure/membership-plan'
+  defaults:
+    _form: 'Drupal\jaraba_resources\Form\MembershipPlanSettingsForm'
+    _title: 'Configuración de Planes de Membresía'
+  requirements:
+    _permission: 'administer membership plans'
+
+entity.user_subscription.settings:
+  path: '/admin/structure/user-subscription'
+  defaults:
+    _form: 'Drupal\jaraba_resources\Form\UserSubscriptionSettingsForm'
+    _title: 'Configuración de Suscripciones'
+  requirements:
+    _permission: 'administer membership plans'

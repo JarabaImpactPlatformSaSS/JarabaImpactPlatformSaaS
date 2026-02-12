@@ -1,0 +1,327 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Resources.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_resources_theme(): array {
+  return [
+    'kit_catalog' => [
+      'template' => 'kit-catalog',
+      'variables' => [
+        'kits' => [],
+        'categories' => [],
+        'user_plan_type' => 'free',
+        'filters' => [],
+      ],
+    ],
+    'kit_detail' => [
+      'template' => 'kit-detail',
+      'variables' => [
+        'kit' => NULL,
+        'can_download' => FALSE,
+        'required_plan' => NULL,
+        'related_kits' => [],
+      ],
+    ],
+    'pricing_table' => [
+      'template' => 'pricing-table',
+      'variables' => [
+        'plans' => [],
+        'current_plan' => NULL,
+        'billing_interval' => 'monthly',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function jaraba_resources_cron(): void {
+  // RES-001: Process expired subscriptions.
+  _jaraba_resources_process_expired_subscriptions();
+  
+  // RES-002: Reset monthly usage counters.
+  _jaraba_resources_reset_monthly_usage();
+  
+  // RES-003: Auto-remove "new" badge after 30 days.
+  _jaraba_resources_update_new_badges();
+}
+
+/**
+ * Process expired subscriptions.
+ */
+function _jaraba_resources_process_expired_subscriptions(): void {
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_resources_expiry_check_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+  
+  // Run every 6 hours.
+  if ($now - $lastRun < 21600) {
+    return;
+  }
+  
+  try {
+    $subscriptionService = \Drupal::service('jaraba_resources.subscription_service');
+    $count = $subscriptionService->processExpiredSubscriptions();
+    
+    if ($count > 0) {
+      \Drupal::logger('jaraba_resources')->info('Expired @count subscriptions', ['@count' => $count]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_resources')->error('Expiry check failed: @error', ['@error' => $e->getMessage()]);
+  }
+  
+  $state->set('jaraba_resources_expiry_check_last', $now);
+}
+
+/**
+ * Reset monthly usage counters.
+ */
+function _jaraba_resources_reset_monthly_usage(): void {
+  // Only run on the first of the month.
+  if (date('j') !== '1') {
+    return;
+  }
+  
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_resources_monthly_reset_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+  
+  // Run once per day on the 1st.
+  if (date('Y-m-d', $lastRun) === date('Y-m-d', $now)) {
+    return;
+  }
+  
+  try {
+    $subscriptionService = \Drupal::service('jaraba_resources.subscription_service');
+    $count = $subscriptionService->resetMonthlyUsage();
+    
+    \Drupal::logger('jaraba_resources')->info('Reset monthly usage for @count subscriptions', ['@count' => $count]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_resources')->error('Monthly reset failed: @error', ['@error' => $e->getMessage()]);
+  }
+  
+  $state->set('jaraba_resources_monthly_reset_last', $now);
+}
+
+/**
+ * Update "new" badges on kits older than 30 days.
+ */
+function _jaraba_resources_update_new_badges(): void {
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_resources_new_badge_update_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+  
+  // Run once per day.
+  if ($now - $lastRun < 86400) {
+    return;
+  }
+  
+  $thirtyDaysAgo = $now - (30 * 86400);
+  
+  $storage = \Drupal::entityTypeManager()->getStorage('digital_kit');
+  $query = $storage->getQuery()
+    ->condition('is_new', TRUE)
+    ->condition('created', $thirtyDaysAgo, '<')
+    ->accessCheck(FALSE);
+  
+  $ids = $query->execute();
+  
+  foreach ($storage->loadMultiple($ids) as $kit) {
+    $kit->set('is_new', FALSE);
+    $kit->save();
+  }
+  
+  if (!empty($ids)) {
+    \Drupal::logger('jaraba_resources')->info('Removed "new" badge from @count kits', ['@count' => count($ids)]);
+  }
+  
+  $state->set('jaraba_resources_new_badge_update_last', $now);
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function jaraba_resources_entity_insert(EntityInterface $entity): void {
+  // RES-004: Notify on new subscription.
+  if ($entity->getEntityTypeId() === 'user_subscription') {
+    _jaraba_resources_notify_new_subscription($entity);
+  }
+}
+
+/**
+ * Notify about new subscription.
+ */
+function _jaraba_resources_notify_new_subscription(EntityInterface $subscription): void {
+  $user = $subscription->getOwner();
+  $plan = $subscription->getPlan();
+  
+  if (!$user || !$plan) {
+    return;
+  }
+  
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  
+  if ($user->getEmail()) {
+    $mailManager->mail('jaraba_resources', 'new_subscription', $user->getEmail(), 'es', [
+      'user' => $user,
+      'plan' => $plan,
+      'subscription' => $subscription,
+    ]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_resources_mail($key, &$message, $params): void {
+  switch ($key) {
+    case 'new_subscription':
+      $message['subject'] = t('Bienvenido a tu plan @plan', [
+        '@plan' => $params['plan']->getName(),
+      ]);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('Tu suscripción al plan "@plan" ha sido activada.', [
+        '@plan' => $params['plan']->getName(),
+      ]);
+      $message['body'][] = t('Ahora tienes acceso a:');
+      
+      $features = $params['plan']->getFeatures();
+      foreach ($features as $feature) {
+        $message['body'][] = '• ' . $feature;
+      }
+      
+      $message['body'][] = t('¡Gracias por confiar en nosotros!');
+      break;
+      
+    case 'subscription_expiring':
+      $message['subject'] = t('Tu suscripción expira pronto');
+      $message['body'][] = t('Hola @name,', ['@name' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('Tu suscripción al plan "@plan" expirará el @date.', [
+        '@plan' => $params['plan']->getName(),
+        '@date' => $params['expiry_date'],
+      ]);
+      $message['body'][] = t('Renueva ahora para mantener tu acceso.');
+      break;
+  }
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_resources_install(): void {
+  // Create default plans.
+  _jaraba_resources_create_default_plans();
+}
+
+/**
+ * Creates default membership plans.
+ */
+function _jaraba_resources_create_default_plans(): void {
+  $plans = [
+    [
+      'name' => 'Gratuito',
+      'description' => 'Acceso básico a la plataforma.',
+      'plan_type' => 'free',
+      'price' => 0,
+      'billing_interval' => 'monthly',
+      'kit_access_level' => 'free',
+      'max_mentoring_sessions' => 0,
+      'max_groups' => 2,
+      'has_ai_features' => FALSE,
+      'has_priority_support' => FALSE,
+      'display_order' => 0,
+      'features' => json_encode([
+        'Acceso a kits gratuitos',
+        'Diagnóstico empresarial',
+        'Hasta 2 grupos de colaboración',
+        'Foro de la comunidad',
+      ]),
+    ],
+    [
+      'name' => 'Starter',
+      'description' => 'Ideal para emprendedores en fase inicial.',
+      'plan_type' => 'starter',
+      'price' => 29,
+      'billing_interval' => 'monthly',
+      'kit_access_level' => 'starter',
+      'max_mentoring_sessions' => 2,
+      'max_groups' => 5,
+      'has_ai_features' => FALSE,
+      'has_priority_support' => FALSE,
+      'display_order' => 1,
+      'features' => json_encode([
+        'Todo lo del plan Gratuito',
+        'Kits digitales Starter',
+        '2 sesiones de mentoría/mes',
+        'Hasta 5 grupos',
+        'Business Model Canvas',
+      ]),
+    ],
+    [
+      'name' => 'Professional',
+      'description' => 'Para negocios en crecimiento.',
+      'plan_type' => 'professional',
+      'price' => 79,
+      'billing_interval' => 'monthly',
+      'kit_access_level' => 'professional',
+      'max_mentoring_sessions' => 5,
+      'max_groups' => 10,
+      'has_ai_features' => TRUE,
+      'has_priority_support' => FALSE,
+      'is_featured' => TRUE,
+      'display_order' => 2,
+      'features' => json_encode([
+        'Todo lo del plan Starter',
+        'Kits digitales Professional',
+        '5 sesiones de mentoría/mes',
+        'Análisis de Canvas con IA',
+        'Proyecciones financieras',
+        'Grupos ilimitados',
+      ]),
+    ],
+    [
+      'name' => 'Enterprise',
+      'description' => 'Solución completa para equipos y programas.',
+      'plan_type' => 'enterprise',
+      'price' => 199,
+      'billing_interval' => 'monthly',
+      'kit_access_level' => 'enterprise',
+      'max_mentoring_sessions' => NULL, // Unlimited.
+      'max_groups' => NULL, // Unlimited.
+      'has_ai_features' => TRUE,
+      'has_priority_support' => TRUE,
+      'display_order' => 3,
+      'features' => json_encode([
+        'Todo lo del plan Professional',
+        'Todos los kits digitales',
+        'Mentorías ilimitadas',
+        'Soporte prioritario',
+        'API access',
+        'White-label options',
+      ]),
+    ],
+  ];
+  
+  $storage = \Drupal::entityTypeManager()->getStorage('membership_plan');
+  
+  foreach ($plans as $planData) {
+    $plan = $storage->create($planData);
+    $plan->set('status', 'active');
+    $plan->save();
+  }
+  
+  \Drupal::logger('jaraba_resources')->info('Created @count default membership plans', ['@count' => count($plans)]);
+}

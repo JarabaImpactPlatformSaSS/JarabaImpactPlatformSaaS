@@ -1,0 +1,20 @@
+# Action links for Resources module entities
+# "Add" buttons on collection pages
+
+entity.digital_kit.add_form:
+  title: 'Añadir kit digital'
+  route_name: entity.digital_kit.add_form
+  appears_on:
+    - entity.digital_kit.collection
+
+entity.membership_plan.add_form:
+  title: 'Añadir plan'
+  route_name: entity.membership_plan.add_form
+  appears_on:
+    - entity.membership_plan.collection
+
+entity.user_subscription.add_form:
+  title: 'Añadir suscripción'
+  route_name: entity.user_subscription.add_form
+  appears_on:
+    - entity.user_subscription.collection
