@@ -219,3 +219,201 @@ function jaraba_agroconecta_core_preprocess_html(array &$variables): void
         }
     }
 }
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Triggers automáticos del Producer Copilot:
+ * - Nuevo producto sin descripción → Encola generación con Copilot.
+ * - Nueva reseña recibida → Encola borrador de respuesta.
+ */
+function jaraba_agroconecta_core_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void
+{
+    // Trigger: Producto sin descripción → generar con Copilot.
+    if ($entity->getEntityTypeId() === 'product_agro') {
+        $description = '';
+        try {
+            if ($entity->hasField('body')) {
+                $description = trim((string) ($entity->get('body')->value ?? ''));
+            }
+        }
+        catch (\Exception $e) {
+            // Campo no disponible.
+        }
+
+        if (empty($description)) {
+            \Drupal::queue('jaraba_agroconecta_copilot_auto')
+                ->createItem([
+                    'action' => 'generate_description',
+                    'product_id' => (int) $entity->id(),
+                    'tenant_id' => $entity->hasField('tenant_id') ? ($entity->get('tenant_id')->target_id ?? NULL) : NULL,
+                ]);
+
+            \Drupal::logger('jaraba_agroconecta_core')->info(
+                'Producto @id creado sin descripción: encolado para generación automática.',
+                ['@id' => $entity->id()]
+            );
+        }
+    }
+
+    // Trigger: Nueva reseña → generar borrador de respuesta.
+    if ($entity->getEntityTypeId() === 'review_agro') {
+        $rating = 3;
+        try {
+            $rating = (int) ($entity->get('rating')->value ?? 3);
+        }
+        catch (\Exception $e) {
+            // Campo no disponible.
+        }
+
+        \Drupal::queue('jaraba_agroconecta_copilot_auto')
+            ->createItem([
+                'action' => 'respond_review',
+                'review_id' => (int) $entity->id(),
+                'review_rating' => $rating,
+                'tenant_id' => $entity->hasField('tenant_id') ? ($entity->get('tenant_id')->target_id ?? NULL) : NULL,
+            ]);
+
+        \Drupal::logger('jaraba_agroconecta_core')->info(
+            'Reseña @id creada: encolado borrador de respuesta automática.',
+            ['@id' => $entity->id()]
+        );
+    }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Tareas periódicas del módulo AgroConecta:
+ * - Actualizar forecasts de demanda (cada 24h, 04:00-06:00 UTC).
+ * - Detectar precios fuera de rango y generar alertas (cada 12h).
+ */
+function jaraba_agroconecta_core_cron(): void
+{
+    $state = \Drupal::state();
+    $time = \Drupal::time()->getRequestTime();
+
+    // === Actualización de forecasts de demanda (cada 24h) ===
+    $lastForecast = (int) $state->get('jaraba_agroconecta.last_forecast_update', 0);
+    $hour = (int) date('G', $time);
+
+    if (($time - $lastForecast) > 86400 && $hour >= 4 && $hour <= 6) {
+        $state->set('jaraba_agroconecta.last_forecast_update', $time);
+
+        try {
+            /** @var \Drupal\jaraba_agroconecta_core\Service\DemandForecasterService $forecaster */
+            $forecaster = \Drupal::service('jaraba_agroconecta.demand_forecaster');
+
+            // Obtener productores activos.
+            $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
+            $producerIds = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('status', 1)
+                ->range(0, 100)
+                ->execute();
+
+            $updated = 0;
+            foreach ($producerIds as $producerId) {
+                try {
+                    $forecaster->getDemandTrends((int) $producerId, 3);
+                    $updated++;
+                }
+                catch (\Exception $e) {
+                    // Continuar con siguiente productor.
+                }
+            }
+
+            \Drupal::logger('jaraba_agroconecta_core')->info(
+                'Cron: forecasts de demanda actualizados para @count productores.',
+                ['@count' => $updated]
+            );
+        }
+        catch (\Exception $e) {
+            \Drupal::logger('jaraba_agroconecta_core')->error(
+                'Cron: error actualizando forecasts: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+    }
+
+    // === Alertas de precios fuera de rango (cada 12h) ===
+    $lastPriceCheck = (int) $state->get('jaraba_agroconecta.last_price_check', 0);
+
+    if (($time - $lastPriceCheck) > 43200) {
+        $state->set('jaraba_agroconecta.last_price_check', $time);
+
+        try {
+            /** @var \Drupal\jaraba_agroconecta_core\Service\MarketSpyService $marketSpy */
+            $marketSpy = \Drupal::service('jaraba_agroconecta.market_spy');
+
+            $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
+            $producerIds = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('status', 1)
+                ->range(0, 100)
+                ->execute();
+
+            $alertCount = 0;
+            foreach ($producerIds as $producerId) {
+                try {
+                    $alerts = $marketSpy->getPriceAlerts((int) $producerId);
+                    $alertCount += count($alerts);
+                }
+                catch (\Exception $e) {
+                    // Continuar con siguiente productor.
+                }
+            }
+
+            if ($alertCount > 0) {
+                \Drupal::logger('jaraba_agroconecta_core')->info(
+                    'Cron: @count alertas de precio detectadas.',
+                    ['@count' => $alertCount]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            \Drupal::logger('jaraba_agroconecta_core')->error(
+                'Cron: error en chequeo de precios: @error',
+                ['@error' => $e->getMessage()]
+            );
+        }
+    }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Plantillas de email del módulo AgroConecta.
+ */
+function jaraba_agroconecta_core_mail(string $key, array &$message, array $params): void
+{
+    switch ($key) {
+        case 'copilot_content_ready':
+            $message['subject'] = t('Tu contenido IA está listo para revisión');
+            $message['body'][] = t('Hola @name,', ['@name' => $params['producer_name'] ?? 'Productor']);
+            $message['body'][] = t('El copiloto ha generado nuevo contenido para tu producto "@product". Revísalo y apruébalo desde tu panel de control.', [
+                '@product' => $params['product_name'] ?? '',
+            ]);
+            break;
+
+        case 'price_alert':
+            $message['subject'] = t('Alerta de precio: @product', ['@product' => $params['product_name'] ?? '']);
+            $message['body'][] = t('Hola @name,', ['@name' => $params['producer_name'] ?? 'Productor']);
+            $message['body'][] = t('Tu producto "@product" tiene un precio @deviation del promedio del mercado (@avg€). @recommendation', [
+                '@product' => $params['product_name'] ?? '',
+                '@deviation' => $params['deviation'] ?? '',
+                '@avg' => $params['market_avg'] ?? '',
+                '@recommendation' => $params['recommendation'] ?? '',
+            ]);
+            break;
+
+        case 'demand_forecast':
+            $message['subject'] = t('Previsión de demanda: @product', ['@product' => $params['product_name'] ?? '']);
+            $message['body'][] = t('Hola @name,', ['@name' => $params['producer_name'] ?? 'Productor']);
+            $message['body'][] = t('Basándonos en las tendencias de ventas, la demanda de "@product" se prevé @trend en los próximos 30 días.', [
+                '@product' => $params['product_name'] ?? '',
+                '@trend' => $params['trend'] ?? 'estable',
+            ]);
+            break;
+    }
+}

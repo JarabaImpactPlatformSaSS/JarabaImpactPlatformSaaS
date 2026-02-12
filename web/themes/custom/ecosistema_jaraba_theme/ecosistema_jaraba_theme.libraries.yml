@@ -137,3 +137,23 @@ alpinejs:
         defer: true
         integrity: sha384-X9kJyAubVxnP0hcA+AMMs21U445qsnqhnUF8EBlEpP3a42Kh/JwWjlv2ZcvGfphb
         crossorigin: anonymous
+
+# F12 — Lenis Smooth Scroll (CDN, versión fija)
+lenis:
+  version: 1.3.17
+  js:
+    https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js:
+      type: external
+      attributes:
+        defer: true
+        crossorigin: anonymous
+
+# F12 — Lenis scroll integration para landing pages
+lenis-scroll:
+  version: 1.0.0
+  js:
+    js/lenis-scroll.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/lenis

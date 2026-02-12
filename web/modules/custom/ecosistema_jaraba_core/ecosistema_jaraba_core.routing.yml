@@ -1374,6 +1374,84 @@ ecosistema_jaraba_core.lead_magnet.template_propuesta:
   requirements:
     _access: 'TRUE'
 
+# ---------------------------------------------------------------------------
+# LEAD MAGNET SUBMISSION HANDLERS (F3 Doc 178 - POST)
+# ---------------------------------------------------------------------------
+# Endpoints API para recibir formularios de lead magnets.
+# Aceptan JSON con email + name + datos especificos.
+# Publicos sin autenticacion para visitantes anonimos.
+
+# POST: Envio de resultados de Calculadora de Madurez Digital
+ecosistema_jaraba_core.lead_magnet.calculadora_submit:
+  path: '/api/lead-magnet/calculadora-madurez'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitCalculadora'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# POST: Envio de formulario Guia Vende Online
+ecosistema_jaraba_core.lead_magnet.guia_submit:
+  path: '/api/lead-magnet/guia-vende-online'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitGuia'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# POST: Envio de formulario Auditoria SEO Local
+ecosistema_jaraba_core.lead_magnet.auditoria_submit:
+  path: '/api/lead-magnet/auditoria-seo'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitAuditoria'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# POST: Envio de formulario Template Propuesta Profesional
+ecosistema_jaraba_core.lead_magnet.propuesta_submit:
+  path: '/api/lead-magnet/template-propuesta'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitPropuesta'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# LEAD MAGNET DOWNLOAD / AUDIT ENDPOINTS (F3 Doc 178 - PDF & SEO)
+# ---------------------------------------------------------------------------
+# Rutas para descargar documentos PDF (print-ready HTML) y ejecutar
+# auditorias SEO desde los lead magnets publicos.
+
+# GET: Descargar Guia AgroConecta como HTML print-ready (PDF via browser)
+ecosistema_jaraba_core.lead_magnet.guia_pdf:
+  path: '/agroconecta/guia-vende-online/descargar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::downloadGuiaPdf'
+    _title: 'Descargar Guia: Vende Online sin Intermediarios'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# GET: Descargar Template Propuesta ServiciosConecta como HTML print-ready
+ecosistema_jaraba_core.lead_magnet.propuesta_pdf:
+  path: '/serviciosconecta/template-propuesta/descargar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::downloadPropuestaPdf'
+    _title: 'Descargar Template: Propuesta Profesional'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# POST: Ejecutar auditoria SEO y devolver resultados JSON
+ecosistema_jaraba_core.lead_magnet.auditoria_result:
+  path: '/api/lead-magnet/auditoria-seo/analizar'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::analyzeUrl'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
 # =============================================
 # F6 — Admin Center Dashboard (Doc 181)
 # =============================================

@@ -145,3 +145,71 @@ jaraba_ai_agents.api.quality.criteria:
   methods: [GET]
   requirements:
     _permission: 'use ai agents'
+
+# F11 — Brand Voice Training API Routes
+jaraba_ai_agents.api.brand_voice.feedback:
+  path: '/api/v1/ai/brand-voice/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\BrandVoiceTrainerApiController::recordFeedback'
+  methods: [POST]
+  requirements:
+    _permission: 'manage tenant brand voice'
+
+jaraba_ai_agents.api.brand_voice.alignment:
+  path: '/api/v1/ai/brand-voice/alignment'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\BrandVoiceTrainerApiController::checkAlignment'
+  methods: [POST]
+  requirements:
+    _permission: 'manage tenant brand voice'
+
+jaraba_ai_agents.api.brand_voice.training_stats:
+  path: '/api/v1/ai/brand-voice/training-stats'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\BrandVoiceTrainerApiController::getTrainingStats'
+  methods: [GET]
+  requirements:
+    _permission: 'manage tenant brand voice'
+
+jaraba_ai_agents.api.brand_voice.refine:
+  path: '/api/v1/ai/brand-voice/refine'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\BrandVoiceTrainerApiController::refineBrandVoice'
+  methods: [POST]
+  requirements:
+    _permission: 'administer ai agents'
+
+# F11 — Prompt Experiment API Routes
+jaraba_ai_agents.api.prompt_experiments.list:
+  path: '/api/v1/ai/prompt-experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\PromptExperimentApiController::listExperiments'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.prompt_experiments.create:
+  path: '/api/v1/ai/prompt-experiments'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\PromptExperimentApiController::createExperiment'
+  methods: [POST]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.prompt_experiments.results:
+  path: '/api/v1/ai/prompt-experiments/{experiment_id}/results'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\PromptExperimentApiController::getResults'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+    experiment_id: '\d+'
+
+# F11 — MultiModal capabilities check
+jaraba_ai_agents.api.multimodal.capabilities:
+  path: '/api/v1/ai/multimodal/capabilities'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\MultiModalApiController::getCapabilities'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'

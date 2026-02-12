@@ -6,7 +6,14 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\ecosistema_jaraba_core\Service\LeadMagnetEmailService;
+use Drupal\ecosistema_jaraba_core\Service\LeadMagnetPdfService;
+use Drupal\ecosistema_jaraba_core\Service\SeoAuditService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controlador para lead magnets publicos por vertical.
@@ -25,11 +32,33 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Rutas publicas con _access: 'TRUE'
  * - Templates limpios sin regiones Drupal
  * - Tracking via jaraba_pixels
+ * - PHP 8.4 strict types
+ * - Controller thin: delega a LeadMagnetEmailService
  *
  * @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
  */
 class LeadMagnetController extends ControllerBase
 {
+
+    /**
+     * Servicio de envio de emails para lead magnets.
+     */
+    protected LeadMagnetEmailService $leadMagnetEmail;
+
+    /**
+     * Servicio de generacion de HTML/PDF para lead magnets.
+     */
+    protected LeadMagnetPdfService $leadMagnetPdf;
+
+    /**
+     * Servicio de auditoria SEO.
+     */
+    protected SeoAuditService $seoAudit;
+
+    /**
+     * Logger del modulo.
+     */
+    protected LoggerInterface $leadLogger;
 
     /**
      * {@inheritdoc}
@@ -38,6 +67,10 @@ class LeadMagnetController extends ControllerBase
     {
         $instance = new static();
         $instance->formBuilder = $container->get('form_builder');
+        $instance->leadMagnetEmail = $container->get('ecosistema_jaraba_core.lead_magnet_email');
+        $instance->leadMagnetPdf = $container->get('ecosistema_jaraba_core.lead_magnet_pdf');
+        $instance->seoAudit = $container->get('ecosistema_jaraba_core.seo_audit');
+        $instance->leadLogger = $container->get('logger.channel.ecosistema_jaraba_core');
         return $instance;
     }
 
@@ -255,6 +288,464 @@ class LeadMagnetController extends ControllerBase
                 ],
             ],
         ];
+    }
+
+    // =========================================================================
+    // SUBMISSION HANDLERS (POST)
+    // =========================================================================
+
+    /**
+     * Procesa el envio del formulario de Calculadora de Madurez Digital.
+     *
+     * Acepta JSON POST con: email, name, score, answers.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con resultado de la operacion.
+     */
+    public function submitCalculadora(Request $request): JsonResponse
+    {
+        return $this->processSubmission($request, 'calculadora_madurez', ['score', 'answers']);
+    }
+
+    /**
+     * Procesa el envio del formulario de Guia Vende Online.
+     *
+     * Acepta JSON POST con: email, name, product_type (opcional).
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con resultado de la operacion.
+     */
+    public function submitGuia(Request $request): JsonResponse
+    {
+        return $this->processSubmission($request, 'guia_vende_online', ['product_type']);
+    }
+
+    /**
+     * Procesa el envio del formulario de Auditoria SEO Local.
+     *
+     * Acepta JSON POST con: email, name, business_name, website_url.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con resultado de la operacion.
+     */
+    public function submitAuditoria(Request $request): JsonResponse
+    {
+        return $this->processSubmission($request, 'auditoria_seo', ['business_name', 'website_url']);
+    }
+
+    /**
+     * Procesa el envio del formulario de Template Propuesta Profesional.
+     *
+     * Acepta JSON POST con: email, name, service_type (opcional).
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con resultado de la operacion.
+     */
+    public function submitPropuesta(Request $request): JsonResponse
+    {
+        return $this->processSubmission($request, 'template_propuesta', ['service_type']);
+    }
+
+    /**
+     * Procesa un envio generico de lead magnet.
+     *
+     * Patron comun para todos los lead magnets:
+     * 1. Parsear JSON body
+     * 2. Validar email y name
+     * 3. Almacenar lead en State API
+     * 4. Enviar email con resultados via LeadMagnetEmailService
+     * 5. Registrar evento de tracking (jaraba_pixels)
+     * 6. Retornar JsonResponse
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP.
+     * @param string $type
+     *   Tipo de lead magnet.
+     * @param array $extraFields
+     *   Campos adicionales a extraer del JSON body.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON.
+     */
+    protected function processSubmission(Request $request, string $type, array $extraFields = []): JsonResponse
+    {
+        try {
+            // 1. Parsear JSON body.
+            $content = $request->getContent();
+            $payload = json_decode($content, TRUE);
+
+            if (empty($payload) || !is_array($payload)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.'),
+                ], 400);
+            }
+
+            // 2. Extraer y validar campos requeridos.
+            $email = trim((string) ($payload['email'] ?? ''));
+            $name = trim((string) ($payload['name'] ?? ''));
+
+            if (empty($email)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('El campo email es obligatorio.'),
+                ], 422);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('El formato del email no es valido.'),
+                ], 422);
+            }
+
+            if (empty($name)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('El campo nombre es obligatorio.'),
+                ], 422);
+            }
+
+            // 3. Extraer campos adicionales del payload.
+            $data = [];
+            foreach ($extraFields as $field) {
+                if (isset($payload[$field])) {
+                    $data[$field] = $payload[$field];
+                }
+            }
+
+            // 4. Almacenar lead en State API para persistencia ligera.
+            $this->storeLead($type, $email, $name, $data);
+
+            // 5. Enviar email con resultados.
+            $emailSent = $this->leadMagnetEmail->sendResults($type, $email, $name, $data);
+
+            // 6. Registrar evento de tracking via UpgradeTriggerService o logging.
+            $this->trackLeadMagnetEvent($type, $email, $data);
+
+            return new JsonResponse([
+                'status' => 'success',
+                'message' => (string) $this->t('Tus resultados han sido enviados a @email', [
+                    '@email' => $email,
+                ]),
+                'email_sent' => $emailSent,
+                'type' => $type,
+            ], 200);
+        }
+        catch (\Exception $e) {
+            $this->leadLogger->error('Lead magnet submission error (@type): @error', [
+                '@type' => $type,
+                '@error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => (string) $this->t('Ha ocurrido un error al procesar tu solicitud. Por favor, intentalo de nuevo.'),
+            ], 500);
+        }
+    }
+
+    /**
+     * Almacena un lead en State API.
+     *
+     * Usa una clave por tipo de lead magnet con un array de leads.
+     * Cada lead contiene: email, name, data, timestamp, ip.
+     *
+     * @param string $type
+     *   Tipo de lead magnet.
+     * @param string $email
+     *   Email del lead.
+     * @param string $name
+     *   Nombre del lead.
+     * @param array $data
+     *   Datos adicionales del lead.
+     */
+    protected function storeLead(string $type, string $email, string $name, array $data): void
+    {
+        try {
+            $state = \Drupal::state();
+            $stateKey = 'lead_magnet_leads_' . $type;
+            $leads = $state->get($stateKey, []);
+
+            $leads[] = [
+                'email' => $email,
+                'name' => $name,
+                'data' => $data,
+                'timestamp' => time(),
+                'ip' => \Drupal::request()->getClientIp(),
+            ];
+
+            // Mantener maximo 10000 leads por tipo para no sobrecargar State.
+            if (count($leads) > 10000) {
+                $leads = array_slice($leads, -10000);
+            }
+
+            $state->set($stateKey, $leads);
+        }
+        catch (\Exception $e) {
+            $this->leadLogger->warning('Lead magnet: error almacenando lead @type: @error', [
+                '@type' => $type,
+                '@error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Registra un evento de tracking para el lead magnet completado.
+     *
+     * Intenta usar UpgradeTriggerService si esta disponible, o registra
+     * directamente en el logger como evento de analytics.
+     *
+     * @param string $type
+     *   Tipo de lead magnet.
+     * @param string $email
+     *   Email del lead.
+     * @param array $data
+     *   Datos del lead magnet.
+     */
+    protected function trackLeadMagnetEvent(string $type, string $email, array $data): void
+    {
+        try {
+            // Intentar usar UpgradeTriggerService para tracking si esta disponible.
+            if (\Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+                $state = \Drupal::state();
+                $stateKey = 'lead_magnet_events_' . date('Y-m');
+                $events = $state->get($stateKey, []);
+                $events[] = [
+                    'event' => 'lead_magnet_complete',
+                    'type' => $type,
+                    'email_hash' => hash('sha256', $email),
+                    'score' => $data['score'] ?? NULL,
+                    'timestamp' => time(),
+                ];
+                $state->set($stateKey, $events);
+            }
+
+            // Log del evento para analytics.
+            $this->leadLogger->info('Lead magnet completado: @type | email_hash=@hash | score=@score', [
+                '@type' => $type,
+                '@hash' => substr(hash('sha256', $email), 0, 12),
+                '@score' => $data['score'] ?? 'N/A',
+            ]);
+        }
+        catch (\Exception $e) {
+            // Non-blocking: tracking failure should not break the submission.
+            $this->leadLogger->warning('Lead magnet tracking error: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // =========================================================================
+    // PDF DOWNLOAD HANDLERS (GET)
+    // =========================================================================
+
+    /**
+     * Descarga la Guia AgroConecta como HTML print-ready (PDF via browser).
+     *
+     * Genera un documento HTML profesional con CSS @media print optimizado
+     * que el usuario puede convertir a PDF desde el navegador (Ctrl+P).
+     *
+     * Los parametros name y email se pasan como query parameters:
+     *   /agroconecta/guia-vende-online/descargar?name=Juan&email=juan@ejemplo.com
+     *
+     * Ruta: /agroconecta/guia-vende-online/descargar
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP con query params name y email.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *   Respuesta HTML print-ready.
+     */
+    public function downloadGuiaPdf(Request $request): Response
+    {
+        try {
+            $name = trim($request->query->get('name', ''));
+            $email = trim($request->query->get('email', ''));
+
+            if (empty($name)) {
+                $name = (string) $this->t('Estimado/a usuario/a');
+            }
+
+            if (empty($email)) {
+                $email = 'visitante@ecosistemajaraba.org';
+            }
+
+            $html = $this->leadMagnetPdf->generateGuiaAgroHtml($name, $email);
+
+            return new Response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            ]);
+        }
+        catch (\Throwable $e) {
+            $this->leadLogger->error('Error generating Guia AgroConecta PDF: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+
+            return new Response(
+                '<html><body><h1>' . $this->t('Error al generar el documento') . '</h1>'
+                . '<p>' . $this->t('Ha ocurrido un error. Por favor, intentalo de nuevo.') . '</p>'
+                . '<a href="/agroconecta/guia-vende-online">' . $this->t('Volver') . '</a>'
+                . '</body></html>',
+                500,
+                ['Content-Type' => 'text/html; charset=UTF-8'],
+            );
+        }
+    }
+
+    /**
+     * Descarga el Template Propuesta como HTML print-ready (PDF via browser).
+     *
+     * Genera un documento HTML de propuesta profesional con secciones
+     * rellenables, tabla de precios, clausulas legales y bloque de firma.
+     *
+     * Los parametros se pasan como query parameters:
+     *   /serviciosconecta/template-propuesta/descargar?name=Ana&email=ana@ejemplo.com
+     *
+     * Parametros opcionales: business_name, service_type, client_name.
+     *
+     * Ruta: /serviciosconecta/template-propuesta/descargar
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP con query params.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *   Respuesta HTML print-ready.
+     */
+    public function downloadPropuestaPdf(Request $request): Response
+    {
+        try {
+            $name = trim($request->query->get('name', ''));
+            $email = trim($request->query->get('email', ''));
+
+            if (empty($name)) {
+                $name = (string) $this->t('Estimado/a profesional');
+            }
+
+            if (empty($email)) {
+                $email = 'visitante@ecosistemajaraba.org';
+            }
+
+            $serviceData = [
+                'business_name' => trim($request->query->get('business_name', '')),
+                'service_type' => trim($request->query->get('service_type', '')),
+                'client_name' => trim($request->query->get('client_name', '')),
+            ];
+
+            // Remove empty values so service uses its own defaults.
+            $serviceData = array_filter($serviceData, fn($v) => $v !== '');
+
+            $html = $this->leadMagnetPdf->generatePropuestaHtml($name, $email, $serviceData);
+
+            return new Response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            ]);
+        }
+        catch (\Throwable $e) {
+            $this->leadLogger->error('Error generating Propuesta PDF: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+
+            return new Response(
+                '<html><body><h1>' . $this->t('Error al generar el documento') . '</h1>'
+                . '<p>' . $this->t('Ha ocurrido un error. Por favor, intentalo de nuevo.') . '</p>'
+                . '<a href="/serviciosconecta/template-propuesta">' . $this->t('Volver') . '</a>'
+                . '</body></html>',
+                500,
+                ['Content-Type' => 'text/html; charset=UTF-8'],
+            );
+        }
+    }
+
+    // =========================================================================
+    // SEO AUDIT HANDLER (POST)
+    // =========================================================================
+
+    /**
+     * Ejecuta una auditoria SEO sobre la URL proporcionada.
+     *
+     * Acepta JSON POST con: url (obligatorio), email (opcional), name (opcional).
+     * Delega al SeoAuditService y devuelve resultados JSON con score,
+     * checks individuales y recomendaciones priorizadas.
+     *
+     * Ruta: /api/lead-magnet/auditoria-seo/analizar
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion HTTP con JSON body.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Respuesta JSON con resultados de la auditoria.
+     */
+    public function analyzeUrl(Request $request): JsonResponse
+    {
+        try {
+            $content = $request->getContent();
+            $payload = json_decode($content, TRUE);
+
+            if (empty($payload) || !is_array($payload)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.'),
+                ], 400);
+            }
+
+            $url = trim((string) ($payload['url'] ?? ''));
+
+            if (empty($url)) {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => (string) $this->t('El campo url es obligatorio.'),
+                ], 422);
+            }
+
+            // Run the SEO audit.
+            $auditResult = $this->seoAudit->audit($url);
+
+            // If the visitor provided email/name, store the lead.
+            $email = trim((string) ($payload['email'] ?? ''));
+            $name = trim((string) ($payload['name'] ?? ''));
+
+            if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->storeLead('auditoria_seo', $email, $name ?: 'Anonimo', [
+                    'website_url' => $url,
+                    'score' => $auditResult['score'],
+                    'grade' => $auditResult['grade'],
+                ]);
+
+                $this->trackLeadMagnetEvent('auditoria_seo', $email, [
+                    'score' => $auditResult['score'],
+                ]);
+            }
+
+            return new JsonResponse([
+                'status' => $auditResult['error'] ? 'error' : 'success',
+                'data' => $auditResult,
+            ], $auditResult['error'] ? 422 : 200);
+        }
+        catch (\Throwable $e) {
+            $this->leadLogger->error('SEO audit controller error: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => (string) $this->t('Ha ocurrido un error al ejecutar la auditoria. Por favor, intentalo de nuevo.'),
+            ], 500);
+        }
     }
 
 }

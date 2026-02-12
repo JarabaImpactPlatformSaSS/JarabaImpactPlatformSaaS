@@ -164,3 +164,18 @@ manage agro copilot:
   description: 'Ver todas las conversaciones, moderar respuestas y configurar.'
   restrict access: true
 
+# Fase 9: Market Intelligence & Forecast
+
+view agro market intelligence:
+  title: 'Ver inteligencia de mercado'
+  description: 'Acceder a datos de mercado, tendencias y análisis competitivo.'
+
+view agro demand forecast:
+  title: 'Ver predicción de demanda'
+  description: 'Acceder a las predicciones de demanda de productos.'
+
+manage agro generated content:
+  title: 'Gestionar contenido generado IA'
+  description: 'Ver, aprobar, rechazar y eliminar contenido generado por la IA.'
+  restrict access: true
+
