@@ -38,12 +38,9 @@ services:
   # ===========================================
   # ALIASES → jaraba_billing (TD-003 God Object extraction)
   # Los servicios billing ahora viven en jaraba_billing module.
-  # Estos aliases mantienen backward-compatibility.
+  # Aliases registrados condicionalmente en EcosistemaJarabaCoreServiceProvider
+  # para evitar errores cuando jaraba_billing no está instalado.
   # ===========================================
-  ecosistema_jaraba_core.plan_validator:
-    alias: jaraba_billing.plan_validator
-  ecosistema_jaraba_core.tenant_subscription:
-    alias: jaraba_billing.tenant_subscription
 
   ecosistema_jaraba_core.tenant_domain:
     class: Drupal\ecosistema_jaraba_core\Service\TenantDomainService
@@ -73,14 +70,16 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # Gestor de Tenants (fachada que delega a servicios especializados)
+  # plan_validator y tenant_subscription se inyectan condicionalmente
+  # desde EcosistemaJarabaCoreServiceProvider cuando jaraba_billing está instalado.
   ecosistema_jaraba_core.tenant_manager:
     class: Drupal\ecosistema_jaraba_core\Service\TenantManager
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@ecosistema_jaraba_core.plan_validator'
+      - ~
       - '@logger.channel.ecosistema_jaraba_core'
-      - '@ecosistema_jaraba_core.tenant_subscription'
+      - ~
       - '@ecosistema_jaraba_core.tenant_domain'
 
   # Servicio de Onboarding de Tenants
@@ -328,11 +327,7 @@ services:
 
   # Sprint 13-14: Outcome-Based Pricing
 
-  # Aliases → jaraba_billing
-  ecosistema_jaraba_core.tenant_metering:
-    alias: jaraba_billing.tenant_metering
-  ecosistema_jaraba_core.pricing_engine:
-    alias: jaraba_billing.pricing_engine
+  # Aliases → jaraba_billing (registrados en ServiceProvider)
 
   # Dashboard de valor generado por IA
   ecosistema_jaraba_core.ai_value_dashboard:
@@ -365,9 +360,7 @@ services:
   # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
   # ===========================================
 
-  # Alias → jaraba_billing
-  ecosistema_jaraba_core.reverse_trial:
-    alias: jaraba_billing.reverse_trial
+  # Alias → jaraba_billing (registrado en ServiceProvider)
 
   # ===========================================
   # Q1 2027: AI AGENT AUTONOMY LEVELS (GAP P1)
@@ -449,9 +442,7 @@ services:
   # Q1 2027: EXPANSION REVENUE TRACKING
   # ===========================================
 
-  # Alias → jaraba_billing
-  ecosistema_jaraba_core.expansion_revenue:
-    alias: jaraba_billing.expansion_revenue
+  # Alias → jaraba_billing (registrado en ServiceProvider)
 
   # ===========================================
   # Q1 2027: VIDEO CONTENT GEO
@@ -496,9 +487,7 @@ services:
   # Q1 2027: CRÉDITOS DE IMPACTO (ECA Flows)
   # ===========================================
 
-  # Alias → jaraba_billing
-  ecosistema_jaraba_core.impact_credit:
-    alias: jaraba_billing.impact_credit
+  # Alias → jaraba_billing (registrado en ServiceProvider)
 
   # ===========================================
   # Q1 2027: AI USAGE LIMITS (Per Tenant/Plan)
@@ -515,6 +504,19 @@ services:
   # ===========================================
   # Q1 2027: UNIFIED PROMPT BUILDER (AI Trilogy)
   # ===========================================
+
+  # ===========================================
+  # AUDIT LOG & COMPLIANCE (G115-1, G115-2)
+  # ===========================================
+
+  # Servicio centralizado de audit logging
+  ecosistema_jaraba_core.audit_log:
+    class: Drupal\ecosistema_jaraba_core\Service\AuditLogService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@logger.channel.ecosistema_jaraba_core'
 
   # Constructor de prompts unificados para agentes IA.
   # Registrado condicionalmente via EcosistemaJarabaCoreServiceProvider

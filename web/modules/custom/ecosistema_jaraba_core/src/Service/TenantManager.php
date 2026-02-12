@@ -8,6 +8,7 @@ use Drupal\ecosistema_jaraba_core\Entity\Tenant;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Entity\VerticalInterface;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
+// Billing services are optional — loaded via ServiceProvider when jaraba_billing is installed.
 use Drupal\jaraba_billing\Service\PlanValidator;
 use Drupal\jaraba_billing\Service\TenantSubscriptionService;
 use Drupal\user\UserInterface;
@@ -26,7 +27,7 @@ class TenantManager
 
     protected EntityTypeManagerInterface $entityTypeManager;
     protected AccountProxyInterface $currentUser;
-    protected PlanValidator $planValidator;
+    protected ?PlanValidator $planValidator;
     protected LoggerInterface $logger;
     protected ?TenantInterface $currentTenant = NULL;
     protected ?TenantSubscriptionService $subscriptionService = NULL;
@@ -38,7 +39,7 @@ class TenantManager
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         AccountProxyInterface $current_user,
-        PlanValidator $plan_validator,
+        ?PlanValidator $plan_validator,
         LoggerInterface $logger,
         ?TenantSubscriptionService $subscription_service = NULL,
         ?TenantDomainService $domain_service = NULL
