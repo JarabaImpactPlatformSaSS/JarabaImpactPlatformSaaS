@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\jaraba_agroconecta_core\Service\CartRecoveryService;
+use Drupal\jaraba_agroconecta_core\Service\CrossSellEngine;
 use Drupal\jaraba_agroconecta_core\Service\SalesAgentService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,15 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Controlador REST para el Sales Agent de consumidores.
  *
- * 9 endpoints: chat, conversations, search, recommendations,
- * cart add, coupon apply, order status, preferences, rate.
- * Referencia: Doc 68 — Sales Agent v1.
+ * 12 endpoints: chat, conversations, search, recommendations,
+ * cart add, coupon apply, order status, preferences, rate,
+ * cross-sell, upsell, recovery stats.
+ * Referencia: Doc 68 — Sales Agent v1 + Fase 10 Cross-Sell & Cart Recovery.
  */
 class SalesApiController extends ControllerBase
 {
 
     public function __construct(
         protected SalesAgentService $salesAgent,
+        protected CrossSellEngine $crossSellEngine,
+        protected CartRecoveryService $cartRecovery,
     ) {
     }
 
@@ -32,6 +37,8 @@ class SalesApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_agroconecta_core.sales_agent'),
+            $container->get('jaraba_agroconecta_core.cross_sell_engine'),
+            $container->get('jaraba_agroconecta_core.cart_recovery'),
         );
     }
 
@@ -261,5 +268,65 @@ class SalesApiController extends ControllerBase
             'conversation_id' => $conversation_id,
             'rating' => $rating,
         ]);
+    }
+
+    /**
+     * Sugerencias de venta cruzada.
+     */
+    public function crossSellSuggestions(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+        $productId = (int) ($data['product_id'] ?? 0);
+        $cartItems = $data['cart_items'] ?? [];
+        $cartTotal = (float) ($data['cart_total'] ?? 0);
+        $trigger = $data['trigger'] ?? 'post-add';
+
+        if (!$productId) {
+            return new JsonResponse(['error' => 'product_id es requerido'], 400);
+        }
+
+        try {
+            $suggestions = $this->crossSellEngine->generateCrossSellSuggestions(
+                $productId, $cartItems, $cartTotal, $trigger
+            );
+            return new JsonResponse(['success' => TRUE, 'data' => $suggestions, 'total' => count($suggestions)]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Sugerencias de upsell basadas en carrito.
+     */
+    public function upsellSuggestions(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+        $cartItems = $data['cart_items'] ?? [];
+        $cartTotal = (float) ($data['cart_total'] ?? 0);
+
+        try {
+            $suggestions = $this->crossSellEngine->getUpsellSuggestions($cartItems, $cartTotal);
+            return new JsonResponse(['success' => TRUE, 'data' => $suggestions, 'total' => count($suggestions)]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Estadísticas de recuperación de carritos.
+     */
+    public function recoveryStats(Request $request): JsonResponse
+    {
+        $days = min((int) $request->query->get('days', 30), 90);
+
+        try {
+            $stats = $this->cartRecovery->getRecoveryStats($days);
+            return new JsonResponse(['success' => TRUE, 'data' => $stats]);
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -1977,6 +1977,42 @@ jaraba_agroconecta.api.sales.rate:
     _role: 'authenticated'
     conversation_id: '\d+'
 
+# API Sales Agent — Cross-Sell & Market Intelligence
+
+jaraba_agroconecta.api.sales.cross_sell:
+  path: '/api/v1/sales/cross-sell'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::crossSellSuggestions'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.upsell:
+  path: '/api/v1/sales/upsell'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::upsellSuggestions'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_agroconecta.api.sales.recovery_stats:
+  path: '/api/v1/sales/recovery/stats'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::recoveryStats'
+  methods: [GET]
+  requirements:
+    _permission: 'manage agro orders'
+
+# WhatsApp Business API Webhook
+
+jaraba_agroconecta.api.whatsapp.webhook:
+  path: '/api/v1/whatsapp/webhook'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\WhatsAppWebhookController::webhook'
+  methods: [GET, POST]
+  requirements:
+    _access: 'TRUE'
+
 # ============================================
 # QR DYNAMIC SYSTEM (Sprint AC6-1 — Doc 81)
 # ============================================

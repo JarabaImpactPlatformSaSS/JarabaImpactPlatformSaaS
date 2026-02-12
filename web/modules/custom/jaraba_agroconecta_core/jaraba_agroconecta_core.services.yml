@@ -131,6 +131,15 @@ services:
       - '@database'
       - '@logger.channel.default'
 
+  # Fase 10: Cross-Sell Engine (Doc 68 §4.3)
+
+  jaraba_agroconecta_core.cross_sell_engine:
+    class: Drupal\jaraba_agroconecta_core\Service\CrossSellEngine
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.default'
+
   # Fase 10: Sales Agent
 
   jaraba_agroconecta_core.sales_agent:
@@ -138,6 +147,25 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
+      - '@logger.channel.default'
+
+  # Fase 10: Cart Recovery (Doc 68 §4.4)
+
+  jaraba_agroconecta_core.cart_recovery:
+    class: Drupal\jaraba_agroconecta_core\Service\CartRecoveryService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.default'
+
+  # Fase 10: WhatsApp Business API (Doc 68 §5)
+
+  jaraba_agroconecta_core.whatsapp:
+    class: Drupal\jaraba_agroconecta_core\Service\WhatsAppApiService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@entity_type.manager'
       - '@logger.channel.default'
 
   # Fase 11: Partner Document Hub B2B (Sprint AC6-2)
