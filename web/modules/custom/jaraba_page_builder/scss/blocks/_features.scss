@@ -133,6 +133,35 @@
             background: rgba(255, 255, 255, 0.95);
         }
     }
+
+    // === Variante fondo verde claro ===
+    // Gradiente verde suave para plantillas como features_grid.
+    // Coincide con la miniatura PNG diseñada (#e8f5e9 → #f1f8e9).
+    // Ref: Spec 20260130c §6.1
+    &--light-green {
+        background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 100%);
+
+        .jaraba-features__title {
+            color: var(--ej-text-primary, #1e293b);
+        }
+
+        .jaraba-features__subtitle {
+            color: var(--ej-text-secondary, #64748b);
+        }
+
+        .jaraba-feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(200, 230, 200, 0.5);
+
+            &:hover {
+                background: white;
+                border-color: rgba(76, 175, 80, 0.3);
+                box-shadow:
+                    0 20px 40px rgba(76, 175, 80, 0.08),
+                    0 8px 16px rgba(0, 0, 0, 0.04);
+            }
+        }
+    }
 }
 
 // ============================================================================
@@ -206,6 +235,82 @@
             height: 28px;
             color: var(--ej-primary, #0066CC);
             transition: color 0.3s ease;
+        }
+
+        // Filtro CSS para recolorear iconos SVG renderizados como <img>.
+        // jaraba_icon() genera <img> con filtros CSS, no SVG inline.
+        img {
+            width: 28px;
+            height: 28px;
+            transition: filter 0.3s ease;
+        }
+
+        // === Variantes de color por token de marca ===
+        // Los colores se aplican al icono SVG/img dentro del contenedor.
+        // La clase se genera desde el Twig con:
+        //   icon_color → jaraba-feature-card__icon--{color}
+        // Se soportan tanto los tokens cortos (impulse, innovation, corporate,
+        // success) como los nombres legacy largos (naranja-impulso,
+        // verde-innovacion, azul-corporativo).
+        // Ref: Spec 20260130c §6.2
+
+        // Impulse — Naranja emprendimiento (#FF8C42)
+        &--impulse,
+        &--naranja-impulso {
+            background: rgba(255, 140, 66, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-impulse, #FF8C42); }
+        }
+
+        // Innovation — Turquesa talento (#00A9A5)
+        &--innovation,
+        &--verde-innovacion {
+            background: rgba(0, 169, 165, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-innovation, #00A9A5); }
+        }
+
+        // Corporate — Azul confianza (#233D63)
+        &--corporate,
+        &--azul-corporativo {
+            background: rgba(35, 61, 99, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-corporate, #233D63); }
+        }
+
+        // Success — Verde positivo (#10B981)
+        &--success {
+            background: rgba(16, 185, 129, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-success, #10B981); }
+        }
+
+        // Warning — Ámbar alertas (#F59E0B)
+        &--warning {
+            background: rgba(245, 158, 11, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-warning, #F59E0B); }
+        }
+
+        // Danger — Rojo errores (#EF4444)
+        &--danger {
+            background: rgba(239, 68, 68, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-danger, #EF4444); }
+        }
+
+        // Agro — Verde oliva naturaleza (#556B2F)
+        &--agro {
+            background: rgba(85, 107, 47, 0.1);
+
+            svg,
+            .icon { color: var(--ej-color-agro, #556B2F); }
         }
     }
 
