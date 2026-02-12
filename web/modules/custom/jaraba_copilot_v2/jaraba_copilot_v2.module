@@ -67,6 +67,47 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
         'profile' => NULL,
       ],
     ],
+    // BMC Dashboard frontend
+    'bmc_dashboard' => [
+      'variables' => [
+        'blocks' => [],
+        'overall_percentage' => 0,
+        'total_hypotheses' => 0,
+        'validated_hypotheses' => 0,
+        'profile' => NULL,
+        'impact_points' => 0,
+        'level' => 1,
+        'next_level_points' => 100,
+      ],
+      'template' => 'bmc-dashboard',
+    ],
+    // Hypothesis Manager frontend
+    'hypothesis_manager' => [
+      'variables' => [
+        'hypotheses' => [],
+        'filters' => [],
+        'total' => 0,
+        'profile_id' => NULL,
+      ],
+      'template' => 'hypothesis-manager',
+    ],
+    // Experiment Lifecycle frontend
+    'experiment_lifecycle' => [
+      'variables' => [
+        'experiments' => [],
+        'stats' => [],
+        'profile_id' => NULL,
+      ],
+      'template' => 'experiment-lifecycle',
+    ],
+    // Copilot Chat Widget
+    'copilot_chat_widget' => [
+      'variables' => [
+        'position' => 'inline',
+        'modes' => [],
+      ],
+      'template' => 'copilot-chat-widget',
+    ],
     // Dashboard Analytics del Copiloto
     'copilot_analytics_dashboard' => [
       'variables' => [
@@ -77,6 +118,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
         'recent_queries' => [],
         'problematic_queries' => [],
         'frequent_questions' => [],
+        'performance_metrics' => [],
       ],
       'template' => 'copilot-analytics-dashboard',
     ],
@@ -110,20 +152,45 @@ function jaraba_copilot_v2_page_attachments(array &$attachments) {
     'jaraba_business_tools.hypotheses',
     'jaraba_paths.catalog',
   ];
-  
+
   if (in_array($route_name, $copilot_routes)) {
     $attachments['#attached']['library'][] = 'jaraba_copilot_v2/copilot-widget';
-    
+
     // Pasar configuración de desbloqueo
     $featureUnlock = \Drupal::service('jaraba_copilot_v2.feature_unlock');
     $status = $featureUnlock->getUnlockStatus();
-    
+
     $attachments['#attached']['drupalSettings']['jarabaCopilot'] = [
       'currentWeek' => $status['current_week'],
       'unlockedFeatures' => $status['unlocked_features'],
       'copilotModes' => $status['copilot_modes'],
       'experimentTypes' => $status['experiment_types'],
     ];
+  }
+
+  // BMC Dashboard, Hypothesis Manager, Experiment Lifecycle
+  $frontend_library_map = [
+    'jaraba_copilot_v2.bmc_dashboard' => 'jaraba_copilot_v2/bmc-dashboard',
+    'jaraba_copilot_v2.hypothesis_manager' => 'jaraba_copilot_v2/hypothesis-manager',
+    'jaraba_copilot_v2.experiment_lifecycle' => 'jaraba_copilot_v2/experiment-lifecycle',
+  ];
+  if (isset($frontend_library_map[$route_name])) {
+    $attachments['#attached']['library'][] = $frontend_library_map[$route_name];
+  }
+
+  // Chat widget en rutas del copiloto.
+  $chat_widget_routes = [
+    'jaraba_copilot_v2.dashboard',
+    'jaraba_copilot_v2.bmc_dashboard',
+    'jaraba_copilot_v2.hypothesis_manager',
+    'jaraba_copilot_v2.experiment_lifecycle',
+  ];
+  if (in_array($route_name, $chat_widget_routes)) {
+    $attachments['#attached']['library'][] = 'jaraba_copilot_v2/copilot-chat-widget';
+
+    // Inyectar modos disponibles en drupalSettings.
+    $modeDetector = \Drupal::service('jaraba_copilot_v2.mode_detector');
+    $attachments['#attached']['drupalSettings']['jarabaCopilotModes'] = $modeDetector->getAvailableModes();
   }
 }
 

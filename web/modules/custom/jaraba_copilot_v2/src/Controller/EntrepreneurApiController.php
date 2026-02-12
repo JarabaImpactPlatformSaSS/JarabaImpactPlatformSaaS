@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EntrepreneurApiController extends ControllerBase {
 
-  protected EntityTypeManagerInterface $entityTypeManager;
-
   /**
    * Constructor.
    */
@@ -71,7 +69,7 @@ class EntrepreneurApiController extends ControllerBase {
   /**
    * POST /api/v1/entrepreneurs - Crea perfil.
    */
-  public function create(Request $request): JsonResponse {
+  public function store(Request $request): JsonResponse {
     try {
       $data = json_decode($request->getContent(), TRUE);
 

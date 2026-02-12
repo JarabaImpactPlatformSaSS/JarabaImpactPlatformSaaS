@@ -6,6 +6,7 @@ namespace Drupal\jaraba_copilot_v2\Service;
 
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\jaraba_self_discovery\Service\SelfDiscoveryContextService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,28 +28,28 @@ class CopilotOrchestratorService
      */
     const MODE_PROVIDERS = [
         'coach' => ['anthropic', 'openai', 'google_gemini'],
-        'consultor' => ['anthropic', 'openai', 'google_gemini'],
+        'consultor' => ['google_gemini', 'anthropic', 'openai'],        // Gemini primario (40% trafico, mas barato)
         'sparring' => ['anthropic', 'openai', 'google_gemini'],
-        'cfo' => ['openai', 'anthropic', 'google_gemini'],  // GPT-4 mejor en cálculos
-        'fiscal' => ['anthropic', 'google_gemini'],          // Claude es principal (RAG)
-        'laboral' => ['anthropic', 'google_gemini'],         // Claude es principal (RAG)
+        'cfo' => ['openai', 'anthropic', 'google_gemini'],              // GPT-4 mejor en calculos
+        'fiscal' => ['anthropic', 'google_gemini'],                     // Claude principal (RAG)
+        'laboral' => ['anthropic', 'google_gemini'],                    // Claude principal (RAG)
         'devil' => ['anthropic', 'openai', 'google_gemini'],
-        'landing_copilot' => ['anthropic', 'openai', 'google_gemini'],  // Copiloto público landing
+        'landing_copilot' => ['google_gemini', 'anthropic', 'openai'],  // Gemini primario (landing=alto volumen)
     ];
 
     /**
      * Mapeo de modo a modelo específico.
      */
     const MODE_MODELS = [
-        'coach' => 'claude-3-5-sonnet-20241022',
-        'consultor' => 'claude-3-5-sonnet-20241022',
-        'sparring' => 'claude-3-5-sonnet-20241022',
+        'coach' => 'claude-sonnet-4-5-20250929',
+        'consultor' => 'gemini-2.5-flash',                  // Gemini Flash (coste-eficiente)
+        'sparring' => 'claude-sonnet-4-5-20250929',
         'cfo' => 'gpt-4o',
-        'fiscal' => 'claude-3-5-sonnet-20241022',
-        'laboral' => 'claude-3-5-sonnet-20241022',
-        'devil' => 'claude-3-5-sonnet-20241022',
-        'detection' => 'claude-3-haiku-20240307',  // Económico para detección
-        'landing_copilot' => 'claude-3-5-sonnet-20241022',  // Copiloto público conversacional
+        'fiscal' => 'claude-sonnet-4-5-20250929',
+        'laboral' => 'claude-sonnet-4-5-20250929',
+        'devil' => 'claude-sonnet-4-5-20250929',
+        'detection' => 'claude-haiku-4-5-20251001',          // Economico para deteccion
+        'landing_copilot' => 'gemini-2.5-flash',             // Gemini Flash (alto volumen)
     ];
 
     /**
@@ -122,6 +123,11 @@ class CopilotOrchestratorService
     protected ?EntrepreneurContextService $entrepreneurContext = NULL;
 
     /**
+     * Self-Discovery context service for career guidance.
+     */
+    protected ?SelfDiscoveryContextService $selfDiscoveryContext = NULL;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -133,7 +139,8 @@ class CopilotOrchestratorService
         ?ModeDetectorService $modeDetector = NULL,
         ?NormativeRAGService $normativeRag = NULL,
         ?CopilotCacheService $cacheService = NULL,
-        ?EntrepreneurContextService $entrepreneurContext = NULL
+        ?EntrepreneurContextService $entrepreneurContext = NULL,
+        ?SelfDiscoveryContextService $selfDiscoveryContext = NULL
     ) {
         $this->aiProvider = $aiProvider;
         $this->configFactory = $configFactory;
@@ -144,6 +151,7 @@ class CopilotOrchestratorService
         $this->normativeRag = $normativeRag;
         $this->cacheService = $cacheService;
         $this->entrepreneurContext = $entrepreneurContext;
+        $this->selfDiscoveryContext = $selfDiscoveryContext;
     }
 
     /**
@@ -192,7 +200,10 @@ class CopilotOrchestratorService
             }
 
             try {
+                $startTime = microtime(TRUE);
                 $response = $this->callProvider($providerId, $model, $enrichedMessage, $systemPrompt);
+                $latency = microtime(TRUE) - $startTime;
+                $this->recordLatencySample($latency);
                 $formattedResponse = $this->formatResponse($response, $mode, $providerId);
 
                 // Reset circuit breaker on success.
@@ -213,6 +224,7 @@ class CopilotOrchestratorService
                 ]);
                 // Registrar fallo en circuit breaker.
                 $this->recordCircuitFailure($providerId);
+                $this->recordFallbackEvent($providerId);
                 continue;
             }
         }
@@ -431,6 +443,8 @@ class CopilotOrchestratorService
     {
         // Costes por 1K tokens (EUR)
         $costs = [
+            'claude-sonnet-4-5-20250929' => ['input' => 0.003, 'output' => 0.015],
+            'claude-haiku-4-5-20251001' => ['input' => 0.0008, 'output' => 0.004],
             'claude-3-5-sonnet-20241022' => ['input' => 0.003, 'output' => 0.015],
             'claude-3-haiku-20240307' => ['input' => 0.00025, 'output' => 0.00125],
             'gpt-4o' => ['input' => 0.0025, 'output' => 0.01],
@@ -458,13 +472,15 @@ class CopilotOrchestratorService
     {
         // Mapeo de modelos a su equivalente Gemini
         $geminiEquivalents = [
-            // GPT-4 y modelos de cálculos -> Gemini 2.5 Pro (reasoning)
+            // GPT-4 y modelos de calculos -> Gemini 2.5 Pro (reasoning)
             'gpt-4o' => self::GEMINI_MODELS['reasoning'],
             'gpt-4' => self::GEMINI_MODELS['reasoning'],
-            // Claude Sonnet -> Gemini 2.5 Flash (balanced)
+            // Claude Sonnet 4.5 -> Gemini 2.5 Flash (balanced)
+            'claude-sonnet-4-5-20250929' => self::GEMINI_MODELS['default'],
             'claude-3-5-sonnet-20241022' => self::GEMINI_MODELS['default'],
             'claude-3-sonnet-20240229' => self::GEMINI_MODELS['default'],
-            // Claude Haiku -> Gemini 2.0 Flash Lite (fast & cheap)
+            // Claude Haiku -> Gemini 2.0 Flash (fast & cheap)
+            'claude-haiku-4-5-20251001' => self::GEMINI_MODELS['fast'],
             'claude-3-haiku-20240307' => self::GEMINI_MODELS['fast'],
         ];
 
@@ -561,7 +577,7 @@ class CopilotOrchestratorService
      */
     protected function getModelForMode(string $mode): string
     {
-        return self::MODE_MODELS[$mode] ?? 'claude-3-5-sonnet-20241022';
+        return self::MODE_MODELS[$mode] ?? 'claude-sonnet-4-5-20250929';
     }
 
     /**
@@ -582,10 +598,24 @@ class CopilotOrchestratorService
         $modePrompt = $this->getModePrompt($mode);
         $contextPrompt = $this->formatContextPrompt($context);
 
+        // Self-Discovery context enrichment.
+        $selfDiscoveryPrompt = '';
+        if ($this->selfDiscoveryContext) {
+            try {
+                $selfDiscoveryPrompt = $this->selfDiscoveryContext->getCopilotContextPrompt();
+            }
+            catch (\Exception $e) {
+                $this->logger->warning('Self-Discovery context unavailable: @error', [
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         return implode("\n\n", array_filter([
             $basePrompt,
             $modePrompt,
             $contextPrompt,
+            $selfDiscoveryPrompt,
         ]));
     }
 
@@ -1134,6 +1164,122 @@ PROMPT,
                 'Revisar hipótesis pendientes',
             ],
         ];
+    }
+
+    /**
+     * Registra una muestra de latencia para metricas P50/P99.
+     */
+    protected function recordLatencySample(float $latencySeconds): void {
+        try {
+            $state = \Drupal::state();
+            $key = 'ai_latency_samples_' . date('Y-m-d');
+            $samples = $state->get($key, []);
+            $samples[] = round($latencySeconds, 3);
+            // Mantener maximo 1000 muestras por dia.
+            if (count($samples) > 1000) {
+                $samples = array_slice($samples, -1000);
+            }
+            $state->set($key, $samples);
+        }
+        catch (\Exception $e) {
+            // No interrumpir la operacion.
+        }
+    }
+
+    /**
+     * Registra un evento de fallback cuando un proveedor falla.
+     */
+    protected function recordFallbackEvent(string $providerId): void {
+        try {
+            $state = \Drupal::state();
+            $key = 'ai_fallback_count_' . date('Y-m-d');
+            $data = $state->get($key, []);
+            $data[$providerId] = ($data[$providerId] ?? 0) + 1;
+            $state->set($key, $data);
+        }
+        catch (\Exception $e) {
+            // No interrumpir la operacion.
+        }
+    }
+
+    /**
+     * Calcula resumen de metricas: P50/P99, fallback rate, costes.
+     *
+     * @return array
+     *   Resumen con latencia, fallbacks y costes.
+     */
+    public function getMetricsSummary(): array {
+        $state = \Drupal::state();
+        $summary = [
+            'latency' => ['p50' => 0, 'p99' => 0, 'avg' => 0, 'samples' => 0],
+            'fallback_rate' => [],
+            'costs' => ['daily' => [], 'weekly_total' => 0, 'monthly_total' => 0],
+            'top_modes' => [],
+        ];
+
+        // Latencia: recopilar muestras de los ultimos 7 dias.
+        $allSamples = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $daySamples = $state->get("ai_latency_samples_{$date}", []);
+            $allSamples = array_merge($allSamples, $daySamples);
+        }
+
+        if (!empty($allSamples)) {
+            sort($allSamples);
+            $count = count($allSamples);
+            $summary['latency'] = [
+                'p50' => round($allSamples[(int) ($count * 0.50)] ?? 0, 3),
+                'p99' => round($allSamples[(int) ($count * 0.99)] ?? 0, 3),
+                'avg' => round(array_sum($allSamples) / $count, 3),
+                'samples' => $count,
+            ];
+        }
+
+        // Fallback rate: ultimos 7 dias.
+        $totalFallbacks = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $dayFallbacks = $state->get("ai_fallback_count_{$date}", []);
+            foreach ($dayFallbacks as $provider => $countVal) {
+                $totalFallbacks[$provider] = ($totalFallbacks[$provider] ?? 0) + $countVal;
+            }
+        }
+        $totalCalls = $state->get('ai_cost_total_calls', 0);
+        foreach ($totalFallbacks as $provider => $fbCount) {
+            $summary['fallback_rate'][$provider] = [
+                'count' => $fbCount,
+                'rate' => $totalCalls > 0 ? round(($fbCount / $totalCalls) * 100, 2) : 0,
+            ];
+        }
+
+        // Costes diarios (ultimos 7 dias).
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $dailyData = $state->get("ai_usage_daily_{$date}", ['cost' => 0, 'tokens' => 0, 'calls' => 0]);
+            $summary['costs']['daily'][$date] = $dailyData;
+            $summary['costs']['weekly_total'] += $dailyData['cost'];
+        }
+
+        // Coste mensual.
+        $monthKey = 'ai_usage_' . date('Y-m');
+        $monthlyData = $state->get($monthKey, []);
+        foreach ($monthlyData as $providerData) {
+            $summary['costs']['monthly_total'] += $providerData['cost'] ?? 0;
+        }
+        $summary['costs']['monthly_by_provider'] = $monthlyData;
+
+        // Top modos por volumen.
+        $modes = ['coach', 'consultor', 'sparring', 'cfo', 'fiscal', 'laboral', 'devil', 'landing_copilot'];
+        foreach ($modes as $mode) {
+            $modeCount = $state->get("mode_detector_{$mode}_count", 0);
+            if ($modeCount > 0) {
+                $summary['top_modes'][$mode] = $modeCount;
+            }
+        }
+        arsort($summary['top_modes']);
+
+        return $summary;
     }
 
     /**

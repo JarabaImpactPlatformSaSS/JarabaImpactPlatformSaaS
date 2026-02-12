@@ -41,3 +41,10 @@ jaraba_copilot_v2.settings:
   route_name: jaraba_copilot_v2.settings
   parent: system.admin_config_system
   weight: 50
+
+jaraba_copilot_v2.mode_triggers_admin:
+  title: 'Triggers de Modo del Copiloto'
+  description: 'Gestionar triggers de deteccion de modo (crear, editar, eliminar, peso).'
+  route_name: jaraba_copilot_v2.mode_triggers_admin
+  parent: jaraba_copilot_v2.settings
+  weight: 10

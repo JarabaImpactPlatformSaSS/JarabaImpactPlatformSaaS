@@ -65,9 +65,13 @@ services:
       - '@jaraba_copilot_v2.normative_rag'
       - '@jaraba_copilot_v2.copilot_cache'
       - '@jaraba_copilot_v2.entrepreneur_context'
+      - '@jaraba_self_discovery.context'
 
   jaraba_copilot_v2.mode_detector:
     class: Drupal\jaraba_copilot_v2\Service\ModeDetectorService
+    arguments:
+      - '@database'
+      - '@cache.copilot_triggers'
 
   # v3: Test Cards - Testing Business Ideas (Osterwalder)
   jaraba_copilot_v2.test_card_generator:
@@ -171,3 +175,11 @@ services:
       - { name: cache.bin }
     factory: cache_factory:get
     arguments: [copilot_responses]
+
+  # Custom cache bin for copilot mode triggers
+  cache.copilot_triggers:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [copilot_triggers]

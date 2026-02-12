@@ -1,0 +1,47 @@
+bmc-dashboard:
+  version: VERSION
+  css:
+    component:
+      css/copilot-v2.css: {}
+  js:
+    js/bmc-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+hypothesis-manager:
+  version: VERSION
+  css:
+    component:
+      css/copilot-v2.css: {}
+  js:
+    js/hypothesis-manager.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+experiment-lifecycle:
+  version: VERSION
+  css:
+    component:
+      css/copilot-v2.css: {}
+  js:
+    js/experiment-lifecycle.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+copilot-chat-widget:
+  version: VERSION
+  css:
+    component:
+      css/copilot-v2.css: {}
+  js:
+    js/copilot-chat-widget.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings

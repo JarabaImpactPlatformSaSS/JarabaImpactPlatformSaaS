@@ -35,7 +35,7 @@ class ClaudeApiService
     /**
      * Modelo por defecto.
      */
-    const DEFAULT_MODEL = 'claude-3-5-sonnet-20241022';
+    const DEFAULT_MODEL = 'claude-sonnet-4-5-20250929';
 
     /**
      * Config factory.

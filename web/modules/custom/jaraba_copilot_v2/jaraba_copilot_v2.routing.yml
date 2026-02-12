@@ -6,6 +6,17 @@ jaraba_copilot_v2.settings:
   requirements:
     _permission: 'administer site configuration'
 
+# Administracion de triggers de deteccion de modo
+jaraba_copilot_v2.mode_triggers_admin:
+  path: '/admin/config/jaraba/copilot-v2/triggers'
+  defaults:
+    _form: '\Drupal\jaraba_copilot_v2\Form\ModeTriggersAdminForm'
+    _title: 'Copiloto v2 - Triggers de Modo'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
 # Analytics Dashboard - Métricas de uso del copiloto
 jaraba_copilot_v2.analytics:
   path: '/admin/copilot/analytics'
@@ -53,6 +64,15 @@ jaraba_copilot_v2.experiment_detail:
   requirements:
     _permission: 'access copilot'
     experiment_id: '\d+'
+
+# SSE Streaming endpoint para chat del copiloto
+jaraba_copilot_v2.api.chat_stream:
+  path: '/api/copilot/chat/stream'
+  defaults:
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotStreamController::stream'
+  methods: [POST]
+  requirements:
+    _permission: 'access copilot'
 
 # API Endpoints
 jaraba_copilot_v2.api.chat:
@@ -185,7 +205,7 @@ jaraba_copilot_v2.api.hypotheses.list:
 jaraba_copilot_v2.api.hypotheses.create:
   path: '/api/v1/hypotheses'
   defaults:
-    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::create'
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\HypothesisApiController::store'
   methods: [POST]
   requirements:
     _permission: 'create hypotheses'
@@ -235,7 +255,7 @@ jaraba_copilot_v2.api.experiments.list:
 jaraba_copilot_v2.api.experiments.create:
   path: '/api/v1/experiments'
   defaults:
-    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::create'
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::store'
   methods: [POST]
   requirements:
     _permission: 'create experiments'
@@ -306,7 +326,7 @@ jaraba_copilot_v2.api.entrepreneurs.list:
 jaraba_copilot_v2.api.entrepreneurs.create:
   path: '/api/v1/entrepreneurs'
   defaults:
-    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::create'
+    _controller: '\Drupal\jaraba_copilot_v2\Controller\EntrepreneurApiController::store'
   methods: [POST]
   requirements:
     _permission: 'access copilot'
