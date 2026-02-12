@@ -1,0 +1,32 @@
+# Action links for Groups module entities
+# "Add" buttons on collection pages
+
+entity.collaboration_group.add_form:
+  title: 'Añadir grupo'
+  route_name: entity.collaboration_group.add_form
+  appears_on:
+    - entity.collaboration_group.collection
+
+entity.group_membership.add_form:
+  title: 'Añadir membresía'
+  route_name: entity.group_membership.add_form
+  appears_on:
+    - entity.group_membership.collection
+
+entity.group_discussion.add_form:
+  title: 'Añadir discusión'
+  route_name: entity.group_discussion.add_form
+  appears_on:
+    - entity.group_discussion.collection
+
+entity.group_event.add_form:
+  title: 'Añadir evento'
+  route_name: entity.group_event.add_form
+  appears_on:
+    - entity.group_event.collection
+
+entity.group_resource.add_form:
+  title: 'Añadir recurso'
+  route_name: entity.group_resource.add_form
+  appears_on:
+    - entity.group_resource.collection

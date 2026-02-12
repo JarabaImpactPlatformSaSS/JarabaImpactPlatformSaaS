@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Template para el bloque Parallax Hero.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set min_height = content.min_height|default('tall') %}
+{% set overlay = content.overlay_opacity|default(0.5) %}
+{% set speed = content.parallax_speed|default(0.5) %}
+
+<section class="jaraba-parallax-hero jaraba-parallax-hero--{{ min_height }} jaraba-block jaraba-block--premium"
+         data-parallax
+         data-parallax-speed="{{ speed }}"
+         style="--overlay-opacity: {{ overlay }};">
+  
+  <div class="jaraba-parallax-hero__background" 
+       style="background-image: url('{{ content.background_image }}');"></div>
+  
+  <div class="jaraba-parallax-hero__overlay"></div>
+  
+  {% if content.particles %}
+    <div class="jaraba-parallax-hero__particles" data-particles></div>
+  {% endif %}
+  
+  <div class="jaraba-parallax-hero__content jaraba-block__container">
+    <h1 class="jaraba-parallax-hero__title">{{ content.title }}</h1>
+    
+    {% if content.subtitle %}
+      <p class="jaraba-parallax-hero__subtitle">{{ content.subtitle }}</p>
+    {% endif %}
+    
+    {% if content.ctas is not empty %}
+      <div class="jaraba-parallax-hero__ctas">
+        {% for cta in content.ctas %}
+          <a href="{{ cta.url }}" class="jaraba-btn jaraba-btn--{{ cta.style|default('primary') }} jaraba-btn--lg">
+            {{ cta.text }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  
+</section>

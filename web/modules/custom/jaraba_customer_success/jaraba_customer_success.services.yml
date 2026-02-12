@@ -1,0 +1,59 @@
+services:
+  # Canal de log para Customer Success.
+  logger.channel.jaraba_customer_success:
+    parent: logger.channel_base
+    arguments: ['jaraba_customer_success']
+
+  # Servicio de scoring de engagement por tenant.
+  jaraba_customer_success.engagement_scoring:
+    class: Drupal\jaraba_customer_success\Service\EngagementScoringService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_customer_success'
+
+  # Sistema de encuestas NPS con tracking longitudinal.
+  jaraba_customer_success.nps_survey:
+    class: Drupal\jaraba_customer_success\Service\NpsSurveyService
+    arguments:
+      - '@config.factory'
+      - '@state'
+      - '@logger.channel.jaraba_customer_success'
+
+  # Gestión de etapas del ciclo de vida del tenant.
+  jaraba_customer_success.lifecycle_stage:
+    class: Drupal\jaraba_customer_success\Service\LifecycleStageService
+    arguments:
+      - '@state'
+      - '@logger.channel.jaraba_customer_success'
+
+  # Motor de cálculo del Health Score compuesto (0-100).
+  jaraba_customer_success.health_calculator:
+    class: Drupal\jaraba_customer_success\Service\HealthScoreCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@state'
+      - '@jaraba_customer_success.engagement_scoring'
+      - '@jaraba_customer_success.nps_survey'
+      - '@jaraba_customer_success.lifecycle_stage'
+      - '@logger.channel.jaraba_customer_success'
+
+  # Servicio de predicción de churn con @ai.provider.
+  jaraba_customer_success.churn_prediction:
+    class: Drupal\jaraba_customer_success\Service\ChurnPredictionService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@jaraba_customer_success.health_calculator'
+      - '@jaraba_customer_success.engagement_scoring'
+      - '@logger.channel.jaraba_customer_success'
+
+  # Motor de ejecución de playbooks automatizados.
+  jaraba_customer_success.playbook_executor:
+    class: Drupal\jaraba_customer_success\Service\PlaybookExecutorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@state'
+      - '@jaraba_customer_success.health_calculator'
+      - '@logger.channel.jaraba_customer_success'

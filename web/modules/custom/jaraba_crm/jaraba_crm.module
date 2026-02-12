@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Jaraba CRM - Sistema de Gestión de Relaciones Comerciales.
+ *
+ * Este módulo proporciona:
+ * - Gestión de Empresas (Company)
+ * - Gestión de Contactos con engagement scoring
+ * - Pipeline visual de Oportunidades (Kanban)
+ * - Registro de Actividades (Timeline)
+ * - Integración con jaraba_email y jaraba_pixels
+ */
+
+declare(strict_types=1);
+
+// Cargar callbacks de allowed_values (Directriz #20).
+require_once __DIR__ . '/jaraba_crm.allowed_values.inc';
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_crm_theme(): array {
+  return [
+    'crm_dashboard' => [
+      'variables' => [
+        'companies_count' => 0,
+        'contacts_count' => 0,
+        'opportunities_count' => 0,
+        'pipeline_value' => 0,
+        'recent_activities' => [],
+      ],
+      'template' => 'crm-dashboard',
+    ],
+    'crm_pipeline' => [
+      'variables' => [
+        'stages' => [],
+        'opportunities' => [],
+      ],
+      'template' => 'crm-pipeline',
+    ],
+    'crm_contact_360' => [
+      'variables' => [
+        'contact' => NULL,
+        'company' => NULL,
+        'activities' => [],
+        'opportunities' => [],
+      ],
+      'template' => 'crm-contact-360',
+    ],
+  ];
+}

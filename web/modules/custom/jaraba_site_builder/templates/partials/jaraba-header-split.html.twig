@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Header variante: Split (Canvas v2)
+ *
+ * Logo centrado, menús a ambos lados.
+ * Uso: Sitios editoriales, magazines, portfolios.
+ */
+#}
+{% set header_classes = [
+  'jaraba-header',
+  'jaraba-header--split',
+  sticky ? 'jaraba-header--sticky',
+  transparent ? 'jaraba-header--transparent',
+] %}
+
+<header class="{{ header_classes|join(' ')|trim }}" role="banner" data-grapesjs-type="jaraba-header" data-header-type="split">
+  <div class="jaraba-header__container jaraba-header__container--split">
+    {# Navegación izquierda #}
+    <nav class="jaraba-header__nav jaraba-header__nav--left" aria-label="{{ 'Navegación izquierda'|t }}">
+      {% if navigation %}
+        <ul class="jaraba-header__menu">
+          {% for item in navigation|slice(0, 3) %}
+            <li class="jaraba-header__menu-item">
+              <a href="{{ item.url }}" class="jaraba-header__menu-link">
+                {{ item.label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    {# Logo central #}
+    <div class="jaraba-header__brand jaraba-header__brand--centered">
+      {% if logo %}
+        <a href="/" class="jaraba-header__logo-link" rel="home">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-header__logo" />
+        </a>
+      {% else %}
+        <a href="/" class="jaraba-header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación derecha #}
+    <nav class="jaraba-header__nav jaraba-header__nav--right" aria-label="{{ 'Navegación derecha'|t }}">
+      {% if navigation %}
+        <ul class="jaraba-header__menu">
+          {% for item in navigation|slice(3) %}
+            <li class="jaraba-header__menu-item">
+              <a href="{{ item.url }}" class="jaraba-header__menu-link">
+                {{ item.label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      
+      {% if cta_text and cta_url %}
+        <a href="{{ cta_url }}" class="jaraba-header__cta btn btn--primary btn--sm">
+          {{ cta_text }}
+        </a>
+      {% endif %}
+    </nav>
+
+    {# Mobile toggle #}
+    <button class="jaraba-header__mobile-toggle" aria-label="{{ 'Abrir menú'|t }}" aria-expanded="false">
+      <span class="jaraba-header__hamburger"></span>
+    </button>
+  </div>
+</header>

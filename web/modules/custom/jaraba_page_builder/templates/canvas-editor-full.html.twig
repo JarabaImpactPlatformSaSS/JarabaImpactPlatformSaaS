@@ -1,0 +1,317 @@
+{#
+/**
+ * @file
+ * canvas-editor-full.html.twig - HTML COMPLETO limpio para Canvas Editor.
+ *
+ * PROPÓSITO:
+ * Template HTML completo renderizado DIRECTAMENTE por el controller via Twig,
+ * bypassing completamente el sistema de page templates de Drupal.
+ * No pasa por html.html.twig ni page.html.twig.
+ *
+ * RUTA: /page/{id}/editor
+ */
+#}
+<!DOCTYPE html>
+<html lang="es" class="canvas-editor-page full-viewport-layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  
+  {# CSS del tema principal #}
+  <link rel="stylesheet" href="{{ base_path }}themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css">
+  <link rel="stylesheet" href="{{ base_path }}modules/custom/jaraba_page_builder/css/canvas-editor.css">
+  
+  <style>
+    /* ESTILOS CRÍTICOS - Full-viewport Canvas Editor */
+    html, body {
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    /* Ocultar cualquier elemento que no sea el canvas editor */
+    body > *:not(.canvas-editor):not(script):not(style):not(link) {
+      display: none !important;
+    }
+    
+    .canvas-editor {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      z-index: 99999 !important;
+      background: var(--ej-bg-body, #F8FAFC) !important;
+    }
+    
+    .canvas-editor__header {
+      flex-shrink: 0;
+      height: 56px;
+      background: var(--ej-bg-card, #FFFFFF);
+      border-bottom: 1px solid var(--ej-border-color, #E2E8F0);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      justify-content: space-between;
+    }
+    
+    .canvas-editor__header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .canvas-editor__back {
+      color: var(--ej-text-muted, #64748B);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    
+    .canvas-editor__back:hover {
+      color: var(--ej-primary, #6366F1);
+    }
+    
+    .canvas-editor__title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--ej-text-primary, #1E293B);
+      margin: 0;
+    }
+    
+    .canvas-editor__body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    .canvas-editor__sidebar {
+      width: 280px;
+      background: var(--ej-bg-card, #FFFFFF);
+      border-right: 1px solid var(--ej-border-color, #E2E8F0);
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    
+    .canvas-editor__canvas {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: var(--ej-bg-body, #F8FAFC);
+    }
+    
+    .canvas-editor__iframe-wrapper {
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .canvas-editor__iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .canvas-editor__btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .canvas-editor__btn--primary {
+      background: var(--ej-primary, #6366F1);
+      color: white;
+    }
+    
+    .canvas-editor__btn--secondary {
+      background: var(--ej-bg-muted, #F1F5F9);
+      color: var(--ej-text-primary, #1E293B);
+    }
+    
+    .canvas-editor__viewport-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--ej-bg-muted, #F1F5F9);
+      padding: 0.25rem;
+      border-radius: 6px;
+    }
+    
+    .canvas-editor__viewport-btn {
+      padding: 0.375rem 0.625rem;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--ej-text-muted, #64748B);
+    }
+    
+    .canvas-editor__viewport-btn.active {
+      background: white;
+      color: var(--ej-text-primary, #1E293B);
+    }
+    
+    .canvas-editor__section-item {
+      padding: 0.75rem 1rem;
+      background: var(--ej-bg-muted, #F1F5F9);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .canvas-editor__empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--ej-text-muted, #64748B);
+    }
+    
+    .canvas-editor__add-section-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px dashed var(--ej-border-color, #E2E8F0);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ej-text-muted, #64748B);
+      cursor: pointer;
+    }
+    
+    .canvas-editor__add-section-btn:hover {
+      border-color: var(--ej-primary, #6366F1);
+      color: var(--ej-primary, #6366F1);
+    }
+    
+    .canvas-editor__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body class="canvas-editor-page full-viewport-layout">
+  <div class="canvas-editor">
+    {# Header del Editor #}
+    <header class="canvas-editor__header">
+      <div class="canvas-editor__header-left">
+        <a href="/my-pages" class="canvas-editor__back" title="Volver a Mis Páginas">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="canvas-editor__title">{{ page.label }}</h1>
+      </div>
+      
+      <div class="canvas-editor__viewport-toggle">
+        <button class="canvas-editor__viewport-btn active" data-viewport="desktop" title="Desktop">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+        </button>
+        <button class="canvas-editor__viewport-btn" data-viewport="tablet" title="Tablet">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <circle cx="12" cy="18" r="1"/>
+          </svg>
+        </button>
+        <button class="canvas-editor__viewport-btn" data-viewport="mobile" title="Mobile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="7" y="2" width="10" height="20" rx="2"/>
+            <circle cx="12" cy="18" r="1"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="canvas-editor__actions">
+        <button class="canvas-editor__btn canvas-editor__btn--secondary" id="preview-btn">
+          Vista previa
+        </button>
+        <button class="canvas-editor__btn canvas-editor__btn--primary" id="save-btn">
+          Guardar
+        </button>
+      </div>
+    </header>
+    
+    {# Cuerpo: Sidebar + Canvas #}
+    <div class="canvas-editor__body">
+      {# Sidebar con secciones #}
+      <aside class="canvas-editor__sidebar">
+        <h3 style="margin: 0 0 1rem 0; font-size: 0.875rem; font-weight: 600; color: var(--ej-text-muted);">
+          Secciones
+        </h3>
+        
+        <div id="sections-list">
+          {% if sections|length > 0 %}
+            {% for section in sections %}
+              <div class="canvas-editor__section-item" data-uuid="{{ section.uuid }}">
+                <span>{{ section.template_id|default('Sección') }}</span>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="canvas-editor__empty-state">
+              <p>Aún no hay secciones.</p>
+              <p>Añade tu primera sección para comenzar.</p>
+            </div>
+          {% endif %}
+        </div>
+        
+        <button class="canvas-editor__add-section-btn" id="add-section-btn">
+          + Añadir sección
+        </button>
+      </aside>
+      
+      {# Canvas con iframe preview #}
+      <main class="canvas-editor__canvas">
+        <div class="canvas-editor__iframe-wrapper" id="iframe-wrapper">
+          <iframe 
+            class="canvas-editor__iframe" 
+            id="preview-iframe"
+            src="{{ preview_url }}"
+            title="Vista previa de la página"
+          ></iframe>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <script>
+    window.drupalSettings = {{ drupal_settings|raw }};
+    
+    // Viewport toggle
+    document.querySelectorAll('.canvas-editor__viewport-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.canvas-editor__viewport-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const wrapper = document.getElementById('iframe-wrapper');
+        if (this.dataset.viewport === 'mobile') wrapper.style.maxWidth = '375px';
+        else if (this.dataset.viewport === 'tablet') wrapper.style.maxWidth = '768px';
+        else wrapper.style.maxWidth = '100%';
+      });
+    });
+    
+    document.getElementById('preview-btn')?.addEventListener('click', () => window.open('{{ preview_url }}', '_blank'));
+    document.getElementById('save-btn')?.addEventListener('click', () => alert('Guardando...'));
+    document.getElementById('add-section-btn')?.addEventListener('click', () => alert('Añadir sección...'));
+  </script>
+</body>
+</html>

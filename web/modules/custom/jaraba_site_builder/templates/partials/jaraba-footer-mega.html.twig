@@ -1,0 +1,113 @@
+{#
+/**
+ * @file
+ * Footer variante: Mega (Canvas v2)
+ *
+ * Footer amplio con múltiples secciones, estadísticas, y contenido enriquecido.
+ * Ideal para sitios enterprise y plataformas SaaS.
+ */
+#}
+<footer class="jaraba-footer jaraba-footer--mega" role="contentinfo" data-grapesjs-type="jaraba-footer" data-footer-type="mega">
+  <div class="jaraba-footer__container">
+    {# Sección superior con CTA o destacado #}
+    <div class="jaraba-footer__mega-top">
+      <div class="jaraba-footer__mega-cta">
+        <h2 class="jaraba-footer__mega-title">{{ 'Comienza tu transformación digital hoy'|t }}</h2>
+        <a href="/contacto" class="btn btn--primary btn--lg">
+          {{ 'Solicitar demo'|t }}
+        </a>
+      </div>
+    </div>
+
+    {# Sección principal mega #}
+    <div class="jaraba-footer__mega-main">
+      {# Columna Brand + Social #}
+      <div class="jaraba-footer__mega-brand">
+        {% if logo %}
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-footer__logo jaraba-footer__logo--lg" />
+        {% else %}
+          <span class="jaraba-footer__site-name jaraba-footer__site-name--lg">{{ site_name }}</span>
+        {% endif %}
+        
+        <p class="jaraba-footer__mega-tagline">
+          {{ config.tagline|default('Transformando el futuro digital') }}
+        </p>
+
+        {% if show_social and social_links %}
+          <div class="jaraba-footer__social jaraba-footer__social--lg">
+            {% for social in social_links %}
+              <a href="{{ social.url }}" class="jaraba-footer__social-link" target="_blank" rel="noopener">
+                <svg class="jaraba-footer__social-icon" width="28" height="28">
+                  <use xlink:href="#icon-{{ social.platform|lower }}"></use>
+                </svg>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {# Columnas de navegación #}
+      <div class="jaraba-footer__mega-nav">
+        {% if navigation %}
+          {% for section in navigation %}
+            <div class="jaraba-footer__mega-column">
+              <h3 class="jaraba-footer__column-title">{{ section.label }}</h3>
+              {% if section.children %}
+                <ul class="jaraba-footer__nav-list">
+                  {% for item in section.children %}
+                    <li class="jaraba-footer__nav-item">
+                      <a href="{{ item.url }}" class="jaraba-footer__nav-link">
+                        {{ item.label }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {# Columna Newsletter + Contacto #}
+      <div class="jaraba-footer__mega-contact">
+        {% if show_newsletter %}
+          <div class="jaraba-footer__newsletter">
+            <h3 class="jaraba-footer__column-title">{{ 'Newsletter'|t }}</h3>
+            <form class="jaraba-footer__newsletter-form" action="/newsletter/subscribe" method="post">
+              <input type="email" name="email" placeholder="{{ 'Tu email'|t }}" required class="jaraba-footer__newsletter-input" />
+              <button type="submit" class="jaraba-footer__newsletter-btn btn btn--primary">
+                {{ 'Suscribir'|t }}
+              </button>
+            </form>
+          </div>
+        {% endif %}
+
+        <div class="jaraba-footer__contact-info">
+          <h3 class="jaraba-footer__column-title">{{ 'Contacto'|t }}</h3>
+          {% if config.contact_email %}
+            <a href="mailto:{{ config.contact_email }}" class="jaraba-footer__contact-link">
+              {{ config.contact_email }}
+            </a>
+          {% endif %}
+          {% if config.contact_phone %}
+            <a href="tel:{{ config.contact_phone }}" class="jaraba-footer__contact-link">
+              {{ config.contact_phone }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {# Barra inferior con legal #}
+    <div class="jaraba-footer__bottom jaraba-footer__bottom--mega">
+      <div class="jaraba-footer__copyright">
+        {{ copyright }}
+      </div>
+      <nav class="jaraba-footer__legal-nav">
+        <a href="/privacidad" class="jaraba-footer__legal-link">{{ 'Privacidad'|t }}</a>
+        <a href="/terminos" class="jaraba-footer__legal-link">{{ 'Términos'|t }}</a>
+        <a href="/cookies" class="jaraba-footer__legal-link">{{ 'Cookies'|t }}</a>
+      </nav>
+    </div>
+  </div>
+</footer>

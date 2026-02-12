@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * help-center-not-found.html.twig — Artículo no encontrado.
+ *
+ * Variables:
+ * - message: Mensaje descriptivo.
+ */
+#}
+
+<div class="help-not-found">
+  <div class="help-not-found__icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-text-secondary, #718096)" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  </div>
+  <h1 class="help-not-found__title">{% trans %}Artículo no encontrado{% endtrans %}</h1>
+  <p class="help-not-found__message">{{ message }}</p>
+  <a href="{{ path('jaraba_tenant_knowledge.help.index') }}" class="help-not-found__link">
+    ← {% trans %}Volver al Centro de Ayuda{% endtrans %}
+  </a>
+</div>

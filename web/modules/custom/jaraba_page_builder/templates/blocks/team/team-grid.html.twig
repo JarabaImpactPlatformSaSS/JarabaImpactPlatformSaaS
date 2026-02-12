@@ -1,0 +1,121 @@
+{#
+/**
+ * @file
+ * Template para el bloque Equipo en Grid.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout_class = content.layout|default('grid-3') %}
+{% set card_style = content.card_style|default('simple') %}
+{% set members = content.members|default([]) %}
+
+<section class="jaraba-team jaraba-team--{{ bg_class }} jaraba-block"
+         aria-labelledby="team-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-team__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="team-title" class="jaraba-block__title">{{ content.title }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de miembros #}
+    {% if members is not empty %}
+      <div class="jaraba-team__grid jaraba-team__grid--{{ layout_class }}">
+        {% for member in members %}
+          <article class="jaraba-team-card jaraba-team-card--{{ card_style }}">
+            {# Foto #}
+            <div class="jaraba-team-card__photo-wrapper">
+              {% if member.photo %}
+                <img src="{{ member.photo }}" 
+                     alt="{{ member.name }}"
+                     class="jaraba-team-card__photo"
+                     loading="lazy">
+              {% else %}
+                <div class="jaraba-team-card__photo jaraba-team-card__photo--placeholder">
+                  {{ jaraba_icon('ui', 'user', { variant: 'duotone', size: '48px', color: 'muted' }) }}
+                </div>
+              {% endif %}
+              
+              {# Overlay con redes sociales (estilo hover-reveal/overlay) #}
+              {% if card_style != 'simple' and (member.linkedin or member.twitter or member.email) %}
+                <div class="jaraba-team-card__overlay">
+                  <div class="jaraba-team-card__social">
+                    {% if member.linkedin %}
+                      <a href="{{ member.linkedin }}" 
+                         target="_blank" 
+                         rel="noopener"
+                         aria-label="LinkedIn {{ member.name }}">
+                        {{ jaraba_icon('social', 'linkedin', { size: '20px' }) }}
+                      </a>
+                    {% endif %}
+                    {% if member.twitter %}
+                      <a href="{{ member.twitter }}" 
+                         target="_blank" 
+                         rel="noopener"
+                         aria-label="Twitter {{ member.name }}">
+                        {{ jaraba_icon('social', 'twitter', { size: '20px' }) }}
+                      </a>
+                    {% endif %}
+                    {% if member.email %}
+                      <a href="mailto:{{ member.email }}" 
+                         aria-label="{% trans %}Email{% endtrans %} {{ member.name }}">
+                        {{ jaraba_icon('ui', 'mail', { size: '20px' }) }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+            
+            {# Info #}
+            <div class="jaraba-team-card__info">
+              <h3 class="jaraba-team-card__name">{{ member.name }}</h3>
+              <p class="jaraba-team-card__role">{{ member.role }}</p>
+              
+              {% if member.bio %}
+                <p class="jaraba-team-card__bio">{{ member.bio }}</p>
+              {% endif %}
+              
+              {# Redes sociales (estilo simple) #}
+              {% if card_style == 'simple' and (member.linkedin or member.twitter or member.email) %}
+                <div class="jaraba-team-card__social">
+                  {% if member.linkedin %}
+                    <a href="{{ member.linkedin }}" target="_blank" rel="noopener">
+                      {{ jaraba_icon('social', 'linkedin', { size: '18px', color: 'muted' }) }}
+                    </a>
+                  {% endif %}
+                  {% if member.twitter %}
+                    <a href="{{ member.twitter }}" target="_blank" rel="noopener">
+                      {{ jaraba_icon('social', 'twitter', { size: '18px', color: 'muted' }) }}
+                    </a>
+                  {% endif %}
+                  {% if member.email %}
+                    <a href="mailto:{{ member.email }}">
+                      {{ jaraba_icon('ui', 'mail', { size: '18px', color: 'muted' }) }}
+                    </a>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

@@ -1,0 +1,235 @@
+{#
+/**
+ * @file
+ * Slide-Panel "⚙ Configuración de Página" para el Canvas Editor.
+ *
+ * PROPÓSITO:
+ * Panel lateral dentro del Canvas Editor para editar metadatos de la página
+ * sin salir del editor visual. Secciones: General, SEO, Revisiones.
+ *
+ * VARIABLES:
+ * - page: Entidad PageContent (para valores iniciales server-side).
+ *
+ * Los valores se cargan y actualizan vía JS (page-config.js) usando la API
+ * GET/PATCH /api/v1/pages/{id}/config.
+ *
+ * @see \Drupal\jaraba_page_builder\Controller\PageConfigApiController
+ */
+#}
+
+<div class="page-config-panel" id="page-config-panel" role="dialog" aria-modal="true" aria-labelledby="page-config-panel-title" hidden>
+  {# Overlay #}
+  <div class="page-config-panel__overlay" data-action="close"></div>
+
+  {# Panel Container #}
+  <div class="page-config-panel__container">
+    {# Header #}
+    <div class="page-config-panel__header">
+      <h2 class="page-config-panel__title" id="page-config-panel-title">
+        {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '20px' }) }}
+        {% trans %}Configuración de Página{% endtrans %}
+      </h2>
+      <button type="button" class="page-config-panel__close" data-action="close" aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '20px' }) }}
+      </button>
+    </div>
+
+    {# Save indicator #}
+    <div class="page-config-panel__save-indicator" id="page-config-save-indicator" hidden>
+      <span class="page-config-panel__save-dot"></span>
+      <span class="page-config-panel__save-text">{% trans %}Guardando...{% endtrans %}</span>
+    </div>
+
+    {# Body — scrollable #}
+    <div class="page-config-panel__body">
+
+      {# ════════════ SECCIÓN: GENERAL ════════════ #}
+      <section class="page-config-panel__section page-config-panel__section--general">
+        <button type="button" class="page-config-panel__section-toggle" aria-expanded="true" data-section="general">
+          <span class="page-config-panel__section-icon">
+            {{ jaraba_icon('ui', 'file-text', { size: '16px' }) }}
+          </span>
+          <span>{% trans %}General{% endtrans %}</span>
+          <span class="page-config-panel__section-chevron">
+            {{ jaraba_icon('ui', 'chevron-down', { size: '14px' }) }}
+          </span>
+        </button>
+
+        <div class="page-config-panel__section-content" id="section-general">
+          {# Título #}
+          <div class="page-config-panel__field">
+            <label for="page-config-title">{% trans %}Título{% endtrans %}</label>
+            <input type="text"
+                   id="page-config-title"
+                   name="title"
+                   class="page-config-panel__input"
+                   placeholder="{% trans %}Título de la página{% endtrans %}"
+                   maxlength="255"
+                   value="{{ page.label() }}"
+                   data-field="title"
+                   required>
+          </div>
+
+          {# URL amigable (Slug) #}
+          <div class="page-config-panel__field">
+            <label for="page-config-slug">{% trans %}URL amigable{% endtrans %}</label>
+            <div class="page-config-panel__slug-wrapper">
+              <span class="page-config-panel__slug-prefix">/</span>
+              <input type="text"
+                     id="page-config-slug"
+                     name="path_alias"
+                     class="page-config-panel__input page-config-panel__input--slug"
+                     placeholder="mi-pagina"
+                     maxlength="255"
+                     value="{{ (page.path_alias.value|default(''))|replace({'/': ''}) }}"
+                     data-field="path_alias">
+            </div>
+            <span class="page-config-panel__field-hint" id="slug-preview"></span>
+          </div>
+
+          {# Estado: Publicado / Borrador #}
+          <div class="page-config-panel__field">
+            <label>{% trans %}Estado{% endtrans %}</label>
+            <div class="page-config-panel__toggle-wrapper">
+              <button type="button"
+                      class="page-config-panel__status-toggle {{ page.status.value ? 'is-published' : '' }}"
+                      id="page-config-status"
+                      data-field="status"
+                      data-value="{{ page.status.value ? '1' : '0' }}"
+                      role="switch"
+                      aria-checked="{{ page.status.value ? 'true' : 'false' }}">
+                <span class="page-config-panel__toggle-track">
+                  <span class="page-config-panel__toggle-knob"></span>
+                </span>
+                <span class="page-config-panel__toggle-label" id="status-label">
+                  {{ page.status.value ? 'Publicado'|t : 'Borrador'|t }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {# Menú #}
+          <div class="page-config-panel__field">
+            <label for="page-config-menu">{% trans %}Añadir a menú{% endtrans %}</label>
+            <select id="page-config-menu"
+                    name="menu_link"
+                    class="page-config-panel__select"
+                    data-field="menu_link">
+              <option value="">{% trans %}- Ninguno -{% endtrans %}</option>
+              <option value="main" {{ page.menu_link.value == 'main' ? 'selected' : '' }}>{% trans %}Menú principal{% endtrans %}</option>
+              <option value="footer" {{ page.menu_link.value == 'footer' ? 'selected' : '' }}>{% trans %}Menú del footer{% endtrans %}</option>
+              <option value="secondary" {{ page.menu_link.value == 'secondary' ? 'selected' : '' }}>{% trans %}Menú secundario{% endtrans %}</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {# ════════════ SECCIÓN: SEO ════════════ #}
+      <section class="page-config-panel__section page-config-panel__section--seo">
+        <button type="button" class="page-config-panel__section-toggle" aria-expanded="true" data-section="seo">
+          <span class="page-config-panel__section-icon">
+            {{ jaraba_icon('ui', 'search', { size: '16px' }) }}
+          </span>
+          <span>{% trans %}SEO{% endtrans %}</span>
+          <span class="page-config-panel__seo-score" id="seo-meta-score"></span>
+          <span class="page-config-panel__section-chevron">
+            {{ jaraba_icon('ui', 'chevron-down', { size: '14px' }) }}
+          </span>
+        </button>
+
+        <div class="page-config-panel__section-content" id="section-seo">
+          {# Meta Título #}
+          <div class="page-config-panel__field">
+            <label for="page-config-meta-title">{% trans %}Meta título{% endtrans %}</label>
+            <input type="text"
+                   id="page-config-meta-title"
+                   name="meta_title"
+                   class="page-config-panel__input"
+                   placeholder="{% trans %}Título para buscadores{% endtrans %}"
+                   maxlength="70"
+                   value="{{ page.meta_title.value|default('') }}"
+                   data-field="meta_title"
+                   data-max-recommended="60">
+            <div class="page-config-panel__char-counter">
+              <span class="page-config-panel__char-count" id="meta-title-count">0</span>
+              <span class="page-config-panel__char-separator">/</span>
+              <span class="page-config-panel__char-max">60</span>
+              {% trans %}caracteres{% endtrans %}
+            </div>
+          </div>
+
+          {# Meta Descripción #}
+          <div class="page-config-panel__field">
+            <label for="page-config-meta-desc">{% trans %}Meta descripción{% endtrans %}</label>
+            <textarea id="page-config-meta-desc"
+                      name="meta_description"
+                      class="page-config-panel__textarea"
+                      placeholder="{% trans %}Descripción para buscadores (máx. 155 caracteres){% endtrans %}"
+                      maxlength="300"
+                      rows="3"
+                      data-field="meta_description"
+                      data-max-recommended="155">{{ page.meta_description.value|default('') }}</textarea>
+            <div class="page-config-panel__char-counter">
+              <span class="page-config-panel__char-count" id="meta-desc-count">0</span>
+              <span class="page-config-panel__char-separator">/</span>
+              <span class="page-config-panel__char-max">155</span>
+              {% trans %}caracteres{% endtrans %}
+            </div>
+          </div>
+
+          {# SERP Preview #}
+          <div class="page-config-panel__serp-preview" id="serp-preview">
+            <div class="page-config-panel__serp-label">{% trans %}Vista previa en Google{% endtrans %}</div>
+            <div class="page-config-panel__serp-card">
+              <div class="page-config-panel__serp-url" id="serp-url">example.com › mi-pagina</div>
+              <div class="page-config-panel__serp-title" id="serp-title">{{ page.meta_title.value|default('') ?: page.label() }}</div>
+              <div class="page-config-panel__serp-desc" id="serp-desc">{{ page.meta_description.value|default('') ?: 'Sin descripción' }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {# ════════════ SECCIÓN: REVISIONES ════════════ #}
+      <section class="page-config-panel__section page-config-panel__section--revisions">
+        <button type="button" class="page-config-panel__section-toggle" aria-expanded="false" data-section="revisions">
+          <span class="page-config-panel__section-icon">
+            {{ jaraba_icon('ui', 'clock', { size: '16px' }) }}
+          </span>
+          <span>{% trans %}Revisiones{% endtrans %}</span>
+          <span class="page-config-panel__section-chevron">
+            {{ jaraba_icon('ui', 'chevron-down', { size: '14px' }) }}
+          </span>
+        </button>
+
+        <div class="page-config-panel__section-content page-config-panel__section-content--collapsed" id="section-revisions">
+          <div class="page-config-panel__revision-info">
+            <div class="page-config-panel__revision-row">
+              <span class="page-config-panel__revision-label">{% trans %}Creado{% endtrans %}</span>
+              <span class="page-config-panel__revision-value" id="page-config-created">—</span>
+            </div>
+            <div class="page-config-panel__revision-row">
+              <span class="page-config-panel__revision-label">{% trans %}Modificado{% endtrans %}</span>
+              <span class="page-config-panel__revision-value" id="page-config-changed">—</span>
+            </div>
+            <div class="page-config-panel__revision-row">
+              <span class="page-config-panel__revision-label">{% trans %}Última revisión{% endtrans %}</span>
+              <span class="page-config-panel__revision-value" id="page-config-revision-info">—</span>
+            </div>
+            <div class="page-config-panel__revision-row">
+              <span class="page-config-panel__revision-label">{% trans %}Total revisiones{% endtrans %}</span>
+              <span class="page-config-panel__revision-value" id="page-config-revision-count">0</span>
+            </div>
+          </div>
+          <a href="/admin/content/pages/{{ page.id() }}/revisions"
+             class="page-config-panel__revision-link"
+             target="_blank"
+             id="page-config-revisions-link">
+            {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
+            {% trans %}Ver historial completo{% endtrans %}
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>

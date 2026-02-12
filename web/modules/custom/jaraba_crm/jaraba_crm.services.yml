@@ -1,0 +1,16 @@
+services:
+  jaraba_crm.company:
+    class: Drupal\jaraba_crm\Service\CompanyService
+    arguments: ['@entity_type.manager']
+
+  jaraba_crm.contact:
+    class: Drupal\jaraba_crm\Service\ContactService
+    arguments: ['@entity_type.manager']
+
+  jaraba_crm.opportunity:
+    class: Drupal\jaraba_crm\Service\OpportunityService
+    arguments: ['@entity_type.manager']
+
+  jaraba_crm.activity:
+    class: Drupal\jaraba_crm\Service\ActivityService
+    arguments: ['@entity_type.manager']

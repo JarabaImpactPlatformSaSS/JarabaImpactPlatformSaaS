@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install/update hooks para jaraba_tenant_knowledge.
+ */
+
+/**
+ * Convierte tenant_faq a entidad traducible (G114-3).
+ *
+ * Migra datos existentes del base_table al data_table,
+ * asignando langcode del idioma por defecto del sitio.
+ */
+function jaraba_tenant_knowledge_update_10001(array &$sandbox): void {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('tenant_faq');
+  $field_storage_definitions = $entity_field_manager->getFieldStorageDefinitions('tenant_faq');
+
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
+}
+
+/**
+ * Convierte tenant_policy a entidad traducible (G114-3).
+ */
+function jaraba_tenant_knowledge_update_10002(array &$sandbox): void {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('tenant_policy');
+  $field_storage_definitions = $entity_field_manager->getFieldStorageDefinitions('tenant_policy');
+
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
+}

@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template para el bloque Animación Orbital.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+
+<section class="jaraba-orbit jaraba-orbit--{{ bg_class }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <div class="jaraba-orbit__scene">
+      {# Center content #}
+      <div class="jaraba-orbit__center">
+        {% if content.center_content.type == 'icon' %}
+          {{ jaraba_icon('ui', content.center_content.icon, { variant: 'duotone', size: '48px' }) }}
+        {% elseif content.center_content.type == 'image' %}
+          <img src="{{ content.center_content.image }}" alt="">
+        {% elseif content.center_content.type == 'text' %}
+          <span>{{ content.center_content.text }}</span>
+        {% endif %}
+      </div>
+      
+      {# Orbits #}
+      {% for orbit in content.orbits %}
+        {% set orbit_speed = orbit.speed|default('normal') %}
+        {% set orbit_direction = orbit.direction|default('clockwise') %}
+        <div class="jaraba-orbit__ring jaraba-orbit__ring--{{ loop.index }} jaraba-orbit__ring--{{ orbit_speed }} jaraba-orbit__ring--{{ orbit_direction }}">
+          {% for item in orbit.items %}
+            <div class="jaraba-orbit__item" style="--index: {{ loop.index0 }}; --total: {{ orbit.items|length }};">
+              {% if item.type == 'icon' %}
+                {{ jaraba_icon('ui', item.icon, { size: '24px' }) }}
+              {% elseif item.type == 'image' or item.type == 'avatar' %}
+                <img src="{{ item.image }}" alt="">
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    {% if content.title or content.description %}
+      <div class="jaraba-orbit__content">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.description %}
+          <p class="jaraba-block__subtitle">{{ content.description }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

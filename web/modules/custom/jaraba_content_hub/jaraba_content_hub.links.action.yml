@@ -1,0 +1,12 @@
+# Action links (+ Add buttons)
+entity.content_article.add_form:
+  title: 'Add Article'
+  route_name: entity.content_article.add_form
+  appears_on:
+    - entity.content_article.collection
+
+entity.content_category.add_form:
+  title: 'Add Category'
+  route_name: entity.content_category.add_form
+  appears_on:
+    - entity.content_category.collection

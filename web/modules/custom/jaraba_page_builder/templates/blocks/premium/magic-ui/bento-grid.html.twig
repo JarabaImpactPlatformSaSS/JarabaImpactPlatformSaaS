@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * Template para el bloque Bento Grid (Magic UI).
+ *
+ * Grid moderno estilo Bento con efectos de brillo.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set items = content.items|default([]) %}
+
+<section class="jaraba-bento-grid jaraba-block"
+         data-block-type="bento_grid">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.section_title %}
+      <header class="jaraba-bento-grid__header">
+        <h2 class="jaraba-block__title">{{ content.section_title }}</h2>
+      </header>
+    {% endif %}
+
+    {# Grid #}
+    <div class="jaraba-bento-grid__grid">
+      {% for item in items %}
+        <article class="jaraba-bento-grid__item jaraba-bento-grid__item--{{ item.size|default('medium') }}"
+                 {% if item.background_color %}style="--bento-bg: {{ item.background_color }}; --bento-accent: {{ item.accent_color|default('#00d4ff') }};"{% endif %}>
+          <div class="jaraba-bento-grid__glow"></div>
+          <div class="jaraba-bento-grid__content">
+            {% if item.icon %}
+              <div class="jaraba-bento-grid__icon">
+                {{ jaraba_icon('ui', item.icon, { size: '40px', color: 'white' }) }}
+              </div>
+            {% endif %}
+            {% if item.title %}
+              <h3 class="jaraba-bento-grid__title">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.description %}
+              <p class="jaraba-bento-grid__description">{{ item.description }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>

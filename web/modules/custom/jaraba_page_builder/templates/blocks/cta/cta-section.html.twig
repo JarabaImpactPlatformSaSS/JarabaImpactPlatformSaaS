@@ -1,0 +1,82 @@
+{#
+/**
+ * @file
+ * Template para el bloque CTA Section.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient-primary') %}
+{% set layout_class = content.layout|default('centered') %}
+{% set has_bg_image = content.background == 'image' and content.background_image %}
+
+<section class="jaraba-block jaraba-cta-section jaraba-cta-section--{{ bg_class }} jaraba-cta-section--{{ layout_class }}"
+         data-block-type="cta_section"
+         {% if has_bg_image %}
+           style="--cta-bg-image: url('{{ file_url(content.background_image) }}')"
+         {% endif %}>
+  
+  {# Overlay para imágenes de fondo #}
+  {% if has_bg_image %}
+    <div class="jaraba-cta-section__overlay"></div>
+  {% endif %}
+  
+  <div class="jaraba-block__container">
+    <div class="jaraba-cta-section__content">
+      
+      {# Textos #}
+      <div class="jaraba-cta-section__text">
+        {% if content.eyebrow %}
+          <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+        {% endif %}
+        
+        {% if content.title %}
+          <h2 class="jaraba-cta-section__title">{{ content.title }}</h2>
+        {% endif %}
+        
+        {% if content.subtitle %}
+          <p class="jaraba-cta-section__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </div>
+      
+      {# Botones #}
+      <div class="jaraba-cta-section__actions">
+        {% if content.primary_cta.text %}
+          <a href="{{ content.primary_cta.url|default('#') }}" 
+             class="jaraba-btn jaraba-btn--{{ content.primary_cta.style|default('primary') }} jaraba-btn--lg">
+            {{ content.primary_cta.text }}
+          </a>
+        {% endif %}
+        
+        {% if content.secondary_cta.text %}
+          <a href="{{ content.secondary_cta.url|default('#') }}" 
+             class="jaraba-btn jaraba-btn--{{ content.secondary_cta.style|default('ghost') }} jaraba-btn--lg">
+            {{ content.secondary_cta.text }}
+          </a>
+        {% endif %}
+      </div>
+      
+      {# Trust Badges #}
+      {% if content.trust_badges is not empty %}
+        <div class="jaraba-cta-section__badges">
+          {% for badge in content.trust_badges %}
+            <div class="jaraba-trust-badge">
+              {% if badge.icon %}
+                <span class="jaraba-trust-badge__icon">
+                  {{ jaraba_icon('ui', badge.icon, { variant: 'filled', size: '16px', color: 'success' }) }}
+                </span>
+              {% endif %}
+              <span class="jaraba-trust-badge__text">{{ badge.text }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+    </div>
+  </div>
+</section>

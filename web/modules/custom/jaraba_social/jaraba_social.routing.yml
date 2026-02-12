@@ -1,0 +1,26 @@
+# Social Dashboard
+jaraba_social.dashboard:
+  path: '/social'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialDashboardController::dashboard'
+    _title: 'Social Media Manager'
+  requirements:
+    _permission: 'access social dashboard'
+
+# API: Generar contenido
+jaraba_social.api.generate:
+  path: '/api/v1/social/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::generate'
+  methods: [POST]
+  requirements:
+    _permission: 'create social posts'
+
+# API: Estadísticas
+jaraba_social.api.stats:
+  path: '/api/v1/social/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_social\Controller\SocialApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'access social dashboard'

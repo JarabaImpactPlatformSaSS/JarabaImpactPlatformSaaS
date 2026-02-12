@@ -1,0 +1,13 @@
+name: Jaraba Page Builder
+type: module
+description: 'Constructor de páginas SaaS con bloques premium (Aceternity/Magic UI). Multi-tenant con límites configurables por Vertical/Plan.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:path_alias
+  - drupal:link
+  - drupal:options
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+
+configure: entity.page_template.collection

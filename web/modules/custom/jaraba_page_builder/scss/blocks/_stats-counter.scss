@@ -1,0 +1,43 @@
+/**
+ * @file
+ * Stats Counter - Estilos para el contador de estadísticas con animación.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * @package jaraba_page_builder
+ */
+
+// ============================================================================
+// STATS COUNTER COMPONENT
+// Contadores numéricos animados con Intersection Observer
+// ============================================================================
+
+.jaraba-stats--counter {
+    background: var(--ej-bg-secondary, #f8fafc);
+    padding: var(--ej-spacing-2xl, 4rem) var(--ej-spacing-lg, 2rem);
+    font-family: var(--ej-font-family, Inter, sans-serif);
+}
+
+// Número animado
+.jaraba-stats__number {
+    font-size: 3rem;
+    font-weight: 800;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+// Versión responsive: 2 columnas en móvil
+@media (max-width: 768px) {
+    .jaraba-stats--counter>div {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .jaraba-stats__number {
+        font-size: 2.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .jaraba-stats--counter>div {
+        grid-template-columns: 1fr !important;
+    }
+}

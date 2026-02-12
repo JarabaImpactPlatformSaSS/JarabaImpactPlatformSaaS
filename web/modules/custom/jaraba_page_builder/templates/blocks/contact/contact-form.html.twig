@@ -1,0 +1,163 @@
+{#
+/**
+ * @file
+ * Template para el bloque Formulario de Contacto.
+ *
+ * Sección de contacto con formulario e información.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout = content.layout|default('split') %}
+{% set contact = content.contact_info|default({}) %}
+{% set fields = content.form_fields|default([]) %}
+{% set socials = content.social_links|default([]) %}
+
+<section class="jaraba-contact-form jaraba-contact-form--{{ bg_class }} jaraba-contact-form--{{ layout }} jaraba-block"
+         data-block-type="contact_form">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-contact-form__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    <div class="jaraba-contact-form__wrapper">
+      
+      {# Contact Info Side #}
+      <div class="jaraba-contact-form__info">
+        {% if contact.address %}
+          <div class="jaraba-contact-form__info-item">
+            <div class="jaraba-contact-form__info-icon">
+              {{ jaraba_icon('ui', 'location', { size: '24px', color: 'primary' }) }}
+            </div>
+            <div class="jaraba-contact-form__info-text">
+              <strong>{% trans %}Dirección{% endtrans %}</strong>
+              <p>{{ contact.address }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if contact.phone %}
+          <div class="jaraba-contact-form__info-item">
+            <div class="jaraba-contact-form__info-icon">
+              {{ jaraba_icon('ui', 'bell', { size: '24px', color: 'primary' }) }}
+            </div>
+            <div class="jaraba-contact-form__info-text">
+              <strong>{% trans %}Teléfono{% endtrans %}</strong>
+              <p><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if contact.email %}
+          <div class="jaraba-contact-form__info-item">
+            <div class="jaraba-contact-form__info-icon">
+              {{ jaraba_icon('ui', 'mail', { size: '24px', color: 'primary' }) }}
+            </div>
+            <div class="jaraba-contact-form__info-text">
+              <strong>{% trans %}Email{% endtrans %}</strong>
+              <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if contact.hours %}
+          <div class="jaraba-contact-form__info-item">
+            <div class="jaraba-contact-form__info-icon">
+              {{ jaraba_icon('ui', 'clock', { size: '24px', color: 'primary' }) }}
+            </div>
+            <div class="jaraba-contact-form__info-text">
+              <strong>{% trans %}Horario{% endtrans %}</strong>
+              <p>{{ contact.hours }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Social Links #}
+        {% if socials is not empty %}
+          <div class="jaraba-contact-form__socials">
+            {% for social in socials %}
+              <a href="{{ social.url }}" 
+                 class="jaraba-contact-form__social-link" 
+                 target="_blank" 
+                 rel="noopener"
+                 aria-label="{{ social.platform }}">
+                {{ jaraba_icon('social', social.platform, { size: '24px' }) }}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# Map #}
+        {% if content.show_map and content.map_embed_url %}
+          <div class="jaraba-contact-form__map">
+            <iframe src="{{ content.map_embed_url }}" 
+                    width="100%" 
+                    height="200" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Form Side #}
+      <div class="jaraba-contact-form__form-wrapper">
+        <form class="jaraba-contact-form__form" data-contact-form>
+          {% for field in fields %}
+            <div class="jaraba-contact-form__field jaraba-contact-form__field--{{ field.type }}">
+              <label for="contact-{{ field.name }}">
+                {{ field.label }}
+                {% if field.required %}<span class="required">*</span>{% endif %}
+              </label>
+              
+              {% if field.type == 'textarea' %}
+                <textarea id="contact-{{ field.name }}" 
+                          name="{{ field.name }}" 
+                          rows="4"
+                          {% if field.required %}required{% endif %}></textarea>
+              {% elseif field.type == 'select' %}
+                <select id="contact-{{ field.name }}" 
+                        name="{{ field.name }}"
+                        {% if field.required %}required{% endif %}>
+                  <option value="">{% trans %}Seleccionar...{% endtrans %}</option>
+                  {% for option in field.options|default([]) %}
+                    <option value="{{ option }}">{{ option }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input type="{{ field.type }}" 
+                       id="contact-{{ field.name }}" 
+                       name="{{ field.name }}"
+                       {% if field.required %}required{% endif %}>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <button type="submit" class="jaraba-contact-form__submit jaraba-button jaraba-button--primary">
+            {{ content.submit_text|default('Enviar Mensaje'|trans) }}
+          </button>
+        </form>
+
+        <div class="jaraba-contact-form__success" hidden>
+          <div class="jaraba-contact-form__success-icon">
+            {{ jaraba_icon('ui', 'check-circle', { size: '48px', color: 'success' }) }}
+          </div>
+          <p>{{ content.success_message|default('Gracias por tu mensaje.'|trans) }}</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,23 @@
+{
+    "name": "jaraba-interactive",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo Interactive Content de Jaraba SaaS",
+    "scripts": {
+        "build:player": "sass scss/player.scss:css/player.css --style=compressed",
+        "build:dashboard": "sass scss/dashboard.scss:css/dashboard.css --style=compressed",
+        "build:all": "npm run build:player && npm run build:dashboard && echo '✅ Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "interactive",
+        "learning",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

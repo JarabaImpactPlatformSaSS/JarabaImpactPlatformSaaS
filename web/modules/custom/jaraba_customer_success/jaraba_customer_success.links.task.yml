@@ -1,0 +1,29 @@
+jaraba_customer_success.admin.dashboard:
+  title: 'Health Scores'
+  route_name: jaraba_customer_success.admin.dashboard
+  base_route: jaraba_customer_success.admin.dashboard
+  weight: 0
+
+jaraba_customer_success.admin.churn:
+  title: 'Churn Predictions'
+  route_name: entity.churn_prediction.collection
+  base_route: jaraba_customer_success.admin.dashboard
+  weight: 10
+
+jaraba_customer_success.admin.playbooks:
+  title: 'Playbooks'
+  route_name: entity.cs_playbook.collection
+  base_route: jaraba_customer_success.admin.dashboard
+  weight: 20
+
+jaraba_customer_success.admin.expansion:
+  title: 'Expansion Signals'
+  route_name: entity.expansion_signal.collection
+  base_route: jaraba_customer_success.admin.dashboard
+  weight: 30
+
+jaraba_customer_success.admin.settings_tab:
+  title: 'Settings'
+  route_name: jaraba_customer_success.settings
+  base_route: jaraba_customer_success.admin.dashboard
+  weight: 40

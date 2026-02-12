@@ -1,0 +1,104 @@
+{#
+/**
+ * @file
+ * Template para el gestor del árbol de páginas del sitio.
+ *
+ * Variables:
+ * - tree: Array jerárquico de páginas
+ * - config: Configuración del tree manager
+ * - can_edit: Si el usuario puede editar
+ *
+ * @see \Drupal\jaraba_site_builder\Controller\SiteTreePageController::tree()
+ */
+#}
+
+<div class="site-tree-manager" data-tree-manager>
+  <div class="site-tree-manager__header">
+    <h2 class="site-tree-manager__title">{{ 'Árbol de Páginas'|t }}</h2>
+    <p class="site-tree-manager__description">
+      {{ 'Arrastra las páginas para reorganizar la estructura del sitio. Los cambios se guardan automáticamente.'|t }}
+    </p>
+  </div>
+
+  {% if can_edit %}
+  <div class="site-tree-manager__toolbar">
+    <button type="button" class="btn btn--primary js-add-root-page" data-action="add-root">
+      <span class="btn__icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
+      <span class="btn__text">{{ 'Añadir página'|t }}</span>
+    </button>
+    <button type="button" class="btn btn--secondary js-expand-all" data-action="expand-all">
+      {{ 'Expandir todo'|t }}
+    </button>
+    <button type="button" class="btn btn--secondary js-collapse-all" data-action="collapse-all">
+      {{ 'Contraer todo'|t }}
+    </button>
+  </div>
+  {% endif %}
+
+  <div class="site-tree-manager__tree" data-tree-container>
+    {% if tree|length > 0 %}
+      <ul class="site-tree" data-sortable>
+        {% for node in tree %}
+          {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {
+            node: node,
+            depth: 0,
+            can_edit: can_edit,
+          } %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="site-tree-manager__empty">
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-2m0 0l7-7 7 7m-9 9v-6h4v6m5 0v-9.667l-2.252-1.5"></path><circle cx="18" cy="4" r="2"></circle></svg>
+          </div>
+          <h3 class="empty-state__title">{{ 'No hay páginas en el árbol'|t }}</h3>
+          <p class="empty-state__text">
+            {{ 'Comienza añadiendo páginas del Page Builder al árbol de navegación.'|t }}
+          </p>
+          {% if can_edit %}
+          <button type="button" class="btn btn--primary js-add-root-page" data-action="add-root">
+            {{ 'Añadir primera página'|t }}
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="site-tree-manager__status" data-status-bar>
+    <span class="status-indicator status-indicator--saved" data-status="saved">
+      {{ 'Cambios guardados'|t }}
+    </span>
+    <span class="status-indicator status-indicator--saving" data-status="saving" hidden>
+      {{ 'Guardando...'|t }}
+    </span>
+    <span class="status-indicator status-indicator--error" data-status="error" hidden>
+      {{ 'Error al guardar'|t }}
+    </span>
+  </div>
+</div>
+
+{# Slide-panel para añadir/editar página #}
+<div class="slide-panel slide-panel--medium" id="page-edit-panel" hidden>
+  <div class="slide-panel__overlay" data-close-panel="page-edit-panel"></div>
+  <div class="slide-panel__content" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+    <header class="slide-panel__header">
+      <h2 class="slide-panel__title" id="panel-title">{{ 'Configurar página'|t }}</h2>
+      <button type="button" class="slide-panel__close" data-close-panel="page-edit-panel" aria-label="{{ 'Cerrar'|t }}">
+        ✕
+      </button>
+    </header>
+    <div class="slide-panel__body" data-panel-content>
+      {# El contenido se carga dinámicamente via JS #}
+    </div>
+    <footer class="slide-panel__footer">
+      <button type="button" class="btn btn--secondary" data-close-panel="page-edit-panel">
+        {{ 'Cancelar'|t }}
+      </button>
+      <button type="button" class="btn btn--primary" data-action="save-page">
+        {{ 'Guardar'|t }}
+      </button>
+    </footer>
+  </div>
+</div>

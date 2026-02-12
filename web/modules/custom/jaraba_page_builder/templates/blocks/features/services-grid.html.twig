@@ -1,0 +1,79 @@
+{#
+/**
+ * @file
+ * Template para el bloque Grid de Servicios.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set card_style = content.card_style|default('elevated') %}
+
+<section class="jaraba-services-grid jaraba-services-grid--{{ bg_class }} jaraba-block"
+         aria-labelledby="services-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-services-grid__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      <h2 id="services-title" class="jaraba-block__title">
+        {{ content.title|default('Nuestros Servicios'|trans) }}
+      </h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid #}
+    {% if content.services is not empty %}
+      <div class="jaraba-services-grid__grid jaraba-services-grid__grid--{{ columns }}">
+        {% for service in content.services %}
+          <article class="jaraba-service-card jaraba-service-card--{{ card_style }}">
+            {# Icon #}
+            {% if service.icon %}
+              <div class="jaraba-service-card__icon jaraba-service-card__icon--{{ service.icon_color|default('azul-corporativo') }}">
+                {{ jaraba_icon('verticals', service.icon, { variant: 'duotone', size: '32px' }) }}
+              </div>
+            {% endif %}
+            
+            {# Content #}
+            <h3 class="jaraba-service-card__title">{{ service.title }}</h3>
+            
+            {% if service.description %}
+              <p class="jaraba-service-card__description">{{ service.description }}</p>
+            {% endif %}
+            
+            {# Features list #}
+            {% if service.features is not empty %}
+              <ul class="jaraba-service-card__features">
+                {% for feature in service.features %}
+                  <li>
+                    {{ jaraba_icon('ui', 'check', { size: '14px', color: 'success' }) }}
+                    {{ feature }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            
+            {# CTA #}
+            {% if service.cta_text %}
+              <a href="{{ service.cta_url }}" class="jaraba-service-card__link">
+                {{ service.cta_text }}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+              </a>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

@@ -1,0 +1,172 @@
+{#
+ # Template: Comparación Visual de Revisiones de Conocimiento
+ #
+ # Variables:
+ #   - entity: Entidad (TenantFaq o TenantPolicy)
+ #   - entity_type: 'tenant_faq' o 'tenant_policy'
+ #   - older: Revisión más antigua
+ #   - newer: Revisión más reciente
+ #   - older_id: ID de la revisión antigua
+ #   - newer_id: ID de la revisión nueva
+ #   - diff: Array de diferencias por campo
+ #   - has_changes: Boolean si hay cambios
+ #   - list_route: Ruta para volver al historial
+ #   - list_route_params: Parámetros de la ruta
+ #   - revert_route: Ruta para revertir
+ #   - revert_route_params: Parámetros de la ruta de revertir
+ #   - entity_label: Etiqueta legible
+ #
+ # G114-2: Versionado de artículos con diff visual
+ # Reutiliza los estilos de _revision-diff.scss del core
+ #}
+
+<div class="revision-diff knowledge-revision-diff"
+     data-entity-id="{{ entity.id() }}"
+     data-entity-type="{{ entity_type }}"
+     data-older="{{ older_id }}"
+     data-newer="{{ newer_id }}">
+
+  {# Header #}
+  <header class="revision-diff__header">
+    <div class="revision-diff__header-content">
+      <h1 class="revision-diff__title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2">
+          <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+        </svg>
+        {% trans %}Comparar Revisiones{% endtrans %}
+      </h1>
+      <p class="revision-diff__subtitle">{{ entity_label }}</p>
+    </div>
+    <div class="revision-diff__header-actions">
+      <a href="{{ path(list_route, list_route_params) }}" class="btn btn--outline btn--sm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        {% trans %}Volver al historial{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# Barra de versiones #}
+  <div class="revision-diff__versions">
+    <div class="revision-diff__version revision-diff__version--old">
+      <div class="revision-diff__version-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-warning, #F59E0B)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        {% trans %}Revisión anterior{% endtrans %}
+      </div>
+      <div class="revision-diff__version-meta">
+        <span class="revision-diff__date">
+          {{ older.get('changed').value|date('d/m/Y H:i') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="revision-diff__arrow">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </div>
+
+    <div class="revision-diff__version revision-diff__version--new">
+      <div class="revision-diff__version-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-success, #10B981)" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        {% trans %}Revisión nueva{% endtrans %}
+      </div>
+      <div class="revision-diff__version-meta">
+        <span class="revision-diff__date">
+          {{ newer.get('changed').value|date('d/m/Y H:i') }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {# Contenido del diff #}
+  <main class="revision-diff__content">
+    {% if has_changes %}
+      {% for field_name, change in diff %}
+        <div class="revision-diff__field revision-diff__field--{{ change.type }}">
+          <h3 class="revision-diff__field-name">
+            {% if change.type == 'added' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-success, #10B981)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            {% elseif change.type == 'removed' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            {% else %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-impulse, #FF8C42)" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            {% endif %}
+            {{ change.label|default(field_name) }}
+          </h3>
+
+          {# Comparación lado a lado #}
+          <div class="revision-diff__comparison">
+            <div class="revision-diff__old">
+              <div class="revision-diff__label">{% trans %}Antes{% endtrans %}</div>
+              <div class="revision-diff__value">
+                {% if change.old %}
+                  {{ change.old }}
+                {% else %}
+                  <span class="text-muted">{% trans %}(vacío){% endtrans %}</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="revision-diff__new">
+              <div class="revision-diff__label">{% trans %}Después{% endtrans %}</div>
+              <div class="revision-diff__value">
+                {% if change.new %}
+                  {{ change.new }}
+                {% else %}
+                  <span class="text-muted">{% trans %}(vacío){% endtrans %}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="revision-diff__no-changes">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-success, #10B981)" stroke-width="1.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <h3>{% trans %}Sin diferencias{% endtrans %}</h3>
+          <p>{% trans %}Estas dos revisiones son idénticas.{% endtrans %}</p>
+        </div>
+      </div>
+    {% endif %}
+  </main>
+
+  {# Acciones de rollback #}
+  {% if has_changes %}
+    <footer class="revision-diff__actions">
+      <div class="revision-diff__actions-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-warning, #F59E0B)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{% trans %}Restaurar creará una nueva revisión con el contenido de la versión anterior.{% endtrans %}</span>
+      </div>
+
+      <a href="{{ path(revert_route, revert_route_params) }}"
+         class="btn btn--danger"
+         onclick="return confirm('{% trans %}¿Restaurar a la versión anterior? Se creará una nueva revisión.{% endtrans %}');">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+        {% trans %}Restaurar versión anterior{% endtrans %}
+      </a>
+    </footer>
+  {% endif %}
+</div>

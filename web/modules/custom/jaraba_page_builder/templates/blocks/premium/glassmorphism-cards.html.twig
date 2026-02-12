@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas Glassmorphism.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set columns = content.columns|default(3) %}
+{% set blur = content.blur_intensity|default('medium') %}
+
+<section class="jaraba-glassmorphism jaraba-glassmorphism--blur-{{ blur }} jaraba-block jaraba-block--premium"
+         {% if content.background_image %}style="background-image: url('{{ content.background_image }}');"{% endif %}>
+  
+  <div class="jaraba-glassmorphism__overlay"></div>
+  
+  <div class="jaraba-block__container jaraba-glassmorphism__inner">
+    
+    <header class="jaraba-glassmorphism__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.cards is not empty %}
+      <div class="jaraba-glassmorphism__grid jaraba-glassmorphism__grid--{{ columns }}">
+        {% for card in content.cards %}
+          <article class="jaraba-glass-card">
+            {% if card.icon %}
+              <div class="jaraba-glass-card__icon">
+                {{ jaraba_icon('ui', card.icon, { variant: 'duotone', size: '36px' }) }}
+              </div>
+            {% endif %}
+            {% if card.value %}
+              <div class="jaraba-glass-card__value">{{ card.value }}</div>
+            {% endif %}
+            <h3 class="jaraba-glass-card__title">{{ card.title }}</h3>
+            {% if card.description %}
+              <p class="jaraba-glass-card__description">{{ card.description }}</p>
+            {% endif %}
+            {% if card.url %}
+              <a href="{{ card.url }}" class="jaraba-glass-card__link">
+                {% trans %}Más info{% endtrans %}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+              </a>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

@@ -1,0 +1,279 @@
+/**
+ * @file
+ * Estilos para la consola de pruebas del Copiloto.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_tenant_knowledge && \
+ *   npx sass scss/test-console.scss css/knowledge-test-console.css --style=compressed"
+ */
+
+.knowledge-test-console {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--ej-spacing-lg, 1.5rem);
+    height: calc(100vh - 200px);
+    min-height: 500px;
+    padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+/* === Header === */
+.test-console__header {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.test-console__title h1 {
+    font-size: var(--ej-font-size-2xl, 1.75rem);
+    font-weight: 600;
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0;
+}
+
+.test-console__subtitle {
+    color: var(--ej-text-secondary, #6b7280);
+    margin: var(--ej-spacing-xs, 0.25rem) 0 0;
+}
+
+.test-console__stats {
+    display: flex;
+    gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.stat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    background: var(--ej-bg-surface, #fff);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    box-shadow: var(--ej-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.stat-chip__value {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 700;
+    color: var(--ej-color-primary, #233D63);
+}
+
+.stat-chip__label {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+    text-transform: uppercase;
+}
+
+.stat-chip--coverage {
+    background: linear-gradient(135deg, var(--ej-color-primary, #233D63), var(--ej-color-accent, #FF8C42));
+}
+
+.stat-chip--coverage .stat-chip__value,
+.stat-chip--coverage .stat-chip__label {
+    color: #fff;
+}
+
+/* === Chat Area === */
+.test-console__chat {
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    background: var(--ej-bg-surface, #fff);
+    border-radius: var(--ej-radius-lg, 0.75rem);
+    box-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ej-spacing-md, 1rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-md, 1rem);
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    border-radius: var(--ej-radius-md, 0.5rem);
+}
+
+.chat-message--user {
+    align-self: flex-end;
+    background: var(--ej-color-primary, #233D63);
+    color: #fff;
+}
+
+.chat-message--assistant {
+    align-self: flex-start;
+    background: var(--ej-bg-muted, #f3f4f6);
+    color: var(--ej-text-primary, #1a1a2e);
+}
+
+.chat-message--system {
+    align-self: center;
+    background: transparent;
+    color: var(--ej-text-muted, #9ca3af);
+    font-style: italic;
+    text-align: center;
+    max-width: 90%;
+}
+
+.chat-message--error {
+    align-self: center;
+    background: var(--ej-color-error-bg, #fef2f2);
+    color: var(--ej-color-error, #dc2626);
+    border: 1px solid var(--ej-color-error, #dc2626);
+}
+
+/* === Chat Input === */
+.chat-input {
+    display: flex;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-md, 1rem);
+    border-top: 1px solid var(--ej-border-color, #e5e7eb);
+    background: var(--ej-bg-surface, #fff);
+}
+
+.chat-input__field {
+    flex: 1;
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    border: 1px solid var(--ej-border-color, #d1d5db);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    font-size: var(--ej-font-size-base, 1rem);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.chat-input__field:focus {
+    outline: none;
+    border-color: var(--ej-color-primary, #233D63);
+    box-shadow: 0 0 0 3px rgba(35, 61, 99, 0.1);
+}
+
+.chat-input__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--ej-color-primary, #233D63);
+    color: #fff;
+    border: none;
+    border-radius: var(--ej-radius-md, 0.5rem);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-input__submit:hover {
+    background: var(--ej-color-primary-dark, #1a2d4a);
+}
+
+.chat-input__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* === Context Panel === */
+.test-console__context {
+    grid-row: 2;
+    background: var(--ej-bg-surface, #fff);
+    border-radius: var(--ej-radius-lg, 0.75rem);
+    padding: var(--ej-spacing-md, 1rem);
+    box-shadow: var(--ej-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.test-console__context h3 {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+}
+
+.context-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 0.25rem);
+}
+
+.context-sources__empty {
+    color: var(--ej-text-muted, #9ca3af);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+.source-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-sm, 0.25rem);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    background: var(--ej-bg-muted, #f3f4f6);
+    color: var(--ej-text-secondary, #6b7280);
+}
+
+.source-chip--faq {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.source-chip--policy {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.source-chip--document {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* === Suggestions === */
+.test-console__suggestions {
+    grid-column: 1 / -1;
+}
+
+.test-console__suggestions h4 {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--ej-text-secondary, #6b7280);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+}
+
+.suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.suggestion-chip {
+    padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-md, 1rem);
+    background: var(--ej-bg-surface, #fff);
+    border: 1px solid var(--ej-border-color, #d1d5db);
+    border-radius: var(--ej-radius-full, 9999px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-primary, #1a1a2e);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.suggestion-chip:hover {
+    background: var(--ej-color-primary, #233D63);
+    border-color: var(--ej-color-primary, #233D63);
+    color: #fff;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .knowledge-test-console {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .test-console__context {
+        grid-row: auto;
+        order: 3;
+    }
+}

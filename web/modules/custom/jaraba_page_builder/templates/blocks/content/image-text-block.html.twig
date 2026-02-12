@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Template para el bloque Imagen + Texto.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set image_position = content.image_position|default('left') %}
+{% set image_size = content.image_size|default('medium') %}
+{% set vertical_align = content.vertical_align|default('center') %}
+
+<section class="jaraba-image-text jaraba-image-text--{{ bg_class }} jaraba-image-text--image-{{ image_position }} jaraba-image-text--size-{{ image_size }} jaraba-block">
+  <div class="jaraba-block__container">
+    <div class="jaraba-image-text__wrapper jaraba-image-text__wrapper--valign-{{ vertical_align }}">
+      
+      {# Image #}
+      <div class="jaraba-image-text__image-wrapper">
+        <img src="{{ content.image }}" 
+             alt="{{ content.title }}"
+             class="jaraba-image-text__image"
+             loading="lazy">
+      </div>
+      
+      {# Content #}
+      <div class="jaraba-image-text__content">
+        {% if content.eyebrow %}
+          <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+        {% endif %}
+        
+        <h2 class="jaraba-image-text__title">{{ content.title }}</h2>
+        
+        {% if content.content %}
+          <div class="jaraba-image-text__text">
+            {{ content.content|raw }}
+          </div>
+        {% endif %}
+        
+        {% if content.cta.text %}
+          <a href="{{ content.cta.url }}" class="jaraba-btn jaraba-btn--primary">
+            {{ content.cta.text }}
+            {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+          </a>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</section>

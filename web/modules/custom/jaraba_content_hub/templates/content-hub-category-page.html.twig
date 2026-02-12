@@ -1,0 +1,69 @@
+{#
+/**
+ * @file
+ * Template: Category page (sin regiones de Drupal).
+ *
+ * Variables:
+ * - category: Array con datos de categoría
+ *   - id, name, description, color, icon
+ * - articles: Array de artículos de la categoría
+ * - show_reading_time: Boolean
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+
+<div class="page-wrapper page-wrapper--clean">
+  {# LOW-09: Header with only to prevent scope leakage #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } only %}
+
+  <main class="category-page">
+    {# Category hero #}
+    <section class="category-hero" style="--category-color: {{ category.color|default('#233D63') }}">
+      <div class="container">
+        <a href="/blog" class="category-hero__back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          {% trans %}Back to Blog{% endtrans %}
+        </a>
+        <h1 class="category-hero__title">{{ category.name }}</h1>
+        {% if category.description %}
+          <p class="category-hero__description">{{ category.description }}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# Articles grid #}
+    <section class="category-content">
+      <div class="container">
+        {% if articles is not empty %}
+          <div class="articles-grid articles-grid--3cols">
+            {% for article in articles %}
+              {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+                article: article,
+                show_reading_time: show_reading_time,
+                variant: 'standard'
+              } only %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="category-empty">
+            <p>{% trans %}No articles in this category yet.{% endtrans %}</p>
+            <a href="/blog" class="btn btn--primary">
+              {% trans %}View all articles{% endtrans %}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+
+  {# Footer del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}
+</div>

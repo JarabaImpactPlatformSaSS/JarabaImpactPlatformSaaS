@@ -1,0 +1,31 @@
+/**
+ * @file
+ * Main SCSS - Estilos de bloques del Page Builder.
+ *
+ * Este archivo compila TODOS los estilos de bloques del Canvas Editor.
+ * NO incluye estilos del propio editor (esos están en _canvas-editor.scss).
+ *
+ * COMPILACIÓN (desde Docker):
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/page-builder-blocks.scss css/jaraba-page-builder.css --style=compressed"
+ *
+ * DIRECTRIZ: Usar variables CSS inyectables (var(--ej-*, $fallback))
+ * Ver: /.agent/workflows/scss-estilos.md
+ *
+ * @package jaraba_page_builder
+ */
+
+@use 'sass:color';
+
+// Estilos del contenedor Canvas Content
+@use 'canvas-content';
+
+// Bloques de contenido
+@use 'blocks/features';
+@use 'blocks/recommended-courses';
+@use 'blocks/faq-accordion';
+@use 'blocks/stats-counter';
+@use 'blocks/pricing-toggle';
+@use 'blocks/tabs-content';
+@use 'blocks/countdown-timer';
+@use 'blocks/timeline';

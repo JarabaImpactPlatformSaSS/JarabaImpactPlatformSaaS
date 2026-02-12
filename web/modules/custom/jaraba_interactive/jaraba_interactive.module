@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Interactive AI-Powered.
+ *
+ * Sistema de contenido interactivo world-class con IA generativa.
+ * Competidor de Coursera, LinkedIn Learning y Duolingo.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_interactive_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_interactive') {
+    return '<p>' . t('Sistema de contenido interactivo AI-Powered para formaciones y certificaciones. Permite crear cuestionarios, videos interactivos, escenarios ramificados y más.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_interactive_theme(): array {
+  return [
+    'interactive_player' => [
+      'variables' => [
+        'content' => NULL,
+        'settings' => [],
+        'xapi_endpoint' => '/api/v1/interactive/xapi',
+        'enrollment_id' => NULL,
+      ],
+      'template' => 'interactive-player',
+    ],
+    'interactive_dashboard' => [
+      'variables' => [
+        'contents' => [],
+        'stats' => [],
+      ],
+      'template' => 'interactive-dashboard',
+    ],
+    'interactive_question_set' => [
+      'variables' => [
+        'questions' => [],
+        'settings' => [],
+      ],
+      'template' => 'interactive-question-set',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade clases al body para páginas del módulo (estándar del proyecto).
+ */
+function jaraba_interactive_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if (!$route) {
+    return;
+  }
+
+  // Rutas de frontend (limpio).
+  $frontend_routes = [
+    'jaraba_interactive.dashboard',
+    'jaraba_interactive.player',
+  ];
+
+  if (in_array($route, $frontend_routes, TRUE)) {
+    $variables['attributes']['class'][] = 'page-interactive';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    $variables['attributes']['class'][] = 'premium-portal';
+  }
+
+  // Ruta específica del player.
+  if ($route === 'jaraba_interactive.player') {
+    $variables['attributes']['class'][] = 'page-interactive-player';
+  }
+
+  // Ruta específica del dashboard.
+  if ($route === 'jaraba_interactive.dashboard') {
+    $variables['attributes']['class'][] = 'page-interactive-dashboard';
+  }
+}

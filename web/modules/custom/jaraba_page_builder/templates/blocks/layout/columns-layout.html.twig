@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Template para el bloque Layout de Columnas.
+ *
+ * DIRECTRICES:
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout = content.layout|default('50-50') %}
+{% set gap = content.gap|default('medium') %}
+
+<section class="jaraba-columns jaraba-columns--{{ bg_class }} jaraba-columns--{{ layout }} jaraba-columns--gap-{{ gap }} jaraba-block"
+         {% if content.reverse_mobile %}data-reverse-mobile{% endif %}>
+  <div class="jaraba-block__container">
+    <div class="jaraba-columns__wrapper">
+      {% for column in content.columns %}
+        <div class="jaraba-columns__column jaraba-columns__column--align-{{ column.align|default('left') }} jaraba-columns__column--valign-{{ column.vertical_align|default('top') }}">
+          {{ column.content|raw }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

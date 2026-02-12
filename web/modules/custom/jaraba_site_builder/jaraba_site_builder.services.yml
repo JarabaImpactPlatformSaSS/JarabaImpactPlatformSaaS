@@ -1,0 +1,66 @@
+services:
+  jaraba_site_builder.structure:
+    class: Drupal\jaraba_site_builder\Service\SiteStructureService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.redirect:
+    class: Drupal\jaraba_site_builder\Service\RedirectService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_site_builder'
+
+  jaraba_site_builder.sitemap:
+    class: Drupal\jaraba_site_builder\Service\SitemapGeneratorService
+    arguments:
+      - '@jaraba_site_builder.structure'
+      - '@entity_type.manager'
+      - '@file_url_generator'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_site_builder.access_check:
+    class: Drupal\jaraba_site_builder\Access\SiteBuilderAccessCheck
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: access_check, applies_to: _site_builder_access }
+
+  # Sprint B1: Analíticas del dashboard premium.
+  jaraba_site_builder.analytics:
+    class: Drupal\jaraba_site_builder\Service\SiteAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_site_builder.structure'
+      - '@jaraba_site_builder.seo_auditor'
+
+  # Sprint B2: Servicio de auditoría SEO.
+  jaraba_site_builder.seo_auditor:
+    class: Drupal\jaraba_site_builder\Service\SeoAuditorService
+    arguments:
+      - '@entity_type.manager'
+
+  logger.channel.jaraba_site_builder:
+    parent: logger.channel_base
+    arguments: ['jaraba_site_builder']
+
+  # Canvas v2 Full Page Editor - Servicios de Variantes
+  jaraba_site_builder.header_variant:
+    class: Drupal\jaraba_site_builder\Service\HeaderVariantService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@renderer'
+      - '@jaraba_site_builder.structure'
+
+  jaraba_site_builder.footer_variant:
+    class: Drupal\jaraba_site_builder\Service\FooterVariantService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@renderer'
+      - '@jaraba_site_builder.structure'

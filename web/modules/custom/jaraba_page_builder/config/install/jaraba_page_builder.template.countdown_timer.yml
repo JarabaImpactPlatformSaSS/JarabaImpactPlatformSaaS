@@ -1,0 +1,77 @@
+langcode: es
+status: true
+dependencies: {}
+id: countdown_timer
+label: 'Cuenta Regresiva'
+description: 'Temporizador para eventos, lanzamientos o promociones.'
+category: cta
+twig_template: '@jaraba_page_builder/blocks/cta/countdown-timer.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      default: 'Próximo lanzamiento'
+    description:
+      type: string
+      title: 'Descripción'
+    target_date:
+      type: string
+      title: 'Fecha objetivo'
+      format: datetime
+    end_action:
+      type: string
+      title: 'Acción al finalizar'
+      enum:
+        - hide
+        - show_message
+        - redirect
+      default: show_message
+    end_message:
+      type: string
+      title: 'Mensaje al finalizar'
+    end_url:
+      type: string
+      title: 'URL de redirección'
+    cta:
+      type: object
+      title: 'CTA'
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+    style:
+      type: string
+      title: 'Estilo'
+      enum:
+        - minimal
+        - cards
+        - flip
+      default: cards
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: gradient
+  required:
+    - target_date
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  title: "Product Launch Coming Soon"
+  description: "Be the first to experience our revolutionary new platform. Sign up now for early access."
+  target_date: "2026-03-15T00:00:00"
+  end_action: show_message
+  end_message: "We're live! Check it out now."
+  cta:
+    text: "Get Early Access"
+    url: "#"
+  style: cards
+  background: gradient
+

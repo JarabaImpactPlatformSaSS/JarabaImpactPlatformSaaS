@@ -1,0 +1,27 @@
+# Tabs en /admin/content para acceso a colecciones de entidades.
+#
+# Estas tabs aparecen junto a "Contenido", "Bloques", "Comentarios", etc.
+
+entity.crm_company.collection:
+  title: 'Empresas'
+  route_name: entity.crm_company.collection
+  base_route: system.admin_content
+  weight: 30
+
+entity.crm_contact.collection:
+  title: 'Contactos'
+  route_name: entity.crm_contact.collection
+  base_route: system.admin_content
+  weight: 31
+
+entity.crm_opportunity.collection:
+  title: 'Oportunidades'
+  route_name: entity.crm_opportunity.collection
+  base_route: system.admin_content
+  weight: 32
+
+entity.crm_activity.collection:
+  title: 'Actividades'
+  route_name: entity.crm_activity.collection
+  base_route: system.admin_content
+  weight: 33

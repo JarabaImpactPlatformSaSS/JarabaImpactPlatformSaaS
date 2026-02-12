@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas con Iconos.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set card_style = content.card_style|default('elevated') %}
+{% set icon_position = content.icon_position|default('top') %}
+{% set cards = content.cards|default([]) %}
+
+<section class="jaraba-icon-cards jaraba-icon-cards--{{ bg_class }} jaraba-block"
+         aria-labelledby="icon-cards-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-icon-cards__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      {% if content.title %}
+        <h2 id="icon-cards-title" class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de tarjetas #}
+    {% if cards is not empty %}
+      <div class="jaraba-icon-cards__grid jaraba-icon-cards__grid--{{ columns }}">
+        {% for card in cards %}
+          {% set tag = card.url ? 'a' : 'article' %}
+          <{{ tag }} 
+             class="jaraba-icon-card jaraba-icon-card--{{ card_style }} jaraba-icon-card--icon-{{ icon_position }}"
+             {% if card.url %}href="{{ card.url }}"{% endif %}>
+            
+            {# Icono #}
+            {% if card.icon %}
+              <div class="jaraba-icon-card__icon jaraba-icon-card__icon--{{ card.icon_color|default('azul-corporativo') }}">
+                {{ jaraba_icon('business', card.icon, { variant: 'duotone', size: '40px', color: card.icon_color|default('azul-corporativo') }) }}
+              </div>
+            {% endif %}
+            
+            {# Contenido #}
+            <div class="jaraba-icon-card__content">
+              <h3 class="jaraba-icon-card__title">{{ card.title }}</h3>
+              
+              {% if card.description %}
+                <p class="jaraba-icon-card__description">{{ card.description }}</p>
+              {% endif %}
+              
+              {% if card.url %}
+                <span class="jaraba-icon-card__link">
+                  {% trans %}Saber más{% endtrans %}
+                  {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+                </span>
+              {% endif %}
+            </div>
+          </{{ tag }}>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

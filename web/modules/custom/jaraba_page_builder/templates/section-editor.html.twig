@@ -1,0 +1,344 @@
+{#
+/**
+ * @file
+ * Canvas Editor Visual - Editor de Secciones Multi-Block.
+ *
+ * PROPÓSITO:
+ * Interfaz visual side-by-side para gestionar secciones de páginas
+ * con preview en tiempo real.
+ *
+ * CARACTERÍSTICAS:
+ * - Layout de 2 columnas: Lista de bloques + Canvas preview
+ * - Drag-and-drop con SortableJS
+ * - Preview en iframe con viewport toggle (Desktop/Tablet/Mobile)
+ * - Actualización automática del preview tras cambios
+ *
+ * VARIABLES:
+ * - page: La entidad PageContent
+ * - sections: Array de secciones
+ * - can_edit: Permiso de edición
+ * - preview_url: URL canónica de la página para el iframe
+ *
+ * @see SectionApiController
+ * @see section-editor.js
+ */
+#}
+
+{# URL de preview para el iframe #}
+{% set preview_url = path('entity.page_content.canonical', {'page_content': page.id}) %}
+
+<div class="canvas-editor"
+     data-page-id="{{ page.id }}"
+     data-preview-url="{{ preview_url }}"
+     x-data="sectionEditor()"
+     x-init="init()">
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     HEADER DEL CANVAS EDITOR
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <header class="canvas-editor__header">
+    <div class="canvas-editor__header-left">
+      <h2 class="canvas-editor__title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M9 21V9"/>
+        </svg>
+        {{ page.label }}
+      </h2>
+      <span class="canvas-editor__count" x-text="sections.length + ' bloques'"></span>
+    </div>
+
+    <div class="canvas-editor__header-actions">
+      {# Viewport Toggle #}
+      <div class="canvas-editor__viewport-toggle">
+        <button type="button" class="canvas-editor__viewport-btn is-active"
+                data-viewport="desktop" @click="setViewport('desktop')" title="{% trans %}Desktop{% endtrans %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </button>
+        <button type="button" class="canvas-editor__viewport-btn"
+                data-viewport="tablet" @click="setViewport('tablet')" title="{% trans %}Tablet{% endtrans %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+        </button>
+        <button type="button" class="canvas-editor__viewport-btn"
+                data-viewport="mobile" @click="setViewport('mobile')" title="{% trans %}Mobile{% endtrans %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      {# Botones de acción #}
+      <button type="button" class="jaraba-btn jaraba-btn--ghost jaraba-btn--sm"
+              @click="refreshPreview()" :disabled="saving">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        {% trans %}Refrescar{% endtrans %}
+      </button>
+
+      <a href="{{ preview_url }}" target="_blank" class="jaraba-btn jaraba-btn--ghost jaraba-btn--sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        {% trans %}Abrir{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     LAYOUT SIDE-BY-SIDE
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="canvas-editor__layout">
+
+    {# ─────────────────────────────────────────────────────────────────────────
+       SIDEBAR: LISTA DE BLOQUES
+       ───────────────────────────────────────────────────────────────────────── #}
+    <aside class="canvas-editor__sidebar">
+      <div class="canvas-editor__sidebar-header">
+        <h3 class="canvas-editor__sidebar-title">{% trans %}Bloques{% endtrans %}</h3>
+        {% if can_edit %}
+          <button type="button"
+                  class="jaraba-btn jaraba-btn--primary jaraba-btn--sm"
+                  @click="openAddPanel()"
+                  :disabled="saving">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            {% trans %}Añadir{% endtrans %}
+          </button>
+        {% endif %}
+      </div>
+
+      {# Estado de carga #}
+      <div class="canvas-editor__loading" x-show="loading" x-cloak>
+        <div class="canvas-editor__spinner"></div>
+        <p>{% trans %}Cargando...{% endtrans %}</p>
+      </div>
+
+      {# Lista de secciones (Sortable) #}
+      <div class="canvas-editor__blocks"
+           x-show="!loading"
+           x-ref="sectionsContainer">
+
+        {# Empty state #}
+        <div class="canvas-editor__empty" x-show="sections.length === 0">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+          <p>{% trans %}Sin bloques{% endtrans %}</p>
+          <button type="button"
+                  class="jaraba-btn jaraba-btn--primary jaraba-btn--sm"
+                  @click="openAddPanel()">
+            {% trans %}Añadir primero{% endtrans %}
+          </button>
+        </div>
+
+        {# Items de bloque #}
+        <template x-for="section in sections" :key="section.uuid">
+          <article class="canvas-editor__block"
+                   :data-uuid="section.uuid"
+                   :class="{
+                     'canvas-editor__block--hidden': !section.visible,
+                     'canvas-editor__block--selected': selectedSection && selectedSection.uuid === section.uuid
+                   }"
+                   @click="scrollToBlockInPreview(section.uuid)">
+
+            {# Drag handle #}
+            <div class="canvas-editor__drag-handle" title="{% trans %}Arrastrar{% endtrans %}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="9" cy="6" r="1.5"/>
+                <circle cx="15" cy="6" r="1.5"/>
+                <circle cx="9" cy="12" r="1.5"/>
+                <circle cx="15" cy="12" r="1.5"/>
+                <circle cx="9" cy="18" r="1.5"/>
+                <circle cx="15" cy="18" r="1.5"/>
+              </svg>
+            </div>
+
+            {# Info del bloque #}
+            <div class="canvas-editor__block-info">
+              <span class="canvas-editor__block-name" x-text="getTemplateLabel(section.template_id)"></span>
+              <span class="canvas-editor__block-meta">
+                <span x-show="!section.visible" class="canvas-editor__badge canvas-editor__badge--hidden">
+                  {% trans %}Oculto{% endtrans %}
+                </span>
+              </span>
+            </div>
+
+            {# Acciones rápidas #}
+            {% if can_edit %}
+              <div class="canvas-editor__block-actions">
+                <button type="button"
+                        class="canvas-editor__action"
+                        @click.stop="openEditPanel(section)"
+                        title="{% trans %}Editar{% endtrans %}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                  </svg>
+                </button>
+
+                <button type="button"
+                        class="canvas-editor__action"
+                        @click.stop="toggleVisibility(section)"
+                        :title="section.visible ? '{{ 'Ocultar'|t }}' : '{{ 'Mostrar'|t }}'">
+                  <template x-if="section.visible">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </template>
+                  <template x-if="!section.visible">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  </template>
+                </button>
+
+                <button type="button"
+                        class="canvas-editor__action canvas-editor__action--delete"
+                        @click.stop="deleteSection(section.uuid)"
+                        title="{% trans %}Eliminar{% endtrans %}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            {% endif %}
+          </article>
+        </template>
+      </div>
+    </aside>
+
+    {# ─────────────────────────────────────────────────────────────────────────
+       CANVAS: PREVIEW EN IFRAME
+       ───────────────────────────────────────────────────────────────────────── #}
+    <main class="canvas-editor__canvas">
+      <div class="canvas-editor__preview-container" :class="'canvas-editor__preview-container--' + currentViewport">
+        <iframe
+          class="canvas-editor__iframe"
+          :src="previewUrl"
+          x-ref="previewIframe"
+          frameborder="0"
+          @load="onPreviewLoad()">
+        </iframe>
+      </div>
+
+      {# Indicador de carga del iframe #}
+      <div class="canvas-editor__preview-loading" x-show="previewLoading" x-cloak>
+        <div class="canvas-editor__spinner"></div>
+        <p>{% trans %}Cargando preview...{% endtrans %}</p>
+      </div>
+    </main>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SLIDE-PANEL: AÑADIR BLOQUE
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="jaraba-slide-panel" id="section-add-panel" x-show="showAddPanel" x-cloak>
+    <div class="jaraba-slide-panel__overlay" @click="closeAddPanel()"></div>
+    <div class="jaraba-slide-panel__content">
+      <header class="jaraba-slide-panel__header">
+        <h3>{% trans %}Añadir Bloque{% endtrans %}</h3>
+        <button type="button" class="jaraba-slide-panel__close" @click="closeAddPanel()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="jaraba-slide-panel__body">
+        {# Búsqueda de templates #}
+        <div class="canvas-editor__search">
+          <input type="text"
+                 class="jaraba-input"
+                 placeholder="{% trans %}Buscar bloque...{% endtrans %}"
+                 x-model="templateSearch"
+                 @input="filterTemplates()">
+        </div>
+
+        {# Grid de templates #}
+        <div class="canvas-editor__template-grid">
+          <template x-for="template in filteredTemplates" :key="template.id">
+            <button type="button"
+                    class="canvas-editor__template-card"
+                    @click="addSection(template.id)"
+                    :disabled="saving">
+              <img :src="template.thumbnail || '/modules/custom/jaraba_page_builder/images/placeholder.png'"
+                   :alt="template.label"
+                   class="canvas-editor__template-thumb"/>
+              <div class="canvas-editor__template-info">
+                <span class="canvas-editor__template-name" x-text="template.label"></span>
+                <span class="canvas-editor__template-category" x-text="template.category"></span>
+              </div>
+              <span class="canvas-editor__template-badge" x-show="template.premium">PRO</span>
+            </button>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SLIDE-PANEL: EDITAR BLOQUE
+     ═══════════════════════════════════════════════════════════════════════════ #}
+  <div class="jaraba-slide-panel" id="section-edit-panel" x-show="showEditPanel" x-cloak>
+    <div class="jaraba-slide-panel__overlay" @click="closeEditPanel()"></div>
+    <div class="jaraba-slide-panel__content">
+      <header class="jaraba-slide-panel__header">
+        <h3>{% trans %}Editar Bloque{% endtrans %}</h3>
+        <button type="button" class="jaraba-slide-panel__close" @click="closeEditPanel()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="jaraba-slide-panel__body" x-show="selectedSection">
+        {# TODO: Generar campos dinámicamente según fields_schema del template #}
+        <div class="canvas-editor__form-group">
+          <label for="section-content">{% trans %}Contenido (JSON){% endtrans %}</label>
+          <textarea id="section-content"
+                    class="jaraba-textarea"
+                    x-model="selectedSection.content"
+                    rows="12"></textarea>
+        </div>
+      </div>
+
+      <footer class="jaraba-slide-panel__footer">
+        <button type="button"
+                class="jaraba-btn jaraba-btn--ghost"
+                @click="closeEditPanel()">
+          {% trans %}Cancelar{% endtrans %}
+        </button>
+        <button type="button"
+                class="jaraba-btn jaraba-btn--primary"
+                @click="saveSection()"
+                :disabled="saving">
+          <span x-show="saving">{% trans %}Guardando...{% endtrans %}</span>
+          <span x-show="!saving">{% trans %}Guardar{% endtrans %}</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  {# Overlay de guardado global #}
+  <div class="canvas-editor__saving-overlay" x-show="saving" x-cloak>
+    <div class="canvas-editor__spinner"></div>
+  </div>
+</div>

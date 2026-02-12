@@ -1,0 +1,94 @@
+langcode: es
+status: true
+dependencies: {}
+id: animated_counter
+label: 'Contador Animado Premium'
+description: 'Números con animación de counting up y efectos visuales premium.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/animated-counter.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    stats:
+      type: array
+      title: 'Estadísticas'
+      items:
+        type: object
+        properties:
+          value:
+            type: number
+          prefix:
+            type: string
+          suffix:
+            type: string
+          label:
+            type: string
+          icon:
+            type: string
+          color:
+            type: string
+            enum:
+              - primary
+              - secondary
+              - corporate
+              - success
+    animation_duration:
+      type: number
+      title: 'Duración (ms)'
+      default: 2000
+    show_separator:
+      type: boolean
+      title: 'Mostrar separadores'
+      default: true
+    style:
+      type: string
+      enum:
+        - cards
+        - inline
+        - gradient
+      default: cards
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: gradient
+  required:
+    - stats
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_data:
+  title: "Our Achievements"
+  subtitle: "Numbers that speak for themselves"
+  stats:
+    - value: 50000
+      suffix: "+"
+      label: "Happy Customers"
+      icon: "users"
+      color: primary
+    - value: 99
+      suffix: "%"
+      label: "Uptime"
+      icon: "shield"
+      color: success
+    - value: 4.9
+      label: "Average Rating"
+      icon: "star"
+      color: secondary
+    - value: 150
+      prefix: "+"
+      label: "Integrations"
+      icon: "layout-grid"
+      color: corporate
+  animation_duration: 2000
+  show_separator: true
+  style: cards
+  background: gradient
+

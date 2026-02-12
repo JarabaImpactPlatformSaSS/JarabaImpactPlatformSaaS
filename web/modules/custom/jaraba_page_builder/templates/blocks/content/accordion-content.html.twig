@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Template para el bloque Acordeón de Contenido.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set style = content.style|default('bordered') %}
+{% set allow_multiple = content.allow_multiple|default(false) %}
+
+<section class="jaraba-accordion jaraba-accordion--{{ bg_class }} jaraba-accordion--{{ style }} jaraba-block"
+         data-allow-multiple="{{ allow_multiple ? 'true' : 'false' }}">
+  <div class="jaraba-block__container">
+    
+    {% if content.title %}
+      <header class="jaraba-accordion__header">
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% if content.items is not empty %}
+      <div class="jaraba-accordion__items">
+        {% for item in content.items %}
+          <details class="jaraba-accordion__item" {{ item.is_open ? 'open' : '' }}>
+            <summary class="jaraba-accordion__trigger">
+              {% if item.icon %}
+                <span class="jaraba-accordion__icon">
+                  {{ jaraba_icon('ui', item.icon, { variant: 'duotone', size: '20px', color: 'primary' }) }}
+                </span>
+              {% endif %}
+              <span class="jaraba-accordion__title">{{ item.title }}</span>
+              <span class="jaraba-accordion__chevron">
+                {{ jaraba_icon('ui', 'chevron-down', { size: '20px' }) }}
+              </span>
+            </summary>
+            <div class="jaraba-accordion__content">
+              {{ item.content|raw }}
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

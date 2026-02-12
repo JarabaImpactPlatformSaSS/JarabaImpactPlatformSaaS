@@ -1,0 +1,39 @@
+# Enlaces de acción del módulo Page Builder
+
+entity.page_template.add_form:
+  route_name: entity.page_template.add_form
+  title: 'Añadir Plantilla'
+  appears_on:
+    - entity.page_template.collection
+
+entity.page_content.add_form:
+  route_name: jaraba_page_builder.template_picker
+  title: 'Crear Página'
+  appears_on:
+    - entity.page_content.collection
+    - jaraba_page_builder.my_pages
+
+entity.homepage_content.add_form:
+  route_name: entity.homepage_content.add_form
+  title: 'Añadir Homepage'
+  appears_on:
+    - entity.homepage_content.collection
+
+entity.feature_card.add_form:
+  route_name: entity.feature_card.add_form
+  title: 'Añadir Feature Card'
+  appears_on:
+    - entity.feature_card.collection
+
+entity.stat_item.add_form:
+  route_name: entity.stat_item.add_form
+  title: 'Añadir Estadística'
+  appears_on:
+    - entity.stat_item.collection
+
+entity.intention_card.add_form:
+  route_name: entity.intention_card.add_form
+  title: 'Añadir Intención'
+  appears_on:
+    - entity.intention_card.collection
+

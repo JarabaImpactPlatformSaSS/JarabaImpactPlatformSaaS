@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Header variante: Standard (Canvas v2)
+ *
+ * Header estándar con logo izquierda, navegación centrada, acciones derecha.
+ * Variables del HeaderVariantService:
+ *   - config: SiteConfig entity
+ *   - navigation: árbol de menú
+ *   - sticky: boolean
+ *   - transparent: boolean
+ *   - cta_text: string|null
+ *   - cta_url: string|null
+ *   - site_name: string
+ *   - logo: string|null (URL)
+ */
+#}
+{% set header_classes = [
+  'jaraba-header',
+  'jaraba-header--standard',
+  sticky ? 'jaraba-header--sticky',
+  transparent ? 'jaraba-header--transparent',
+] %}
+
+<header class="{{ header_classes|join(' ')|trim }}" role="banner" data-grapesjs-type="jaraba-header" data-header-type="standard">
+  <div class="jaraba-header__container">
+    {# Logo / Brand #}
+    <div class="jaraba-header__brand">
+      {% if logo %}
+        <a href="/" class="jaraba-header__logo-link" rel="home">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-header__logo" />
+        </a>
+      {% else %}
+        <a href="/" class="jaraba-header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación principal #}
+    <nav class="jaraba-header__nav" aria-label="{{ 'Navegación principal'|t }}">
+      {% if navigation %}
+        <ul class="jaraba-header__menu">
+          {% for item in navigation %}
+            <li class="jaraba-header__menu-item{% if item.children %} has-children{% endif %}">
+              <a href="{{ item.url }}" class="jaraba-header__menu-link">
+                {{ item.label }}
+              </a>
+              {% if item.children %}
+                <ul class="jaraba-header__submenu">
+                  {% for child in item.children %}
+                    <li class="jaraba-header__submenu-item">
+                      <a href="{{ child.url }}" class="jaraba-header__submenu-link">
+                        {{ child.label }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    {# Acciones (CTA, Login) #}
+    <div class="jaraba-header__actions">
+      {% if cta_text and cta_url %}
+        <a href="{{ cta_url }}" class="jaraba-header__cta btn btn--primary">
+          {{ cta_text }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Mobile toggle #}
+    <button class="jaraba-header__mobile-toggle" aria-label="{{ 'Abrir menú'|t }}" aria-expanded="false">
+      <span class="jaraba-header__hamburger"></span>
+    </button>
+  </div>
+</header>

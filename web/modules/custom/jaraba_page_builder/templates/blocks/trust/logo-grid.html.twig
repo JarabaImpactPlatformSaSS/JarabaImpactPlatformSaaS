@@ -1,0 +1,60 @@
+{#
+/**
+ * @file
+ * Template para el bloque Grid de Logos.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout_class = content.layout|default('grid') %}
+{% set logos = content.logos|default([]) %}
+
+<section class="jaraba-logo-grid jaraba-logo-grid--{{ bg_class }} jaraba-block"
+         aria-labelledby="logos-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-logo-grid__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="logos-title" class="jaraba-block__title">{{ content.title|default('Confían en nosotros'|trans) }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de logos #}
+    {% if logos is not empty %}
+      <div class="jaraba-logo-grid__logos jaraba-logo-grid__logos--{{ layout_class }} {{ content.grayscale ? 'jaraba-logo-grid__logos--grayscale' : '' }}">
+        {% for logo in logos %}
+          {% if logo.url %}
+            <a href="{{ logo.url }}" 
+               target="_blank" 
+               rel="noopener"
+               class="jaraba-logo-grid__item"
+               title="{{ logo.name }}">
+              <img src="{{ logo.image }}" 
+                   alt="{{ logo.name }}"
+                   loading="lazy">
+            </a>
+          {% else %}
+            <div class="jaraba-logo-grid__item" title="{{ logo.name }}">
+              <img src="{{ logo.image }}" 
+                   alt="{{ logo.name }}"
+                   loading="lazy">
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

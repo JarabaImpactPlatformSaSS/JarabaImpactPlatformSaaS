@@ -1,0 +1,103 @@
+services:
+  # Generador de formularios dinámicos desde JSON Schema.
+  jaraba_page_builder.form_builder:
+    class: Drupal\jaraba_page_builder\Service\FormBuilderService
+
+  # Resolver de tenant/grupo del usuario actual.
+  jaraba_page_builder.tenant_resolver:
+    class: Drupal\jaraba_page_builder\Service\TenantResolverService
+    arguments:
+      - '@current_user'
+      - '@?group.membership_loader'
+
+  # Gestor de límites y cuotas por plan.
+  jaraba_page_builder.quota_manager:
+    class: Drupal\jaraba_page_builder\Service\QuotaManagerService
+    arguments:
+      - '@jaraba_page_builder.tenant_resolver'
+      - '@config.factory'
+
+  # Servicio para obtener datos de homepage.
+  jaraba_page_builder.homepage_data:
+    class: Drupal\jaraba_page_builder\Service\HomepageDataService
+    arguments:
+      - '@entity_type.manager'
+
+  # Generador de Schema.org JSON-LD para SEO.
+  jaraba_page_builder.schema_org:
+    class: Drupal\jaraba_page_builder\Service\SchemaOrgService
+
+  # Generador de tags Hreflang multi-idioma - Gap #2 (Doc 166).
+  jaraba_page_builder.hreflang:
+    class: Drupal\jaraba_page_builder\Service\HreflangService
+    arguments:
+      - '@entity_type.manager'
+      - '@language_manager'
+      - '@current_route_match'
+
+  # Servicio de A/B Testing - Gap #3 (Doc 168).
+  jaraba_page_builder.experiment:
+    class: Drupal\jaraba_page_builder\Service\ExperimentService
+    arguments:
+      - '@entity_type.manager'
+      - '@request_stack'
+
+  # Servicio de Analytics integrado - Gap #4 (Doc 167).
+  jaraba_page_builder.analytics:
+    class: Drupal\jaraba_page_builder\Service\AnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_route_match'
+
+  # Servicio de migración Multi-Block - Gap J.
+  jaraba_page_builder.multiblock_migration:
+    class: Drupal\jaraba_page_builder\Service\MultiBlockMigrationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@uuid'
+
+  # Servicio de comparación de revisiones - Gap G.
+  jaraba_page_builder.revision_diff:
+    class: Drupal\jaraba_page_builder\Service\RevisionDiffService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+
+  # Template Registry Service - SSoT para templates del Page Builder.
+  # Centraliza acceso a templates, filtrado por plan, y generación de bloques.
+  # @see docs/arquitectura/2026-02-06_arquitectura_unificada_templates_bloques.md
+  jaraba_page_builder.template_registry:
+    class: Drupal\jaraba_page_builder\Service\TemplateRegistryService
+    arguments:
+      - '@cache.default'
+      - '@config.factory'
+      - '@module_handler'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+      - '@logger.factory'
+
+  # Persistencia del estado del Onboarding Tour del Canvas Editor.
+  # Usa user.data de Drupal para sincronización entre dispositivos.
+  # @see docs/planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md §3
+  jaraba_page_builder.onboarding_state:
+    class: Drupal\jaraba_page_builder\Service\OnboardingStateService
+    arguments:
+      - '@user.data'
+      - '@current_user'
+
+  # Sugerencias SEO con IA — Sprint C4.1.
+  # Analiza HTML y genera sugerencias SEO accionables via LLM.
+  # @see docs/planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md §11 (C4.1)
+  jaraba_page_builder.seo_suggestion:
+    class: Drupal\jaraba_page_builder\Service\SeoSuggestionService
+    arguments:
+      - '@logger.factory'
+
+  # Generador de templates con IA — Sprint C4.2.
+  # Genera landing pages completas a partir de un prompt de texto.
+  # @see docs/planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md §11 (C4.2)
+  jaraba_page_builder.ai_template_generator:
+    class: Drupal\jaraba_page_builder\Service\AiTemplateGeneratorService
+    arguments:
+      - '@logger.factory'

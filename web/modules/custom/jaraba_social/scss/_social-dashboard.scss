@@ -1,0 +1,218 @@
+/**
+ * @file
+ * Estilos del Dashboard de Social Media.
+ *
+ * Sigue el patrón de variables inyectables CSS (Federated Design Tokens).
+ * NO define variables SCSS locales, solo consume CSS custom properties.
+ */
+
+// ============================================
+// SOCIAL DASHBOARD
+// ============================================
+
+.social-dashboard {
+    padding: var(--ej-spacing-lg, 2rem);
+    background: var(--ej-bg-surface, #f8fafc);
+    min-height: 100vh;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--ej-spacing-lg, 2rem);
+        padding-bottom: var(--ej-spacing-md, 1rem);
+        border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+    }
+
+    &__title {
+        font-size: var(--ej-font-size-2xl, 1.5rem);
+        font-weight: 700;
+        color: var(--ej-color-corporate, #233D63);
+        margin: 0;
+    }
+
+    &__actions {
+        display: flex;
+        gap: var(--ej-spacing-sm, 0.5rem);
+    }
+}
+
+// ============================================
+// STATS CARDS
+// ============================================
+
+.social-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-xl, 2.5rem);
+}
+
+.social-stat-card {
+    background: var(--ej-bg-white, #ffffff);
+    border-radius: var(--ej-radius-lg, 1rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    &__value {
+        font-size: var(--ej-font-size-3xl, 2rem);
+        font-weight: 800;
+        color: var(--ej-color-primary, #4f46e5);
+        margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    &__label {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-muted, #6b7280);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    // Variantes por estado
+    &--published .social-stat-card__value {
+        color: var(--ej-color-success, #10b981);
+    }
+
+    &--scheduled .social-stat-card__value {
+        color: var(--ej-color-warning, #f59e0b);
+    }
+
+    &--draft .social-stat-card__value {
+        color: var(--ej-color-info, #3b82f6);
+    }
+}
+
+// ============================================
+// POST LIST
+// ============================================
+
+.social-posts {
+    background: var(--ej-bg-white, #ffffff);
+    border-radius: var(--ej-radius-lg, 1rem);
+    box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    overflow: hidden;
+}
+
+.social-post-item {
+    display: flex;
+    align-items: center;
+    padding: var(--ej-spacing-md, 1rem);
+    border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+    transition: background 0.15s ease;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: var(--ej-bg-hover, #f9fafb);
+    }
+
+    &__platform {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--ej-radius-md, 0.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: var(--ej-spacing-md, 1rem);
+        font-size: 1.25rem;
+
+        &--facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        &--instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+
+        &--linkedin {
+            background: #0a66c2;
+            color: white;
+        }
+
+        &--twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        &--tiktok {
+            background: #000000;
+            color: white;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__title {
+        font-weight: 600;
+        color: var(--ej-color-text, #1f2937);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__meta {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-muted, #6b7280);
+    }
+
+    &__status {
+        padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-sm, 0.5rem);
+        border-radius: var(--ej-radius-full, 9999px);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        font-weight: 600;
+        text-transform: uppercase;
+
+        &--draft {
+            background: var(--ej-color-info-bg, #dbeafe);
+            color: var(--ej-color-info, #3b82f6);
+        }
+
+        &--scheduled {
+            background: var(--ej-color-warning-bg, #fef3c7);
+            color: var(--ej-color-warning-dark, #d97706);
+        }
+
+        &--published {
+            background: var(--ej-color-success-bg, #d1fae5);
+            color: var(--ej-color-success, #10b981);
+        }
+
+        &--failed {
+            background: var(--ej-color-danger-bg, #fee2e2);
+            color: var(--ej-color-danger, #ef4444);
+        }
+    }
+}
+
+// ============================================
+// MOBILE RESPONSIVE (Mobile-first)
+// ============================================
+
+@media (max-width: 768px) {
+    .social-dashboard {
+        padding: var(--ej-spacing-md, 1rem);
+    }
+
+    .social-dashboard__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ej-spacing-md, 1rem);
+    }
+
+    .social-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}

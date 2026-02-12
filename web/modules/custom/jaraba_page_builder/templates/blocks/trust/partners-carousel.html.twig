@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template para el bloque Carrusel de Partners.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set speed = content.speed|default('normal') %}
+{% set direction = content.direction|default('left') %}
+
+<section class="jaraba-partners-carousel jaraba-partners-carousel--{{ bg_class }} jaraba-block"
+         data-speed="{{ speed }}"
+         data-direction="{{ direction }}"
+         {% if content.pause_on_hover %}data-pause-hover{% endif %}>
+  <div class="jaraba-block__container">
+    
+    {% if content.title %}
+      <h2 class="jaraba-partners-carousel__title">{{ content.title }}</h2>
+    {% endif %}
+
+    <div class="jaraba-partners-carousel__track">
+      <div class="jaraba-partners-carousel__slide {{ content.grayscale ? 'is-grayscale' : '' }}">
+        {% for logo in content.logos %}
+          {% if logo.url %}
+            <a href="{{ logo.url }}" class="jaraba-partners-carousel__logo" target="_blank" rel="noopener">
+              <img src="{{ logo.image }}" alt="{{ logo.alt|default('Partner') }}" loading="lazy">
+            </a>
+          {% else %}
+            <div class="jaraba-partners-carousel__logo">
+              <img src="{{ logo.image }}" alt="{{ logo.alt|default('Partner') }}" loading="lazy">
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {# Duplicate for seamless loop #}
+      <div class="jaraba-partners-carousel__slide {{ content.grayscale ? 'is-grayscale' : '' }}" aria-hidden="true">
+        {% for logo in content.logos %}
+          <div class="jaraba-partners-carousel__logo">
+            <img src="{{ logo.image }}" alt="" loading="lazy">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+  </div>
+</section>

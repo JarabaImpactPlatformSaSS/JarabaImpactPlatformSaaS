@@ -1,0 +1,41 @@
+# Librería de assets para Site Builder
+
+sortable-js:
+  version: 1.15.2
+  js:
+    https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js: { type: external, minified: true }
+
+site-tree-manager:
+  version: 2.0
+  js:
+    js/site-tree-manager.js: {}
+  css:
+    theme:
+      css/site-builder.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_site_builder/sortable-js
+
+# Sprint B1: Dashboard premium con KPIs glassmorphism
+site-builder-dashboard:
+  version: 2.0
+  js:
+    js/site-builder-dashboard.js: {}
+  css:
+    theme:
+      css/site-builder.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_site_builder/site-tree-manager
+
+site-config:
+  version: 1.0
+  css:
+    theme:
+      css/site-builder.css: {}
+  dependencies:
+    - core/drupal

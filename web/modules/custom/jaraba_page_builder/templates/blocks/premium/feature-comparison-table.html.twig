@@ -1,0 +1,137 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tabla Comparativa de Planes/Características.
+ *
+ * Tabla de comparación premium para páginas de precios. Soporta
+ * highlighting de columna popular, tooltips y header sticky.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set highlight = content.highlight_column|default(2) %}
+{% set sticky = content.sticky_header|default(true) %}
+{% set show_toggle = content.show_annual_toggle|default(false) %}
+{% set plans = content.plans|default([]) %}
+{% set features = content.features|default([]) %}
+
+<section class="jaraba-comparison jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-comparison__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+        
+        {# Annual/Monthly Toggle (optional) #}
+        {% if show_toggle %}
+          <div class="jaraba-comparison__toggle">
+            <span class="jaraba-comparison__toggle-label">{% trans %}Mensual{% endtrans %}</span>
+            <button type="button" class="jaraba-comparison__toggle-switch" role="switch" aria-checked="false">
+              <span class="jaraba-comparison__toggle-slider"></span>
+            </button>
+            <span class="jaraba-comparison__toggle-label">
+              {% trans %}Anual{% endtrans %}
+              <span class="jaraba-comparison__toggle-badge">-20%</span>
+            </span>
+          </div>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Comparison Table #}
+    {% if plans is not empty and features is not empty %}
+      <div class="jaraba-comparison__wrapper">
+        <table class="jaraba-comparison__table{{ sticky ? ' jaraba-comparison__table--sticky' : '' }}">
+          
+          {# Table Header: Plans #}
+          <thead class="jaraba-comparison__thead">
+            <tr>
+              <th class="jaraba-comparison__corner">
+                <span class="visually-hidden">{% trans %}Características{% endtrans %}</span>
+              </th>
+              {% for plan in plans %}
+                <th class="jaraba-comparison__plan-header{{ plan.is_popular ? ' jaraba-comparison__plan-header--popular' : '' }}{{ loop.index == highlight ? ' jaraba-comparison__plan-header--highlight' : '' }}">
+                  {% if plan.badge %}
+                    <span class="jaraba-comparison__badge">{{ plan.badge }}</span>
+                  {% endif %}
+                  <span class="jaraba-comparison__plan-name">{{ plan.name }}</span>
+                  <div class="jaraba-comparison__price">
+                    <span class="jaraba-comparison__price-amount">{{ plan.price }}</span>
+                    {% if plan.price_period %}
+                      <span class="jaraba-comparison__price-period">{{ plan.price_period }}</span>
+                    {% endif %}
+                  </div>
+                  {% if plan.cta_text %}
+                    <a href="{{ plan.cta_url|default('#') }}" 
+                       class="jaraba-comparison__cta{{ plan.is_popular ? ' jaraba-comparison__cta--primary' : ' jaraba-comparison__cta--secondary' }}">
+                      {{ plan.cta_text }}
+                    </a>
+                  {% endif %}
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
+          
+          {# Table Body: Features #}
+          <tbody class="jaraba-comparison__tbody">
+            {% for feature in features %}
+              <tr class="jaraba-comparison__row">
+                <td class="jaraba-comparison__feature-name">
+                  {{ feature.name }}
+                  {% if feature.tooltip %}
+                    <button type="button" 
+                            class="jaraba-comparison__tooltip-trigger" 
+                            aria-label="{{ feature.tooltip }}"
+                            data-tooltip="{{ feature.tooltip }}">
+                      {{ jaraba_icon('ui', 'info', { size: '14px' }) }}
+                    </button>
+                  {% endif %}
+                </td>
+                {% for value in feature.values %}
+                  <td class="jaraba-comparison__value{{ loop.index == highlight ? ' jaraba-comparison__value--highlight' : '' }}">
+                    {% if value == '✅' %}
+                      <span class="jaraba-comparison__check" aria-label="{% trans %}Incluido{% endtrans %}">
+                        {{ jaraba_icon('actions', 'check', { size: '20px', color: 'success' }) }}
+                      </span>
+                    {% elseif value == '❌' %}
+                      <span class="jaraba-comparison__cross" aria-label="{% trans %}No incluido{% endtrans %}">
+                        {{ jaraba_icon('ui', 'close', { size: '18px', color: 'neutral' }) }}
+                      </span>
+                    {% else %}
+                      <span class="jaraba-comparison__text">{{ value }}</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+          
+          {# Table Footer: CTAs (repeated) #}
+          <tfoot class="jaraba-comparison__tfoot">
+            <tr>
+              <td class="jaraba-comparison__footer-corner"></td>
+              {% for plan in plans %}
+                <td class="jaraba-comparison__footer-cta{{ loop.index == highlight ? ' jaraba-comparison__footer-cta--highlight' : '' }}">
+                  {% if plan.cta_text %}
+                    <a href="{{ plan.cta_url|default('#') }}" 
+                       class="jaraba-comparison__cta{{ plan.is_popular ? ' jaraba-comparison__cta--primary' : ' jaraba-comparison__cta--secondary' }}">
+                      {{ plan.cta_text }}
+                    </a>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          </tfoot>
+          
+        </table>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

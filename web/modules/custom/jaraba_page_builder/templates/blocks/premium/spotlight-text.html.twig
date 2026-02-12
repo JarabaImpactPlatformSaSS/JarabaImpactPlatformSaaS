@@ -1,0 +1,36 @@
+{#
+/**
+ * @file
+ * Template para el bloque Texto con Spotlight.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set spotlight_color = content.spotlight_color|default('white') %}
+{% set spotlight_size = content.spotlight_size|default('medium') %}
+{% set font_size = content.font_size|default('hero') %}
+
+<section class="jaraba-spotlight jaraba-spotlight--{{ spotlight_color }} jaraba-spotlight--size-{{ spotlight_size }} jaraba-block jaraba-block--premium"
+         data-spotlight>
+  
+  <div class="jaraba-spotlight__effect"></div>
+  
+  <div class="jaraba-block__container jaraba-spotlight__content">
+    <h1 class="jaraba-spotlight__title jaraba-spotlight__title--{{ font_size }}">{{ content.title }}</h1>
+    
+    {% if content.subtitle %}
+      <p class="jaraba-spotlight__subtitle">{{ content.subtitle }}</p>
+    {% endif %}
+    
+    {% if content.ctas is not empty %}
+      <div class="jaraba-spotlight__ctas">
+        {% for cta in content.ctas %}
+          <a href="{{ cta.url }}" class="jaraba-btn jaraba-btn--{{ cta.style|default('primary') }} jaraba-btn--lg">
+            {{ cta.text }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  
+</section>

@@ -1,0 +1,31 @@
+# Links de acción para botones "Añadir" en las listas admin.
+
+entity.tenant_faq.add_form:
+  route_name: jaraba_tenant_knowledge.faq.add
+  title: 'Añadir FAQ'
+  appears_on:
+    - jaraba_tenant_knowledge.admin.faqs
+
+entity.tenant_policy.add_form:
+  route_name: jaraba_tenant_knowledge.policy.add
+  title: 'Añadir Política'
+  appears_on:
+    - jaraba_tenant_knowledge.admin.policies
+
+entity.tenant_document.add_form:
+  route_name: jaraba_tenant_knowledge.document.add
+  title: 'Subir Documento'
+  appears_on:
+    - jaraba_tenant_knowledge.admin.documents
+
+entity.tenant_product_enrichment.add_form:
+  route_name: jaraba_tenant_knowledge.product.add
+  title: 'Añadir Producto'
+  appears_on:
+    - jaraba_tenant_knowledge.admin.products
+
+entity.tenant_ai_correction.add_form:
+  route_name: jaraba_tenant_knowledge.correction.add
+  title: 'Añadir Corrección'
+  appears_on:
+    - jaraba_tenant_knowledge.admin.corrections

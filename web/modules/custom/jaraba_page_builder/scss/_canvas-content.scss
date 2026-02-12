@@ -1,0 +1,63 @@
+/**
+ * @file
+ * Estilos del contenedor de contenido Canvas (GrapesJS renderizado).
+ *
+ * Estos estilos aseguran que el contenido generado desde el Canvas Editor
+ * se alinee correctamente con el resto de la página.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Variables inyectables (var(--ej-*))
+ * Ver: /.agent/workflows/scss-estilos.md
+ */
+
+// ====================================================
+// VARIABLES POR DEFECTO
+// Fallbacks para cuando las CSS Custom Properties no estén inyectadas
+// ====================================================
+$_max-width-content: 1200px;
+$_spacing-page-x: 1.5rem;
+$_spacing-page-x-mobile: 1rem;
+$_text-inverse: #ffffff;
+$_color-corporate: #233D63;
+
+// ====================================================
+// PAGE CONTENT WRAPPER (Canvas)
+// Contenedor principal para el HTML renderizado desde GrapesJS.
+// ====================================================
+
+.page-content--canvas {
+    width: 100%;
+}
+
+.canvas-content {
+    width: 100%;
+    max-width: var(--ej-max-width-content, #{$_max-width-content});
+    margin: 0 auto;
+    padding: var(--ej-spacing-page-x, #{$_spacing-page-x});
+}
+
+// Full-width sections dentro del canvas
+.canvas-content>.jaraba-hero--fullscreen,
+.canvas-content>.jaraba-cta-banner,
+.canvas-content>[data-gjs-type="wrapper"][style*="full-width"] {
+    max-width: none;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    width: 100vw;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+// Bloque de navegación - respetar ancho del contenedor
+.canvas-content .jaraba-navigation {
+    padding: 1rem 0;
+}
+
+// ====================================================
+// RESPONSIVE
+// ====================================================
+
+@media (max-width: 768px) {
+    .canvas-content {
+        padding: var(--ej-spacing-page-x-mobile, #{$_spacing-page-x-mobile});
+    }
+}

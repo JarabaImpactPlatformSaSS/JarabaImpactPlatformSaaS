@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hero con Partículas.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_color = content.background_color|default('dark') %}
+{% set min_height = content.min_height|default('fullscreen') %}
+{% set particle_shape = content.particle_config.shape|default('circle') %}
+{% set particle_count = content.particle_config.count|default(80) %}
+{% set connect_lines = content.particle_config.connect_lines|default(true) %}
+{% set interactive = content.particle_config.interactive|default(true) %}
+{% set particle_color = content.particle_config.color|default('white') %}
+
+<section class="jaraba-particle-hero jaraba-particle-hero--{{ bg_color }} jaraba-particle-hero--{{ min_height }} jaraba-block jaraba-block--premium"
+         data-particles
+         data-particle-shape="{{ particle_shape }}"
+         data-particle-count="{{ particle_count }}"
+         data-particle-lines="{{ connect_lines ? 'true' : 'false' }}"
+         data-particle-interactive="{{ interactive ? 'true' : 'false' }}"
+         data-particle-color="{{ particle_color }}">
+  
+  <div class="jaraba-particle-hero__particles" id="particles-{{ random() }}"></div>
+  
+  <div class="jaraba-particle-hero__content jaraba-block__container">
+    <h1 class="jaraba-particle-hero__title">{{ content.title }}</h1>
+    
+    {% if content.subtitle %}
+      <p class="jaraba-particle-hero__subtitle">{{ content.subtitle }}</p>
+    {% endif %}
+    
+    {% if content.ctas is not empty %}
+      <div class="jaraba-particle-hero__ctas">
+        {% for cta in content.ctas %}
+          <a href="{{ cta.url }}" class="jaraba-btn jaraba-btn--{{ cta.style|default('primary') }} jaraba-btn--lg">
+            {{ cta.text }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  
+</section>

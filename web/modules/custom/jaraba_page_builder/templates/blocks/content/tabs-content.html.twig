@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Template para el bloque Contenido en Tabs.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set tab_style = content.tab_style|default('underline') %}
+{% set orientation = content.orientation|default('horizontal') %}
+{% set default_tab = content.default_tab|default(0) %}
+
+<section class="jaraba-tabs jaraba-tabs--{{ bg_class }} jaraba-tabs--{{ orientation }} jaraba-block"
+         data-block-type="tabs_content"
+         data-default-tab="{{ default_tab }}">
+  <div class="jaraba-block__container">
+    
+    {% if content.title %}
+      <h2 class="jaraba-block__title">{{ content.title }}</h2>
+    {% endif %}
+
+    <div class="jaraba-tabs__wrapper">
+      {# Tab List #}
+      <div class="jaraba-tabs__list jaraba-tabs__list--{{ tab_style }}" role="tablist">
+        {% for tab in content.tabs %}
+          <button type="button"
+                  role="tab"
+                  id="tab-{{ loop.index }}"
+                  class="jaraba-tabs__tab {{ loop.index0 == default_tab ? 'is-active' : '' }}"
+                  aria-controls="panel-{{ loop.index }}"
+                  aria-selected="{{ loop.index0 == default_tab ? 'true' : 'false' }}">
+            {% if tab.icon %}
+              {{ jaraba_icon('ui', tab.icon, { size: '18px' }) }}
+            {% endif %}
+            {{ tab.label }}
+          </button>
+        {% endfor %}
+      </div>
+
+      {# Tab Panels #}
+      <div class="jaraba-tabs__panels">
+        {% for tab in content.tabs %}
+          <div role="tabpanel"
+               id="panel-{{ loop.index }}"
+               class="jaraba-tabs__panel {{ loop.index0 == default_tab ? 'is-active' : '' }}"
+               aria-labelledby="tab-{{ loop.index }}"
+               {% if loop.index0 != default_tab %}hidden{% endif %}>
+            
+            <div class="jaraba-tabs__panel-content">
+              {% if tab.image %}
+                <img src="{{ tab.image }}" 
+                     alt="{{ tab.label }}"
+                     class="jaraba-tabs__panel-image"
+                     loading="lazy">
+              {% endif %}
+              <div class="jaraba-tabs__panel-text">
+                {{ tab.content|raw }}
+              </div>
+            </div>
+            
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+  </div>
+</section>

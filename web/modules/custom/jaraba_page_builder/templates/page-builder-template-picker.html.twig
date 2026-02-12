@@ -1,0 +1,156 @@
+{#
+/**
+ * @file
+ * Template para el selector de plantillas del Page Builder.
+ *
+ * Variables:
+ * - categories: Array de plantillas agrupadas por categoría.
+ *   Cada item contiene:
+ *   - template: La entidad PageTemplate
+ *   - has_access: Boolean indicando si el usuario tiene acceso
+ *
+ * @see \Drupal\jaraba_page_builder\Controller\TemplatePickerController::listTemplates()
+ */
+#}
+<div class="template-picker">
+
+  {# ============================================== #}
+  {# DASHBOARD HEADER - Premium con Partículas     #}
+  {# Consistente con Content Hub y Site Builder    #}
+  {# ============================================== #}
+  <header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+    {# Canvas de partículas (mismo estilo que homepage) #}
+    <canvas id="dashboard-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    
+    {# Botón de navegación - Vuelve a Mis Páginas #}
+    <nav class="template-picker__nav">
+      <a href="{{ path('jaraba_page_builder.my_pages') }}" class="template-picker__back-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        {% trans %}Mis Páginas{% endtrans %}
+      </a>
+    </nav>
+    
+    <div class="dashboard-header__content dashboard-header__content--centered" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.75rem;">
+      {# Icono representativo #}
+      <div class="dashboard-header__icon">
+        {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '48px', color: 'white' }) }}
+      </div>
+      {# Título y subtítulo alineados verticalmente #}
+      <div class="dashboard-header__text">
+        <h1 class="dashboard-header__title">{% trans %}Elige una plantilla{% endtrans %}</h1>
+        <p class="dashboard-header__subtitle">
+          {% trans %}Selecciona la plantilla que mejor se adapte a tu página{% endtrans %}
+        </p>
+      </div>
+    </div>
+  </header>
+
+
+  {# Barra de búsqueda y filtros #}
+  <div class="template-picker__toolbar">
+    {# Campo de búsqueda en tiempo real #}
+    <div class="template-picker__search">
+      <svg class="template-picker__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" 
+             id="template-search" 
+             class="template-picker__search-input"
+             placeholder="{% trans %}Buscar plantillas...{% endtrans %}"
+             aria-label="{% trans %}Buscar plantillas{% endtrans %}">
+    </div>
+
+    {# Filtros de categorías - Usa category_labels para traducciones #}
+    <div class="template-picker__filters">
+    <button class="template-picker__filter is-active" data-filter="all">{% trans %}Todas{% endtrans %}</button>
+    {% for category, items in categories %}
+      <button class="template-picker__filter" data-filter="{{ category }}">
+        {{ category_labels[category]|default(category|capitalize) }}
+      </button>
+    {% endfor %}
+    </div>
+  </div>
+
+  {# Grid de plantillas #}
+  <div class="template-picker__grid">
+    {% for category, items in categories %}
+      {% for item in items %}
+        {% set template = item.template %}
+        {% set has_access = item.has_access %}
+        {% set is_premium = template.premium %}
+        
+        <article class="template-card{% if not has_access %} template-card--locked{% endif %}{% if is_premium %} template-card--premium{% endif %}"
+                 data-category="{{ category }}"
+                 data-template-id="{{ template.id }}">
+          
+          {# Preview Image #}
+          <div class="template-card__preview">
+            {% if template.previewImage %}
+              <img src="{{ template.previewImage }}" alt="{{ template.label }}" loading="lazy"/>
+            {% else %}
+              <div class="template-card__placeholder">
+                <svg viewBox="0 0 100 100" width="48" height="48">
+                  <rect x="10" y="10" width="80" height="20" fill="currentColor" opacity="0.3"/>
+                  <rect x="10" y="35" width="45" height="55" fill="currentColor" opacity="0.2"/>
+                  <rect x="60" y="35" width="30" height="25" fill="currentColor" opacity="0.2"/>
+                  <rect x="60" y="65" width="30" height="25" fill="currentColor" opacity="0.2"/>
+                </svg>
+              </div>
+            {% endif %}
+            
+            {# Overlay con acciones - visible en hover #}
+            <div class="template-card__overlay">
+              {% if has_access %}
+                <a href="{{ path('jaraba_page_builder.create_from_template', {'page_template': template.id}) }}"
+                   class="template-card__action template-card__action--primary">
+                  {% trans %}Usar{% endtrans %}
+                </a>
+                <a href="{{ path('jaraba_page_builder.template_preview', {'page_template': template.id}) }}"
+                   class="template-card__action template-card__action--secondary">
+                  {% trans %}Vista previa{% endtrans %}
+                </a>
+              {% else %}
+                <a href="/pricing" class="template-card__action template-card__action--primary">
+                  {% trans %}Ver planes{% endtrans %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+
+          {# Info #}
+          <div class="template-card__info">
+            <h3 class="template-card__name">{{ template.label }}</h3>
+            {% if template.description %}
+              <p class="template-card__description">{{ template.description }}</p>
+            {% endif %}
+            
+            {# Badges #}
+            <div class="template-card__badges">
+              <span class="template-card__badge template-card__badge--category">{{ category }}</span>
+              {% if is_premium %}
+                <span class="template-card__badge template-card__badge--premium">⭐ Premium</span>
+              {% endif %}
+            </div>
+          </div>
+          
+        </article>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  {# Empty state #}
+  {% if categories is empty %}
+    <div class="template-picker__empty">
+      <svg viewBox="0 0 100 100" width="64" height="64">
+        <rect x="15" y="15" width="70" height="70" fill="none" stroke="currentColor" stroke-width="2" rx="8"/>
+        <line x1="30" y1="50" x2="70" y2="50" stroke="currentColor" stroke-width="2"/>
+        <line x1="50" y1="30" x2="50" y2="70" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p>{% trans %}No hay plantillas disponibles actualmente.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+</div>

@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Header variante: Minimal (Canvas v2)
+ *
+ * Header minimalista con solo logo y CTA.
+ * Ideal para landing pages y páginas de conversión.
+ */
+#}
+{% set header_classes = [
+  'jaraba-header',
+  'jaraba-header--minimal',
+  sticky ? 'jaraba-header--sticky',
+  transparent ? 'jaraba-header--transparent',
+] %}
+
+<header class="{{ header_classes|join(' ')|trim }}" role="banner" data-grapesjs-type="jaraba-header" data-header-type="minimal">
+  <div class="jaraba-header__container jaraba-header__container--minimal">
+    {# Logo / Brand centrado #}
+    <div class="jaraba-header__brand jaraba-header__brand--centered">
+      {% if logo %}
+        <a href="/" class="jaraba-header__logo-link" rel="home">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-header__logo" />
+        </a>
+      {% else %}
+        <a href="/" class="jaraba-header__site-name" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Solo CTA, sin navegación #}
+    {% if cta_text and cta_url %}
+      <a href="{{ cta_url }}" class="jaraba-header__cta btn btn--outline">
+        {{ cta_text }}
+      </a>
+    {% endif %}
+  </div>
+</header>

@@ -1,0 +1,130 @@
+{#
+/**
+ * @file
+ * Template para el bloque Cursos Recomendados.
+ *
+ * Variables:
+ * - content.title: Título de la sección
+ * - content.subtitle: Subtítulo opcional
+ * - courses: Array de entidades lms_course cargadas dinámicamente
+ * - content.layout: 'carousel' o 'grid'
+ * - content.columns: Número de columnas (2, 3, 4)
+ * - content.background: 'light', 'dark', o 'gradient'
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout = content.layout|default('carousel') %}
+{% set columns = content.columns|default(3) %}
+
+<section class="jaraba-recommended-courses jaraba-recommended-courses--{{ bg_class }} jaraba-recommended-courses--{{ layout }} jaraba-block">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-recommended-courses__header">
+      <h2 class="jaraba-block__title">{{ content.title|default('Cursos que te pueden interesar'|trans) }}</h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid/Carousel de cursos #}
+    {% if courses is not empty %}
+      <div class="jaraba-recommended-courses__items jaraba-recommended-courses__items--{{ columns }}">
+        {% for course in courses %}
+          <article class="jaraba-course-card jaraba-course-card--premium">
+            {# Imagen del curso #}
+            <div class="jaraba-course-card__image-wrapper">
+              {% if course.image %}
+                <img src="{{ course.image }}" alt="{{ course.title }}" loading="lazy">
+              {% else %}
+                <div class="jaraba-course-card__placeholder">
+                  {{ jaraba_icon('education', 'book-open', { size: '48px' }) }}
+                </div>
+              {% endif %}
+              
+              {# Badge de nivel #}
+              {% if course.level %}
+                <span class="jaraba-course-card__level jaraba-course-card__level--{{ course.level }}">
+                  {{ course.level|capitalize }}
+                </span>
+              {% endif %}
+            </div>
+            
+            {# Contenido del curso #}
+            <div class="jaraba-course-card__body">
+              {% if course.category %}
+                <span class="jaraba-course-card__category">{{ course.category }}</span>
+              {% endif %}
+              
+              <h3 class="jaraba-course-card__title">
+                <a href="{{ course.url }}">{{ course.title }}</a>
+              </h3>
+              
+              {# Meta información #}
+              <div class="jaraba-course-card__meta">
+                {% if content.show_duration|default(true) and course.duration %}
+                  <span class="jaraba-course-card__meta-item">
+                    {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+                    {{ course.duration }}
+                  </span>
+                {% endif %}
+                
+                {% if content.show_rating|default(true) and course.rating %}
+                  <span class="jaraba-course-card__meta-item">
+                    {{ jaraba_icon('ui', 'star', { variant: 'filled', size: '14px', color: 'warning' }) }}
+                    {{ course.rating|number_format(1) }}
+                  </span>
+                {% endif %}
+              </div>
+              
+              {# Instructor #}
+              {% if content.show_instructor|default(true) and course.instructor %}
+                <div class="jaraba-course-card__instructor">
+                  {{ jaraba_icon('ui', 'user', { size: '14px' }) }}
+                  {{ course.instructor }}
+                </div>
+              {% endif %}
+              
+              {# Precio y CTA #}
+              <div class="jaraba-course-card__footer">
+                {% if content.show_price|default(true) and course.price %}
+                  <div class="jaraba-course-card__price">{{ course.price }}</div>
+                {% endif %}
+                <a href="{{ course.url }}" class="jaraba-course-card__cta">
+                  {% trans %}Ver curso{% endtrans %}
+                  {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+                </a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      
+      {# Controles del carousel #}
+      {% if layout == 'carousel' and courses|length > 3 %}
+        <div class="jaraba-recommended-courses__controls">
+          <button type="button" class="jaraba-recommended-courses__control jaraba-recommended-courses__control--prev" aria-label="{% trans %}Anterior{% endtrans %}">
+            {{ jaraba_icon('ui', 'chevron-left', { size: '24px' }) }}
+          </button>
+          <button type="button" class="jaraba-recommended-courses__control jaraba-recommended-courses__control--next" aria-label="{% trans %}Siguiente{% endtrans %}">
+            {{ jaraba_icon('ui', 'chevron-right', { size: '24px' }) }}
+          </button>
+        </div>
+      {% endif %}
+    {% else %}
+      {# Empty state #}
+      <div class="jaraba-recommended-courses__empty">
+        {{ jaraba_icon('education', 'graduation-cap', { size: '48px' }) }}
+        <p>{% trans %}No hay cursos seleccionados.{% endtrans %}</p>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

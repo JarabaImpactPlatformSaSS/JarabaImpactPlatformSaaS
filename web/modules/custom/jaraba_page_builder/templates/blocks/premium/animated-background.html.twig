@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Template para el bloque Fondo Animado.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set animation_type = content.animation_type|default('particles') %}
+{% set color_scheme = content.color_scheme|default('corporate') %}
+{% set density = content.density|default('medium') %}
+{% set min_height = content.min_height|default('tall') %}
+
+<section class="jaraba-animated-bg jaraba-animated-bg--{{ animation_type }} jaraba-animated-bg--{{ color_scheme }} jaraba-animated-bg--{{ min_height }} jaraba-block jaraba-block--premium"
+         data-animated-bg
+         data-bg-type="{{ animation_type }}"
+         data-bg-density="{{ density }}">
+  
+  <div class="jaraba-animated-bg__canvas"></div>
+  
+  <div class="jaraba-block__container jaraba-animated-bg__content">
+    {% if content.title %}
+      <h2 class="jaraba-block__title">{{ content.title }}</h2>
+    {% endif %}
+    
+    {% if content.subtitle %}
+      <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+    {% endif %}
+    
+    {% if content.content %}
+      <div class="jaraba-animated-bg__text">{{ content.content|raw }}</div>
+    {% endif %}
+    
+    {% if content.ctas is not empty %}
+      <div class="jaraba-animated-bg__ctas">
+        {% for cta in content.ctas %}
+          <a href="{{ cta.url }}" class="jaraba-btn jaraba-btn--{{ cta.style|default('primary') }} jaraba-btn--lg">
+            {{ cta.text }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  
+</section>

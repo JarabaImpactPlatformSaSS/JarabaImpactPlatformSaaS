@@ -1,0 +1,288 @@
+{#
+/**
+ * @file
+ * Group Detail - Vista completa del grupo.
+ *
+ * Variables:
+ * - group: CollaborationGroup entity
+ * - is_member: Boolean
+ * - is_admin: Boolean
+ * - membership: GroupMembership entity or null
+ * - members: Array of member data
+ * - discussions: Array of recent discussions
+ * - events: Array of upcoming events
+ * - resources: Array of shared resources
+ */
+#}
+
+{% set type_labels = {
+  'program_cohort': 'Cohorte de Programa'|t,
+  'sector_group': 'Grupo Sectorial'|t,
+  'territorial_group': 'Grupo Territorial'|t,
+  'interest_group': 'Grupo de Interés'|t,
+  'mastermind': 'Mastermind'|t,
+} %}
+
+<article class="group-detail" data-group-id="{{ group.id }}">
+  {# Hero Header #}
+  <header class="group-detail__header">
+    {% if group.image.entity %}
+      <div class="group-detail__cover" style="background-image: url('{{ file_url(group.image.entity.fileuri) }}')"></div>
+    {% else %}
+      <div class="group-detail__cover group-detail__cover--default">
+        {{ jaraba_icon('business', 'group', { variant: 'duotone', size: '64px', color: 'corporate' }) }}
+      </div>
+    {% endif %}
+    
+    <div class="group-detail__info">
+      <span class="group-detail__type badge badge--{{ group.group_type }}">
+        {{ type_labels[group.group_type] }}
+      </span>
+      <h1>{{ group.name }}</h1>
+      
+      <div class="group-detail__meta">
+        <span class="meta-item">
+          {{ jaraba_icon('ui', 'users', { size: '16px' }) }}
+          {{ '%count miembros'|t({'%count': group.member_count}) }}
+        </span>
+        {% if group.sector %}
+        <span class="meta-item">
+          {{ jaraba_icon('business', 'sector', { size: '16px' }) }}
+          {{ group.sector }}
+        </span>
+        {% endif %}
+        {% if group.territory %}
+        <span class="meta-item">
+          {{ jaraba_icon('ui', 'location', { size: '16px' }) }}
+          {{ group.territory }}
+        </span>
+        {% endif %}
+      </div>
+      
+      {# Join/Leave Actions #}
+      <div class="group-detail__actions">
+        {% if is_member %}
+          {% if is_admin %}
+            <a href="/groups/{{ group.id }}/manage" class="btn btn--primary">
+              {{ jaraba_icon('actions', 'settings', { size: '16px' }) }}
+              {{ 'Gestionar Grupo'|t }}
+            </a>
+          {% endif %}
+          <button class="btn btn--secondary" data-action="leave-group">
+            {{ 'Abandonar Grupo'|t }}
+          </button>
+        {% else %}
+          <button class="btn btn--primary" data-action="join-group">
+            {{ jaraba_icon('actions', 'plus', { size: '16px' }) }}
+            {% if group.join_policy == 'open' %}
+              {{ 'Unirse al Grupo'|t }}
+            {% else %}
+              {{ 'Solicitar Ingreso'|t }}
+            {% endif %}
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+  
+  {# Description #}
+  {% if group.description.value %}
+  <section class="group-detail__description">
+    <h2>{{ 'Sobre este grupo'|t }}</h2>
+    {{ group.description.value|raw }}
+  </section>
+  {% endif %}
+  
+  {# Main Content Tabs #}
+  <nav class="group-detail__tabs">
+    <button class="tab active" data-tab="discussions">
+      {{ jaraba_icon('ui', 'chat', { size: '16px' }) }}
+      {{ 'Foro'|t }}
+      <span class="count">{{ discussions|length }}</span>
+    </button>
+    <button class="tab" data-tab="events">
+      {{ jaraba_icon('ui', 'calendar', { size: '16px' }) }}
+      {{ 'Eventos'|t }}
+      <span class="count">{{ events|length }}</span>
+    </button>
+    <button class="tab" data-tab="resources">
+      {{ jaraba_icon('ui', 'folder', { size: '16px' }) }}
+      {{ 'Recursos'|t }}
+      <span class="count">{{ resources|length }}</span>
+    </button>
+    <button class="tab" data-tab="members">
+      {{ jaraba_icon('ui', 'users', { size: '16px' }) }}
+      {{ 'Miembros'|t }}
+      <span class="count">{{ members|length }}</span>
+    </button>
+  </nav>
+  
+  {# Tab Content: Discussions #}
+  <section class="tab-content tab-content--discussions active" id="tab-discussions">
+    {% if is_member %}
+      <div class="section-header">
+        <h2>{{ 'Discusiones Recientes'|t }}</h2>
+        <button class="btn btn--primary btn--sm" data-action="new-discussion">
+          {{ jaraba_icon('actions', 'plus', { size: '14px' }) }}
+          {{ 'Nueva Discusión'|t }}
+        </button>
+      </div>
+      
+      {% if discussions %}
+        <div class="discussion-list">
+          {% for discussion in discussions %}
+            <article class="discussion-card {{ discussion.is_pinned ? 'discussion-card--pinned' : '' }}">
+              {% if discussion.is_pinned %}
+                <span class="pin-badge">{{ jaraba_icon('ui', 'pin', { size: '12px' }) }}</span>
+              {% endif %}
+              <h3>
+                <a href="/groups/{{ group.id }}/discussions/{{ discussion.id }}">{{ discussion.title }}</a>
+              </h3>
+              <div class="discussion-card__meta">
+                <span class="category badge badge--{{ discussion.category }}">
+                  {{ discussion.category }}
+                </span>
+                <span class="author">{{ discussion.author_name }}</span>
+                <span class="replies">{{ discussion.reply_count }} {{ 'respuestas'|t }}</span>
+                <span class="date">{{ discussion.created|date('d/m/Y') }}</span>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>{{ 'Aún no hay discusiones. ¡Sé el primero en crear una!'|t }}</p>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="locked-content">
+        <p>{{ 'Únete al grupo para participar en las discusiones.'|t }}</p>
+      </div>
+    {% endif %}
+  </section>
+  
+  {# Tab Content: Events #}
+  <section class="tab-content tab-content--events" id="tab-events">
+    <div class="section-header">
+      <h2>{{ 'Próximos Eventos'|t }}</h2>
+      {% if is_admin %}
+        <button class="btn btn--primary btn--sm" data-action="new-event">
+          {{ jaraba_icon('actions', 'plus', { size: '14px' }) }}
+          {{ 'Crear Evento'|t }}
+        </button>
+      {% endif %}
+    </div>
+    
+    {% if events %}
+      <div class="event-grid">
+        {% for event in events %}
+          <article class="event-card">
+            <div class="event-card__date">
+              <span class="day">{{ event.start_datetime|date('d') }}</span>
+              <span class="month">{{ event.start_datetime|date('M') }}</span>
+            </div>
+            <div class="event-card__content">
+              <h3>{{ event.title }}</h3>
+              <div class="event-card__meta">
+                <span class="time">
+                  {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+                  {{ event.start_datetime|date('H:i') }}
+                </span>
+                <span class="format badge badge--{{ event.format }}">
+                  {{ event.format == 'online' ? 'Online'|t : 'Presencial'|t }}
+                </span>
+                <span class="attendees">
+                  {{ event.current_attendees }}/{{ event.max_attendees ?: '∞' }}
+                </span>
+              </div>
+            </div>
+            <div class="event-card__action">
+              {% if event.is_full %}
+                <span class="badge badge--danger">{{ 'Completo'|t }}</span>
+              {% else %}
+                <button class="btn btn--sm btn--primary" data-action="register-event" data-event-id="{{ event.id }}">
+                  {{ 'Inscribirse'|t }}
+                </button>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>{{ 'No hay eventos programados.'|t }}</p>
+      </div>
+    {% endif %}
+  </section>
+  
+  {# Tab Content: Resources #}
+  <section class="tab-content tab-content--resources" id="tab-resources">
+    {% if is_member %}
+      <div class="section-header">
+        <h2>{{ 'Biblioteca de Recursos'|t }}</h2>
+        <button class="btn btn--primary btn--sm" data-action="upload-resource">
+          {{ jaraba_icon('actions', 'upload', { size: '14px' }) }}
+          {{ 'Subir Recurso'|t }}
+        </button>
+      </div>
+      
+      {% if resources %}
+        <div class="resource-list">
+          {% for resource in resources %}
+            <article class="resource-card">
+              <div class="resource-card__icon">
+                {% if resource.resource_type == 'document' %}
+                  {{ jaraba_icon('ui', 'file-text', { size: '24px', color: 'corporate' }) }}
+                {% elseif resource.resource_type == 'video' %}
+                  {{ jaraba_icon('ui', 'video', { size: '24px', color: 'impulse' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'file', { size: '24px' }) }}
+                {% endif %}
+              </div>
+              <div class="resource-card__content">
+                <h4>{{ resource.title }}</h4>
+                <span class="meta">
+                  {{ resource.uploader_name }} • {{ resource.download_count }} {{ 'descargas'|t }}
+                </span>
+              </div>
+              <a href="{{ resource.download_url }}" class="resource-card__download btn btn--sm btn--secondary">
+                {{ jaraba_icon('actions', 'download', { size: '14px' }) }}
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>{{ 'Aún no hay recursos compartidos en este grupo.'|t }}</p>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="locked-content">
+        <p>{{ 'Únete al grupo para acceder a los recursos compartidos.'|t }}</p>
+      </div>
+    {% endif %}
+  </section>
+  
+  {# Tab Content: Members #}
+  <section class="tab-content tab-content--members" id="tab-members">
+    <div class="section-header">
+      <h2>{{ 'Miembros del Grupo'|t }}</h2>
+    </div>
+    
+    {% if members %}
+      <div class="member-grid">
+        {% for member in members %}
+          <article class="member-card">
+            <div class="member-card__avatar">
+              {{ jaraba_icon('ui', 'user', { size: '32px' }) }}
+            </div>
+            <div class="member-card__info">
+              <span class="name">{{ member.display_name }}</span>
+              <span class="role badge badge--{{ member.role }}">{{ member.role_label }}</span>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+</article>

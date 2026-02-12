@@ -1,0 +1,191 @@
+# CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
+# Patrón 4-YAML obligatorio para compliance con Field UI y Views
+
+# =====================================================
+# ESTRUCTURA: /admin/structure (Field UI)
+# =====================================================
+
+entity.interactive_content.settings:
+  path: '/admin/structure/jaraba-interactive/interactive-content'
+  defaults:
+    _form: '\Drupal\jaraba_interactive\Form\InteractiveContentSettingsForm'
+    _title: 'Configuración de Contenido Interactivo'
+  requirements:
+    _permission: 'administer interactive content'
+  options:
+    _admin_route: TRUE
+
+entity.interactive_result.settings:
+  path: '/admin/structure/jaraba-interactive/interactive-result'
+  defaults:
+    _form: '\Drupal\jaraba_interactive\Form\InteractiveResultSettingsForm'
+    _title: 'Configuración de Resultados'
+  requirements:
+    _permission: 'administer interactive content'
+  options:
+    _admin_route: TRUE
+
+# =====================================================
+# CONTENIDO: /admin/content (Collections)
+# =====================================================
+
+# --- InteractiveContent ---
+entity.interactive_content.collection:
+  path: '/admin/content/interactive-content'
+  defaults:
+    _entity_list: 'interactive_content'
+    _title: 'Contenido Interactivo'
+  requirements:
+    _permission: 'view interactive content'
+  options:
+    _admin_route: TRUE
+
+entity.interactive_content.add_form:
+  path: '/admin/content/interactive-content/add'
+  defaults:
+    _entity_form: 'interactive_content.add'
+    _title: 'Crear Contenido Interactivo'
+  requirements:
+    _permission: 'create interactive content'
+  options:
+    _admin_route: TRUE
+
+entity.interactive_content.canonical:
+  path: '/admin/content/interactive-content/{interactive_content}'
+  defaults:
+    _entity_view: 'interactive_content'
+    _title_callback: '\Drupal\jaraba_interactive\Controller\InteractiveContentController::getTitle'
+  requirements:
+    _permission: 'view interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+    _admin_route: TRUE
+
+entity.interactive_content.edit_form:
+  path: '/admin/content/interactive-content/{interactive_content}/edit'
+  defaults:
+    _entity_form: 'interactive_content.edit'
+    _title: 'Editar Contenido Interactivo'
+  requirements:
+    _permission: 'edit any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+    _admin_route: TRUE
+
+entity.interactive_content.delete_form:
+  path: '/admin/content/interactive-content/{interactive_content}/delete'
+  defaults:
+    _entity_form: 'interactive_content.delete'
+    _title: 'Eliminar Contenido Interactivo'
+  requirements:
+    _permission: 'delete any interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+    _admin_route: TRUE
+
+# --- InteractiveResult ---
+entity.interactive_result.collection:
+  path: '/admin/content/interactive-results'
+  defaults:
+    _entity_list: 'interactive_result'
+    _title: 'Resultados Interactivos'
+  requirements:
+    _permission: 'view interactive results'
+  options:
+    _admin_route: TRUE
+
+entity.interactive_result.canonical:
+  path: '/admin/content/interactive-result/{interactive_result}'
+  defaults:
+    _entity_view: 'interactive_result'
+    _title: 'Detalle de Resultado'
+  requirements:
+    _permission: 'view interactive results'
+  options:
+    parameters:
+      interactive_result:
+        type: entity:interactive_result
+    _admin_route: TRUE
+
+# =====================================================
+# FRONTEND: Portal Limpio (Clean Frontend)
+# =====================================================
+
+jaraba_interactive.player:
+  path: '/interactive/play/{interactive_content}'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\PlayerController::render'
+    _title_callback: '\Drupal\jaraba_interactive\Controller\PlayerController::getTitle'
+  requirements:
+    _permission: 'view interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+    _admin_route: FALSE
+
+jaraba_interactive.dashboard:
+  path: '/interactive'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\InteractiveDashboardController::render'
+    _title: 'Contenido Interactivo'
+  requirements:
+    _permission: 'view interactive content'
+  options:
+    _admin_route: FALSE
+
+# =====================================================
+# API REST
+# =====================================================
+
+jaraba_interactive.api.content:
+  path: '/api/v1/interactive/content/{interactive_content}'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::getContent'
+  methods: [GET]
+  requirements:
+    _permission: 'view interactive content'
+  options:
+    parameters:
+      interactive_content:
+        type: entity:interactive_content
+
+jaraba_interactive.api.xapi:
+  path: '/api/v1/interactive/xapi'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::receiveXapi'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_interactive.api.generate:
+  path: '/api/v1/interactive/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::generate'
+  methods: [POST]
+  requirements:
+    _permission: 'use interactive ai generator'
+
+# --- Smart Import API (Sprint 5) ---
+
+jaraba_interactive.api.import_url:
+  path: '/api/v1/interactive/import-url'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::importFromUrl'
+  methods: [POST]
+  requirements:
+    _permission: 'use interactive ai generator'
+
+jaraba_interactive.api.import_video:
+  path: '/api/v1/interactive/import-video'
+  defaults:
+    _controller: '\Drupal\jaraba_interactive\Controller\ApiController::importFromVideo'
+  methods: [POST]
+  requirements:
+    _permission: 'use interactive ai generator'

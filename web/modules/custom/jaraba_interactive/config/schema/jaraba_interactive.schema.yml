@@ -1,0 +1,20 @@
+# Schema configuration for module settings
+jaraba_interactive.settings:
+  type: config_object
+  label: 'Jaraba Interactive Settings'
+  mapping:
+    default_passing_score:
+      type: integer
+      label: 'Default passing score percentage'
+    max_attempts:
+      type: integer
+      label: 'Maximum attempts allowed'
+    enable_xapi:
+      type: boolean
+      label: 'Enable xAPI tracking'
+    ai_enabled:
+      type: boolean
+      label: 'Enable AI content generation'
+    ai_model:
+      type: string
+      label: 'AI model to use for generation'

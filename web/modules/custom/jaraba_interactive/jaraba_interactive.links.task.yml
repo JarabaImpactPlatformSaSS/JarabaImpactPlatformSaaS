@@ -1,0 +1,29 @@
+# Tabs locales para entidades
+# CRÍTICO: Settings debe tener weight negativo para anclar Field UI tabs
+
+# --- InteractiveContent Settings ---
+jaraba_interactive.interactive_content_settings:
+  title: 'Configuración'
+  route_name: entity.interactive_content.settings
+  base_route: entity.interactive_content.settings
+  weight: -10
+
+# --- InteractiveResult Settings ---
+jaraba_interactive.interactive_result_settings:
+  title: 'Configuración'
+  route_name: entity.interactive_result.settings
+  base_route: entity.interactive_result.settings
+  weight: -10
+
+# --- Collection tabs ---
+entity.interactive_content.collection:
+  title: 'Contenido Interactivo'
+  route_name: entity.interactive_content.collection
+  base_route: system.admin_content
+  weight: 20
+
+entity.interactive_result.collection:
+  title: 'Resultados'
+  route_name: entity.interactive_result.collection
+  base_route: system.admin_content
+  weight: 21

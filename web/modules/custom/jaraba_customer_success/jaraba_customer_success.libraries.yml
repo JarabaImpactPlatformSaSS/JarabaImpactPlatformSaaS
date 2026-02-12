@@ -1,0 +1,11 @@
+dashboard:
+  version: 1.0
+  css:
+    theme:
+      css/customer-success-dashboard.css: {}
+  js:
+    js/customer-success-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

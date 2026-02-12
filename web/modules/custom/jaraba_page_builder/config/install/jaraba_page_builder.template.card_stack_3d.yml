@@ -1,0 +1,90 @@
+langcode: es
+status: true
+dependencies: {}
+id: card_stack_3d
+label: 'Stack de Tarjetas 3D'
+description: 'Carrusel de tarjetas apiladas con efecto 3D rotatorio (estilo Aceternity). Perfecto para testimonios o portfolios.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/card-stack-3d.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    cards:
+      type: array
+      title: 'Tarjetas'
+      items:
+        type: object
+        properties:
+          image:
+            type: string
+            format: image
+          title:
+            type: string
+          description:
+            type: string
+          author:
+            type: string
+          role:
+            type: string
+    animation_speed:
+      type: string
+      enum:
+        - slow
+        - medium
+        - fast
+      default: medium
+    stack_direction:
+      type: string
+      enum:
+        - left
+        - right
+      default: right
+    autoplay:
+      type: boolean
+      default: true
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: gradient
+  required:
+    - cards
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  title: "Lo que dicen nuestros clientes"
+  subtitle: "Historias de éxito que nos inspiran"
+  cards:
+    - image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"
+      title: "Transformación completa"
+      description: "La plataforma revolucionó nuestra forma de trabajar. Resultados increíbles en solo 3 meses."
+      author: "Carlos Martínez"
+      role: "CEO, TechStart"
+    - image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"
+      title: "Productividad al máximo"
+      description: "Duplicamos nuestra eficiencia con las herramientas de automatización. Imprescindible."
+      author: "María García"
+      role: "COO, InnovaGroup"
+    - image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80"
+      title: "Soporte excepcional"
+      description: "El equipo siempre está disponible. La mejor inversión que hemos hecho."
+      author: "Antonio López"
+      role: "Director, DigitalPro"
+    - image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80"
+      title: "Escalabilidad real"
+      description: "Pasamos de 10 a 1000 usuarios sin problemas. Infraestructura sólida."
+      author: "Elena Ruiz"
+      role: "CTO, CloudScale"
+  animation_speed: medium
+  stack_direction: right
+  autoplay: true
+  background: gradient

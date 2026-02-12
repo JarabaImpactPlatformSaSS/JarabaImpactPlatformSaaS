@@ -1,0 +1,133 @@
+langcode: es
+status: true
+dependencies: {}
+id: footer_section
+label: 'Sección Footer'
+description: 'Pie de página con columnas de enlaces, redes sociales y copyright.'
+category: layout
+twig_template: '@jaraba_page_builder/blocks/layout/footer-section.html.twig'
+fields_schema:
+  type: object
+  properties:
+    logo:
+      type: string
+      title: 'Logo'
+      format: image
+    tagline:
+      type: string
+      title: 'Tagline'
+    columns:
+      type: array
+      title: 'Columnas de enlaces'
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          links:
+            type: array
+            items:
+              type: object
+              properties:
+                text:
+                  type: string
+                url:
+                  type: string
+    social_links:
+      type: array
+      title: 'Redes sociales'
+      items:
+        type: object
+        properties:
+          platform:
+            type: string
+            enum:
+              - facebook
+              - twitter
+              - linkedin
+              - instagram
+              - youtube
+          url:
+            type: string
+    newsletter:
+      type: object
+      title: 'Newsletter'
+      properties:
+        enabled:
+          type: boolean
+        title:
+          type: string
+        placeholder:
+          type: string
+    copyright:
+      type: string
+      title: 'Copyright'
+    legal_links:
+      type: array
+      title: 'Enlaces legales'
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+          url:
+            type: string
+    style:
+      type: string
+      title: 'Estilo'
+      enum:
+        - light
+        - dark
+        - gradient
+      default: dark
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  tagline: "Building the future of business, one platform at a time."
+  columns:
+    - title: "Product"
+      links:
+        - text: "Features"
+          url: "#"
+        - text: "Pricing"
+          url: "#"
+        - text: "Integrations"
+          url: "#"
+    - title: "Resources"
+      links:
+        - text: "Documentation"
+          url: "#"
+        - text: "API Reference"
+          url: "#"
+        - text: "Blog"
+          url: "#"
+    - title: "Company"
+      links:
+        - text: "About Us"
+          url: "#"
+        - text: "Careers"
+          url: "#"
+        - text: "Contact"
+          url: "#"
+  social_links:
+    - platform: twitter
+      url: "#"
+    - platform: linkedin
+      url: "#"
+    - platform: facebook
+      url: "#"
+  newsletter:
+    enabled: true
+    title: "Subscribe to our newsletter"
+    placeholder: "Enter your email"
+  copyright: "© 2024 Company Inc. All rights reserved."
+  legal_links:
+    - text: "Privacy Policy"
+      url: "#"
+    - text: "Terms of Service"
+      url: "#"
+  style: dark
+

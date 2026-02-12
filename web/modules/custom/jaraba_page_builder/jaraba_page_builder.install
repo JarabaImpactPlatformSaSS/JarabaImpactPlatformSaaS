@@ -1,0 +1,194 @@
+<?php
+
+/**
+ * @file
+ * Instalación del módulo Page Builder.
+ *
+ * NOTA SOBRE DATOS INICIALES:
+ * El sistema usa fallbacks en los templates Twig que incluyen SVGs inline.
+ * Estos fallbacks se muestran automáticamente cuando no hay HomepageContent.
+ *
+ * Para crear contenido dinámico desde el admin, usar:
+ * - /admin/content/homepage
+ * - /admin/content/feature-cards
+ * - /admin/content/stat-items
+ * - /admin/content/intention-cards
+ *
+ * IMPORTANTE: Las entidades usan campo 'icon' con nombre de icono (ej: 'rocket'),
+ * pero los templates actuales esperan 'icon_svg' con el SVG inline.
+ * Hasta que se integre correctamente jaraba_icon() en el servicio,
+ * es mejor dejar que los templates usen sus fallbacks.
+ */
+
+use Drupal\jaraba_page_builder\Entity\FeatureCard;
+use Drupal\jaraba_page_builder\Entity\StatItem;
+use Drupal\jaraba_page_builder\Entity\IntentionCard;
+use Drupal\jaraba_page_builder\Entity\HomepageContent;
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_page_builder_install() {
+  // Mostrar mensaje de instalación con info sobre fallbacks.
+  \Drupal::messenger()->addStatus(t('El módulo Constructor de Páginas ha sido instalado. La homepage usa contenido por defecto desde los templates. Visita /admin/content/homepage para personalizar.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_page_builder_uninstall() {
+  // Eliminar configuración.
+  \Drupal::configFactory()->getEditable('jaraba_page_builder.settings')->delete();
+}
+
+/**
+ * Helper: Crea contenido inicial de ejemplo para la homepage.
+ *
+ * NOTA: Solo llamar si se ha integrado correctamente jaraba_icon() en el
+ * HomepageDataService para generar icon_svg desde el campo icon.
+ *
+ * Se puede invocar desde Drush:
+ * drush php:eval "_jaraba_page_builder_create_default_content();"
+ *
+ * @return bool
+ *   TRUE si se creó contenido, FALSE si ya existía.
+ */
+function _jaraba_page_builder_create_default_content(): bool {
+  $storage = \Drupal::entityTypeManager()->getStorage('homepage_content');
+
+  // Verificar si ya existe contenido.
+  $existing = $storage->getQuery()
+    ->accessCheck(FALSE)
+    ->range(0, 1)
+    ->execute();
+
+  if (!empty($existing)) {
+    \Drupal::messenger()->addWarning(t('Ya existe contenido de homepage. No se creará contenido duplicado.'));
+    return FALSE;
+  }
+
+  // Crear Feature Cards.
+  $feature_cards = [];
+  $features_data = [
+    ['Configuración en minutos', 'Tu ecosistema digital funcionando desde el día uno, sin código', 'Rápido', 'clock', 0],
+    ['IA integrada', 'Copiloto de carrera, matching inteligente, asistente de emprendimiento y recomendaciones personalizadas', 'Con IA', 'brain', 1],
+    ['Multi-vertical', 'Empleabilidad, emprendimiento, comercio y servicios profesionales y públicos', '4 verticales', 'layers', 2],
+  ];
+
+  foreach ($features_data as $data) {
+    $feature = FeatureCard::create([
+      'title' => $data[0],
+      'description' => ['value' => $data[1], 'format' => 'basic_html'],
+      'badge' => $data[2],
+      'icon' => $data[3],
+      'weight' => $data[4],
+    ]);
+    $feature->save();
+    $feature_cards[] = $feature;
+  }
+
+  // Crear Stat Items.
+  $stat_items = [];
+  $stats_data = [
+    [1500, '+', 'Candidatos activos', 0],
+    [120, '+', 'Empresas', 1],
+    [85, '+', 'Emprendimientos', 2],
+    [98, '%', 'Satisfacción', 3],
+  ];
+
+  foreach ($stats_data as $data) {
+    $stat = StatItem::create([
+      'value' => $data[0],
+      'suffix' => $data[1],
+      'label' => $data[2],
+      'weight' => $data[3],
+    ]);
+    $stat->save();
+    $stat_items[] = $stat;
+  }
+
+  // Crear Intention Cards.
+  $intention_cards = [];
+  $intentions_data = [
+    ['Busco empleo', 'Encuentra ofertas que encajan contigo', 'user-check', '/empleo', 'corporate', 0],
+    ['Busco talento', 'Conecta con candidatos cualificados', 'users', '/talento', 'impulse', 1],
+    ['Quiero emprender', 'Valida tu idea con metodología', 'star', '/emprender', 'innovation', 2],
+    ['Tengo un negocio', 'Vende tus productos o servicios online', 'shopping-bag', '/comercio', 'commerce', 3],
+    ['Soy institución', 'Impulsa programas de desarrollo territorial', 'building', '/instituciones', 'corporate', 4],
+  ];
+
+  foreach ($intentions_data as $data) {
+    $intention = IntentionCard::create([
+      'title' => $data[0],
+      'description' => ['value' => $data[1], 'format' => 'basic_html'],
+      'icon' => $data[2],
+      'url' => $data[3],
+      'color_class' => $data[4],
+      'weight' => $data[5],
+    ]);
+    $intention->save();
+    $intention_cards[] = $intention;
+  }
+
+  // Crear HomepageContent con referencias.
+  $homepage = HomepageContent::create([
+    'title' => 'Homepage Principal',
+    'hero_eyebrow' => 'Plataforma SaaS de Impacto',
+    'hero_title' => 'Impulsa tu ecosistema digital',
+    'hero_subtitle' => ['value' => 'Conecta talento, emprendedores e instituciones en una plataforma inteligente.', 'format' => 'basic_html'],
+    'hero_cta_primary_text' => 'Empezar gratis',
+    'hero_cta_primary_url' => '/user/register',
+    'hero_cta_secondary_text' => 'Ya tengo cuenta',
+    'hero_cta_secondary_url' => '/user/login',
+    'features' => array_map(fn($f) => ['target_id' => $f->id()], $feature_cards),
+    'stats' => array_map(fn($s) => ['target_id' => $s->id()], $stat_items),
+    'intentions' => array_map(fn($i) => ['target_id' => $i->id()], $intention_cards),
+  ]);
+  $homepage->save();
+
+  \Drupal::messenger()->addStatus(t('Contenido inicial de homepage creado exitosamente.'));
+  return TRUE;
+}
+
+/**
+ * Install canvas_data and rendered_html fields for PageContent entity.
+ *
+ * These fields support the GrapesJS Canvas Editor persistence (Gap J v3).
+ */
+function jaraba_page_builder_update_9001(&$sandbox) {
+  $entity_type_id = 'page_content';
+  $fields_to_install = ['canvas_data', 'rendered_html'];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  // Get field storage definitions for the entity type.
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  $installed = [];
+  foreach ($fields_to_install as $field_name) {
+    if (isset($field_definitions[$field_name])) {
+      try {
+        $entity_definition_update_manager->installFieldStorageDefinition(
+          $field_name,
+          $entity_type_id,
+          'jaraba_page_builder',
+          $field_definitions[$field_name]
+        );
+        $installed[] = $field_name;
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_page_builder')->warning('Could not install field @field: @message', [
+          '@field' => $field_name,
+          '@message' => $e->getMessage(),
+        ]);
+      }
+    }
+  }
+
+  if (!empty($installed)) {
+    return t('Installed Canvas Editor fields: @fields', ['@fields' => implode(', ', $installed)]);
+  }
+
+  return t('No Canvas Editor fields needed to be installed.');
+}

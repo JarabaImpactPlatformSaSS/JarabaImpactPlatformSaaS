@@ -1,0 +1,82 @@
+{#
+/**
+ * @file
+ * jaraba-cs-health-card.html.twig - Gauge visual con score y categoría.
+ *
+ * VARIABLES:
+ * - health: entidad CustomerHealth (puede ser NULL)
+ * - tenant: entidad Group del tenant
+ */
+#}
+
+<div class="cs-health-card">
+  {% if health %}
+    {% set score = health.overall_score.value|default(0) %}
+    {% set category = health.category.value|default('neutral') %}
+
+    <div class="cs-health-card__gauge cs-health-card__gauge--{{ category }}">
+      <div class="cs-health-card__score-circle">
+        <span class="cs-health-card__score-value">{{ score }}</span>
+        <span class="cs-health-card__score-max">/100</span>
+      </div>
+    </div>
+
+    <div class="cs-health-card__category">
+      <span class="cs-health-card__badge cs-health-card__badge--{{ category }}">
+        {{ category|replace({'_': ' '})|capitalize }}
+      </span>
+      <span class="cs-health-card__trend cs-health-card__trend--{{ health.trend.value|default('stable') }}">
+        {% if health.trend.value == 'improving' %}{% trans %}Improving{% endtrans %} ↑
+        {% elseif health.trend.value == 'declining' %}{% trans %}Declining{% endtrans %} ↓
+        {% else %}{% trans %}Stable{% endtrans %} →
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="cs-health-card__breakdown">
+      <h3 class="cs-health-card__breakdown-title">{% trans %}Score Breakdown{% endtrans %}</h3>
+      <div class="cs-health-card__components">
+        <div class="cs-health-card__component">
+          <span class="cs-health-card__component-label">{% trans %}Engagement{% endtrans %}</span>
+          <div class="cs-health-card__bar">
+            <div class="cs-health-card__bar-fill" style="width: {{ health.engagement_score.value|default(0) }}%;"></div>
+          </div>
+          <span class="cs-health-card__component-value">{{ health.engagement_score.value|default(0) }}</span>
+        </div>
+        <div class="cs-health-card__component">
+          <span class="cs-health-card__component-label">{% trans %}Adoption{% endtrans %}</span>
+          <div class="cs-health-card__bar">
+            <div class="cs-health-card__bar-fill" style="width: {{ health.adoption_score.value|default(0) }}%;"></div>
+          </div>
+          <span class="cs-health-card__component-value">{{ health.adoption_score.value|default(0) }}</span>
+        </div>
+        <div class="cs-health-card__component">
+          <span class="cs-health-card__component-label">{% trans %}Satisfaction{% endtrans %}</span>
+          <div class="cs-health-card__bar">
+            <div class="cs-health-card__bar-fill" style="width: {{ health.satisfaction_score.value|default(0) }}%;"></div>
+          </div>
+          <span class="cs-health-card__component-value">{{ health.satisfaction_score.value|default(0) }}</span>
+        </div>
+        <div class="cs-health-card__component">
+          <span class="cs-health-card__component-label">{% trans %}Support{% endtrans %}</span>
+          <div class="cs-health-card__bar">
+            <div class="cs-health-card__bar-fill" style="width: {{ health.support_score.value|default(0) }}%;"></div>
+          </div>
+          <span class="cs-health-card__component-value">{{ health.support_score.value|default(0) }}</span>
+        </div>
+        <div class="cs-health-card__component">
+          <span class="cs-health-card__component-label">{% trans %}Growth{% endtrans %}</span>
+          <div class="cs-health-card__bar">
+            <div class="cs-health-card__bar-fill" style="width: {{ health.growth_score.value|default(0) }}%;"></div>
+          </div>
+          <span class="cs-health-card__component-value">{{ health.growth_score.value|default(0) }}</span>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    {% include '@jaraba_customer_success/jaraba-cs-empty-state.html.twig' with {
+      title: 'No health data'|t,
+      message: 'Health score has not been calculated for this tenant yet.'|t,
+    } only %}
+  {% endif %}
+</div>

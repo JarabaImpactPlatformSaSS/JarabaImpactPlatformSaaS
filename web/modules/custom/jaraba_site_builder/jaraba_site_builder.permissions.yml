@@ -1,0 +1,21 @@
+# Permisos del módulo Site Builder
+administer site structure:
+  title: 'Administrar estructura del sitio'
+  description: 'Gestionar árbol de páginas, configuración y redirects del sitio.'
+  restrict access: TRUE
+
+view site structure:
+  title: 'Ver estructura del sitio'
+  description: 'Ver el árbol de páginas y configuración del sitio.'
+
+manage site redirects:
+  title: 'Gestionar redirects'
+  description: 'Crear, editar y eliminar redirects del sitio.'
+
+view site config:
+  title: 'Ver configuración del sitio'
+  description: 'Ver la configuración global del sitio.'
+
+edit site config:
+  title: 'Editar configuración del sitio'
+  description: 'Modificar nombre, logo, redes sociales y datos de contacto.'

@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Template para el bloque Pantalla Dividida.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set split_ratio = content.split_ratio|default('50-50') %}
+{% set min_height = content.min_height|default('fullscreen') %}
+
+<section class="jaraba-split-screen jaraba-split-screen--{{ split_ratio }} jaraba-split-screen--{{ min_height }} jaraba-block jaraba-block--premium">
+  
+  {# Left Section #}
+  <div class="jaraba-split-screen__left jaraba-split-screen__panel jaraba-split-screen__panel--{{ content.left_section.background|default('light') }}"
+       {% if content.left_section.background == 'image' and content.left_section.image %}
+         style="background-image: url('{{ content.left_section.image }}');"
+       {% endif %}>
+    <div class="jaraba-split-screen__panel-content">
+      {% if content.left_section.type == 'content' %}
+        {% if content.left_section.title %}
+          <h2 class="jaraba-split-screen__title">{{ content.left_section.title }}</h2>
+        {% endif %}
+        {% if content.left_section.content %}
+          <div class="jaraba-split-screen__text">{{ content.left_section.content|raw }}</div>
+        {% endif %}
+        {% if content.left_section.cta.text %}
+          <a href="{{ content.left_section.cta.url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+            {{ content.left_section.cta.text }}
+          </a>
+        {% endif %}
+      {% elseif content.left_section.type == 'image' %}
+        <img src="{{ content.left_section.image }}" alt="{{ content.left_section.title }}" class="jaraba-split-screen__image">
+      {% elseif content.left_section.type == 'video' %}
+        <video src="{{ content.left_section.video_url }}" autoplay muted loop playsinline class="jaraba-split-screen__video"></video>
+      {% endif %}
+    </div>
+  </div>
+  
+  {# Right Section #}
+  <div class="jaraba-split-screen__right jaraba-split-screen__panel jaraba-split-screen__panel--{{ content.right_section.background|default('dark') }}"
+       {% if content.right_section.background == 'image' and content.right_section.image %}
+         style="background-image: url('{{ content.right_section.image }}');"
+       {% endif %}>
+    <div class="jaraba-split-screen__panel-content">
+      {% if content.right_section.type == 'content' %}
+        {% if content.right_section.title %}
+          <h2 class="jaraba-split-screen__title">{{ content.right_section.title }}</h2>
+        {% endif %}
+        {% if content.right_section.content %}
+          <div class="jaraba-split-screen__text">{{ content.right_section.content|raw }}</div>
+        {% endif %}
+        {% if content.right_section.cta.text %}
+          <a href="{{ content.right_section.cta.url }}" class="jaraba-btn jaraba-btn--secondary jaraba-btn--lg">
+            {{ content.right_section.cta.text }}
+          </a>
+        {% endif %}
+      {% elseif content.right_section.type == 'image' %}
+        <img src="{{ content.right_section.image }}" alt="{{ content.right_section.title }}" class="jaraba-split-screen__image">
+      {% elseif content.right_section.type == 'video' %}
+        <video src="{{ content.right_section.video_url }}" autoplay muted loop playsinline class="jaraba-split-screen__video"></video>
+      {% endif %}
+    </div>
+  </div>
+  
+</section>

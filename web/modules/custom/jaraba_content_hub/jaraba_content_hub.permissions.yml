@@ -1,0 +1,52 @@
+# Content Hub Permissions
+
+'administer content hub':
+  title: 'Administer Content Hub'
+  description: 'Full administrative access to Content Hub settings and all content.'
+  restrict access: true
+
+'access content article overview':
+  title: 'Access article overview'
+  description: 'View the list of all articles.'
+
+'create content article':
+  title: 'Create articles'
+  description: 'Create new blog articles.'
+
+'edit own content article':
+  title: 'Edit own articles'
+  description: 'Edit articles created by the user.'
+
+'edit any content article':
+  title: 'Edit any article'
+  description: 'Edit any article regardless of author.'
+
+'delete own content article':
+  title: 'Delete own articles'
+  description: 'Delete articles created by the user.'
+
+'delete any content article':
+  title: 'Delete any article'
+  description: 'Delete any article regardless of author.'
+
+'publish content article':
+  title: 'Publish articles'
+  description: 'Publish and unpublish articles.'
+
+'view unpublished content article':
+  title: 'View unpublished articles'
+  description: 'View articles that are not published.'
+
+'administer content categories':
+  title: 'Administer categories'
+  description: 'Create, edit, and delete content categories.'
+
+# AI Writing Assistant permissions
+'use content ai assistant':
+  title: 'Use AI Writing Assistant'
+  description: 'Generate content, headlines, and SEO elements using AI.'
+
+'administer ai generation logs':
+  title: 'Administer AI generation logs'
+  description: 'View and manage AI content generation logs.'
+  restrict access: true

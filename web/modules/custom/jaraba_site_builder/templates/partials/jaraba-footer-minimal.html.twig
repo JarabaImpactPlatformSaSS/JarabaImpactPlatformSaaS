@@ -1,0 +1,47 @@
+{#
+/**
+ * @file
+ * Footer variante: Simple (Canvas v2)
+ *
+ * Footer simple con una línea: copyright + enlaces legales.
+ * Ideal para landing pages y sitios minimalistas.
+ */
+#}
+<footer class="jaraba-footer jaraba-footer--simple" role="contentinfo" data-grapesjs-type="jaraba-footer" data-footer-type="simple">
+  <div class="jaraba-footer__container">
+    <div class="jaraba-footer__simple-row">
+      {# Copyright #}
+      <div class="jaraba-footer__copyright">
+        {{ copyright }}
+      </div>
+
+      {# Enlaces legales #}
+      {% if navigation %}
+        <nav class="jaraba-footer__legal-nav" aria-label="{{ 'Enlaces legales'|t }}">
+          <ul class="jaraba-footer__legal-list">
+            {% for item in navigation %}
+              <li class="jaraba-footer__legal-item">
+                <a href="{{ item.url }}" class="jaraba-footer__legal-link">
+                  {{ item.label }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+
+      {# Redes sociales opcionales #}
+      {% if show_social and social_links %}
+        <div class="jaraba-footer__social">
+          {% for social in social_links %}
+            <a href="{{ social.url }}" class="jaraba-footer__social-link" target="_blank" rel="noopener" aria-label="{{ social.platform }}">
+              <svg class="jaraba-footer__social-icon" width="20" height="20">
+                <use xlink:href="#icon-{{ social.platform|lower }}"></use>
+              </svg>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</footer>

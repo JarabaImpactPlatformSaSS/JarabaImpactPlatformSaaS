@@ -1,0 +1,7 @@
+services:
+  jaraba_page_builder.commands:
+    class: Drupal\jaraba_page_builder\Commands\PageBuilderCommands
+    arguments:
+      - '@jaraba_page_builder.multiblock_migration'
+    tags:
+      - { name: drush.command }

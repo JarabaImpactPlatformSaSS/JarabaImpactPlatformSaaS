@@ -1,0 +1,119 @@
+{#
+/**
+ * @file
+ * Template para el bloque FAQ con Acordeón.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS _page-builder
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set categories = content.categories|default([]) %}
+
+<section class="jaraba-faq jaraba-faq--{{ bg_class }} jaraba-block"
+         aria-labelledby="faq-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-faq__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="faq-title" class="jaraba-block__title">{{ content.title }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Categorías con FAQs #}
+    {% if categories is not empty %}
+      <div class="jaraba-faq__categories">
+        {% for category in categories %}
+          <div class="jaraba-faq__category" data-category="{{ loop.index0 }}">
+            {% if category.name %}
+              <h3 class="jaraba-faq__category-title">
+                {% if category.icon %}
+                  {{ jaraba_icon('ui', category.icon, { variant: 'duotone', size: '24px', color: 'primary' }) }}
+                {% endif %}
+                {{ category.name }}
+              </h3>
+            {% endif %}
+            
+            {% if category.faqs is not empty %}
+              <div class="jaraba-faq__accordion" role="list">
+                {% for faq in category.faqs %}
+                  <details class="jaraba-faq__item" role="listitem">
+                    <summary class="jaraba-faq__question">
+                      <span class="jaraba-faq__question-text">{{ faq.question }}</span>
+                      <span class="jaraba-faq__toggle">
+                        {{ jaraba_icon('ui', 'chevron-down', { size: '20px' }) }}
+                      </span>
+                    </summary>
+                    <div class="jaraba-faq__answer">
+                      {{ faq.answer|raw }}
+                    </div>
+                  </details>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# CTA de Contacto #}
+    {% if content.show_contact_cta %}
+      <div class="jaraba-faq__cta">
+        <p class="jaraba-faq__cta-text">{{ content.contact_text|default('¿No encuentras lo que buscas?'|trans) }}</p>
+        <a href="{{ content.contact_button_url|default('/contacto') }}" 
+           class="jaraba-btn jaraba-btn--primary">
+          {{ content.contact_button_text|default('Contáctanos'|trans) }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {# Schema.org FAQPage JSON-LD para Rich Snippets en Google #}
+  {# @see https://developers.google.com/search/docs/appearance/structured-data/faqpage #}
+  {% set all_faqs = [] %}
+  {% for category in categories %}
+    {% if category.faqs is not empty %}
+      {% for faq in category.faqs %}
+        {% set all_faqs = all_faqs|merge([{
+          'question': faq.question,
+          'answer': faq.answer|striptags
+        }]) %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if all_faqs is not empty %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {% for faq in all_faqs %}
+        {
+          "@type": "Question",
+          "name": {{ faq.question|json_encode|raw }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ faq.answer|json_encode|raw }}
+          }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+  {% endif %}
+
+</section>
+

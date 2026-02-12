@@ -1,0 +1,164 @@
+# =============================================
+# RUTAS DE ADMINISTRACIÓN
+# =============================================
+
+# Settings form.
+jaraba_customer_success.settings:
+  path: '/admin/config/services/customer-success'
+  defaults:
+    _form: '\Drupal\jaraba_customer_success\Form\CustomerSuccessSettingsForm'
+    _title: 'Customer Success Settings'
+  requirements:
+    _permission: 'administer customer success'
+
+# Admin dashboard overview.
+jaraba_customer_success.admin.dashboard:
+  path: '/admin/structure/customer-success'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSAdminController::dashboard'
+    _title: 'Customer Success'
+  requirements:
+    _permission: 'view customer health scores'
+
+# Recalculate health scores action.
+jaraba_customer_success.admin.recalculate:
+  path: '/admin/structure/customer-success/recalculate'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSAdminController::recalculate'
+    _title: 'Recalculate Health Scores'
+  requirements:
+    _permission: 'administer customer success'
+  methods: [GET]
+
+# =============================================
+# RUTAS FRONTEND (/customer-success)
+# =============================================
+
+# CSM Dashboard principal.
+jaraba_customer_success.frontend.dashboard:
+  path: '/customer-success'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::dashboard'
+    _title: 'Customer Success Dashboard'
+  requirements:
+    _permission: 'view customer health scores'
+
+# Detalle de tenant.
+jaraba_customer_success.frontend.tenant_detail:
+  path: '/customer-success/tenant/{group}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::tenantDetail'
+    _title_callback: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::tenantTitle'
+  requirements:
+    _permission: 'view customer health scores'
+  options:
+    parameters:
+      group:
+        type: entity:group
+
+# Playbook executions panel.
+jaraba_customer_success.frontend.playbooks:
+  path: '/customer-success/playbooks'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::playbooks'
+    _title: 'Playbook Executions'
+  requirements:
+    _permission: 'manage playbooks'
+
+# Expansion pipeline.
+jaraba_customer_success.frontend.expansion:
+  path: '/customer-success/expansion'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\CSMDashboardController::expansion'
+    _title: 'Expansion Pipeline'
+  requirements:
+    _permission: 'manage expansion signals'
+
+# =============================================
+# RUTAS API REST
+# =============================================
+
+# GET /api/v1/health-scores
+jaraba_customer_success.api.health_scores:
+  path: '/api/v1/health-scores'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::list'
+  requirements:
+    _permission: 'view customer health scores'
+  methods: [GET]
+  options:
+    _format: json
+
+# GET /api/v1/health-scores/{tenant_id}
+jaraba_customer_success.api.health_score_detail:
+  path: '/api/v1/health-scores/{tenant_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::detail'
+  requirements:
+    _permission: 'view customer health scores'
+    tenant_id: '\d+'
+  methods: [GET]
+  options:
+    _format: json
+
+# GET /api/v1/health-scores/{tenant_id}/history
+jaraba_customer_success.api.health_score_history:
+  path: '/api/v1/health-scores/{tenant_id}/history'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::history'
+  requirements:
+    _permission: 'view customer health scores'
+    tenant_id: '\d+'
+  methods: [GET]
+  options:
+    _format: json
+
+# GET /api/v1/churn-predictions
+jaraba_customer_success.api.churn_predictions:
+  path: '/api/v1/churn-predictions'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::churnPredictions'
+  requirements:
+    _permission: 'view churn predictions'
+  methods: [GET]
+  options:
+    _format: json
+
+# GET /api/v1/expansion-signals
+jaraba_customer_success.api.expansion_signals:
+  path: '/api/v1/expansion-signals'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::expansionSignals'
+  requirements:
+    _permission: 'manage expansion signals'
+  methods: [GET]
+  options:
+    _format: json
+
+# PUT /api/v1/expansion-signals/{expansion_signal}
+jaraba_customer_success.api.expansion_signal_update:
+  path: '/api/v1/expansion-signals/{expansion_signal}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::updateExpansionSignal'
+  requirements:
+    _permission: 'manage expansion signals'
+  methods: [PUT]
+  options:
+    _format: json
+    parameters:
+      expansion_signal:
+        type: entity:expansion_signal
+
+# POST /api/v1/playbooks/{cs_playbook}/execute
+jaraba_customer_success.api.playbook_execute:
+  path: '/api/v1/playbooks/{cs_playbook}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::executePlaybook'
+  requirements:
+    _permission: 'manage playbooks'
+  methods: [POST]
+  options:
+    _format: json
+    parameters:
+      cs_playbook:
+        type: entity:cs_playbook

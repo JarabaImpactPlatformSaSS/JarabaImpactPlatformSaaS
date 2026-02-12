@@ -1,0 +1,12 @@
+services:
+  logger.channel.jaraba_social:
+    parent: logger.channel_base
+    arguments: ['jaraba_social']
+
+  jaraba_social.post_service:
+    class: Drupal\jaraba_social\Service\SocialPostService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.orchestrator'
+      - '@queue'
+      - '@logger.channel.jaraba_social'

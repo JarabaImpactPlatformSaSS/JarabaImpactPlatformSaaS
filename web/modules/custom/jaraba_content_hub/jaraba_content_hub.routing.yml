@@ -1,0 +1,363 @@
+# Settings form
+jaraba_content_hub.settings:
+  path: '/admin/config/content/content-hub'
+  defaults:
+    _form: '\Drupal\jaraba_content_hub\Form\ContentHubSettingsForm'
+    _title: 'Content Hub Settings'
+  requirements:
+    _permission: 'administer content hub'
+
+# Editor Dashboard (Admin - for super admins only)
+jaraba_content_hub.dashboard:
+  path: '/admin/content/content-hub'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ContentHubDashboardController::dashboard'
+    _title: 'Content Hub'
+  requirements:
+    _permission: 'administer content hub'
+
+# Editor Dashboard (Frontend - for tenant editors)
+jaraba_content_hub.dashboard.frontend:
+  path: '/content-hub'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ContentHubDashboardController::dashboardFrontend'
+    _title: 'Content Hub'
+  requirements:
+    _permission: 'access content article overview'
+  options:
+    _admin_route: FALSE
+
+# === Frontend Routes (Tenant Editors - NO admin theme) ===
+
+# Articles List Frontend
+jaraba_content_hub.articles.frontend:
+  path: '/content-hub/articles'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticlesListController::list'
+    _title: 'Articles'
+  requirements:
+    _permission: 'access content article overview'
+  options:
+    _admin_route: FALSE
+
+# Article Add Form Frontend
+jaraba_content_hub.articles.add.frontend:
+  path: '/content-hub/articles/add'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticlesListController::add'
+    _title: 'New Article'
+  requirements:
+    _permission: 'create content article'
+  options:
+    _admin_route: FALSE
+
+# Article Edit Form Frontend
+jaraba_content_hub.articles.edit.frontend:
+  path: '/content-hub/articles/{content_article}/edit'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticlesListController::edit'
+    _title: 'Edit Article'
+  requirements:
+    _entity_access: 'content_article.update'
+  options:
+    _admin_route: FALSE
+    parameters:
+      content_article:
+        type: entity:content_article
+
+# Categories List Frontend
+jaraba_content_hub.categories.frontend:
+  path: '/content-hub/categories'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CategoriesListController::list'
+    _title: 'Categories'
+  requirements:
+    _permission: 'administer content categories'
+  options:
+    _admin_route: FALSE
+
+# Category Add Form Frontend
+jaraba_content_hub.categories.add.frontend:
+  path: '/content-hub/categories/add'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CategoriesListController::add'
+    _title: 'New Category'
+  requirements:
+    _permission: 'administer content categories'
+  options:
+    _admin_route: FALSE
+
+# AI Generation Logs Frontend
+jaraba_content_hub.ai_logs.frontend:
+  path: '/content-hub/ai-logs'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\AiLogsListController::list'
+    _title: 'AI Logs'
+  requirements:
+    _permission: 'administer ai generation logs'
+  options:
+    _admin_route: FALSE
+
+# === Content Article Routes ===
+
+entity.content_article.canonical:
+  path: '/blog/{content_article}'
+  defaults:
+    _entity_view: 'content_article.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'content_article.view'
+  options:
+    parameters:
+      content_article:
+        type: entity:content_article
+
+entity.content_article.collection:
+  path: '/admin/content/articles'
+  defaults:
+    _entity_list: 'content_article'
+    _title: 'Articles'
+  requirements:
+    _permission: 'access content article overview'
+
+entity.content_article.add_form:
+  path: '/admin/content/articles/add'
+  defaults:
+    _entity_form: 'content_article.add'
+    _title: 'Add Article'
+  requirements:
+    _permission: 'create content article'
+
+entity.content_article.edit_form:
+  path: '/admin/content/articles/{content_article}/edit'
+  defaults:
+    _entity_form: 'content_article.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'content_article.update'
+  options:
+    parameters:
+      content_article:
+        type: entity:content_article
+
+entity.content_article.delete_form:
+  path: '/admin/content/articles/{content_article}/delete'
+  defaults:
+    _entity_form: 'content_article.delete'
+    _title: 'Delete Article'
+  requirements:
+    _entity_access: 'content_article.delete'
+  options:
+    parameters:
+      content_article:
+        type: entity:content_article
+
+entity.content_article.settings:
+  path: '/admin/structure/content-hub/article'
+  defaults:
+    _form: '\Drupal\jaraba_content_hub\Form\ContentArticleSettingsForm'
+    _title: 'Article Settings'
+  requirements:
+    _permission: 'administer content hub'
+
+# === Content Category Routes ===
+
+entity.content_category.canonical:
+  path: '/blog/category/{content_category}'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CategoryController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'content_category.view'
+  options:
+    parameters:
+      content_category:
+        type: entity:content_category
+
+entity.content_category.collection:
+  path: '/admin/structure/content-hub/categories'
+  defaults:
+    _entity_list: 'content_category'
+    _title: 'Categories'
+  requirements:
+    _permission: 'administer content categories'
+
+entity.content_category.add_form:
+  path: '/admin/structure/content-hub/categories/add'
+  defaults:
+    _entity_form: 'content_category.add'
+    _title: 'Add Category'
+  requirements:
+    _permission: 'administer content categories'
+
+entity.content_category.edit_form:
+  path: '/admin/structure/content-hub/categories/{content_category}/edit'
+  defaults:
+    _entity_form: 'content_category.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'content_category.update'
+  options:
+    parameters:
+      content_category:
+        type: entity:content_category
+
+entity.content_category.delete_form:
+  path: '/admin/structure/content-hub/categories/{content_category}/delete'
+  defaults:
+    _entity_form: 'content_category.delete'
+    _title: 'Delete Category'
+  requirements:
+    _entity_access: 'content_category.delete'
+  options:
+    parameters:
+      content_category:
+        type: entity:content_category
+
+# === Blog Public Routes ===
+
+jaraba_content_hub.blog:
+  path: '/blog'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\BlogController::index'
+    _title: 'Blog'
+  requirements:
+    _permission: 'access content'
+
+# === REST API Routes ===
+
+jaraba_content_hub.api.articles.list:
+  path: '/api/v1/content/articles'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_content_hub.api.articles.get:
+  path: '/api/v1/content/articles/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_content_hub.api.articles.create:
+  path: '/api/v1/content/articles'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleApiController::createArticle'
+  methods: [POST]
+  requirements:
+    _permission: 'create content article'
+
+jaraba_content_hub.api.articles.update:
+  path: '/api/v1/content/articles/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit any content article'
+
+jaraba_content_hub.api.articles.publish:
+  path: '/api/v1/content/articles/{uuid}/publish'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleApiController::publish'
+  methods: [POST]
+  requirements:
+    _permission: 'publish content article'
+
+# === AI Writing Assistant API Routes ===
+
+jaraba_content_hub.api.ai.outline:
+  path: '/api/v1/content/ai/outline'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::generateOutline'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.expand:
+  path: '/api/v1/content/ai/expand-section'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::expandSection'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.headline:
+  path: '/api/v1/content/ai/optimize-headline'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::optimizeHeadline'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.seo:
+  path: '/api/v1/content/ai/improve-seo'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::improveSeo'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.full_article:
+  path: '/api/v1/content/ai/full-article'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::generateFullArticle'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.create_draft:
+  path: '/api/v1/content/ai/create-draft'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::createDraft'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+jaraba_content_hub.api.ai.apply_seo:
+  path: '/api/v1/content/ai/articles/{articleId}/apply-seo'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\WritingAssistantController::applySeoToArticle'
+  methods: [POST]
+  requirements:
+    _permission: 'use content ai assistant'
+
+# AI Generation Logs (Admin)
+jaraba_content_hub.ai_logs:
+  path: '/admin/reports/ai-generations'
+  defaults:
+    _entity_list: 'ai_generation_log'
+    _title: 'AI Generation Logs'
+  requirements:
+    _permission: 'administer ai generation logs'
+
+# === F.4 Recommendations API Routes ===
+
+jaraba_content_hub.api.recommendations.related:
+  path: '/api/v1/content/articles/{article_id}/related'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\RecommendationController::getRelated'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    article_id: '\d+'
+
+jaraba_content_hub.api.recommendations.index:
+  path: '/api/v1/content/articles/{article_id}/index'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\RecommendationController::indexArticle'
+  methods: [POST]
+  requirements:
+    _permission: 'administer content articles'
+    article_id: '\d+'
+
+jaraba_content_hub.api.recommendations.reindex:
+  path: '/api/v1/content/reindex-all'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\RecommendationController::reindexAll'
+  methods: [POST]
+  requirements:
+    _permission: 'administer content articles'
+

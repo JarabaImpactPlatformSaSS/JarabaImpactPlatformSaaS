@@ -1,0 +1,87 @@
+{#
+/**
+ * @file
+ * Footer variante: Columns (Canvas v2)
+ *
+ * Footer con columnas dinámicas. Estructura clásica corporativa.
+ * Variables del FooterVariantService:
+ *   - columns: número de columnas (2-5)
+ *   - show_social: mostrar redes sociales
+ *   - show_newsletter: mostrar formulario newsletter
+ *   - copyright: texto copyright
+ *   - social_links: array de enlaces sociales
+ *   - navigation: árbol de navegación footer
+ */
+#}
+<footer class="jaraba-footer jaraba-footer--columns" role="contentinfo" data-grapesjs-type="jaraba-footer" data-footer-type="columns">
+  <div class="jaraba-footer__container">
+    {# Sección principal con columnas #}
+    <div class="jaraba-footer__main">
+      {# Columna Brand #}
+      <div class="jaraba-footer__brand-column">
+        {% if logo %}
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-footer__logo" />
+        {% else %}
+          <span class="jaraba-footer__site-name">{{ site_name }}</span>
+        {% endif %}
+        
+        {% if show_social and social_links %}
+          <div class="jaraba-footer__social">
+            {% for social in social_links %}
+              <a href="{{ social.url }}" class="jaraba-footer__social-link" target="_blank" rel="noopener" aria-label="{{ social.platform }}">
+                <svg class="jaraba-footer__social-icon" width="24" height="24">
+                  <use xlink:href="#icon-{{ social.platform|lower }}"></use>
+                </svg>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {# Columnas de navegación #}
+      {% if navigation %}
+        {% for section in navigation %}
+          <div class="jaraba-footer__nav-column">
+            <h3 class="jaraba-footer__column-title">{{ section.label }}</h3>
+            {% if section.children %}
+              <ul class="jaraba-footer__nav-list">
+                {% for item in section.children %}
+                  <li class="jaraba-footer__nav-item">
+                    <a href="{{ item.url }}" class="jaraba-footer__nav-link">
+                      {{ item.label }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {# Columna Newsletter #}
+      {% if show_newsletter %}
+        <div class="jaraba-footer__newsletter-column">
+          <h3 class="jaraba-footer__column-title">{{ 'Suscríbete'|t }}</h3>
+          <p class="jaraba-footer__newsletter-text">
+            {{ 'Recibe las últimas novedades en tu email.'|t }}
+          </p>
+          <form class="jaraba-footer__newsletter-form" action="/newsletter/subscribe" method="post">
+            <div class="jaraba-footer__newsletter-input-wrapper">
+              <input type="email" name="email" placeholder="{{ 'Tu email'|t }}" required class="jaraba-footer__newsletter-input" />
+              <button type="submit" class="jaraba-footer__newsletter-btn btn btn--primary">
+                {{ 'Suscribir'|t }}
+              </button>
+            </div>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Barra inferior #}
+    <div class="jaraba-footer__bottom">
+      <div class="jaraba-footer__copyright">
+        {{ copyright }}
+      </div>
+    </div>
+  </div>
+</footer>

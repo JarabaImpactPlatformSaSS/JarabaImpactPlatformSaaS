@@ -1,0 +1,44 @@
+/**
+ * @file
+ * Pricing Toggle - Estilos para switch mensual/anual.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * @package jaraba_page_builder
+ */
+
+// ============================================================================
+// PRICING TOGGLE COMPONENT
+// Toggle de facturación mensual/anual con estados activos
+// ============================================================================
+
+.jaraba-pricing--toggle {
+    text-align: center;
+    padding: var(--ej-spacing-lg, 2rem);
+    font-family: var(--ej-font-family, Inter, sans-serif);
+}
+
+// Opciones del toggle
+.jaraba-pricing-toggle__option {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+
+    &:hover:not(&--active) {
+        color: var(--ej-text-primary, #1e293b);
+        background: rgba(0, 0, 0, 0.04);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ej-color-corporate, #233D63);
+        outline-offset: 2px;
+    }
+
+    // Estado activo
+    &--active {
+        background: var(--ej-color-corporate, #233D63);
+        color: white;
+    }
+}

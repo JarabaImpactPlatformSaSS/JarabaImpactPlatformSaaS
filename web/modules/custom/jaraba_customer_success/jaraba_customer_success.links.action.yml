@@ -1,0 +1,11 @@
+jaraba_customer_success.playbook.add:
+  title: 'Add Playbook'
+  route_name: entity.cs_playbook.add_form
+  appears_on:
+    - entity.cs_playbook.collection
+
+jaraba_customer_success.calculate_scores:
+  title: 'Recalculate Health Scores'
+  route_name: jaraba_customer_success.admin.recalculate
+  appears_on:
+    - jaraba_customer_success.admin.dashboard

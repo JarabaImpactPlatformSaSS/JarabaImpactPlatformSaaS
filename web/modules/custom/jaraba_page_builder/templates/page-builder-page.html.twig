@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Template base para páginas creadas con el Page Builder.
+ *
+ * Este template renderiza el contenido de una página construida
+ * usando bloques del Page Builder. Cada bloque es renderizado
+ * dinámicamente según su tipo y configuración.
+ *
+ * Variables:
+ * - page_content: La entidad PageContent con los datos de la página
+ * - blocks: Array de bloques renderizados
+ * - meta: Metadatos SEO de la página
+ *
+ * @see \Drupal\jaraba_page_builder\Controller\PageContentController
+ */
+#}
+
+<article class="page-builder-page" data-page-id="{{ page_content.id }}">
+  
+  {# Contenido principal con los bloques #}
+  <div class="page-builder-page__content">
+    {% if blocks is not empty %}
+      {% for block in blocks %}
+        <section class="page-builder-block page-builder-block--{{ block.type|default('default') }}"
+                 data-block-id="{{ block.id|default(loop.index) }}">
+          {{ block.rendered|raw }}
+        </section>
+      {% endfor %}
+    {% else %}
+      {# Estado vacío cuando no hay bloques #}
+      <div class="page-builder-page__empty">
+        <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+        </svg>
+        <p>{% trans %}Esta página aún no tiene contenido.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+</article>

@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Template for full article display.
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/related-articles') }}
+
+<article class="content-article content-article--full" data-article-id="{{ article.id }}">
+  {% if article.featured_image %}
+    <div class="content-article__featured-image">
+      <img src="{{ article.featured_image }}" alt="{{ article.title }}" loading="lazy">
+    </div>
+  {% endif %}
+
+  <header class="content-article__header">
+    {% if article.category %}
+      <a href="{{ article.category_url }}" class="content-article__category" style="background-color: {{ article.category_color }}">
+        {{ article.category_name }}
+      </a>
+    {% endif %}
+
+    <h1 class="content-article__title">{{ article.title }}</h1>
+
+    <div class="content-article__meta">
+      <span class="content-article__author">
+        {% trans %}By {{ article.author_name }}{% endtrans %}
+      </span>
+      <span class="content-article__date">
+        {{ article.publish_date|date('d M Y') }}
+      </span>
+      {% if show_reading_time %}
+        <span class="content-article__reading-time">
+          {{ article.reading_time }} {% trans %}min read{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if article.answer_capsule %}
+      <div class="content-article__answer-capsule">
+        <strong>{% trans %}Quick Answer{% endtrans %}:</strong>
+        {{ article.answer_capsule }}
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="content-article__body">
+    {{ article.body|raw }}
+  </div>
+
+  <footer class="content-article__footer">
+    <div class="content-article__share">
+      <span>{% trans %}Share{% endtrans %}:</span>
+      <a href="https://twitter.com/intent/tweet?url={{ article.url|url_encode }}&text={{ article.title|url_encode }}" 
+         target="_blank" rel="noopener" class="content-article__share-link content-article__share-link--twitter">
+        Twitter
+      </a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ article.url|url_encode }}" 
+         target="_blank" rel="noopener" class="content-article__share-link content-article__share-link--linkedin">
+        LinkedIn
+      </a>
+    </div>
+
+    {% if article.ai_generated %}
+      <div class="content-article__ai-badge">
+        {% trans %}Content assisted by AI{% endtrans %}
+      </div>
+    {% endif %}
+  </footer>
+</article>
+
+{# Related Articles Widget #}
+{% include '@ecosistema_jaraba_theme/partials/_related-articles.html.twig' with {
+  article_id: article.id,
+  related_articles: related_articles|default([]),
+  title: 'You might also like'|trans,
+  count: 4,
+  variant: 'grid',
+  show_reading_time: true
+} only %}
+

@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Template wrapper for Content Hub Category Form (frontend).
+ *
+ * Variables:
+ * - form: The entity form render array
+ * - title: Page title
+ * - back_url: URL to go back to list
+ */
+#}
+
+<div class="content-hub-form content-hub-form--category">
+  <header class="content-hub-form__header">
+    <a href="{{ back_url }}" class="btn btn--ghost btn--small">
+      {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+      {% trans %}Back to Categories{% endtrans %}
+    </a>
+    <h1 class="content-hub-form__title">{{ title }}</h1>
+  </header>
+  
+  <div class="content-hub-form__content">
+    {{ form }}
+  </div>
+</div>

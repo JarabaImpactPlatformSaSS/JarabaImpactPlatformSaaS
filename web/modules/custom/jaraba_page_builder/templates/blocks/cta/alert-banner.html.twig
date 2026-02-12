@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Template para el bloque Banner de Alerta.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set type = content.type|default('info') %}
+
+{% set icon_map = {
+  'info': 'info-circle',
+  'success': 'check-circle',
+  'warning': 'alert-triangle',
+  'error': 'x-circle',
+  'neutral': 'bell'
+} %}
+
+<aside class="jaraba-alert jaraba-alert--{{ type }}"
+       role="alert"
+       {% if content.dismissible %}data-dismissible{% endif %}
+       {% if content.persist %}data-persist{% endif %}>
+  <div class="jaraba-alert__inner jaraba-block__container">
+    
+    <span class="jaraba-alert__icon">
+      {{ jaraba_icon('ui', content.icon|default(icon_map[type]), { variant: 'duotone', size: '20px' }) }}
+    </span>
+    
+    <span class="jaraba-alert__message">{{ content.message }}</span>
+    
+    {% if content.cta.text %}
+      <a href="{{ content.cta.url }}" class="jaraba-alert__cta">
+        {{ content.cta.text }}
+        {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+      </a>
+    {% endif %}
+    
+    {% if content.dismissible %}
+      <button type="button" class="jaraba-alert__close" aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '18px' }) }}
+      </button>
+    {% endif %}
+    
+  </div>
+</aside>

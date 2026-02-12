@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Template para el bloque Contador Animado Premium.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient') %}
+{% set style = content.style|default('cards') %}
+{% set duration = content.animation_duration|default(2000) %}
+
+<section class="jaraba-animated-counter jaraba-animated-counter--{{ bg_class }} jaraba-animated-counter--{{ style }} jaraba-block jaraba-block--premium"
+         data-counter-duration="{{ duration }}">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-animated-counter__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.stats is not empty %}
+      <div class="jaraba-animated-counter__grid">
+        {% for stat in content.stats %}
+          <div class="jaraba-counter-stat jaraba-counter-stat--{{ stat.color|default('primary') }}">
+            {% if stat.icon %}
+              <div class="jaraba-counter-stat__icon">
+                {{ jaraba_icon('ui', stat.icon, { variant: 'duotone', size: '32px' }) }}
+              </div>
+            {% endif %}
+            <div class="jaraba-counter-stat__value">
+              {% if stat.prefix %}<span class="jaraba-counter-stat__prefix">{{ stat.prefix }}</span>{% endif %}
+              <span class="jaraba-counter-stat__number" data-target="{{ stat.value }}">0</span>
+              {% if stat.suffix %}<span class="jaraba-counter-stat__suffix">{{ stat.suffix }}</span>{% endif %}
+            </div>
+            <div class="jaraba-counter-stat__label">{{ stat.label }}</div>
+          </div>
+          {% if content.show_separator and not loop.last %}
+            <div class="jaraba-animated-counter__separator"></div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

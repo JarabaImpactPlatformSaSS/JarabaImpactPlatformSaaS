@@ -1,0 +1,319 @@
+/**
+ * @file
+ * Estilos para el bloque Cursos Recomendados.
+ *
+ * Usa tokens de diseño inyectables (--ej-*).
+ *
+ * @ingroup jaraba_page_builder
+ */
+
+.jaraba-recommended-courses {
+    padding: var(--ej-spacing-section, 4rem) 0;
+
+    // === Fondos ===
+    &--light {
+        background: var(--ej-bg-secondary, #f8fafc);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, #1e293b);
+        color: var(--ej-text-on-dark, #f1f5f9);
+
+        .jaraba-course-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        .jaraba-course-card__title a {
+            color: var(--ej-text-on-dark, #f1f5f9);
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg,
+                var(--ej-primary, #3b82f6) 0%,
+                var(--ej-secondary, #8b5cf6) 100%);
+        color: white;
+
+        .jaraba-course-card {
+            background: rgba(255, 255, 255, 0.95);
+        }
+    }
+
+    // === Header ===
+    &__header {
+        text-align: center;
+        margin-bottom: var(--ej-spacing-lg, 2rem);
+    }
+
+    // === Layout Grid ===
+    &--grid &__items {
+        display: grid;
+        gap: var(--ej-spacing-md, 1.5rem);
+
+        &--2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &--3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        &--4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 1024px) {
+            &--4 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            &--3,
+            &--4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            &--2,
+            &--3,
+            &--4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+
+    // === Layout Carousel ===
+    &--carousel &__items {
+        display: flex;
+        gap: var(--ej-spacing-md, 1.5rem);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        padding-bottom: var(--ej-spacing-sm, 1rem);
+
+        // Ocultar scrollbar pero mantener funcionalidad
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .jaraba-course-card {
+            flex: 0 0 calc(33.333% - 1rem);
+            scroll-snap-align: start;
+
+            @media (max-width: 1024px) {
+                flex: 0 0 calc(50% - 0.75rem);
+            }
+
+            @media (max-width: 640px) {
+                flex: 0 0 calc(100% - 0.5rem);
+            }
+        }
+    }
+
+    // === Controles Carousel ===
+    &__controls {
+        display: flex;
+        justify-content: center;
+        gap: var(--ej-spacing-sm, 1rem);
+        margin-top: var(--ej-spacing-md, 1.5rem);
+    }
+
+    &__control {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--ej-bg-primary, white);
+        border: 1px solid var(--ej-border-color, #e2e8f0);
+        color: var(--ej-text-secondary, #64748b);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: var(--ej-primary, #3b82f6);
+            color: white;
+            border-color: var(--ej-primary, #3b82f6);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // === Empty State ===
+    &__empty {
+        text-align: center;
+        padding: var(--ej-spacing-xl, 3rem);
+        color: var(--ej-text-muted, #94a3b8);
+
+        svg {
+            margin-bottom: var(--ej-spacing-sm, 1rem);
+            opacity: 0.5;
+        }
+    }
+}
+
+// === Course Card Premium ===
+.jaraba-course-card--premium {
+    background: var(--ej-bg-primary, white);
+    border-radius: var(--ej-radius-lg, 12px);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        transform: translateY(-4px);
+
+        .jaraba-course-card__image-wrapper img {
+            transform: scale(1.05);
+        }
+    }
+
+    .jaraba-course-card__image-wrapper {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+    }
+
+    .jaraba-course-card__placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        color: var(--ej-text-muted, #94a3b8);
+    }
+
+    .jaraba-course-card__level {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+
+        &--beginner {
+            background: #10b981;
+            color: white;
+        }
+
+        &--intermediate {
+            background: #f59e0b;
+            color: white;
+        }
+
+        &--advanced {
+            background: #ef4444;
+            color: white;
+        }
+    }
+
+    .jaraba-course-card__body {
+        padding: var(--ej-spacing-md, 1.5rem);
+    }
+
+    .jaraba-course-card__category {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--ej-primary, #3b82f6);
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+    }
+
+    .jaraba-course-card__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.4;
+
+        a {
+            color: var(--ej-text-primary, #1e293b);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--ej-primary, #3b82f6);
+            }
+        }
+    }
+
+    .jaraba-course-card__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--ej-text-secondary, #64748b);
+        margin-bottom: 12px;
+    }
+
+    .jaraba-course-card__meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .jaraba-course-card__instructor {
+        font-size: 13px;
+        color: var(--ej-text-secondary, #64748b);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .jaraba-course-card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid var(--ej-border-color, #e2e8f0);
+    }
+
+    .jaraba-course-card__price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ej-primary, #3b82f6);
+    }
+
+    .jaraba-course-card__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ej-primary, #3b82f6);
+        text-decoration: none;
+        transition: gap 0.2s ease;
+
+        &:hover {
+            gap: 10px;
+        }
+    }
+}

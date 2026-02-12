@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Header variante: Compact (Canvas v2)
+ *
+ * Header compacto con altura reducida. Logo + menú en línea.
+ * Perfecto para sitios con mucho contenido visible.
+ */
+#}
+{% set header_classes = [
+  'jaraba-header',
+  'jaraba-header--compact',
+  sticky ? 'jaraba-header--sticky',
+  transparent ? 'jaraba-header--transparent',
+] %}
+
+<header class="{{ header_classes|join(' ')|trim }}" role="banner" data-grapesjs-type="jaraba-header" data-header-type="compact">
+  <div class="jaraba-header__container jaraba-header__container--compact">
+    {# Logo / Brand #}
+    <div class="jaraba-header__brand jaraba-header__brand--compact">
+      {% if logo %}
+        <a href="/" class="jaraba-header__logo-link" rel="home">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="jaraba-header__logo jaraba-header__logo--sm" />
+        </a>
+      {% else %}
+        <a href="/" class="jaraba-header__site-name jaraba-header__site-name--compact" rel="home">
+          {{ site_name }}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Navegación inline #}
+    <nav class="jaraba-header__nav jaraba-header__nav--inline" aria-label="{{ 'Navegación principal'|t }}">
+      {% if navigation %}
+        <ul class="jaraba-header__menu jaraba-header__menu--inline">
+          {% for item in navigation %}
+            <li class="jaraba-header__menu-item">
+              <a href="{{ item.url }}" class="jaraba-header__menu-link jaraba-header__menu-link--compact">
+                {{ item.label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    {# CTA compacto #}
+    {% if cta_text and cta_url %}
+      <a href="{{ cta_url }}" class="jaraba-header__cta btn btn--primary btn--sm">
+        {{ cta_text }}
+      </a>
+    {% endif %}
+
+    {# Mobile toggle #}
+    <button class="jaraba-header__mobile-toggle" aria-label="{{ 'Abrir menú'|t }}" aria-expanded="false">
+      <span class="jaraba-header__hamburger"></span>
+    </button>
+  </div>
+</header>

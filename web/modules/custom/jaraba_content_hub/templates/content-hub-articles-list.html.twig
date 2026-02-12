@@ -1,0 +1,148 @@
+{#
+/**
+ * @file
+ * Template for Content Hub Articles List (frontend - tenant editors).
+ *
+ * Variables:
+ * - articles: Array of article data with title, status, author, etc.
+ * - stats: Array with total, published, drafts counts
+ * - current_filter: Current active filter (all, published, draft)
+ * - search_query: Current search query
+ * - pager: Pager render array
+ * - back_url: URL to go back to dashboard
+ * - add_url: URL to add new article
+ *
+ * @see docs/00_DIRECTRICES_PROYECTO.md section 2.2.2 (Plantillas Twig Limpias)
+ */
+#}
+
+<div class="content-hub-page content-hub-page--articles">
+  {# Header con breadcrumb y acción principal #}
+  <header class="content-hub-page__header">
+    <div class="content-hub-page__nav">
+      <a href="{{ back_url }}" class="btn btn--ghost btn--small">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+        {% trans %}Back to Dashboard{% endtrans %}
+      </a>
+    </div>
+    <div class="content-hub-page__title-row">
+      <h1 class="content-hub-page__title">{% trans %}Articles{% endtrans %}</h1>
+      <a href="{{ add_url }}" 
+         class="btn btn--primary"
+         data-slide-panel="large"
+         data-slide-panel-title="{% trans %}New Article{% endtrans %}">
+        {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+        {% trans %}New Article{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# Stats summary #}
+  <div class="content-hub-page__stats">
+    <a href="?status=" class="stat-badge {{ current_filter == 'all' ? 'stat-badge--active' : '' }}">
+      <span class="stat-badge__value">{{ stats.total }}</span>
+      <span class="stat-badge__label">{% trans %}Total{% endtrans %}</span>
+    </a>
+    <a href="?status=published" class="stat-badge {{ current_filter == 'published' ? 'stat-badge--active' : '' }}">
+      <span class="stat-badge__value">{{ stats.published }}</span>
+      <span class="stat-badge__label">{% trans %}Published{% endtrans %}</span>
+    </a>
+    <a href="?status=draft" class="stat-badge {{ current_filter == 'draft' ? 'stat-badge--active' : '' }}">
+      <span class="stat-badge__value">{{ stats.drafts }}</span>
+      <span class="stat-badge__label">{% trans %}Drafts{% endtrans %}</span>
+    </a>
+  </div>
+
+  {# Search bar #}
+  <div class="content-hub-page__filters">
+    <form method="get" class="search-form">
+      {% if current_filter != 'all' %}
+        <input type="hidden" name="status" value="{{ current_filter }}">
+      {% endif %}
+      <div class="search-form__field">
+        {{ jaraba_icon('ui', 'search', { size: '18px' }) }}
+        <input type="search" 
+               name="q" 
+               value="{{ search_query }}"
+               placeholder="{% trans %}Search articles...{% endtrans %}"
+               class="search-form__input">
+      </div>
+      <button type="submit" class="btn btn--secondary btn--small">{% trans %}Search{% endtrans %}</button>
+    </form>
+  </div>
+
+  {# Articles table #}
+  <div class="content-hub-page__content">
+    {% if articles is not empty %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Title{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+            <th>{% trans %}Category{% endtrans %}</th>
+            <th>{% trans %}Author{% endtrans %}</th>
+            <th>{% trans %}Modified{% endtrans %}</th>
+            <th class="data-table__actions">{% trans %}Actions{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for article in articles %}
+            <tr>
+              <td>
+                <a href="{{ article.edit_url }}" 
+                   class="data-table__title"
+                   data-slide-panel="large"
+                   data-slide-panel-title="{% trans %}Edit Article{% endtrans %}">
+                  {{ article.title }}
+                </a>
+              </td>
+              <td>
+                <span class="status-badge status-badge--{{ article.status }}">
+                  {{ article.status_label }}
+                </span>
+              </td>
+              <td>{{ article.category }}</td>
+              <td>{{ article.author }}</td>
+              <td>{{ article.changed|date('d/m/Y H:i') }}</td>
+              <td class="data-table__actions">
+                <a href="{{ article.view_url }}" 
+                   class="btn btn--ghost btn--small"
+                   target="_blank"
+                   title="{% trans %}View{% endtrans %}">
+                  {{ jaraba_icon('ui', 'eye', { size: '16px' }) }}
+                </a>
+                <a href="{{ article.edit_url }}"
+                   class="btn btn--ghost btn--small"
+                   data-slide-panel="large"
+                   data-slide-panel-title="{% trans %}Edit Article{% endtrans %}"
+                   title="{% trans %}Edit{% endtrans %}">
+                  {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# Pager #}
+      {% if pager %}
+        <div class="content-hub-page__pager">
+          {{ pager }}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">
+        {{ jaraba_icon('ui', 'document', { size: '48px', color: 'azul-corporativo' }) }}
+        <h3>{% trans %}No articles found{% endtrans %}</h3>
+        <p>{% trans %}Create your first article to get started.{% endtrans %}</p>
+        <a href="{{ add_url }}" 
+           class="btn btn--primary"
+           data-slide-panel="large"
+           data-slide-panel-title="{% trans %}New Article{% endtrans %}">
+          {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+          {% trans %}New Article{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

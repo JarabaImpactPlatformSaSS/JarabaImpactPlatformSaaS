@@ -1,0 +1,18 @@
+name: 'Jaraba Content Hub'
+type: module
+description: 'AI-powered content hub with blog, articles, and newsletter integration.'
+package: Jaraba SaaS
+core_version_requirement: ^10 || ^11
+php: 8.2
+
+dependencies:
+  - drupal:text
+  - drupal:file
+  - drupal:user
+  - drupal:datetime
+  - drupal:views
+  - drupal:field_ui
+  - drupal:options
+  - group:group
+
+configure: jaraba_content_hub.settings

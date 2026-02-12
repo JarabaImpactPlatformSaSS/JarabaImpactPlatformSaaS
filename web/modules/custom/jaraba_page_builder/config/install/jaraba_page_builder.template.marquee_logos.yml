@@ -1,0 +1,130 @@
+langcode: es
+status: true
+dependencies: {}
+id: marquee_logos
+label: 'Marquee de Logos (Magic UI)'
+description: 'Carrusel infinito de logos de clientes o partners con animación suave.'
+category: social_proof
+twig_template: '@jaraba_page_builder/blocks/premium/marquee-logos.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título de la sección'
+      maxLength: 100
+      default: 'Empresas que confían en nosotros'
+    subtitle:
+      type: text
+      title: 'Subtítulo'
+      rows: 2
+    logos:
+      type: array
+      title: 'Logos'
+      description: 'Logos de empresas o partners.'
+      minItems: 5
+      maxItems: 20
+      itemLabel: 'logo'
+      items:
+        type: object
+        properties:
+          image:
+            type: image
+            title: 'Imagen del logo'
+            description: 'Logo en formato PNG o SVG, fondo transparente recomendado.'
+          alt_text:
+            type: string
+            title: 'Texto alternativo'
+            description: 'Nombre de la empresa para accesibilidad.'
+            maxLength: 100
+          url:
+            type: url
+            title: 'Enlace (opcional)'
+            description: 'URL del sitio web de la empresa.'
+        required:
+          - image
+          - alt_text
+    direction:
+      type: select
+      title: 'Dirección de movimiento'
+      enum:
+        - left
+        - right
+      enumLabels:
+        - 'Hacia la izquierda'
+        - 'Hacia la derecha'
+      default: left
+    speed:
+      type: select
+      title: 'Velocidad'
+      enum:
+        - slow
+        - normal
+        - fast
+      enumLabels:
+        - 'Lenta (60s)'
+        - 'Normal (40s)'
+        - 'Rápida (20s)'
+      default: normal
+    pause_on_hover:
+      type: boolean
+      title: 'Pausar al pasar el ratón'
+      default: true
+    grayscale:
+      type: boolean
+      title: 'Logos en escala de grises'
+      description: 'Mostrar logos en gris y colorear al pasar el ratón.'
+      default: true
+    rows:
+      type: select
+      title: 'Filas de logos'
+      enum:
+        - '1'
+        - '2'
+      enumLabels:
+        - 'Una fila'
+        - 'Dos filas (direcciones opuestas)'
+      default: '1'
+    background:
+      type: select
+      title: 'Fondo'
+      enum:
+        - transparent
+        - light
+        - dark
+      enumLabels:
+        - 'Transparente'
+        - 'Claro'
+        - 'Oscuro'
+      default: transparent
+  required:
+    - logos
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: "/modules/custom/jaraba_page_builder/images/previews/marquee-logos.png"
+weight: 120
+preview_data:
+  title: "Trusted by Leading Companies"
+  subtitle: "Join thousands of businesses that rely on our platform"
+  logos:
+    - image: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
+      alt_text: "Google"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+      alt_text: "Amazon"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+      alt_text: "Microsoft"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+      alt_text: "Apple"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+      alt_text: "Netflix"
+    - image: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_of_YouTube_%282015-2017%29.svg"
+      alt_text: "YouTube"
+  direction: left
+  speed: normal
+  pause_on_hover: true
+  grayscale: true
+  rows: "1"
+  background: transparent
+

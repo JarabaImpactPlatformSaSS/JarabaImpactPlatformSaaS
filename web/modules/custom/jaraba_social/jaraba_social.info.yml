@@ -1,0 +1,9 @@
+name: Jaraba Social
+type: module
+description: 'AI Social Manager: gestión de publicaciones en redes sociales con IA.'
+core_version_requirement: ^10 || ^11
+package: Jaraba Marketing
+dependencies:
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_ai_agents:jaraba_ai_agents

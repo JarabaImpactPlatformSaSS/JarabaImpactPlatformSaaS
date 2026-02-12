@@ -1,0 +1,322 @@
+/**
+ * @file
+ * Estilos para el generador de campos con IA.
+ *
+ * PROPÓSITO:
+ * Define los estilos del botón "✨ Generar" y el modal de generación.
+ * Sigue las variables CSS del tema Jaraba (--ej-*).
+ *
+ * ESPECIFICACIÓN: Gap 1 - Plan Elevación Clase Mundial
+ */
+
+// ==========================================================================
+// Variables locales
+// ==========================================================================
+
+$ai-primary-color: var(--ej-color-innovation, #00A9A5);
+$ai-primary-hover: var(--ej-color-innovation-dark, #008F8C);
+$ai-secondary-color: var(--ej-color-corporate, #233D63);
+$ai-success-color: var(--ej-color-success, #28a745);
+$ai-success-hover: var(--ej-color-success-dark, #1e7e34);
+$ai-error-color: var(--ej-color-danger, #dc3545);
+$ai-text-color: var(--ej-text-primary, #333);
+$ai-bg-color: var(--ej-bg-surface, #fff);
+$ai-border-radius: var(--ej-border-radius, 8px);
+$ai-shadow: var(--ej-shadow-modal, 0 4px 24px rgba(0, 0, 0, 0.15));
+
+// ==========================================================================
+// Botón de generación
+// ==========================================================================
+
+.ai-generate-btn-container {
+    display: inline-flex;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.ai-generate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $ai-primary-color;
+    background: transparent;
+    border: 1px solid $ai-primary-color;
+    border-radius: $ai-border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: $ai-primary-color;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    &:focus {
+        outline: 2px solid $ai-primary-color;
+        outline-offset: 2px;
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    .ai-icon {
+        font-size: 1rem;
+    }
+
+    .ai-label {
+        display: none;
+
+        @media (min-width: 768px) {
+            display: inline;
+        }
+    }
+}
+
+// ==========================================================================
+// Modal overlay
+// ==========================================================================
+
+.ai-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 9998;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+// ==========================================================================
+// Modal principal
+// ==========================================================================
+
+.ai-generate-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    background: $ai-bg-color;
+    border-radius: $ai-border-radius;
+    box-shadow: $ai-shadow;
+    z-index: 9999;
+    overflow: hidden;
+    animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+// Header del modal
+.ai-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, $ai-secondary-color, $ai-primary-color);
+    color: #fff;
+
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+}
+
+.ai-modal-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+// Body del modal
+.ai-modal-body {
+    padding: 1.25rem;
+    max-height: calc(90vh - 150px);
+    overflow-y: auto;
+}
+
+.ai-form-group {
+    margin-bottom: 1rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: $ai-text-color;
+    }
+}
+
+.ai-select,
+.ai-textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: $ai-border-radius;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: $ai-primary-color;
+        box-shadow: 0 0 0 3px rgba($ai-primary-color, 0.15);
+    }
+}
+
+.ai-textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+// Información de contexto
+.ai-context-info {
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: $ai-border-radius;
+    margin-bottom: 1rem;
+
+    small {
+        color: #666;
+        line-height: 1.5;
+    }
+}
+
+// Área de preview
+.ai-preview-area {
+    margin-top: 1rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: $ai-secondary-color;
+    }
+}
+
+.ai-preview-content {
+    padding: 1rem;
+    background: #f0faf9;
+    border: 1px solid $ai-primary-color;
+    border-radius: $ai-border-radius;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 60px;
+    white-space: pre-wrap;
+}
+
+.ai-error {
+    color: $ai-error-color;
+}
+
+// Footer del modal
+.ai-modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 1rem 1.25rem;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+// Botones del modal
+.ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    border-radius: $ai-border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.ai-btn-primary {
+    background: $ai-primary-color;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+        background: $ai-primary-hover;
+        transform: translateY(-1px);
+    }
+}
+
+.ai-btn-secondary {
+    background: transparent;
+    color: #666;
+    border: 1px solid #ddd;
+
+    &:hover:not(:disabled) {
+        background: #f0f0f0;
+    }
+}
+
+.ai-btn-success {
+    background: $ai-success-color;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+        background: $ai-success-hover;
+        transform: translateY(-1px);
+    }
+}
+
+// ==========================================================================
+// Feedback visual en campo
+// ==========================================================================
+
+.ai-field-updated {
+    animation: aiUpdatePulse 0.5s ease;
+    box-shadow: 0 0 0 3px rgba($ai-primary-color, 0.3) !important;
+}
+
+@keyframes aiUpdatePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba($ai-primary-color, 0.5);
+    }
+
+    100% {
+        box-shadow: 0 0 0 8px rgba($ai-primary-color, 0);
+    }
+}

@@ -1,0 +1,13 @@
+jaraba_customer_success.settings:
+  title: 'Customer Success'
+  description: 'Configure customer success health scores, playbooks and alerts.'
+  parent: system.admin_config_services
+  route_name: jaraba_customer_success.settings
+  weight: 30
+
+jaraba_customer_success.admin_dashboard:
+  title: 'Customer Success'
+  description: 'Health scores, churn predictions and playbooks overview.'
+  parent: system.admin_structure
+  route_name: jaraba_customer_success.admin.dashboard
+  weight: 25

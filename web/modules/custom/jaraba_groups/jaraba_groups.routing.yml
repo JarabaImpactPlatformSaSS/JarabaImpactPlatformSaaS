@@ -1,0 +1,127 @@
+# Groups API Routes
+jaraba_groups.api.groups.list:
+  path: '/api/v1/groups'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+  options:
+    _format: json
+
+jaraba_groups.api.groups.my:
+  path: '/api/v1/groups/my'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::myGroups'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+  options:
+    _format: json
+
+jaraba_groups.api.groups.get:
+  path: '/api/v1/groups/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::get'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_groups.api.groups.join:
+  path: '/api/v1/groups/{id}/join'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::join'
+  methods: [POST]
+  requirements:
+    _permission: 'join collaboration group'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_groups.api.groups.leave:
+  path: '/api/v1/groups/{id}/leave'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::leave'
+  methods: [POST]
+  requirements:
+    _permission: 'join collaboration group'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_groups.api.groups.members:
+  path: '/api/v1/groups/{id}/members'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::listMembers'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_groups.api.groups.discussions:
+  path: '/api/v1/groups/{id}/discussions'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::listDiscussions'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+    id: \d+
+  options:
+    _format: json
+
+jaraba_groups.api.groups.events:
+  path: '/api/v1/groups/{id}/events'
+  defaults:
+    _controller: '\Drupal\jaraba_groups\Controller\GroupApiController::listEvents'
+  methods: [GET]
+  requirements:
+    _permission: 'access groups api'
+    id: \d+
+  options:
+    _format: json
+
+# Settings routes for Field UI
+entity.collaboration_group.settings:
+  path: '/admin/structure/collaboration-group'
+  defaults:
+    _form: 'Drupal\jaraba_groups\Form\CollaborationGroupSettingsForm'
+    _title: 'Configuración de Grupos de Colaboración'
+  requirements:
+    _permission: 'administer collaboration groups'
+
+entity.group_membership.settings:
+  path: '/admin/structure/group-membership'
+  defaults:
+    _form: 'Drupal\jaraba_groups\Form\GroupMembershipSettingsForm'
+    _title: 'Configuración de Membresías'
+  requirements:
+    _permission: 'administer collaboration groups'
+
+entity.group_discussion.settings:
+  path: '/admin/structure/group-discussion'
+  defaults:
+    _form: 'Drupal\jaraba_groups\Form\GroupDiscussionSettingsForm'
+    _title: 'Configuración de Discusiones'
+  requirements:
+    _permission: 'administer collaboration groups'
+
+entity.group_event.settings:
+  path: '/admin/structure/group-event'
+  defaults:
+    _form: 'Drupal\jaraba_groups\Form\GroupEventSettingsForm'
+    _title: 'Configuración de Eventos'
+  requirements:
+    _permission: 'administer collaboration groups'
+
+entity.group_resource.settings:
+  path: '/admin/structure/group-resource'
+  defaults:
+    _form: 'Drupal\jaraba_groups\Form\GroupResourceSettingsForm'
+    _title: 'Configuración de Recursos'
+  requirements:
+    _permission: 'administer collaboration groups'

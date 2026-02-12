@@ -1,0 +1,73 @@
+# Enlaces de menú del módulo Page Builder
+
+jaraba_page_builder.admin:
+  title: 'Constructor de Páginas'
+  description: 'Configuración del constructor de páginas SaaS.'
+  route_name: jaraba_page_builder.admin
+  parent: system.admin_config
+  weight: 50
+
+jaraba_page_builder.settings:
+  title: 'Configuración'
+  route_name: jaraba_page_builder.settings
+  parent: jaraba_page_builder.admin
+  weight: 0
+
+entity.page_template.collection:
+  title: 'Plantillas'
+  description: 'Gestionar plantillas de páginas del Page Builder.'
+  route_name: entity.page_template.collection
+  parent: jaraba_page_builder.admin
+  weight: 10
+
+entity.page_content.collection:
+  title: 'Páginas'
+  description: 'Gestionar páginas creadas con el Page Builder.'
+  route_name: entity.page_content.collection
+  parent: jaraba_page_builder.admin
+  weight: 20
+
+# Field UI en /admin/structure
+entity.homepage_content.settings:
+  title: 'Contenido Homepage'
+  description: 'Configurar campos de contenido de homepage.'
+  route_name: entity.homepage_content.settings
+  parent: system.admin_structure
+  weight: 30
+
+entity.feature_card.settings:
+  title: 'Feature Cards'
+  description: 'Configurar campos de tarjetas de características.'
+  route_name: entity.feature_card.settings
+  parent: system.admin_structure
+  weight: 31
+
+entity.stat_item.settings:
+  title: 'Estadísticas'
+  description: 'Configurar campos de estadísticas.'
+  route_name: entity.stat_item.settings
+  parent: system.admin_structure
+  weight: 32
+
+entity.intention_card.settings:
+  title: 'Intenciones'
+  description: 'Configurar campos de tarjetas de intención.'
+  route_name: entity.intention_card.settings
+  parent: system.admin_structure
+  weight: 33
+
+# Experimentos A/B - Double Navigation Pattern
+entity.page_experiment.settings:
+  title: 'Experimentos A/B'
+  description: 'Configurar campos y presentación de Experimentos A/B.'
+  route_name: entity.page_experiment.settings
+  parent: system.admin_structure
+  weight: 40
+
+entity.experiment_variant.settings:
+  title: 'Variantes de Experimento'
+  description: 'Configurar campos de Variantes de Experimento.'
+  route_name: entity.experiment_variant.settings
+  parent: system.admin_structure
+  weight: 41
+

@@ -1,0 +1,92 @@
+{#
+/**
+ * @file
+ * Template para la consola de pruebas del Copiloto.
+ *
+ * Variables:
+ * - statistics: Estadísticas del conocimiento (faqs_count, policies_count, etc.)
+ * - coverage: Porcentaje de cobertura del conocimiento.
+ *
+ * DIRECTRIZ: Template Twig limpio, sin regiones de Drupal.
+ * Body classes inyectadas via hook_preprocess_html().
+ */
+#}
+
+<div class="knowledge-test-console">
+  {# Header con estadísticas #}
+  <header class="test-console__header">
+    <div class="test-console__title">
+      <h1>{{ 'Probar mi Copiloto'|t }}</h1>
+      <p class="test-console__subtitle">
+        {{ 'Envía preguntas de prueba para ver cómo responde tu asistente IA.'|t }}
+      </p>
+    </div>
+
+    <div class="test-console__stats">
+      <div class="stat-chip">
+        <span class="stat-chip__value">{{ statistics.faqs_count }}</span>
+        <span class="stat-chip__label">{{ 'FAQs'|t }}</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-chip__value">{{ statistics.policies_count }}</span>
+        <span class="stat-chip__label">{{ 'Políticas'|t }}</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-chip__value">{{ statistics.documents_count }}</span>
+        <span class="stat-chip__label">{{ 'Documentos'|t }}</span>
+      </div>
+      <div class="stat-chip stat-chip--coverage">
+        <span class="stat-chip__value">{{ coverage }}%</span>
+        <span class="stat-chip__label">{{ 'Cobertura'|t }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# Área de chat #}
+  <div class="test-console__chat">
+    <div class="chat-messages" id="test-console-messages">
+      <div class="chat-message chat-message--system">
+        <div class="chat-message__content">
+          {{ '¡Hola! Soy tu Copiloto de pruebas. Hazme cualquier pregunta sobre tu negocio para ver cómo respondo con el conocimiento que has configurado.'|t }}
+        </div>
+      </div>
+    </div>
+
+    <form class="chat-input" id="test-console-form">
+      <input
+        type="text"
+        id="test-console-input"
+        class="chat-input__field"
+        placeholder="{{ 'Escribe una pregunta de prueba...'|t }}"
+        autocomplete="off"
+        required
+      >
+      <button type="submit" class="chat-input__submit" id="test-console-submit">
+        {{ jaraba_icon('actions', 'send', { size: '20px' }) }}
+        <span class="visually-hidden">{{ 'Enviar'|t }}</span>
+      </button>
+    </form>
+  </div>
+
+  {# Panel de contexto (opcional, muestra qué fuentes se usaron) #}
+  <aside class="test-console__context" id="test-console-context">
+    <h3>{{ 'Fuentes utilizadas'|t }}</h3>
+    <div class="context-sources" id="context-sources">
+      <p class="context-sources__empty">
+        {{ 'Las fuentes aparecerán aquí después de cada respuesta.'|t }}
+      </p>
+    </div>
+  </aside>
+
+  {# Sugerencias de preguntas #}
+  <div class="test-console__suggestions">
+    <h4>{{ 'Preguntas sugeridas'|t }}</h4>
+    <div class="suggestion-chips">
+      {% for suggestion in suggestions %}
+        <button type="button" class="suggestion-chip" data-question="{{ suggestion }}">
+          {{ suggestion }}
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+</div>

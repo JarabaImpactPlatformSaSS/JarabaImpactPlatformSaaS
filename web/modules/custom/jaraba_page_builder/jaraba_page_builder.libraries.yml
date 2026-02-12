@@ -1,0 +1,419 @@
+# Librerías del módulo Page Builder
+
+# Dashboard principal del Page Builder - Hub Central
+page-builder-dashboard:
+  version: 1.0
+  js:
+    js/page-builder-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+
+page-builder:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-page-builder.css: {}
+  js:
+    js/jaraba-page-builder.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+template-picker:
+  version: 1.x
+  js:
+    js/template-picker.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global
+
+preview:
+  version: 2.x
+  css:
+    theme:
+      css/preview.css: {}
+  js:
+    js/preview-particles.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/alpinejs
+
+
+my-pages:
+  version: 1.x
+  css:
+    theme:
+      css/my-pages.css: {}
+  js:
+    js/my-pages.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Bloques premium - Aceternity UI
+aceternity:
+  version: 1.x
+  css:
+    theme:
+      css/premium/aceternity.css: {}
+  js:
+    js/premium/aceternity-adapter.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Bloques premium - Magic UI
+magic-ui:
+  version: 1.x
+  css:
+    theme:
+      css/premium/magic-ui.css: {}
+  js:
+    js/premium/magic-ui-adapter.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Bloques premium - Efectos interactivos
+premium-blocks:
+  version: 1.x
+  js:
+    js/premium-blocks.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Generación de contenido con IA para Form Builder
+ai-content-generator:
+  version: 1.x
+  js:
+    js/ai-content-generator.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.ajax
+
+# A/B Testing Client - Gap #3 (Doc 168)
+ab-testing:
+  version: 1.x
+  js:
+    js/ab-testing-client.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Generador de campos con IA - Gap 1 Clase Mundial
+ai-field-generator:
+  version: 1.0
+  css:
+    theme:
+      css/ai-field-generator.css: {}
+  js:
+    js/ai-field-generator.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Dashboard visual experimentos A/B - Gap 2 Clase Mundial
+experiment-dashboard:
+  version: 1.0
+  js:
+    js/experiment-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.autocomplete
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+
+# Dashboard de Analytics - Gap C Clase Mundial
+analytics-dashboard:
+  version: 1.0
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
+    js/analytics-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+    - jaraba_heatmap/viewer
+
+# Canvas Editor - Editor Visual Multi-Block con Preview (Gap J evolucionado)
+section-editor:
+  version: 2.0
+  css:
+    theme:
+      css/canvas-editor.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js: { type: external, minified: true }
+    js/section-editor.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/alpinejs
+    - ecosistema_jaraba_theme/slide-panel
+
+# Canvas Editor Visual - Editor lado a lado clase mundial
+canvas-editor:
+  version: 1.0
+  css:
+    theme:
+      css/canvas-editor.css: {}
+      css/variant-selector.css: {}
+  js:
+    js/canvas-editor.js: {}
+    js/variant-selector.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+
+# Diff Visual de Revisiones - Gap G Clase Mundial
+revision-diff:
+  version: 1.0
+  js:
+    js/revision-diff.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global
+
+# Canvas Preview Receiver - Hot-swap de variantes en iframe (Canvas v2)
+# Se carga automáticamente en páginas públicas cuando hay sesión de edición
+canvas-preview-receiver:
+  version: 1.0
+  css:
+    theme:
+      css/canvas-hot-swap.css: {}
+  js:
+    js/canvas-preview-receiver.js: {}
+  dependencies:
+    - core/drupal
+
+# =====================================================================
+# BEHAVIORS: Bloques Interactivos del Page Builder (Sprint PB-1)
+# Cada behavior se carga solo en páginas que usan el bloque correspondiente.
+# Los scripts replican la lógica de los GrapesJS script functions pero como
+# Drupal.behaviors para las páginas publicadas del frontend.
+# =====================================================================
+
+# Behavior: Stats Counter con IntersectionObserver
+block-stats-counter:
+  version: 1.0
+  js:
+    js/behaviors/jaraba-stats-counter.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Behavior: Pricing Toggle mensual/anual
+block-pricing-toggle:
+  version: 1.0
+  js:
+    js/behaviors/jaraba-pricing-toggle.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Behavior: Pestañas de contenido con accesibilidad ARIA
+block-tabs:
+  version: 1.0
+  js:
+    js/behaviors/jaraba-tabs.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Behavior: Countdown Timer en tiempo real
+block-countdown:
+  version: 1.0
+  js:
+    js/behaviors/jaraba-countdown.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Behavior: Timeline con animación scroll-triggered
+block-timeline:
+  version: 1.0
+  js:
+    js/behaviors/jaraba-timeline.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# GrapesJS Canvas Editor - Canvas v3 Constructor Visual Clase Mundial
+# Motor de edición drag-and-drop con inline editing y undo/redo nativo
+# v5.2: Sprint A3 — Drag & Drop Polish (ghost elements, drop zones, toast)
+grapesjs-canvas:
+  version: 5.2
+  css:
+    theme:
+      # GrapesJS core CSS (local, descargado de unpkg.com para evitar CSP)
+      css/grapes.min.css: { minified: true }
+      # FE-07: CSS compilado del tema (main.css eliminado en PERF-02)
+      /themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css: {}
+  js:
+    # GrapesJS core (local, descargado de unpkg.com para evitar CSP)
+    js/vendor/grapes.min.js: { minified: true }
+    # GrapesJS presets y plugins (local, descargado de unpkg.com para evitar CSP)
+    js/vendor/grapesjs-preset-webpage.min.js: { minified: true }
+    js/vendor/grapesjs-blocks-basic.min.js: { minified: true }
+    # Archivos Jaraba custom
+    js/grapesjs-jaraba-canvas.js: {}
+    js/grapesjs-jaraba-thumbnails.js: {}
+    js/grapesjs-jaraba-blocks.js: {}
+    js/grapesjs-jaraba-command-palette.js: {}
+    js/grapesjs-jaraba-partials.js: {}
+    js/grapesjs-jaraba-ai.js: {}
+    js/grapesjs-jaraba-assets.js: {}
+    js/grapesjs-jaraba-seo.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_page_builder/ai-content-generator
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/slide-panel
+
+# Slide-Panel de Configuración de Página (⚙ Página) en Canvas Editor
+page-config:
+  version: 1.0
+  js:
+    js/page-config.js: {}
+  css:
+    theme:
+      css/page-config-panel.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# GrapesJS Onboarding Tour - Guía interactiva primer uso
+grapesjs-onboarding:
+  version: 1.0
+  css:
+    theme:
+      # Driver.js CSS (local, descargado de unpkg.com para evitar CSP)
+      css/vendor/driver.min.css: { minified: true }
+      css/grapesjs-onboarding.css: {}
+  js:
+    https://unpkg.com/driver.js@1.3.1/dist/driver.js.iife.js: { type: external, minified: true }
+    js/grapesjs-onboarding.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/grapesjs-canvas
+
+# GrapesJS Assets Manager - Integración con Media Library
+grapesjs-assets:
+  version: 1.0
+  js:
+    js/grapesjs-jaraba-assets.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+    - jaraba_page_builder/grapesjs-canvas
+
+# GrapesJS Template Marketplace - Catálogo de templates integrado en Canvas Editor
+# Sprint C1: Slide-panel con filtros, búsqueda, badges de plan, e inserción en canvas
+grapesjs-marketplace:
+  version: 1.0
+  js:
+    js/grapesjs-jaraba-marketplace.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+    - jaraba_page_builder/grapesjs-canvas
+
+# GrapesJS Multi-Page Editor - Tabs de páginas tipo IDE en Canvas Editor
+# Sprint C2: Edición multi-página sin abandonar el editor
+grapesjs-multipage:
+  version: 1.0
+  js:
+    js/grapesjs-jaraba-multipage.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_page_builder/grapesjs-canvas
+
+# FAQ Accordion - Interactividad expandir/contraer para bloques FAQ
+# Los estilos están incluidos en jaraba-page-builder.css (compilado desde SCSS)
+# El JS se carga automáticamente en páginas públicas que usan Page Builder content
+faq-accordion:
+  version: 1.0
+  js:
+    js/jaraba-faq-accordion.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+
+# Stats Counter - Contadores animados con Intersection Observer (Dual Architecture)
+stats-counter:
+  version: 1.0
+  js:
+    js/jaraba-stats-counter.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+
+# Pricing Toggle - Switch mensual/anual con ARIA (Dual Architecture)
+pricing-toggle:
+  version: 1.0
+  js:
+    js/jaraba-pricing-toggle.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+
+# Tabs Content - Pestañas con navegación ARIA y soporte teclado (Dual Architecture)
+tabs-content:
+  version: 1.0
+  js:
+    js/jaraba-tabs-content.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+
+# Countdown Timer - Temporizador en tiempo real (Dual Architecture)
+countdown-timer:
+  version: 1.0
+  js:
+    js/jaraba-countdown-timer.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+
+# Timeline - Animación scroll-triggered staggered (Dual Architecture)
+timeline:
+  version: 1.0
+  js:
+    js/jaraba-timeline.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
+

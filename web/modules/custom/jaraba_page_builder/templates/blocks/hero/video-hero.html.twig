@@ -1,0 +1,85 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hero con Video.
+ *
+ * DIRECTRICES:
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ * - Soporta YouTube, Vimeo, y archivos locales
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set video_type = content.video_type|default('youtube') %}
+{% set height_class = content.height|default('fullscreen') %}
+{% set position_class = content.content_position|default('center') %}
+{% set overlay_opacity = content.overlay_opacity|default(60) %}
+
+<section class="jaraba-video-hero jaraba-video-hero--{{ height_class }} jaraba-block"
+         data-block-type="video_hero">
+  
+  {# Video de fondo #}
+  <div class="jaraba-video-hero__video-wrapper">
+    {% if video_type == 'youtube' %}
+      {% set video_id = content.video_url|split('v=')|last|split('&')|first %}
+      <iframe class="jaraba-video-hero__video"
+              src="https://www.youtube.com/embed/{{ video_id }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}&controls=0&showinfo=0"
+              frameborder="0"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              loading="lazy"></iframe>
+    {% elseif video_type == 'vimeo' %}
+      {% set video_id = content.video_url|split('/')|last %}
+      <iframe class="jaraba-video-hero__video"
+              src="https://player.vimeo.com/video/{{ video_id }}?autoplay=1&muted=1&loop=1&background=1"
+              frameborder="0"
+              allow="autoplay"
+              allowfullscreen
+              loading="lazy"></iframe>
+    {% else %}
+      <video class="jaraba-video-hero__video"
+             autoplay muted loop playsinline
+             {% if content.poster_image %}poster="{{ content.poster_image }}"{% endif %}>
+        <source src="{{ content.video_url }}" type="video/mp4">
+      </video>
+    {% endif %}
+    
+    {# Overlay #}
+    <div class="jaraba-video-hero__overlay" 
+         style="--overlay-opacity: {{ overlay_opacity / 100 }}"></div>
+  </div>
+
+  {# Contenido #}
+  <div class="jaraba-block__container">
+    <div class="jaraba-video-hero__content jaraba-video-hero__content--{{ position_class }}">
+      
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h1 class="jaraba-video-hero__title">{{ content.title }}</h1>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-video-hero__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+      
+      <div class="jaraba-video-hero__actions">
+        {% if content.primary_cta.text %}
+          <a href="{{ content.primary_cta.url|default('#') }}" 
+             class="jaraba-btn jaraba-btn--{{ content.primary_cta.style|default('gradient') }} jaraba-btn--lg">
+            {{ content.primary_cta.text }}
+          </a>
+        {% endif %}
+        
+        {% if content.secondary_cta.text %}
+          <a href="{{ content.secondary_cta.url|default('#') }}" 
+             class="jaraba-btn jaraba-btn--ghost jaraba-btn--lg">
+            {{ content.secondary_cta.text }}
+          </a>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</section>

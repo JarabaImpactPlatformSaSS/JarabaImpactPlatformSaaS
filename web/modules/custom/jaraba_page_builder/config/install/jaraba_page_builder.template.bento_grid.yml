@@ -1,0 +1,86 @@
+# Plantilla Premium: Bento Grid (Magic UI)
+# Grid estilo Bento con efectos premium
+
+id: bento_grid
+label: 'Bento Grid'
+description: 'Grid moderno estilo Bento con efectos de brillo y animaciones. Ideal para mostrar features de forma visual.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/premium/magic-ui/bento-grid.html.twig'
+fields_schema:
+  type: object
+  title: 'Bento Grid'
+  properties:
+    section_title:
+      type: string
+      title: 'Título de la Sección'
+      maxLength: 100
+    items:
+      type: array
+      title: 'Items del Grid'
+      maxItems: 6
+      items:
+        type: object
+        properties:
+          size:
+            type: string
+            title: 'Tamaño'
+            enum: [small, medium, large]
+            default: medium
+          icon:
+            type: string
+            title: 'Icono'
+            ui:widget: icon-picker
+          title:
+            type: string
+            title: 'Título'
+            maxLength: 50
+          description:
+            type: string
+            title: 'Descripción'
+            maxLength: 150
+          background_color:
+            type: string
+            title: 'Color de Fondo'
+            ui:widget: color-picker
+          accent_color:
+            type: string
+            title: 'Color de Acento'
+            ui:widget: color-picker
+  required:
+    - items
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/bento-grid.png'
+weight: 100
+preview_data:
+  section_title: "Platform Features"
+  items:
+    - size: large
+      icon: "star"
+      title: "AI-Powered Analytics"
+      description: "Get instant insights with our machine learning engine"
+      background_color: "#1a1a2e"
+      accent_color: "#00d4ff"
+    - size: medium
+      icon: "shield"
+      title: "Enterprise Security"
+      description: "Bank-grade encryption for all your data"
+    - size: medium
+      icon: "bolt"
+      title: "Lightning Fast"
+      description: "Built for speed and scalability"
+    - size: small
+      icon: "users"
+      title: "Collaboration"
+      description: "Real-time team sync"
+    - size: small
+      icon: "fire"
+      title: "Automation"
+      description: "Workflow automation"
+    - size: medium
+      icon: "star"
+      title: "Goal Tracking"
+      description: "Achieve your targets with smart tracking"
+

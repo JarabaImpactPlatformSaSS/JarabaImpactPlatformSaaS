@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * Template para el bloque Banner de Anuncio.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set style = content.style|default('promo') %}
+{% set position = content.position|default('inline') %}
+
+<aside class="jaraba-banner jaraba-banner--{{ style }} jaraba-banner--{{ position }}"
+       role="alert"
+       {% if content.dismissible %}data-dismissible{% endif %}>
+  <div class="jaraba-banner__inner">
+    
+    {% if content.icon %}
+      <span class="jaraba-banner__icon">
+        {{ jaraba_icon('ui', content.icon, { variant: 'duotone', size: '20px' }) }}
+      </span>
+    {% endif %}
+    
+    <span class="jaraba-banner__text">{{ content.text }}</span>
+    
+    {% if content.cta_text %}
+      <a href="{{ content.cta_url }}" class="jaraba-banner__link">
+        {{ content.cta_text }}
+        {{ jaraba_icon('ui', 'arrow-right', { size: '14px' }) }}
+      </a>
+    {% endif %}
+    
+    {% if content.dismissible %}
+      <button type="button" class="jaraba-banner__close" aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '18px' }) }}
+      </button>
+    {% endif %}
+    
+  </div>
+</aside>

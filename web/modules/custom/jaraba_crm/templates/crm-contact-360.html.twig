@@ -1,0 +1,60 @@
+{#
+/**
+ * @file
+ * Vista 360º de un contacto.
+ *
+ * Variables disponibles:
+ * - contact: El contacto.
+ * - company: La empresa asociada.
+ * - activities: Timeline de actividades.
+ * - opportunities: Oportunidades del contacto.
+ */
+#}
+<div class="crm-contact-360">
+  <div class="crm-contact-360__header">
+    <h1 class="crm-contact-360__name">{{ contact.label }}</h1>
+    <div class="crm-contact-360__engagement">
+      <span class="crm-contact-360__score">{{ contact.engagement_score.value }}%</span>
+      <span class="crm-contact-360__score-label">{{ 'Engagement'|t }}</span>
+    </div>
+  </div>
+
+  <div class="crm-contact-360__content">
+    <div class="crm-contact-360__info">
+      <h2>{{ 'Información'|t }}</h2>
+      <dl>
+        <dt>{{ 'Email'|t }}</dt>
+        <dd><a href="mailto:{{ contact.email.value }}">{{ contact.email.value }}</a></dd>
+        {% if contact.phone.value %}
+          <dt>{{ 'Teléfono'|t }}</dt>
+          <dd><a href="tel:{{ contact.phone.value }}">{{ contact.phone.value }}</a></dd>
+        {% endif %}
+        {% if contact.job_title.value %}
+          <dt>{{ 'Cargo'|t }}</dt>
+          <dd>{{ contact.job_title.value }}</dd>
+        {% endif %}
+        {% if company %}
+          <dt>{{ 'Empresa'|t }}</dt>
+          <dd>{{ company.label }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="crm-contact-360__timeline">
+      <h2>{{ 'Actividad'|t }}</h2>
+      {% if activities %}
+        <ul class="crm-timeline">
+          {% for activity in activities %}
+            <li class="crm-timeline__item crm-timeline__item--{{ activity.type.value }}">
+              <span class="crm-timeline__date">{{ activity.activity_date.value|date('d/m/Y') }}</span>
+              <span class="crm-timeline__type">{{ activity.type.value }}</span>
+              <span class="crm-timeline__subject">{{ activity.subject.value }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>{{ 'Sin actividad registrada.'|t }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>

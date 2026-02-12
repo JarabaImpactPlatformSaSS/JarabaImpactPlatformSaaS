@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Template para el bloque Texto Rico.
+ *
+ * DIRECTRICES:
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('transparent') %}
+{% set width_class = content.max_width|default('medium') %}
+{% set align_class = content.alignment|default('left') %}
+
+<section class="jaraba-rich-text jaraba-rich-text--{{ bg_class }} jaraba-block">
+  <div class="jaraba-block__container">
+    <div class="jaraba-rich-text__wrapper jaraba-rich-text__wrapper--{{ width_class }} jaraba-rich-text__wrapper--{{ align_class }}">
+      
+      {% if content.title %}
+        <h2 class="jaraba-rich-text__title">{{ content.title }}</h2>
+      {% endif %}
+      
+      <div class="jaraba-rich-text__content prose">
+        {{ content.content|raw }}
+      </div>
+      
+    </div>
+  </div>
+</section>

@@ -1,0 +1,118 @@
+// ==========================================================================
+// Canvas Hot-Swap - Animaciones para transiciones de variantes
+// ==========================================================================
+//
+// PROPÓSITO:
+// Proporciona animaciones suaves cuando el Canvas Editor hace
+// hot-swap de variantes de header y footer en el iframe preview.
+//
+// DIRECTRIZ:
+// - Usa @use en lugar de @import (Dart Sass moderno)
+// - Variables CSS inyectables para consistencia con el tema
+// - Las animaciones son sutiles y rápidas para no interrumpir
+//
+// @see canvas-preview-receiver.js
+// @see docs/tecnicos/20260203a-178_Page_Builder_Canvas_Visual_v2_Claude.md
+
+// ==========================================================================
+// Variables locales con fallback a variables CSS inyectables
+// ==========================================================================
+
+$hot-swap-duration-out: 0.15s;
+$hot-swap-duration-in: 0.3s;
+
+// ==========================================================================
+// Animaciones de Hot-Swap
+// ==========================================================================
+
+/// Transición de salida - elemento que se está reemplazando.
+.canvas-hot-swap--out {
+    opacity: 0.5;
+    transform: scale(0.98);
+    transition: opacity $hot-swap-duration-out ease-out,
+        transform $hot-swap-duration-out ease-out;
+    pointer-events: none;
+}
+
+/// Transición de entrada - nuevo elemento.
+.canvas-hot-swap--in {
+    animation: canvas-fade-in $hot-swap-duration-in ease-out forwards;
+}
+
+@keyframes canvas-fade-in {
+    from {
+        opacity: 0.7;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ==========================================================================
+// Resaltado de Secciones (cuando se selecciona desde el sidebar)
+// ==========================================================================
+
+/// Sección resaltada desde el Canvas Editor.
+/// Usa variables CSS inyectables del tema.
+.canvas-section-highlighted {
+    position: relative;
+    // Variables inyectables desde UI de Drupal.
+    outline: 3px solid var(--ej-color-corporate, #233D63);
+    outline-offset: 4px;
+    animation: canvas-pulse 1.5s ease-in-out;
+}
+
+@keyframes canvas-pulse {
+
+    0%,
+    100% {
+        outline-color: var(--ej-color-corporate, #233D63);
+        outline-offset: 4px;
+    }
+
+    50% {
+        outline-color: var(--ej-color-innovation, #3B82F6);
+        outline-offset: 8px;
+    }
+}
+
+/// Badge indicador "Editando" (texto traducido via JS).
+/// El texto real se inyecta desde canvas-preview-receiver.js.
+.canvas-section-highlighted::before {
+    content: attr(data-editing-label);
+    position: absolute;
+    top: -28px;
+    left: 8px;
+    background: var(--ej-color-corporate, #233D63);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+// ==========================================================================
+// Estado de Preview Activo
+// ==========================================================================
+
+/// Indicador visual de que la página está en modo preview de edición.
+/// Solo visible cuando el receiver está activo.
+body.canvas-preview-mode::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+            var(--ej-color-corporate, #233D63) 0%,
+            var(--ej-color-innovation, #3B82F6) 50%,
+            var(--ej-color-corporate, #233D63) 100%);
+    z-index: 10000;
+    pointer-events: none;
+}

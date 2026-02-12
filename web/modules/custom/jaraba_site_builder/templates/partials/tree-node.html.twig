@@ -1,0 +1,120 @@
+{#
+/**
+ * @file
+ * Partial para un nodo del árbol de páginas (recursivo).
+ *
+ * Variables:
+ * - node: Datos del nodo
+ * - depth: Profundidad actual
+ * - can_edit: Si el usuario puede editar
+ */
+#}
+
+<li class="site-tree__item{% if node.status != 'published' %} site-tree__item--{{ node.status }}{% endif %}{% if not node.show_in_nav %} site-tree__item--hidden{% endif %}" 
+    data-node-id="{{ node.id }}"
+    data-page-id="{{ node.page_id }}"
+    data-depth="{{ depth }}">
+  
+  <div class="site-tree__node">
+    {# Handle para drag & drop #}
+    {% if can_edit %}
+    <span class="site-tree__handle" title="{{ 'Arrastrar para mover'|t }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+        <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+      </svg>
+    </span>
+    {% endif %}
+
+    {# Expandir/contraer si tiene hijos #}
+    {% if node.children|length > 0 %}
+    <button type="button" class="site-tree__toggle" data-action="toggle" aria-expanded="true" aria-label="{{ 'Expandir/Contraer'|t }}">
+      <svg class="site-tree__toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+    {% else %}
+    <span class="site-tree__toggle-placeholder"></span>
+    {% endif %}
+
+    {# Icono de navegación #}
+    {% if node.nav_icon %}
+    <span class="site-tree__icon">{{ jaraba_icon('ui', node.nav_icon) }}</span>
+    {% endif %}
+
+    {# Título #}
+    <a href="{{ node.page_url }}" class="site-tree__title" target="_blank">
+      {{ node.nav_title }}
+    </a>
+
+    {# Badges de estado #}
+    <span class="site-tree__badges">
+      {% if node.status == 'draft' %}
+      <span class="badge badge--warning" title="{{ 'Borrador'|t }}">{{ 'Borrador'|t }}</span>
+      {% elseif node.status == 'archived' %}
+      <span class="badge badge--muted" title="{{ 'Archivado'|t }}">{{ 'Archivado'|t }}</span>
+      {% endif %}
+      
+      {% if not node.show_in_nav %}
+      <span class="badge badge--info" title="{{ 'Oculto en navegación'|t }}">{{ 'Oculto'|t }}</span>
+      {% endif %}
+      
+      {% if node.is_external %}
+      <span class="badge badge--secondary" title="{{ 'Enlace externo'|t }}">{{ 'Externo'|t }}</span>
+      {% endif %}
+    </span>
+
+    {# URL del path #}
+    <span class="site-tree__url">{{ node.page_url }}</span>
+
+    {# Sprint B2: SEO Score Badge #}
+    {% if node.seo_score is not null %}
+      {% if node.seo_score < 40 %}
+        {% set seo_variant = 'danger' %}
+      {% elseif node.seo_score < 70 %}
+        {% set seo_variant = 'warning' %}
+      {% else %}
+        {% set seo_variant = 'success' %}
+      {% endif %}
+      <span class="site-tree__seo">
+        <span class="seo-badge seo-badge--{{ seo_variant }}" title="{{ 'SEO Score'|t }}: {{ node.seo_score }}/100">
+          {{ node.seo_score }}
+        </span>
+      </span>
+    {% endif %}
+
+    {# Acciones #}
+    {% if can_edit %}
+    <div class="site-tree__actions">
+      <button type="button" class="btn btn--icon btn--ghost" data-action="edit" data-node-id="{{ node.id }}" title="{{ 'Editar configuración'|t }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        </svg>
+      </button>
+      <button type="button" class="btn btn--icon btn--ghost" data-action="add-child" data-node-id="{{ node.id }}" title="{{ 'Añadir subpágina'|t }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      <button type="button" class="btn btn--icon btn--ghost btn--danger" data-action="remove" data-node-id="{{ node.id }}" title="{{ 'Quitar del árbol'|t }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Hijos (recursivo) #}
+  {% if node.children|length > 0 %}
+  <ul class="site-tree__children" data-sortable>
+    {% for child in node.children %}
+      {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {
+        node: child,
+        depth: depth + 1,
+        can_edit: can_edit,
+      } %}
+    {% endfor %}
+  </ul>
+  {% endif %}
+</li>

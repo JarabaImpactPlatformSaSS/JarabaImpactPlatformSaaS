@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Template para el bloque Galería de Imágenes.
+ *
+ * Galería con filtros por categoría y lightbox.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout = content.layout|default('grid') %}
+{% set columns = content.columns|default(4) %}
+{% set images = content.images|default([]) %}
+{% set categories = content.categories|default([]) %}
+
+<section class="jaraba-image-gallery jaraba-image-gallery--{{ bg_class }} jaraba-block"
+         data-block-type="image_gallery"
+         data-enable-lightbox="{{ content.enable_lightbox ? 'true' : 'false' }}">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-image-gallery__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Filters #}
+    {% if content.show_filters and categories is not empty %}
+      <div class="jaraba-image-gallery__filters">
+        <button type="button" 
+                class="jaraba-image-gallery__filter is-active" 
+                data-filter="all">
+          {% trans %}Todas{% endtrans %}
+        </button>
+        {% for category in categories %}
+          <button type="button" 
+                  class="jaraba-image-gallery__filter" 
+                  data-filter="{{ category.id }}">
+            {{ category.label }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Gallery Grid #}
+    <div class="jaraba-image-gallery__grid jaraba-image-gallery__grid--{{ layout }} jaraba-image-gallery__grid--cols-{{ columns }}">
+      {% for image in images %}
+        <figure class="jaraba-image-gallery__item" 
+                data-category="{{ image.category|default('') }}"
+                {% if content.enable_lightbox %}data-lightbox-src="{{ image.src }}"{% endif %}>
+          <div class="jaraba-image-gallery__image-wrapper">
+            <img src="{{ image.src }}" 
+                 alt="{{ image.alt|default('') }}" 
+                 class="jaraba-image-gallery__image"
+                 loading="lazy">
+            <div class="jaraba-image-gallery__overlay">
+              {% if content.enable_lightbox %}
+                <button type="button" class="jaraba-image-gallery__zoom" aria-label="{% trans %}Ampliar{% endtrans %}">
+                  {{ jaraba_icon('ui', 'search', { size: '24px', color: 'white' }) }}
+                </button>
+              {% endif %}
+            </div>
+          </div>
+          {% if image.caption %}
+            <figcaption class="jaraba-image-gallery__caption">{{ image.caption }}</figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  {# Lightbox Container #}
+  {% if content.enable_lightbox %}
+    <div class="jaraba-image-gallery__lightbox" hidden>
+      <button type="button" class="jaraba-image-gallery__lightbox-close" aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '32px', color: 'white' }) }}
+      </button>
+      <button type="button" class="jaraba-image-gallery__lightbox-prev" aria-label="{% trans %}Anterior{% endtrans %}">
+        {{ jaraba_icon('ui', 'chevron-left', { size: '32px', color: 'white' }) }}
+      </button>
+      <button type="button" class="jaraba-image-gallery__lightbox-next" aria-label="{% trans %}Siguiente{% endtrans %}">
+        {{ jaraba_icon('ui', 'chevron-right', { size: '32px', color: 'white' }) }}
+      </button>
+      <div class="jaraba-image-gallery__lightbox-content">
+        <img src="" alt="" class="jaraba-image-gallery__lightbox-image">
+      </div>
+    </div>
+  {% endif %}
+</section>

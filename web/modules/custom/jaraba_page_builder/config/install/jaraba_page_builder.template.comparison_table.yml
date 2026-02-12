@@ -1,0 +1,129 @@
+langcode: es
+status: true
+dependencies: {}
+id: comparison_table
+label: 'Tabla Comparativa'
+description: 'Tabla para comparar características, planes o productos lado a lado.'
+category: content
+twig_template: '@jaraba_page_builder/blocks/content/comparison-table.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      default: 'Compara nuestras opciones'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+    columns:
+      type: array
+      title: 'Columnas a comparar'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'Nombre'
+          highlight:
+            type: boolean
+            title: 'Destacar'
+          badge:
+            type: string
+            title: 'Badge (opcional)'
+          price:
+            type: string
+            title: 'Precio (opcional)'
+    rows:
+      type: array
+      title: 'Características a comparar'
+      items:
+        type: object
+        properties:
+          feature:
+            type: string
+            title: 'Característica'
+          tooltip:
+            type: string
+            title: 'Tooltip explicativo'
+          values:
+            type: array
+            title: 'Valores por columna'
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - check
+                    - cross
+                    - text
+                    - partial
+                value:
+                  type: string
+    show_cta:
+      type: boolean
+      title: 'Mostrar CTAs'
+      default: true
+    background:
+      type: string
+      title: 'Fondo'
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - columns
+    - rows
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  title: "Compare Our Plans"
+  subtitle: "Choose the perfect plan for your needs"
+  columns:
+    - name: "Free"
+      price: "$0/mo"
+    - name: "Pro"
+      price: "$29/mo"
+      highlight: true
+      badge: "POPULAR"
+    - name: "Enterprise"
+      price: "Custom"
+  rows:
+    - feature: "Users"
+      values:
+        - type: text
+          value: "1"
+        - type: text
+          value: "10"
+        - type: text
+          value: "Unlimited"
+    - feature: "Storage"
+      values:
+        - type: text
+          value: "5GB"
+        - type: text
+          value: "100GB"
+        - type: text
+          value: "Unlimited"
+    - feature: "API Access"
+      values:
+        - type: cross
+        - type: check
+        - type: check
+    - feature: "Priority Support"
+      values:
+        - type: cross
+        - type: partial
+          value: "Email"
+        - type: check
+    - feature: "Custom Branding"
+      values:
+        - type: cross
+        - type: cross
+        - type: check
+  show_cta: true
+  background: light
+

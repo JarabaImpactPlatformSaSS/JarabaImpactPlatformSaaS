@@ -1,0 +1,80 @@
+langcode: es
+status: true
+dependencies: {}
+id: sticky_scroll
+label: 'Scroll Sticky Reveal'
+description: 'Contenido fijo que revela secciones al hacer scroll.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/sticky-scroll.html.twig'
+fields_schema:
+  type: object
+  properties:
+    sticky_content:
+      type: object
+      title: 'Contenido fijo'
+      properties:
+        type:
+          type: string
+          enum:
+            - image
+            - video
+            - device_mockup
+        image:
+          type: string
+          format: image
+        video_url:
+          type: string
+        device:
+          type: string
+          enum:
+            - iphone
+            - macbook
+            - ipad
+            - browser
+    sections:
+      type: array
+      title: 'Secciones de texto'
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+          highlight_area:
+            type: string
+    sticky_position:
+      type: string
+      enum:
+        - left
+        - right
+      default: left
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - sticky_content
+    - sections
+plans_required:
+  - enterprise
+is_premium: true
+preview_data:
+  sticky_content:
+    type: device_mockup
+    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80"
+    device: iphone
+  sections:
+    - title: "Intuitive Dashboard"
+      description: "Everything you need at a glance. Track metrics, manage tasks, and stay on top of your goals."
+    - title: "Smart Notifications"
+      description: "Never miss important updates. Our AI prioritizes alerts based on your preferences."
+    - title: "Seamless Integration"
+      description: "Connect with your favorite tools. Sync data automatically across all platforms."
+    - title: "Mobile First"
+      description: "Full functionality on any device. Work from anywhere, anytime."
+  sticky_position: left
+  background: light
+

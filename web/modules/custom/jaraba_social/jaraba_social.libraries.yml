@@ -1,0 +1,8 @@
+dashboard:
+  version: VERSION
+  css:
+    theme:
+      css/social-dashboard.css: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/main

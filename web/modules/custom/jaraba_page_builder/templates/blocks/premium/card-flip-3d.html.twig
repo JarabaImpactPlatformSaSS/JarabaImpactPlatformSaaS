@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template para el bloque Tarjetas 3D Flip.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(3) %}
+{% set direction = content.flip_direction|default('horizontal') %}
+
+<section class="jaraba-flip-cards jaraba-flip-cards--{{ bg_class }} jaraba-block jaraba-block--premium">
+  <div class="jaraba-block__container">
+    
+    <header class="jaraba-flip-cards__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {% if content.cards is not empty %}
+      <div class="jaraba-flip-cards__grid jaraba-flip-cards__grid--{{ columns }}">
+        {% for card in content.cards %}
+          <article class="jaraba-flip-card jaraba-flip-card--{{ direction }}">
+            <div class="jaraba-flip-card__inner">
+              {# Front #}
+              <div class="jaraba-flip-card__front">
+                {% if card.front_image %}
+                  <img src="{{ card.front_image }}" alt="{{ card.front_title }}" class="jaraba-flip-card__image">
+                {% endif %}
+                <h3 class="jaraba-flip-card__title">{{ card.front_title }}</h3>
+              </div>
+              {# Back #}
+              <div class="jaraba-flip-card__back">
+                <h3 class="jaraba-flip-card__back-title">{{ card.back_title }}</h3>
+                {% if card.back_description %}
+                  <p class="jaraba-flip-card__back-desc">{{ card.back_description }}</p>
+                {% endif %}
+                {% if card.back_cta_text %}
+                  <a href="{{ card.back_cta_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--sm">
+                    {{ card.back_cta_text }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

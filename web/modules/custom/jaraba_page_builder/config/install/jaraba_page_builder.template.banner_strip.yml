@@ -1,0 +1,59 @@
+langcode: es
+status: true
+dependencies: {}
+id: banner_strip
+label: 'Banner de Anuncio'
+description: 'Banner slim para anuncios, promociones o mensajes importantes.'
+category: cta
+twig_template: '@jaraba_page_builder/blocks/cta/banner-strip.html.twig'
+fields_schema:
+  type: object
+  properties:
+    text:
+      type: string
+      title: 'Texto del banner'
+    cta_text:
+      type: string
+      title: 'Texto del enlace'
+    cta_url:
+      type: string
+      title: 'URL del enlace'
+    icon:
+      type: string
+      title: 'Icono'
+    dismissible:
+      type: boolean
+      title: 'Cerrable'
+      default: true
+    style:
+      type: string
+      title: 'Estilo'
+      enum:
+        - info
+        - success
+        - warning
+        - promo
+      default: promo
+    position:
+      type: string
+      title: 'Posición'
+      enum:
+        - top
+        - inline
+      default: inline
+  required:
+    - text
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_data:
+  text: "🎉 Spring Sale! Get 25% off all plans with code SPRING25"
+  cta_text: "Shop Now →"
+  cta_url: "#"
+  icon: "star"
+  dismissible: true
+  style: promo
+  position: inline
+

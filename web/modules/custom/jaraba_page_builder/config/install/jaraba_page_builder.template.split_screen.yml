@@ -1,0 +1,116 @@
+langcode: es
+status: true
+dependencies: {}
+id: split_screen
+label: 'Pantalla Dividida'
+description: 'Dos secciones lado a lado con scroll independiente.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/split-screen.html.twig'
+fields_schema:
+  type: object
+  properties:
+    left_section:
+      type: object
+      title: 'Sección izquierda'
+      properties:
+        type:
+          type: string
+          enum:
+            - content
+            - image
+            - video
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+          format: image
+        video_url:
+          type: string
+        cta:
+          type: object
+          properties:
+            text:
+              type: string
+            url:
+              type: string
+        background:
+          type: string
+          enum:
+            - light
+            - dark
+            - primary
+            - image
+    right_section:
+      type: object
+      title: 'Sección derecha'
+      properties:
+        type:
+          type: string
+          enum:
+            - content
+            - image
+            - video
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+          format: image
+        video_url:
+          type: string
+        cta:
+          type: object
+          properties:
+            text:
+              type: string
+            url:
+              type: string
+        background:
+          type: string
+          enum:
+            - light
+            - dark
+            - primary
+            - image
+    split_ratio:
+      type: string
+      enum:
+        - 50-50
+        - 40-60
+        - 60-40
+        - 33-67
+        - 67-33
+      default: 50-50
+    min_height:
+      type: string
+      enum:
+        - medium
+        - tall
+        - fullscreen
+      default: fullscreen
+  required:
+    - left_section
+    - right_section
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_data:
+  left_section:
+    type: content
+    title: "Work Smarter, Not Harder"
+    content: "Our platform streamlines your workflow, automates repetitive tasks, and gives you back hours of your day. Focus on what matters most—growing your business."
+    cta:
+      text: "Start Free Trial"
+      url: "#"
+    background: dark
+  right_section:
+    type: image
+    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80"
+    background: image
+  split_ratio: "50-50"
+  min_height: fullscreen
+

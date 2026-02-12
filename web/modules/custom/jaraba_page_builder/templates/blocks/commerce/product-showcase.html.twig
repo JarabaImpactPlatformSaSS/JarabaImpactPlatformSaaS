@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * Template para el bloque Escaparate de Productos.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set columns = content.columns|default(4) %}
+{% set products = content.products|default([]) %}
+
+<section class="jaraba-product-showcase jaraba-product-showcase--{{ bg_class }} jaraba-block"
+         aria-labelledby="products-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-product-showcase__header">
+      <h2 id="products-title" class="jaraba-block__title">
+        {{ content.title|default('Productos destacados'|trans) }}
+      </h2>
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de productos #}
+    {% if products is not empty %}
+      <div class="jaraba-product-showcase__grid jaraba-product-showcase__grid--{{ columns }}">
+        {% for product in products %}
+          <article class="jaraba-product-card">
+            {# Imagen #}
+            <a href="{{ product.url }}" class="jaraba-product-card__image-wrapper">
+              <img src="{{ product.image }}" 
+                   alt="{{ product.name }}"
+                   class="jaraba-product-card__image"
+                   loading="lazy">
+              {% if product.badge %}
+                <span class="jaraba-product-card__badge jaraba-product-card__badge--{{ product.badge|lower }}">
+                  {{ product.badge }}
+                </span>
+              {% endif %}
+            </a>
+            
+            {# Info #}
+            <div class="jaraba-product-card__info">
+              <h3 class="jaraba-product-card__name">
+                <a href="{{ product.url }}">{{ product.name }}</a>
+              </h3>
+              
+              {# Rating #}
+              {% if product.rating %}
+                <div class="jaraba-product-card__rating">
+                  <div class="jaraba-product-card__stars" style="--rating: {{ product.rating }}">
+                    {% for i in 1..5 %}
+                      {{ jaraba_icon('ui', 'star', { variant: i <= product.rating ? 'filled' : 'outline', size: '14px', color: 'warning' }) }}
+                    {% endfor %}
+                  </div>
+                  {% if product.reviews_count %}
+                    <span class="jaraba-product-card__reviews">({{ product.reviews_count }})</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+              
+              {# Precio #}
+              <div class="jaraba-product-card__price-wrapper">
+                <span class="jaraba-product-card__price">{{ product.price }}</span>
+                {% if product.original_price %}
+                  <span class="jaraba-product-card__original-price">{{ product.original_price }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# CTA #}
+    {% if content.show_cta %}
+      <div class="jaraba-product-showcase__cta">
+        <a href="{{ content.cta_url|default('/productos') }}" class="jaraba-btn jaraba-btn--outline">
+          {{ content.cta_text|default('Ver todos los productos'|trans) }}
+          {{ jaraba_icon('ui', 'arrow-right', { size: '18px' }) }}
+        </a>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

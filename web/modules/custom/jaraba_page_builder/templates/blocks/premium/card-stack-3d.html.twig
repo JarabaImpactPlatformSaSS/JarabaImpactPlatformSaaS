@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Template para el bloque Stack de Tarjetas 3D (Card Stack).
+ *
+ * Efecto de carrusel con tarjetas apiladas que rotan al interactuar.
+ * Inspirado en el componente Card Stack de Aceternity UI.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('gradient') %}
+{% set speed = content.animation_speed|default('medium') %}
+{% set direction = content.stack_direction|default('right') %}
+{% set autoplay = content.autoplay|default(true) %}
+
+<section class="jaraba-card-stack jaraba-card-stack--{{ bg_class }} jaraba-block jaraba-block--premium"
+         data-speed="{{ speed }}"
+         data-direction="{{ direction }}"
+         data-autoplay="{{ autoplay ? 'true' : 'false' }}">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    {% if content.title or content.subtitle %}
+      <header class="jaraba-card-stack__header">
+        {% if content.title %}
+          <h2 class="jaraba-block__title">{{ content.title }}</h2>
+        {% endif %}
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {# Stack Container #}
+    {% if content.cards is not empty %}
+      <div class="jaraba-card-stack__viewport">
+        <div class="jaraba-card-stack__container">
+          {% for card in content.cards %}
+            <article class="jaraba-card-stack__card" 
+                     data-index="{{ loop.index0 }}"
+                     style="--card-index: {{ loop.index0 }}; --total-cards: {{ content.cards|length }};">
+              
+              {# Card Content - Quote Style #}
+              <div class="jaraba-card-stack__content">
+                {# Avatar at top #}
+                {% if card.image %}
+                  <div class="jaraba-card-stack__avatar">
+                    <img src="{{ card.image }}" 
+                         alt="{{ card.author }}" 
+                         class="jaraba-card-stack__avatar-img"
+                         loading="lazy">
+                  </div>
+                {% endif %}
+
+                {# Quote/Description #}
+                {% if card.description %}
+                  <blockquote class="jaraba-card-stack__quote">
+                    {{ card.description }}
+                  </blockquote>
+                {% endif %}
+                
+                {# Author Info #}
+                {% if card.author or card.role %}
+                  <footer class="jaraba-card-stack__author">
+                    <div class="jaraba-card-stack__author-info">
+                      {% if card.author %}
+                        <strong class="jaraba-card-stack__author-name">{{ card.author }}</strong>
+                      {% endif %}
+                      {% if card.role %}
+                        <span class="jaraba-card-stack__author-role">{{ card.role }}</span>
+                      {% endif %}
+                    </div>
+                  </footer>
+                {% endif %}
+              </div>
+              
+              {# Decorative Elements #}
+              <div class="jaraba-card-stack__shine"></div>
+            </article>
+          {% endfor %}
+        </div>
+        
+        {# Navigation Dots #}
+        <div class="jaraba-card-stack__dots" role="tablist">
+          {% for card in content.cards %}
+            <button type="button" 
+                    class="jaraba-card-stack__dot{{ loop.first ? ' is-active' : '' }}"
+                    data-target="{{ loop.index0 }}"
+                    role="tab"
+                    aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                    aria-label="{% trans %}Ir a tarjeta{% endtrans %} {{ loop.index }}">
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+      
+      {# Navigation Arrows #}
+      <div class="jaraba-card-stack__nav">
+        <button type="button" 
+                class="jaraba-card-stack__prev" 
+                aria-label="{% trans %}Anterior{% endtrans %}">
+          {{ jaraba_icon('ui', 'chevron-left', { size: '28px' }) }}
+        </button>
+        <button type="button" 
+                class="jaraba-card-stack__next" 
+                aria-label="{% trans %}Siguiente{% endtrans %}">
+          {{ jaraba_icon('ui', 'chevron-right', { size: '28px' }) }}
+        </button>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

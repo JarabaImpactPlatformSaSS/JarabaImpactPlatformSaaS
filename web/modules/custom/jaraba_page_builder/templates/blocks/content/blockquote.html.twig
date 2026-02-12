@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Template para el bloque Cita Destacada.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set style = content.style|default('highlighted') %}
+
+<section class="jaraba-blockquote jaraba-blockquote--{{ bg_class }} jaraba-blockquote--{{ style }} jaraba-block">
+  <div class="jaraba-block__container">
+    
+    <blockquote class="jaraba-blockquote__quote">
+      <span class="jaraba-blockquote__mark">
+        {{ jaraba_icon('ui', 'quote', { variant: 'filled', size: '32px', color: 'primary' }) }}
+      </span>
+      <p class="jaraba-blockquote__text">{{ content.quote }}</p>
+      
+      {% if content.author %}
+        <footer class="jaraba-blockquote__footer">
+          {% if content.author_image %}
+            <img src="{{ content.author_image }}" 
+                 alt="{{ content.author }}"
+                 class="jaraba-blockquote__avatar">
+          {% endif %}
+          <div class="jaraba-blockquote__author-info">
+            <cite class="jaraba-blockquote__author">{{ content.author }}</cite>
+            {% if content.author_title %}
+              <span class="jaraba-blockquote__author-title">{{ content.author_title }}</span>
+            {% endif %}
+          </div>
+        </footer>
+      {% endif %}
+      
+      {% if content.source %}
+        <div class="jaraba-blockquote__source">
+          {% if content.source_url %}
+            <a href="{{ content.source_url }}" target="_blank" rel="noopener">{{ content.source }}</a>
+          {% else %}
+            {{ content.source }}
+          {% endif %}
+        </div>
+      {% endif %}
+    </blockquote>
+    
+  </div>
+</section>

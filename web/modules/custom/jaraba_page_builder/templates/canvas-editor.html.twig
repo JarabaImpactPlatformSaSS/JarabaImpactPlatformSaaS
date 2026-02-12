@@ -1,0 +1,608 @@
+{#
+/**
+ * @file
+ * Canvas Editor - Editor Visual de Páginas lado a lado.
+ *
+ * ARQUITECTURA:
+ * - Sidebar izquierda: Lista de secciones arrastrables (SortableJS)
+ * - Canvas derecha: Iframe con preview en vivo de la página
+ * - Toolbar superior: Viewport toggle + acciones de guardado
+ *
+ * VARIABLES:
+ * - page: Entidad PageContent que se está editando
+ * - sections: Array de secciones con uuid, template_id, content, weight
+ * - available_templates: Templates disponibles agrupados por categoría
+ * - preview_url: URL para el iframe de preview
+ * - tenant_info: Información del tenant para design tokens
+ */
+#}
+
+<div class="canvas-editor" data-page-id="{{ page.id() }}">
+  {# TODO: Header SaaS - Temporalmente deshabilitado por conflicto de layout.
+     Requiere integración CSS más cuidadosa con el layout flex existente.
+     Ver Sprint 5: Re-implementar header SaaS sin romper el grid de 3 columnas. #}
+
+  {# Toolbar Superior #}
+  <header class="canvas-editor__toolbar">
+    <div class="canvas-editor__toolbar-left">
+      {# Logo del Tenant - Branding Premium #}
+      {% if tenant_logo or tenant_name %}
+        <div class="canvas-editor__branding">
+          {% if tenant_logo %}
+            <img src="{{ tenant_logo }}" 
+                 alt="{{ tenant_name|default('Mi SaaS') }}" 
+                 class="canvas-editor__tenant-logo" />
+          {% elseif tenant_name %}
+            <span class="canvas-editor__tenant-name">{{ tenant_name }}</span>
+          {% endif %}
+        </div>
+        <div class="canvas-editor__separator" aria-hidden="true"></div>
+      {% endif %}
+      
+      <a href="{{ path('jaraba_page_builder.my_pages') }}" class="canvas-editor__back">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
+        <span>{% trans %}Volver{% endtrans %}</span>
+      </a>
+      <h1 class="canvas-editor__title">{{ page.label() }}</h1>
+    </div>
+
+    <div class="canvas-editor__toolbar-center">
+
+      {# Viewport Toggle — Sprint C3: 8 dispositivos + slider + rotación #}
+      <div class="canvas-editor__viewport-toggle" role="group" aria-label="{% trans %}Cambiar viewport{% endtrans %}">
+        {# Grupo Desktop #}
+        <div class="canvas-editor__viewport-group" data-group="desktop">
+          <button type="button" class="canvas-editor__viewport-btn is-active" data-viewport="desktop-xl" title="{% trans %}Escritorio XL{% endtrans %}">
+            {{ jaraba_icon('ui', 'monitor', { size: '18px' }) }}
+          </button>
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="desktop" title="{% trans %}Escritorio{% endtrans %} (1280px)">
+            {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
+          </button>
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="laptop" title="{% trans %}Portátil{% endtrans %} (1024px)">
+            {{ jaraba_icon('ui', 'laptop', { size: '18px' }) }}
+          </button>
+        </div>
+
+        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
+
+        {# Grupo Tablet #}
+        <div class="canvas-editor__viewport-group" data-group="tablet">
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet-landscape" title="{% trans %}Tablet horizontal{% endtrans %} (1024×768)">
+            {{ jaraba_icon('ui', 'tablet', { size: '18px' }) }}
+          </button>
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet" title="{% trans %}Tablet{% endtrans %} (768px)">
+            {{ jaraba_icon('ui', 'tablet', { size: '16px' }) }}
+          </button>
+        </div>
+
+        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
+
+        {# Grupo Mobile #}
+        <div class="canvas-editor__viewport-group" data-group="mobile">
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-lg" title="{% trans %}Móvil grande{% endtrans %} (428px)">
+            {{ jaraba_icon('ui', 'smartphone', { size: '18px' }) }}
+          </button>
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile" title="{% trans %}Móvil{% endtrans %} (375px)">
+            {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
+          </button>
+          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-sm" title="{% trans %}Móvil pequeño{% endtrans %} (320px)">
+            {{ jaraba_icon('ui', 'smartphone', { size: '14px' }) }}
+          </button>
+        </div>
+
+        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
+
+        {# Ancho personalizado + Rotación #}
+        <div class="canvas-editor__viewport-custom">
+          <input type="range"
+                 id="viewport-custom-width"
+                 class="canvas-editor__viewport-slider"
+                 min="320" max="1920" value="1920" step="1"
+                 aria-label="{% trans %}Ancho personalizado{% endtrans %}" />
+          <output for="viewport-custom-width"
+                  class="canvas-editor__viewport-value"
+                  id="viewport-custom-value">1920px</output>
+          <button type="button"
+                  class="canvas-editor__viewport-btn canvas-editor__viewport-btn--rotate"
+                  id="viewport-rotate-btn"
+                  title="{% trans %}Rotar orientación{% endtrans %}">
+            {{ jaraba_icon('ui', 'rotate-ccw', { size: '16px' }) }}
+          </button>
+        </div>
+      </div>
+
+      {# Undo/Redo Controls #}
+        <div class="canvas-editor__history-controls" role="group" aria-label="{% trans %}Historial de cambios{% endtrans %}">
+          <button type="button" 
+                  class="canvas-editor__history-btn" 
+                  id="canvas-undo-btn"
+                  title="{% trans %}Deshacer{% endtrans %} (Ctrl+Z)"
+                  disabled
+                  aria-label="{% trans %}Deshacer último cambio{% endtrans %}">
+            {# Undo icon - rotate counter-clockwise arrow #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+          </button>
+          <button type="button" 
+                  class="canvas-editor__history-btn" 
+                  id="canvas-redo-btn"
+                  title="{% trans %}Rehacer{% endtrans %} (Ctrl+Shift+Z)"
+                  disabled
+                  aria-label="{% trans %}Rehacer último cambio{% endtrans %}">
+            {# Redo icon - rotate clockwise arrow #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+            </svg>
+          </button>
+        </div>
+
+      {# Template Marketplace — Sprint C1: Abre slide-panel con catálogo de templates #}
+        <button type="button"
+                class="canvas-editor__btn canvas-editor__btn--secondary"
+                id="marketplace-toggle-btn"
+                title="{% trans %}Template Marketplace{% endtrans %}"
+                aria-label="{% trans %}Abrir catálogo de plantillas{% endtrans %}"
+                aria-pressed="false">
+          {{ jaraba_icon('ui', 'layout-template', { variant: 'duotone', size: '18px' }) }}
+          <span>{% trans %}Plantillas{% endtrans %}</span>
+        </button>
+
+      {# Sugerencias SEO con IA — Sprint C4.1: Analiza el canvas y sugiere mejoras SEO #}
+        <button type="button"
+                class="canvas-editor__btn canvas-editor__btn--secondary"
+                id="seo-ai-suggest-btn"
+                title="{% trans %}Sugerencias SEO con IA{% endtrans %}"
+                aria-label="{% trans %}Analizar SEO del contenido actual con IA{% endtrans %}">
+          🤖
+          <span>{% trans %}SEO IA{% endtrans %}</span>
+        </button>
+
+      {# SEO Toggle - Botón para abrir/cerrar panel de auditoría SEO #}
+        <button type="button" 
+                class="canvas-editor__seo-toggle" 
+                id="seo-panel-toggle"
+                title="{% trans %}Auditoría SEO{% endtrans %}"
+                aria-pressed="false"
+                aria-controls="gjs-seo-panel">
+          {{ jaraba_icon('ui', 'search', { variant: 'duotone', size: '18px' }) }}
+          <span>{% trans %}SEO{% endtrans %}</span>
+        </button>
+    </div>
+
+
+    <div class="canvas-editor__toolbar-right">
+      {# TODO: i18n-selector temporalmente removido por conflicto de estilos.
+         El componente tiene CSS que crea barras de colores que superponen la UI.
+         Sprint 5: Estilizar correctamente el i18n-selector para el Canvas Editor. #}
+
+      {# Botón ⚙ Página — Abre slide-panel de configuración de página #}
+      <button type="button"
+              class="canvas-editor__btn canvas-editor__btn--secondary"
+              id="page-config-toggle-btn"
+              title="{% trans %}Configuración de Página{% endtrans %}"
+              aria-label="{% trans %}Configuración de Página{% endtrans %}">
+        {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '18px' }) }}
+        <span>{% trans %}Página{% endtrans %}</span>
+      </button>
+
+      <button type="button" class="canvas-editor__btn canvas-editor__btn--secondary" id="canvas-preview-btn">
+        {{ jaraba_icon('ui', 'eye', { size: '18px' }) }}
+        <span>{% trans %}Vista previa{% endtrans %}</span>
+      </button>
+      <button type="button" class="canvas-editor__btn canvas-editor__btn--primary" id="canvas-save-btn">
+        {{ jaraba_icon('ui', 'save', { size: '18px' }) }}
+        <span>{% trans %}Guardar{% endtrans %}</span>
+      </button>
+      <button type="button" class="canvas-editor__btn canvas-editor__btn--success" id="canvas-publish-btn">
+        {{ jaraba_icon('ui', 'rocket', { size: '18px' }) }}
+        <span>{% trans %}Publicar{% endtrans %}</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="canvas-editor__layout">
+    {# Sidebar - Global Partials + Lista de Secciones #}
+    <aside class="canvas-editor__sidebar">
+      {# Canvas v2: Global Partials (Header/Footer) #}
+      <div class="canvas-editor__partials">
+        <div class="canvas-editor__partials-header">
+          <h2>{% trans %}Parciales Globales{% endtrans %}</h2>
+        </div>
+
+        {# Header Variant Selector #}
+        <div class="canvas-editor__partial-group">
+          <label class="canvas-editor__partial-label">
+            {{ jaraba_icon('ui', 'layout-top', { variant: 'duotone', size: '16px' }) }}
+            {% trans %}Header{% endtrans %}
+          </label>
+          <select class="canvas-editor__partial-select" 
+                  id="header-variant-select"
+                  data-partial-type="header"
+                  data-current="{{ header_data.config.current|default('classic') }}">
+            <option value="classic" {% if header_data.config.current == 'classic' %}selected{% endif %}>{% trans %}Clásico{% endtrans %}</option>
+            <option value="centered" {% if header_data.config.current == 'centered' %}selected{% endif %}>{% trans %}Centrado{% endtrans %}</option>
+            <option value="hero" {% if header_data.config.current == 'hero' %}selected{% endif %}>{% trans %}Hero{% endtrans %}</option>
+            <option value="split" {% if header_data.config.current == 'split' %}selected{% endif %}>{% trans %}Dividido{% endtrans %}</option>
+            <option value="minimal" {% if header_data.config.current == 'minimal' %}selected{% endif %}>{% trans %}Minimalista{% endtrans %}</option>
+          </select>
+        </div>
+
+        {# Footer Variant Selector #}
+        <div class="canvas-editor__partial-group">
+          <label class="canvas-editor__partial-label">
+            {{ jaraba_icon('ui', 'layout-bottom', { variant: 'duotone', size: '16px' }) }}
+            {% trans %}Footer{% endtrans %}
+          </label>
+          <select class="canvas-editor__partial-select" 
+                  id="footer-variant-select"
+                  data-partial-type="footer"
+                  data-current="{{ footer_data.config.current|default('standard') }}">
+            <option value="minimal" {% if footer_data.config.current == 'minimal' %}selected{% endif %}>{% trans %}Minimalista{% endtrans %}</option>
+            <option value="standard" {% if footer_data.config.current == 'standard' %}selected{% endif %}>{% trans %}Estándar{% endtrans %}</option>
+            <option value="mega" {% if footer_data.config.current == 'mega' %}selected{% endif %}>{% trans %}Mega{% endtrans %}</option>
+            <option value="split" {% if footer_data.config.current == 'split' %}selected{% endif %}>{% trans %}Dividido{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+
+      {# Divider #}
+      <div class="canvas-editor__sidebar-divider"></div>
+
+      {# Sections List #}
+      <div class="canvas-editor__sidebar-header">
+        <h2>{% trans %}Secciones{% endtrans %}</h2>
+        <button type="button" class="canvas-editor__add-section" id="add-section-btn" data-slide-panel="template-picker" data-slide-panel-title="{% trans %}Añadir Sección{% endtrans %}">
+          {{ jaraba_icon('actions', 'plus', { size: '20px' }) }}
+        </button>
+      </div>
+
+      <div class="canvas-editor__sections-list" id="sections-list">
+        {% if sections is empty %}
+          <div class="canvas-editor__empty-state">
+            <div class="canvas-editor__empty-icon">
+              {{ jaraba_icon('ui', 'layout-grid', { size: '48px', color: 'neutral' }) }}
+            </div>
+            <p>{% trans %}Esta página está vacía{% endtrans %}</p>
+            <button type="button" class="canvas-editor__btn canvas-editor__btn--primary" data-slide-panel="template-picker">
+              {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+              {% trans %}Añadir primera sección{% endtrans %}
+            </button>
+          </div>
+        {% else %}
+          {% for section in sections %}
+            <div class="canvas-editor__section-item" 
+                 data-uuid="{{ section.uuid }}" 
+                 data-template-id="{{ section.template_id }}"
+                 data-weight="{{ section.weight }}">
+              <div class="canvas-editor__section-drag">
+                {{ jaraba_icon('ui', 'grip-vertical', { size: '16px', color: 'neutral' }) }}
+              </div>
+              <div class="canvas-editor__section-info">
+                <span class="canvas-editor__section-name">{{ section.template_id|replace({'_': ' '})|title }}</span>
+              </div>
+              <div class="canvas-editor__section-actions">
+                <button type="button" class="canvas-editor__section-btn" data-action="edit" title="{% trans %}Editar{% endtrans %}">
+                  {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                </button>
+                <button type="button" class="canvas-editor__section-btn" data-action="toggle" title="{% trans %}Mostrar/Ocultar{% endtrans %}">
+                  {% if section.visible %}
+                    {{ jaraba_icon('ui', 'eye', { size: '16px' }) }}
+                  {% else %}
+                    {{ jaraba_icon('ui', 'eye-off', { size: '16px' }) }}
+                  {% endif %}
+                </button>
+                <button type="button" class="canvas-editor__section-btn canvas-editor__section-btn--danger" data-action="delete" title="{% trans %}Eliminar{% endtrans %}">
+                  {{ jaraba_icon('actions', 'trash', { size: '16px', color: 'danger' }) }}
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </aside>
+
+    {# Canvas - Vista según el modo de edición #}
+    <main class="canvas-editor__canvas">
+        {# ============================================================
+           Canvas v3: Editor GrapesJS (modo=canvas)
+           Estructura completa con paneles laterales y canvas central.
+           ============================================================ #}
+        <div class="jaraba-grapesjs-layout">
+          {# Panel izquierdo: Bloques disponibles #}
+          <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--left" id="gjs-blocks-panel">
+            {# Fondo de partículas animadas #}
+            <div class="jaraba-grapesjs-panel__particles" id="gjs-panel-particles"></div>
+            
+            <div class="jaraba-grapesjs-panel__header">
+              <h3>{% trans %}Bloques{% endtrans %}</h3>
+            </div>
+            
+            {# Botón de acceso a galería completa de templates #}
+            <a href="{{ path('jaraba_page_builder.template_picker') }}" 
+               class="jaraba-grapesjs-panel__gallery-link" 
+               target="_blank"
+               title="{% trans %}Ver galería completa de plantillas{% endtrans %}">
+              {{ jaraba_icon('ui', 'layout-grid', { size: '16px' }) }}
+              <span>{% trans %}Ver Galería de Plantillas{% endtrans %}</span>
+              {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
+            </a>
+
+            {# Issue 3: Buscador de bloques #}
+            <div class="jaraba-grapesjs-panel__search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" class="jaraba-grapesjs-panel__search-icon" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="search"
+                     id="gjs-blocks-search"
+                     class="jaraba-grapesjs-panel__search-input"
+                     placeholder="{% trans %}Buscar bloques...{% endtrans %}"
+                     autocomplete="off" />
+            </div>
+            
+            <div id="gjs-blocks-container" class="jaraba-grapesjs-panel__content"></div>
+          </div>
+
+          {# Canvas central: Área de edición GrapesJS #}
+          <div class="jaraba-grapesjs-canvas-wrapper">
+            <div id="gjs-editor" class="jaraba-grapesjs-container">
+              {# GrapesJS se inicializa aquí vía JS #}
+            </div>
+          </div>
+
+          {# Panel derecho: Estilos y Traits #}
+          <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--right" id="gjs-styles-panel">
+            <div class="jaraba-grapesjs-panel__tabs">
+              <button type="button" class="jaraba-grapesjs-tab is-active" data-panel="styles">
+                {{ jaraba_icon('ui', 'tools', { variant: 'duotone', size: '16px' }) }}
+                {% trans %}Estilos{% endtrans %}
+              </button>
+              <button type="button" class="jaraba-grapesjs-tab" data-panel="traits">
+                {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '16px' }) }}
+                {% trans %}Propiedades{% endtrans %}
+              </button>
+              <button type="button" class="jaraba-grapesjs-tab" data-panel="layers">
+                {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '16px' }) }}
+                {% trans %}Capas{% endtrans %}
+              </button>
+              <button type="button" class="jaraba-grapesjs-tab" data-panel="design">
+                {{ jaraba_icon('ui', 'palette', { variant: 'duotone', size: '16px' }) }}
+                {% trans %}Diseño{% endtrans %}
+              </button>
+            </div>
+            <div id="gjs-styles-container" class="jaraba-grapesjs-panel__content"></div>
+            <div id="gjs-traits-container" class="jaraba-grapesjs-panel__content" hidden></div>
+            <div id="gjs-layers-container" class="jaraba-grapesjs-panel__content" hidden></div>
+            <div id="gjs-design-container" class="jaraba-grapesjs-panel__content" hidden>
+              {# ============================================================
+                 Tab Diseño: Selectores visuales de Header y Footer
+                 Cada variante se muestra como card con thumbnail SVG.
+                 ============================================================ #}
+              <div class="variant-selector" id="variant-selector">
+
+                {# ── Header Variants ── #}
+                <div class="variant-selector__section">
+                  <h3 class="variant-selector__title">
+                    {{ jaraba_icon('ui', 'layout-top', { variant: 'duotone', size: '16px' }) }}
+                    {% trans %}Encabezado{% endtrans %}
+                  </h3>
+                  <div class="variant-selector__grid" data-variant-type="header">
+
+                    {# Classic: Logo izq + Nav horizontal #}
+                    <button type="button"
+                            class="variant-selector__card{{ header_data.config.current|default('classic') == 'classic' ? ' is-active' : '' }}"
+                            data-variant="classic"
+                            data-variant-type="header"
+                            title="{% trans %}Clásico{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="8" y="14" width="20" height="12" rx="2" fill="currentColor" opacity="0.7"/>
+                          <rect x="36" y="17" width="16" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="56" y="17" width="16" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="76" y="17" width="16" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="96" y="17" width="16" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Clásico{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Centered: Logo centrado + nav debajo #}
+                    <button type="button"
+                            class="variant-selector__card{{ header_data.config.current|default('classic') == 'centered' ? ' is-active' : '' }}"
+                            data-variant="centered"
+                            data-variant-type="header"
+                            title="{% trans %}Centrado{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="45" y="6" width="30" height="12" rx="2" fill="currentColor" opacity="0.7"/>
+                          <rect x="20" y="24" width="14" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="38" y="24" width="14" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="56" y="24" width="14" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="74" y="24" width="14" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="92" y="24" width="14" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Centrado{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Hero: Fullwidth con imagen de fondo #}
+                    <button type="button"
+                            class="variant-selector__card{{ header_data.config.current|default('classic') == 'hero' ? ' is-active' : '' }}"
+                            data-variant="hero"
+                            data-variant-type="header"
+                            title="{% trans %}Hero{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="2" y="2" width="116" height="36" rx="3" fill="currentColor" opacity="0.1"/>
+                          <rect x="8" y="6" width="20" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+                          <rect x="70" y="7" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="86" y="7" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="102" y="7" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="30" y="20" width="60" height="6" rx="1" fill="currentColor" opacity="0.5"/>
+                          <rect x="40" y="30" width="40" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Hero{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Split: Logo izq, nav derecha dividido #}
+                    <button type="button"
+                            class="variant-selector__card{{ header_data.config.current|default('classic') == 'split' ? ' is-active' : '' }}"
+                            data-variant="split"
+                            data-variant-type="header"
+                            title="{% trans %}Dividido{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="8" y="14" width="20" height="12" rx="2" fill="currentColor" opacity="0.7"/>
+                          <line x1="60" y1="8" x2="60" y2="32" stroke="currentColor" opacity="0.15" stroke-width="1"/>
+                          <rect x="70" y="14" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="86" y="14" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="70" y="22" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="86" y="22" width="12" height="5" rx="1" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Dividido{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Minimal: Solo logo + hamburguesa #}
+                    <button type="button"
+                            class="variant-selector__card{{ header_data.config.current|default('classic') == 'minimal' ? ' is-active' : '' }}"
+                            data-variant="minimal"
+                            data-variant-type="header"
+                            title="{% trans %}Minimalista{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="48" y="14" width="24" height="12" rx="2" fill="currentColor" opacity="0.7"/>
+                          <rect x="100" y="15" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+                          <rect x="100" y="19" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+                          <rect x="100" y="23" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Minimalista{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                  </div>
+                </div>
+
+                {# ── Footer Variants ── #}
+                <div class="variant-selector__section">
+                  <h3 class="variant-selector__title">
+                    {{ jaraba_icon('ui', 'layout-bottom', { variant: 'duotone', size: '16px' }) }}
+                    {% trans %}Pie de página{% endtrans %}
+                  </h3>
+                  <div class="variant-selector__grid" data-variant-type="footer">
+
+                    {# Minimal: Solo copyright #}
+                    <button type="button"
+                            class="variant-selector__card{{ footer_data.config.current|default('standard') == 'minimal' ? ' is-active' : '' }}"
+                            data-variant="minimal"
+                            data-variant-type="footer"
+                            title="{% trans %}Minimalista{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="8" y1="12" x2="112" y2="12" stroke="currentColor" opacity="0.15" stroke-width="1"/>
+                          <rect x="38" y="18" width="44" height="6" rx="1" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Minimalista{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Standard: Logo + links + social #}
+                    <button type="button"
+                            class="variant-selector__card{{ footer_data.config.current|default('standard') == 'standard' ? ' is-active' : '' }}"
+                            data-variant="standard"
+                            data-variant-type="footer"
+                            title="{% trans %}Estándar{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="8" y1="6" x2="112" y2="6" stroke="currentColor" opacity="0.15" stroke-width="1"/>
+                          <rect x="8" y="12" width="18" height="10" rx="2" fill="currentColor" opacity="0.6"/>
+                          <rect x="34" y="13" width="20" height="4" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="34" y="19" width="16" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                          <circle cx="90" cy="17" r="4" fill="currentColor" opacity="0.3"/>
+                          <circle cx="102" cy="17" r="4" fill="currentColor" opacity="0.3"/>
+                          <rect x="30" y="30" width="60" height="4" rx="1" fill="currentColor" opacity="0.15"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Estándar{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Mega: Multi-columna + newsletter #}
+                    <button type="button"
+                            class="variant-selector__card{{ footer_data.config.current|default('standard') == 'mega' ? ' is-active' : '' }}"
+                            data-variant="mega"
+                            data-variant-type="footer"
+                            title="{% trans %}Mega{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="8" y1="4" x2="112" y2="4" stroke="currentColor" opacity="0.15" stroke-width="1"/>
+                          <rect x="8" y="8" width="22" height="4" rx="1" fill="currentColor" opacity="0.5"/>
+                          <rect x="8" y="14" width="18" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="8" y="19" width="16" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="38" y="8" width="22" height="4" rx="1" fill="currentColor" opacity="0.5"/>
+                          <rect x="38" y="14" width="18" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="38" y="19" width="16" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="68" y="8" width="22" height="4" rx="1" fill="currentColor" opacity="0.5"/>
+                          <rect x="68" y="14" width="18" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="68" y="19" width="16" height="3" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="98" y="8" width="14" height="4" rx="1" fill="currentColor" opacity="0.5"/>
+                          <rect x="98" y="14" width="14" height="9" rx="2" fill="currentColor" opacity="0.15"/>
+                          <rect x="30" y="30" width="60" height="4" rx="1" fill="currentColor" opacity="0.15"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Mega{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                    {# Split: Dos columnas divididas #}
+                    <button type="button"
+                            class="variant-selector__card{{ footer_data.config.current|default('standard') == 'split' ? ' is-active' : '' }}"
+                            data-variant="split"
+                            data-variant-type="footer"
+                            title="{% trans %}Dividido{% endtrans %}">
+                      <div class="variant-selector__thumb">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="8" y1="6" x2="112" y2="6" stroke="currentColor" opacity="0.15" stroke-width="1"/>
+                          <line x1="60" y1="10" x2="60" y2="34" stroke="currentColor" opacity="0.1" stroke-width="1"/>
+                          <rect x="8" y="12" width="18" height="10" rx="2" fill="currentColor" opacity="0.6"/>
+                          <rect x="8" y="26" width="40" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="68" y="13" width="20" height="4" rx="1" fill="currentColor" opacity="0.3"/>
+                          <rect x="68" y="19" width="16" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                          <rect x="68" y="26" width="24" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                        </svg>
+                      </div>
+                      <span class="variant-selector__label">{% trans %}Dividido{% endtrans %}</span>
+                      <span class="variant-selector__check" aria-hidden="true">✓</span>
+                    </button>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+    </main>
+  </div>
+
+  {# Slide-Panel: ⚙ Configuración de Página #}
+  {% include '@jaraba_page_builder/partials/page-config-panel.html.twig' with { page: page } only %}
+
+  {# Estado de guardado #}
+  <div class="canvas-editor__status" id="save-status" hidden>
+    <span class="canvas-editor__status-icon">{{ jaraba_icon('ui', 'loader', { size: '20px' }) }}</span>
+    <span class="canvas-editor__status-text">{% trans %}Guardando...{% endtrans %}</span>
+  </div>
+</div>

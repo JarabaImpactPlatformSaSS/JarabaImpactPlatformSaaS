@@ -1,0 +1,20 @@
+crm-frontend:
+  version: 1.0.0
+  js:
+    js/crm-particles.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_theme/dashboard
+
+kanban:
+  version: 1.0.0
+  css:
+    theme:
+      css/crm-kanban.css: {}
+  js:
+    js/crm-kanban.js: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/global

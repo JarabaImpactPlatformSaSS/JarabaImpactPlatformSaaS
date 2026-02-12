@@ -1,0 +1,227 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\jaraba_content_hub\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Pager\PagerManagerInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Url;
+use Drupal\jaraba_content_hub\Entity\ContentArticle;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Controller for frontend article listing (tenant editors).
+ *
+ * IMPORTANTE: Este controlador reemplaza el listado de admin para que
+ * los tenants no usen el tema de administración de Drupal.
+ *
+ * @see docs/00_DIRECTRICES_PROYECTO.md section 2.2.2
+ */
+class ArticlesListController extends ControllerBase
+{
+
+    /**
+     * Items per page for pagination.
+     */
+    protected const ITEMS_PER_PAGE = 20;
+
+    /**
+     * The pager manager.
+     */
+    protected PagerManagerInterface $pagerManager;
+
+    /**
+     * The renderer service.
+     */
+    protected RendererInterface $renderer;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static
+    {
+        $instance = parent::create($container);
+        $instance->pagerManager = $container->get('pager.manager');
+        $instance->renderer = $container->get('renderer');
+        return $instance;
+    }
+
+    /**
+     * Lists articles for tenant editors (frontend theme).
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The current request.
+     *
+     * @return array
+     *   Render array for the articles list.
+     */
+    public function list(Request $request): array
+    {
+        $storage = $this->entityTypeManager()->getStorage('content_article');
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->sort('changed', 'DESC');
+
+        // Filtrar por estado si se especifica.
+        $status = $request->query->get('status');
+        if ($status === 'published') {
+            $query->condition('status', 1);
+        } elseif ($status === 'draft') {
+            $query->condition('status', 0);
+        }
+
+        // Búsqueda por título.
+        $search = $request->query->get('q');
+        if ($search) {
+            $query->condition('title', '%' . $search . '%', 'LIKE');
+        }
+
+        // Contar total para paginación.
+        $count_query = clone $query;
+        $total = $count_query->count()->execute();
+
+        // Paginación.
+        $page = $this->pagerManager->createPager($total, self::ITEMS_PER_PAGE)->getCurrentPage();
+        $query->range($page * self::ITEMS_PER_PAGE, self::ITEMS_PER_PAGE);
+
+        $ids = $query->execute();
+        $articles = $storage->loadMultiple($ids);
+
+        // Preparar datos para el template.
+        $rows = [];
+        foreach ($articles as $article) {
+            /** @var \Drupal\jaraba_content_hub\Entity\ContentArticle $article */
+            $rows[] = [
+                'id' => $article->id(),
+                'title' => $article->label(),
+                'status' => $article->isPublished() ? 'published' : 'draft',
+                'status_label' => $article->isPublished() ? $this->t('Published') : $this->t('Draft'),
+                'author' => $article->getOwner()?->getDisplayName() ?? $this->t('Unknown'),
+                'changed' => $article->getChangedTime(),
+                'category' => $article->get('category')->entity?->label() ?? '-',
+                'edit_url' => Url::fromRoute('jaraba_content_hub.articles.edit.frontend', [
+                    'content_article' => $article->id(),
+                ])->toString(),
+                'view_url' => $article->toUrl()->toString(),
+            ];
+        }
+
+        // Estadísticas para cabecera.
+        $all_count = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->count()
+            ->execute();
+        $published_count = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', 1)
+            ->count()
+            ->execute();
+        $draft_count = $all_count - $published_count;
+
+        return [
+            '#theme' => 'content_hub_articles_list',
+            '#articles' => $rows,
+            '#stats' => [
+                'total' => $all_count,
+                'published' => $published_count,
+                'drafts' => $draft_count,
+            ],
+            '#current_filter' => $status ?? 'all',
+            '#search_query' => $search ?? '',
+            '#pager' => [
+                '#type' => 'pager',
+            ],
+            '#back_url' => Url::fromRoute('jaraba_content_hub.dashboard.frontend')->toString(),
+            '#add_url' => Url::fromRoute('jaraba_content_hub.articles.add.frontend')->toString(),
+            '#cache' => [
+                'tags' => ['content_article_list'],
+                'contexts' => ['url.query_args'],
+            ],
+            '#attached' => [
+                'library' => ['ecosistema_jaraba_theme/content-hub'],
+            ],
+        ];
+    }
+
+    /**
+     * Add article form (frontend wrapper).
+     *
+     * Detects AJAX requests and returns only the form HTML for slide-panel.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The current request.
+     *
+     * @return array|\Symfony\Component\HttpFoundation\Response
+     *   Render array or Response for AJAX requests.
+     */
+    public function add(Request $request): array|Response
+    {
+        $article = $this->entityTypeManager()
+            ->getStorage('content_article')
+            ->create();
+
+        $form = $this->entityFormBuilder()->getForm($article, 'add');
+
+        // If AJAX request, return only the form HTML
+        if ($request->isXmlHttpRequest()) {
+            try {
+                // Use render() instead of renderRoot() for proper context handling
+                $html = (string) $this->renderer->render($form);
+                return new Response($html, 200, [
+                    'Content-Type' => 'text/html; charset=UTF-8',
+                ]);
+            } catch (\Exception $e) {
+                // Log error and return user-friendly message
+                \Drupal::logger('jaraba_content_hub')->error('Form render error: @message', [
+                    '@message' => $e->getMessage(),
+                ]);
+                return new Response(
+                    '<div class="slide-panel__error"><p>' . $this->t('Error loading form. Please try again.') . '</p></div>',
+                    500,
+                    ['Content-Type' => 'text/html; charset=UTF-8']
+                );
+            }
+        }
+
+        // Regular request - return full page with theme
+        return [
+            '#theme' => 'content_hub_article_form',
+            '#form' => $form,
+            '#title' => $this->t('New Article'),
+            '#back_url' => Url::fromRoute('jaraba_content_hub.articles.frontend')->toString(),
+            '#attached' => [
+                'library' => ['ecosistema_jaraba_theme/content-hub'],
+            ],
+        ];
+    }
+
+    /**
+     * Edit article form (frontend wrapper).
+     *
+     * @param \Drupal\jaraba_content_hub\Entity\ContentArticle $content_article
+     *   The article to edit.
+     *
+     * @return array
+     *   Render array with entity form.
+     */
+    public function edit(ContentArticle $content_article): array
+    {
+        $form = $this->entityFormBuilder()->getForm($content_article, 'edit');
+
+        return [
+            '#theme' => 'content_hub_article_form',
+            '#form' => $form,
+            '#title' => $this->t('Edit: @title', ['@title' => $content_article->label()]),
+            '#back_url' => Url::fromRoute('jaraba_content_hub.articles.frontend')->toString(),
+            '#attached' => [
+                'library' => ['ecosistema_jaraba_theme/content-hub'],
+            ],
+        ];
+    }
+
+}

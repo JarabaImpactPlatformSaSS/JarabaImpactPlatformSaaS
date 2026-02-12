@@ -1,0 +1,73 @@
+# Links de menú admin para jaraba_groups
+
+# Entrada en /admin/structure para Field UI - Grupos
+entity.collaboration_group.settings:
+  title: 'Grupos de Colaboración'
+  description: 'Configuración de campos de grupos.'
+  route_name: entity.collaboration_group.settings
+  parent: system.admin_structure
+  weight: 50
+
+# Entrada en /admin/structure para Field UI - Membresías
+entity.group_membership.settings:
+  title: 'Membresías de Grupo'
+  description: 'Configuración de campos de membresías.'
+  route_name: entity.group_membership.settings
+  parent: system.admin_structure
+  weight: 51
+
+# Entrada en /admin/structure para Field UI - Discusiones
+entity.group_discussion.settings:
+  title: 'Discusiones de Grupo'
+  description: 'Configuración de campos de discusiones.'
+  route_name: entity.group_discussion.settings
+  parent: system.admin_structure
+  weight: 52
+
+# Entrada en /admin/structure para Field UI - Eventos
+entity.group_event.settings:
+  title: 'Eventos de Grupo'
+  description: 'Configuración de campos de eventos.'
+  route_name: entity.group_event.settings
+  parent: system.admin_structure
+  weight: 53
+
+# Entrada en /admin/structure para Field UI - Recursos
+entity.group_resource.settings:
+  title: 'Recursos de Grupo'
+  description: 'Configuración de campos de recursos.'
+  route_name: entity.group_resource.settings
+  parent: system.admin_structure
+  weight: 54
+
+# Entrada en /admin/content - Grupos
+entity.collaboration_group.collection:
+  title: 'Grupos de Colaboración'
+  description: 'Gestionar grupos de emprendedores.'
+  route_name: entity.collaboration_group.collection
+  parent: system.admin_content
+  weight: 50
+
+# Entrada en /admin/content - Eventos
+entity.group_event.collection:
+  title: 'Eventos de Grupo'
+  description: 'Gestionar eventos y webinars.'
+  route_name: entity.group_event.collection
+  parent: system.admin_content
+  weight: 51
+
+# Entrada en /admin/content - Discusiones
+entity.group_discussion.collection:
+  title: 'Discusiones de Grupo'
+  description: 'Gestionar hilos del foro.'
+  route_name: entity.group_discussion.collection
+  parent: system.admin_content
+  weight: 52
+
+# Entrada en /admin/content - Recursos
+entity.group_resource.collection:
+  title: 'Recursos Compartidos'
+  description: 'Gestionar biblioteca de recursos.'
+  route_name: entity.group_resource.collection
+  parent: system.admin_content
+  weight: 53

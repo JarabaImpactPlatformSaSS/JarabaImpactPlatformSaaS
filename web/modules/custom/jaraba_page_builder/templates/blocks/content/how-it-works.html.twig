@@ -1,0 +1,86 @@
+{#
+/**
+ * @file
+ * Template para el bloque Cómo Funciona.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout_class = content.layout|default('horizontal') %}
+{% set steps = content.steps|default([]) %}
+
+<section class="jaraba-how-it-works jaraba-how-it-works--{{ bg_class }} jaraba-how-it-works--{{ layout_class }} jaraba-block"
+         aria-labelledby="how-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-how-it-works__header">
+      {% if content.eyebrow %}
+        <span class="jaraba-block__eyebrow">{{ content.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 id="how-title" class="jaraba-block__title">{{ content.title|default('Cómo funciona'|trans) }}</h2>
+      
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Grid de pasos #}
+    {% if steps is not empty %}
+      <div class="jaraba-how-it-works__steps {{ content.show_connector ? 'jaraba-how-it-works__steps--connected' : '' }}">
+        {% for step in steps %}
+          <article class="jaraba-step {{ loop.last ? 'jaraba-step--last' : '' }}">
+            
+            {# Número del paso #}
+            <div class="jaraba-step__number">
+              <span>{{ step.number|default(loop.index) }}</span>
+            </div>
+            
+            {# Conector #}
+            {% if content.show_connector and not loop.last %}
+              <div class="jaraba-step__connector"></div>
+            {% endif %}
+            
+            {# Contenido #}
+            <div class="jaraba-step__content">
+              {% if step.icon %}
+                <div class="jaraba-step__icon">
+                  {{ jaraba_icon('ui', step.icon, { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
+                </div>
+              {% endif %}
+              
+              {% if step.image %}
+                <div class="jaraba-step__image">
+                  <img src="{{ step.image }}" alt="{{ step.title }}" loading="lazy">
+                </div>
+              {% endif %}
+              
+              <h3 class="jaraba-step__title">{{ step.title }}</h3>
+              
+              {% if step.description %}
+                <p class="jaraba-step__description">{{ step.description }}</p>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# CTA #}
+    {% if content.cta.text %}
+      <div class="jaraba-how-it-works__cta">
+        <a href="{{ content.cta.url|default('#') }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+          {{ content.cta.text }}
+        </a>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

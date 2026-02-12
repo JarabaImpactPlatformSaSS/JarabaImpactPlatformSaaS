@@ -1,0 +1,96 @@
+{#
+/**
+ * @file
+ * Template para el bloque Hero con Vídeo de Fondo.
+ *
+ * Hero section premium con vídeo en loop como fondo, overlay configurable
+ * y contenido centrado con CTAs. Impacto visual máximo para landing pages.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set overlay = content.overlay_style|default('gradient') %}
+{% set opacity = content.overlay_opacity|default(60) %}
+{% set alignment = content.content_alignment|default('center') %}
+{% set height = content.height|default('tall') %}
+{% set has_scroll = content.scroll_indicator|default(true) %}
+
+<section class="jaraba-video-hero jaraba-video-hero--{{ height }} jaraba-video-hero--align-{{ alignment }} jaraba-block jaraba-block--premium">
+  
+  {# Video Background #}
+  <div class="jaraba-video-hero__bg">
+    <video class="jaraba-video-hero__video"
+           autoplay
+           muted
+           loop
+           playsinline
+           {% if content.poster_image %}poster="{{ content.poster_image }}"{% endif %}>
+      <source src="{{ content.video_url }}" type="video/mp4">
+    </video>
+    
+    {# Overlay #}
+    <div class="jaraba-video-hero__overlay jaraba-video-hero__overlay--{{ overlay }}" 
+         style="--overlay-opacity: {{ opacity / 100 }};"></div>
+  </div>
+  
+  {# Content #}
+  <div class="jaraba-video-hero__content">
+    <div class="jaraba-block__container">
+      <div class="jaraba-video-hero__inner">
+        
+        {# Badge (optional decorative) #}
+        <div class="jaraba-video-hero__badge">
+          <span class="jaraba-video-hero__badge-dot"></span>
+          {% trans %}Premium Experience{% endtrans %}
+        </div>
+        
+        {# Title #}
+        {% if content.title %}
+          <h1 class="jaraba-video-hero__title">
+            {{ content.title }}
+          </h1>
+        {% endif %}
+        
+        {# Subtitle #}
+        {% if content.subtitle %}
+          <p class="jaraba-video-hero__subtitle">
+            {{ content.subtitle }}
+          </p>
+        {% endif %}
+        
+        {# CTAs #}
+        {% if content.cta_text or content.secondary_cta_text %}
+          <div class="jaraba-video-hero__ctas">
+            {% if content.cta_text %}
+              <a href="{{ content.cta_url|default('#') }}" class="jaraba-video-hero__cta jaraba-video-hero__cta--primary">
+                {{ content.cta_text }}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '20px' }) }}
+              </a>
+            {% endif %}
+            {% if content.secondary_cta_text %}
+              <a href="{{ content.secondary_cta_url|default('#') }}" class="jaraba-video-hero__cta jaraba-video-hero__cta--secondary">
+                {{ jaraba_icon('ui', 'play', { size: '20px' }) }}
+                {{ content.secondary_cta_text }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>
+  
+  {# Scroll Indicator #}
+  {% if has_scroll %}
+    <div class="jaraba-video-hero__scroll-indicator" aria-hidden="true">
+      <div class="jaraba-video-hero__scroll-mouse">
+        <div class="jaraba-video-hero__scroll-wheel"></div>
+      </div>
+      <span class="jaraba-video-hero__scroll-text">{% trans %}Scroll{% endtrans %}</span>
+    </div>
+  {% endif %}
+  
+  {# Decorative Bottom Fade #}
+  <div class="jaraba-video-hero__bottom-fade"></div>
+  
+</section>

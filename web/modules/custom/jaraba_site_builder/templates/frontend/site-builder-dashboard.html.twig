@@ -1,0 +1,191 @@
+{#
+/**
+ * @file
+ * site-builder-dashboard.html.twig - Dashboard frontend del Site Builder.
+ *
+ * ARQUITECTURA:
+ * - Este template se renderiza dentro de page--site-builder.html.twig
+ * - Sin regiones de admin ni toolbar
+ * - Tabs de navegación entre secciones
+ * - Sprint B1: KPIs glassmorphism + árbol + preview lateral
+ *
+ * @see content-hub-dashboard-frontend.html.twig (patrón de referencia)
+ * @see .agent/workflows/slide-panel-modales.md
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/site-builder') }}
+
+<div class="site-builder-frontend site-builder-dashboard">
+  {# Navegación por tabs #}
+  <nav class="site-builder-tabs" aria-label="{% trans %}Site Builder Navigation{% endtrans %}">
+    <ul class="site-builder-tabs__list">
+      {% for tab in tabs %}
+        <li class="site-builder-tabs__item">
+          <a href="{{ tab.url }}" 
+             class="site-builder-tabs__link {{ tab.active ? 'is-active' : '' }}"
+             {% if tab.active %}aria-current="page"{% endif %}>
+            {{ tab.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  {# Header del dashboard con partículas (mismo patrón que content-hub) #}
+  <header class="dashboard-header dashboard-header--premium dashboard-header--corporate">
+    {# Canvas de partículas #}
+    <canvas id="site-builder-particles" class="dashboard-header__particles" aria-hidden="true"></canvas>
+    
+    <div class="dashboard-header__content">
+      <h1 class="dashboard-header__title">{% trans %}Constructor del Sitio{% endtrans %}</h1>
+      <p class="dashboard-header__subtitle">
+        {% trans %}Gestiona la estructura, navegación y configuración de tu sitio web.{% endtrans %}
+      </p>
+    </div>
+    {% if can_edit %}
+    <div class="dashboard-header__actions">
+      <a href="/page-builder/templates/ajax" 
+         class="btn btn--primary btn--glow"
+         data-slide-panel="large"
+         data-slide-panel-title="{% trans %}Nueva Página{% endtrans %}">
+        {{ jaraba_icon('ui', 'plus', { color: 'neutral', size: '16px' }) }}
+        {% trans %}Nueva Página{% endtrans %}
+      </a>
+    </div>
+    {% endif %}
+  </header>
+
+  {# Sprint B1: KPIs glassmorphism row #}
+  <section class="dashboard-kpis" aria-label="{% trans %}Estadísticas del sitio{% endtrans %}">
+    {# Total páginas #}
+    <div class="site-kpi-card site-kpi-card--total">
+      <div class="site-kpi-card__icon">
+        {{ jaraba_icon('ui', 'document', { color: 'corporate', size: '24px' }) }}
+      </div>
+      <div class="site-kpi-card__value" data-value="{{ kpis.total_pages|default(0) }}">0</div>
+      <div class="site-kpi-card__label">{% trans %}Total Páginas{% endtrans %}</div>
+    </div>
+
+    {# Publicadas #}
+    <div class="site-kpi-card site-kpi-card--published">
+      <div class="site-kpi-card__icon">
+        {{ jaraba_icon('ui', 'check', { variant: 'duotone', color: 'success', size: '24px' }) }}
+      </div>
+      <div class="site-kpi-card__value" data-value="{{ kpis.published_pages|default(0) }}">0</div>
+      <div class="site-kpi-card__label">{% trans %}Publicadas{% endtrans %}</div>
+    </div>
+
+    {# SEO Score #}
+    <div class="site-kpi-card site-kpi-card--seo">
+      <div class="site-kpi-card__icon">
+        {{ jaraba_icon('ui', 'bolt', { variant: 'duotone', color: 'innovation', size: '24px' }) }}
+      </div>
+      <div class="site-kpi-card__value" data-value="{{ kpis.seo_score|default('—') }}">
+        {{ kpis.seo_score is not null ? kpis.seo_score : '—' }}
+      </div>
+      <div class="site-kpi-card__label">{% trans %}SEO Score{% endtrans %}</div>
+    </div>
+
+    {# Última actualización #}
+    <div class="site-kpi-card site-kpi-card--updated">
+      <div class="site-kpi-card__icon">
+        {{ jaraba_icon('ui', 'clock', { color: 'warning', size: '24px' }) }}
+      </div>
+      <div class="site-kpi-card__value" data-value="{{ kpis.last_updated_formatted|default('—') }}">
+        {{ kpis.last_updated_formatted|default('—') }}
+      </div>
+      <div class="site-kpi-card__label">{% trans %}Última Actualización{% endtrans %}</div>
+    </div>
+  </section>
+
+  {# Layout 2 columnas: Árbol + Preview #}
+  <div class="site-builder-layout site-builder-layout--with-preview">
+    {# Columna principal: Árbol de navegación #}
+    <main class="site-builder-main">
+      <section class="dashboard-panel">
+        <h2 class="dashboard-panel__title">{% trans %}Árbol de Navegación{% endtrans %}</h2>
+        
+        {% if tree|length > 0 %}
+          <div id="site-tree-container" class="site-tree-manager" data-tree="{{ tree|json_encode }}">
+            <ul class="site-tree-list">
+              {% for node in tree %}
+                {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {'node': node, 'depth': 0} %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <p>{% trans %}No hay páginas en el árbol de navegación.{% endtrans %}</p>
+            <a href="/page-builder/templates/ajax" 
+               class="btn btn--primary"
+               data-slide-panel="large"
+               data-slide-panel-title="{% trans %}Nueva Página{% endtrans %}">
+              {% trans %}Crear primera página{% endtrans %}
+            </a>
+          </div>
+        {% endif %}
+      </section>
+    </main>
+
+    {# Sidebar: Preview en vivo + Acciones rápidas #}
+    <aside class="site-builder-sidebar">
+      {# Preview panel (Sprint B1) #}
+      <section class="dashboard-panel site-preview">
+        <h3 class="dashboard-panel__title site-preview__header">
+          {% trans %}Vista Previa{% endtrans %}
+          <span class="site-preview__page-title"></span>
+        </h3>
+        <div class="site-preview__container">
+          <div class="site-preview__empty">
+            {{ jaraba_icon('ui', 'monitor', { color: 'neutral', size: '40px' }) }}
+            <p>{% trans %}Haz clic en una página del árbol para ver la vista previa{% endtrans %}</p>
+          </div>
+          <iframe class="site-preview__iframe" hidden
+                  title="{% trans %}Vista previa de la página{% endtrans %}"
+                  sandbox="allow-same-origin allow-scripts">
+          </iframe>
+        </div>
+      </section>
+
+      {# Acciones rápidas #}
+      <section class="dashboard-panel">
+        <h3 class="dashboard-panel__title">{% trans %}Acciones Rápidas{% endtrans %}</h3>
+        <div class="quick-actions--vertical">
+          <a href="/page-builder/templates/ajax" 
+             class="quick-action"
+             data-slide-panel="large"
+             data-slide-panel-title="{% trans %}Nueva Página{% endtrans %}">
+            <span class="quick-action__icon quick-action__icon--primary">
+              {{ jaraba_icon('ui', 'plus', { color: 'corporate', size: '20px' }) }}
+            </span>
+            <span class="quick-action__title">{% trans %}Nueva Página{% endtrans %}</span>
+          </a>
+          <a href="/site-builder/tree" class="quick-action">
+            <span class="quick-action__icon">
+              {{ jaraba_icon('ui', 'list', { color: 'neutral', size: '20px' }) }}
+            </span>
+            <span class="quick-action__title">{% trans %}Gestionar Árbol{% endtrans %}</span>
+          </a>
+          <a href="/site-builder/config" class="quick-action">
+            <span class="quick-action__icon">
+              {{ jaraba_icon('ui', 'cog', { color: 'neutral', size: '20px' }) }}
+            </span>
+            <span class="quick-action__title">{% trans %}Configuración{% endtrans %}</span>
+          </a>
+          <a href="/site-builder/redirects" class="quick-action">
+            <span class="quick-action__icon">
+              {{ jaraba_icon('ui', 'arrow-right', { color: 'neutral', size: '20px' }) }}
+            </span>
+            <span class="quick-action__title">{% trans %}Redirects{% endtrans %}</span>
+          </a>
+          <a href="/site-builder/sitemap" class="quick-action">
+            <span class="quick-action__icon">
+              {{ jaraba_icon('ui', 'globe', { color: 'neutral', size: '20px' }) }}
+            </span>
+            <span class="quick-action__title">{% trans %}Sitemap{% endtrans %}</span>
+          </a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

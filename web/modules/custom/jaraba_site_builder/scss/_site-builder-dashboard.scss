@@ -1,0 +1,236 @@
+/**
+ * @file
+ * Sprint B1: Dashboard Premium — Glassmorphism KPIs y Preview Panel.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_site_builder && npx sass scss/main.scss css/site-builder.css --style=compressed"
+ */
+
+// ---------------------------------------------------------------------------
+// KPI Cards Row — Glassmorphism premium
+// ---------------------------------------------------------------------------
+
+.dashboard-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ej-spacing-md, 16px);
+    margin: var(--ej-spacing-lg, 24px) 0;
+}
+
+.site-kpi-card {
+    position: relative;
+    overflow: hidden;
+    padding: var(--ej-spacing-lg, 24px);
+    border-radius: var(--ej-radius-lg, 12px);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+
+    // Glassmorphism base
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    // Decorative gradient line at top
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: var(--ej-radius-lg, 12px) var(--ej-radius-lg, 12px) 0 0;
+    }
+
+    // Color variants
+    // Variantes de color — Paleta oficial Jaraba
+    &--total::before {
+        background: linear-gradient(90deg,
+                var(--ej-color-primary, #4F46E5),
+                var(--ej-color-corporate, #233D63));
+    }
+
+    &--published::before {
+        background: linear-gradient(90deg,
+                var(--ej-color-success, #10B981),
+                var(--ej-color-success-light, #34D399));
+    }
+
+    &--seo::before {
+        background: linear-gradient(90deg,
+                var(--ej-color-secondary, #7C3AED),
+                var(--ej-color-secondary-light, #A78BFA));
+    }
+
+    &--updated::before {
+        background: linear-gradient(90deg,
+                var(--ej-color-warning, #F59E0B),
+                var(--ej-color-warning-light, #FBBF24));
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto var(--ej-spacing-sm, 12px);
+        border-radius: var(--ej-radius-md, 8px);
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--ej-color-primary, #4F46E5);
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &--total .site-kpi-card__icon {
+        color: var(--ej-color-primary, #4F46E5);
+    }
+
+    &--published .site-kpi-card__icon {
+        color: var(--ej-color-success, #10B981);
+    }
+
+    &--seo .site-kpi-card__icon {
+        color: var(--ej-color-secondary, #7C3AED);
+    }
+
+    &--updated .site-kpi-card__icon {
+        color: var(--ej-color-warning, #F59E0B);
+    }
+
+    &__value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ej-text-primary, #111827);
+        line-height: 1.2;
+        margin-bottom: var(--ej-spacing-xs, 8px);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-text-muted, #6B7280);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Layout con preview lateral
+// ---------------------------------------------------------------------------
+
+.site-builder-layout--with-preview {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--ej-spacing-lg, 24px);
+    align-items: start;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Preview Panel
+// ---------------------------------------------------------------------------
+
+.site-preview {
+    position: sticky;
+    top: var(--ej-spacing-lg, 24px);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 12px);
+    }
+
+    &__page-title {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 400;
+        color: var(--ej-text-muted, #6B7280);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__container {
+        border: 1px solid var(--ej-border-color, #E5E7EB);
+        border-radius: var(--ej-radius-md, 8px);
+        overflow: hidden;
+        background: var(--ej-bg-muted, #F3F4F6);
+        min-height: 400px;
+    }
+
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ej-spacing-sm, 12px);
+        padding: var(--ej-spacing-xl, 32px);
+        text-align: center;
+        min-height: 400px;
+        color: var(--ej-text-muted, #6B7280);
+
+        svg {
+            opacity: 0.4;
+        }
+
+        p {
+            margin: 0;
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            max-width: 220px;
+        }
+    }
+
+    &__iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+        background: var(--ej-bg-surface, #FFFFFF);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Tree node preview active state
+// ---------------------------------------------------------------------------
+
+.site-tree-node--preview-active {
+    > .site-tree__node {
+        background: color-mix(in srgb, var(--ej-color-primary, #4F46E5) 6%, transparent);
+        border-left: 3px solid var(--ej-color-primary, #4F46E5);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Dark mode (tenant CSS custom properties override)
+// ---------------------------------------------------------------------------
+
+@media (prefers-color-scheme: dark) {
+    .site-kpi-card {
+        background: rgba(30, 30, 40, 0.6);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+        &__value {
+            color: var(--ej-text-primary, #F1F5F9);
+        }
+    }
+}

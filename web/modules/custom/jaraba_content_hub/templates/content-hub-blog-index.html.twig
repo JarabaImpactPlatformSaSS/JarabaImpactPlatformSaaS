@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * Template: Blog index page (sin regiones de Drupal).
+ *
+ * Variables:
+ * - title: Título del blog
+ * - articles: Array de artículos
+ * - categories: Array de categorías
+ * - trending: Array de artículos trending
+ * - show_reading_time: Boolean
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+
+<div class="page-wrapper page-wrapper--clean">
+  {# LOW-09: Header with only to prevent scope leakage #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } only %}
+
+  <main class="blog-page">
+    {# Hero section #}
+    <section class="blog-hero">
+      <div class="container">
+        <h1 class="blog-hero__title">{{ title }}</h1>
+        <p class="blog-hero__subtitle">
+          {% trans %}Discover insights, tips, and stories from our community.{% endtrans %}
+        </p>
+      </div>
+    </section>
+
+    {# Category filter #}
+    <section class="blog-filters">
+      <div class="container">
+        {% include '@ecosistema_jaraba_theme/partials/_category-filter.html.twig' with {
+          categories: categories,
+          show_all_link: true,
+          all_url: '/blog'
+        } only %}
+      </div>
+    </section>
+
+    {# Articles grid #}
+    <section class="blog-content">
+      <div class="container">
+        <div class="blog-grid">
+          {# Main content #}
+          <div class="blog-grid__main">
+            {% if articles is not empty %}
+              <div class="articles-grid">
+                {% for article in articles %}
+                  {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+                    article: article,
+                    show_reading_time: show_reading_time,
+                    variant: loop.first ? 'featured' : 'standard'
+                  } only %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="blog-empty">
+                <p>{% trans %}No articles found.{% endtrans %}</p>
+              </div>
+            {% endif %}
+          </div>
+
+          {# Sidebar #}
+          <aside class="blog-grid__sidebar">
+            {# Trending widget #}
+            {% if trending is not empty %}
+              <div class="sidebar-widget">
+                <h3 class="sidebar-widget__title">
+                  {% trans %}Trending{% endtrans %}
+                </h3>
+                <ol class="trending-list">
+                  {% for item in trending %}
+                    <li class="trending-list__item">
+                      <a href="{{ item.url }}">{{ item.title }}</a>
+                    </li>
+                  {% endfor %}
+                </ol>
+              </div>
+            {% endif %}
+
+            {# Newsletter widget #}
+            <div class="sidebar-widget sidebar-widget--newsletter">
+              <h3 class="sidebar-widget__title">
+                {% trans %}Subscribe to our newsletter{% endtrans %}
+              </h3>
+              <p class="sidebar-widget__text">
+                {% trans %}Get the latest articles delivered to your inbox.{% endtrans %}
+              </p>
+              <form class="newsletter-form" action="/newsletter/subscribe" method="post">
+                <input 
+                  type="email" 
+                  name="email" 
+                  class="newsletter-form__input" 
+                  placeholder="{% trans %}Your email{% endtrans %}"
+                  required
+                >
+                <button type="submit" class="newsletter-form__button">
+                  {% trans %}Subscribe{% endtrans %}
+                </button>
+              </form>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {# Footer del tema #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}
+</div>

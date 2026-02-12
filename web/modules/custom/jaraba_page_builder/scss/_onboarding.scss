@@ -1,0 +1,181 @@
+/**
+ * @file
+ * Estilos del Onboarding Tour para el Canvas Editor.
+ *
+ * DIRECTRICES SCSS:
+ * - Solo var(--ej-*, $fallback) para colores/espaciados.
+ * - No hardcodear hex fuera de fallbacks.
+ * - Transiciones con tokens $ej-transition-*.
+ *
+ * @see docs/planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md §3
+ */
+
+// =============================================================================
+// ONBOARDING TOUR — POPOVER OVERRIDES
+// =============================================================================
+
+.jaraba-onboarding__popover {
+    // Override Driver.js defaults para alinearse con design system.
+
+    &.driver-popover {
+        background: var(--ej-bg-surface, #ffffff);
+        border: 1px solid var(--ej-border-color, #e2e8f0);
+        border-radius: var(--ej-radius-lg, 14px);
+        box-shadow: var(--ej-shadow-xl, 0 16px 48px rgba(0, 0, 0, 0.18));
+        padding: 1.25rem 1.5rem;
+        font-family: var(--ej-font-family, 'Inter', sans-serif);
+        max-width: 360px;
+    }
+
+    .driver-popover-title {
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        font-weight: 600;
+        color: var(--ej-color-text, #212121);
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    .driver-popover-description {
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-muted, #616161);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    // Botones de navegación.
+    .driver-popover-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .driver-popover-prev-btn,
+    .driver-popover-next-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: var(--ej-radius-md, 10px);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 200ms ease;
+        border: none;
+        line-height: 1.4;
+    }
+
+    .driver-popover-prev-btn {
+        background: var(--ej-bg-secondary, #f1f5f9);
+        color: var(--ej-color-text, #212121);
+
+        &:hover {
+            background: var(--ej-bg-tertiary, #e2e8f0);
+        }
+    }
+
+    .driver-popover-next-btn {
+        background: var(--ej-color-innovation, #00A9A5);
+        color: #ffffff;
+
+        &:hover {
+            background: var(--ej-color-innovation-hover, #008F8C);
+            transform: translateY(-1px);
+            box-shadow: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.10));
+        }
+    }
+
+    // Progreso (ej: "3 de 8").
+    .driver-popover-progress-text {
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-text-muted, #9e9e9e);
+        font-weight: 500;
+    }
+
+    // Botón de cerrar.
+    .driver-popover-close-btn {
+        color: var(--ej-color-text-muted, #9e9e9e);
+        font-size: 1.25rem;
+        opacity: 0.7;
+        transition: opacity 200ms ease;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// =============================================================================
+// OVERLAY DE DRIVER.JS
+// =============================================================================
+
+.driver-overlay {
+    // Suavizar la transición de overlay.
+    transition: opacity 250ms ease;
+}
+
+// Highlight del elemento seleccionado.
+.driver-active-element {
+    outline: 2px solid var(--ej-color-innovation, #00A9A5) !important;
+    outline-offset: 4px;
+    border-radius: var(--ej-radius-md, 10px);
+}
+
+// =============================================================================
+// BOTÓN DE AYUDA "?"
+// =============================================================================
+
+.jaraba-onboarding__help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ej-radius-full, 9999px);
+    background: var(--ej-bg-secondary, #f1f5f9);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    color: var(--ej-color-text-muted, #616161);
+    cursor: pointer;
+    transition: all 200ms ease;
+    padding: 0;
+    margin-left: 0.5rem;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        background: var(--ej-color-innovation, #00A9A5);
+        color: #ffffff;
+        border-color: var(--ej-color-innovation, #00A9A5);
+        transform: scale(1.08);
+        box-shadow: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.10));
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ej-color-innovation, #00A9A5);
+        outline-offset: 2px;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// =============================================================================
+// PREFERS REDUCED MOTION
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+
+    .jaraba-onboarding__popover,
+    .driver-overlay,
+    .driver-active-element,
+    .jaraba-onboarding__help-btn {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .jaraba-onboarding__help-btn:hover {
+        transform: none;
+    }
+}

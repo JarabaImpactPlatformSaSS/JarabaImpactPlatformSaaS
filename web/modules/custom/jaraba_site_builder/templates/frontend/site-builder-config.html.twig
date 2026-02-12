@@ -1,0 +1,33 @@
+{#
+/**
+ * @file
+ * site-builder-config.html.twig - Configuración del sitio frontend.
+ */
+#}
+<div class="site-builder-frontend site-builder-config">
+  {# Navegación por tabs #}
+  <nav class="site-builder-tabs" aria-label="{% trans %}Site Builder Navigation{% endtrans %}">
+    <ul class="site-builder-tabs__list">
+      {% for tab in tabs %}
+        <li class="site-builder-tabs__item">
+          <a href="{{ tab.url }}" 
+             class="site-builder-tabs__link {{ tab.active ? 'is-active' : '' }}"
+             {% if tab.active %}aria-current="page"{% endif %}>
+            {{ tab.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <header class="dashboard-header--premium">
+    <h1 class="dashboard-header__title">{% trans %}Configuración del Sitio{% endtrans %}</h1>
+    <p class="dashboard-header__subtitle">
+      {% trans %}Configura el nombre, logo, favicon y metadatos de tu sitio.{% endtrans %}
+    </p>
+  </header>
+
+  <section class="dashboard-panel site-config-form-wrapper">
+    {{ form }}
+  </section>
+</div>

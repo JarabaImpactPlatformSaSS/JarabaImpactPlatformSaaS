@@ -1,0 +1,107 @@
+{#
+/**
+ * @file
+ * Template para el bloque Calendario de Eventos.
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('light') %}
+{% set layout_class = content.layout|default('cards') %}
+{% set events = content.events|default([]) %}
+
+<section class="jaraba-event-calendar jaraba-event-calendar--{{ bg_class }} jaraba-block"
+         aria-labelledby="events-title">
+  <div class="jaraba-block__container">
+    
+    {# Header #}
+    <header class="jaraba-event-calendar__header">
+      <div class="jaraba-event-calendar__header-main">
+        <h2 id="events-title" class="jaraba-block__title">
+          {{ content.title|default('Próximos Eventos'|trans) }}
+        </h2>
+        {% if content.subtitle %}
+          <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+        {% endif %}
+      </div>
+      
+      {% if content.show_subscribe %}
+        <a href="#" class="jaraba-btn jaraba-btn--outline" data-calendar-subscribe>
+          {{ jaraba_icon('ui', 'calendar-plus', { size: '18px' }) }}
+          {{ content.subscribe_text|default('Suscríbete al calendario'|trans) }}
+        </a>
+      {% endif %}
+    </header>
+
+    {# Grid de eventos #}
+    {% if events is not empty %}
+      <div class="jaraba-event-calendar__grid jaraba-event-calendar__grid--{{ layout_class }}">
+        {% for event in events %}
+          <article class="jaraba-event-card {{ event.is_featured ? 'jaraba-event-card--featured' : '' }}">
+            {# Imagen #}
+            {% if event.image %}
+              <a href="{{ event.url }}" class="jaraba-event-card__image-wrapper">
+                <img src="{{ event.image }}" 
+                     alt="{{ event.title }}"
+                     class="jaraba-event-card__image"
+                     loading="lazy">
+              </a>
+            {% endif %}
+            
+            {# Fecha visual #}
+            <div class="jaraba-event-card__date-badge">
+              <span class="jaraba-event-card__date-day">{{ event.date|date('d') }}</span>
+              <span class="jaraba-event-card__date-month">{{ event.date|date('M') }}</span>
+            </div>
+            
+            {# Info #}
+            <div class="jaraba-event-card__info">
+              {% if event.category %}
+                <span class="jaraba-event-card__category">{{ event.category }}</span>
+              {% endif %}
+              
+              <h3 class="jaraba-event-card__title">
+                <a href="{{ event.url }}">{{ event.title }}</a>
+              </h3>
+              
+              <div class="jaraba-event-card__meta">
+                {% if event.time %}
+                  <span class="jaraba-event-card__time">
+                    {{ jaraba_icon('ui', 'clock', { size: '14px', color: 'neutral' }) }}
+                    {{ event.time }}
+                  </span>
+                {% endif %}
+                {% if event.location %}
+                  <span class="jaraba-event-card__location">
+                    {{ jaraba_icon('ui', 'location', { size: '14px', color: 'neutral' }) }}
+                    {{ event.location }}
+                  </span>
+                {% endif %}
+              </div>
+              
+              {% if event.description %}
+                <p class="jaraba-event-card__description">{{ event.description }}</p>
+              {% endif %}
+              
+              <a href="{{ event.url }}" class="jaraba-event-card__link">
+                {% trans %}Ver detalles{% endtrans %}
+                {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="jaraba-event-calendar__empty">
+        {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '48px', color: 'neutral' }) }}
+        <p>{% trans %}No hay eventos próximos programados.{% endtrans %}</p>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * help-center-article.html.twig — Vista individual de artículo de ayuda.
+ *
+ * Variables:
+ * - faq: Array con keys: id, question, answer, category, category_label, created.
+ * - related: Array de artículos relacionados con keys: id, question.
+ */
+#}
+
+<div class="help-article">
+  {# Breadcrumb #}
+  <nav class="help-article__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+    <a href="{{ path('jaraba_tenant_knowledge.help.index') }}" class="help-article__breadcrumb-link">
+      {% trans %}Centro de Ayuda{% endtrans %}
+    </a>
+    <span class="help-article__breadcrumb-sep">/</span>
+    <a href="{{ path('jaraba_tenant_knowledge.help.index') }}#category-{{ faq.category }}" class="help-article__breadcrumb-link">
+      {{ faq.category_label }}
+    </a>
+    <span class="help-article__breadcrumb-sep">/</span>
+    <span class="help-article__breadcrumb-current">{{ faq.question|length > 60 ? faq.question|slice(0, 60) ~ '...' : faq.question }}</span>
+  </nav>
+
+  {# Contenido principal #}
+  <article class="help-article__content">
+    <header class="help-article__header">
+      <span class="help-article__category-badge">{{ faq.category_label }}</span>
+      <h1 class="help-article__title">{{ faq.question }}</h1>
+    </header>
+
+    <div class="help-article__body">
+      {{ faq.answer|raw }}
+    </div>
+
+    <footer class="help-article__footer">
+      <div class="help-article__feedback">
+        <span class="help-article__feedback-label">{% trans %}¿Te resultó útil este artículo?{% endtrans %}</span>
+        <button class="help-article__feedback-btn help-article__feedback-btn--yes" data-feedback="yes" data-faq-id="{{ faq.id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+          {% trans %}Sí{% endtrans %}
+        </button>
+        <button class="help-article__feedback-btn help-article__feedback-btn--no" data-feedback="no" data-faq-id="{{ faq.id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+          </svg>
+          {% trans %}No{% endtrans %}
+        </button>
+      </div>
+    </footer>
+  </article>
+
+  {# Artículos relacionados #}
+  {% if related is not empty %}
+    <aside class="help-article__related">
+      <h2 class="help-article__related-title">{% trans %}Artículos Relacionados{% endtrans %}</h2>
+      <ul class="help-article__related-list">
+        {% for rel in related %}
+          <li>
+            <a href="{{ path('jaraba_tenant_knowledge.help.article', { faq_id: rel.id }) }}" class="help-article__related-link">
+              {{ rel.question }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
+  {% endif %}
+
+  {# Botón volver #}
+  <div class="help-article__back">
+    <a href="{{ path('jaraba_tenant_knowledge.help.index') }}" class="help-article__back-link">
+      ← {% trans %}Volver al Centro de Ayuda{% endtrans %}
+    </a>
+  </div>
+</div>
