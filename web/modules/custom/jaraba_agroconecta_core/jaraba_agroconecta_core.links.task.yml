@@ -1,0 +1,187 @@
+# Pestañas en /admin/content
+# Las entidades aparecen como tabs junto a Contenido, Bloques, etc.
+
+entity.product_agro.collection:
+  title: 'Productos Agro'
+  route_name: entity.product_agro.collection
+  base_route: system.admin_content
+  weight: 40
+
+entity.producer_profile.collection:
+  title: 'Productores'
+  route_name: entity.producer_profile.collection
+  base_route: system.admin_content
+  weight: 41
+
+entity.agro_certification.collection:
+  title: 'Certificaciones Agro'
+  route_name: entity.agro_certification.collection
+  base_route: system.admin_content
+  weight: 42
+
+entity.order_agro.collection:
+  title: 'Pedidos Agro'
+  route_name: entity.order_agro.collection
+  base_route: system.admin_content
+  weight: 43
+
+entity.suborder_agro.collection:
+  title: 'Sub-pedidos Agro'
+  route_name: entity.suborder_agro.collection
+  base_route: system.admin_content
+  weight: 44
+
+# Fase 4: Reviews + Notificaciones
+
+entity.review_agro.collection:
+  title: 'Reseñas Agro'
+  route_name: entity.review_agro.collection
+  base_route: system.admin_content
+  weight: 45
+
+entity.notification_template_agro.collection:
+  title: 'Plantillas Notificación Agro'
+  route_name: entity.notification_template_agro.collection
+  base_route: system.admin_content
+  weight: 46
+
+entity.notification_log_agro.collection:
+  title: 'Logs Notificación Agro'
+  route_name: entity.notification_log_agro.collection
+  base_route: system.admin_content
+  weight: 47
+
+entity.notification_preference_agro.collection:
+  title: 'Preferencias Notificación Agro'
+  route_name: entity.notification_preference_agro.collection
+  base_route: system.admin_content
+  weight: 48
+
+# Fase 5: Search & Discovery
+
+entity.agro_category.collection:
+  title: 'Categorías Agro'
+  route_name: entity.agro_category.collection
+  base_route: system.admin_content
+  weight: 50
+
+entity.agro_collection.collection:
+  title: 'Colecciones Agro'
+  route_name: entity.agro_collection.collection
+  base_route: system.admin_content
+  weight: 51
+
+# Fase 5: Promotions & Coupons
+
+entity.promotion_agro.collection:
+  title: 'Promociones Agro'
+  route_name: entity.promotion_agro.collection
+  base_route: system.admin_content
+  weight: 52
+
+entity.coupon_agro.collection:
+  title: 'Cupones Agro'
+  route_name: entity.coupon_agro.collection
+  base_route: system.admin_content
+  weight: 53
+
+# Fase 5: Shipping Core
+
+entity.shipping_zone_agro.collection:
+  title: 'Zonas Envío Agro'
+  route_name: entity.shipping_zone_agro.collection
+  base_route: system.admin_content
+  weight: 54
+
+entity.shipping_method_agro.collection:
+  title: 'Métodos Envío Agro'
+  route_name: entity.shipping_method_agro.collection
+  base_route: system.admin_content
+  weight: 55
+
+# Fase 6: Traceability + QR
+
+entity.agro_batch.collection.tab:
+  title: 'Lotes Agro'
+  route_name: entity.agro_batch.collection
+  base_route: system.admin_content
+  weight: 56
+
+entity.trace_event_agro.collection.tab:
+  title: 'Eventos Trazabilidad'
+  route_name: entity.trace_event_agro.collection
+  base_route: system.admin_content
+  weight: 57
+
+entity.integrity_proof_agro.collection.tab:
+  title: 'Pruebas Integridad'
+  route_name: entity.integrity_proof_agro.collection
+  base_route: system.admin_content
+  weight: 58
+
+entity.qr_code_agro.collection.tab:
+  title: 'QR Codes'
+  route_name: entity.qr_code_agro.collection
+  base_route: system.admin_content
+  weight: 59
+
+entity.qr_scan_event.collection.tab:
+  title: 'Escaneos QR'
+  route_name: entity.qr_scan_event.collection
+  base_route: system.admin_content
+  weight: 60
+
+entity.qr_lead_capture.collection.tab:
+  title: 'Leads QR'
+  route_name: entity.qr_lead_capture.collection
+  base_route: system.admin_content
+  weight: 61
+
+# Fase 7: Analytics
+
+entity.analytics_daily_agro.collection.tab:
+  title: 'Analytics Diario'
+  route_name: entity.analytics_daily_agro.collection
+  base_route: system.admin_content
+  weight: 62
+
+entity.alert_rule_agro.collection.tab:
+  title: 'Reglas Alerta'
+  route_name: entity.alert_rule_agro.collection
+  base_route: system.admin_content
+  weight: 63
+
+# Fase 9: Producer Copilot
+
+entity.copilot_conversation_agro.collection.tab:
+  title: 'Copiloto Conversaciones'
+  route_name: entity.copilot_conversation_agro.collection
+  base_route: system.admin_content
+  weight: 64
+
+entity.copilot_message_agro.collection.tab:
+  title: 'Copiloto Mensajes'
+  route_name: entity.copilot_message_agro.collection
+  base_route: system.admin_content
+  weight: 65
+
+# Sprint AC6-2: Partner Document Hub B2B
+
+entity.partner_relationship.collection.tab:
+  title: 'Partners Agro'
+  route_name: entity.partner_relationship.collection
+  base_route: system.admin_content
+  weight: 66
+
+entity.product_document.collection.tab:
+  title: 'Documentos Producto'
+  route_name: entity.product_document.collection
+  base_route: system.admin_content
+  weight: 67
+
+entity.document_download_log.collection.tab:
+  title: 'Logs Descarga'
+  route_name: entity.document_download_log.collection
+  base_route: system.admin_content
+  weight: 68
+

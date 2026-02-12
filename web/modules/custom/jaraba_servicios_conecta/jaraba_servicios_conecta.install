@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * @file
+ * Instalación y actualización del módulo ServiciosConecta.
+ *
+ * Estructura: Define hooks de instalación, desinstalación y actualización.
+ *
+ * Lógica: La instalación crea los vocabularios de taxonomía necesarios
+ *   y los términos iniciales para categorías de servicio y especialidades.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Lógica: Crea los términos iniciales de las taxonomías de servicios
+ *   para que el marketplace tenga categorías desde el primer momento.
+ *   Los términos se crean solo si el vocabulario existe y está vacío.
+ */
+function jaraba_servicios_conecta_install(): void {
+  _jaraba_servicios_conecta_create_service_categories();
+  _jaraba_servicios_conecta_create_service_modalities();
+
+  \Drupal::messenger()->addStatus(t('ServiciosConecta instalado correctamente. Categorías y modalidades iniciales creadas.'));
+}
+
+/**
+ * Crea las categorías de servicio profesional iniciales.
+ *
+ * Lógica: Crea un árbol jerárquico de categorías orientadas a servicios
+ *   profesionales. Nivel 1: sector. Nivel 2: especialidades.
+ */
+function _jaraba_servicios_conecta_create_service_categories(): void {
+  $vocabulary = 'servicios_category';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    \Drupal::logger('jaraba_servicios_conecta')->warning('Vocabulario @vocab no encontrado. Crear manualmente o importar config.', [
+      '@vocab' => $vocabulary,
+    ]);
+    return;
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $categories = [
+    'Legal' => ['Derecho Civil', 'Derecho Penal', 'Derecho Laboral', 'Derecho Fiscal', 'Derecho Mercantil', 'Derecho Familia', 'Extranjería'],
+    'Salud' => ['Medicina General', 'Fisioterapia', 'Psicología', 'Odontología', 'Nutrición', 'Podología', 'Logopedia'],
+    'Técnico' => ['Arquitectura', 'Ingeniería', 'Peritaje', 'Topografía', 'Diseño de Interiores'],
+    'Financiero' => ['Asesoría Fiscal', 'Gestoría', 'Contabilidad', 'Auditoría', 'Planificación Financiera'],
+    'Consultoría' => ['Consultoría Empresarial', 'Coaching', 'Formación', 'Marketing Digital', 'Transformación Digital'],
+    'Bienestar' => ['Entrenamiento Personal', 'Yoga y Pilates', 'Terapias Alternativas', 'Estética', 'Spa y Relajación'],
+  ];
+
+  $weight = 0;
+  foreach ($categories as $parent_name => $children) {
+    $parent = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $parent_name,
+      'weight' => $weight,
+    ]);
+    $parent->save();
+
+    $child_weight = 0;
+    foreach ($children as $child_name) {
+      $child = $term_storage->create([
+        'vid' => $vocabulary,
+        'name' => $child_name,
+        'parent' => $parent->id(),
+        'weight' => $child_weight,
+      ]);
+      $child->save();
+      $child_weight++;
+    }
+    $weight++;
+  }
+}
+
+/**
+ * Crea las modalidades de servicio iniciales.
+ *
+ * Lógica: Modalidades de prestación del servicio (presencial,
+ *   online, híbrida, domicilio).
+ */
+function _jaraba_servicios_conecta_create_service_modalities(): void {
+  $vocabulary = 'servicios_modality';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    \Drupal::logger('jaraba_servicios_conecta')->warning('Vocabulario @vocab no encontrado.', [
+      '@vocab' => $vocabulary,
+    ]);
+    return;
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $modalities = [
+    'Presencial' => 0,
+    'Online (Videollamada)' => 1,
+    'Híbrido' => 2,
+    'A Domicilio' => 3,
+    'Telefónica' => 4,
+  ];
+
+  foreach ($modalities as $name => $weight) {
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $name,
+      'weight' => $weight,
+    ]);
+    $term->save();
+  }
+}

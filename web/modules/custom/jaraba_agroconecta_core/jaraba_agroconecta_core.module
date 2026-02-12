@@ -1,0 +1,221 @@
+<?php
+
+/**
+ * @file
+ * Módulo AgroConecta Core.
+ *
+ * Marketplace agroalimentario multi-vendor con Commerce 3.x,
+ * multi-tenancy y portales productor/cliente.
+ *
+ * Comando de compilación SCSS:
+ *   cd web/modules/custom/jaraba_agroconecta_core && npm run build
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_agroconecta_core_help(string $route_name, RouteMatchInterface $route_match): string
+{
+    if ($route_name === 'help.page.jaraba_agroconecta_core') {
+        return '<p>' . t('Módulo AgroConecta: Marketplace agroalimentario multi-vendor con gestión de productos, productores y certificaciones.') . '</p>';
+    }
+    return '';
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Define los templates Twig del módulo AgroConecta.
+ */
+function jaraba_agroconecta_core_theme(): array
+{
+    return [
+        'agro_marketplace' => [
+            'variables' => [
+                'products' => [],
+                'marketplace_name' => '',
+                'marketplace_description' => '',
+                'total_products' => 0,
+                'pager' => NULL,
+            ],
+            'template' => 'agro-marketplace',
+        ],
+        'agro_product_detail' => [
+            'variables' => [
+                'product' => NULL,
+                'producer' => NULL,
+            ],
+            'template' => 'agro-product-detail',
+        ],
+        'agro_checkout' => [
+            'variables' => [
+                'marketplace_name' => '',
+            ],
+            'template' => 'agro-checkout',
+        ],
+        'agro_order_confirmation' => [
+            'variables' => [
+                'order' => [],
+                'order_number' => '',
+            ],
+            'template' => 'agro-order-confirmation',
+        ],
+        // ===== Portal del Productor (Fase 3) =====
+        'agro_producer_dashboard' => [
+            'variables' => [
+                'kpis' => [],
+                'alerts' => [],
+                'pending_orders' => [],
+                'top_products' => [],
+            ],
+            'template' => 'agro-producer-dashboard',
+        ],
+        'agro_producer_orders' => [
+            'variables' => [
+                'orders' => [],
+                'total' => 0,
+            ],
+            'template' => 'agro-producer-orders',
+        ],
+        'agro_producer_order_detail' => [
+            'variables' => [
+                'suborder' => [],
+                'order' => [],
+                'items' => [],
+            ],
+            'template' => 'agro-producer-order-detail',
+        ],
+        'agro_producer_products' => [
+            'variables' => [
+                'products' => [],
+                'total' => 0,
+            ],
+            'template' => 'agro-producer-products',
+        ],
+        'agro_producer_payouts' => [
+            'variables' => [
+                'total_revenue' => '',
+                'total_commissions' => '',
+                'total_payouts' => '',
+                'payout_history' => [],
+            ],
+            'template' => 'agro-producer-payouts',
+        ],
+        'agro_producer_settings' => [
+            'variables' => [
+                'producer' => [],
+            ],
+            'template' => 'agro-producer-settings',
+        ],
+        // ===== Portal del Cliente (Fase 3) =====
+        'agro_customer_dashboard' => [
+            'variables' => [
+                'active_order' => NULL,
+                'total_orders' => 0,
+                'recent_products' => [],
+                'user_name' => '',
+            ],
+            'template' => 'agro-customer-dashboard',
+        ],
+        'agro_customer_orders' => [
+            'variables' => [
+                'orders' => [],
+                'total' => 0,
+            ],
+            'template' => 'agro-customer-orders',
+        ],
+        'agro_customer_order_detail' => [
+            'variables' => [
+                'order' => [],
+                'items' => [],
+                'timeline' => [],
+            ],
+            'template' => 'agro-customer-order-detail',
+        ],
+        'agro_customer_addresses' => [
+            'variables' => [
+                'addresses' => [],
+            ],
+            'template' => 'agro-customer-addresses',
+        ],
+        'agro_customer_favorites' => [
+            'variables' => [
+                'products' => [],
+            ],
+            'template' => 'agro-customer-favorites',
+        ],
+        // ===== Search & Discovery (Fase 5) =====
+        'agro_search_page' => [
+            'variables' => [
+                'search_query' => '',
+                'sort' => 'relevance',
+                'categories' => [],
+                'featured_collections' => [],
+                'initial_results' => NULL,
+            ],
+            'template' => 'agro-search-page',
+        ],
+        'agro_category_page' => [
+            'variables' => [
+                'category' => [],
+                'products' => [],
+            ],
+            'template' => 'agro-category-page',
+        ],
+        'agro_collection_page' => [
+            'variables' => [
+                'collection' => [],
+                'products' => [],
+                'total' => 0,
+            ],
+            'template' => 'agro-collection-page',
+        ],
+    ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * CRÍTICO: Añade body classes para las páginas AgroConecta.
+ * NUNCA usar attributes.addClass() en templates Twig.
+ *
+ * @see /frontend-page-pattern workflow
+ */
+function jaraba_agroconecta_core_preprocess_html(array &$variables): void
+{
+    $route = \Drupal::routeMatch()->getRouteName();
+
+    $routeClasses = [
+        'jaraba_agroconecta.marketplace' => ['marketplace-page', 'page-marketplace', 'agro-page'],
+        'jaraba_agroconecta.product_detail' => ['agro-product-page', 'agro-page'],
+        'jaraba_agroconecta.checkout' => ['checkout-page', 'agro-page', 'page-checkout'],
+        'jaraba_agroconecta.order_confirmation' => ['order-confirmation-page', 'agro-page'],
+        // Portal del Productor (Fase 3)
+        'jaraba_agroconecta.producer.dashboard' => ['producer-dashboard-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.orders' => ['producer-orders-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.order_detail' => ['producer-order-detail-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.products' => ['producer-products-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.payouts' => ['producer-payouts-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.settings' => ['producer-settings-page', 'producer-portal-page', 'agro-page'],
+        // Portal del Cliente (Fase 3)
+        'jaraba_agroconecta.customer.dashboard' => ['customer-dashboard-page', 'customer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.customer.orders' => ['customer-orders-page', 'customer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.customer.order_detail' => ['customer-order-detail-page', 'customer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.customer.addresses' => ['customer-addresses-page', 'customer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.customer.favorites' => ['customer-favorites-page', 'customer-portal-page', 'agro-page'],
+        // Search & Discovery (Fase 5)
+        'jaraba_agroconecta.search_page' => ['search-page', 'agro-search-page', 'agro-page'],
+        'jaraba_agroconecta.category_page' => ['category-page', 'agro-category-page', 'agro-page'],
+        'jaraba_agroconecta.collection_page' => ['collection-page', 'agro-collection-page', 'agro-page'],
+    ];
+
+    if (isset($routeClasses[$route])) {
+        foreach ($routeClasses[$route] as $class) {
+            $variables['attributes']['class'][] = $class;
+        }
+    }
+}

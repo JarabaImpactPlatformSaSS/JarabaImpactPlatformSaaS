@@ -1,0 +1,105 @@
+{#
+/**
+ * @file
+ * Template de detalle de producto AgroConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Header/Footer via partials.
+ * Body classes inyectadas via hook_preprocess_html(): agro-product-page, agro-page.
+ *
+ * Variables:
+ *   - product: Entidad ProductAgro.
+ *   - producer: Entidad ProducerProfile (puede ser NULL).
+ */
+#}
+
+<article class="agro-product-detail">
+  {# === Imagen del producto === #}
+  <div class="agro-product-detail__gallery">
+    {% if product.image.entity %}
+      <img class="agro-product-detail__image"
+           src="{{ file_url(product.image.entity.fileuri) }}"
+           alt="{{ product.name.value }}">
+    {% else %}
+      <div class="agro-product-detail__image agro-product-detail__image--placeholder"></div>
+    {% endif %}
+  </div>
+
+  {# === Info del producto === #}
+  <div class="agro-product-detail__info">
+    <h1 class="agro-product-detail__name">{{ product.name.value }}</h1>
+
+    {% if product.origin.value %}
+      <p class="agro-product-detail__origin">📍 {{ product.origin.value }}</p>
+    {% endif %}
+
+    {% if product.category.value %}
+      <span class="agro-product-detail__category">{{ product.category.value }}</span>
+    {% endif %}
+
+    <div class="agro-product-detail__price-block">
+      <span class="agro-product-detail__price">{{ product.getFormattedPrice() }}</span>
+      {% if product.unit.value %}
+        <span class="agro-product-detail__unit">/ {{ product.unit.value }}</span>
+      {% endif %}
+    </div>
+
+    {% if product.hasStock() %}
+      <p class="agro-product-detail__stock agro-product-detail__stock--available">
+        ✓ {% trans %}En stock{% endtrans %} ({{ product.stock.value }} {% trans %}unidades{% endtrans %})
+      </p>
+    {% else %}
+      <p class="agro-product-detail__stock agro-product-detail__stock--out">
+        ✗ {% trans %}Agotado{% endtrans %}
+      </p>
+    {% endif %}
+
+    {% if product.description_short.value %}
+      <p class="agro-product-detail__summary">{{ product.description_short.value }}</p>
+    {% endif %}
+
+    {% if product.description.value %}
+      <div class="agro-product-detail__description">
+        {{ product.description.value|raw }}
+      </div>
+    {% endif %}
+  </div>
+
+  {# === Info del productor === #}
+  {% if producer %}
+    <aside class="agro-product-detail__producer">
+      <h3>{% trans %}Productor{% endtrans %}</h3>
+      <div class="agro-producer-card--inline">
+        {% if producer.image.entity %}
+          <img class="agro-producer-card__avatar"
+               src="{{ file_url(producer.image.entity.fileuri) }}"
+               alt="{{ producer.farm_name.value }}"
+               loading="lazy">
+        {% endif %}
+        <div>
+          <strong>{{ producer.farm_name.value }}</strong>
+          {% if producer.location.value %}
+            <p>📍 {{ producer.location.value }}</p>
+          {% endif %}
+          {% if producer.production_type.value %}
+            <span class="agro-producer-card__type">{{ producer.production_type.value }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </aside>
+  {% endif %}
+
+  {# === Reseñas del producto (Fase 4) === #}
+  {% include '@jaraba_agroconecta_core/partials/agro-reviews-widget.html.twig' with {
+    target_type: 'product_agro',
+    target_id: product.id,
+    show_form: logged_in|default(false),
+    review_type: 'product',
+  } only %}
+
+  {# === Volver al marketplace === #}
+  <div class="agro-product-detail__back">
+    <a href="{{ path('jaraba_agroconecta.marketplace') }}" class="agro-btn agro-btn--secondary">
+      ← {% trans %}Volver al marketplace{% endtrans %}
+    </a>
+  </div>
+</article>

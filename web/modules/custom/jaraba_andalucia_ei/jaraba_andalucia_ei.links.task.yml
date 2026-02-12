@@ -1,0 +1,27 @@
+# Task links - Pestañas en /admin/content
+
+# Tab principal en Content
+entity.programa_participante_ei.collection:
+  title: 'Andalucía +ei'
+  route_name: entity.programa_participante_ei.collection
+  base_route: system.admin_content
+  weight: 25
+
+# Tabs para la entidad individual
+entity.programa_participante_ei.canonical:
+  title: 'Ver'
+  route_name: entity.programa_participante_ei.canonical
+  base_route: entity.programa_participante_ei.canonical
+  weight: 0
+
+entity.programa_participante_ei.edit_form:
+  title: 'Editar'
+  route_name: entity.programa_participante_ei.edit_form
+  base_route: entity.programa_participante_ei.canonical
+  weight: 10
+
+entity.programa_participante_ei.delete_form:
+  title: 'Eliminar'
+  route_name: entity.programa_participante_ei.delete_form
+  base_route: entity.programa_participante_ei.canonical
+  weight: 20

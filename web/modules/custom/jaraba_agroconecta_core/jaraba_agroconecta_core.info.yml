@@ -1,0 +1,13 @@
+name: 'Jaraba AgroConecta Core'
+description: 'Vertical AgroConecta: Marketplace agroalimentario multi-vendor con Commerce 3.x, multi-tenancy y portales productor/cliente.'
+type: module
+core_version_requirement: ^11
+package: Jaraba AgroConecta
+dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+# Compilación SCSS: npm run build (ver package.json)

@@ -1,0 +1,323 @@
+// =============================================================================
+// ComercioConecta — Shared Components
+//
+// Botones, badges, tablas, merchant card y utilidades reutilizables.
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Buttons
+// ---------------------------------------------------------------------------
+.comercio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+  padding: $space-sm $space-lg;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+
+  &--primary {
+    background: var(--ej-btn-primary-bg, var(--ej-color-primary, $comercio-primary));
+    color: var(--ej-btn-primary-text, #fff);
+    border-color: var(--ej-btn-primary-bg, var(--ej-color-primary, $comercio-primary));
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+  }
+
+  &--secondary {
+    background: var(--ej-btn-secondary-bg, $comercio-secondary);
+    color: var(--ej-btn-secondary-text, #fff);
+  }
+
+  &--outline {
+    background: transparent;
+    border-color: var(--ej-color-primary, $comercio-primary);
+    color: var(--ej-color-primary, $comercio-primary);
+
+    &:hover {
+      background: var(--ej-color-primary, color.scale($comercio-primary, $lightness: 90%));
+    }
+  }
+
+  &--small {
+    padding: $space-xs $space-sm;
+    font-size: 0.8125rem;
+    border-radius: $radius-sm;
+  }
+
+  &--danger {
+    background: transparent;
+    border-color: $comercio-danger;
+    color: $comercio-danger;
+
+    &:hover {
+      background: color.scale($comercio-danger, $lightness: 90%);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Badges
+// ---------------------------------------------------------------------------
+.comercio-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-xs $space-sm;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--success {
+    background: color.scale($comercio-success, $lightness: 85%);
+    color: color.scale($comercio-success, $lightness: -20%);
+  }
+
+  &--warning {
+    background: color.scale($comercio-warning, $lightness: 80%);
+    color: color.scale($comercio-warning, $lightness: -30%);
+  }
+
+  &--danger {
+    background: color.scale($comercio-danger, $lightness: 85%);
+    color: color.scale($comercio-danger, $lightness: -15%);
+  }
+
+  &--info {
+    background: color.scale($comercio-primary, $lightness: 85%);
+    color: $comercio-primary-dark;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Status labels
+// ---------------------------------------------------------------------------
+.comercio-status {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-xs $space-sm;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &--active {
+    background: color.scale($comercio-success, $lightness: 85%);
+    color: color.scale($comercio-success, $lightness: -20%);
+  }
+
+  &--draft {
+    background: color.scale($comercio-text-muted, $lightness: 60%);
+    color: color.scale($comercio-text-muted, $lightness: -30%);
+  }
+
+  &--paused {
+    background: color.scale($comercio-warning, $lightness: 80%);
+    color: color.scale($comercio-warning, $lightness: -30%);
+  }
+
+  &--out_of_stock {
+    background: color.scale($comercio-danger, $lightness: 85%);
+    color: color.scale($comercio-danger, $lightness: -15%);
+  }
+
+  &--archived {
+    background: color.scale($comercio-text-muted, $lightness: 70%);
+    color: color.scale($comercio-text-muted, $lightness: -20%);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tables
+// ---------------------------------------------------------------------------
+.comercio-table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comercio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead {
+    th {
+      text-align: left;
+      padding: $space-sm $space-md;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ej-color-muted, $comercio-text-muted);
+      border-bottom: 2px solid var(--ej-card-border, $comercio-border);
+      white-space: nowrap;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--ej-card-border, $comercio-border);
+      transition: background $transition-fast;
+
+      &:hover {
+        background: color.scale($comercio-cream, $lightness: -1%);
+      }
+    }
+
+    td {
+      padding: $space-sm $space-md;
+      vertical-align: middle;
+    }
+  }
+
+  &__row--warning {
+    background: color.scale($comercio-warning, $lightness: 92%) !important;
+  }
+
+  &__row--danger {
+    background: color.scale($comercio-danger, $lightness: 93%) !important;
+  }
+
+  &__cell--product {
+    min-width: 200px;
+  }
+
+  &__product-info {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+  }
+
+  &__product-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-sm;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  code {
+    font-family: $font-mono;
+    font-size: 0.8125rem;
+    background: color.scale($comercio-cream, $lightness: -5%);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Merchant card
+// ---------------------------------------------------------------------------
+.comercio-merchant-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+  padding: $space-lg;
+  background: var(--ej-card-bg, $comercio-surface);
+  border: 1px solid var(--ej-card-border, $comercio-border);
+  border-radius: $radius-lg;
+
+  &__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-md;
+    object-fit: cover;
+    flex-shrink: 0;
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: color.scale($comercio-cream, $lightness: -5%);
+      color: var(--ej-color-muted, $comercio-text-muted);
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+
+    a {
+      color: var(--ej-color-headings, $comercio-text);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--ej-color-primary, $comercio-primary);
+      }
+    }
+  }
+
+  &__type {
+    font-size: 0.8125rem;
+    color: var(--ej-color-primary, $comercio-primary);
+  }
+
+  &__location {
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, $comercio-text-muted);
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    font-size: 0.8125rem;
+  }
+
+  &__stars {
+    color: $comercio-warning;
+    font-weight: 600;
+  }
+
+  &__review-count {
+    color: var(--ej-color-muted, $comercio-text-muted);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &--click-collect {
+      background: color.scale($comercio-secondary, $lightness: 85%);
+      color: $comercio-secondary;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen reader only
+// ---------------------------------------------------------------------------
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

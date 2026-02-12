@@ -1,0 +1,122 @@
+{#
+ # Template: Detalle de Profesional
+ # Ruta: /servicios/profesional/{slug}
+ # Variables: provider, services, availability, reviews, review_summary, schema_json_ld
+ #}
+
+{# JSON-LD para SEO #}
+{% if schema_json_ld %}
+  <script type="application/ld+json">{{ schema_json_ld|raw }}</script>
+{% endif %}
+
+<div class="servicios-provider-detail">
+  {# Cabecera del profesional #}
+  <header class="servicios-provider-detail__header">
+    {% if provider.cover_image.entity %}
+      <div class="servicios-provider-detail__cover">
+        <img src="{{ file_url(provider.cover_image.entity.fileuri) }}"
+             alt="{{ provider.display_name.value }}"
+             loading="lazy" />
+      </div>
+    {% endif %}
+
+    <div class="servicios-provider-detail__info">
+      {% if provider.photo.entity %}
+        <img class="servicios-provider-detail__photo"
+             src="{{ file_url(provider.photo.entity.fileuri) }}"
+             alt="{{ provider.display_name.value }}"
+             loading="lazy" />
+      {% endif %}
+
+      <div class="servicios-provider-detail__identity">
+        <h1 class="servicios-provider-detail__name">{{ provider.display_name.value }}</h1>
+        <p class="servicios-provider-detail__title">{{ provider.professional_title.value }}</p>
+
+        {% if provider.average_rating.value > 0 %}
+          <div class="servicios-provider-detail__rating">
+            <span class="rating__value">{{ provider.average_rating.value|number_format(1) }}</span>
+            <span class="rating__count">({{ provider.total_reviews.value }} {{ 'reseñas'|t }})</span>
+          </div>
+        {% endif %}
+
+        <div class="servicios-provider-detail__location">
+          <span>{{ provider.address_city.value }}, {{ provider.address_province.value }}</span>
+        </div>
+
+        {% if provider.accepts_online.value %}
+          <span class="servicios-provider-detail__badge badge badge--online">
+            {{ 'Consulta Online'|t }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {# Descripción #}
+  <section class="servicios-provider-detail__about">
+    <h2>{{ 'Sobre el profesional'|t }}</h2>
+    <div class="servicios-provider-detail__description">
+      {{ provider.description.value|raw }}
+    </div>
+
+    {% if provider.license_number.value %}
+      <p class="servicios-provider-detail__license">
+        {{ 'Nº Colegiado: %number'|t({'%number': provider.license_number.value}) }}
+      </p>
+    {% endif %}
+
+    {% if provider.years_experience.value %}
+      <p class="servicios-provider-detail__experience">
+        {{ '%years años de experiencia'|t({'%years': provider.years_experience.value}) }}
+      </p>
+    {% endif %}
+  </section>
+
+  {# Servicios ofertados #}
+  <section class="servicios-provider-detail__services">
+    <h2>{{ 'Servicios'|t }}</h2>
+    {% if services|length > 0 %}
+      <div class="servicios-provider-detail__services-grid">
+        {% for service in services %}
+          {% include '@jaraba_servicios_conecta/partials/service-card.html.twig' with {
+            service: service
+          } only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ 'Este profesional aún no ha publicado servicios.'|t }}</p>
+    {% endif %}
+  </section>
+
+  {# Horarios de disponibilidad #}
+  <section class="servicios-provider-detail__availability">
+    <h2>{{ 'Horarios'|t }}</h2>
+    {% if availability|length > 0 %}
+      <div class="servicios-availability-grid">
+        {% set day_names = {1: 'Lunes'|t, 2: 'Martes'|t, 3: 'Miércoles'|t, 4: 'Jueves'|t, 5: 'Viernes'|t, 6: 'Sábado'|t, 7: 'Domingo'|t} %}
+        {% for day, slots in availability %}
+          <div class="servicios-availability-grid__day">
+            <strong>{{ day_names[day] }}</strong>
+            {% for slot in slots %}
+              <span>{{ slot.start_time.value }} - {{ slot.end_time.value }}</span>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ 'Horarios no configurados.'|t }}</p>
+    {% endif %}
+  </section>
+
+  {# Contacto #}
+  <section class="servicios-provider-detail__contact">
+    <h2>{{ 'Contacto'|t }}</h2>
+    <ul class="servicios-contact-list">
+      <li>{{ provider.phone.value }}</li>
+      <li>{{ provider.address_street.value }}, {{ provider.address_city.value }}</li>
+      {% if provider.website.value %}
+        <li><a href="{{ provider.website.value }}" target="_blank" rel="noopener">{{ 'Sitio Web'|t }}</a></li>
+      {% endif %}
+    </ul>
+  </section>
+</div>

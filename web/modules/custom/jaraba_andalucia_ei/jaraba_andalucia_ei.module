@@ -1,0 +1,299 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Módulo principal para el Programa Andalucía +ei.
+ *
+ * Gestiona participantes del programa con tracking de horas de mentoría IA,
+ * integración con STO y transiciones de fase PIIL.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_andalucia_ei_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_andalucia_ei') {
+    return '<p>' . t('Gestión del Programa Andalucía +ei - Emprendimiento Aumentado con IA.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_andalucia_ei_theme(): array {
+  return [
+    'andalucia_ei_dashboard' => [
+      'variables' => [
+        'participante' => NULL,
+      ],
+      'template' => 'andalucia-ei-dashboard',
+    ],
+  ];
+}
+
+// =============================================================================
+// ECA-EI-001: CONTABILIZAR HORAS IA AL FINALIZAR SESIÓN COPILOT
+// Ver: docs/tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for copilot_session.
+ *
+ * Contabiliza automáticamente las horas de mentoría IA cuando finaliza
+ * una sesión con el Copilot v2.
+ */
+function jaraba_andalucia_ei_copilot_session_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Solo procesar si la sesión pasa a 'completed'.
+  if (!$entity->hasField('status')) {
+    return;
+  }
+
+  $newStatus = $entity->get('status')->value ?? '';
+  $oldStatus = $entity->original->get('status')->value ?? '';
+
+  if ($oldStatus !== 'completed' && $newStatus === 'completed') {
+    _jaraba_andalucia_ei_track_ia_hours($entity);
+  }
+}
+
+/**
+ * Registra las horas de sesión IA en el participante Andalucía +ei.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $session
+ *   Sesión de Copilot completada.
+ */
+function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface $session): void {
+  try {
+    $userId = $session->getOwnerId();
+    if (!$userId) {
+      return;
+    }
+
+    // Buscar participante vinculado.
+    $storage = \Drupal::entityTypeManager()->getStorage('programa_participante_ei');
+    $participantes = $storage->loadByProperties(['user_id' => $userId]);
+    $participante = reset($participantes);
+
+    if (!$participante) {
+      return;
+    }
+
+    // Calcular duración de sesión (en horas).
+    $duracionMinutos = $session->get('duration_minutes')->value ?? 0;
+    $duracionHoras = (float) $duracionMinutos / 60;
+
+    // Aplicar límite diario según configuración (default: 2h/día).
+    $config = \Drupal::config('jaraba_andalucia_ei.settings');
+    $limiteDiario = (float) ($config->get('ai_mentorship_daily_limit') ?? 2);
+
+    // Verificar horas ya registradas hoy.
+    $tracker = \Drupal::service('jaraba_andalucia_ei.ai_mentorship_tracker');
+    $horasHoy = $tracker->getHoursToday($participante);
+    $horasRestantes = max(0, $limiteDiario - $horasHoy);
+    $horasARegistrar = min($duracionHoras, $horasRestantes);
+
+    if ($horasARegistrar > 0) {
+      $horasActuales = (float) ($participante->get('horas_mentoria_ia')->value ?? 0);
+      $participante->set('horas_mentoria_ia', $horasActuales + $horasARegistrar);
+      $participante->save();
+
+      // Registrar en auditoría.
+      $tracker->recordSession($participante, $horasARegistrar, $session->id());
+
+      \Drupal::logger('jaraba_andalucia_ei')->info(
+        'Registradas @horas horas IA para participante @dni (sesión @session)',
+        [
+          '@horas' => number_format($horasARegistrar, 2),
+          '@dni' => $participante->label(),
+          '@session' => $session->id(),
+        ]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Error al registrar horas IA: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+}
+
+// =============================================================================
+// ECA-EI-002: NOTIFICAR ELEGIBILIDAD PARA FASE INSERCIÓN
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for programa_participante_ei.
+ *
+ * Detecta cuando un participante cumple requisitos para avanzar a fase
+ * Inserción y notifica al equipo técnico.
+ */
+function jaraba_andalucia_ei_programa_participante_ei_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Solo en fase Atención.
+  if ($entity->getFaseActual() !== 'atencion') {
+    return;
+  }
+
+  // Verificar si ahora cumple requisitos.
+  if ($entity->canTransitToInsercion()) {
+    // Verificar si antes no los cumplía (para evitar notificaciones duplicadas).
+    $original = $entity->original;
+    if (!$original || !$original->canTransitToInsercion()) {
+      _jaraba_andalucia_ei_notify_eligibility($entity);
+    }
+  }
+}
+
+/**
+ * Envía notificación de elegibilidad para fase Inserción.
+ *
+ * @param \Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface $participante
+ *   Participante elegible.
+ */
+function _jaraba_andalucia_ei_notify_eligibility($participante): void {
+  try {
+    $mailManager = \Drupal::service('plugin.manager.mail');
+
+    // Obtener email del técnico/orientador.
+    $config = \Drupal::config('jaraba_andalucia_ei.settings');
+    $emailTecnicos = $config->get('notification_email') ?? 'orientacion@agentejaraba.es';
+
+    $params = [
+      'participante_dni' => $participante->getDniNie(),
+      'participante_id' => $participante->id(),
+      'horas_orientacion' => $participante->getTotalHorasOrientacion(),
+      'horas_formacion' => $participante->get('horas_formacion')->value ?? 0,
+    ];
+
+    $mailManager->mail(
+      'jaraba_andalucia_ei',
+      'eligibility_notification',
+      $emailTecnicos,
+      'es',
+      $params,
+      NULL,
+      TRUE
+    );
+
+    \Drupal::logger('jaraba_andalucia_ei')->notice(
+      'Notificación de elegibilidad enviada para participante @dni',
+      ['@dni' => $participante->getDniNie()]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Error al enviar notificación de elegibilidad: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'eligibility_notification':
+      $message['subject'] = t('Participante elegible para Fase Inserción - Andalucía +ei');
+      $message['body'][] = t(
+        "El participante con DNI @dni ha alcanzado los requisitos mínimos para avanzar a la Fase de Inserción:\n\n" .
+        "- Horas de orientación: @orient h (mínimo: 10h)\n" .
+        "- Horas de formación: @form h (mínimo: 50h)\n\n" .
+        "Acceda a la ficha del participante para aprobar la transición:\n" .
+        "@url",
+        [
+          '@dni' => $params['participante_dni'] ?? '',
+          '@orient' => number_format($params['horas_orientacion'] ?? 0, 1),
+          '@form' => number_format($params['horas_formacion'] ?? 0, 1),
+          '@url' => \Drupal\Core\Url::fromRoute(
+            'entity.programa_participante_ei.edit_form',
+            ['programa_participante_ei' => $params['participante_id'] ?? 0],
+            ['absolute' => TRUE]
+          )->toString(),
+        ]
+      );
+      break;
+  }
+}
+
+// =============================================================================
+// ECA-EI-003: SINCRONIZACIÓN PERIÓDICA CON STO (via Cron)
+// =============================================================================
+
+/**
+ * Implements hook_cron().
+ *
+ * Sincronización periódica de datos con el Sistema Telemático del STO.
+ */
+function jaraba_andalucia_ei_cron(): void {
+  // Solo ejecutar cada 6 horas.
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_andalucia_ei.sto_sync_last_run', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  if ($now - $lastRun < 6 * 3600) {
+    return;
+  }
+
+  $state->set('jaraba_andalucia_ei.sto_sync_last_run', $now);
+
+  \Drupal::logger('jaraba_andalucia_ei')->info('Iniciando sincronización STO...');
+
+  try {
+    // Procesar participantes pendientes de sincronización.
+    _jaraba_andalucia_ei_process_sto_sync();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Error en sincronización STO: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Procesa la sincronización pendiente con el STO.
+ */
+function _jaraba_andalucia_ei_process_sto_sync(): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('programa_participante_ei');
+
+  // Buscar participantes con sync pendiente.
+  $pendingIds = $storage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('sto_sync_status', 'pending')
+    ->range(0, 50)
+    ->execute();
+
+  if (empty($pendingIds)) {
+    return;
+  }
+
+  $participantes = $storage->loadMultiple($pendingIds);
+  $exporter = \Drupal::service('jaraba_andalucia_ei.sto_export');
+
+  foreach ($participantes as $participante) {
+    try {
+      $result = $exporter->syncParticipante($participante);
+      $participante->set('sto_sync_status', $result ? 'synced' : 'error');
+      $participante->save();
+    }
+    catch (\Exception $e) {
+      $participante->set('sto_sync_status', 'error');
+      $participante->save();
+      \Drupal::logger('jaraba_andalucia_ei')->error(
+        'Error sincronizando participante @id: @message',
+        ['@id' => $participante->id(), '@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  \Drupal::logger('jaraba_andalucia_ei')->info(
+    'Sincronización STO: @count participantes procesados',
+    ['@count' => count($participantes)]
+  );
+}

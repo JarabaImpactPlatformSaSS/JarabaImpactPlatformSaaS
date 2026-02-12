@@ -1,0 +1,464 @@
+// ============================================
+// Portal del Productor - AgroConecta (Fase 3)
+// ============================================
+// BEM: .producer-portal__*
+// DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+
+$producer-primary: var(--color-brand-primary, #2d7a3a);
+$producer-bg: var(--color-bg-primary, #f8f9fa);
+$producer-surface: var(--color-bg-surface, #ffffff);
+$producer-text: var(--color-text-primary, #1a1a2e);
+$producer-text-muted: var(--color-text-muted, #6c757d);
+$producer-border: var(--color-border, #e0e0e0);
+$producer-radius: var(--radius-md, 12px);
+$producer-radius-sm: var(--radius-sm, 8px);
+$producer-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.06));
+$producer-gap: var(--spacing-lg, 24px);
+
+.producer-portal {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    color: $producer-text;
+
+    &__header {
+        margin-bottom: 32px;
+    }
+
+    &__title {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 16px;
+    }
+
+    // Navegación
+    &__nav {
+        display: flex;
+        gap: 4px;
+        border-bottom: 2px solid $producer-border;
+        overflow-x: auto;
+    }
+
+    &__nav-link {
+        padding: 10px 20px;
+        text-decoration: none;
+        font-weight: 500;
+        color: $producer-text-muted;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+            color: $producer-primary;
+        }
+
+        &--active {
+            color: $producer-primary;
+            border-bottom-color: $producer-primary;
+            font-weight: 600;
+        }
+    }
+
+    // Alertas
+    &__alerts {
+        margin-bottom: $producer-gap;
+    }
+
+    &__alerts-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 12px;
+    }
+
+    &__alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-radius: $producer-radius-sm;
+        margin-bottom: 8px;
+        font-size: 14px;
+
+        &--warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        &--error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+    }
+
+    &__alert-action {
+        font-weight: 600;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    // KPI Cards
+    &__kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: $producer-gap;
+    }
+
+    &__kpi-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: $producer-surface;
+        border-radius: $producer-radius;
+        box-shadow: $producer-shadow;
+        transition: transform 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+        }
+    }
+
+    &__kpi-icon {
+        font-size: 32px;
+    }
+
+    &__kpi-value {
+        font-size: 24px;
+        font-weight: 700;
+        display: block;
+    }
+
+    &__kpi-label {
+        font-size: 13px;
+        color: $producer-text-muted;
+    }
+
+    // Content layout (2 col)
+    &__content {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: $producer-gap;
+
+        &--full {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__main,
+    &__sidebar {
+        min-width: 0;
+    }
+
+    // Secciones
+    &__section {
+        background: $producer-surface;
+        border-radius: $producer-radius;
+        box-shadow: $producer-shadow;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    &__section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    &__section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 16px;
+    }
+
+    &__section-link {
+        font-size: 13px;
+        font-weight: 600;
+        color: $producer-primary;
+        text-decoration: none;
+    }
+
+    // Dashboard order table
+    &__table-header {
+        display: grid;
+        grid-template-columns: 1.5fr 2fr 1fr 1fr 80px;
+        gap: 8px;
+        padding: 8px 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: $producer-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid $producer-border;
+    }
+
+    &__table-row {
+        display: grid;
+        grid-template-columns: 1.5fr 2fr 1fr 1fr 80px;
+        gap: 8px;
+        padding: 12px 0;
+        font-size: 14px;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    // Full table
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+
+        th,
+        td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid $producer-border;
+        }
+
+        th {
+            font-size: 12px;
+            color: $producer-text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+    }
+
+    // State badges
+    &__order-state {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+
+        &--pending {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        &--paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        &--processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        &--ready {
+            background: #bee5eb;
+            color: #0c5460;
+        }
+
+        &--shipped {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        &--delivered {
+            background: #c3e6cb;
+            color: #155724;
+        }
+
+        &--completed {
+            background: #b8daff;
+            color: #004085;
+        }
+
+        &--cancelled {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+
+        &--large {
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+    }
+
+    &__payout-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+
+        &--pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        &--transferred {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        &--failed {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+    }
+
+    // Top products
+    &__top-product {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    &__top-rank {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(45, 122, 58, 0.1);
+        color: $producer-primary;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    &__top-name {
+        font-weight: 500;
+        display: block;
+    }
+
+    &__top-stats {
+        font-size: 12px;
+        color: $producer-text-muted;
+    }
+
+    // Chart
+    &__chart {
+        width: 100%;
+        min-height: 200px;
+    }
+
+    // Buttons
+    &__btn {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: $producer-radius-sm;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        border: 1px solid $producer-border;
+        background: $producer-surface;
+        color: $producer-text;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: $producer-primary;
+            color: $producer-primary;
+        }
+
+        &--sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        &--primary {
+            background: $producer-primary;
+            color: white;
+            border-color: $producer-primary;
+
+            &:hover {
+                opacity: 0.9;
+                color: white;
+            }
+        }
+    }
+
+    // Detail sections
+    &__detail-status {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    &__detail-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    &__finance-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__finance-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+        &--total {
+            font-weight: 700;
+            font-size: 16px;
+            border-bottom: 2px solid $producer-border;
+            padding: 12px 0;
+        }
+    }
+
+    &__customer-info,
+    &__tracking {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__info-row,
+    &__tracking-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    &__back {
+        margin-top: 24px;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 24px;
+        color: $producer-text-muted;
+        font-style: italic;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .producer-portal {
+        padding: 16px;
+
+        &__content {
+            grid-template-columns: 1fr;
+        }
+
+        &__kpis {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &__nav {
+            gap: 0;
+        }
+
+        &__nav-link {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    }
+}

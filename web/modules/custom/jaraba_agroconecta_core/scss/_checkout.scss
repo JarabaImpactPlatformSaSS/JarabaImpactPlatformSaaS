@@ -1,0 +1,378 @@
+/**
+ * @file
+ * Estilos del checkout AgroConecta.
+ *
+ * DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+ * Fase 2 — Checkout + Payments + Order Confirmation.
+ */
+
+// === CHECKOUT PAGE ===
+
+.agro-checkout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-md, 1rem);
+
+    &__header {
+        text-align: center;
+        margin-bottom: var(--ej-spacing-xl, 2rem);
+    }
+
+    &__title {
+        font-size: var(--ej-font-size-2xl, 2rem);
+        font-weight: 700;
+        color: var(--ej-color-text-primary, #1a1a2e);
+        margin: 0;
+    }
+
+    &__subtitle {
+        color: var(--ej-color-text-muted, #6b7280);
+        margin-top: var(--ej-spacing-xs, 0.5rem);
+    }
+
+    &__content {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: var(--ej-spacing-xl, 2rem);
+        align-items: start;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // Steps
+    &__step {
+        background: var(--ej-color-surface, #fff);
+        border-radius: var(--ej-radius-lg, 12px);
+        padding: var(--ej-spacing-lg, 1.5rem);
+        margin-bottom: var(--ej-spacing-md, 1rem);
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+        transition: box-shadow 0.2s ease;
+
+        &:hover {
+            box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+        }
+    }
+
+    &__step-title {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        font-weight: 600;
+        color: var(--ej-color-text-primary, #1a1a2e);
+        margin: 0 0 var(--ej-spacing-md, 1rem);
+    }
+
+    &__step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, #2d6a4f);
+        color: #fff;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    // Form fields
+    &__field {
+        margin-bottom: var(--ej-spacing-md, 1rem);
+
+        label {
+            display: block;
+            font-weight: 500;
+            color: var(--ej-color-text-secondary, #374151);
+            margin-bottom: var(--ej-spacing-xs, 0.25rem);
+            font-size: var(--ej-font-size-sm, 0.875rem);
+        }
+    }
+
+    &__field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--ej-spacing-md, 1rem);
+
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__input,
+    &__textarea {
+        width: 100%;
+        padding: var(--ej-spacing-sm, 0.75rem);
+        border: 1px solid var(--ej-color-border, #d1d5db);
+        border-radius: var(--ej-radius-md, 8px);
+        font-size: var(--ej-font-size-base, 1rem);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: var(--ej-color-surface, #fff);
+        color: var(--ej-color-text-primary, #1a1a2e);
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-primary, #2d6a4f);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+        }
+
+        &::placeholder {
+            color: var(--ej-color-text-muted, #9ca3af);
+        }
+    }
+
+    &__textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    // Delivery options
+    &__delivery-options {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ej-spacing-sm, 0.75rem);
+    }
+
+    &__radio {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        padding: var(--ej-spacing-sm, 0.75rem);
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+        border-radius: var(--ej-radius-md, 8px);
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+
+        &:hover {
+            border-color: var(--ej-color-primary, #2d6a4f);
+        }
+
+        input[type="radio"]:checked+.agro-checkout__radio-label {
+            color: var(--ej-color-primary, #2d6a4f);
+        }
+
+        input[type="radio"]:checked~& {
+            border-color: var(--ej-color-primary, #2d6a4f);
+            background: rgba(45, 106, 79, 0.04);
+        }
+    }
+
+    &__radio-label {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+            font-size: var(--ej-font-size-base, 1rem);
+        }
+
+        small {
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            color: var(--ej-color-text-muted, #6b7280);
+        }
+    }
+
+    // Payment element
+    &__payment-element {
+        min-height: 100px;
+        padding: var(--ej-spacing-sm, 0.75rem);
+        border: 1px dashed var(--ej-color-border, #d1d5db);
+        border-radius: var(--ej-radius-md, 8px);
+    }
+
+    &__payment-message {
+        padding: var(--ej-spacing-sm, 0.75rem);
+        border-radius: var(--ej-radius-md, 8px);
+        margin-top: var(--ej-spacing-sm, 0.75rem);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+
+        &--error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        &--success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+    }
+
+    // Submit button
+    &__actions {
+        margin-top: var(--ej-spacing-lg, 1.5rem);
+    }
+
+    &__submit {
+        width: 100%;
+        padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-xl, 2rem);
+        background: var(--ej-color-primary, #2d6a4f);
+        color: #fff;
+        border: none;
+        border-radius: var(--ej-radius-md, 8px);
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+
+        &:hover:not(:disabled) {
+            background: var(--ej-color-primary-hover, #245a42);
+            transform: translateY(-1px);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // Summary sidebar
+    &__summary {
+        background: var(--ej-color-surface, #fff);
+        border-radius: var(--ej-radius-lg, 12px);
+        padding: var(--ej-spacing-lg, 1.5rem);
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+        position: sticky;
+        top: var(--ej-spacing-xl, 2rem);
+    }
+
+    &__summary-title {
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        font-weight: 600;
+        margin: 0 0 var(--ej-spacing-md, 1rem);
+        color: var(--ej-color-text-primary, #1a1a2e);
+    }
+
+    &__totals {
+        border-top: 1px solid var(--ej-color-border, #e5e7eb);
+        padding-top: var(--ej-spacing-md, 1rem);
+        margin-top: var(--ej-spacing-md, 1rem);
+    }
+
+    &__total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--ej-spacing-xs, 0.25rem) 0;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        color: var(--ej-color-text-secondary, #374151);
+
+        &--final {
+            font-size: var(--ej-font-size-lg, 1.125rem);
+            font-weight: 700;
+            color: var(--ej-color-text-primary, #1a1a2e);
+            border-top: 2px solid var(--ej-color-primary, #2d6a4f);
+            padding-top: var(--ej-spacing-sm, 0.75rem);
+            margin-top: var(--ej-spacing-xs, 0.5rem);
+        }
+    }
+
+    &__empty-cart {
+        text-align: center;
+        color: var(--ej-color-text-muted, #9ca3af);
+        padding: var(--ej-spacing-lg, 1.5rem) 0;
+    }
+}
+
+// === ORDER CONFIRMATION ===
+
+.agro-confirmation {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--ej-spacing-2xl, 3rem) var(--ej-spacing-md, 1rem);
+    text-align: center;
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2d6a4f, #40916c);
+        color: #fff;
+        font-size: 2.5rem;
+        margin-bottom: var(--ej-spacing-lg, 1.5rem);
+        box-shadow: 0 8px 24px rgba(45, 106, 79, 0.3);
+    }
+
+    &__title {
+        font-size: var(--ej-font-size-2xl, 2rem);
+        font-weight: 700;
+        color: var(--ej-color-text-primary, #1a1a2e);
+        margin: 0 0 var(--ej-spacing-sm, 0.75rem);
+    }
+
+    &__number {
+        font-size: var(--ej-font-size-lg, 1.125rem);
+        color: var(--ej-color-text-secondary, #374151);
+        margin-bottom: var(--ej-spacing-xl, 2rem);
+    }
+
+    &__details {
+        background: var(--ej-color-surface, #fff);
+        border-radius: var(--ej-radius-lg, 12px);
+        padding: var(--ej-spacing-lg, 1.5rem);
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+        margin-bottom: var(--ej-spacing-xl, 2rem);
+        text-align: left;
+    }
+
+    &__detail {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--ej-spacing-xs, 0.5rem) 0;
+        border-bottom: 1px solid var(--ej-color-border-light, #f3f4f6);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__label {
+        color: var(--ej-color-text-muted, #6b7280);
+        font-size: var(--ej-font-size-sm, 0.875rem);
+    }
+
+    &__value {
+        font-weight: 600;
+        color: var(--ej-color-text-primary, #1a1a2e);
+
+        &--total {
+            color: var(--ej-color-primary, #2d6a4f);
+            font-size: var(--ej-font-size-lg, 1.125rem);
+        }
+    }
+
+    &__message {
+        color: var(--ej-color-text-secondary, #374151);
+        margin-bottom: var(--ej-spacing-xl, 2rem);
+        line-height: 1.6;
+
+        p {
+            margin: var(--ej-spacing-xs, 0.25rem) 0;
+        }
+    }
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-xl, 2rem);
+        border-radius: var(--ej-radius-md, 8px);
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.1s ease;
+
+        &--primary {
+            background: var(--ej-color-primary, #2d6a4f);
+            color: #fff;
+
+            &:hover {
+                background: var(--ej-color-primary-hover, #245a42);
+                transform: translateY(-1px);
+            }
+        }
+    }
+}

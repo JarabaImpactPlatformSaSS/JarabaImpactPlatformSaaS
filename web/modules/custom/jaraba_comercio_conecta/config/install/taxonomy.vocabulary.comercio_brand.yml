@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_comercio_conecta
+name: 'Marcas Comercio'
+vid: comercio_brand
+description: 'Marcas comerciales para productos del marketplace ComercioConecta. Vocabulario plano.'
+weight: 0

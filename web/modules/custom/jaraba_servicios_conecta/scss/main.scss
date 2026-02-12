@@ -1,0 +1,15 @@
+// =============================================================================
+// ServiciosConecta — Main SCSS Entry Point
+//
+// DIRECTRIZ: @use 'sass:color' (NUNCA darken()/lighten()).
+// DIRECTRIZ: Variables CSS inyectables con var(--ej-*, fallback).
+// DIRECTRIZ: BEM naming convention para todas las clases.
+// DIRECTRIZ: Mobile-first responsive design.
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+@use 'marketplace';
+@use 'provider-detail';
+@use 'provider-dashboard';
+@use 'components';

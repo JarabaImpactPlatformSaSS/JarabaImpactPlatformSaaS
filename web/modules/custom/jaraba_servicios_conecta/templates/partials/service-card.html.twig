@@ -1,0 +1,72 @@
+{#
+ # Parcial: Tarjeta de Servicio
+ # Uso: {% include '@jaraba_servicios_conecta/partials/service-card.html.twig' with {service: service} only %}
+ # Variables: service (ServiceOffering entity), show_actions (bool, opcional)
+ #}
+
+{% set modality_labels = {
+  'in_person': 'Presencial'|t,
+  'online': 'Online'|t,
+  'hybrid': 'Híbrido'|t,
+  'home_visit': 'Domicilio'|t,
+  'phone': 'Telefónica'|t,
+} %}
+
+{% set price_type_labels = {
+  'fixed': '',
+  'hourly': '/hora'|t,
+  'from': 'Desde'|t,
+  'free': 'Gratis'|t,
+  'quote': 'Presupuesto'|t,
+} %}
+
+<article class="service-card">
+  {% if service.image.entity %}
+    <div class="service-card__image">
+      <img src="{{ file_url(service.image.entity.fileuri) }}"
+           alt="{{ service.title.value }}"
+           loading="lazy" />
+    </div>
+  {% endif %}
+
+  <div class="service-card__body">
+    <h3 class="service-card__title">{{ service.title.value }}</h3>
+
+    <div class="service-card__meta">
+      <span class="service-card__price">
+        {% if service.price_type.value == 'free' %}
+          {{ 'Gratis'|t }}
+        {% elseif service.price_type.value == 'quote' %}
+          {{ 'Bajo presupuesto'|t }}
+        {% else %}
+          {% if service.price_type.value == 'from' %}{{ 'Desde'|t }} {% endif %}
+          {{ service.price.value|number_format(2, ',', '.') }} €
+          {{ price_type_labels[service.price_type.value] }}
+        {% endif %}
+      </span>
+      <span class="service-card__duration">{{ service.duration_minutes.value }} min</span>
+    </div>
+
+    <span class="service-card__modality badge badge--{{ service.modality.value }}">
+      {{ modality_labels[service.modality.value]|default(service.modality.value) }}
+    </span>
+
+    {% if service.is_featured.value %}
+      <span class="service-card__featured badge badge--featured">{{ 'Destacado'|t }}</span>
+    {% endif %}
+  </div>
+
+  <div class="service-card__footer">
+    <a href="/servicios/reservar/{{ service.id }}" class="btn btn--primary btn--sm">
+      {{ 'Reservar'|t }}
+    </a>
+
+    {% if show_actions|default(false) %}
+      <a href="{{ path('entity.service_offering.edit_form', {'service_offering': service.id}) }}"
+         class="btn btn--outline btn--sm"
+         data-slide-panel data-slide-panel-title="{{ 'Editar Servicio'|t }}">
+        {{ 'Editar'|t }}
+      </a>
+    {% endif %}
+  </div>
+</article>

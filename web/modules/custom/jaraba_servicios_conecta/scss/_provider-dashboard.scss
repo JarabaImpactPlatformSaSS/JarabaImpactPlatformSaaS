@@ -1,0 +1,204 @@
+// =============================================================================
+// ServiciosConecta — Dashboard y Portal del Profesional
+// Ruta: /mi-servicio/*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+.servicios-provider-dashboard {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    margin-bottom: $space-xl;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--ej-text-primary, $servicios-text);
+    }
+  }
+
+  &__welcome {
+    font-size: 1.125rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+
+  // --- KPIs ---
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-md;
+    margin-bottom: $space-2xl;
+
+    @media (min-width: $bp-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  // --- Acciones rápidas ---
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-sm;
+    margin-bottom: $space-2xl;
+  }
+
+  // --- Próximas citas ---
+  &__upcoming {
+    h2 {
+      font-family: $font-heading;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: $space-md;
+    }
+  }
+}
+
+// --- KPI card ---
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-lg;
+  background: var(--ej-surface, $servicios-surface);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  text-align: center;
+
+  &__value {
+    font-family: $font-heading;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-primary, $servicios-primary);
+    line-height: 1;
+    margin-bottom: $space-xs;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+}
+
+// --- Booking item ---
+.servicios-booking-item {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md;
+  background: var(--ej-surface, $servicios-surface);
+  border-radius: $radius-md;
+  border-left: 3px solid var(--ej-primary, $servicios-primary);
+  margin-bottom: $space-sm;
+
+  &__date {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ej-primary, $servicios-primary);
+    white-space: nowrap;
+  }
+
+  &__client {
+    flex: 1;
+    color: var(--ej-text-primary, $servicios-text);
+  }
+
+  &__status {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    background: var(--ej-surface, $servicios-cream);
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+}
+
+// --- Provider offerings page ---
+.servicios-provider-offerings {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-lg;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+    margin-bottom: $space-lg;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-md;
+
+    @media (min-width: $bp-md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: $bp-lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $space-3xl;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+}
+
+// --- Calendar ---
+.servicios-provider-calendar {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    margin-bottom: $space-xl;
+  }
+}
+
+.servicios-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: $space-md;
+
+  &__day {
+    padding: $space-md;
+    background: var(--ej-surface, $servicios-surface);
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+
+    h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ej-primary, $servicios-primary);
+      margin-bottom: $space-sm;
+    }
+  }
+
+  &__slot {
+    font-size: 0.875rem;
+    padding: $space-xs 0;
+    color: var(--ej-text-primary, $servicios-text);
+  }
+}

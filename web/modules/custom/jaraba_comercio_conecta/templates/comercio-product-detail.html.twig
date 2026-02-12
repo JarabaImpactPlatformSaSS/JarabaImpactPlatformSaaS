@@ -1,0 +1,279 @@
+{#
+/**
+ * @file
+ * Template de detalle de producto ComercioConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Header/Footer via partials.
+ * Body classes inyectadas via hook_preprocess_html(): comercio-page, comercio-product-page.
+ *
+ * Variables:
+ *   - product: Entidad ProductRetail (puede ser NULL en página de merchant).
+ *   - variations: Array de entidades ProductVariationRetail.
+ *   - merchant: Entidad MerchantProfile.
+ *   - related_products: Array de productos relacionados.
+ *   - reviews: Array de reseñas (Fase 6).
+ *   - review_summary: Resumen de reseñas (Fase 6).
+ *   - schema_json_ld: String JSON-LD para SEO.
+ */
+#}
+
+{# Schema.org JSON-LD para SEO #}
+{% if schema_json_ld %}
+  <script type="application/ld+json">{{ schema_json_ld|raw }}</script>
+{% endif %}
+
+{% if product %}
+  <article class="comercio-product-detail" itemscope itemtype="https://schema.org/Product">
+
+    {# === Breadcrumb del producto === #}
+    <nav class="comercio-breadcrumb container" aria-label="{{ 'Navegación'|trans }}">
+      <ol class="comercio-breadcrumb__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li class="comercio-breadcrumb__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="{{ path('jaraba_comercio_conecta.marketplace') }}" itemprop="item">
+            <span itemprop="name">{% trans %}Marketplace{% endtrans %}</span>
+          </a>
+          <meta itemprop="position" content="1">
+        </li>
+        {% if product.get('category_id').entity %}
+          <li class="comercio-breadcrumb__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ path('jaraba_comercio_conecta.marketplace') }}?category={{ product.get('category_id').entity.id() }}" itemprop="item">
+              <span itemprop="name">{{ product.get('category_id').entity.label() }}</span>
+            </a>
+            <meta itemprop="position" content="2">
+          </li>
+        {% endif %}
+        <li class="comercio-breadcrumb__item comercio-breadcrumb__item--active" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ product.get('title').value }}</span>
+          <meta itemprop="position" content="3">
+        </li>
+      </ol>
+    </nav>
+
+    <div class="comercio-product-detail__layout container">
+
+      {# === Galería de imágenes === #}
+      <div class="comercio-product-detail__gallery">
+        {% if product.get('images').entity %}
+          <div class="comercio-gallery">
+            {# Imagen principal #}
+            <div class="comercio-gallery__main">
+              <img class="comercio-gallery__image"
+                   src="{{ file_url(product.get('images').0.entity.fileuri) }}"
+                   alt="{{ product.get('title').value }}"
+                   itemprop="image"
+                   id="comercio-main-image">
+            </div>
+
+            {# Thumbnails #}
+            {% if product.get('images')|length > 1 %}
+              <div class="comercio-gallery__thumbs" role="tablist" aria-label="{{ 'Imágenes del producto'|trans }}">
+                {% for image in product.get('images') %}
+                  {% if image.entity %}
+                    <button class="comercio-gallery__thumb {{ loop.first ? 'comercio-gallery__thumb--active' : '' }}"
+                            data-image-src="{{ file_url(image.entity.fileuri) }}"
+                            role="tab"
+                            aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                            aria-label="{{ 'Imagen'|trans }} {{ loop.index }}">
+                      <img src="{{ file_url(image.entity.fileuri) }}"
+                           alt="{{ product.get('title').value }} - {{ loop.index }}"
+                           loading="lazy">
+                    </button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="comercio-gallery__placeholder">
+            {{ jaraba_icon('commerce', 'shopping-bag', { variant: 'duotone', size: '80px', class: 'comercio-gallery__placeholder-icon' }) }}
+          </div>
+        {% endif %}
+      </div>
+
+      {# === Info del producto === #}
+      <div class="comercio-product-detail__info">
+        <h1 class="comercio-product-detail__title" itemprop="name">{{ product.get('title').value }}</h1>
+
+        {# SKU y categoría #}
+        <div class="comercio-product-detail__meta">
+          <span class="comercio-product-detail__sku">{% trans %}SKU{% endtrans %}: {{ product.get('sku').value }}</span>
+          {% if product.get('category_id').entity %}
+            <span class="comercio-product-detail__category">
+              {{ product.get('category_id').entity.label() }}
+            </span>
+          {% endif %}
+          {% if product.get('brand_id').entity %}
+            <span class="comercio-product-detail__brand" itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+              <span itemprop="name">{{ product.get('brand_id').entity.label() }}</span>
+            </span>
+          {% endif %}
+        </div>
+
+        {# Precio #}
+        <div class="comercio-product-detail__price-block" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="priceCurrency" content="EUR">
+          <meta itemprop="price" content="{{ product.get('price').value }}">
+          {% if product.get('compare_at_price').value and product.get('compare_at_price').value > product.get('price').value %}
+            <span class="comercio-product-detail__price-original">
+              {{ product.get('compare_at_price').value|number_format(2, ',', '.') }} €
+            </span>
+            <span class="comercio-product-detail__price-current comercio-product-detail__price-current--sale">
+              {{ product.get('price').value|number_format(2, ',', '.') }} €
+            </span>
+            {% set discount = ((product.get('compare_at_price').value - product.get('price').value) / product.get('compare_at_price').value * 100)|round %}
+            <span class="comercio-product-detail__discount-badge">-{{ discount }}%</span>
+          {% else %}
+            <span class="comercio-product-detail__price-current">
+              {{ product.get('price').value|number_format(2, ',', '.') }} €
+            </span>
+          {% endif %}
+
+          {# Estado de disponibilidad #}
+          {% set stock = product.get('stock_quantity').value %}
+          {% if stock > 0 %}
+            <link itemprop="availability" href="https://schema.org/InStock">
+            <span class="comercio-product-detail__availability comercio-product-detail__availability--in-stock">
+              {% trans %}En stock{% endtrans %}
+              {% if stock <= 5 %}
+                <small>({% trans %}últimas {{ stock }} unidades{% endtrans %})</small>
+              {% endif %}
+            </span>
+          {% else %}
+            <link itemprop="availability" href="https://schema.org/OutOfStock">
+            <span class="comercio-product-detail__availability comercio-product-detail__availability--out">
+              {% trans %}Agotado{% endtrans %}
+            </span>
+          {% endif %}
+        </div>
+
+        {# Selector de variaciones #}
+        {% if variations|length > 0 %}
+          <div class="comercio-product-detail__variations">
+            <h3 class="comercio-product-detail__variations-title">{% trans %}Opciones disponibles{% endtrans %}</h3>
+            <div class="comercio-variations-selector" data-variations>
+              {% for variation in variations %}
+                <button class="comercio-variation-btn {{ loop.first ? 'comercio-variation-btn--active' : '' }}"
+                        data-variation-id="{{ variation.id() }}"
+                        data-variation-price="{{ variation.get('price').value }}"
+                        data-variation-stock="{{ variation.get('stock_quantity').value }}"
+                        data-variation-sku="{{ variation.get('sku').value }}">
+                  {{ variation.get('title').value }}
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {# Descripción corta #}
+        {% if product.get('short_description').value %}
+          <p class="comercio-product-detail__summary" itemprop="description">
+            {{ product.get('short_description').value }}
+          </p>
+        {% endif %}
+
+        {# Descripción completa #}
+        {% if product.get('description').value %}
+          <div class="comercio-product-detail__description">
+            <h3>{% trans %}Descripción{% endtrans %}</h3>
+            <div itemprop="description">{{ product.get('description').value|raw }}</div>
+          </div>
+        {% endif %}
+
+        {# Información de IVA #}
+        {% set tax_labels = {
+          'general_21': 'IVA 21% incluido'|trans,
+          'reducido_10': 'IVA 10% incluido'|trans,
+          'superreducido_4': 'IVA 4% incluido'|trans,
+          'exento_0': 'Exento de IVA'|trans,
+        } %}
+        <p class="comercio-product-detail__tax">
+          {{ tax_labels[product.get('tax_rate').value]|default('IVA incluido'|trans) }}
+        </p>
+      </div>
+    </div>
+
+    {# === Información del comercio === #}
+    {% if merchant %}
+      <section class="comercio-product-detail__merchant container" aria-label="{{ 'Información del comercio'|trans }}">
+        {% include '@jaraba_comercio_conecta/partials/_comercio-merchant-card.html.twig' with {
+          'merchant': merchant,
+          'show_link': true
+        } only %}
+      </section>
+    {% endif %}
+
+    {# === Productos relacionados === #}
+    {% if related_products|length > 0 %}
+      <section class="comercio-product-detail__related container" aria-label="{{ 'Productos relacionados'|trans }}">
+        <h2 class="comercio-section-title">{% trans %}También te puede interesar{% endtrans %}</h2>
+        <div class="comercio-products-grid comercio-products-grid--compact">
+          {% for related in related_products|slice(0, 4) %}
+            {% include '@jaraba_comercio_conecta/partials/_comercio-product-card.html.twig' with {
+              'product': related
+            } only %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {# === Reseñas (Fase 6) === #}
+    {% if reviews is defined and reviews|length > 0 %}
+      <section class="comercio-product-detail__reviews container" aria-label="{{ 'Reseñas'|trans }}">
+        <h2 class="comercio-section-title">{% trans %}Reseñas de clientes{% endtrans %}</h2>
+        {# TODO Fase 6: Widget de reseñas con estrellas #}
+      </section>
+    {% endif %}
+
+  </article>
+
+{% elseif merchant %}
+  {# === Página de comerciante (sin producto) === #}
+  <div class="comercio-merchant-page container">
+    <div class="comercio-merchant-page__header">
+      {% if merchant.get('cover_image').entity %}
+        <img class="comercio-merchant-page__cover"
+             src="{{ file_url(merchant.get('cover_image').entity.fileuri) }}"
+             alt="{{ merchant.get('business_name').value }}">
+      {% endif %}
+
+      <div class="comercio-merchant-page__info">
+        {% if merchant.get('logo').entity %}
+          <img class="comercio-merchant-page__logo"
+               src="{{ file_url(merchant.get('logo').entity.fileuri) }}"
+               alt="{{ merchant.get('business_name').value }}"
+               loading="lazy">
+        {% endif %}
+        <h1 class="comercio-merchant-page__name">{{ merchant.get('business_name').value }}</h1>
+        <p class="comercio-merchant-page__type">
+          {% set type_labels = {
+            'retail': 'Comercio minorista'|trans,
+            'food': 'Alimentación'|trans,
+            'services': 'Servicios'|trans,
+            'crafts': 'Artesanía'|trans,
+            'other': 'Otro'|trans,
+          } %}
+          {{ type_labels[merchant.get('business_type').value]|default('') }}
+        </p>
+        {% if merchant.get('description').value %}
+          <div class="comercio-merchant-page__description">
+            {{ merchant.get('description').value|raw }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Productos del comercio #}
+    {% if related_products|length > 0 %}
+      <section class="comercio-merchant-page__products" aria-label="{{ 'Productos del comercio'|trans }}">
+        <h2 class="comercio-section-title">{% trans %}Productos{% endtrans %}</h2>
+        <div class="comercio-products-grid">
+          {% for product in related_products %}
+            {% include '@jaraba_comercio_conecta/partials/_comercio-product-card.html.twig' with {
+              'product': product
+            } only %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+{% endif %}

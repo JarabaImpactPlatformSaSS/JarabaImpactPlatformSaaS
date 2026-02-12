@@ -1,0 +1,26 @@
+# Permisos del módulo Andalucía +ei
+
+administer andalucia ei:
+  title: 'Administrar Andalucía +ei'
+  description: 'Acceso completo a la gestión del programa Andalucía +ei.'
+  restrict access: true
+
+view programa participante ei:
+  title: 'Ver participantes Andalucía +ei'
+  description: 'Permite ver la lista de participantes del programa.'
+
+create programa participante ei:
+  title: 'Crear participantes Andalucía +ei'
+  description: 'Permite dar de alta nuevos participantes en el programa.'
+
+edit programa participante ei:
+  title: 'Editar participantes Andalucía +ei'
+  description: 'Permite modificar datos de participantes existentes.'
+
+delete programa participante ei:
+  title: 'Eliminar participantes Andalucía +ei'
+  description: 'Permite dar de baja participantes del programa.'
+
+export sto data:
+  title: 'Exportar datos para STO'
+  description: 'Permite generar paquetes de exportación para el STO.'

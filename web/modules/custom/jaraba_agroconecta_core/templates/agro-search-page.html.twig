@@ -1,0 +1,173 @@
+{#
+/**
+ * @file
+ * Template de la página de búsqueda del marketplace AgroConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Header/Footer via partials.
+ * Body classes inyectadas via hook_preprocess_html(): search-page, agro-page.
+ *
+ * Variables:
+ *   - search_query: Texto de búsqueda actual.
+ *   - sort: Criterio de ordenación actual.
+ *   - categories: Árbol jerárquico de categorías.
+ *   - featured_collections: Colecciones destacadas.
+ *   - initial_results: Resultados iniciales (si hay query).
+ */
+#}
+
+<div class="agro-search" id="agro-search-root">
+
+  {# === Hero de búsqueda === #}
+  <section class="agro-search-hero">
+    <h1 class="agro-search-hero__title">{% trans %}Descubre productos agroalimentarios{% endtrans %}</h1>
+    <p class="agro-search-hero__subtitle">{% trans %}Busca entre cientos de productos locales y artesanales{% endtrans %}</p>
+
+    <div class="agro-search-bar">
+      <div class="agro-search-bar__wrapper">
+        <span class="agro-search-bar__icon">🔍</span>
+        <input type="text"
+               id="agro-search-input"
+               class="agro-search-bar__input"
+               placeholder="{{ 'Buscar productos, productores...'|t }}"
+               value="{{ search_query }}"
+               autocomplete="off">
+        <div class="agro-search-autocomplete" id="agro-search-autocomplete"></div>
+      </div>
+      <select id="agro-search-sort" class="agro-search-bar__sort">
+        <option value="relevance" {{ sort == 'relevance' ? 'selected' }}>{% trans %}Relevancia{% endtrans %}</option>
+        <option value="newest" {{ sort == 'newest' ? 'selected' }}>{% trans %}Más recientes{% endtrans %}</option>
+        <option value="price_asc" {{ sort == 'price_asc' ? 'selected' }}>{% trans %}Precio: menor a mayor{% endtrans %}</option>
+        <option value="price_desc" {{ sort == 'price_desc' ? 'selected' }}>{% trans %}Precio: mayor a menor{% endtrans %}</option>
+        <option value="best_rated" {{ sort == 'best_rated' ? 'selected' }}>{% trans %}Mejor valorados{% endtrans %}</option>
+      </select>
+    </div>
+  </section>
+
+  {# === Layout principal: Sidebar + Resultados === #}
+  <div class="agro-search-layout">
+
+    {# --- Sidebar de filtros --- #}
+    <aside class="agro-search-sidebar" id="agro-search-sidebar">
+      <h2 class="agro-search-sidebar__title">{% trans %}Categorías{% endtrans %}</h2>
+      {% if categories|length > 0 %}
+        <ul class="agro-search-categories">
+          {% for cat in categories %}
+            <li class="agro-search-categories__item">
+              <a href="#" class="agro-search-categories__link" data-category-id="{{ cat.id }}">
+                {% if cat.icon %}
+                  <span class="agro-search-categories__icon">{{ cat.icon }}</span>
+                {% endif %}
+                <span class="agro-search-categories__name">{{ cat.name }}</span>
+                {% if cat.count is defined %}
+                  <span class="agro-search-categories__count">({{ cat.count }})</span>
+                {% endif %}
+              </a>
+              {% if cat.children is defined and cat.children|length > 0 %}
+                <ul class="agro-search-categories__sub">
+                  {% for child in cat.children %}
+                    <li>
+                      <a href="#" class="agro-search-categories__link agro-search-categories__link--child"
+                         data-category-id="{{ child.id }}">
+                        {{ child.name }}
+                        {% if child.count is defined %}
+                          <span class="agro-search-categories__count">({{ child.count }})</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# Filtro de precio #}
+      <div class="agro-search-filter">
+        <h3 class="agro-search-filter__title">{% trans %}Precio{% endtrans %}</h3>
+        <div class="agro-search-filter__range">
+          <input type="number" id="agro-filter-min-price" class="agro-search-filter__input"
+                 placeholder="{{ 'Min'|t }}" min="0" step="0.01">
+          <span class="agro-search-filter__sep">—</span>
+          <input type="number" id="agro-filter-max-price" class="agro-search-filter__input"
+                 placeholder="{{ 'Max'|t }}" min="0" step="0.01">
+        </div>
+      </div>
+    </aside>
+
+    {# --- Contenido principal --- #}
+    <main class="agro-search-main">
+
+      {# Chips de filtros activos #}
+      <div class="agro-search-active-filters" id="agro-search-active-filters"></div>
+
+      {# Barra de resultados meta #}
+      <div class="agro-search-meta" id="agro-search-meta">
+        {% if initial_results %}
+          <span class="agro-search-meta__count">{{ initial_results.total }} {% trans %}productos encontrados{% endtrans %}</span>
+        {% endif %}
+      </div>
+
+      {# Grid de resultados #}
+      <div class="agro-products-grid" id="agro-search-results">
+        {% if initial_results and initial_results.results|length > 0 %}
+          {% for product in initial_results.results %}
+            <article class="agro-product-card" data-product-id="{{ product.id }}">
+              <div class="agro-product-card__image agro-product-card__image--placeholder"></div>
+              <div class="agro-product-card__body">
+                <h3 class="agro-product-card__name">{{ product.name }}</h3>
+                <div class="agro-product-card__price">{{ product.price|number_format(2, ',', '.') }} €</div>
+                {% if product.average_rating > 0 %}
+                  <div class="agro-product-card__rating" data-agro-rating="{{ product.average_rating|round }}">
+                    <span class="agro-product-card__stars"></span>
+                    <span class="agro-product-card__review-count">({{ product.review_count }})</span>
+                  </div>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        {% elseif search_query %}
+          <div class="agro-search-empty">
+            <span class="agro-search-empty__icon">🔍</span>
+            <p>{% trans %}No se encontraron productos para "{{ search_query }}".{% endtrans %}</p>
+            <p class="agro-search-empty__hint">{% trans %}Prueba con otros términos o explora nuestras categorías.{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Loader #}
+      <div class="agro-search-loader" id="agro-search-loader" style="display: none;">
+        <span class="agro-spinner"></span>
+        <span>{% trans %}Buscando...{% endtrans %}</span>
+      </div>
+
+      {# Paginación "Cargar más" #}
+      <div class="agro-search-pagination" id="agro-search-pagination" style="display: none;">
+        <button class="agro-btn agro-btn--outline" id="agro-search-load-more">
+          {% trans %}Cargar más productos{% endtrans %}
+        </button>
+      </div>
+
+      {# === Colecciones destacadas (sin búsqueda activa) === #}
+      {% if not search_query and featured_collections|length > 0 %}
+        <section class="agro-featured-collections">
+          <h2 class="agro-featured-collections__title">{% trans %}Colecciones destacadas{% endtrans %}</h2>
+          <div class="agro-collections-grid">
+            {% for col in featured_collections %}
+              <a href="/agroconecta/collection/{{ col.slug }}" class="agro-collection-card">
+                <div class="agro-collection-card__body">
+                  <h3 class="agro-collection-card__name">{{ col.name }}</h3>
+                  {% if col.description %}
+                    <p class="agro-collection-card__desc">{{ col.description|length > 80 ? col.description|slice(0, 80) ~ '…' : col.description }}</p>
+                  {% endif %}
+                  <span class="agro-collection-card__badge">{{ col.type_label }}</span>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+    </main>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+name: 'Jaraba ServiciosConecta'
+type: module
+description: 'Vertical ServiciosConecta: Plataforma de Confianza Digital para Profesionales. Motor de reservas, buzon de confianza cifrado, firma digital PAdES, triaje IA, presupuestador automatico y copilot RAG.'
+package: 'Jaraba Verticals'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - drupal:taxonomy
+  - drupal:datetime
+  - drupal:link
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

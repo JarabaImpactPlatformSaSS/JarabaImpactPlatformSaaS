@@ -1,0 +1,32 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de ComercioConecta
+# Cada entidad aparece como una pestaña en la sección de contenido
+# =============================================================================
+
+# Tab Productos Comercio en admin/content
+jaraba_comercio_conecta.product_retail.collection:
+  title: 'Productos Comercio'
+  route_name: entity.product_retail.collection
+  base_route: system.admin_content
+  weight: 50
+
+# Tab Variaciones Comercio en admin/content
+jaraba_comercio_conecta.product_variation_retail.collection:
+  title: 'Variaciones Comercio'
+  route_name: entity.product_variation_retail.collection
+  base_route: system.admin_content
+  weight: 51
+
+# Tab Ubicaciones Stock en admin/content
+jaraba_comercio_conecta.stock_location.collection:
+  title: 'Ubicaciones Stock'
+  route_name: entity.stock_location.collection
+  base_route: system.admin_content
+  weight: 52
+
+# Tab Comerciantes en admin/content
+jaraba_comercio_conecta.merchant_profile.collection:
+  title: 'Comerciantes'
+  route_name: entity.merchant_profile.collection
+  base_route: system.admin_content
+  weight: 53

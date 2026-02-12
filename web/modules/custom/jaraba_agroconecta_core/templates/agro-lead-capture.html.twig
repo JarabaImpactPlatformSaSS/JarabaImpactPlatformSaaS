@@ -1,0 +1,123 @@
+{#
+/**
+ * @file
+ * Lead Capture Landing para QR dinámico AgroConecta.
+ *
+ * Sprint AC6-1 — Doc 81.
+ * Diseño público sin autenticación para captura de leads
+ * desde escaneos QR en packaging, eventos y punto de venta.
+ *
+ * Variables:
+ *   - qr_code: Entidad QR con datos del código escaneado
+ *   - qr_code_id: ID del QR code
+ *   - scan_id: ID del escaneo registrado
+ *   - capture_type: Tipo de captura (newsletter|discount|recipe|contest)
+ *   - producer_name: Nombre del productor
+ *   - product_name: Nombre del producto si aplica
+ *   - cta_title: Título call-to-action personalizable
+ *   - cta_description: Descripción personalizable
+ */
+#}
+
+<div class="agro-lead-capture">
+
+  {# === Header con branding del productor === #}
+  <div class="agro-lead-capture__header">
+    <div class="agro-lead-capture__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 11h2v2H3v-2zm0-4h2v2H3V7zm0 8h2v2H3v-2zm4-4h14v2H7v-2zm0-4h14v2H7V7zm0 8h14v2H7v-2z"/>
+      </svg>
+    </div>
+    <h1 class="agro-lead-capture__title">
+      {{ cta_title|default('Únete a nuestra comunidad'|t) }}
+    </h1>
+    <p class="agro-lead-capture__desc">
+      {{ cta_description|default('Recibe ofertas exclusivas, recetas y novedades directamente de'|t) }}
+      {% if producer_name %}
+        <strong>{{ producer_name }}</strong>
+      {% endif %}
+    </p>
+  </div>
+
+  {# === Formulario de captura === #}
+  <form class="agro-lead-capture__form"
+        data-qr-code-id="{{ qr_code_id }}"
+        {% if scan_id %}data-scan-id="{{ scan_id }}"{% endif %}
+        data-capture-type="{{ capture_type|default('newsletter') }}"
+        novalidate>
+
+    <div class="agro-lead-capture__field">
+      <label class="agro-lead-capture__label" for="lead-name">
+        {% trans %}Nombre{% endtrans %}
+      </label>
+      <input class="agro-lead-capture__input"
+             type="text"
+             id="lead-name"
+             name="name"
+             placeholder="{% trans %}Tu nombre{% endtrans %}"
+             autocomplete="name">
+    </div>
+
+    <div class="agro-lead-capture__field">
+      <label class="agro-lead-capture__label" for="lead-email">
+        {% trans %}Email{% endtrans %} <span aria-hidden="true">*</span>
+      </label>
+      <input class="agro-lead-capture__input"
+             type="email"
+             id="lead-email"
+             name="email"
+             placeholder="{% trans %}tu@email.com{% endtrans %}"
+             required
+             autocomplete="email">
+    </div>
+
+    <div class="agro-lead-capture__field">
+      <label class="agro-lead-capture__label" for="lead-phone">
+        {% trans %}Teléfono{% endtrans %} ({% trans %}opcional{% endtrans %})
+      </label>
+      <input class="agro-lead-capture__input"
+             type="tel"
+             id="lead-phone"
+             name="phone"
+             placeholder="{% trans %}+34 600 000 000{% endtrans %}"
+             autocomplete="tel">
+    </div>
+
+    <label class="agro-lead-capture__consent">
+      <input type="checkbox" name="consent_marketing" required>
+      {% trans %}Acepto recibir comunicaciones comerciales y novedades. Puedes darte de baja en cualquier momento.{% endtrans %}
+      <a href="/privacy-policy" target="_blank">{% trans %}Política de Privacidad{% endtrans %}</a>
+    </label>
+
+    <button type="submit" class="agro-lead-capture__submit">
+      {% if capture_type == 'discount' %}
+        {% trans %}Obtener mi descuento{% endtrans %}
+      {% elseif capture_type == 'recipe' %}
+        {% trans %}Recibir recetas{% endtrans %}
+      {% elseif capture_type == 'contest' %}
+        {% trans %}Participar{% endtrans %}
+      {% else %}
+        {% trans %}Suscribirme{% endtrans %}
+      {% endif %}
+    </button>
+  </form>
+
+  {# === Feedback de estado === #}
+  <div class="agro-lead-capture__feedback"></div>
+
+  {# === Código de descuento (se muestra tras éxito si aplica) === #}
+  {% if capture_type == 'discount' %}
+    <div class="agro-lead-capture__discount" style="display: none;">
+      <div class="agro-lead-capture__discount-code">---</div>
+      <p class="agro-lead-capture__discount-label">{% trans %}Tu código de descuento{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+  {# === Producto asociado (si hay) === #}
+  {% if product_name %}
+    <div style="text-align: center; margin-top: var(--ej-spacing-md, 1rem); font-size: var(--ej-font-size-xs, 0.75rem); color: var(--ej-color-text-muted, #6b7280);">
+      {% trans %}Escaneaste el QR de{% endtrans %}: <strong>{{ product_name }}</strong>
+    </div>
+  {% endif %}
+
+</div>

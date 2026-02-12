@@ -1,0 +1,159 @@
+// =============================================================================
+// ComercioConecta — Merchant Dashboard Styles
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Dashboard header
+// ---------------------------------------------------------------------------
+.comercio-merchant-dashboard {
+  &__header {
+    background: linear-gradient(135deg, var(--ej-color-primary, $comercio-primary), var(--ej-color-primary, color.scale($comercio-primary, $lightness: -15%)));
+    color: #fff;
+    padding: $space-xl $space-md;
+  }
+
+  &__header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+
+    @media (min-width: $bp-md) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__welcome {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+  }
+
+  &__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-full;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &__business-name {
+    font-size: 0.875rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-sm;
+    flex-wrap: wrap;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// KPI cards grid
+// ---------------------------------------------------------------------------
+.comercio-kpis {
+  padding-block: $space-xl;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-md;
+
+    @media (min-width: $bp-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+
+.comercio-kpi-card {
+  background: var(--ej-card-bg, $comercio-surface);
+  border: 1px solid var(--ej-card-border, $comercio-border);
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    background: color.scale($comercio-primary, $lightness: 85%);
+    color: var(--ej-color-primary, $comercio-primary);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ej-color-headings, $comercio-text);
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: var(--ej-color-muted, $comercio-text-muted);
+    margin-top: $space-xs;
+  }
+
+  &--warning {
+    .comercio-kpi-card__icon {
+      background: color.scale($comercio-warning, $lightness: 80%);
+      color: $comercio-warning;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Verification banner
+// ---------------------------------------------------------------------------
+.comercio-verification-banner {
+  padding-block: $space-md;
+
+  &__inner {
+    padding: $space-md $space-lg;
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+
+    &--pending,
+    &--documents_submitted,
+    &--under_review {
+      background: color.scale($comercio-warning, $lightness: 85%);
+      color: color.scale($comercio-warning, $lightness: -40%);
+      border: 1px solid color.scale($comercio-warning, $lightness: 60%);
+    }
+
+    &--rejected,
+    &--suspended {
+      background: color.scale($comercio-danger, $lightness: 90%);
+      color: color.scale($comercio-danger, $lightness: -20%);
+      border: 1px solid color.scale($comercio-danger, $lightness: 60%);
+    }
+  }
+}

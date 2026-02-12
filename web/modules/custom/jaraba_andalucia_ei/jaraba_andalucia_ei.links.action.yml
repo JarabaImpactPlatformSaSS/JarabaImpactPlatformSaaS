@@ -1,0 +1,14 @@
+# Action links - Botones "Añadir" en colecciones
+
+entity.programa_participante_ei.add_form:
+  title: 'Añadir Participante'
+  route_name: entity.programa_participante_ei.add_form
+  appears_on:
+    - entity.programa_participante_ei.collection
+
+jaraba_andalucia_ei.sto_export:
+  title: 'Exportar para STO'
+  route_name: jaraba_andalucia_ei.sto_export
+  appears_on:
+    - entity.programa_participante_ei.collection
+  weight: 10

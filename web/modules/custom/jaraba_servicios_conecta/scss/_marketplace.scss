@@ -1,0 +1,130 @@
+// =============================================================================
+// ServiciosConecta — Marketplace de Servicios Profesionales
+// Ruta: /servicios
+// DIRECTRIZ: var(--ej-*, fallback) para colores del tema.
+// DIRECTRIZ: BEM naming. Mobile-first.
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+.servicios-marketplace {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    text-align: center;
+    margin-bottom: $space-2xl;
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-text-primary, $servicios-text);
+    margin-bottom: $space-sm;
+
+    @media (min-width: $bp-md) {
+      font-size: 2.5rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+
+  &__filters {
+    margin-bottom: $space-xl;
+  }
+
+  &__meta {
+    margin-bottom: $space-lg;
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-lg;
+
+    @media (min-width: $bp-sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: $bp-lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (min-width: $bp-xl) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $space-3xl $space-md;
+    color: var(--ej-text-secondary, $servicios-text-muted);
+  }
+
+  &__pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-md;
+    margin-top: $space-2xl;
+  }
+}
+
+// --- Filtros ---
+.servicios-filters {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  padding: $space-md;
+  background: var(--ej-surface, $servicios-surface);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+
+  @media (min-width: $bp-md) {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__group {
+    flex: 1;
+  }
+
+  &__search {
+    width: 100%;
+    padding: $space-sm $space-md;
+    border: 1px solid var(--ej-border, $servicios-border);
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+    transition: border-color $transition-fast;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-primary, $servicios-primary);
+    }
+  }
+
+  &__select {
+    width: 100%;
+    padding: $space-sm $space-md;
+    border: 1px solid var(--ej-border, $servicios-border);
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+    background: var(--ej-surface, $servicios-surface);
+    cursor: pointer;
+  }
+
+  &__btn {
+    white-space: nowrap;
+  }
+}

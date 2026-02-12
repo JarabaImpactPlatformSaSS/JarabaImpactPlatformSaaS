@@ -1,0 +1,17 @@
+# Enlaces de menú - Para /admin/structure y /admin/config
+
+# Entrada en Structure (para Field UI)
+jaraba_andalucia_ei.structure:
+  title: 'Participante Andalucía +ei'
+  description: 'Administrar campos y visualización del participante Andalucía +ei.'
+  route_name: entity.programa_participante_ei.settings
+  parent: system.admin_structure
+  weight: 30
+
+# Entrada en Config > Programas
+jaraba_andalucia_ei.config:
+  title: 'Andalucía +ei'
+  description: 'Configuración general del programa Andalucía +ei.'
+  route_name: jaraba_andalucia_ei.settings
+  parent: system.admin_config
+  weight: 50

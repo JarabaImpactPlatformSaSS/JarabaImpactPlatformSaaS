@@ -1,0 +1,22 @@
+jaraba_andalucia_ei.settings:
+  type: config_object
+  label: 'Configuración Andalucía +ei'
+  mapping:
+    horas_minimas_orientacion:
+      type: float
+      label: 'Horas mínimas orientación'
+    horas_minimas_formacion:
+      type: float
+      label: 'Horas mínimas formación'
+    horas_por_sesion_ia:
+      type: float
+      label: 'Horas por sesión IA'
+    maximo_horas_ia_dia:
+      type: float
+      label: 'Máximo horas IA por día'
+    sto_sync_enabled:
+      type: boolean
+      label: 'Sincronización STO habilitada'
+    sto_endpoint:
+      type: string
+      label: 'Endpoint STO'

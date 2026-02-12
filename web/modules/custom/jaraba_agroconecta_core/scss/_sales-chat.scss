@@ -1,0 +1,456 @@
+/**
+ * @file
+ * Estilos del Sales Chat Widget para consumidores AgroConecta.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * Sprint AC5-17/18 — Sales Agent Chat Widget.
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_agroconecta_core && npx sass scss/main.scss css/agroconecta.css --style=compressed"
+ */
+
+// === SALES CHAT FAB ===
+
+.agro-sales-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+            var(--ej-agro-primary, #2e7d32),
+            var(--ej-agro-primary-light, #43a047));
+    color: var(--ej-color-white, #fff);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 4px 20px rgba(46, 125, 50, 0.35),
+        0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s ease;
+    animation: agro-sales-pulse 2s ease-in-out 3;
+
+    &:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 28px rgba(46, 125, 50, 0.45);
+    }
+
+    &--open {
+        animation: none;
+        transform: rotate(180deg);
+    }
+
+    &__badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--ej-color-error, #dc2626);
+        color: var(--ej-color-white, #fff);
+        font-size: 0.6rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--ej-color-white, #fff);
+    }
+}
+
+@keyframes agro-sales-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 20px rgba(46, 125, 50, 0.35);
+    }
+
+    50% {
+        box-shadow: 0 4px 30px rgba(46, 125, 50, 0.6), 0 0 0 8px rgba(46, 125, 50, 0.12);
+    }
+}
+
+// === SALES CHAT WINDOW ===
+
+.agro-sales-chat {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    z-index: 999;
+    width: 400px;
+    max-height: 580px;
+    background: var(--ej-bg-surface, #fff);
+    border-radius: var(--ej-radius-xl, 16px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.14),
+        0 2px 8px rgba(0, 0, 0, 0.06);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+
+    &--open {
+        display: flex;
+        animation: agro-sales-slide-up 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    // Header — warm green gradient (AgroConecta brand)
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+        background: linear-gradient(135deg,
+                var(--ej-agro-header-dark, #1b5e20),
+                var(--ej-agro-header, #2e7d32));
+        color: var(--ej-color-white, #fff);
+    }
+
+    &__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,
+                var(--ej-agro-primary-light, #43a047),
+                var(--ej-agro-accent, #66bb6a));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    &__info {
+        flex: 1;
+
+        h3 {
+            margin: 0;
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            font-weight: 700;
+        }
+
+        small {
+            font-size: var(--ej-font-size-xs, 0.75rem);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            &::before {
+                content: '';
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--ej-agro-accent, #66bb6a);
+            }
+        }
+    }
+
+    &__close {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        border: none;
+        color: var(--ej-color-white, #fff);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.24);
+        }
+    }
+
+    // Messages
+    &__messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--ej-spacing-md, 1rem);
+        display: flex;
+        flex-direction: column;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        max-height: 380px;
+        min-height: 220px;
+        scroll-behavior: smooth;
+    }
+
+    &__message {
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 16px;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        line-height: 1.5;
+        word-break: break-word;
+        animation: agro-sales-msg-in 0.25s ease;
+
+        &--bot {
+            align-self: flex-start;
+            background: var(--ej-bg-surface-alt, #f3f4f6);
+            color: var(--ej-text-primary, #1a1a2e);
+            border-bottom-left-radius: 4px;
+        }
+
+        &--user {
+            align-self: flex-end;
+            background: linear-gradient(135deg,
+                    var(--ej-agro-primary, #2e7d32),
+                    var(--ej-agro-primary-light, #43a047));
+            color: var(--ej-color-white, #fff);
+            border-bottom-right-radius: 4px;
+        }
+    }
+
+    // Product card inline
+    &__product-card {
+        display: flex;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        padding: var(--ej-spacing-sm, 0.75rem);
+        background: var(--ej-bg-surface, #fff);
+        border: 1px solid var(--ej-border-color, #e5e7eb);
+        border-radius: var(--ej-radius-md, 8px);
+        margin-top: 6px;
+        align-items: center;
+        transition: border-color 0.2s ease;
+
+        &:hover {
+            border-color: var(--ej-agro-primary, #2e7d32);
+        }
+    }
+
+    &__product-img {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--ej-radius-sm, 6px);
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    &__product-info {
+        flex: 1;
+        min-width: 0;
+
+        .name {
+            font-weight: 600;
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--ej-agro-primary, #2e7d32);
+            font-size: var(--ej-font-size-sm, 0.875rem);
+        }
+
+        .origin {
+            font-size: var(--ej-font-size-xs, 0.75rem);
+            color: var(--ej-text-muted, #6b7280);
+        }
+    }
+
+    &__product-add {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 20px;
+        background: var(--ej-agro-primary, #2e7d32);
+        color: var(--ej-color-white, #fff);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: var(--ej-agro-primary-dark, #1b5e20);
+        }
+
+        &--added {
+            background: var(--ej-agro-header-dark, #1b5e20);
+        }
+    }
+
+    // Typing indicator
+    &__typing {
+        align-self: flex-start;
+        padding: 10px 14px;
+        background: var(--ej-bg-surface-alt, #f3f4f6);
+        border-radius: 16px;
+        border-bottom-left-radius: 4px;
+        display: none;
+
+        &--visible {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--ej-agro-primary-light, #43a047);
+            animation: agro-sales-typing 1.4s infinite;
+
+            &:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            &:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+        }
+    }
+
+    // Suggestion chips
+    &__suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
+        border-top: 1px solid var(--ej-border-color-light, #f3f4f6);
+    }
+
+    &__suggestion-chip {
+        padding: 5px 14px;
+        border: 1px solid var(--ej-agro-chip-border, #c8e6c9);
+        border-radius: 20px;
+        background: var(--ej-agro-chip-bg, #e8f5e9);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-agro-header-dark, #1b5e20);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+            background: var(--ej-agro-chip-border, #c8e6c9);
+            border-color: var(--ej-agro-primary-light, #43a047);
+        }
+    }
+
+    // Input
+    &__input-area {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--ej-spacing-xs, 0.5rem);
+        padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+        border-top: 1px solid var(--ej-border-color, #e5e7eb);
+    }
+
+    &__input {
+        flex: 1;
+        resize: none;
+        border: 1px solid var(--ej-border-color, #d1d5db);
+        border-radius: 22px;
+        padding: 9px 16px;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        line-height: 1.4;
+        max-height: 100px;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-agro-primary-light, #43a047);
+        }
+
+        &::placeholder {
+            color: var(--ej-text-muted, #9ca3af);
+        }
+    }
+
+    &__send {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--ej-agro-primary, #2e7d32);
+        color: var(--ej-color-white, #fff);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        transition: background 0.2s ease, transform 0.1s ease;
+
+        &:hover:not(:disabled) {
+            background: var(--ej-agro-primary-dark, #1b5e20);
+        }
+
+        &:active:not(:disabled) {
+            transform: scale(0.9);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+}
+
+@keyframes agro-sales-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes agro-sales-msg-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes agro-sales-typing {
+
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+}
+
+// === Responsive (mobile-first approach) ===
+
+@media (max-width: 480px) {
+    .agro-sales-chat {
+        width: calc(100vw - 16px);
+        right: 8px;
+        bottom: 80px;
+        max-height: calc(100vh - 120px);
+        border-radius: var(--ej-radius-lg, 12px);
+    }
+
+    .agro-sales-fab {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+    }
+}

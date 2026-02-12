@@ -1,0 +1,139 @@
+<?php
+
+/**
+ * @file
+ * Instalación y actualización del módulo ComercioConecta.
+ *
+ * Estructura: Define hooks de instalación, desinstalación y actualización.
+ *
+ * Lógica: La instalación crea los vocabularios de taxonomía necesarios
+ *   y los términos iniciales para categorías, marcas y atributos.
+ *   La desinstalación limpia todas las entidades creadas por el módulo.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Lógica: Crea los términos iniciales de las taxonomías de comercio
+ *   para que el marketplace tenga categorías desde el primer momento.
+ *   Los términos se crean solo si el vocabulario existe y está vacío.
+ */
+function jaraba_comercio_conecta_install(): void {
+  // Crear términos iniciales de categorías de producto retail
+  _jaraba_comercio_conecta_create_initial_categories();
+  // Crear atributos de variación iniciales (color, talla, material)
+  _jaraba_comercio_conecta_create_initial_attributes();
+
+  \Drupal::messenger()->addStatus(t('ComercioConecta instalado correctamente. Categorías y atributos iniciales creados.'));
+}
+
+/**
+ * Crea las categorías de producto retail iniciales.
+ *
+ * Lógica: Crea un árbol jerárquico de categorías orientadas a comercio
+ *   minorista general. Nivel 1: categorías principales. Nivel 2: subcategorías.
+ */
+function _jaraba_comercio_conecta_create_initial_categories(): void {
+  $vocabulary = 'comercio_category';
+
+  // Verificar que el vocabulario existe
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    \Drupal::logger('jaraba_comercio_conecta')->warning('Vocabulario @vocab no encontrado. Crear manualmente o importar config.', [
+      '@vocab' => $vocabulary,
+    ]);
+    return;
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  // Categorías raíz con sus subcategorías
+  $categories = [
+    'Moda y Complementos' => ['Ropa Mujer', 'Ropa Hombre', 'Calzado', 'Bolsos y Accesorios', 'Joyería y Bisutería'],
+    'Hogar y Decoración' => ['Muebles', 'Textil Hogar', 'Iluminación', 'Decoración', 'Menaje'],
+    'Alimentación y Gourmet' => ['Conservas', 'Dulces y Repostería', 'Vinos y Licores', 'Productos Frescos', 'Delicatessen'],
+    'Electrónica y Tecnología' => ['Móviles y Accesorios', 'Informática', 'Audio y Video', 'Gaming', 'Fotografía'],
+    'Salud y Belleza' => ['Cosmética', 'Perfumería', 'Herboristería', 'Parafarmacia', 'Cuidado Personal'],
+    'Deportes y Aire Libre' => ['Ropa Deportiva', 'Equipamiento', 'Ciclismo', 'Senderismo', 'Fitness'],
+    'Juguetes y Niños' => ['Juguetes Educativos', 'Ropa Infantil', 'Bebé', 'Juegos de Mesa', 'Manualidades'],
+    'Libros y Papelería' => ['Libros', 'Material Escolar', 'Papelería Creativa', 'Revistas', 'Material de Oficina'],
+    'Mascotas' => ['Alimentación Animal', 'Accesorios', 'Higiene Animal', 'Juguetes para Mascotas'],
+    'Artesanía y Regalos' => ['Cerámica', 'Textil Artesanal', 'Regalos Personalizados', 'Velas y Aromas', 'Complementos Artesanos'],
+  ];
+
+  $weight = 0;
+  foreach ($categories as $parent_name => $children) {
+    // Crear categoría padre
+    $parent = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $parent_name,
+      'weight' => $weight,
+    ]);
+    $parent->save();
+
+    // Crear subcategorías
+    $child_weight = 0;
+    foreach ($children as $child_name) {
+      $child = $term_storage->create([
+        'vid' => $vocabulary,
+        'name' => $child_name,
+        'parent' => $parent->id(),
+        'weight' => $child_weight,
+      ]);
+      $child->save();
+      $child_weight++;
+    }
+    $weight++;
+  }
+}
+
+/**
+ * Crea los atributos de variación iniciales.
+ *
+ * Lógica: Crea atributos jerárquicos (Color, Talla, Material, Acabado)
+ *   con sus valores para que los comerciantes puedan crear variaciones
+ *   desde el primer momento.
+ */
+function _jaraba_comercio_conecta_create_initial_attributes(): void {
+  $vocabulary = 'comercio_attribute';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    \Drupal::logger('jaraba_comercio_conecta')->warning('Vocabulario @vocab no encontrado.', [
+      '@vocab' => $vocabulary,
+    ]);
+    return;
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $attributes = [
+    'Color' => ['Rojo', 'Azul', 'Verde', 'Negro', 'Blanco', 'Gris', 'Marrón', 'Rosa', 'Amarillo', 'Naranja', 'Beige', 'Multicolor'],
+    'Talla' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', 'Única'],
+    'Material' => ['Algodón', 'Poliéster', 'Cuero', 'Madera', 'Metal', 'Cerámica', 'Vidrio', 'Plástico', 'Lana', 'Seda'],
+    'Acabado' => ['Mate', 'Brillante', 'Satinado', 'Texturizado', 'Natural'],
+  ];
+
+  $weight = 0;
+  foreach ($attributes as $parent_name => $values) {
+    $parent = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $parent_name,
+      'weight' => $weight,
+    ]);
+    $parent->save();
+
+    $child_weight = 0;
+    foreach ($values as $value) {
+      $child = $term_storage->create([
+        'vid' => $vocabulary,
+        'name' => $value,
+        'parent' => $parent->id(),
+        'weight' => $child_weight,
+      ]);
+      $child->save();
+      $child_weight++;
+    }
+    $weight++;
+  }
+}

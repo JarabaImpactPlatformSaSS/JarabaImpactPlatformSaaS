@@ -1,0 +1,194 @@
+# =============================================================================
+# Rutas del módulo ServiciosConecta - Fase 1
+# Estructura: rutas de settings (Field UI), frontend y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente
+# =============================================================================
+
+# --- Settings Routes (para Field UI de cada entidad) ---
+
+jaraba_servicios_conecta.provider_profile.settings:
+  path: '/admin/structure/servicios-providers'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\ProviderProfileSettingsForm'
+    _title: 'Configuración Profesionales'
+  requirements:
+    _permission: 'manage servicios providers'
+
+jaraba_servicios_conecta.service_offering.settings:
+  path: '/admin/structure/servicios-offerings'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\ServiceOfferingSettingsForm'
+    _title: 'Configuración Servicios'
+  requirements:
+    _permission: 'manage servicios offerings'
+
+jaraba_servicios_conecta.booking.settings:
+  path: '/admin/structure/servicios-bookings'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\BookingSettingsForm'
+    _title: 'Configuración Reservas'
+  requirements:
+    _permission: 'manage servicios bookings'
+
+jaraba_servicios_conecta.availability_slot.settings:
+  path: '/admin/structure/servicios-availability'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\AvailabilitySlotSettingsForm'
+    _title: 'Configuración Disponibilidad'
+  requirements:
+    _permission: 'manage servicios providers'
+
+jaraba_servicios_conecta.service_package.settings:
+  path: '/admin/structure/servicios-packages'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\ServicePackageSettingsForm'
+    _title: 'Configuración Paquetes'
+  requirements:
+    _permission: 'manage servicios offerings'
+
+# --- Rutas Frontend del Marketplace de Servicios ---
+
+jaraba_servicios_conecta.marketplace:
+  path: '/servicios'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\MarketplaceController::marketplace'
+    _title: 'Servicios Profesionales'
+  requirements:
+    _permission: 'access content'
+
+jaraba_servicios_conecta.marketplace.provider:
+  path: '/servicios/profesional/{provider_slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\MarketplaceController::providerPage'
+    _title: 'Profesional'
+  requirements:
+    _permission: 'access content'
+    provider_slug: '[a-z0-9\-]+'
+
+jaraba_servicios_conecta.marketplace.booking:
+  path: '/servicios/reservar/{service_offering}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\MarketplaceController::bookingPage'
+    _title: 'Reservar Cita'
+  requirements:
+    _permission: 'access content'
+    service_offering: '\d+'
+
+# --- Rutas Frontend del Portal del Profesional ---
+
+jaraba_servicios_conecta.provider_portal:
+  path: '/mi-servicio'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::dashboard'
+    _title: 'Mi Servicio'
+  requirements:
+    _permission: 'edit own provider profile'
+
+jaraba_servicios_conecta.provider_portal.offerings:
+  path: '/mi-servicio/servicios'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::offerings'
+    _title: 'Mis Servicios'
+  requirements:
+    _permission: 'edit own provider profile'
+
+jaraba_servicios_conecta.provider_portal.offering_add:
+  path: '/mi-servicio/servicios/add'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::offeringAdd'
+    _title: 'Nuevo Servicio'
+  requirements:
+    _permission: 'create servicios offerings'
+
+jaraba_servicios_conecta.provider_portal.bookings:
+  path: '/mi-servicio/reservas'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::bookings'
+    _title: 'Mis Reservas'
+  requirements:
+    _permission: 'edit own provider profile'
+
+jaraba_servicios_conecta.provider_portal.calendar:
+  path: '/mi-servicio/calendario'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::calendar'
+    _title: 'Calendario'
+  requirements:
+    _permission: 'edit own provider profile'
+
+jaraba_servicios_conecta.provider_portal.profile:
+  path: '/mi-servicio/perfil'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::profile'
+    _title: 'Perfil Profesional'
+  requirements:
+    _permission: 'edit own provider profile'
+
+# --- API REST Providers ---
+
+jaraba_servicios_conecta.api.providers:
+  path: '/api/v1/servicios/providers'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::providersList'
+  methods: [GET]
+  requirements:
+    _permission: 'view servicios providers'
+
+jaraba_servicios_conecta.api.providers.detail:
+  path: '/api/v1/servicios/providers/{provider_profile}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::providerDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'view servicios providers'
+    provider_profile: '\d+'
+
+# --- API REST Offerings ---
+
+jaraba_servicios_conecta.api.offerings:
+  path: '/api/v1/servicios/offerings'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::offeringsList'
+  methods: [GET]
+  requirements:
+    _permission: 'view servicios offerings'
+
+jaraba_servicios_conecta.api.offerings.detail:
+  path: '/api/v1/servicios/offerings/{service_offering}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::offeringDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'view servicios offerings'
+    service_offering: '\d+'
+
+# --- API REST Bookings ---
+
+jaraba_servicios_conecta.api.bookings.create:
+  path: '/api/v1/servicios/bookings'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::createBooking'
+  methods: [POST]
+  requirements:
+    _permission: 'create servicios bookings'
+
+jaraba_servicios_conecta.api.bookings.update:
+  path: '/api/v1/servicios/bookings/{booking}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::updateBooking'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage servicios bookings'
+    booking: '\d+'
+
+# --- API REST Availability ---
+
+jaraba_servicios_conecta.api.availability:
+  path: '/api/v1/servicios/providers/{provider_profile}/availability'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::providerAvailability'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    provider_profile: '\d+'

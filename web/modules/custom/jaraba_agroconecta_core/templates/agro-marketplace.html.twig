@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * Template del listado del marketplace AgroConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content. Header/Footer via partials.
+ * Body classes inyectadas via hook_preprocess_html(): marketplace-page, agro-page.
+ *
+ * Variables:
+ *   - products: Array de entidades ProductAgro.
+ *   - marketplace_name: Nombre del marketplace.
+ *   - marketplace_description: Descripción del marketplace.
+ *   - total_products: Total de productos.
+ *   - pager: Render array del pager.
+ */
+#}
+
+{# === Hero del Marketplace === #}
+<section class="agro-marketplace-hero">
+  <h1>{% trans %}{{ marketplace_name }}{% endtrans %}</h1>
+  {% if marketplace_description %}
+    <p>{{ marketplace_description }}</p>
+  {% endif %}
+  <p class="agro-marketplace-hero__stats">
+    {{ total_products }} {% trans %}productos disponibles{% endtrans %}
+  </p>
+</section>
+
+{# === Filtros (preparado para Fase 7: Search) === #}
+<div class="agro-marketplace-filters">
+  <button class="agro-filter-btn agro-filter-btn--active" data-filter="all">
+    {% trans %}Todos{% endtrans %}
+  </button>
+</div>
+
+{# === Grid de productos === #}
+{% if products|length > 0 %}
+  <div class="agro-products-grid">
+    {% for product in products %}
+      <article class="agro-product-card" data-product-id="{{ product.id() }}">
+        {% if product.image.entity %}
+          <img class="agro-product-card__image"
+               src="{{ file_url(product.image.entity.fileuri) }}"
+               alt="{{ product.name.value }}"
+               loading="lazy">
+        {% else %}
+          <div class="agro-product-card__image agro-product-card__image--placeholder"></div>
+        {% endif %}
+
+        <div class="agro-product-card__body">
+          <h3 class="agro-product-card__name">
+            <a href="{{ path('jaraba_agroconecta.product_detail', {'product_agro': product.id()}) }}">
+              {{ product.name.value }}
+            </a>
+          </h3>
+
+          {% if product.origin.value %}
+            <p class="agro-product-card__origin">
+              📍 {{ product.origin.value }}
+            </p>
+          {% endif %}
+
+          <div class="agro-product-card__price">
+            {{ product.getFormattedPrice() }}
+            {% if product.unit.value %}
+              <span class="agro-product-card__unit">/ {{ product.unit.value }}</span>
+            {% endif %}
+          </div>
+
+          {% if product.hasStock() %}
+            <span class="agro-product-card__stock agro-product-card__stock--available">
+              ✓ {% trans %}En stock{% endtrans %}
+            </span>
+          {% else %}
+            <span class="agro-product-card__stock agro-product-card__stock--out">
+              ✗ {% trans %}Agotado{% endtrans %}
+            </span>
+          {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {# === Paginación === #}
+  {% if pager %}
+    <div class="agro-marketplace-pager">
+      {{ pager }}
+    </div>
+  {% endif %}
+
+{% else %}
+  <div class="agro-marketplace-empty">
+    <p>{% trans %}No hay productos disponibles en este momento.{% endtrans %}</p>
+  </div>
+{% endif %}

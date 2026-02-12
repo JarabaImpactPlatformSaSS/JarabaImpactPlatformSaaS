@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Template: Portal Partner B2B — Vista Pública.
+ *
+ * Accesible vía magic link (token), sin autenticación Drupal.
+ *
+ * Variables:
+ *   - token: Token de acceso del partner.
+ *
+ * Sprint AC6-2 (Doc 82).
+ * Convención BEM: .agro-portal-*
+ */
+#}
+
+<div class="agro-portal" data-token="{{ token }}">
+
+  {# --- Cabecera con datos del productor --- #}
+  <div class="agro-portal__header">
+    <h1 class="agro-portal__producer-name">{{ 'Cargando...'|t }}</h1>
+    <p class="agro-portal__partner-info">--</p>
+    <span class="agro-portal__level-badge">--</span>
+  </div>
+
+  {# --- Productos y documentos --- #}
+  <div class="agro-portal-products">
+    <h2 class="agro-portal-products__title">{{ 'Documentos Disponibles'|t }}</h2>
+    <div class="agro-portal-products__grid">
+      <div class="agro-hub-empty">
+        <div class="agro-hub-empty__text">{{ 'Cargando documentos...'|t }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# --- Descarga masiva --- #}
+  <div style="text-align: center; margin-top: 2rem;">
+    <button class="agro-hub-btn agro-hub-btn--primary" data-action="download-all" data-token="{{ token }}">
+      {{ 'Descargar Todos los Documentos'|t }}
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,129 @@
+{#
+/**
+ * @file
+ * Template del listado de productos del comerciante.
+ *
+ * DIRECTRIZ: Template limpia sin page.content.
+ * Body classes: comercio-page, merchant-products-page.
+ *
+ * Variables:
+ *   - merchant: Entidad MerchantProfile.
+ *   - products: Array de entidades ProductRetail.
+ *   - total: Total de productos.
+ *   - current_filters: Filtros activos.
+ */
+#}
+
+<div class="comercio-merchant-products">
+  <header class="comercio-merchant-products__header container">
+    <div class="comercio-merchant-products__header-inner">
+      <h1>{% trans %}Mis Productos{% endtrans %}</h1>
+      <p class="comercio-merchant-products__count">{{ total }} {% trans %}productos{% endtrans %}</p>
+    </div>
+    <button class="comercio-btn comercio-btn--primary"
+            data-slide-panel="nuevo-producto"
+            data-slide-panel-url="{{ path('entity.product_retail.add_form') }}"
+            data-slide-panel-title="{{ 'Nuevo Producto'|trans }}">
+      + {% trans %}Añadir Producto{% endtrans %}
+    </button>
+  </header>
+
+  {# Filtros rápidos #}
+  <div class="comercio-merchant-products__filters container">
+    <div class="comercio-filter-tabs">
+      <a href="?" class="comercio-filter-tab {{ not current_filters.status ? 'comercio-filter-tab--active' : '' }}">
+        {% trans %}Todos{% endtrans %}
+      </a>
+      <a href="?status=active" class="comercio-filter-tab {{ current_filters.status == 'active' ? 'comercio-filter-tab--active' : '' }}">
+        {% trans %}Activos{% endtrans %}
+      </a>
+      <a href="?status=draft" class="comercio-filter-tab {{ current_filters.status == 'draft' ? 'comercio-filter-tab--active' : '' }}">
+        {% trans %}Borradores{% endtrans %}
+      </a>
+      <a href="?status=out_of_stock" class="comercio-filter-tab {{ current_filters.status == 'out_of_stock' ? 'comercio-filter-tab--active' : '' }}">
+        {% trans %}Sin Stock{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Tabla de productos #}
+  {% if products|length > 0 %}
+    <div class="comercio-table-responsive container">
+      <table class="comercio-table comercio-table--products">
+        <thead>
+          <tr>
+            <th>{% trans %}Producto{% endtrans %}</th>
+            <th>{% trans %}SKU{% endtrans %}</th>
+            <th>{% trans %}Precio{% endtrans %}</th>
+            <th>{% trans %}Stock{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Acciones{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+            <tr>
+              <td class="comercio-table__cell--product">
+                <div class="comercio-table__product-info">
+                  {% if product.get('images').entity %}
+                    <img src="{{ file_url(product.get('images').0.entity.fileuri) }}"
+                         alt="{{ product.get('title').value }}"
+                         class="comercio-table__product-thumb"
+                         loading="lazy">
+                  {% endif %}
+                  <span>{{ product.get('title').value }}</span>
+                </div>
+              </td>
+              <td><code>{{ product.get('sku').value }}</code></td>
+              <td>{{ product.get('price').value|number_format(2, ',', '.') }} €</td>
+              <td>
+                {% set stock = product.get('stock_quantity').value %}
+                {% set threshold = product.get('low_stock_threshold').value|default(5) %}
+                <span class="comercio-badge {{ stock == 0 ? 'comercio-badge--danger' : (stock <= threshold ? 'comercio-badge--warning' : 'comercio-badge--success') }}">
+                  {{ stock }}
+                </span>
+              </td>
+              <td>
+                {% set status_labels = {
+                  'draft': 'Borrador'|trans,
+                  'active': 'Activo'|trans,
+                  'paused': 'Pausado'|trans,
+                  'out_of_stock': 'Sin Stock'|trans,
+                  'archived': 'Archivado'|trans,
+                } %}
+                {% set status = product.get('status').value %}
+                <span class="comercio-status comercio-status--{{ status }}">
+                  {{ status_labels[status]|default(status) }}
+                </span>
+              </td>
+              <td>
+                <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                        data-slide-panel="editar-producto"
+                        data-slide-panel-url="{{ path('entity.product_retail.edit_form', {'product_retail': product.id()}) }}"
+                        data-slide-panel-title="{{ 'Editar Producto'|trans }}">
+                  {% trans %}Editar{% endtrans %}
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="comercio-empty-state container">
+      <div class="comercio-empty-state__icon">
+        {{ jaraba_icon('commerce', 'shopping-bag', { variant: 'duotone', size: '64px' }) }}
+      </div>
+      <h3 class="comercio-empty-state__title">{% trans %}No tienes productos todavía{% endtrans %}</h3>
+      <p class="comercio-empty-state__text">
+        {% trans %}Añade tu primer producto para empezar a vender en el marketplace.{% endtrans %}
+      </p>
+      <button class="comercio-btn comercio-btn--primary"
+              data-slide-panel="nuevo-producto"
+              data-slide-panel-url="{{ path('entity.product_retail.add_form') }}"
+              data-slide-panel-title="{{ 'Nuevo Producto'|trans }}">
+        + {% trans %}Crear mi primer producto{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

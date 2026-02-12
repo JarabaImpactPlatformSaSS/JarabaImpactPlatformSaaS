@@ -1,0 +1,180 @@
+{#
+/**
+ * @file
+ * Detalle de sub-pedido para el productor.
+ *
+ * Variables:
+ *   - suborder: Array con datos del sub-pedido
+ *   - order: Array con datos del pedido padre (customer, dirección)
+ *   - items: Array de líneas del sub-pedido
+ *
+ * Body class: producer-order-detail-page
+ */
+#}
+<div class="producer-portal">
+  <div class="producer-portal__header">
+    <h1 class="producer-portal__title">{{ 'Pedido'|t }} {{ suborder.suborder_number }}</h1>
+    <nav class="producer-portal__nav">
+      <a href="/productor" class="producer-portal__nav-link">{{ 'Dashboard'|t }}</a>
+      <a href="/productor/pedidos" class="producer-portal__nav-link producer-portal__nav-link--active">{{ 'Pedidos'|t }}</a>
+      <a href="/productor/productos" class="producer-portal__nav-link">{{ 'Productos'|t }}</a>
+      <a href="/productor/finanzas" class="producer-portal__nav-link">{{ 'Finanzas'|t }}</a>
+      <a href="/productor/configuracion" class="producer-portal__nav-link">{{ 'Configuración'|t }}</a>
+    </nav>
+  </div>
+
+  <div class="producer-portal__content">
+    <div class="producer-portal__main">
+
+      {# Estado actual + Acciones #}
+      <section class="producer-portal__section">
+        <div class="producer-portal__detail-status">
+          <span class="producer-portal__order-state producer-portal__order-state--{{ suborder.state }} producer-portal__order-state--large">
+            {{ suborder.state_label }}
+          </span>
+          <span class="producer-portal__detail-date">{{ suborder.created }}</span>
+        </div>
+
+        <div class="producer-portal__detail-actions" data-suborder-id="{{ suborder.id }}">
+          {% if suborder.state == 'paid' %}
+            <button class="producer-portal__btn producer-portal__btn--primary" data-action="confirm">
+              ✓ {{ 'Confirmar Pedido'|t }}
+            </button>
+          {% endif %}
+          {% if suborder.state in ['confirmed', 'processing'] %}
+            <button class="producer-portal__btn producer-portal__btn--primary" data-action="ship">
+              🚚 {{ 'Marcar como Enviado'|t }}
+            </button>
+          {% endif %}
+        </div>
+      </section>
+
+      {# Items del pedido #}
+      <section class="producer-portal__section">
+        <h2 class="producer-portal__section-title">{{ 'Artículos del pedido'|t }}</h2>
+        {% if items is not empty %}
+          <div class="producer-portal__items-table">
+            <table class="producer-portal__table">
+              <thead>
+                <tr>
+                  <th>{{ 'Producto'|t }}</th>
+                  <th>{{ 'SKU'|t }}</th>
+                  <th>{{ 'Cantidad'|t }}</th>
+                  <th>{{ 'Precio Ud.'|t }}</th>
+                  <th>{{ 'Total'|t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in items %}
+                  <tr>
+                    <td>{{ item.title }}</td>
+                    <td><code>{{ item.sku }}</code></td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unit_price }}</td>
+                    <td><strong>{{ item.total_price }}</strong></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </section>
+
+      {# Tracking #}
+      {% if suborder.tracking_number %}
+        <section class="producer-portal__section">
+          <h2 class="producer-portal__section-title">🚚 {{ 'Información de Envío'|t }}</h2>
+          <div class="producer-portal__tracking">
+            <div class="producer-portal__tracking-row">
+              <span>{{ 'Nº Seguimiento'|t }}</span>
+              <strong>{{ suborder.tracking_number }}</strong>
+            </div>
+            {% if suborder.tracking_url %}
+              <div class="producer-portal__tracking-row">
+                <span>{{ 'Enlace'|t }}</span>
+                <a href="{{ suborder.tracking_url }}" target="_blank" rel="noopener">{{ 'Ver tracking'|t }} ↗</a>
+              </div>
+            {% endif %}
+            {% if suborder.shipped_at %}
+              <div class="producer-portal__tracking-row">
+                <span>{{ 'Enviado'|t }}</span>
+                <span>{{ suborder.shipped_at }}</span>
+              </div>
+            {% endif %}
+            {% if suborder.delivered_at %}
+              <div class="producer-portal__tracking-row">
+                <span>{{ 'Entregado'|t }}</span>
+                <span>{{ suborder.delivered_at }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </section>
+      {% endif %}
+    </div>
+
+    {# Sidebar: Info financiera + Cliente #}
+    <aside class="producer-portal__sidebar">
+      {# Resumen financiero #}
+      <section class="producer-portal__section">
+        <h2 class="producer-portal__section-title">💰 {{ 'Resumen Financiero'|t }}</h2>
+        <div class="producer-portal__finance-summary">
+          <div class="producer-portal__finance-row">
+            <span>{{ 'Subtotal'|t }}</span>
+            <span>{{ suborder.subtotal }}</span>
+          </div>
+          <div class="producer-portal__finance-row">
+            <span>{{ 'Comisión'|t }} ({{ suborder.commission_rate }}%)</span>
+            <span>-{{ suborder.commission_amount }}</span>
+          </div>
+          <div class="producer-portal__finance-row producer-portal__finance-row--total">
+            <span>{{ 'Tu Payout'|t }}</span>
+            <span>{{ suborder.producer_payout }}</span>
+          </div>
+          <div class="producer-portal__finance-row">
+            <span>{{ 'Estado Pago'|t }}</span>
+            <span class="producer-portal__payout-badge producer-portal__payout-badge--{{ suborder.payout_state }}">
+              {{ suborder.payout_state }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {# Datos del cliente #}
+      {% if order %}
+        <section class="producer-portal__section">
+          <h2 class="producer-portal__section-title">👤 {{ 'Cliente'|t }}</h2>
+          <div class="producer-portal__customer-info">
+            <div class="producer-portal__info-row">
+              <span>{{ 'Email'|t }}</span>
+              <span>{{ order.customer_email }}</span>
+            </div>
+            <div class="producer-portal__info-row">
+              <span>{{ 'Pedido Nº'|t }}</span>
+              <span>{{ order.order_number }}</span>
+            </div>
+            <div class="producer-portal__info-row">
+              <span>{{ 'Entrega'|t }}</span>
+              <span>{{ order.delivery_method }}</span>
+            </div>
+            {% if order.shipping_address %}
+              <div class="producer-portal__info-row">
+                <span>{{ 'Dirección'|t }}</span>
+                <span>{{ order.shipping_address }}</span>
+              </div>
+            {% endif %}
+            {% if order.delivery_notes %}
+              <div class="producer-portal__info-row">
+                <span>{{ 'Notas'|t }}</span>
+                <span>{{ order.delivery_notes }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </section>
+      {% endif %}
+    </aside>
+  </div>
+
+  <div class="producer-portal__back">
+    <a href="/productor/pedidos" class="producer-portal__btn">← {{ 'Volver a pedidos'|t }}</a>
+  </div>
+</div>

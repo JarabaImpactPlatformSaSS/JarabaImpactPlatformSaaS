@@ -1,0 +1,127 @@
+{#
+/**
+ * @file
+ * Panel de administración ejecutivo AgroConecta.
+ *
+ * DIRECTRIZ: Template pública sin page.content.
+ * Body classes: admin-dashboard, agro-page.
+ *
+ * Variables:
+ *   - health: Array de indicadores de salud del sistema
+ *   - recent_activity: Array de actividad reciente
+ *   - stats: Estadísticas generales
+ */
+#}
+
+<div class="agro-admin">
+
+  {# === Header === #}
+  <div class="agro-admin__header">
+    <h1 class="agro-admin__title">⚙️ {% trans %}Panel de Administración{% endtrans %}</h1>
+    <p class="agro-admin__subtitle">{% trans %}Vista ejecutiva del marketplace{% endtrans %}</p>
+  </div>
+
+  {# === Health Indicators === #}
+  <div class="agro-admin-health">
+    <div class="agro-health-card">
+      <span class="agro-health-card__indicator agro-health-card__indicator--healthy"></span>
+      <span class="agro-health-card__label">{% trans %}Plataforma{% endtrans %}</span>
+      <span class="agro-health-card__value">{% trans %}Online{% endtrans %}</span>
+    </div>
+    <div class="agro-health-card">
+      <span class="agro-health-card__indicator agro-health-card__indicator--{{ health.payments|default('healthy') }}"></span>
+      <span class="agro-health-card__label">{% trans %}Pagos{% endtrans %}</span>
+      <span class="agro-health-card__value">{{ stats.pending_payments|default(0) }} {% trans %}pendientes{% endtrans %}</span>
+    </div>
+    <div class="agro-health-card">
+      <span class="agro-health-card__indicator agro-health-card__indicator--{{ health.shipping|default('healthy') }}"></span>
+      <span class="agro-health-card__label">{% trans %}Envíos{% endtrans %}</span>
+      <span class="agro-health-card__value">{{ stats.active_shipments|default(0) }} {% trans %}activos{% endtrans %}</span>
+    </div>
+    <div class="agro-health-card">
+      <span class="agro-health-card__indicator agro-health-card__indicator--{{ health.reviews|default('healthy') }}"></span>
+      <span class="agro-health-card__label">{% trans %}Reseñas{% endtrans %}</span>
+      <span class="agro-health-card__value">{{ stats.pending_reviews|default(0) }} {% trans %}por moderar{% endtrans %}</span>
+    </div>
+    <div class="agro-health-card">
+      <span class="agro-health-card__indicator agro-health-card__indicator--{{ health.stock|default('healthy') }}"></span>
+      <span class="agro-health-card__label">{% trans %}Stock{% endtrans %}</span>
+      <span class="agro-health-card__value">{{ stats.low_stock_products|default(0) }} {% trans %}bajo stock{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# === Quick Actions === #}
+  <div class="agro-admin-actions">
+    <a href="/admin/agro/products" class="agro-quick-action">
+      <span class="agro-quick-action__icon">📦</span>
+      <span class="agro-quick-action__label">{% trans %}Productos{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/orders" class="agro-quick-action">
+      <span class="agro-quick-action__icon">🛒</span>
+      <span class="agro-quick-action__label">{% trans %}Pedidos{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/producers" class="agro-quick-action">
+      <span class="agro-quick-action__icon">👨‍🌾</span>
+      <span class="agro-quick-action__label">{% trans %}Productores{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/promotions" class="agro-quick-action">
+      <span class="agro-quick-action__icon">🏷️</span>
+      <span class="agro-quick-action__label">{% trans %}Promociones{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/shipping" class="agro-quick-action">
+      <span class="agro-quick-action__icon">🚚</span>
+      <span class="agro-quick-action__label">{% trans %}Envíos{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/reviews" class="agro-quick-action">
+      <span class="agro-quick-action__icon">⭐</span>
+      <span class="agro-quick-action__label">{% trans %}Reseñas{% endtrans %}</span>
+    </a>
+    <a href="/admin/agro/analytics" class="agro-quick-action">
+      <span class="agro-quick-action__icon">📊</span>
+      <span class="agro-quick-action__label">{% trans %}Analytics{% endtrans %}</span>
+    </a>
+  </div>
+
+  {# === Activity Feed === #}
+  <div class="agro-activity-feed">
+    <h2 class="agro-activity-feed__title">📋 {% trans %}Actividad Reciente{% endtrans %}</h2>
+    <ul class="agro-activity-feed__list">
+      {% if recent_activity is not empty %}
+        {% for activity in recent_activity %}
+          <li class="agro-activity-feed__item">
+            <span class="agro-activity-feed__icon">{{ activity.icon }}</span>
+            <div class="agro-activity-feed__text">
+              {{ activity.message }}
+            </div>
+            <span class="agro-activity-feed__time">{{ activity.time_ago }}</span>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="agro-activity-feed__item">
+          <div class="agro-activity-feed__text">{% trans %}No hay actividad reciente.{% endtrans %}</div>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+
+  {# === Resumen Numérico === #}
+  <div class="agro-kpi-grid" style="margin-bottom: 0;">
+    <div class="agro-kpi-card" data-kpi="total_products">
+      <p class="agro-kpi-card__label">{% trans %}Total Productos{% endtrans %}</p>
+      <p class="agro-kpi-card__value">{{ stats.total_products|default(0) }}</p>
+    </div>
+    <div class="agro-kpi-card" data-kpi="total_producers">
+      <p class="agro-kpi-card__label">{% trans %}Productores Activos{% endtrans %}</p>
+      <p class="agro-kpi-card__value">{{ stats.total_producers|default(0) }}</p>
+    </div>
+    <div class="agro-kpi-card" data-kpi="total_customers">
+      <p class="agro-kpi-card__label">{% trans %}Clientes Registrados{% endtrans %}</p>
+      <p class="agro-kpi-card__value">{{ stats.total_customers|default(0) }}</p>
+    </div>
+    <div class="agro-kpi-card" data-kpi="total_orders">
+      <p class="agro-kpi-card__label">{% trans %}Pedidos Totales{% endtrans %}</p>
+      <p class="agro-kpi-card__value">{{ stats.total_orders|default(0) }}</p>
+    </div>
+  </div>
+
+</div>

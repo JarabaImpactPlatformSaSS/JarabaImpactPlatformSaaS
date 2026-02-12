@@ -1,0 +1,198 @@
+# =============================================================================
+# Rutas del módulo ComercioConecta - Fase 1
+# Estructura: rutas de settings (Field UI), frontend y API REST
+# Lógica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automáticamente
+# =============================================================================
+
+# --- Settings Routes (para Field UI de cada entidad) ---
+
+jaraba_comercio_conecta.product_retail.settings:
+  path: '/admin/structure/comercio-products'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\ProductRetailSettingsForm'
+    _title: 'Configuración Productos Comercio'
+  requirements:
+    _permission: 'manage comercio products'
+
+jaraba_comercio_conecta.product_variation_retail.settings:
+  path: '/admin/structure/comercio-variations'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\ProductVariationRetailSettingsForm'
+    _title: 'Configuración Variaciones Comercio'
+  requirements:
+    _permission: 'manage comercio products'
+
+jaraba_comercio_conecta.stock_location.settings:
+  path: '/admin/structure/comercio-stock-locations'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\StockLocationSettingsForm'
+    _title: 'Configuración Ubicaciones Stock'
+  requirements:
+    _permission: 'manage comercio stock'
+
+jaraba_comercio_conecta.merchant_profile.settings:
+  path: '/admin/structure/comercio-merchants'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\MerchantProfileSettingsForm'
+    _title: 'Configuración Comerciantes'
+  requirements:
+    _permission: 'manage comercio merchants'
+
+# --- Rutas Frontend del Marketplace ---
+
+jaraba_comercio_conecta.marketplace:
+  path: '/comercio-local'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MarketplaceController::marketplace'
+    _title: 'Comercio Local'
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.marketplace.merchant:
+  path: '/comercio-local/{merchant_slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MarketplaceController::merchantPage'
+    _title: 'Comercio'
+  requirements:
+    _permission: 'access content'
+    merchant_slug: '[a-z0-9\-]+'
+
+jaraba_comercio_conecta.marketplace.product:
+  path: '/comercio-local/producto/{product_retail}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MarketplaceController::productDetail'
+    _title: 'Producto'
+  requirements:
+    _permission: 'access content'
+    product_retail: '\d+'
+
+# --- Rutas Frontend del Merchant Portal ---
+
+jaraba_comercio_conecta.merchant_portal:
+  path: '/mi-comercio'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::dashboard'
+    _title: 'Mi Comercio'
+  requirements:
+    _permission: 'edit own merchant profile'
+
+jaraba_comercio_conecta.merchant_portal.products:
+  path: '/mi-comercio/productos'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::products'
+    _title: 'Mis Productos'
+  requirements:
+    _permission: 'edit own merchant profile'
+
+jaraba_comercio_conecta.merchant_portal.product_add:
+  path: '/mi-comercio/productos/add'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::productAdd'
+    _title: 'Nuevo Producto'
+  requirements:
+    _permission: 'create comercio products'
+
+jaraba_comercio_conecta.merchant_portal.stock:
+  path: '/mi-comercio/stock'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::stock'
+    _title: 'Inventario'
+  requirements:
+    _permission: 'view comercio stock'
+
+jaraba_comercio_conecta.merchant_portal.analytics:
+  path: '/mi-comercio/analiticas'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::analytics'
+    _title: 'Analíticas'
+  requirements:
+    _permission: 'view merchant analytics'
+
+jaraba_comercio_conecta.merchant_portal.profile:
+  path: '/mi-comercio/perfil'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::profile'
+    _title: 'Perfil del Comercio'
+  requirements:
+    _permission: 'edit own merchant profile'
+
+# --- API REST Productos ---
+
+jaraba_comercio_conecta.api.products:
+  path: '/api/v1/comercio/products'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view comercio products'
+
+jaraba_comercio_conecta.api.products.detail:
+  path: '/api/v1/comercio/products/{product_retail}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::detail'
+  methods: [GET]
+  requirements:
+    _permission: 'view comercio products'
+    product_retail: '\d+'
+
+jaraba_comercio_conecta.api.products.create:
+  path: '/api/v1/comercio/products'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::createProduct'
+  methods: [POST]
+  requirements:
+    _permission: 'create comercio products'
+
+jaraba_comercio_conecta.api.products.update:
+  path: '/api/v1/comercio/products/{product_retail}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own comercio products'
+    product_retail: '\d+'
+
+jaraba_comercio_conecta.api.products.variations:
+  path: '/api/v1/comercio/products/{product_retail}/variations'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::variations'
+  methods: [GET]
+  requirements:
+    _permission: 'view comercio products'
+    product_retail: '\d+'
+
+jaraba_comercio_conecta.api.stock.update:
+  path: '/api/v1/comercio/stock/update'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::updateStock'
+  methods: [POST]
+  requirements:
+    _permission: 'manage comercio stock'
+
+# --- API REST Merchants ---
+
+jaraba_comercio_conecta.api.merchants:
+  path: '/api/v1/comercio/merchants'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::merchants'
+  methods: [GET]
+  requirements:
+    _permission: 'view comercio merchants'
+
+jaraba_comercio_conecta.api.merchants.detail:
+  path: '/api/v1/comercio/merchants/{merchant_profile}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::merchantDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'view comercio merchants'
+    merchant_profile: '\d+'
+
+jaraba_comercio_conecta.api.merchants.nearby:
+  path: '/api/v1/comercio/merchants/nearby'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ProductApiController::merchantsNearby'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,210 @@
+{#
+/**
+ * @file
+ * Template de checkout para AgroConecta.
+ *
+ * Variables:
+ *   - marketplace_name: Nombre del marketplace.
+ *
+ * NOTA: Stripe Payment Element se monta vía JS en #payment-element.
+ * Body class: checkout-page
+ */
+#}
+<div class="agro-checkout">
+  <div class="agro-checkout__header">
+    <h1 class="agro-checkout__title">{{ 'Finalizar Compra'|t }}</h1>
+    <p class="agro-checkout__subtitle">{{ marketplace_name }}</p>
+  </div>
+
+  <div class="agro-checkout__content">
+    {# Columna izquierda: Formularios #}
+    <div class="agro-checkout__forms">
+
+      {# Paso 1: Datos de contacto #}
+      <section class="agro-checkout__step" data-step="contact">
+        <h2 class="agro-checkout__step-title">
+          <span class="agro-checkout__step-number">1</span>
+          {{ 'Datos de contacto'|t }}
+        </h2>
+        <div class="agro-checkout__step-content">
+          <div class="agro-checkout__field">
+            <label for="checkout-email">{{ 'Email'|t }} *</label>
+            <input type="email" id="checkout-email" name="email" required
+                   placeholder="tu@email.com"
+                   class="agro-checkout__input" />
+          </div>
+          <div class="agro-checkout__field">
+            <label for="checkout-phone">{{ 'Teléfono'|t }}</label>
+            <input type="tel" id="checkout-phone" name="phone"
+                   placeholder="+34 612 345 678"
+                   class="agro-checkout__input" />
+          </div>
+        </div>
+      </section>
+
+      {# Paso 2: Dirección de envío #}
+      <section class="agro-checkout__step" data-step="shipping">
+        <h2 class="agro-checkout__step-title">
+          <span class="agro-checkout__step-number">2</span>
+          {{ 'Dirección de envío'|t }}
+        </h2>
+        <div class="agro-checkout__step-content">
+          <div class="agro-checkout__field">
+            <label for="checkout-address">{{ 'Dirección'|t }} *</label>
+            <input type="text" id="checkout-address" name="address" required
+                   class="agro-checkout__input" />
+          </div>
+          <div class="agro-checkout__field-row">
+            <div class="agro-checkout__field">
+              <label for="checkout-city">{{ 'Ciudad'|t }} *</label>
+              <input type="text" id="checkout-city" name="city" required
+                     class="agro-checkout__input" />
+            </div>
+            <div class="agro-checkout__field">
+              <label for="checkout-postal">{{ 'Código postal'|t }} *</label>
+              <input type="text" id="checkout-postal" name="postal_code" required
+                     class="agro-checkout__input"
+                     data-agro-shipping-trigger />
+            </div>
+          </div>
+          <div class="agro-checkout__field">
+            <label for="checkout-province">{{ 'Provincia'|t }} *</label>
+            <input type="text" id="checkout-province" name="province" required
+                   class="agro-checkout__input" />
+          </div>
+        </div>
+      </section>
+
+      {# Paso 3: Método de envío #}
+      <section class="agro-checkout__step" data-step="shipping-method">
+        <h2 class="agro-checkout__step-title">
+          <span class="agro-checkout__step-number">3</span>
+          {{ 'Método de envío'|t }}
+        </h2>
+        <div class="agro-checkout__step-content">
+          <div class="agro-checkout__delivery-options">
+            <label class="agro-checkout__radio">
+              <input type="radio" name="delivery_method" value="shipping" checked />
+              <span class="agro-checkout__radio-label">
+                <strong>{{ 'Envío a domicilio'|t }}</strong>
+                <small>{{ 'Recibe tu pedido en casa'|t }}</small>
+              </span>
+            </label>
+            <label class="agro-checkout__radio">
+              <input type="radio" name="delivery_method" value="pickup_origin" />
+              <span class="agro-checkout__radio-label">
+                <strong>{{ 'Recogida en origen'|t }}</strong>
+                <small>{{ 'Recoge directamente en el productor'|t }}</small>
+              </span>
+            </label>
+          </div>
+
+          {# Selector de carrier dinámico (se muestra cuando delivery_method=shipping) #}
+          <div class="agro-shipping-selector" id="agro-shipping-selector">
+            <h3 class="agro-shipping-selector__title">{{ 'Opciones de envío disponibles'|t }}</h3>
+            <div class="agro-shipping-selector__loading" style="display: none;">
+              <span class="agro-spinner"></span>
+              {{ 'Calculando tarifas de envío...'|t }}
+            </div>
+            <div class="agro-shipping-selector__options">
+              <p class="agro-shipping-selector__hint">
+                {{ 'Introduce tu código postal para ver las opciones de envío.'|t }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {# Paso 4: Cupón de descuento #}
+      <section class="agro-checkout__step" data-step="coupon">
+        <h2 class="agro-checkout__step-title">
+          <span class="agro-checkout__step-number">4</span>
+          {{ '¿Tienes un cupón?'|t }}
+        </h2>
+        <div class="agro-checkout__step-content">
+          <div class="agro-coupon" id="agro-coupon-section">
+            <div class="agro-coupon__form" id="agro-coupon-form">
+              <input type="text" id="agro-coupon-input" class="agro-coupon__input"
+                     placeholder="{{ 'Código de cupón'|t }}" maxlength="32" />
+              <button type="button" id="agro-coupon-apply" class="agro-coupon__btn">
+                {{ 'Aplicar'|t }}
+              </button>
+            </div>
+            <div class="agro-coupon__message" id="agro-coupon-message" style="display: none;"></div>
+            <div class="agro-coupon__applied" id="agro-coupon-applied" style="display: none;">
+              <div class="agro-coupon__applied-info">
+                <span class="agro-coupon__applied-code" id="agro-coupon-code-display"></span>
+                <span class="agro-coupon__applied-discount" id="agro-coupon-discount-display"></span>
+              </div>
+              <button type="button" id="agro-coupon-remove" class="agro-coupon__btn agro-coupon__btn--remove">
+                ✕ {{ 'Eliminar'|t }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {# Paso 5: Pago #}
+      <section class="agro-checkout__step" data-step="payment">
+        <h2 class="agro-checkout__step-title">
+          <span class="agro-checkout__step-number">5</span>
+          {{ 'Pago'|t }}
+        </h2>
+        <div class="agro-checkout__step-content">
+          <div id="payment-element" class="agro-checkout__payment-element">
+            {# Stripe Payment Element se monta aquí via JS #}
+          </div>
+          <div id="payment-message" class="agro-checkout__payment-message" style="display:none;"></div>
+        </div>
+      </section>
+
+      {# Notas del pedido #}
+      <section class="agro-checkout__step" data-step="notes">
+        <div class="agro-checkout__field">
+          <label for="checkout-notes">{{ 'Notas del pedido'|t }}</label>
+          <textarea id="checkout-notes" name="customer_notes"
+                    class="agro-checkout__textarea"
+                    placeholder="{{ 'Instrucciones especiales de entrega...'|t }}"></textarea>
+        </div>
+      </section>
+
+      {# Botón de confirmación #}
+      <div class="agro-checkout__actions">
+        <button type="button" id="checkout-submit" class="agro-checkout__submit" disabled>
+          <span class="agro-checkout__submit-text">{{ 'Confirmar Pedido'|t }}</span>
+          <span class="agro-checkout__submit-spinner" style="display:none;">
+            {{ 'Procesando...'|t }}
+          </span>
+        </button>
+      </div>
+
+    </div>
+
+    {# Columna derecha: Resumen del carrito #}
+    <aside class="agro-checkout__summary">
+      <h3 class="agro-checkout__summary-title">{{ 'Resumen del pedido'|t }}</h3>
+      <div id="checkout-cart-summary" class="agro-checkout__cart-items">
+        {# Se rellena vía JS con los items del carrito #}
+        <p class="agro-checkout__empty-cart">{{ 'Tu carrito está vacío.'|t }}</p>
+      </div>
+      <div class="agro-checkout__totals">
+        <div class="agro-checkout__total-row">
+          <span>{{ 'Subtotal'|t }}</span>
+          <span id="checkout-subtotal">€0,00</span>
+        </div>
+        <div class="agro-checkout__total-row" id="checkout-discount-row" style="display: none;">
+          <span>{{ 'Descuento'|t }}</span>
+          <span id="checkout-discount" data-checkout-discount>-€0,00</span>
+        </div>
+        <div class="agro-checkout__total-row">
+          <span>{{ 'Envío'|t }}</span>
+          <span id="checkout-shipping" data-checkout-shipping-cost>{{ 'Por calcular'|t }}</span>
+        </div>
+        <div class="agro-checkout__total-row agro-checkout__total-row--final">
+          <span>{{ 'Total'|t }}</span>
+          <span id="checkout-total">€0,00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

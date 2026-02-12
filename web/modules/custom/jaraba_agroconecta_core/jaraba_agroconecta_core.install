@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Install, update y uninstall hooks para jaraba_agroconecta_core.
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Define tablas auxiliares que no son entidades content entity.
+ */
+function jaraba_agroconecta_core_schema(): array
+{
+    $schema['coupon_agro_usage'] = [
+        'description' => 'Registro de canjes de cupones por usuario.',
+        'fields' => [
+            'id' => [
+                'description' => 'ID autoincremental.',
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ],
+            'coupon_id' => [
+                'description' => 'ID del cupón canjeado.',
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+            'uid' => [
+                'description' => 'ID del usuario que canjeó.',
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+            'used_at' => [
+                'description' => 'Timestamp del canje.',
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+            'coupon_user' => ['coupon_id', 'uid'],
+            'uid' => ['uid'],
+        ],
+    ];
+
+    return $schema;
+}

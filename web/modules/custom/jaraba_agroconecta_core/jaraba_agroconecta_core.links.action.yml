@@ -1,0 +1,142 @@
+# Botones de acción "Añadir" en las colecciones
+
+entity.product_agro.add_form:
+  title: 'Añadir Producto Agro'
+  route_name: entity.product_agro.add_form
+  appears_on:
+    - entity.product_agro.collection
+
+entity.producer_profile.add_form:
+  title: 'Añadir Productor'
+  route_name: entity.producer_profile.add_form
+  appears_on:
+    - entity.producer_profile.collection
+
+entity.agro_certification.add_form:
+  title: 'Añadir Certificación Agro'
+  route_name: entity.agro_certification.add_form
+  appears_on:
+    - entity.agro_certification.collection
+
+entity.suborder_agro.add_form:
+  title: 'Añadir Sub-pedido Agro'
+  route_name: entity.suborder_agro.add_form
+  appears_on:
+    - entity.suborder_agro.collection
+
+# Fase 4: Reviews + Notificaciones
+
+entity.review_agro.add_form:
+  title: 'Añadir Reseña Agro'
+  route_name: entity.review_agro.add_form
+  appears_on:
+    - entity.review_agro.collection
+
+entity.notification_template_agro.add_form:
+  title: 'Añadir Plantilla de Notificación'
+  route_name: entity.notification_template_agro.add_form
+  appears_on:
+    - entity.notification_template_agro.collection
+
+entity.notification_preference_agro.add_form:
+  title: 'Añadir Preferencia de Notificación'
+  route_name: entity.notification_preference_agro.add_form
+  appears_on:
+    - entity.notification_preference_agro.collection
+
+entity.order_agro.add_form:
+  title: 'Añadir Pedido Agro'
+  route_name: entity.order_agro.add_form
+  appears_on:
+    - entity.order_agro.collection
+
+# Fase 5: Search & Discovery
+
+entity.agro_category.add_form:
+  title: 'Añadir Categoría Agro'
+  route_name: entity.agro_category.add_form
+  appears_on:
+    - entity.agro_category.collection
+
+entity.agro_collection.add_form:
+  title: 'Añadir Colección Agro'
+  route_name: entity.agro_collection.add_form
+  appears_on:
+    - entity.agro_collection.collection
+
+# Fase 5: Promotions & Coupons
+
+entity.promotion_agro.add_form:
+  title: 'Añadir Promoción Agro'
+  route_name: entity.promotion_agro.add_form
+  appears_on:
+    - entity.promotion_agro.collection
+
+entity.coupon_agro.add_form:
+  title: 'Añadir Cupón Agro'
+  route_name: entity.coupon_agro.add_form
+  appears_on:
+    - entity.coupon_agro.collection
+
+# Fase 5: Shipping Core
+
+entity.shipping_zone_agro.add_form:
+  title: 'Añadir Zona de Envío'
+  route_name: entity.shipping_zone_agro.add_form
+  appears_on:
+    - entity.shipping_zone_agro.collection
+
+entity.shipping_method_agro.add_form:
+  title: 'Añadir Método de Envío'
+  route_name: entity.shipping_method_agro.add_form
+  appears_on:
+    - entity.shipping_method_agro.collection
+
+# Fase 6: Traceability + QR
+
+entity.agro_batch.add:
+  title: 'Añadir Lote'
+  route_name: entity.agro_batch.add_form
+  appears_on:
+    - entity.agro_batch.collection
+
+entity.trace_event_agro.add:
+  title: 'Añadir Evento'
+  route_name: entity.trace_event_agro.add_form
+  appears_on:
+    - entity.trace_event_agro.collection
+
+entity.integrity_proof_agro.add:
+  title: 'Añadir Prueba'
+  route_name: entity.integrity_proof_agro.add_form
+  appears_on:
+    - entity.integrity_proof_agro.collection
+
+entity.qr_code_agro.add:
+  title: 'Añadir QR'
+  route_name: entity.qr_code_agro.add_form
+  appears_on:
+    - entity.qr_code_agro.collection
+
+# Fase 7: Analytics
+
+entity.alert_rule_agro.add:
+  title: 'Crear Regla Alerta'
+  route_name: entity.alert_rule_agro.add_form
+  appears_on:
+    - entity.alert_rule_agro.collection
+
+# Sprint AC6-2: Partner Document Hub B2B
+
+entity.partner_relationship.add:
+  title: 'Añadir Partner'
+  route_name: entity.partner_relationship.add_form
+  appears_on:
+    - entity.partner_relationship.collection
+
+entity.product_document.add:
+  title: 'Añadir Documento'
+  route_name: entity.product_document.add_form
+  appears_on:
+    - entity.product_document.collection
+

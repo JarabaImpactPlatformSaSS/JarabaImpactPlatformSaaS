@@ -1,0 +1,135 @@
+{#
+/**
+ * @file
+ * Dashboard principal del Portal del Productor.
+ *
+ * Variables:
+ *   - kpis: Array con sales_today, sales_month, pending_orders, orders_by_state, total_products
+ *   - alerts: Array de alertas con type, message, severity, action_url
+ *   - pending_orders: Array de sub-pedidos pendientes
+ *   - top_products: Array de productos más vendidos
+ *
+ * Body class: producer-dashboard-page
+ */
+#}
+<div class="producer-portal">
+  <div class="producer-portal__header">
+    <h1 class="producer-portal__title">{{ 'Mi Tienda'|t }}</h1>
+    <nav class="producer-portal__nav">
+      <a href="/productor" class="producer-portal__nav-link producer-portal__nav-link--active">{{ 'Dashboard'|t }}</a>
+      <a href="/productor/pedidos" class="producer-portal__nav-link">{{ 'Pedidos'|t }}</a>
+      <a href="/productor/productos" class="producer-portal__nav-link">{{ 'Productos'|t }}</a>
+      <a href="/productor/finanzas" class="producer-portal__nav-link">{{ 'Finanzas'|t }}</a>
+      <a href="/productor/configuracion" class="producer-portal__nav-link">{{ 'Configuración'|t }}</a>
+    </nav>
+  </div>
+
+  {# Alertas #}
+  {% if alerts is not empty %}
+    <div class="producer-portal__alerts">
+      <h3 class="producer-portal__alerts-title">⚠️ {{ 'Alertas'|t }} ({{ alerts|length }})</h3>
+      {% for alert in alerts %}
+        <div class="producer-portal__alert producer-portal__alert--{{ alert.severity }}">
+          <span class="producer-portal__alert-text">{{ alert.message }}</span>
+          {% if alert.action_url %}
+            <a href="{{ alert.action_url }}" class="producer-portal__alert-action">{{ 'Ver'|t }} →</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# KPIs #}
+  <div class="producer-portal__kpis">
+    <div class="producer-portal__kpi-card">
+      <span class="producer-portal__kpi-icon">💰</span>
+      <div class="producer-portal__kpi-content">
+        <span class="producer-portal__kpi-value">{{ kpis.sales_today|number_format(2, ',', '.') }} €</span>
+        <span class="producer-portal__kpi-label">{{ 'Ventas Hoy'|t }}</span>
+      </div>
+    </div>
+    <div class="producer-portal__kpi-card">
+      <span class="producer-portal__kpi-icon">📊</span>
+      <div class="producer-portal__kpi-content">
+        <span class="producer-portal__kpi-value">{{ kpis.sales_month|number_format(2, ',', '.') }} €</span>
+        <span class="producer-portal__kpi-label">{{ 'Este Mes'|t }}</span>
+      </div>
+    </div>
+    <div class="producer-portal__kpi-card">
+      <span class="producer-portal__kpi-icon">📦</span>
+      <div class="producer-portal__kpi-content">
+        <span class="producer-portal__kpi-value">{{ kpis.pending_orders }}</span>
+        <span class="producer-portal__kpi-label">{{ 'Pedidos Pendientes'|t }}</span>
+      </div>
+    </div>
+    <div class="producer-portal__kpi-card">
+      <span class="producer-portal__kpi-icon">🛒</span>
+      <div class="producer-portal__kpi-content">
+        <span class="producer-portal__kpi-value">{{ kpis.total_products }}</span>
+        <span class="producer-portal__kpi-label">{{ 'Productos Activos'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="producer-portal__content">
+    {# Columna: Pedidos pendientes + Gráfico #}
+    <div class="producer-portal__main">
+
+      {# Pedidos pendientes #}
+      <section class="producer-portal__section">
+        <div class="producer-portal__section-header">
+          <h2 class="producer-portal__section-title">📦 {{ 'Pedidos Pendientes'|t }}</h2>
+          <a href="/productor/pedidos" class="producer-portal__section-link">{{ 'Ver todos'|t }} →</a>
+        </div>
+        {% if pending_orders is not empty %}
+          <div class="producer-portal__order-table">
+            <div class="producer-portal__table-header">
+              <span>{{ 'Nº'|t }}</span>
+              <span>{{ 'Cliente'|t }}</span>
+              <span>{{ 'Total'|t }}</span>
+              <span>{{ 'Estado'|t }}</span>
+              <span>{{ 'Acción'|t }}</span>
+            </div>
+            {% for order in pending_orders %}
+              <div class="producer-portal__table-row">
+                <span class="producer-portal__order-number">{{ order.suborder_number }}</span>
+                <span class="producer-portal__order-customer">{{ order.customer_email }}</span>
+                <span class="producer-portal__order-total">{{ order.subtotal }}</span>
+                <span class="producer-portal__order-state producer-portal__order-state--{{ order.state }}">{{ order.state_label }}</span>
+                <a href="/productor/pedidos/{{ order.id }}" class="producer-portal__btn producer-portal__btn--sm">{{ 'Ver'|t }}</a>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="producer-portal__empty">{{ 'No hay pedidos pendientes. ¡Todo al día!'|t }}</p>
+        {% endif %}
+      </section>
+
+      {# Gráfico de ventas #}
+      <section class="producer-portal__section">
+        <h2 class="producer-portal__section-title">📈 {{ 'Ventas Últimos 7 Días'|t }}</h2>
+        <canvas id="sales-chart" class="producer-portal__chart" height="200"></canvas>
+      </section>
+    </div>
+
+    {# Sidebar: Top productos #}
+    <aside class="producer-portal__sidebar">
+      <section class="producer-portal__section">
+        <h2 class="producer-portal__section-title">🏆 {{ 'Top Productos'|t }}</h2>
+        {% if top_products is not empty %}
+          {% for product in top_products %}
+            <div class="producer-portal__top-product">
+              <span class="producer-portal__top-rank">{{ loop.index }}</span>
+              <div class="producer-portal__top-info">
+                <span class="producer-portal__top-name">{{ product.title }}</span>
+                <span class="producer-portal__top-stats">{{ product.quantity_sold }} uds • {{ product.revenue|number_format(2, ',', '.') }} €</span>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="producer-portal__empty">{{ 'Sin datos de ventas aún.'|t }}</p>
+        {% endif %}
+      </section>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,245 @@
+<?php
+
+/**
+ * @file
+ * Módulo principal de ServiciosConecta.
+ *
+ * Estructura: Define hooks de tema, preproceso y automatizaciones para
+ *   el vertical de servicios profesionales del Ecosistema Jaraba.
+ *
+ * Lógica: Los hooks implementan el patrón de automatización por código
+ *   (no ECA BPMN) siguiendo la directriz del proyecto. Cada hook
+ *   incluye verificación de tipo de entidad para evitar conflictos
+ *   con otras entidades del ecosistema.
+ *
+ * Sintaxis: Todas las funciones siguen el patrón hook_name() de Drupal.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra todos los templates Twig del módulo.
+ *   Cada template tiene sus variables documentadas con tipo y propósito.
+ *
+ * Lógica: Los templates se usan desde los controllers via render arrays
+ *   con '#theme' => 'nombre_del_template'. Las variables se pasan
+ *   como '#variable_name' => $valor en el render array.
+ */
+function jaraba_servicios_conecta_theme(): array {
+  return [
+    // Marketplace público de profesionales: grid, filtros, mapa
+    'servicios_marketplace' => [
+      'variables' => [
+        'providers' => [],
+        'categories' => [],
+        'modalities' => [],
+        'current_filters' => [],
+        'total_results' => 0,
+        'pager' => NULL,
+      ],
+      'template' => 'servicios-marketplace',
+    ],
+    // Página pública del perfil de un profesional
+    'servicios_provider_detail' => [
+      'variables' => [
+        'provider' => NULL,
+        'services' => [],
+        'availability' => [],
+        'reviews' => [],
+        'review_summary' => NULL,
+        'schema_json_ld' => '',
+      ],
+      'template' => 'servicios-provider-detail',
+    ],
+    // Dashboard del profesional con KPIs y acciones rápidas
+    'servicios_provider_dashboard' => [
+      'variables' => [
+        'provider' => NULL,
+        'kpis' => [],
+        'upcoming_bookings' => [],
+        'pending_bookings' => [],
+        'recent_reviews' => [],
+      ],
+      'template' => 'servicios-provider-dashboard',
+    ],
+    // Listado de servicios ofertados por el profesional
+    'servicios_provider_offerings' => [
+      'variables' => [
+        'provider' => NULL,
+        'offerings' => [],
+        'total' => 0,
+        'current_filters' => [],
+      ],
+      'template' => 'servicios-provider-offerings',
+    ],
+    // Calendario de reservas del profesional
+    'servicios_provider_calendar' => [
+      'variables' => [
+        'provider' => NULL,
+        'bookings' => [],
+        'availability_slots' => [],
+        'current_week' => '',
+      ],
+      'template' => 'servicios-provider-calendar',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Añade clases CSS al <body> según la ruta activa.
+ *
+ * Lógica: Detecta rutas de ServiciosConecta para añadir clases
+ *   que permiten estilos específicos por página. Usa el patrón
+ *   de mapeo ruta→clase. IMPORTANTE: Las clases en <body> SOLO
+ *   funcionan desde hook_preprocess_html, NO desde templates.
+ */
+function jaraba_servicios_conecta_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  // Mapeo de rutas a clases CSS en el body
+  $route_classes = [
+    'jaraba_servicios_conecta.marketplace' => 'page--servicios-marketplace',
+    'jaraba_servicios_conecta.marketplace.provider' => 'page--servicios-provider-detail',
+    'jaraba_servicios_conecta.provider_portal' => 'page--servicios-provider-dashboard',
+    'jaraba_servicios_conecta.provider_portal.offerings' => 'page--servicios-provider-offerings',
+    'jaraba_servicios_conecta.provider_portal.calendar' => 'page--servicios-provider-calendar',
+    'jaraba_servicios_conecta.provider_portal.bookings' => 'page--servicios-provider-bookings',
+    'jaraba_servicios_conecta.provider_portal.profile' => 'page--servicios-provider-profile',
+  ];
+
+  if (isset($route_classes[$route_name])) {
+    $variables['attributes']['class'][] = $route_classes[$route_name];
+    $variables['attributes']['class'][] = 'page--servicios';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Hook que se dispara al crear cualquier entidad.
+ *   Filtra por tipo de entidad para actuar solo en entidades
+ *   de ServiciosConecta.
+ *
+ * Lógica: Al crear un ProviderProfile, se genera automáticamente
+ *   el slug URL-friendly a partir del display_name si no
+ *   se proporcionó uno explícito.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad recién creada.
+ */
+function jaraba_servicios_conecta_entity_insert(EntityInterface $entity): void {
+  // Auto-generar slug para nuevos perfiles de profesional
+  if ($entity->getEntityTypeId() === 'provider_profile') {
+    $slug = $entity->get('slug')->value;
+    if (empty($slug)) {
+      $display_name = $entity->get('display_name')->value;
+      $slug = _jaraba_servicios_conecta_generate_slug($display_name);
+      $entity->set('slug', $slug);
+      $entity->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Estructura: Hook para detectar cambios de estado en entidades.
+ *
+ * Lógica: Detecta transiciones de estado en profesionales y reservas
+ *   para disparar notificaciones o acciones automáticas.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad actualizada.
+ */
+function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
+  // Detectar cambio de estado en ProviderProfile (verificación)
+  if ($entity->getEntityTypeId() === 'provider_profile') {
+    $new_status = $entity->get('verification_status')->value;
+    $old_status = $entity->original->get('verification_status')->value ?? '';
+    if ($new_status !== $old_status && $new_status === 'approved') {
+      \Drupal::logger('jaraba_servicios_conecta')->info(
+        'Profesional @name aprobado (ID: @id)',
+        ['@name' => $entity->get('display_name')->value, '@id' => $entity->id()]
+      );
+      // TODO Fase 6: Enviar notificación de aprobación al profesional
+    }
+  }
+
+  // Detectar cambio de estado en Booking (confirmación, cancelación)
+  if ($entity->getEntityTypeId() === 'booking') {
+    $new_status = $entity->get('status')->value;
+    $old_status = $entity->original->get('status')->value ?? '';
+    if ($new_status !== $old_status) {
+      \Drupal::logger('jaraba_servicios_conecta')->info(
+        'Reserva @id transición: @old → @new',
+        [
+          '@id' => $entity->id(),
+          '@old' => $old_status,
+          '@new' => $new_status,
+        ]
+      );
+      // TODO Fase 4: Enviar notificación por estado de reserva
+      // TODO Fase 5: Si cancelada, liberar slot de disponibilidad
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Estructura: Tareas programadas del módulo ServiciosConecta.
+ *
+ * Lógica: Ejecuta periódicamente verificaciones de reservas,
+ *   recordatorios de citas y limpieza de slots expirados.
+ *   Se protege con un flag de estado para evitar ejecuciones
+ *   concurrentes.
+ */
+function jaraba_servicios_conecta_cron(): void {
+  $state = \Drupal::state();
+  $last_run = $state->get('jaraba_servicios_conecta.cron_last_run', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Ejecutar cada 15 minutos como máximo
+  if (($now - $last_run) < 900) {
+    return;
+  }
+
+  $state->set('jaraba_servicios_conecta.cron_last_run', $now);
+
+  // TODO Fase 2: Detectar reservas pendientes de confirmación (>24h)
+  // TODO Fase 4: Enviar recordatorios de citas (24h y 1h antes)
+  // TODO Fase 5: Detectar no-shows (cita pasada sin check-in)
+  // TODO Fase 5: Limpiar slots de disponibilidad expirados
+}
+
+/**
+ * Genera un slug URL-friendly a partir de un texto.
+ *
+ * Lógica: Convierte a minúsculas, elimina acentos y caracteres
+ *   especiales, reemplaza espacios por guiones, y trunca a 128 chars.
+ *
+ * @param string $text
+ *   Texto fuente para generar el slug.
+ *
+ * @return string
+ *   Slug limpio.
+ */
+function _jaraba_servicios_conecta_generate_slug(string $text): string {
+  $transliteration = [
+    'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+    'ñ' => 'n', 'ü' => 'u', 'Á' => 'a', 'É' => 'e', 'Í' => 'i',
+    'Ó' => 'o', 'Ú' => 'u', 'Ñ' => 'n', 'Ü' => 'u',
+  ];
+
+  $slug = strtr(mb_strtolower($text), $transliteration);
+  $slug = preg_replace('/[^a-z0-9\-]/', '-', $slug);
+  $slug = preg_replace('/-+/', '-', $slug);
+  $slug = trim($slug, '-');
+  $slug = substr($slug, 0, 128);
+
+  return $slug;
+}

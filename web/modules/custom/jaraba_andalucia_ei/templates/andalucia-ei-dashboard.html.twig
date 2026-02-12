@@ -1,0 +1,138 @@
+{#
+/**
+ * @file
+ * Template para el dashboard del programa Andalucía +ei.
+ *
+ * Variables:
+ * - participante: Entidad ProgramaParticipanteEi del usuario (o NULL).
+ *
+ * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
+ */
+#}
+
+<div class="andalucia-ei-dashboard">
+  
+  {# Hero Section #}
+  <section class="andalucia-ei-hero">
+    <div class="hero-content">
+      <h1 class="hero-title">{% trans %}Andalucía +ei{% endtrans %}</h1>
+      <p class="hero-subtitle">{% trans %}Emprendimiento Aumentado con Inteligencia Artificial{% endtrans %}</p>
+    </div>
+    <div class="hero-decoration" aria-hidden="true"></div>
+  </section>
+
+  {% if participante %}
+    {# Dashboard del Participante #}
+    {% set faseActual = participante.get('fase_actual').value|default('atencion') %}
+    {% set horasMentoriaIa = participante.get('horas_mentoria_ia').value|default(0) %}
+    {% set horasMentoriaHumana = participante.get('horas_mentoria_humana').value|default(0) %}
+    {% set horasOrientacionInd = participante.get('horas_orientacion_ind').value|default(0) %}
+    {% set horasOrientacionGrup = participante.get('horas_orientacion_grup').value|default(0) %}
+    {% set totalOrientacion = horasMentoriaIa + horasMentoriaHumana + horasOrientacionInd + horasOrientacionGrup %}
+    {% set horasFormacion = participante.get('horas_formacion').value|default(0) %}
+    {% set progreso = (horasFormacion / 50 * 100)|round %}
+    
+    <section class="participant-dashboard">
+      <div class="dashboard-grid">
+        
+        {# Card: Progreso General #}
+        <article class="dashboard-card card-progress">
+          <header class="card-header">
+            <span class="card-icon">📈</span>
+            <h2>{% trans %}Tu Progreso{% endtrans %}</h2>
+          </header>
+          <div class="card-body">
+            <div class="progress-stat">
+              <span class="stat-label">{% trans %}Fase actual{% endtrans %}</span>
+              <span class="stat-value fase-{{ faseActual }}">
+                {% if faseActual == 'atencion' %}
+                  {% trans %}Atención{% endtrans %}
+                {% elseif faseActual == 'insercion' %}
+                  {% trans %}Inserción{% endtrans %}
+                {% else %}
+                  {{ faseActual|capitalize }}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </article>
+
+        {# Card: Horas de Orientación #}
+        <article class="dashboard-card card-hours">
+          <header class="card-header">
+            <span class="card-icon">⏱️</span>
+            <h2>{% trans %}Horas Acumuladas{% endtrans %}</h2>
+          </header>
+          <div class="card-body">
+            <div class="hours-grid">
+              <div class="hour-item">
+                <span class="hour-value">{{ horasMentoriaIa|number_format(1) }}</span>
+                <span class="hour-label">{% trans %}Tutor IA{% endtrans %}</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-value">{{ horasMentoriaHumana|number_format(1) }}</span>
+                <span class="hour-label">{% trans %}Mentor{% endtrans %}</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-value">{{ totalOrientacion|number_format(1) }}</span>
+                <span class="hour-label">{% trans %}Orientación{% endtrans %}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        {# Card: Formación LMS #}
+        <article class="dashboard-card card-training">
+          <header class="card-header">
+            <span class="card-icon">🎓</span>
+            <h2>{% trans %}Formación{% endtrans %}</h2>
+          </header>
+          <div class="card-body">
+            <div class="training-progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-fill" style="width: {{ progreso > 100 ? 100 : progreso }}%"></div>
+              </div>
+              <span class="progress-text">{{ horasFormacion|number_format(1) }}h / 50h {% trans %}mínimo{% endtrans %}</span>
+            </div>
+          </div>
+        </article>
+
+        {# Card: Acciones Rápidas #}
+        <article class="dashboard-card card-actions">
+          <header class="card-header">
+            <span class="card-icon">🚀</span>
+            <h2>{% trans %}Acciones{% endtrans %}</h2>
+          </header>
+          <div class="card-body">
+            <nav class="quick-actions" aria-label="{% trans %}Acciones rápidas{% endtrans %}">
+              <a href="/copilot" class="action-btn action-primary">
+                🤖 <span>{% trans %}Hablar con Tutor IA{% endtrans %}</span>
+              </a>
+              <a href="/mentoring" class="action-btn action-secondary">
+                👥 <span>{% trans %}Reservar Mentor{% endtrans %}</span>
+              </a>
+              <a href="/lms" class="action-btn action-secondary">
+                📚 <span>{% trans %}Ver Cursos{% endtrans %}</span>
+              </a>
+            </nav>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  {% else %}
+    {# Estado: No inscrito #}
+    <section class="not-enrolled">
+      <div class="empty-state">
+        <span class="empty-icon">👤</span>
+        <h2>{% trans %}Aún no estás inscrito en Andalucía +ei{% endtrans %}</h2>
+        <p>{% trans %}Contacta con tu orientador para inscribirte en el programa.{% endtrans %}</p>
+        <a href="/contacto" class="btn btn-primary">
+          {% trans %}Solicitar Información{% endtrans %}
+        </a>
+      </div>
+    </section>
+  {% endif %}
+
+</div>

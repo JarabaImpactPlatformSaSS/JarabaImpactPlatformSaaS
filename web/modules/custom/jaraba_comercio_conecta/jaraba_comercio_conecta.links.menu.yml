@@ -1,0 +1,36 @@
+# =============================================================================
+# Enlaces de menú en /admin/structure para ComercioConecta
+# Cada entidad tiene su entrada en el menú de estructura de Drupal
+# =============================================================================
+
+# Productos retail en Structure
+jaraba_comercio_conecta.product_retail.settings:
+  title: 'Productos Comercio'
+  description: 'Configuración de la entidad Producto Retail de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.product_retail.settings
+  parent: system.admin_structure
+  weight: 80
+
+# Variaciones de producto en Structure
+jaraba_comercio_conecta.product_variation_retail.settings:
+  title: 'Variaciones Comercio'
+  description: 'Configuración de la entidad Variación de Producto de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.product_variation_retail.settings
+  parent: system.admin_structure
+  weight: 81
+
+# Ubicaciones de stock en Structure
+jaraba_comercio_conecta.stock_location.settings:
+  title: 'Ubicaciones Stock'
+  description: 'Configuración de la entidad Ubicación de Stock de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.stock_location.settings
+  parent: system.admin_structure
+  weight: 82
+
+# Perfiles de comerciante en Structure
+jaraba_comercio_conecta.merchant_profile.settings:
+  title: 'Comerciantes'
+  description: 'Configuración de la entidad Perfil de Comerciante de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.merchant_profile.settings
+  parent: system.admin_structure
+  weight: 83

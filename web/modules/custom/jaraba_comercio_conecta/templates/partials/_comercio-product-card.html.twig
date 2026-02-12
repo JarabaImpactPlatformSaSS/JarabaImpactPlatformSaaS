@@ -1,0 +1,89 @@
+{#
+/**
+ * @file
+ * Parcial: Card de producto para grid del marketplace.
+ *
+ * DIRECTRIZ: Parcial reutilizable con {% include %}.
+ * Se usa en: comercio-marketplace.html.twig, comercio-merchant-products.html.twig,
+ *   comercio-product-detail.html.twig (productos relacionados).
+ *
+ * Variables:
+ *   - product: Entidad ProductRetail.
+ */
+#}
+
+<article class="comercio-product-card" data-product-id="{{ product.id() }}">
+  {# Imagen #}
+  <a href="{{ path('jaraba_comercio_conecta.product_detail', {'product_retail': product.id()}) }}"
+     class="comercio-product-card__image-link">
+    {% if product.get('images').entity %}
+      <img class="comercio-product-card__image"
+           src="{{ file_url(product.get('images').0.entity.fileuri) }}"
+           alt="{{ product.get('title').value }}"
+           loading="lazy">
+    {% else %}
+      <div class="comercio-product-card__image comercio-product-card__image--placeholder">
+        {{ jaraba_icon('commerce', 'shopping-bag', { variant: 'duotone', size: '40px' }) }}
+      </div>
+    {% endif %}
+
+    {# Badge de descuento #}
+    {% if product.get('compare_at_price').value and product.get('compare_at_price').value > product.get('price').value %}
+      {% set discount = ((product.get('compare_at_price').value - product.get('price').value) / product.get('compare_at_price').value * 100)|round %}
+      <span class="comercio-product-card__badge comercio-product-card__badge--sale">-{{ discount }}%</span>
+    {% endif %}
+
+    {# Badge sin stock #}
+    {% if product.get('stock_quantity').value == 0 %}
+      <span class="comercio-product-card__badge comercio-product-card__badge--out">{% trans %}Agotado{% endtrans %}</span>
+    {% endif %}
+  </a>
+
+  {# Contenido #}
+  <div class="comercio-product-card__body">
+    {# Categoría #}
+    {% if product.get('category_id').entity %}
+      <span class="comercio-product-card__category">
+        {{ product.get('category_id').entity.label() }}
+      </span>
+    {% endif %}
+
+    {# Título #}
+    <h3 class="comercio-product-card__title">
+      <a href="{{ path('jaraba_comercio_conecta.product_detail', {'product_retail': product.id()}) }}">
+        {{ product.get('title').value }}
+      </a>
+    </h3>
+
+    {# Comercio #}
+    {% if product.get('merchant_id').entity %}
+      <p class="comercio-product-card__merchant">
+        {{ product.get('merchant_id').entity.get('business_name').value }}
+      </p>
+    {% endif %}
+
+    {# Precio #}
+    <div class="comercio-product-card__price">
+      {% if product.get('compare_at_price').value and product.get('compare_at_price').value > product.get('price').value %}
+        <span class="comercio-product-card__price-original">
+          {{ product.get('compare_at_price').value|number_format(2, ',', '.') }} €
+        </span>
+      {% endif %}
+      <span class="comercio-product-card__price-current">
+        {{ product.get('price').value|number_format(2, ',', '.') }} €
+      </span>
+    </div>
+
+    {# Estado de stock #}
+    {% set stock = product.get('stock_quantity').value %}
+    {% if stock > 0 %}
+      <span class="comercio-product-card__stock comercio-product-card__stock--available">
+        {% trans %}En stock{% endtrans %}
+      </span>
+    {% else %}
+      <span class="comercio-product-card__stock comercio-product-card__stock--out">
+        {% trans %}Agotado{% endtrans %}
+      </span>
+    {% endif %}
+  </div>
+</article>

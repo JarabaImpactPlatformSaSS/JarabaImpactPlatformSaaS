@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Template de la página de categoría AgroConecta.
+ *
+ * Variables:
+ *   - category: Datos de la categoría (id, name, slug, description, breadcrumb).
+ *   - products: Datos de productos {results, total, category}.
+ */
+#}
+
+<div class="agro-category-page" id="agro-category-root">
+
+  {# === Breadcrumb === #}
+  {% if category.breadcrumb is defined and category.breadcrumb|length > 0 %}
+    <nav class="agro-breadcrumb" aria-label="{{ 'Breadcrumb'|t }}">
+      <ol class="agro-breadcrumb__list">
+        <li class="agro-breadcrumb__item">
+          <a href="/agroconecta/search" class="agro-breadcrumb__link">{% trans %}Inicio{% endtrans %}</a>
+        </li>
+        {% for crumb in category.breadcrumb %}
+          <li class="agro-breadcrumb__item">
+            {% if loop.last %}
+              <span class="agro-breadcrumb__current" aria-current="page">{{ crumb }}</span>
+            {% else %}
+              <a href="#" class="agro-breadcrumb__link">{{ crumb }}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    </nav>
+  {% endif %}
+
+  {# === Header de categoría === #}
+  <section class="agro-category-header">
+    <h1 class="agro-category-header__title">{{ category.name }}</h1>
+    {% if category.description %}
+      <p class="agro-category-header__desc">{{ category.description }}</p>
+    {% endif %}
+    <div class="agro-category-header__meta">
+      <span class="agro-category-header__count">{{ products.total }} {% trans %}productos{% endtrans %}</span>
+      <select id="agro-category-sort" class="agro-search-bar__sort">
+        <option value="newest">{% trans %}Más recientes{% endtrans %}</option>
+        <option value="price_asc">{% trans %}Precio: menor a mayor{% endtrans %}</option>
+        <option value="price_desc">{% trans %}Precio: mayor a menor{% endtrans %}</option>
+        <option value="best_rated">{% trans %}Mejor valorados{% endtrans %}</option>
+      </select>
+    </div>
+  </section>
+
+  {# === Grid de productos === #}
+  <div class="agro-products-grid" id="agro-category-results">
+    {% if products.results|length > 0 %}
+      {% for product in products.results %}
+        <article class="agro-product-card" data-product-id="{{ product.id }}">
+          <div class="agro-product-card__image agro-product-card__image--placeholder"></div>
+          <div class="agro-product-card__body">
+            <h3 class="agro-product-card__name">{{ product.name }}</h3>
+            <div class="agro-product-card__price">{{ product.price|number_format(2, ',', '.') }} €</div>
+            {% if product.average_rating > 0 %}
+              <div class="agro-product-card__rating" data-agro-rating="{{ product.average_rating|round }}">
+                <span class="agro-product-card__stars"></span>
+                <span class="agro-product-card__review-count">({{ product.review_count }})</span>
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <div class="agro-search-empty">
+        <span class="agro-search-empty__icon">📦</span>
+        <p>{% trans %}No hay productos en esta categoría todavía.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# === Loader y paginación === #}
+  <div class="agro-search-loader" id="agro-category-loader" style="display: none;">
+    <span class="agro-spinner"></span>
+  </div>
+  {% if products.total > products.results|length %}
+    <div class="agro-search-pagination" id="agro-category-pagination">
+      <button class="agro-btn agro-btn--outline" id="agro-category-load-more">
+        {% trans %}Cargar más productos{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,38 @@
+{#
+ # Template: Calendario del Profesional
+ # Ruta: /mi-servicio/calendario
+ # Variables: provider, bookings, availability_slots, current_week
+ #}
+
+<div class="servicios-provider-calendar">
+  <header class="servicios-provider-calendar__header">
+    <h1>{{ 'Calendario'|t }}</h1>
+    <p>{{ 'Semana del %date'|t({'%date': current_week}) }}</p>
+  </header>
+
+  <div class="servicios-provider-calendar__availability">
+    <h2>{{ 'Horarios Configurados'|t }}</h2>
+    {% if availability_slots|length > 0 %}
+      {% set day_names = {1: 'Lunes'|t, 2: 'Martes'|t, 3: 'Miércoles'|t, 4: 'Jueves'|t, 5: 'Viernes'|t, 6: 'Sábado'|t, 7: 'Domingo'|t} %}
+      <div class="servicios-calendar-grid">
+        {% for day, slots in availability_slots %}
+          <div class="servicios-calendar-grid__day">
+            <h3>{{ day_names[day] }}</h3>
+            {% for slot in slots %}
+              <div class="servicios-calendar-grid__slot">
+                {{ slot.start_time.value }} - {{ slot.end_time.value }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ 'No tienes horarios configurados. Configura tus slots de disponibilidad desde el panel de administración.'|t }}</p>
+    {% endif %}
+  </div>
+
+  <div class="servicios-provider-calendar__widget" data-provider-id="{{ provider.id }}">
+    {# Placeholder para calendario interactivo (Fase 2) #}
+    <p>{{ 'Calendario interactivo disponible en Fase 2.'|t }}</p>
+  </div>
+</div>

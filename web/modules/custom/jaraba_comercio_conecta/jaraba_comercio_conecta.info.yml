@@ -1,0 +1,12 @@
+name: 'Jaraba ComercioConecta'
+type: module
+description: 'Vertical ComercioConecta: Marketplace de comercio de proximidad con omnicanalidad, POS, flash offers y SEO local.'
+package: 'Jaraba Verticals'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - drupal:taxonomy
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

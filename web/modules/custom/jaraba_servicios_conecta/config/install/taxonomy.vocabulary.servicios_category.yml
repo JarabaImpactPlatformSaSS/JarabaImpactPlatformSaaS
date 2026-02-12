@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_servicios_conecta
+name: 'Categorías Servicios'
+vid: servicios_category
+description: 'Categorías jerárquicas de servicios profesionales para ServiciosConecta. Nivel 1: sector. Nivel 2: especialidades.'
+weight: 0

@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Parcial: Gestión de preferencias de notificación.
+ *
+ * Variables:
+ *   - notification_types: Lista de tipos de notificación a mostrar
+ *     (default: order_confirmed,order_shipped,new_review,payment_received)
+ *
+ * Uso:
+ *   {% include '@jaraba_agroconecta_core/partials/agro-notification-prefs.html.twig' with {
+ *     notification_types: 'order_confirmed,order_shipped,new_review,payment_received'
+ *   } %}
+ *
+ * DIRECTRIZ:
+ * - Todos los textos usan |t para i18n
+ * - JS carga preferencias actuales desde API y guarda cambios
+ */
+#}
+{% set types = notification_types|default('order_confirmed,order_shipped,new_review,payment_received') %}
+
+{{ attach_library('jaraba_agroconecta_core/agroconecta.notifications') }}
+
+<section class="customer-portal__section">
+  <div data-agro-notif-prefs data-agro-notif-types="{{ types }}">
+    <div class="agro-reviews__loading">
+      <span class="agro-spinner"></span> {{ 'Cargando preferencias...'|t }}
+    </div>
+  </div>
+</section>

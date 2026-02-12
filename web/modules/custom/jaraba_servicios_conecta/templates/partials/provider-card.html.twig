@@ -1,0 +1,53 @@
+{#
+ # Parcial: Tarjeta de Profesional
+ # Uso: {% include '@jaraba_servicios_conecta/partials/provider-card.html.twig' with {provider: provider} only %}
+ # Variables: provider (ProviderProfile entity)
+ #}
+
+<article class="provider-card">
+  {% if provider.photo.entity %}
+    <div class="provider-card__photo">
+      <img src="{{ file_url(provider.photo.entity.fileuri) }}"
+           alt="{{ provider.display_name.value }}"
+           loading="lazy"
+           class="provider-card__img" />
+    </div>
+  {% else %}
+    <div class="provider-card__photo provider-card__photo--placeholder">
+      <span class="provider-card__initials">
+        {{ provider.display_name.value|first|upper }}
+      </span>
+    </div>
+  {% endif %}
+
+  <div class="provider-card__body">
+    <h3 class="provider-card__name">
+      <a href="/servicios/profesional/{{ provider.slug.value }}">
+        {{ provider.display_name.value }}
+      </a>
+    </h3>
+    <p class="provider-card__title">{{ provider.professional_title.value }}</p>
+    <p class="provider-card__location">{{ provider.address_city.value }}</p>
+
+    {% if provider.average_rating.value > 0 %}
+      <div class="provider-card__rating">
+        <span class="rating__stars" aria-label="{{ '%rating de 5'|t({'%rating': provider.average_rating.value|number_format(1)}) }}">
+          {{ provider.average_rating.value|number_format(1) }}
+        </span>
+        <span class="rating__count">({{ provider.total_reviews.value }})</span>
+      </div>
+    {% endif %}
+
+    <div class="provider-card__badges">
+      {% if provider.accepts_online.value %}
+        <span class="badge badge--online">{{ 'Online'|t }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="provider-card__footer">
+    <a href="/servicios/profesional/{{ provider.slug.value }}" class="btn btn--outline btn--sm">
+      {{ 'Ver Perfil'|t }}
+    </a>
+  </div>
+</article>

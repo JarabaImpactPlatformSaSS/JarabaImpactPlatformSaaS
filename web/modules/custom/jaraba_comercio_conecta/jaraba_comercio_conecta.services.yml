@@ -1,0 +1,46 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para ComercioConecta
+  # Permite filtrar mensajes del vertical en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_comercio_conecta:
+    parent: logger.channel_base
+    arguments: ['jaraba_comercio_conecta']
+
+  # =====================================================================
+  # MarketplaceService: Lógica del marketplace público
+  # Responsabilidad: listado de productos, comercios, búsqueda, filtros
+  # Relaciones: consume ProductRetail, MerchantProfile, taxonomías
+  # =====================================================================
+  jaraba_comercio_conecta.marketplace:
+    class: Drupal\jaraba_comercio_conecta\Service\MarketplaceService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # ProductRetailService: CRUD y lógica de productos retail
+  # Responsabilidad: crear, actualizar, importar/exportar productos,
+  #   gestión de variaciones y stock multi-ubicación
+  # Relaciones: consume MerchantProfile, StockLocation
+  # =====================================================================
+  jaraba_comercio_conecta.product_retail:
+    class: Drupal\jaraba_comercio_conecta\Service\ProductRetailService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # MerchantDashboardService: KPIs y datos del dashboard del comerciante
+  # Responsabilidad: ventas, pedidos pendientes, alertas stock, rating
+  # Relaciones: consume OrderRetail, ProductRetail, ReviewRetail
+  # =====================================================================
+  jaraba_comercio_conecta.merchant_dashboard:
+    class: Drupal\jaraba_comercio_conecta\Service\MerchantDashboardService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+      - '@logger.channel.jaraba_comercio_conecta'

@@ -1,0 +1,114 @@
+# =============================================================================
+# Permisos del módulo ComercioConecta
+# Estructura: permisos por entidad y funcionalidad del marketplace
+# Lógica: control granular de acceso multi-tenant para comerciantes y clientes
+# =============================================================================
+
+# --- Productos ---
+manage comercio products:
+  title: 'Gestionar productos ComercioConecta'
+  description: 'Acceso completo a CRUD de todos los productos del marketplace.'
+  restrict access: true
+
+view comercio products:
+  title: 'Ver productos ComercioConecta'
+  description: 'Ver catálogo de productos en el marketplace público.'
+
+create comercio products:
+  title: 'Crear productos ComercioConecta'
+  description: 'Crear nuevos productos en el catálogo del comerciante.'
+
+edit own comercio products:
+  title: 'Editar productos propios ComercioConecta'
+  description: 'Editar productos creados por el propio comerciante.'
+
+delete own comercio products:
+  title: 'Eliminar productos propios ComercioConecta'
+  description: 'Eliminar productos creados por el propio comerciante.'
+
+# --- Comerciantes ---
+manage comercio merchants:
+  title: 'Gestionar comerciantes ComercioConecta'
+  description: 'Acceso completo a CRUD de perfiles de comerciantes.'
+  restrict access: true
+
+view comercio merchants:
+  title: 'Ver comerciantes ComercioConecta'
+  description: 'Ver perfiles públicos de comerciantes en el marketplace.'
+
+edit own merchant profile:
+  title: 'Editar perfil propio de comerciante'
+  description: 'Editar el perfil del comercio del usuario actual.'
+
+view merchant analytics:
+  title: 'Ver analíticas del comerciante'
+  description: 'Acceder al dashboard de analíticas del comercio.'
+
+# --- Stock y Ubicaciones ---
+manage comercio stock:
+  title: 'Gestionar stock ComercioConecta'
+  description: 'Gestionar ubicaciones de stock y niveles de inventario.'
+
+view comercio stock:
+  title: 'Ver stock ComercioConecta'
+  description: 'Ver niveles de stock del comerciante.'
+
+# --- Pedidos ---
+manage comercio orders:
+  title: 'Gestionar pedidos ComercioConecta'
+  description: 'Acceso completo a todos los pedidos del marketplace.'
+  restrict access: true
+
+view own comercio orders:
+  title: 'Ver pedidos propios ComercioConecta'
+  description: 'Ver historial de pedidos del cliente actual.'
+
+manage merchant orders:
+  title: 'Gestionar pedidos del comerciante'
+  description: 'Ver y gestionar pedidos recibidos por el comerciante.'
+
+# --- Reviews ---
+manage comercio reviews:
+  title: 'Gestionar reseñas ComercioConecta'
+  description: 'Moderar y gestionar todas las reseñas del marketplace.'
+  restrict access: true
+
+view comercio reviews:
+  title: 'Ver reseñas ComercioConecta'
+  description: 'Ver reseñas de productos y comerciantes.'
+
+submit comercio reviews:
+  title: 'Enviar reseñas ComercioConecta'
+  description: 'Publicar reseñas de productos y comerciantes.'
+
+respond comercio reviews:
+  title: 'Responder a reseñas ComercioConecta'
+  description: 'Responder a reseñas como comerciante.'
+
+# --- Promociones ---
+manage comercio promotions:
+  title: 'Gestionar promociones ComercioConecta'
+  description: 'Crear y gestionar promociones y cupones del marketplace.'
+  restrict access: true
+
+manage own comercio promotions:
+  title: 'Gestionar promociones propias'
+  description: 'Crear y gestionar promociones del propio comerciante.'
+
+# --- Notificaciones ---
+manage comercio notifications:
+  title: 'Gestionar notificaciones ComercioConecta'
+  description: 'Administrar plantillas y configuración de notificaciones.'
+  restrict access: true
+
+# --- Admin Dashboard ---
+access comercio admin:
+  title: 'Acceder al panel de administración ComercioConecta'
+  description: 'Acceso al dashboard administrativo de la plataforma.'
+  restrict access: true
+
+# --- Configuración ---
+administer comercio settings:
+  title: 'Administrar configuración ComercioConecta'
+  description: 'Acceso a la configuración global del módulo.'
+  restrict access: true

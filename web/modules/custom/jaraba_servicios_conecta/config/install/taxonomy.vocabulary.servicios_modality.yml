@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_servicios_conecta
+name: 'Modalidades Servicio'
+vid: servicios_modality
+description: 'Modalidades de prestación del servicio: presencial, online, híbrido, domicilio, telefónica.'
+weight: 0

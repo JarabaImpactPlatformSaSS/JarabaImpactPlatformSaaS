@@ -1,0 +1,379 @@
+/**
+ * @file
+ * Estilos del Copilot Chat Widget AgroConecta.
+ *
+ * DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
+ * Fase 59 — Producer Copilot Chat Widget.
+ */
+
+// === CHAT FAB (Floating Action Button) ===
+
+.agro-copilot-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ej-color-primary, #2d6a4f), #40916c);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 16px rgba(45, 106, 79, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 24px rgba(45, 106, 79, 0.4),
+            0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    &--open {
+        transform: rotate(180deg);
+    }
+
+    &__badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+}
+
+// === CHAT WINDOW ===
+
+.agro-copilot-chat {
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    z-index: 999;
+    width: 380px;
+    max-height: 560px;
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-xl, 16px);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.06);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s ease;
+
+    &--open {
+        display: flex;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    // Header
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #fff;
+    }
+
+    &__avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--ej-color-primary, #2d6a4f), #52b788);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    &__info {
+        flex: 1;
+
+        h3 {
+            margin: 0;
+            font-size: var(--ej-font-size-sm, 0.875rem);
+            font-weight: 700;
+        }
+
+        small {
+            font-size: var(--ej-font-size-xs, 0.75rem);
+            opacity: 0.7;
+        }
+    }
+
+    &__close {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #fff;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    // Messages
+    &__messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--ej-spacing-md, 1rem);
+        display: flex;
+        flex-direction: column;
+        gap: var(--ej-spacing-sm, 0.75rem);
+        max-height: 360px;
+        min-height: 200px;
+        scroll-behavior: smooth;
+    }
+
+    &__message {
+        max-width: 88%;
+        padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+        border-radius: 16px;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        line-height: 1.5;
+        word-break: break-word;
+        animation: agro-msg-in 0.3s ease;
+
+        &--bot {
+            align-self: flex-start;
+            background: var(--ej-color-surface-alt, #f3f4f6);
+            color: var(--ej-color-text-primary, #1a1a2e);
+            border-bottom-left-radius: 4px;
+        }
+
+        &--user {
+            align-self: flex-end;
+            background: var(--ej-color-primary, #2d6a4f);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        &--system {
+            align-self: center;
+            font-size: var(--ej-font-size-xs, 0.75rem);
+            color: var(--ej-color-text-muted, #9ca3af);
+            font-style: italic;
+            max-width: 100%;
+        }
+
+        // Markdown rendering
+        p {
+            margin: 0 0 0.5em;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul,
+        ol {
+            margin: 0.5em 0;
+            padding-left: 1.2em;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+    }
+
+    &__typing {
+        align-self: flex-start;
+        padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+        background: var(--ej-color-surface-alt, #f3f4f6);
+        border-radius: 16px;
+        border-bottom-left-radius: 4px;
+        display: none;
+
+        &--visible {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ej-color-text-muted, #9ca3af);
+            animation: agro-typing-dot 1.4s infinite;
+
+            &:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            &:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+        }
+    }
+
+    // Quick Actions
+    &__quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
+        border-top: 1px solid var(--ej-color-border-light, #f3f4f6);
+    }
+
+    &__quick-btn {
+        padding: 4px 12px;
+        border: 1px solid var(--ej-color-border, #e5e7eb);
+        border-radius: 20px;
+        background: var(--ej-color-surface, #fff);
+        font-size: var(--ej-font-size-xs, 0.75rem);
+        color: var(--ej-color-text-secondary, #374151);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+            border-color: var(--ej-color-primary, #2d6a4f);
+            color: var(--ej-color-primary, #2d6a4f);
+            background: rgba(45, 106, 79, 0.04);
+        }
+    }
+
+    // Input
+    &__input-area {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--ej-spacing-xs, 0.5rem);
+        padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+        border-top: 1px solid var(--ej-color-border, #e5e7eb);
+    }
+
+    &__input {
+        flex: 1;
+        resize: none;
+        border: 1px solid var(--ej-color-border, #d1d5db);
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-size: var(--ej-font-size-sm, 0.875rem);
+        line-height: 1.4;
+        max-height: 100px;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-primary, #2d6a4f);
+        }
+
+        &::placeholder {
+            color: var(--ej-color-text-muted, #9ca3af);
+        }
+    }
+
+    &__send {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--ej-color-primary, #2d6a4f);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        transition: background 0.2s ease, transform 0.1s ease;
+
+        &:hover:not(:disabled) {
+            background: var(--ej-color-primary-hover, #245a42);
+        }
+
+        &:active:not(:disabled) {
+            transform: scale(0.92);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+}
+
+@keyframes agro-msg-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes agro-typing-dot {
+
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+// === Responsive ===
+
+@media (max-width: 480px) {
+    .agro-copilot-chat {
+        width: calc(100vw - 16px);
+        right: 8px;
+        bottom: 76px;
+        max-height: calc(100vh - 120px);
+        border-radius: var(--ej-radius-lg, 12px);
+    }
+
+    .agro-copilot-fab {
+        bottom: 16px;
+        right: 16px;
+    }
+}
