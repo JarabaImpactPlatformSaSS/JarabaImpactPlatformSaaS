@@ -1,0 +1,307 @@
+// Journey Dashboard Styles
+// Compiles to css/journey-dashboard.css
+
+@use 'variables' as *;
+
+// ── Dashboard Layout ──────────────────────────────────────────
+.journey-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $journey-spacing-lg;
+  font-family: $journey-font-family;
+  color: $journey-color-text;
+}
+
+// ── Header ────────────────────────────────────────────────────
+.journey-dashboard-header {
+  margin-bottom: $journey-spacing-xl;
+  padding-bottom: $journey-spacing-lg;
+  border-bottom: 1px solid $journey-border-color;
+
+  h1 {
+    font-family: $journey-font-headings;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 $journey-spacing-sm;
+    color: $journey-color-text;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: $journey-color-text-muted;
+    margin: 0;
+  }
+}
+
+// ── Metrics Grid ──────────────────────────────────────────────
+.journey-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $journey-spacing-lg;
+  margin-bottom: $journey-spacing-xl;
+}
+
+.metric-card {
+  background: $journey-bg-surface;
+  border-radius: $journey-border-radius;
+  padding: $journey-spacing-lg;
+  box-shadow: $journey-shadow-sm;
+  border: 1px solid $journey-border-color;
+  text-align: center;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $journey-shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.metric-primary {
+  border-left: 4px solid $journey-color-primary;
+}
+
+.metric-danger {
+  border-left: 4px solid $journey-color-danger;
+}
+
+.metric-success {
+  border-left: 4px solid $journey-color-success;
+}
+
+.metric-info {
+  border-left: 4px solid $journey-color-info;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: $journey-font-headings;
+  line-height: 1.2;
+  margin-bottom: $journey-spacing-xs;
+}
+
+.metric-primary .metric-value { color: $journey-color-primary; }
+.metric-danger .metric-value { color: $journey-color-danger; }
+.metric-success .metric-value { color: $journey-color-success; }
+.metric-info .metric-value { color: $journey-color-info; }
+
+.metric-label {
+  font-size: 0.85rem;
+  color: $journey-color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// ── Sections ──────────────────────────────────────────────────
+.journey-verticals-section,
+.journey-at-risk-section,
+.journey-activity-section {
+  margin-bottom: $journey-spacing-xl;
+
+  h2 {
+    font-family: $journey-font-headings;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 $journey-spacing-md;
+    color: $journey-color-text;
+  }
+}
+
+// ── Tables ────────────────────────────────────────────────────
+.journey-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: $journey-bg-surface;
+  border-radius: $journey-border-radius;
+  box-shadow: $journey-shadow-sm;
+  overflow: hidden;
+
+  th {
+    background: $journey-bg-body;
+    padding: $journey-spacing-md $journey-spacing-lg;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $journey-color-text-muted;
+    border-bottom: 2px solid $journey-border-color;
+  }
+
+  td {
+    padding: $journey-spacing-md $journey-spacing-lg;
+    border-bottom: 1px solid $journey-border-color;
+    font-size: 0.9rem;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.table-danger {
+  th {
+    background: rgba(220, 38, 38, 0.05);
+  }
+}
+
+.text-danger {
+  color: $journey-color-danger;
+  font-weight: 600;
+}
+
+// ── Health Badges ─────────────────────────────────────────────
+.health-badge {
+  display: inline-block;
+  padding: $journey-spacing-xs $journey-spacing-sm;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.health-excelente {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+
+.health-bueno {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.health-regular {
+  background: rgba(245, 158, 11, 0.1);
+  color: #b45309;
+}
+
+.health-crítico,
+.health-critico {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+}
+
+// ── Empty State ───────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: $journey-spacing-xl;
+  color: $journey-color-text-muted;
+  font-style: italic;
+}
+
+// ── Activity Feed ─────────────────────────────────────────────
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: $journey-spacing-sm;
+  padding: $journey-spacing-md;
+  border-bottom: 1px solid $journey-border-color;
+  font-size: 0.9rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.activity-user {
+  font-weight: 600;
+  color: $journey-color-text;
+}
+
+.activity-action {
+  color: $journey-color-text-muted;
+}
+
+.activity-state {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.activity-time {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: $journey-color-text-muted;
+}
+
+// ── State Badges ──────────────────────────────────────────────
+.badge-discovery {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+}
+
+.badge-activation {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.badge-engagement {
+  background: rgba(0, 169, 165, 0.1);
+  color: #0d9488;
+}
+
+.badge-conversion {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+
+.badge-retention {
+  background: rgba(139, 92, 246, 0.1);
+  color: #7c3aed;
+}
+
+.badge-expansion {
+  background: rgba(245, 158, 11, 0.1);
+  color: #b45309;
+}
+
+.badge-advocacy {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.badge-at_risk {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+}
+
+// ── Responsive ────────────────────────────────────────────────
+@media (max-width: $journey-bp-md) {
+  .journey-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .journey-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .activity-item {
+    flex-wrap: wrap;
+  }
+
+  .activity-time {
+    width: 100%;
+    margin-left: 0;
+    margin-top: $journey-spacing-xs;
+  }
+}
+
+@media (max-width: $journey-bp-sm) {
+  .journey-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-dashboard {
+    padding: $journey-spacing-md;
+  }
+}

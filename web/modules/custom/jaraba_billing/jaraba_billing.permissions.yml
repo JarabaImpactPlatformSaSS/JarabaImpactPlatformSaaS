@@ -1,0 +1,20 @@
+administer billing:
+  title: 'Administrar billing'
+  description: 'Acceso completo a todas las entidades y configuración de billing.'
+  restrict access: true
+
+view own invoices:
+  title: 'Ver facturas propias'
+  description: 'Ver las facturas asociadas al tenant del usuario.'
+
+view all invoices:
+  title: 'Ver todas las facturas'
+  description: 'Ver facturas de todos los tenants.'
+
+view billing usage:
+  title: 'Ver registros de uso'
+  description: 'Ver los registros de uso medido de billing.'
+
+manage payment methods:
+  title: 'Gestionar métodos de pago'
+  description: 'Crear, editar y eliminar métodos de pago del tenant.'

@@ -1,0 +1,20 @@
+jaraba_billing.invoices:
+  title: 'Facturas'
+  description: 'Gestión de facturas de billing.'
+  route_name: entity.billing_invoice.collection
+  parent: system.admin_content
+  weight: 20
+
+jaraba_billing.usage:
+  title: 'Registros de Uso'
+  description: 'Registros de uso medido por tenant.'
+  route_name: entity.billing_usage_record.collection
+  parent: system.admin_content
+  weight: 21
+
+jaraba_billing.payment_methods:
+  title: 'Métodos de Pago'
+  description: 'Métodos de pago sincronizados desde Stripe.'
+  route_name: entity.billing_payment_method.collection
+  parent: system.admin_content
+  weight: 22

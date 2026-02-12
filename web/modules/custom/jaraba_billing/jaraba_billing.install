@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_billing.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_billing_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Billing instalado. Las tablas de entidades (billing_invoice, billing_usage_record, billing_payment_method) se han creado automáticamente.'));
+}

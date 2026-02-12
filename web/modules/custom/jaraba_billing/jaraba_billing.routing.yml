@@ -1,0 +1,25 @@
+# Field UI settings routes for billing entities.
+
+jaraba_billing.billing_invoice.settings:
+  path: '/admin/config/billing/invoice'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\BillingInvoiceSettingsForm'
+    _title: 'Configuración de Facturas'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_billing.billing_usage_record.settings:
+  path: '/admin/config/billing/usage-record'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\BillingUsageRecordSettingsForm'
+    _title: 'Configuración de Registros de Uso'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_billing.billing_payment_method.settings:
+  path: '/admin/config/billing/payment-method'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\BillingPaymentMethodSettingsForm'
+    _title: 'Configuración de Métodos de Pago'
+  requirements:
+    _permission: 'administer billing'
