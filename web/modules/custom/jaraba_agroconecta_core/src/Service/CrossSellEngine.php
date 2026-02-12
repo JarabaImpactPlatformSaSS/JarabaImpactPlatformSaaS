@@ -416,17 +416,12 @@ class CrossSellEngine {
   private function normalizeCategory(string $category): string {
     $normalized = mb_strtolower(trim($category));
 
-    // Eliminar acentos comunes del español.
-    $accentMap = [
-      'á' => 'a',
-      'é' => 'e',
-      'í' => 'i',
-      'ó' => 'o',
-      'ú' => 'u',
-      'ü' => 'u',
-      'ñ' => 'n',
-    ];
-    $normalized = strtr($normalized, $accentMap);
+    // Eliminar acentos comunes del español (str_replace para UTF-8 robustez).
+    $normalized = str_replace(
+      ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ü', 'Ñ'],
+      ['a', 'e', 'i', 'o', 'u', 'u', 'n', 'a', 'e', 'i', 'o', 'u', 'u', 'n'],
+      $normalized,
+    );
 
     // Mapeo de variantes comunes a claves de reglas.
     $aliasMap = [
