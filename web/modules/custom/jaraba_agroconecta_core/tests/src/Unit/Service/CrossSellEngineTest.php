@@ -157,7 +157,8 @@ class CrossSellEngineTest extends TestCase {
 
     $result = $method->invoke($this->service, 'Jamón');
 
-    $this->assertSame('jamon', $result);
+    // normalizeCategory maps to rule keys which use accented forms.
+    $this->assertSame('jamón', $result);
   }
 
   #[\PHPUnit\Framework\Attributes\Test]
