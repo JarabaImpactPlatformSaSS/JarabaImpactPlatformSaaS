@@ -500,7 +500,7 @@ $premium-gold: #fbbf24;
             }
 
             td:first-child::before {
-                content: '⚠️';
+                content: '\26A0';
                 margin-right: $ej-spacing-sm;
             }
         }
@@ -518,7 +518,7 @@ $premium-gold: #fbbf24;
             }
 
             td:first-child::before {
-                content: '🚨';
+                content: '\26A0';
                 margin-right: $ej-spacing-sm;
             }
         }

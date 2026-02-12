@@ -21,7 +21,7 @@
   {# === Hero === #}
   <section class="agro-trace-landing__hero">
     <span class="agro-trace-landing__hero-badge">
-      🔍 {% trans %}Trazabilidad Verificada{% endtrans %}
+      {{ jaraba_icon('actions', 'search', { size: '20px' }) }} {% trans %}Trazabilidad Verificada{% endtrans %}
     </span>
     <h1 class="agro-trace-landing__hero-product">{{ product.name }}</h1>
     <p class="agro-trace-landing__hero-producer">
@@ -35,7 +35,7 @@
   {# === Verificación de integridad === #}
   <section class="agro-trace-landing__section">
     <h2 class="agro-trace-landing__section-title">
-      🛡️ {% trans %}Verificación de Integridad{% endtrans %}
+      {{ jaraba_icon('actions', 'shield', { size: '20px' }) }} {% trans %}Verificación de Integridad{% endtrans %}
     </h2>
     <div id="agro-integrity-badge"
          class="agro-integrity-badge agro-integrity-badge--{{ integrity.verified ? 'verified' : 'pending' }}">
@@ -61,7 +61,7 @@
       <button type="button" class="agro-trace-landing__cta-btn"
               data-trace-verify="{{ batch.id }}"
               style="margin-top: 1rem;">
-        🔐 {% trans %}Verificar ahora{% endtrans %}
+        {{ jaraba_icon('actions', 'lock', { size: '20px' }) }} {% trans %}Verificar ahora{% endtrans %}
       </button>
     {% endif %}
   </section>
@@ -70,7 +70,7 @@
   {% if batch.certifications is not empty %}
     <section class="agro-trace-landing__section">
       <h2 class="agro-trace-landing__section-title">
-        📋 {% trans %}Certificaciones{% endtrans %}
+        {{ jaraba_icon('business', 'clipboard', { size: '20px' }) }} {% trans %}Certificaciones{% endtrans %}
       </h2>
       <div class="agro-trace-landing__certifications">
         {% for cert in batch.certifications %}
@@ -85,7 +85,7 @@
   {# === Timeline de trazabilidad === #}
   <section class="agro-trace-landing__section">
     <h2 class="agro-trace-landing__section-title">
-      📍 {% trans %}Recorrido del Producto{% endtrans %}
+      {{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {% trans %}Recorrido del Producto{% endtrans %}
     </h2>
     {% if events is not empty %}
       <div class="agro-trace-timeline">
@@ -93,12 +93,12 @@
         {% for event in events %}
           <div class="agro-trace-timeline__event">
             <span class="agro-trace-timeline__event-icon agro-trace-timeline__event-icon--{{ event.event_type }}">
-              {% if event.event_type == 'harvest' %}🌾
-              {% elseif event.event_type == 'processing' %}⚙️
-              {% elseif event.event_type == 'analysis' %}🔬
-              {% elseif event.event_type == 'packaging' %}📦
-              {% elseif event.event_type == 'shipping' %}🚚
-              {% else %}📌
+              {% if event.event_type == 'harvest' %}{{ jaraba_icon('verticals', 'harvest', { size: '20px' }) }}
+              {% elseif event.event_type == 'processing' %}{{ jaraba_icon('general', 'settings', { size: '20px' }) }}
+              {% elseif event.event_type == 'analysis' %}{{ jaraba_icon('verticals', 'analysis', { size: '20px' }) }}
+              {% elseif event.event_type == 'packaging' %}{{ jaraba_icon('commerce', 'package', { size: '20px' }) }}
+              {% elseif event.event_type == 'shipping' %}{{ jaraba_icon('commerce', 'truck', { size: '20px' }) }}
+              {% else %}{{ jaraba_icon('general', 'pin', { size: '20px' }) }}
               {% endif %}
             </span>
             <div class="agro-trace-timeline__event-card">
@@ -116,14 +116,14 @@
                 <span class="agro-trace-timeline__chevron">▼</span>
               </div>
               {% if event.location %}
-                <div class="agro-trace-timeline__event-location">📍 {{ event.location }}</div>
+                <div class="agro-trace-timeline__event-location">{{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {{ event.location }}</div>
               {% endif %}
               <div class="agro-trace-timeline__event-details">
                 {% if event.description %}
                   <p>{{ event.description }}</p>
                 {% endif %}
                 {% if event.gps_coordinates %}
-                  <p><small>🌐 {{ event.gps_coordinates }}</small></p>
+                  <p><small>{{ jaraba_icon('general', 'globe', { size: '20px' }) }} {{ event.gps_coordinates }}</small></p>
                 {% endif %}
               </div>
             </div>
@@ -138,7 +138,7 @@
   {# === Productor === #}
   <section class="agro-trace-landing__section">
     <h2 class="agro-trace-landing__section-title">
-      👨‍🌾 {% trans %}Nuestro Productor{% endtrans %}
+      {{ jaraba_icon('verticals', 'farmer', { size: '20px' }) }} {% trans %}Nuestro Productor{% endtrans %}
     </h2>
     <div class="agro-trace-landing__producer-card">
       {% if producer.avatar_url %}
@@ -147,7 +147,7 @@
       {% endif %}
       <div>
         <div class="agro-trace-landing__producer-name">{{ producer.name }}</div>
-        <div class="agro-trace-landing__producer-origin">📍 {{ producer.location }}</div>
+        <div class="agro-trace-landing__producer-origin">{{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {{ producer.location }}</div>
       </div>
     </div>
   </section>
@@ -159,7 +159,7 @@
         {% trans %}¿Te gusta lo que ves?{% endtrans %}
       </h2>
       <a href="{{ product_url }}" class="agro-trace-landing__cta-btn">
-        🛒 {% trans %}Comprar este producto{% endtrans %}
+        {{ jaraba_icon('commerce', 'cart', { size: '20px' }) }} {% trans %}Comprar este producto{% endtrans %}
       </a>
     </div>
   {% endif %}

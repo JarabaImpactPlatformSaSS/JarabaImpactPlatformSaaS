@@ -371,7 +371,7 @@
 
     // Fallback para iconos que no se renderizan.
     &:empty::after {
-        content: '✨';
+        content: '\2726';
         font-size: 1.5rem;
     }
 }

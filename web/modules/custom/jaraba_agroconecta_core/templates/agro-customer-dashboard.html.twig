@@ -32,7 +32,7 @@
   {# Pedido activo #}
   {% if active_order %}
     <div class="customer-portal__active-order">
-      <h3 class="customer-portal__active-order-title">📦 {{ 'Pedido en Curso'|t }}</h3>
+      <h3 class="customer-portal__active-order-title">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }} {{ 'Pedido en Curso'|t }}</h3>
       <div class="customer-portal__active-order-card">
         <div class="customer-portal__active-order-info">
           <span class="customer-portal__active-order-number">{{ active_order.order_number }}</span>
@@ -51,14 +51,14 @@
   {# Quick stats #}
   <div class="customer-portal__stats">
     <div class="customer-portal__stat-card">
-      <span class="customer-portal__stat-icon">📦</span>
+      <span class="customer-portal__stat-icon">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }}</span>
       <div class="customer-portal__stat-content">
         <span class="customer-portal__stat-value">{{ total_orders }}</span>
         <span class="customer-portal__stat-label">{{ 'Pedidos'|t }}</span>
       </div>
     </div>
     <div class="customer-portal__stat-card">
-      <span class="customer-portal__stat-icon">❤️</span>
+      <span class="customer-portal__stat-icon">{{ jaraba_icon('general', 'heart', { size: '20px' }) }}</span>
       <div class="customer-portal__stat-content">
         <span class="customer-portal__stat-value">{{ recent_products|length }}</span>
         <span class="customer-portal__stat-label">{{ 'Productos Probados'|t }}</span>
@@ -69,7 +69,7 @@
   {# Comprar de nuevo #}
   {% if recent_products is not empty %}
     <section class="customer-portal__section">
-      <h2 class="customer-portal__section-title">🔄 {{ 'Compra de Nuevo'|t }}</h2>
+      <h2 class="customer-portal__section-title">{{ jaraba_icon('actions', 'refresh', { size: '20px' }) }} {{ 'Compra de Nuevo'|t }}</h2>
       <div class="customer-portal__product-grid">
         {% for product in recent_products %}
           <div class="customer-portal__product-card">
@@ -87,11 +87,11 @@
   {# Accesos rápidos #}
   <div class="customer-portal__quick-links">
     <a href="/mi-cuenta/pedidos" class="customer-portal__quick-link">
-      <span class="customer-portal__quick-link-icon">📦</span>
+      <span class="customer-portal__quick-link-icon">{{ jaraba_icon('commerce', 'package', { size: '20px' }) }}</span>
       <span>{{ 'Ver todos mis pedidos'|t }}</span>
     </a>
     <a href="/marketplace" class="customer-portal__quick-link">
-      <span class="customer-portal__quick-link-icon">🛒</span>
+      <span class="customer-portal__quick-link-icon">{{ jaraba_icon('commerce', 'cart', { size: '20px' }) }}</span>
       <span>{{ 'Ir al Marketplace'|t }}</span>
     </a>
   </div>

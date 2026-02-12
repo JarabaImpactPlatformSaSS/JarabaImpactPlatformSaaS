@@ -67,7 +67,7 @@
           <div class="agro-tracking" data-shipment-id="{{ order.shipment.id }}">
             <div class="agro-tracking__header">
               <div class="agro-tracking__title">
-                📦 {{ order.shipment.carrier_name }}
+                {{ jaraba_icon('commerce', 'package', { size: '20px' }) }} {{ order.shipment.carrier_name }}
               </div>
               <span class="agro-tracking__status-badge agro-tracking__status-badge--{{ order.shipment.state }}">
                 {{ order.shipment.state_label|t }}
@@ -87,7 +87,7 @@
                     <div class="agro-tracking__event-time">{{ event.timestamp }}</div>
                     <div class="agro-tracking__event-title">{{ event.description }}</div>
                     {% if event.location %}
-                      <div class="agro-tracking__event-location">📍 {{ event.location }}</div>
+                      <div class="agro-tracking__event-location">{{ jaraba_icon('general', 'map-pin', { size: '20px' }) }} {{ event.location }}</div>
                     {% endif %}
                   </div>
                 {% endfor %}
@@ -98,7 +98,7 @@
 
             {% if order.shipment.estimated_delivery %}
               <div class="agro-tracking__eta">
-                🚚 {{ 'Entrega estimada:'|t }} <strong>{{ order.shipment.estimated_delivery }}</strong>
+                {{ jaraba_icon('commerce', 'truck', { size: '20px' }) }} {{ 'Entrega estimada:'|t }} <strong>{{ order.shipment.estimated_delivery }}</strong>
               </div>
             {% endif %}
           </div>

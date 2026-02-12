@@ -38,7 +38,7 @@
         {# Card: Progreso General #}
         <article class="dashboard-card card-progress">
           <header class="card-header">
-            <span class="card-icon">📈</span>
+            <span class="card-icon">{{ jaraba_icon('business', 'chart-line', { size: '20px' }) }}</span>
             <h2>{% trans %}Tu Progreso{% endtrans %}</h2>
           </header>
           <div class="card-body">
@@ -84,7 +84,7 @@
         {# Card: Formación LMS #}
         <article class="dashboard-card card-training">
           <header class="card-header">
-            <span class="card-icon">🎓</span>
+            <span class="card-icon">{{ jaraba_icon('general', 'graduation', { size: '20px' }) }}</span>
             <h2>{% trans %}Formación{% endtrans %}</h2>
           </header>
           <div class="card-body">
@@ -100,19 +100,19 @@
         {# Card: Acciones Rápidas #}
         <article class="dashboard-card card-actions">
           <header class="card-header">
-            <span class="card-icon">🚀</span>
+            <span class="card-icon">{{ jaraba_icon('actions', 'rocket', { size: '20px' }) }}</span>
             <h2>{% trans %}Acciones{% endtrans %}</h2>
           </header>
           <div class="card-body">
             <nav class="quick-actions" aria-label="{% trans %}Acciones rápidas{% endtrans %}">
               <a href="/copilot" class="action-btn action-primary">
-                🤖 <span>{% trans %}Hablar con Tutor IA{% endtrans %}</span>
+                {{ jaraba_icon('ai', 'robot', { size: '20px' }) }} <span>{% trans %}Hablar con Tutor IA{% endtrans %}</span>
               </a>
               <a href="/mentoring" class="action-btn action-secondary">
-                👥 <span>{% trans %}Reservar Mentor{% endtrans %}</span>
+                {{ jaraba_icon('general', 'users', { size: '20px' }) }} <span>{% trans %}Reservar Mentor{% endtrans %}</span>
               </a>
               <a href="/lms" class="action-btn action-secondary">
-                📚 <span>{% trans %}Ver Cursos{% endtrans %}</span>
+                {{ jaraba_icon('general', 'book', { size: '20px' }) }} <span>{% trans %}Ver Cursos{% endtrans %}</span>
               </a>
             </nav>
           </div>
@@ -125,7 +125,7 @@
     {# Estado: No inscrito #}
     <section class="not-enrolled">
       <div class="empty-state">
-        <span class="empty-icon">👤</span>
+        <span class="empty-icon">{{ jaraba_icon('general', 'user', { size: '20px' }) }}</span>
         <h2>{% trans %}Aún no estás inscrito en Andalucía +ei{% endtrans %}</h2>
         <p>{% trans %}Contacta con tu orientador para inscribirte en el programa.{% endtrans %}</p>
         <a href="/contacto" class="btn btn-primary">
