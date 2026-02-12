@@ -54,8 +54,8 @@ public function llamarLLM(string $mensaje): string {
     $llm = $this->aiProvider->createInstance('anthropic');
     $response = $llm->chat([
         ['role' => 'user', 'content' => $mensaje]
-    ], 'claude-3-5-sonnet-20241022');
-    
+    ], 'claude-sonnet-4-5-20250929');
+
     return $response->getText();
 }
 ```
@@ -107,11 +107,11 @@ $response = $this->aiProvider->createInstance('anthropic')->chat(...);
 
 | Tarea | Proveedor | Modelo | Razón |
 |-------|-----------|--------|-------|
-| Empatía/Coaching | Anthropic | claude-3-5-sonnet | Superior en tono |
+| Empatía/Coaching | Anthropic | claude-sonnet-4-5 | Superior en tono |
 | Cálculos/Finanzas | OpenAI | gpt-4o | Mejor precisión numérica |
-| Clasificación/Tareas simples | Anthropic | claude-3-haiku | Económico ($0.25/1M) |
-| RAG + Grounding | Anthropic | claude-3-5-sonnet | Mejor seguimiento de contexto |
-| **Chat público grounded (FAQ Bot)** | Anthropic | claude-3-haiku | Reformulación KB, coste bajo, temp=0.3 |
+| Clasificación/Tareas simples | Anthropic | claude-haiku-4-5 | Económico ($0.25/1M) |
+| RAG + Grounding | Anthropic | claude-sonnet-4-5 | Mejor seguimiento de contexto |
+| **Chat público grounded (FAQ Bot)** | Anthropic | claude-haiku-4-5 | Reformulación KB, coste bajo, temp=0.3 |
 | **Legal RAG (consultas normativas)** | Anthropic | claude-sonnet-4-5 | Precisión citas legales, grounding BOE |
 | **Funding Copilot (subvenciones)** | Anthropic | claude-sonnet-4-5 | Matching elegibilidad, contexto largo |
 | **Producer Copilot (AgroConecta)** | Anthropic | claude-sonnet-4-5 | Demand forecast, market spy, SEO |

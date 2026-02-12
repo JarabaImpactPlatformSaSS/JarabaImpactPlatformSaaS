@@ -149,7 +149,8 @@ proxy:
     - jaraba-saas.lndo.site
     # Subdominios de Tenants
     - aceitesdelsur.jaraba-saas.lndo.site
-    # Añadir más subdominios según se creen tenants
+    # Marca Personal Pepe Jaraba (dev proxy)
+    - pepejaraba.jaraba-saas.lndo.site
   phpmyadmin:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:

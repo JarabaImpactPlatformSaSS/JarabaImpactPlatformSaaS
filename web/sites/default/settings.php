@@ -902,6 +902,9 @@ $settings['trusted_host_patterns'] = [
   '^.+\.plataformadeecosistemas\.es$',
   '^jaraba\.es$',
   '^.+\.jaraba\.es$',
+  // Marca Personal - pepejaraba.com
+  '^pepejaraba\.com$',
+  '^www\.pepejaraba\.com$',
 ];
 
 // REDIS CACHE BACKEND - Solo en Lando (contenedor Redis)
