@@ -1,0 +1,11 @@
+id: agroconecta_profesional_orders_per_month
+label: 'AgroConecta Profesional: Pedidos/mes'
+vertical: agroconecta
+plan: profesional
+feature_key: orders_per_month
+limit_value: -1
+description: 'Pedidos ilimitados en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 12
+status: true

@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Parcial: Barra superior (top bar) con anuncio/banner.
+ *
+ * Variables:
+ *   - topbar_content: HTML/texto del banner
+ *   - bg_color: Color de fondo hexadecimal
+ *   - text_color: Color de texto hexadecimal
+ */
+#}
+
+<div class="jaraba-topbar"
+     style="--topbar-bg: {{ bg_color|default('#1E3A5F') }}; --topbar-text: {{ text_color|default('#FFFFFF') }};"
+     role="banner">
+  <div class="jaraba-topbar__container">
+    <div class="jaraba-topbar__content">
+      {{ topbar_content|raw }}
+    </div>
+    <button class="jaraba-topbar__close" aria-label="{% trans %}Cerrar{% endtrans %}" data-close="topbar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+</div>

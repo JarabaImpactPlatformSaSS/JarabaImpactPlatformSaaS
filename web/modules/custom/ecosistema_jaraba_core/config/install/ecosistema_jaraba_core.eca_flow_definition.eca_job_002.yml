@@ -1,0 +1,11 @@
+id: eca_job_002
+label: 'Job Alerts Matching'
+description: 'Cron job diario (9:00) que cruza nuevas ofertas publicadas con perfiles de candidatos con alertas activas. Envia email personalizado con ofertas matching al perfil.'
+domain: JOB
+trigger_event: 'cron:daily_0900_job_matching'
+module: jaraba_job_board
+hook_function: jaraba_job_board_cron_job_alerts
+spec_reference: 35_JobBoard
+implementation_status: implemented
+weight: 61
+status: true

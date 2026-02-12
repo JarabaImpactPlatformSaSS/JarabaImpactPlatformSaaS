@@ -1,0 +1,109 @@
+// Blog Sidebar Styles
+
+.blog-sidebar {
+  &__section {
+    margin-bottom: var(--ej-spacing-xl, 2.5rem);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-base, 1rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+    padding-bottom: var(--ej-spacing-xs, 0.25rem);
+    border-bottom: 2px solid var(--ej-primary, #233D63);
+  }
+
+  &__categories {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__category-item {
+    border-bottom: 1px solid var(--ej-border-light, #f3f4f6);
+  }
+
+  &__category-link {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-sm, 0.5rem) 0;
+    text-decoration: none;
+    color: var(--ej-text-primary, #1a1a2e);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ej-primary, #233D63);
+    }
+  }
+
+  &__category-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__category-name {
+    flex: 1;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__category-count {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+    background: var(--ej-surface-alt, #f3f4f6);
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-full, 9999px);
+  }
+
+  // Popular posts
+  &__popular {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__popular-item {
+    border-bottom: 1px solid var(--ej-border-light, #f3f4f6);
+  }
+
+  &__popular-link {
+    display: flex;
+    flex-direction: column;
+    padding: var(--ej-spacing-sm, 0.5rem) 0;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover .blog-sidebar__popular-title {
+      color: var(--ej-primary, #233D63);
+    }
+  }
+
+  &__popular-title {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-primary, #1a1a2e);
+    line-height: 1.4;
+  }
+
+  &__popular-views {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+    margin-top: 2px;
+  }
+
+  // RSS link
+  &__rss {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.25rem);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-secondary, #6b7280);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ej-primary, #233D63);
+    }
+  }
+}

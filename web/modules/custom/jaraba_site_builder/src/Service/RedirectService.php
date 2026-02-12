@@ -280,6 +280,97 @@ class RedirectService
     }
 
     /**
+     * Importa redirects desde datos CSV parseados.
+     *
+     * @param array $rows
+     *   Array de arrays con keys: source, destination, type, reason.
+     * @param int $tenantId
+     *   ID del tenant.
+     *
+     * @return array
+     *   Resultado: ['imported' => int, 'skipped' => int, 'errors' => array].
+     */
+    public function bulkImport(array $rows, int $tenantId): array
+    {
+        $imported = 0;
+        $skipped = 0;
+        $errors = [];
+
+        foreach ($rows as $index => $row) {
+            $source = trim($row['source'] ?? '');
+            $destination = trim($row['destination'] ?? '');
+
+            if (empty($source) || empty($destination)) {
+                $errors[] = sprintf('Fila %d: campos vacíos.', $index + 1);
+                $skipped++;
+                continue;
+            }
+
+            $type = (int) ($row['type'] ?? 301);
+            if (!in_array($type, [301, 302, 307])) {
+                $type = 301;
+            }
+
+            try {
+                $this->create(
+                    $source,
+                    $destination,
+                    $tenantId,
+                    $type,
+                    $row['reason'] ?? 'CSV import',
+                    FALSE
+                );
+                $imported++;
+            } catch (\Exception $e) {
+                $errors[] = sprintf('Fila %d: %s', $index + 1, $e->getMessage());
+                $skipped++;
+            }
+        }
+
+        $this->logger->info('Bulk import: @imported importados, @skipped omitidos.', [
+            '@imported' => $imported,
+            '@skipped' => $skipped,
+        ]);
+
+        return [
+            'imported' => $imported,
+            'skipped' => $skipped,
+            'errors' => $errors,
+        ];
+    }
+
+    /**
+     * Exporta todos los redirects de un tenant como array para CSV.
+     *
+     * @param int $tenantId
+     *   ID del tenant.
+     *
+     * @return array
+     *   Array de arrays con las columnas CSV.
+     */
+    public function exportAll(int $tenantId): array
+    {
+        $storage = $this->entityTypeManager->getStorage('site_redirect');
+        $entities = $storage->loadByProperties(['tenant_id' => $tenantId]);
+
+        $rows = [];
+        foreach ($entities as $redirect) {
+            $rows[] = [
+                'source' => $redirect->get('source_path')->value,
+                'destination' => $redirect->get('destination_path')->value,
+                'type' => $redirect->get('redirect_type')->value,
+                'reason' => $redirect->get('reason')->value ?? '',
+                'hits' => (int) ($redirect->get('hit_count')->value ?? 0),
+                'active' => $redirect->isActive() ? 'yes' : 'no',
+                'auto_generated' => $redirect->get('is_auto_generated')->value ? 'yes' : 'no',
+                'created' => date('Y-m-d H:i:s', (int) $redirect->get('created')->value),
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
      * Elimina redirects expirados.
      *
      * @return int

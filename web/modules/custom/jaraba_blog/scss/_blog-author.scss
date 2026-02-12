@@ -1,0 +1,80 @@
+// Blog Author Bio Styles
+
+.blog-author-bio {
+  display: flex;
+  gap: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-lg, 2rem);
+  margin-top: var(--ej-spacing-xl, 2.5rem);
+  background: var(--ej-surface-alt, #f9fafb);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-border, #e5e7eb);
+
+  &__avatar {
+    flex-shrink: 0;
+  }
+
+  &__avatar-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--ej-primary, #233D63);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ej-font-size-xl, 1.5rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: var(--ej-font-size-lg, 1.125rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+
+    a {
+      color: var(--ej-text-primary, #1a1a2e);
+      text-decoration: none;
+
+      &:hover { color: var(--ej-primary, #233D63); }
+    }
+  }
+
+  &__text {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-secondary, #6b7280);
+    line-height: 1.5;
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__posts-count {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+  }
+
+  &__social {
+    display: flex;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__social-link {
+    color: var(--ej-text-muted, #9ca3af);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ej-primary, #233D63);
+    }
+  }
+}

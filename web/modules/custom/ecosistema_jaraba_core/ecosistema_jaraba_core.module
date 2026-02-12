@@ -434,6 +434,50 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'reseller-portal',
       'path' => $path . '/templates',
     ],
+
+    // =========================================================================
+    // LEAD MAGNETS PUBLICOS (F3 Doc 178)
+    // =========================================================================
+
+    // Lead Magnet: Calculadora de Madurez Digital (Emprendimiento)
+    // Ruta publica: /emprendimiento/calculadora-madurez
+    'lead_magnet_calculadora_madurez' => [
+      'variables' => [
+        'magnet_data' => [],
+      ],
+      'template' => 'lead-magnet-calculadora-madurez',
+      'path' => $path . '/templates',
+    ],
+
+    // Lead Magnet: Guia Vende Online (AgroConecta)
+    // Ruta publica: /agroconecta/guia-vende-online
+    'lead_magnet_guia_agro' => [
+      'variables' => [
+        'magnet_data' => [],
+      ],
+      'template' => 'lead-magnet-guia-agro',
+      'path' => $path . '/templates',
+    ],
+
+    // Lead Magnet: Auditoria SEO Local (ComercioConecta)
+    // Ruta publica: /comercioconecta/auditoria-seo
+    'lead_magnet_auditoria_seo' => [
+      'variables' => [
+        'magnet_data' => [],
+      ],
+      'template' => 'lead-magnet-auditoria-seo',
+      'path' => $path . '/templates',
+    ],
+
+    // Lead Magnet: Template Propuesta Profesional (ServiciosConecta)
+    // Ruta publica: /serviciosconecta/template-propuesta
+    'lead_magnet_template_propuesta' => [
+      'variables' => [
+        'magnet_data' => [],
+      ],
+      'template' => 'lead-magnet-template-propuesta',
+      'path' => $path . '/templates',
+    ],
   ];
 
 
@@ -1373,9 +1417,38 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   ];
   
   // ---------------------------------------------------------------------------
+  // VISITOR JOURNEY TRACKING (F3 Doc 178)
+  // ---------------------------------------------------------------------------
+  // Deteccion de vertical del visitante + tracking AIDA del funnel.
+  // Solo en paginas frontend (no admin).
+
+  $route_obj = \Drupal::routeMatch()->getRouteObject();
+  $is_admin_route = $route_obj && $route_obj->getOption('_admin_route');
+
+  if (!$is_admin_route) {
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/visitor-journey';
+
+    // Pass detected vertical from backend to JS for enrichment.
+    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+      try {
+        $detection = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+        if ($detection && $detection->vertical) {
+          $attachments['#attached']['drupalSettings']['jarabaVertical'] = [
+            'detected' => $detection->vertical,
+            'source' => $detection->detectionSource,
+          ];
+        }
+      }
+      catch (\Exception $e) {
+        // Non-blocking: detection failure should not break the page.
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // ESTILOS PREMIUM PARA ESTRUCTURA ADMIN
   // ---------------------------------------------------------------------------
-  
+
   // Obtener el path actual (sin el prefijo de idioma)
   $current_path = \Drupal::service('path.current')->getPath();
   

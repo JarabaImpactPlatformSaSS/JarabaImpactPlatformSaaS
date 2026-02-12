@@ -1,0 +1,11 @@
+id: emprendimiento_starter_calculadora_uses
+label: 'Emprendimiento Starter: Calculadora financiera'
+vertical: emprendimiento
+plan: starter
+feature_key: calculadora_uses
+limit_value: -1
+description: 'Usos ilimitados de la calculadora financiera en plan Starter Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 411
+status: true

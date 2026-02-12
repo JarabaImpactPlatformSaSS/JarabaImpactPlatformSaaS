@@ -1,0 +1,11 @@
+id: eca_ord_003
+label: 'Reembolso Procesado'
+description: 'Al recibir webhook charge.refunded de Stripe, se actualiza el estado de la orden, se notifica al comprador y productor, y se ajustan las metricas financieras del tenant.'
+domain: ORD
+trigger_event: 'webhook:charge.refunded'
+module: jaraba_billing
+hook_function: jaraba_billing_stripe_webhook_refund
+spec_reference: 49_Order
+implementation_status: implemented
+weight: 42
+status: true

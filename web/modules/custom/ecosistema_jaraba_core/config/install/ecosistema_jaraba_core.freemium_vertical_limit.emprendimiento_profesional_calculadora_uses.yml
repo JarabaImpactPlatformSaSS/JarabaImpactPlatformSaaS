@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_calculadora_uses
+label: 'Emprendimiento Profesional: Calculadora financiera'
+vertical: emprendimiento
+plan: profesional
+feature_key: calculadora_uses
+limit_value: -1
+description: 'Usos ilimitados de la calculadora financiera en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 412
+status: true

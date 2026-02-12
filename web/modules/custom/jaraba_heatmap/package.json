@@ -1,0 +1,20 @@
+{
+    "name": "jaraba-heatmap",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para el módulo Heatmap de Jaraba SaaS",
+    "scripts": {
+        "build": "sass scss/main.scss:css/jaraba-heatmap.css --style=compressed",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    },
+    "keywords": [
+        "jaraba",
+        "heatmap",
+        "scss",
+        "drupal"
+    ],
+    "author": "Jaraba Impact Platform",
+    "license": "UNLICENSED"
+}

@@ -186,3 +186,25 @@ entity.badge_award.collection:
   route_name: entity.badge_award.collection
   parent: system.admin_config
   weight: 61
+
+# ---------------------------------------------------------------------------
+# MENU DE ESTRUCTURA - ECA FLOW REGISTRY (Doc 185)
+# ---------------------------------------------------------------------------
+
+entity.eca_flow_definition.collection:
+  title: 'ECA Flow Registry'
+  description: 'Registro centralizado de flujos automatizados (ECA) del ecosistema con IDs unicos y estado de implementacion'
+  route_name: entity.eca_flow_definition.collection
+  parent: system.admin_structure
+  weight: -3
+
+# ---------------------------------------------------------------------------
+# MENU DE ESTRUCTURA - FREEMIUM VERTICAL LIMITS (Doc 183)
+# ---------------------------------------------------------------------------
+
+entity.freemium_vertical_limit.collection:
+  title: 'Limites Freemium'
+  description: 'Gestiona los limites freemium por vertical, plan y feature para controlar el modelo de conversion'
+  route_name: entity.freemium_vertical_limit.collection
+  parent: system.admin_structure
+  weight: -2

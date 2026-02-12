@@ -1,0 +1,11 @@
+id: agroconecta_starter_commission_pct
+label: 'AgroConecta Starter: Comision %'
+vertical: agroconecta
+plan: starter
+feature_key: commission_pct
+limit_value: 8
+description: 'Comision del 8% por transaccion en plan Starter AgroConecta.'
+upgrade_message: 'Tu comision actual es del 8%. Actualiza a Profesional para reducirla al 5%.'
+expected_conversion: 0.35
+weight: 41
+status: true

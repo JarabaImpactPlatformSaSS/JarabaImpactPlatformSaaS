@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * blog-post-card.html.twig - Card de post para listados.
+ *
+ * Variables:
+ *   - post: Entidad BlogPost
+ *   - size: 'default' | 'featured' | 'compact'
+ */
+#}
+<article class="blog-card blog-card--{{ size|default('default') }}">
+  {% if post.get('featured_image').entity %}
+    <a href="/blog/{{ post.getSlug() }}" class="blog-card__image-link">
+      <img class="blog-card__image"
+           src="{{ file_url(post.get('featured_image').entity.getFileUri()) }}"
+           alt="{{ post.get('featured_image_alt').value|default(post.getTitle()) }}"
+           loading="lazy" />
+    </a>
+  {% endif %}
+
+  <div class="blog-card__content">
+    {# Categoria badge #}
+    {% set category = post.get('category_id').entity %}
+    {% if category %}
+      <a href="/blog/categoria/{{ category.getSlug() }}"
+         class="blog-card__category badge"
+         style="background-color: {{ category.getColor() }}">
+        {{ category.getName() }}
+      </a>
+    {% endif %}
+
+    <h2 class="blog-card__title">
+      <a href="/blog/{{ post.getSlug() }}">{{ post.getTitle() }}</a>
+    </h2>
+
+    {% if post.getExcerpt() and size != 'compact' %}
+      <p class="blog-card__excerpt">{{ post.getExcerpt()|striptags|length > 150 ? post.getExcerpt()|striptags|slice(0, 150) ~ '...' : post.getExcerpt()|striptags }}</p>
+    {% endif %}
+
+    <footer class="blog-card__footer">
+      {# Autor #}
+      {% set author = post.get('author_id').entity %}
+      {% if author %}
+        <a href="/blog/autor/{{ author.getSlug() }}" class="blog-card__author">
+          {{ author.getDisplayName() }}
+        </a>
+      {% endif %}
+
+      {# Fecha #}
+      {% if post.get('published_at').value %}
+        <time class="blog-card__date" datetime="{{ post.get('published_at').value }}">
+          {{ post.get('published_at').value|date('d M Y') }}
+        </time>
+      {% endif %}
+
+      {# Reading time #}
+      {% if post.getReadingTime() > 0 %}
+        <span class="blog-card__reading-time">{{ post.getReadingTime() }} min</span>
+      {% endif %}
+    </footer>
+  </div>
+</article>

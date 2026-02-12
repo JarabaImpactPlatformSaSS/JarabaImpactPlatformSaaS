@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Install, update y uninstall hooks para jaraba_site_builder.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Instala las entidades de navegación global: SiteMenu, SiteMenuItem,
+ * SiteHeaderConfig, SiteFooterConfig.
+ */
+function jaraba_site_builder_update_10001(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_types = [
+    'site_menu',
+    'site_menu_item',
+    'site_header_config',
+    'site_footer_config',
+  ];
+
+  $installed = [];
+  foreach ($entity_types as $entity_type_id) {
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id, FALSE);
+    if ($entity_type && !$entity_definition_update_manager->getEntityType($entity_type_id)) {
+      $entity_definition_update_manager->installEntityType($entity_type);
+      $installed[] = $entity_type_id;
+    }
+  }
+
+  if (empty($installed)) {
+    return 'Las entidades de navegación ya estaban instaladas.';
+  }
+
+  return sprintf(
+    'Entidades de navegación instaladas: %s.',
+    implode(', ', $installed)
+  );
+}

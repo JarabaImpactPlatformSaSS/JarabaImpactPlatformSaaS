@@ -4,7 +4,19 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 22.0.0 (Copilot v2 Gaps Closure — BD Triggers + SSE Streaming + Multi-Provider + Milestones + Metrics P50/P99)
+**Versión:** 23.0.0 (Heatmaps Nativos + Tracking Automation — Fases 1-5 Implementadas)
+
+> **🔥 HEATMAPS NATIVOS + TRACKING AUTOMATION — FASES 1-5 100%** (2026-02-12)
+> - **Módulo `jaraba_heatmap` completo**: install (4 tablas), QueueWorker plugin, HeatmapScreenshotService (wkhtmltoimage), Dashboard Analytics (Canvas 2D + filtros), SCSS responsive, 38 unit tests
+> - **Fase 1 — Core**: `jaraba_heatmap.install` hook_schema() (heatmap_events, heatmap_aggregated, heatmap_scroll_depth, heatmap_page_screenshots). HeatmapEventProcessor QueueWorker (ContainerFactoryPluginInterface). HeatmapScreenshotService (wkhtmltoimage, UPSERT merge). 10 rutas registradas. 25 tests iniciales
+> - **Fase 2 — hook_cron automation**: 3 funciones independientes (`_jaraba_heatmap_cron_aggregation` diario, `_jaraba_heatmap_cron_cleanup` semanal 604800s, `_jaraba_heatmap_cron_anomaly_detection` diario). `detectAnomalies()` compara ayer vs media 7 días (threshold_drop 50%, threshold_spike 200%). Parámetros opcionales retrocompatibles `?int $days = NULL`
+> - **Fase 3 — Dashboard Frontend**: HeatmapDashboardController + ruta `/heatmap/analytics`. Templates Twig (heatmap-analytics-dashboard, heatmap-metric-card con inline SVG icons). JS Canvas (Drupal.behaviors + once() + fetch API). SCSS responsive (_heatmap-dashboard.scss 10,124 bytes compilados). Zero Region page template en theme
+> - **Fase 4 — Tracking cron cross-módulo**: `jaraba_ab_testing_cron()` auto-winner cada 6h (auto_complete=TRUE, ResultCalculationService::checkAutoStop). PixelHealthCheckService (48h alert threshold, healthy/warning/error). Daily health check en `jaraba_pixels_cron()`
+> - **Fase 5 — Services + Email**: ExperimentOrchestratorService (evaluateAll, evaluateExperiment, sendWinnerNotification). `jaraba_ab_testing_mail('experiment_winner')`. `jaraba_pixels_mail('pixel_health_alert')`
+> - **53 tests, 250 assertions**: 38 heatmap + 9 ab_testing + 6 pixels — todos OK
+> - **9 reglas nuevas**: HEATMAP-001 (QueueWorker DI), HEATMAP-002 (cron funciones independientes), HEATMAP-003 (datetime.time service ID), HEATMAP-004 (anomaly thresholds), HEATMAP-005 (Canvas Zero Region), TRACKING-001 (auto-winner 6h), TRACKING-002 (pixel health 48h), TRACKING-003 (orchestrator pattern), TRACKING-004 (hook_mail alertas)
+> - **Aprendizaje**: [2026-02-12_heatmaps_tracking_phases_1_5.md](./tecnicos/aprendizajes/2026-02-12_heatmaps_tracking_phases_1_5.md)
+>
 
 > **🏅 CREDENTIALS GAPS CLOSURE — 5 DOCS (170, 172-175) 100%** (2026-02-12)
 > - **5 gaps cerrados**: RevocationEntry (Doc 172), Stackable Credentials (Doc 173), Emprendimiento Extension (Doc 175), Cross-Vertical (Doc 174), WCAG 2.1 AA (Doc 170)
@@ -522,6 +534,7 @@
 | [20260212-Plan_Implementacion_Platform_Services_f108_f117_v3.md](./implementacion/20260212-Plan_Implementacion_Platform_Services_f108_f117_v3.md) | 🏗️ **Platform Services v3** ⭐ - 10 módulos dedicados transversales (Docs 108-117): Agent Flows, PWA, Onboarding, Usage Billing, Integrations Marketplace, Customer Success, Knowledge Base, Security & Compliance, Analytics BI, White-Label & Reseller. 542 archivos. 32 entidades, 42+ services | 2026-02-12 |
 | [2026-02-12_plan_cierre_gaps_avatar_empleabilidad.md](./implementacion/2026-02-12_plan_cierre_gaps_avatar_empleabilidad.md) | 🎯 **Avatar + Empleabilidad Gaps** ⭐ - Cierre gaps flujo empleabilidad end-to-end, AvatarDetectionService, EmployabilityDiagnostic, CopilotAgent 6 modos | 2026-02-12 |
 | [2026-02-12_Plan_Cierre_Gaps_Copiloto_v2_Specs_20260121.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Copiloto_v2_Specs_20260121.md) | 🤖 **Copilot v2 Gaps Closure** ⭐ - 8 fases: 5 Access Handlers + 5 ListBuilders, 22 API endpoints REST (Hypothesis CRUD+ICE, Experiment Lifecycle, BMC Validation semáforos, Entrepreneur CRUD+DIME, Session History, Knowledge Search), 14 servicios completados, 3 páginas frontend (BMC Dashboard, Hypothesis Manager, Experiment Lifecycle), 4 suites unit tests, Impact Points gamification | 2026-02-12 |
+| [2026-02-12_Plan_Implementacion_Fases_1_5_Heatmaps_Tracking.md](./implementacion/2026-02-12_Plan_Implementacion_Fases_1_5_Heatmaps_Tracking.md) | 🔥 **Heatmaps Nativos + Tracking Automation** ⭐ - 5 fases: Heatmap Core (install+QueueWorker+screenshots), hook_cron automation (3 funciones), Dashboard Frontend (Canvas 2D), Tracking cron cross-módulo (auto-winner+health check), Services+Email (orchestrator+hook_mail). 53 tests, 250 assertions | 2026-02-12 |
 
 ### 6.2 Bloques de Implementación Plan Maestro v3.0 ⭐
 
@@ -538,7 +551,7 @@
 
 **Total Bloques:** 7 (~4,500h en 24 meses)
 
-**Total documentos implementación:** 28
+**Total documentos implementación:** 29
 
 ---
 
@@ -830,6 +843,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-12 | **23.0.0** | 🔥 **Heatmaps Nativos + Tracking Automation — Fases 1-5 100%:** Módulo `jaraba_heatmap` completado (install 4 tablas, QueueWorker, HeatmapScreenshotService, Dashboard Analytics Canvas 2D, SCSS responsive). hook_cron automation (3 funciones independientes: agregación diaria, limpieza semanal, anomalías). Dashboard Frontend (HeatmapDashboardController + Twig + JS Canvas + SCSS). Tracking cron cross-módulo (jaraba_ab_testing auto-winner 6h, jaraba_pixels PixelHealthCheckService 48h). ExperimentOrchestratorService + hook_mail (ab_testing winner + pixel health alert). 53 tests, 250 assertions. 9 reglas (HEATMAP-001 a 005, TRACKING-001 a 004). Plan implementación + Aprendizaje #69. Directrices v15.0.0, Maestro v15.0.0. 69 aprendizajes |
 | 2026-02-12 | **20.0.0** | 🧠 **Self-Discovery Content Entities + Services — Specs 20260122-25 100%:** Cierre 14 gaps Docs 159-165. 2 Content Entities nuevas (InterestProfile RIASEC 6 scores + StrengthAssessment 24 fortalezas). 4 servicios dedicados (LifeWheelService, TimelineAnalysisService, RiasecService, StrengthAnalysisService) con fallback user.data. SelfDiscoveryContextService refactorizado (4 DI nullable). 2 forms Phase 2/3 (TimelinePhase2Form, TimelinePhase3Form). Copilot v2 context injection (10o arg nullable + buildSystemPrompt). Infraestructura Lando (.lando/redis.conf, .env.example, scripts/setup-dev.sh, settings.local.php completado). Admin navigation (2 tabs + 2 links + 2 actions). 5 unit tests (38 methods). Dual storage entity + user.data. 4 reglas: ENTITY-SD-001, SERVICE-SD-001, COPILOT-SD-001, INFRA-SD-001. Doc implementacion + Aprendizaje #68. Directrices v12.0.0, Maestro v12.0.0. 68 aprendizajes |
 | 2026-02-12 | **19.0.0** | 🤖 **Copilot v2 Gaps Closure — Specs 20260121 100%:** 8 fases implementadas para cierre completo de gaps Copiloto v2 (Emprendimiento Digital). **Fase 1**: 5 Access Handlers + 5 ListBuilders para EntrepreneurProfile, Hypothesis, Experiment, EntrepreneurLearning, FieldExit. Navegación admin completa (/admin/content + /admin/structure). **Fase 2**: Hypothesis API — 5 endpoints REST (CRUD + Prioritize ICE), HypothesisPrioritizationService (Importance×Confidence×Evidence). **Fase 3**: Experiment Lifecycle API — 5 endpoints REST (create Test Card, start, record Learning Card), Impact Points (PERSEVERE=100, PIVOT/ZOOM=75, KILL=50). **Fase 4**: BMC Validation + Entrepreneur API — BmcValidationService (semáforos RED<33%, YELLOW 33-66%, GREEN>66%, GRAY sin datos), 6 endpoints. **Fase 5**: Session History + Knowledge Search — 2 endpoints, CopilotQueryLoggerService expandido. **Fase 6**: 9 servicios stub→producción (ModeDetector 100+ triggers, CopilotCache, CustomerDiscoveryGamification, PivotDetector, ContentGrounding, VPC, BusinessPatternDetector, ClaudeApi, FaqGenerator). **Fase 7**: 3 páginas frontend full-width (BMC Dashboard grid 5×3, Hypothesis Manager filtros/modales, Experiment Lifecycle Test→Learning Card), 7 Twig templates (3 page + 4 partials), SCSS BEM + var(--ej-*), CSS compilado, hook_theme() + hook_page_attachments() + hook_preprocess_html(). **Fase 8**: 4 unit test suites + doc implementación + aprendizaje #67. 22 API endpoints totales, 14 servicios, 3 page templates theme. Directrices v11.0.0, Maestro v11.0.0. 67 aprendizajes |
 | 2026-02-12 | **18.0.0** | 🎯 **Avatar + Empleabilidad Gaps Closure:** Plan cierre gaps flujo empleabilidad end-to-end. AvatarDetectionService, EmployabilityDiagnostic, EmployabilityCopilotAgent. Implementación doc + aprendizaje |

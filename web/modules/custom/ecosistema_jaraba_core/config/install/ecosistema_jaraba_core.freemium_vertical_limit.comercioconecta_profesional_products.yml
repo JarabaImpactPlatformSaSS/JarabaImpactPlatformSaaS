@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_products
+label: 'ComercioConecta Profesional: Productos'
+vertical: comercioconecta
+plan: profesional
+feature_key: products
+limit_value: -1
+description: 'Productos ilimitados en plan Profesional ComercioConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 102
+status: true

@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Parcial: Menú móvil off-canvas.
+ *
+ * Variables:
+ *   - main_menu_tree: array jerárquico de items del menú
+ *   - header_config: array con configuración del header
+ */
+#}
+
+<div class="jaraba-mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-label="{% trans %}Menú de navegación{% endtrans %}">
+  <div class="jaraba-mobile-menu__overlay" data-close="mobile-menu"></div>
+
+  <div class="jaraba-mobile-menu__panel">
+    <div class="jaraba-mobile-menu__header">
+      {% if header_config.logo_mobile_url or header_config.logo_url %}
+        <img src="{{ header_config.logo_mobile_url|default(header_config.logo_url) }}"
+             alt="{{ header_config.logo_alt|default('Logo') }}"
+             class="jaraba-mobile-menu__logo"
+             loading="lazy">
+      {% endif %}
+      <button class="jaraba-mobile-menu__close" data-close="mobile-menu" aria-label="{% trans %}Cerrar menú{% endtrans %}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <nav class="jaraba-mobile-menu__nav" role="navigation">
+      <ul class="jaraba-mobile-menu__list">
+        {% for item in main_menu_tree %}
+          <li class="jaraba-mobile-menu__item{% if item.children|length > 0 %} jaraba-mobile-menu__item--has-children{% endif %}">
+            <div class="jaraba-mobile-menu__item-row">
+              <a href="{{ item.url }}" class="jaraba-mobile-menu__link"
+                 {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {% if item.icon %}
+                  <span class="jaraba-mobile-menu__icon">{{ item.icon }}</span>
+                {% endif %}
+                {{ item.title }}
+                {% if item.badge_text %}
+                  <span class="jaraba-mobile-menu__badge" style="background-color: {{ item.badge_color|default('#FF8C42') }}">{{ item.badge_text }}</span>
+                {% endif %}
+              </a>
+              {% if item.children|length > 0 %}
+                <button class="jaraba-mobile-menu__toggle" aria-expanded="false" aria-label="{% trans %}Expandir submenú{% endtrans %}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              {% endif %}
+            </div>
+
+            {% if item.children|length > 0 %}
+              <ul class="jaraba-mobile-menu__sublist" aria-hidden="true">
+                {% for child in item.children %}
+                  <li class="jaraba-mobile-menu__subitem">
+                    <a href="{{ child.url }}" class="jaraba-mobile-menu__sublink"
+                       {% if child.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                      {{ child.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# CTA en menú móvil #}
+    {% if header_config.show_cta and header_config.cta_text %}
+      <div class="jaraba-mobile-menu__cta">
+        <a href="{{ header_config.cta_url|default('#') }}" class="jaraba-mobile-menu__cta-btn">
+          {{ header_config.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

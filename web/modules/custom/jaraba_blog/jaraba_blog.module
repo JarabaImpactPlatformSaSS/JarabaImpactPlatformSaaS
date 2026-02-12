@@ -1,0 +1,106 @@
+<?php
+
+/**
+ * @file
+ * Modulo Blog Nativo per-tenant.
+ *
+ * Proporciona un sistema de blog completo con RSS,
+ * Schema.org, autores y compartir social.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_blog_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_blog') {
+    return '<p>' . t('Blog nativo per-tenant con RSS, Schema.org, autores y compartir social.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_blog_theme(): array {
+  return [
+    'blog_listing' => [
+      'variables' => [
+        'tabs' => [],
+        'posts' => [],
+        'categories' => [],
+        'current_category' => NULL,
+        'current_author' => NULL,
+        'pagination' => [],
+        'popular_posts' => [],
+        'stats' => [],
+      ],
+      'template' => 'frontend/blog-listing',
+    ],
+    'blog_detail' => [
+      'variables' => [
+        'post' => NULL,
+        'author' => NULL,
+        'category' => NULL,
+        'related_posts' => [],
+        'prev_post' => NULL,
+        'next_post' => NULL,
+        'seo' => [],
+      ],
+      'template' => 'frontend/blog-detail',
+    ],
+    'blog_post_card' => [
+      'variables' => [
+        'post' => NULL,
+        'size' => 'default',
+      ],
+      'template' => 'partials/blog-post-card',
+    ],
+    'blog_sidebar' => [
+      'variables' => [
+        'categories' => [],
+        'popular_posts' => [],
+        'tags' => [],
+      ],
+      'template' => 'partials/blog-sidebar',
+    ],
+    'blog_author_bio' => [
+      'variables' => [
+        'author' => NULL,
+        'posts_count' => 0,
+      ],
+      'template' => 'partials/blog-author-bio',
+    ],
+    'blog_categories_nav' => [
+      'variables' => [
+        'categories' => [],
+        'current_slug' => NULL,
+      ],
+      'template' => 'partials/blog-categories-nav',
+    ],
+    'blog_pagination' => [
+      'variables' => [
+        'current_page' => 1,
+        'total_pages' => 1,
+        'base_url' => '/blog',
+      ],
+      'template' => 'partials/blog-pagination',
+    ],
+    'blog_share_buttons' => [
+      'variables' => [
+        'url' => '',
+        'title' => '',
+      ],
+      'template' => 'partials/blog-share-buttons',
+    ],
+    'blog_related_posts' => [
+      'variables' => [
+        'posts' => [],
+      ],
+      'template' => 'partials/blog-related-posts',
+    ],
+  ];
+}

@@ -1,0 +1,31 @@
+# Permisos del modulo Blog
+# Granulares por rol: admin, editor, viewer
+
+administer blog:
+  title: 'Administrar Blog'
+  description: 'Acceso completo a configuracion y contenido del blog.'
+  restrict access: true
+
+manage blog posts:
+  title: 'Gestionar entradas del blog'
+  description: 'Crear, editar y eliminar entradas del blog del tenant.'
+
+publish blog posts:
+  title: 'Publicar entradas del blog'
+  description: 'Publicar y despublicar entradas del blog.'
+
+manage blog categories:
+  title: 'Gestionar categorias del blog'
+  description: 'Crear, editar y eliminar categorias del blog.'
+
+manage blog authors:
+  title: 'Gestionar autores del blog'
+  description: 'Crear, editar y eliminar perfiles de autor del blog.'
+
+view blog content:
+  title: 'Ver contenido del blog'
+  description: 'Acceder al listado y detalle de entradas publicadas.'
+
+view blog analytics:
+  title: 'Ver analiticas del blog'
+  description: 'Acceder a estadisticas de visitas y rendimiento del blog.'

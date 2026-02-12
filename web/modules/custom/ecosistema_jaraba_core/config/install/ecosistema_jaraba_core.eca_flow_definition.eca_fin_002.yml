@@ -1,0 +1,11 @@
+id: eca_fin_002
+label: 'Revenue Acceleration'
+description: 'Detecta senales de expansion (aumento de uso, nuevos usuarios, features premium) y genera oportunidades de upsell/cross-sell en el pipeline de Customer Success.'
+domain: FIN
+trigger_event: 'expansion_signal_insert'
+module: jaraba_customer_success
+hook_function: jaraba_customer_success_expansion_signal
+spec_reference: 13_FOC
+implementation_status: partial
+weight: 21
+status: true

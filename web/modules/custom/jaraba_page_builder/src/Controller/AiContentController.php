@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  * usando ContentWriterAgent o servicios de IA del ecosistema.
  *
  * ENDPOINTS:
- * - POST /api/page-builder/generate-content: Genera texto para campos
+ * - POST /api/v1/page-builder/generate-content: Genera texto para campos
  * - POST /api/v1/page-builder/seo-ai-suggest: Sugerencias SEO con IA (C4.1)
  * - POST /api/v1/page-builder/ai/generate-template: Genera templates con IA (C4.2)
  * - POST /api/v1/page-builder/ai/generate-page: Prompt-to-Page (C4.4)

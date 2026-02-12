@@ -13,6 +13,32 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
+ * Implements hook_theme().
+ */
+function jaraba_heatmap_theme(): array {
+  return [
+    'heatmap_analytics_dashboard' => [
+      'variables' => [
+        'pages' => [],
+        'summary' => [],
+        'tenant_id' => 0,
+      ],
+      'template' => 'heatmap-analytics-dashboard',
+    ],
+    'heatmap_metric_card' => [
+      'variables' => [
+        'title' => '',
+        'value' => 0,
+        'icon' => '',
+        'trend' => NULL,
+        'trend_direction' => NULL,
+      ],
+      'template' => 'heatmap-metric-card',
+    ],
+  ];
+}
+
+/**
  * Implements hook_help().
  *
  * Proporciona documentación contextual del módulo en la interfaz de ayuda.
@@ -93,33 +119,145 @@ function jaraba_heatmap_page_attachments(array &$attachments) {
 /**
  * Implements hook_cron().
  *
- * Ejecuta la agregación diaria de eventos de heatmap y la purga de datos antiguos.
- * Se recomienda ejecutar este cron durante horas de baja actividad (02:00 UTC).
+ * Orquesta 3 flujos independientes con frecuencias distintas:
+ * - Agregación diaria (§11.1)
+ * - Cleanup semanal (§11.2)
+ * - Detección de anomalías diaria (§11.3)
+ *
+ * Cada flujo tiene su propio state key para control de ejecución independiente.
+ * Ref: Spec 20260130a §11
  */
 function jaraba_heatmap_cron() {
-  // Solo ejecutar una vez al día.
-  $state = \Drupal::state();
-  $last_run = $state->get('jaraba_heatmap.last_aggregation', 0);
+  $time = \Drupal::time()->getRequestTime();
+
+  _jaraba_heatmap_cron_aggregation($time);
+  _jaraba_heatmap_cron_cleanup($time);
+  _jaraba_heatmap_cron_anomaly_detection($time);
+}
+
+/**
+ * Ejecuta la agregación diaria de eventos de heatmap.
+ *
+ * Procesa eventos del día anterior en buckets para visualización eficiente.
+ * Controlado por state 'jaraba_heatmap.last_aggregation'.
+ * Ref: Spec 20260130a §11.1
+ *
+ * @param int $time
+ *   Timestamp actual del request.
+ */
+function _jaraba_heatmap_cron_aggregation(int $time): void {
+  $last_run = \Drupal::state()->get('jaraba_heatmap.last_aggregation', 0);
   $today = strtotime('today');
 
   if ($last_run >= $today) {
     return;
   }
 
-  // Ejecutar agregación si el servicio está disponible.
-  if (\Drupal::hasService('jaraba_heatmap.aggregator')) {
-    try {
-      $aggregator = \Drupal::service('jaraba_heatmap.aggregator');
-      $aggregator->aggregateDaily();
-      $aggregator->purgeOldEvents();
-      $state->set('jaraba_heatmap.last_aggregation', time());
-      
-      \Drupal::logger('jaraba_heatmap')->info('Agregación diaria de heatmaps completada.');
+  if (!\Drupal::hasService('jaraba_heatmap.aggregator')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_heatmap\Service\HeatmapAggregatorService $aggregator */
+    $aggregator = \Drupal::service('jaraba_heatmap.aggregator');
+    $aggregator->aggregateDaily();
+    \Drupal::state()->set('jaraba_heatmap.last_aggregation', $time);
+    \Drupal::logger('jaraba_heatmap')->info('Daily aggregation completed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_heatmap')->error('Error in daily aggregation: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Ejecuta la purga semanal de datos antiguos.
+ *
+ * Purga eventos raw, datos agregados y screenshots expirados.
+ * Controlado por state 'jaraba_heatmap.last_cleanup'.
+ * Ref: Spec 20260130a §11.2
+ *
+ * @param int $time
+ *   Timestamp actual del request.
+ */
+function _jaraba_heatmap_cron_cleanup(int $time): void {
+  $last_run = \Drupal::state()->get('jaraba_heatmap.last_cleanup', 0);
+  $one_week = 604800;
+
+  if (($time - $last_run) <= $one_week) {
+    return;
+  }
+
+  if (!\Drupal::hasService('jaraba_heatmap.aggregator')) {
+    return;
+  }
+
+  try {
+    $config = \Drupal::config('jaraba_heatmap.settings');
+    /** @var \Drupal\jaraba_heatmap\Service\HeatmapAggregatorService $aggregator */
+    $aggregator = \Drupal::service('jaraba_heatmap.aggregator');
+
+    $raw_days = (int) ($config->get('retention_raw_days') ?: 7);
+    $agg_days = (int) ($config->get('retention_aggregated_days') ?: 90);
+
+    $aggregator->purgeOldEvents($raw_days);
+    $aggregator->purgeOldAggregated($agg_days);
+
+    if (\Drupal::hasService('jaraba_heatmap.screenshot')) {
+      /** @var \Drupal\jaraba_heatmap\Service\HeatmapScreenshotService $screenshot */
+      $screenshot = \Drupal::service('jaraba_heatmap.screenshot');
+      $screenshot->cleanupExpiredScreenshots(30);
     }
-    catch (\Exception $e) {
-      \Drupal::logger('jaraba_heatmap')->error('Error en agregación de heatmaps: @message', [
-        '@message' => $e->getMessage(),
+
+    \Drupal::state()->set('jaraba_heatmap.last_cleanup', $time);
+    \Drupal::logger('jaraba_heatmap')->info('Weekly cleanup completed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_heatmap')->error('Error in weekly cleanup: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Ejecuta la detección diaria de anomalías en métricas de heatmap.
+ *
+ * Compara métricas del día anterior con la media de 7 días previos.
+ * Controlado por state 'jaraba_heatmap.last_anomaly_check'.
+ * Ref: Spec 20260130a §11.3
+ *
+ * @param int $time
+ *   Timestamp actual del request.
+ */
+function _jaraba_heatmap_cron_anomaly_detection(int $time): void {
+  $last_run = \Drupal::state()->get('jaraba_heatmap.last_anomaly_check', 0);
+  $today = strtotime('today');
+
+  if ($last_run >= $today) {
+    return;
+  }
+
+  if (!\Drupal::hasService('jaraba_heatmap.aggregator')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_heatmap\Service\HeatmapAggregatorService $aggregator */
+    $aggregator = \Drupal::service('jaraba_heatmap.aggregator');
+    $anomalies = $aggregator->detectAnomalies();
+
+    if (!empty($anomalies)) {
+      \Drupal::logger('jaraba_heatmap')->warning('Anomalies detected: @count pages with unusual activity.', [
+        '@count' => count($anomalies),
       ]);
     }
+
+    \Drupal::state()->set('jaraba_heatmap.last_anomaly_check', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_heatmap')->error('Error in anomaly detection: @message', [
+      '@message' => $e->getMessage(),
+    ]);
   }
 }

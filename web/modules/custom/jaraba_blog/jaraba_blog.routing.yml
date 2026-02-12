@@ -1,0 +1,241 @@
+# Rutas del modulo Blog
+
+# ========================================================================
+# Frontend Routes (Publicas per-tenant - NO admin theme)
+# ========================================================================
+
+jaraba_blog.listing:
+  path: '/blog'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogFrontendController::listing'
+    _title: 'Blog'
+  requirements:
+    _permission: 'view blog content'
+  options:
+    _admin_route: FALSE
+
+jaraba_blog.detail:
+  path: '/blog/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogFrontendController::detail'
+    _title: 'Blog'
+  requirements:
+    _permission: 'view blog content'
+    slug: '[a-z0-9\-]+'
+  options:
+    _admin_route: FALSE
+
+jaraba_blog.category:
+  path: '/blog/categoria/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogFrontendController::category'
+    _title: 'Blog - Categoria'
+  requirements:
+    _permission: 'view blog content'
+    slug: '[a-z0-9\-]+'
+  options:
+    _admin_route: FALSE
+
+jaraba_blog.author:
+  path: '/blog/autor/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogFrontendController::author'
+    _title: 'Blog - Autor'
+  requirements:
+    _permission: 'view blog content'
+    slug: '[a-z0-9\-]+'
+  options:
+    _admin_route: FALSE
+
+jaraba_blog.rss:
+  path: '/blog/feed.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogRssController::feed'
+  requirements:
+    _access: 'TRUE'
+
+# ========================================================================
+# Entity Settings Routes (for Field UI base routes)
+# ========================================================================
+
+entity.blog_post.settings:
+  path: '/admin/structure/blog'
+  defaults:
+    _form: '\Drupal\jaraba_blog\Form\BlogPostSettingsForm'
+    _title: 'Blog Posts Settings'
+  requirements:
+    _permission: 'administer blog'
+
+entity.blog_category.settings:
+  path: '/admin/structure/blog/categories'
+  defaults:
+    _form: '\Drupal\jaraba_blog\Form\BlogCategorySettingsForm'
+    _title: 'Blog Categories Settings'
+  requirements:
+    _permission: 'administer blog'
+
+entity.blog_author.settings:
+  path: '/admin/structure/blog/authors'
+  defaults:
+    _form: '\Drupal\jaraba_blog\Form\BlogAuthorSettingsForm'
+    _title: 'Blog Authors Settings'
+  requirements:
+    _permission: 'administer blog'
+
+# ========================================================================
+# API REST
+# ========================================================================
+
+# --- Posts API ---
+
+jaraba_blog.api.posts.list:
+  path: '/api/v1/blog/posts'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listPosts'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_blog.api.posts.store:
+  path: '/api/v1/blog/posts'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'manage blog posts'
+
+jaraba_blog.api.posts.show:
+  path: '/api/v1/blog/posts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::show'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    id: '\d+'
+
+jaraba_blog.api.posts.update:
+  path: '/api/v1/blog/posts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage blog posts'
+    id: '\d+'
+
+jaraba_blog.api.posts.delete:
+  path: '/api/v1/blog/posts/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::remove'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage blog posts'
+    id: '\d+'
+
+jaraba_blog.api.posts.publish:
+  path: '/api/v1/blog/posts/{id}/publish'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::publish'
+  methods: [POST]
+  requirements:
+    _permission: 'publish blog posts'
+    id: '\d+'
+
+jaraba_blog.api.posts.schedule:
+  path: '/api/v1/blog/posts/{id}/schedule'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::schedule'
+  methods: [POST]
+  requirements:
+    _permission: 'publish blog posts'
+    id: '\d+'
+
+jaraba_blog.api.posts.related:
+  path: '/api/v1/blog/posts/{id}/related'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::related'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    id: '\d+'
+
+jaraba_blog.api.posts.view:
+  path: '/api/v1/blog/posts/{id}/view'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::trackView'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    id: '\d+'
+
+# --- Categories API ---
+
+jaraba_blog.api.categories.list:
+  path: '/api/v1/blog/categories'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listCategories'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_blog.api.categories.store:
+  path: '/api/v1/blog/categories'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::storeCategory'
+  methods: [POST]
+  requirements:
+    _permission: 'manage blog categories'
+
+jaraba_blog.api.categories.update:
+  path: '/api/v1/blog/categories/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::updateCategory'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage blog categories'
+    id: '\d+'
+
+jaraba_blog.api.categories.delete:
+  path: '/api/v1/blog/categories/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::removeCategory'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage blog categories'
+    id: '\d+'
+
+# --- Authors API ---
+
+jaraba_blog.api.authors.list:
+  path: '/api/v1/blog/authors'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listAuthors'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_blog.api.authors.store:
+  path: '/api/v1/blog/authors'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::storeAuthor'
+  methods: [POST]
+  requirements:
+    _permission: 'manage blog authors'
+
+jaraba_blog.api.authors.update:
+  path: '/api/v1/blog/authors/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::updateAuthor'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage blog authors'
+    id: '\d+'
+
+# --- Stats API ---
+
+jaraba_blog.api.stats:
+  path: '/api/v1/blog/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'view blog analytics'

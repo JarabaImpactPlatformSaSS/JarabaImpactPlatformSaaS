@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_bookings_per_month
+label: 'ServiciosConecta Starter: Reservas/mes'
+vertical: serviciosconecta
+plan: starter
+feature_key: bookings_per_month
+limit_value: -1
+description: 'Reservas ilimitadas en plan Starter ServiciosConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 211
+status: true

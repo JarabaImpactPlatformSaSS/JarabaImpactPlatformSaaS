@@ -1,0 +1,151 @@
+/**
+ * @file
+ * Estilos para la navegación principal.
+ *
+ * Cumple con directrices:
+ * - Variables CSS inyectables var(--ej-*)
+ * - Mobile-first
+ * - BEM naming
+ */
+
+.jaraba-nav {
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: flex;
+    align-items: center;
+  }
+
+  &--left {
+    order: -1;
+    margin-right: auto;
+  }
+
+  &--center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--right {
+    margin-left: auto;
+  }
+
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 4px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    position: relative;
+
+    &--has-dropdown:hover > .jaraba-nav__dropdown,
+    &--has-dropdown:focus-within > .jaraba-nav__dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    &--highlight > .jaraba-nav__link {
+      color: var(--ej-color-primary, #FF8C42);
+      font-weight: 600;
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 4px);
+    padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 12px);
+    color: inherit;
+    text-decoration: none;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 500;
+    border-radius: var(--ej-radius-md, 6px);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--ej-bg-hover, rgba(0, 0, 0, 0.04));
+      color: var(--ej-color-primary, #233D63);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    // Texto del enlace.
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    border-radius: var(--ej-radius-full, 9999px);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+  }
+
+  &__chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+
+    .jaraba-nav__item--has-dropdown:hover & {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Dropdown estándar.
+  &__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background: var(--ej-bg-surface, #FFFFFF);
+    border-radius: var(--ej-radius-lg, 8px);
+    box-shadow: var(--ej-shadow-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.1));
+    padding: var(--ej-spacing-xs, 4px);
+    list-style: none;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+  }
+
+  &__dropdown-item {
+    // Wrapper del item.
+  }
+
+  &__dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 8px);
+    padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 12px);
+    color: var(--ej-text-primary, #1E293B);
+    text-decoration: none;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    border-radius: var(--ej-radius-md, 6px);
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--ej-bg-hover, #F1F5F9);
+    }
+  }
+}

@@ -7,3 +7,32 @@ jaraba_site_builder.admin_menu:
   route_name: jaraba_site_builder.dashboard
   parent: system.admin_structure
   weight: 10
+
+# Fase 1 Doc 177: Navegación Global - Entradas en admin/structure
+entity.site_menu.collection:
+  title: 'Menús del Sitio'
+  description: 'Gestiona los menús de navegación personalizados.'
+  route_name: entity.site_menu.collection
+  parent: system.admin_structure
+  weight: 11
+
+entity.site_menu_item.collection:
+  title: 'Items de Menú'
+  description: 'Gestiona los items de los menús de navegación.'
+  route_name: entity.site_menu_item.collection
+  parent: system.admin_structure
+  weight: 12
+
+entity.site_header_config.collection:
+  title: 'Configuración de Headers'
+  description: 'Gestiona la configuración del header por tenant.'
+  route_name: entity.site_header_config.collection
+  parent: system.admin_structure
+  weight: 13
+
+entity.site_footer_config.collection:
+  title: 'Configuración de Footers'
+  description: 'Gestiona la configuración del footer por tenant.'
+  route_name: entity.site_footer_config.collection
+  parent: system.admin_structure
+  weight: 14

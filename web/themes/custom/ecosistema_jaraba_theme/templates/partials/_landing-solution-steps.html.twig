@@ -1,0 +1,41 @@
+{#
+/**
+ * @file _landing-solution-steps.html.twig
+ * Parcial reutilizable: Solution Steps (como funciona en 3 pasos).
+ *
+ * VARIABLES:
+ * - steps: Array de { number, title, description }
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set items = steps|default([]) %}
+
+{% if items|length > 0 %}
+<section class="landing-solution" aria-labelledby="solution-title">
+  <div class="landing-solution__container">
+    <h2 id="solution-title" class="landing-solution__title">
+      {% trans %}Como funciona{% endtrans %}
+    </h2>
+    <p class="landing-solution__subtitle">
+      {% trans %}En 3 pasos simples{% endtrans %}
+    </p>
+
+    <div class="landing-solution__steps">
+      {% for step in items %}
+        <div class="landing-step">
+          <span class="landing-step__number" aria-hidden="true">{{ step.number|default(loop.index) }}</span>
+          <h3 class="landing-step__title">{{ step.title }}</h3>
+          <p class="landing-step__description">{{ step.description }}</p>
+        </div>
+        {% if not loop.last %}
+          <span class="landing-step__connector" aria-hidden="true"></span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

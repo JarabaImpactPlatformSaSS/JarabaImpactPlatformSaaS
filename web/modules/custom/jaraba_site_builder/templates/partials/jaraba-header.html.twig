@@ -1,0 +1,144 @@
+{#
+/**
+ * @file
+ * Parcial reutilizable: Header global del sitio.
+ *
+ * Variables:
+ *   - header_config: array con configuración del header (tipo, logo, CTA, etc.)
+ *   - main_menu_tree: array jerárquico de items del menú principal
+ *   - site_config: array con configuración general del sitio
+ *
+ * Variantes: standard, centered, minimal, mega, transparent
+ * Funcionalidades: sticky, topbar, CTA button, search, mobile menu toggle
+ */
+#}
+
+{% set config = header_config %}
+{% set type = config.header_type|default('standard') %}
+
+{# Top Bar (opcional) #}
+{% if config.show_topbar and config.topbar_content %}
+  {% include '@jaraba_site_builder/partials/jaraba-topbar.html.twig' with {
+    topbar_content: config.topbar_content,
+    bg_color: config.topbar_bg_color|default('#1E3A5F'),
+    text_color: config.topbar_text_color|default('#FFFFFF'),
+  } only %}
+{% endif %}
+
+<header class="jaraba-header jaraba-header--{{ type }}{% if config.is_sticky %} jaraba-header--sticky{% endif %}{% if config.transparent_on_hero %} jaraba-header--transparent{% endif %}{% if config.hide_on_scroll_down %} jaraba-header--autohide{% endif %}"
+  style="--header-bg: {{ config.bg_color|default('#FFFFFF') }}; --header-text: {{ config.text_color|default('#1E293B') }}; --header-height-desktop: {{ config.height_desktop|default(80) }}px; --header-height-mobile: {{ config.height_mobile|default(64) }}px;"
+  data-sticky-offset="{{ config.sticky_offset|default(0) }}"
+  role="banner">
+
+  <div class="jaraba-header__container">
+
+    {# Logo #}
+    <div class="jaraba-header__logo">
+      <a href="/" aria-label="{{ site_config.site_name|default('Inicio') }}">
+        {% if config.logo_url %}
+          <img src="{{ config.logo_url }}"
+               alt="{{ config.logo_alt|default(site_config.site_name|default('Logo')) }}"
+               width="{{ config.logo_width|default(150) }}"
+               class="jaraba-header__logo-img jaraba-header__logo-img--desktop"
+               loading="eager">
+          {% if config.logo_mobile_url %}
+            <img src="{{ config.logo_mobile_url }}"
+                 alt="{{ config.logo_alt|default(site_config.site_name|default('Logo')) }}"
+                 class="jaraba-header__logo-img jaraba-header__logo-img--mobile"
+                 loading="eager">
+          {% endif %}
+        {% else %}
+          <span class="jaraba-header__logo-text">{{ site_config.site_name|default('Jaraba') }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    {# Navegación principal #}
+    {% if main_menu_tree|length > 0 %}
+      <nav class="jaraba-nav jaraba-nav--{{ config.main_menu_position|default('right') }}" role="navigation" aria-label="{% trans %}Navegación principal{% endtrans %}">
+        <ul class="jaraba-nav__list">
+          {% for item in main_menu_tree %}
+            <li class="jaraba-nav__item{% if item.children|length > 0 %} jaraba-nav__item--has-dropdown{% endif %}{% if item.highlight %} jaraba-nav__item--highlight{% endif %}">
+              <a href="{{ item.url }}"
+                 class="jaraba-nav__link"
+                 {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {% if item.icon %}
+                  <span class="jaraba-nav__icon">{{ item.icon }}</span>
+                {% endif %}
+                <span class="jaraba-nav__text">{{ item.title }}</span>
+                {% if item.badge_text %}
+                  <span class="jaraba-nav__badge" style="background-color: {{ item.badge_color|default('#FF8C42') }}">{{ item.badge_text }}</span>
+                {% endif %}
+                {% if item.children|length > 0 %}
+                  <svg class="jaraba-nav__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                {% endif %}
+              </a>
+
+              {# Dropdown / Submenu #}
+              {% if item.children|length > 0 %}
+                {% if item.item_type == 'mega_column' %}
+                  {% include '@jaraba_site_builder/partials/jaraba-mega-menu.html.twig' with {
+                    mega_items: item.children,
+                  } only %}
+                {% else %}
+                  <ul class="jaraba-nav__dropdown">
+                    {% for child in item.children %}
+                      <li class="jaraba-nav__dropdown-item">
+                        <a href="{{ child.url }}" class="jaraba-nav__dropdown-link"
+                           {% if child.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                          {% if child.icon %}
+                            <span class="jaraba-nav__icon">{{ child.icon }}</span>
+                          {% endif %}
+                          {{ child.title }}
+                          {% if child.badge_text %}
+                            <span class="jaraba-nav__badge" style="background-color: {{ child.badge_color|default('#FF8C42') }}">{{ child.badge_text }}</span>
+                          {% endif %}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+
+    {# Acciones del header #}
+    <div class="jaraba-header__actions">
+      {% if config.show_search %}
+        <button class="jaraba-header__action-btn jaraba-header__search-toggle" aria-label="{% trans %}Buscar{% endtrans %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      {% endif %}
+
+      {% if config.show_cta and config.cta_text %}
+        <a href="{{ config.cta_url|default('#') }}" class="jaraba-header__cta jaraba-header__cta--{{ config.cta_style|default('primary') }}">
+          {% if config.cta_icon %}
+            <span class="jaraba-header__cta-icon">{{ config.cta_icon }}</span>
+          {% endif %}
+          {{ config.cta_text }}
+        </a>
+      {% endif %}
+
+      {# Botón menú móvil #}
+      <button class="jaraba-header__mobile-toggle" aria-label="{% trans %}Abrir menú{% endtrans %}" aria-expanded="false" data-toggle="mobile-menu">
+        <span class="jaraba-header__hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+{# Menú móvil off-canvas #}
+{% if main_menu_tree|length > 0 %}
+  {% include '@jaraba_site_builder/partials/jaraba-mobile-menu.html.twig' with {
+    main_menu_tree: main_menu_tree,
+    header_config: config,
+  } only %}
+{% endif %}

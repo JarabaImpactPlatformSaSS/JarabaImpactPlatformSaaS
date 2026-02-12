@@ -1,0 +1,11 @@
+id: comercioconecta_starter_qr_codes
+label: 'ComercioConecta Starter: Codigos QR'
+vertical: comercioconecta
+plan: starter
+feature_key: qr_codes
+limit_value: 10
+description: '10 codigos QR en plan Starter ComercioConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 codigos QR. Actualiza a Profesional para codigos ilimitados.'
+expected_conversion: 0.22
+weight: 111
+status: true

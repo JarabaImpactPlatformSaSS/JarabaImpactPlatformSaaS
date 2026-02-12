@@ -1,0 +1,11 @@
+id: agroconecta_profesional_photos_per_product
+label: 'AgroConecta Profesional: Fotos/producto'
+vertical: agroconecta
+plan: profesional
+feature_key: photos_per_product
+limit_value: 10
+description: '10 fotos por producto en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 32
+status: true

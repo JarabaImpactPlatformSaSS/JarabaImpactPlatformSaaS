@@ -1,0 +1,714 @@
+// =============================================================================
+// LEAD MAGNETS - Paginas publicas de captacion por vertical (F3 Doc 178)
+// =============================================================================
+// Estilos para los 4 lead magnets: Calculadora Madurez (Emprendimiento),
+// Guia Vende Online (AgroConecta), Auditoria SEO (ComercioConecta),
+// Template Propuesta (ServiciosConecta).
+//
+// Usa las CSS Custom Properties del Design Token System:
+// - var(--ej-color-*): Colores del tema inyectados desde Drupal UI
+// - var(--ej-*): Spacing, radius, shadows, tipografia
+//
+// @see docs/implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md
+
+// =============================================================================
+// BASE CONTAINER
+// =============================================================================
+
+.lead-magnet {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-2xl, 3rem) var(--ej-spacing-lg, 1.5rem);
+  font-family: var(--ej-font-body, "Inter", sans-serif);
+
+  // 2-column layout variant
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-xl, 2rem);
+    max-width: 900px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 300px 1fr;
+      align-items: start;
+    }
+  }
+}
+
+// =============================================================================
+// HEADER
+// =============================================================================
+
+.lead-magnet__header {
+  text-align: center;
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.lead-magnet__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: var(--ej-spacing-md, 1rem);
+
+  &--naranja-impulso {
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+  }
+
+  &--verde-agro {
+    background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 12%, transparent);
+  }
+
+  &--verde-innovacion {
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+  }
+}
+
+.lead-magnet__title {
+  font-family: var(--ej-font-headings, "Outfit", sans-serif);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--ej-color-headings, #1A1A2E);
+  margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  line-height: 1.2;
+}
+
+.lead-magnet__subtitle {
+  font-size: 1.125rem;
+  color: var(--ej-color-muted, #64748B);
+  margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+  line-height: 1.5;
+}
+
+// =============================================================================
+// PREVIEW CARD (Guia / Template variants)
+// =============================================================================
+
+.lead-magnet__preview {
+  display: flex;
+  justify-content: center;
+}
+
+.lead-magnet__preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 260px;
+  height: 340px;
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 2px dashed var(--ej-border-color, #E5E7EB);
+  border-radius: var(--ej-border-radius, 12px);
+  padding: var(--ej-spacing-xl, 2rem);
+  text-align: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  position: relative;
+
+  &--document {
+    border-style: solid;
+  }
+}
+
+.lead-magnet__preview-badge {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-color-impulse, #FF8C42);
+  background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, transparent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+}
+
+.lead-magnet__preview-pages,
+.lead-magnet__preview-format {
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748B);
+}
+
+// =============================================================================
+// BENEFITS / CHECKS / INCLUDES LISTS
+// =============================================================================
+
+.lead-magnet__benefits,
+.lead-magnet__checks-list,
+.lead-magnet__includes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+}
+
+.lead-magnet__benefit,
+.lead-magnet__check,
+.lead-magnet__include {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-xs, 0.25rem) 0;
+  font-size: 0.9375rem;
+  color: var(--ej-color-body, #334155);
+  line-height: 1.4;
+}
+
+.lead-magnet__benefit-icon,
+.lead-magnet__check-icon,
+.lead-magnet__include-icon {
+  flex-shrink: 0;
+}
+
+.lead-magnet__checks-title,
+.lead-magnet__includes-title {
+  font-family: var(--ej-font-headings, "Outfit", sans-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-headings, #1A1A2E);
+  margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+}
+
+// =============================================================================
+// EMAIL CAPTURE FORM
+// =============================================================================
+
+.lead-magnet__form {
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.lead-magnet__email-capture {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.lead-magnet__email-input,
+.lead-magnet__name-input,
+.lead-magnet__business-input,
+.lead-magnet__city-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--ej-border-color, #E5E7EB);
+  border-radius: var(--ej-border-radius-sm, 8px);
+  font-family: var(--ej-font-body, "Inter", sans-serif);
+  font-size: 1rem;
+  color: var(--ej-color-body, #334155);
+  background: var(--ej-bg-surface, #FFFFFF);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--ej-color-impulse, #FF8C42);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent);
+  }
+
+  &::placeholder {
+    color: var(--ej-color-muted, #64748B);
+  }
+}
+
+.lead-magnet__audit-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  margin-bottom: var(--ej-spacing-sm, 0.5rem);
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lead-magnet__submit {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--ej-border-radius-sm, 8px);
+  background: var(--ej-color-impulse, #FF8C42);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, #000);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.lead-magnet__privacy {
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748B);
+  text-align: center;
+  margin: var(--ej-spacing-xs, 0.25rem) 0 0;
+}
+
+// =============================================================================
+// CALCULADORA - MULTI-STEP FORM
+// =============================================================================
+
+.calculadora-form {
+  max-width: 600px;
+  margin: 0 auto;
+
+  &__progress {
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+    text-align: center;
+  }
+
+  &__progress-bar {
+    height: 4px;
+    background: var(--ej-border-color, #E5E7EB);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+
+    &::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--ej-color-impulse, #FF8C42);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+  }
+
+  &__progress-text {
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, #64748B);
+  }
+
+  &__step {
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__question {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    padding: 0;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__option {
+    cursor: pointer;
+  }
+
+  &__option-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--ej-border-color, #E5E7EB);
+    border-radius: var(--ej-border-radius-sm, 8px);
+    background: var(--ej-bg-surface, #FFFFFF);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  &__option input:checked + &__option-card {
+    border-color: var(--ej-color-impulse, #FF8C42);
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 5%, var(--ej-bg-surface, #FFFFFF));
+  }
+
+  &__option:hover &__option-card {
+    border-color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 50%, var(--ej-border-color, #E5E7EB));
+  }
+
+  &__option-label {
+    font-size: 0.9375rem;
+    color: var(--ej-color-body, #334155);
+  }
+
+  &__option-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--ej-border-color, #E5E7EB);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  &__option input:checked + &__option-card &__option-check {
+    border-color: var(--ej-color-impulse, #FF8C42);
+    background: var(--ej-color-impulse, #FF8C42);
+    box-shadow: inset 0 0 0 3px #FFFFFF;
+  }
+}
+
+// =============================================================================
+// CALCULADORA - RESULT
+// =============================================================================
+
+.calculadora-result {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &__score-circle {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  &__track {
+    fill: none;
+    stroke: var(--ej-border-color, #E5E7EB);
+    stroke-width: 8;
+  }
+
+  &__progress {
+    fill: none;
+    stroke: var(--ej-color-impulse, #FF8C42);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &__score-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__score-value {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    line-height: 1;
+  }
+
+  &__score-label {
+    font-size: 1rem;
+    color: var(--ej-color-muted, #64748B);
+  }
+
+  &__level {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__description {
+    font-size: 1rem;
+    color: var(--ej-color-muted, #64748B);
+    margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+    line-height: 1.5;
+  }
+
+  &__recommendations {
+    text-align: left;
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 3%, var(--ej-bg-surface, #FFFFFF));
+    border: 1px solid var(--ej-border-color, #E5E7EB);
+    border-radius: var(--ej-border-radius, 12px);
+
+    h3 {
+      font-family: var(--ej-font-headings, "Outfit", sans-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ej-color-headings, #1A1A2E);
+      margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+    }
+  }
+
+  &__recommendations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      position: relative;
+      padding: var(--ej-spacing-xs, 0.25rem) 0 var(--ej-spacing-xs, 0.25rem) 1.5rem;
+      font-size: 0.9375rem;
+      color: var(--ej-color-body, #334155);
+      line-height: 1.4;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.625rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ej-color-impulse, #FF8C42);
+      }
+    }
+  }
+}
+
+// =============================================================================
+// AUDITORIA - ANALYZING ANIMATION
+// =============================================================================
+
+.lead-magnet__analyzing {
+  text-align: center;
+  padding: var(--ej-spacing-2xl, 3rem) 0;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--ej-border-color, #E5E7EB);
+    border-top-color: var(--ej-color-impulse, #FF8C42);
+    border-radius: 50%;
+    margin: 0 auto var(--ej-spacing-md, 1rem);
+    animation: lead-magnet-spin 1s linear infinite;
+  }
+
+  &-text {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &-checks {
+    max-width: 320px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  &-check {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-xs, 0.25rem) 0;
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, #64748B);
+    opacity: 0.5;
+    transition: opacity 0.3s ease, color 0.3s ease;
+
+    &.is-checking {
+      opacity: 1;
+      color: var(--ej-color-body, #334155);
+    }
+
+    &.is-done {
+      opacity: 1;
+      color: var(--ej-color-agro, #556B2F);
+    }
+  }
+
+  &-check-status {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--ej-border-color, #E5E7EB);
+    flex-shrink: 0;
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    .is-done & {
+      background: var(--ej-color-agro, #556B2F);
+      border-color: var(--ej-color-agro, #556B2F);
+    }
+  }
+}
+
+@keyframes lead-magnet-spin {
+  to { transform: rotate(360deg); }
+}
+
+// =============================================================================
+// AUDITORIA - RESULT
+// =============================================================================
+
+.auditoria-result {
+  &[hidden] {
+    display: none;
+  }
+
+  &__score {
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__score-bar {
+    height: 12px;
+    background: var(--ej-border-color, #E5E7EB);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__score-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 6px;
+    background: linear-gradient(90deg,
+      #EF4444 0%,
+      var(--ej-color-impulse, #FF8C42) 50%,
+      var(--ej-color-agro, #556B2F) 100%
+    );
+    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &__score-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, #64748B);
+  }
+
+  &__score-value {
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+  }
+
+  &__breakdown {
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+}
+
+// =============================================================================
+// CTA SECTION
+// =============================================================================
+
+.lead-magnet__cta {
+  text-align: center;
+  padding: var(--ej-spacing-xl, 2rem) 0;
+
+  .btn--lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+}
+
+.lead-magnet__cta-intro {
+  font-size: 1rem;
+  color: var(--ej-color-body, #334155);
+  margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.lead-magnet__cta-hint {
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748B);
+  margin-top: var(--ej-spacing-sm, 0.5rem);
+}
+
+// =============================================================================
+// CONFIRMATION (post-download)
+// =============================================================================
+
+.lead-magnet__confirmation {
+  text-align: center;
+  padding: var(--ej-spacing-2xl, 3rem) 0;
+
+  &[hidden] {
+    display: none;
+  }
+
+  h2 {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: var(--ej-spacing-md, 1rem) 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  p {
+    font-size: 1rem;
+    color: var(--ej-color-muted, #64748B);
+    margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+  }
+}
+
+// =============================================================================
+// VERTICAL-SPECIFIC THEMING
+// =============================================================================
+
+.lead-magnet--calculadora {
+  .lead-magnet__submit {
+    background: var(--ej-color-impulse, #FF8C42);
+  }
+}
+
+.lead-magnet--guia {
+  .lead-magnet__submit {
+    background: var(--ej-color-agro, #556B2F);
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 85%, #000);
+    }
+  }
+
+  .lead-magnet__preview-badge {
+    color: var(--ej-color-agro, #556B2F);
+    background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 8%, transparent);
+  }
+}
+
+.lead-magnet--auditoria {
+  max-width: 700px;
+}
+
+.lead-magnet--template {
+  .lead-magnet__submit {
+    background: var(--ej-color-innovation, #00A9A5);
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 85%, #000);
+    }
+  }
+
+  .lead-magnet__preview-badge {
+    color: var(--ej-color-innovation, #00A9A5);
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 8%, transparent);
+  }
+}
+
+// =============================================================================
+// MOBILE RESPONSIVE
+// =============================================================================
+
+@media (max-width: 480px) {
+  .lead-magnet {
+    padding: var(--ej-spacing-lg, 1.5rem) var(--ej-spacing-md, 1rem);
+  }
+
+  .lead-magnet__preview-card {
+    width: 200px;
+    height: 260px;
+  }
+
+  .calculadora-result__score-circle {
+    width: 110px;
+    height: 110px;
+  }
+
+  .calculadora-result__score-value {
+    font-size: 2rem;
+  }
+}

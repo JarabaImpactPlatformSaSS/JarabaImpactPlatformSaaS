@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * blog-listing.html.twig - Listado del blog con sidebar.
+ *
+ * Variables:
+ *   - posts: Array de entidades BlogPost
+ *   - categories: Array de entidades BlogCategory
+ *   - current_category: BlogCategory actual (si filtrado)
+ *   - current_author: BlogAuthor actual (si filtrado)
+ *   - pagination: { current, total, base_url }
+ *   - popular_posts: Posts populares para sidebar
+ *   - stats: Estadisticas del blog
+ */
+#}
+<div class="blog-listing">
+  <header class="blog-listing__header">
+    <h1 class="blog-listing__title">
+      {% if current_category %}
+        {{ current_category.getName() }}
+      {% elseif current_author %}
+        {% trans %}Articulos de{% endtrans %} {{ current_author.getDisplayName() }}
+      {% else %}
+        {% trans %}Blog{% endtrans %}
+      {% endif %}
+    </h1>
+
+    {% if current_category and current_category.get('description').value %}
+      <p class="blog-listing__description">{{ current_category.get('description').value }}</p>
+    {% endif %}
+  </header>
+
+  {# Navegacion de categorias #}
+  {% if categories|length > 0 %}
+    {% include '@jaraba_blog/partials/blog-categories-nav.html.twig' with {
+      categories: categories,
+      current_slug: current_category ? current_category.getSlug() : null,
+    } only %}
+  {% endif %}
+
+  <div class="blog-listing__layout">
+    {# Contenido principal #}
+    <main class="blog-listing__main">
+      {% if posts|length > 0 %}
+        <div class="blog-listing__grid">
+          {% for post in posts %}
+            {% include '@jaraba_blog/partials/blog-post-card.html.twig' with {
+              post: post,
+              size: loop.first and not current_category ? 'featured' : 'default',
+            } only %}
+          {% endfor %}
+        </div>
+
+        {# Paginacion #}
+        {% if pagination.total > 1 %}
+          {% include '@jaraba_blog/partials/blog-pagination.html.twig' with {
+            current_page: pagination.current,
+            total_pages: pagination.total,
+            base_url: pagination.base_url,
+          } only %}
+        {% endif %}
+      {% else %}
+        <div class="blog-listing__empty empty-state">
+          <p>{% trans %}No hay entradas publicadas.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </main>
+
+    {# Sidebar #}
+    <aside class="blog-listing__sidebar">
+      {% include '@jaraba_blog/partials/blog-sidebar.html.twig' with {
+        categories: categories,
+        popular_posts: popular_posts,
+        tags: [],
+      } only %}
+    </aside>
+  </div>
+</div>

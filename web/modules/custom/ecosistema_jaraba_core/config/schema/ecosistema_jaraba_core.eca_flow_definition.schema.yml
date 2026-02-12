@@ -1,0 +1,41 @@
+# Schema for EcaFlowDefinition config entity
+ecosistema_jaraba_core.eca_flow_definition.*:
+  type: config_entity
+  label: 'ECA Flow Definition'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description'
+    domain:
+      type: string
+      label: 'Domain (USR, ORD, FIN, TEN, AI, WH, MKT, LMS, JOB, BIZ)'
+    trigger_event:
+      type: string
+      label: 'Trigger event'
+    module:
+      type: string
+      label: 'Implementing module'
+    hook_function:
+      type: string
+      label: 'Hook function name'
+    spec_reference:
+      type: string
+      label: 'Specification document reference'
+    implementation_status:
+      type: string
+      label: 'Implementation status (implemented, partial, pending, deprecated)'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

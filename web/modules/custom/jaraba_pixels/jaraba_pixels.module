@@ -128,6 +128,55 @@ function jaraba_pixels_cron() {
   \Drupal::database()->delete('pixel_event_log')
     ->condition('created', $threshold, '<')
     ->execute();
+
+  // Health check diario de píxeles (Ref: Spec 20260130b §8.3).
+  try {
+    $state = \Drupal::state();
+    $lastHealthCheck = $state->get('jaraba_pixels.last_health_check', 0);
+    $oneDayAgo = \Drupal::time()->getRequestTime() - 86400;
+
+    if ($lastHealthCheck < $oneDayAgo && \Drupal::hasService('jaraba_pixels.health_check')) {
+      /** @var \Drupal\jaraba_pixels\Service\PixelHealthCheckService $healthCheck */
+      $healthCheck = \Drupal::service('jaraba_pixels.health_check');
+      $healthCheck->checkAllPixels();
+      $state->set('jaraba_pixels.last_health_check', \Drupal::time()->getRequestTime());
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_pixels')->error('Health check error: @message', [
+      '@message' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Prepares email templates for pixel health alerts.
+ * Ref: Spec 20260130b §8.3
+ */
+function jaraba_pixels_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'pixel_health_alert':
+      $message['subject'] = t('Pixel Health Alert: @count pixels in error state', [
+        '@count' => $params['error_count'] ?? 0,
+      ]);
+      $message['body'][] = t('The following tracking pixels have not received successful events in over 48 hours:');
+      $message['body'][] = '';
+      if (!empty($params['error_pixels'])) {
+        foreach ($params['error_pixels'] as $pixel) {
+          $message['body'][] = t('- @platform pixel @id (tenant @tenant): @hours hours since last event', [
+            '@platform' => $pixel['platform'] ?? 'Unknown',
+            '@id' => $pixel['pixel_id'] ?? 'Unknown',
+            '@tenant' => $pixel['tenant_id'] ?? 0,
+            '@hours' => $pixel['hours_since_last_event'] ?? '?',
+          ]);
+        }
+      }
+      $message['body'][] = '';
+      $message['body'][] = t('Please check the pixel configuration in the Pixel Manager dashboard.');
+      break;
+  }
 }
 
 /**

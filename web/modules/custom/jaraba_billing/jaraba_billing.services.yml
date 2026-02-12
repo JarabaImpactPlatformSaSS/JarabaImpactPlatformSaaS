@@ -11,12 +11,15 @@ services:
     parent: logger.channel_base
     arguments: ['jaraba_billing']
 
-  # Validador de límites de planes SaaS
+  # Validador de límites de planes SaaS.
+  # P1-01/P1-02: Extendido con límites de Page Builder y Credentials.
   jaraba_billing.plan_validator:
     class: Drupal\jaraba_billing\Service\PlanValidator
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+    calls:
+      - [setStringTranslation, ['@string_translation']]
 
   # BE-03 + BIZ-002: Gestión del ciclo de vida de subscripciones
   jaraba_billing.tenant_subscription:

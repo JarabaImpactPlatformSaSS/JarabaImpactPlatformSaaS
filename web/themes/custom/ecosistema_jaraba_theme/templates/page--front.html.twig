@@ -59,6 +59,12 @@
       intentions: homepage.intentions|default([])
     } %}
 
+    {# VERTICAL SELECTOR - 5 cards interactivas (Doc 178 §4.1) #}
+    {% include '@ecosistema_jaraba_theme/partials/_vertical-selector.html.twig' with {
+      verticals: verticals|default([]),
+      detected_vertical: detected_vertical|default(null)
+    } %}
+
     {# FEATURES - Propuesta de valor con datos dinámicos #}
     {% include '@ecosistema_jaraba_theme/partials/_features.html.twig' with {
       features: homepage.features|default([])

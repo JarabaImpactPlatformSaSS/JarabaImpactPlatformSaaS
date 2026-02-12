@@ -1,0 +1,41 @@
+{#
+/**
+ * @file _landing-final-cta.html.twig
+ * Parcial reutilizable: CTA final de cierre (repeticion del CTA principal).
+ *
+ * VARIABLES:
+ * - final_cta.headline: Titulo de cierre
+ * - final_cta.subheadline: Subtitulo opcional
+ * - final_cta.cta: { text, url } CTA principal
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set cta_data = final_cta|default({}) %}
+
+{% if cta_data.cta is defined %}
+<section class="landing-final-cta landing-final-cta--{{ vertical_key|default('default') }}">
+  <div class="landing-final-cta__container">
+    <h2 class="landing-final-cta__title">
+      {{ cta_data.headline|default('Listo para empezar?'|t) }}
+    </h2>
+    {% if cta_data.subheadline is defined %}
+      <p class="landing-final-cta__subtitle">{{ cta_data.subheadline }}</p>
+    {% endif %}
+
+    <a href="{{ cta_data.cta.url }}"
+       class="btn btn--primary btn--xl"
+       data-track-cta="final_{{ vertical_key|default('') }}"
+       data-track-position="landing_final_cta">
+      {{ cta_data.cta.text }}
+    </a>
+
+    <p class="landing-final-cta__hint">
+      {% trans %}Sin tarjeta de credito. Empieza gratis.{% endtrans %}
+    </p>
+  </div>
+</section>
+{% endif %}

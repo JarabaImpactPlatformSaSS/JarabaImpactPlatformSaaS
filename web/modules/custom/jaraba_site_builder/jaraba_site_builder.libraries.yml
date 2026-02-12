@@ -39,3 +39,16 @@ site-config:
       css/site-builder.css: {}
   dependencies:
     - core/drupal
+
+# Fase 1 Doc 177: Componentes de navegacion global
+# Header sticky/autohide, mobile menu off-canvas, topbar, mega menu a11y
+navigation:
+  version: 1.0
+  js:
+    js/navigation.js: {}
+  css:
+    theme:
+      css/site-builder.css: {}
+  dependencies:
+    - core/drupal
+    - core/once

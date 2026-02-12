@@ -1,0 +1,25 @@
+# Botones de acción "Añadir" del módulo Site Builder
+
+entity.site_menu.add_form:
+  title: 'Añadir Menú'
+  route_name: entity.site_menu.add_form
+  appears_on:
+    - entity.site_menu.collection
+
+entity.site_menu_item.add_form:
+  title: 'Añadir Item de Menú'
+  route_name: entity.site_menu_item.add_form
+  appears_on:
+    - entity.site_menu_item.collection
+
+entity.site_header_config.add_form:
+  title: 'Añadir Configuración de Header'
+  route_name: entity.site_header_config.add_form
+  appears_on:
+    - entity.site_header_config.collection
+
+entity.site_footer_config.add_form:
+  title: 'Añadir Configuración de Footer'
+  route_name: entity.site_footer_config.add_form
+  appears_on:
+    - entity.site_footer_config.collection

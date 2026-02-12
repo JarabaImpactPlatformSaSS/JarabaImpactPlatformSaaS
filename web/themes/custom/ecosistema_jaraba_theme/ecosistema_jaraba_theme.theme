@@ -1168,6 +1168,24 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'full-width-page';
   }
 
+  // =========================================================================
+  // BLOG - Paginas publicas del blog per-tenant
+  // Ver: web/modules/custom/jaraba_blog
+  // =========================================================================
+  $blog_routes = [
+    'jaraba_blog.listing',    // /blog
+    'jaraba_blog.detail',     // /blog/{slug}
+    'jaraba_blog.category',   // /blog/categoria/{slug}
+    'jaraba_blog.author',     // /blog/autor/{slug}
+  ];
+  if (in_array($route, $blog_routes)) {
+    $variables['attributes']['class'][] = 'page-blog';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    if ($route === 'jaraba_blog.detail') {
+      $variables['attributes']['class'][] = 'page-blog-detail';
+    }
+  }
+
   if ($config->get('enable_promo_banner')) {
     $variables['attributes']['class'][] = 'has-promo-banner';
   }
@@ -1524,6 +1542,23 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         'stats' => $homepage_data['stats'] ?? [],
         'intentions' => $homepage_data['intentions'] ?? [],
       ];
+
+      // =====================================================================
+      // VERTICAL SELECTOR - Doc 178 §4.1
+      // Detecta la vertical del visitante via AvatarDetectionService y
+      // pasa los datos al parcial _vertical-selector.html.twig.
+      // =====================================================================
+      $variables['detected_vertical'] = NULL;
+      try {
+        $avatar_service = \Drupal::service('ecosistema_jaraba_core.avatar_detection');
+        $detection = $avatar_service->detect();
+        if ($detection && $detection->vertical) {
+          $variables['detected_vertical'] = $detection->vertical;
+        }
+      }
+      catch (\Exception $e) {
+        // Servicio no disponible, sin detección automática
+      }
     }
     catch (\Exception $e) {
       // Servicio no disponible, usar datos vacíos (partials usan fallbacks)
@@ -1962,6 +1997,14 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   if (in_array($route, $credentials_routes)) {
     // Template limpio full-width sin sidebars ni regiones de admin.
     $suggestions[] = 'page__credentials';
+  }
+
+  // =========================================================================
+  // HEATMAP ANALYTICS - Template limpio para dashboard de heatmaps
+  // Ruta /heatmap/analytics usa page--heatmap--analytics.html.twig
+  // =========================================================================
+  if ($route === 'jaraba_heatmap.analytics_dashboard') {
+    $suggestions[] = 'page__heatmap__analytics';
   }
 
   // =========================================================================

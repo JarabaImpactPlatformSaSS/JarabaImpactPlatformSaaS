@@ -1,0 +1,293 @@
+/**
+ * @file
+ * Estilos del footer global.
+ *
+ * Variantes: simple, columns, mega, minimal, cta.
+ *
+ * Cumple con directrices:
+ * - Variables CSS inyectables var(--ej-*)
+ * - Mobile-first
+ * - BEM naming
+ */
+
+.jaraba-footer {
+  background: var(--footer-bg, #1E293B);
+  color: var(--footer-text, #94A3B8);
+  padding: var(--ej-spacing-2xl, 48px) 0 var(--ej-spacing-lg, 24px);
+
+  a {
+    color: var(--footer-text, #94A3B8);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--footer-accent, #3B82F6);
+    }
+  }
+
+  &__container {
+    max-width: var(--ej-container-max, 1280px);
+    margin: 0 auto;
+    padding: 0 var(--ej-spacing-md, 16px);
+
+    @media (min-width: 1024px) {
+      padding: 0 var(--ej-spacing-lg, 24px);
+    }
+  }
+
+  // CTA section (variante cta).
+  &__cta-section {
+    text-align: center;
+    padding: var(--ej-spacing-2xl, 48px) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: var(--ej-spacing-2xl, 48px);
+  }
+
+  &__cta-title {
+    font-size: var(--ej-font-size-2xl, 1.75rem);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 var(--ej-spacing-sm, 8px);
+  }
+
+  &__cta-subtitle {
+    font-size: var(--ej-font-size-base, 1rem);
+    max-width: 500px;
+    margin: 0 auto var(--ej-spacing-lg, 24px);
+  }
+
+  &__cta-btn {
+    display: inline-block;
+    padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-xl, 32px);
+    background: var(--footer-accent, #3B82F6);
+    color: #FFFFFF !important;
+    border-radius: var(--ej-radius-md, 6px);
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  // Main content area.
+  &__main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-xl, 32px);
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 2fr;
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: 1fr 3fr;
+    }
+  }
+
+  // Brand section (logo + description).
+  &__brand {
+    // Brand block.
+  }
+
+  &__logo {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: var(--ej-spacing-md, 16px);
+  }
+
+  &__logo-text {
+    display: block;
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: var(--ej-spacing-md, 16px);
+  }
+
+  &__description {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // Columns grid.
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ej-spacing-lg, 24px);
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+  }
+
+  &__column-title {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 var(--ej-spacing-md, 16px);
+  }
+
+  &__column-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__column-item {
+    margin-bottom: var(--ej-spacing-sm, 8px);
+  }
+
+  &__column-link {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    line-height: 1.5;
+  }
+
+  // Newsletter form.
+  &__newsletter {
+    margin-top: var(--ej-spacing-lg, 24px);
+
+    @media (min-width: 768px) {
+      margin-top: 0;
+    }
+  }
+
+  &__newsletter-title {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 var(--ej-spacing-sm, 12px);
+  }
+
+  &__newsletter-form {
+    display: flex;
+    gap: var(--ej-spacing-xs, 4px);
+  }
+
+  &__newsletter-input {
+    flex: 1;
+    padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 12px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--ej-radius-md, 6px);
+    color: #FFFFFF;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--footer-accent, #3B82F6);
+    }
+  }
+
+  &__newsletter-btn {
+    padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+    background: var(--footer-accent, #3B82F6);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--ej-radius-md, 6px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  // Social links.
+  &__social {
+    display: flex;
+    gap: var(--ej-spacing-sm, 12px);
+    flex-wrap: wrap;
+
+    &--top {
+      padding-bottom: var(--ej-spacing-lg, 24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: var(--ej-spacing-lg, 24px);
+    }
+
+    &--bottom {
+      padding-top: var(--ej-spacing-lg, 24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: var(--ej-spacing-lg, 24px);
+      justify-content: center;
+    }
+  }
+
+  &__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ej-radius-full, 50%);
+    background: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--footer-accent, #3B82F6);
+      color: #FFFFFF !important;
+    }
+  }
+
+  // Bottom bar.
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 8px);
+    align-items: center;
+    padding-top: var(--ej-spacing-lg, 24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: var(--ej-spacing-xl, 32px);
+    text-align: center;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  &__copyright {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    margin: 0;
+  }
+
+  &__legal {
+    display: flex;
+    gap: var(--ej-spacing-md, 16px);
+  }
+
+  &__legal-link {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+  }
+
+  // --- Variantes ---
+
+  // Minimal: solo copyright + social.
+  &--minimal {
+    padding: var(--ej-spacing-lg, 24px) 0;
+
+    .jaraba-footer__main {
+      display: none;
+    }
+  }
+
+  // Simple: sin columnas, solo brand + copyright.
+  &--simple {
+    .jaraba-footer__columns {
+      display: none;
+    }
+
+    .jaraba-footer__main {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+}

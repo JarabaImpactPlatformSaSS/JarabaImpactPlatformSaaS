@@ -1,0 +1,11 @@
+id: eca_mkt_005
+label: 'Referral Code Generated'
+description: 'Al registrarse un nuevo usuario, se genera automaticamente un codigo de referido unico vinculado a su cuenta para el programa de referidos.'
+domain: MKT
+trigger_event: hook_user_insert
+module: jaraba_referral
+hook_function: jaraba_referral_user_insert
+spec_reference: 157_Referral
+implementation_status: implemented
+weight: 34
+status: true

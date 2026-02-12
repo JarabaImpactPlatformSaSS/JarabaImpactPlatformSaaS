@@ -1,0 +1,11 @@
+// Blog Module - Main SCSS Entry Point
+// Usa CSS Custom Properties var(--ej-*) con fallbacks inline.
+// Mobile-first. BEM naming.
+
+@forward 'blog-listing';
+@forward 'blog-detail';
+@forward 'blog-sidebar';
+@forward 'blog-author';
+@forward 'blog-categories';
+@forward 'blog-pagination';
+@forward 'blog-share';

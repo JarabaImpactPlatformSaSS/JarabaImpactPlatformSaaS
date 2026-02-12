@@ -8,10 +8,12 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_site_builder\Service\SiteStructureService;
 use Drupal\jaraba_site_builder\Service\SiteAnalyticsService;
 use Drupal\jaraba_site_builder\Service\SeoAuditorService;
+use Drupal\jaraba_site_builder\Service\RedirectService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * API Controller para operaciones del árbol de páginas.
@@ -27,6 +29,7 @@ class SiteStructureApiController extends ControllerBase
         protected SiteAnalyticsService $analyticsService,
         protected TenantContextService $tenantContext,
         protected SeoAuditorService $seoAuditor,
+        protected RedirectService $redirectService,
     ) {
     }
 
@@ -40,6 +43,7 @@ class SiteStructureApiController extends ControllerBase
             $container->get('jaraba_site_builder.analytics'),
             $container->get('ecosistema_jaraba_core.tenant_context'),
             $container->get('jaraba_site_builder.seo_auditor'),
+            $container->get('jaraba_site_builder.redirect'),
         );
     }
 
@@ -337,6 +341,72 @@ class SiteStructureApiController extends ControllerBase
     }
 
     /**
+     * GET /admin/structure/site-builder/tree/{id}/edit-ajax - Formulario de edición AJAX.
+     *
+     * Devuelve solo el HTML del formulario para cargarlo en un slide-panel.
+     */
+    public function editNodeAjax(int $id): Response
+    {
+        $storage = $this->entityTypeManager()->getStorage('site_page_tree');
+        $entity = $storage->load($id);
+
+        if (!$entity) {
+            return new Response(
+                '<div class="error-message">' . $this->t('Nodo no encontrado.') . '</div>',
+                404
+            );
+        }
+
+        $form = $this->entityFormBuilder()->getForm($entity, 'edit');
+        $rendered = \Drupal::service('renderer')->renderRoot($form);
+
+        return new Response($rendered);
+    }
+
+    /**
+     * POST /api/v1/site/pages/bulk-status - Actualiza estado de múltiples nodos.
+     */
+    public function bulkUpdateStatus(Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), TRUE);
+
+            if (empty($data['node_ids']) || !is_array($data['node_ids'])) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('Se requiere el campo "node_ids" como array.'),
+                ], 400);
+            }
+
+            if (empty($data['status'])) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('Se requiere el campo "status".'),
+                ], 400);
+            }
+
+            $nodeIds = array_map('intval', $data['node_ids']);
+            $updated = $this->structureService->bulkUpdateStatus($nodeIds, $data['status']);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'data' => ['updated' => $updated],
+                'message' => $this->t('@count páginas actualizadas.', ['@count' => $updated]),
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $e->getMessage(),
+            ], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Error al actualizar páginas.'),
+            ], 500);
+        }
+    }
+
+    /**
      * GET /api/v1/site/pages/{id}/seo-audit - Auditoría SEO de una página.
      *
      * Sprint B2: SEO Assistant Integrado.
@@ -384,6 +454,97 @@ class SiteStructureApiController extends ControllerBase
             return new JsonResponse([
                 'success' => FALSE,
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * POST /api/v1/site/redirects/bulk-import - Importa redirects desde CSV.
+     *
+     * Espera un body JSON con 'rows': array de objetos
+     * {source, destination, type, reason}.
+     */
+    public function bulkImportRedirects(Request $request): JsonResponse
+    {
+        try {
+            $tenant = $this->tenantContext->getCurrentTenant();
+            $tenantId = $tenant ? (int) $tenant->id() : null;
+
+            if (!$tenantId) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('No hay tenant seleccionado.'),
+                ], 400);
+            }
+
+            $data = json_decode($request->getContent(), TRUE);
+
+            if (empty($data['rows']) || !is_array($data['rows'])) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('Se requiere el campo "rows" como array.'),
+                ], 400);
+            }
+
+            $result = $this->redirectService->bulkImport($data['rows'], $tenantId);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'data' => $result,
+                'message' => $this->t('@imported redirects importados.', [
+                    '@imported' => $result['imported'],
+                ]),
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Error al importar redirects.'),
+            ], 500);
+        }
+    }
+
+    /**
+     * GET /api/v1/site/redirects/export - Exporta redirects como CSV.
+     */
+    public function exportRedirects(): Response
+    {
+        try {
+            $tenant = $this->tenantContext->getCurrentTenant();
+            $tenantId = $tenant ? (int) $tenant->id() : null;
+
+            if (!$tenantId) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => $this->t('No hay tenant seleccionado.'),
+                ], 400);
+            }
+
+            $rows = $this->redirectService->exportAll($tenantId);
+
+            // Generar CSV.
+            $csv = "source,destination,type,reason,hits,active,auto_generated,created\n";
+            foreach ($rows as $row) {
+                $csv .= sprintf(
+                    '"%s","%s",%s,"%s",%d,%s,%s,"%s"' . "\n",
+                    str_replace('"', '""', $row['source']),
+                    str_replace('"', '""', $row['destination']),
+                    $row['type'],
+                    str_replace('"', '""', $row['reason']),
+                    $row['hits'],
+                    $row['active'],
+                    $row['auto_generated'],
+                    $row['created']
+                );
+            }
+
+            return new Response($csv, 200, [
+                'Content-Type' => 'text/csv; charset=utf-8',
+                'Content-Disposition' => 'attachment; filename="redirects-export.csv"',
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Error al exportar redirects.'),
             ], 500);
         }
     }

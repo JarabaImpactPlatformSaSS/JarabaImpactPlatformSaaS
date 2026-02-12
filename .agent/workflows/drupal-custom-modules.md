@@ -488,6 +488,77 @@ https://jaraba-saas.lndo.site/
 
 ---
 
+## 🔄 PATRÓN: QueueWorker Plugin + hook_cron + hook_mail
+
+> Aprendizaje 2026-02-12 — Validado en jaraba_heatmap, jaraba_ab_testing, jaraba_pixels
+
+### QueueWorker Plugin (HEATMAP-001)
+
+El `@QueueWorker` plugin **DEBE** usar `ContainerFactoryPluginInterface` con inyección de dependencias.
+El constructor **NO** debe redeclarar propiedades de `QueueWorkerBase` (PHP 8.4 DRUPAL11-001).
+
+```php
+/**
+ * @QueueWorker(
+ *   id = "jaraba_heatmap_events",
+ *   title = @Translation("Heatmap Event Processor"),
+ *   cron = {"time" = 30}
+ * )
+ */
+class HeatmapEventProcessor extends QueueWorkerBase implements ContainerFactoryPluginInterface {
+  // Inyectar servicios via create() — NO redeclarar $configuration, $plugin_id, $plugin_definition
+}
+```
+
+### hook_cron con funciones independientes + State API (HEATMAP-002)
+
+Refactorizar `hook_cron()` en funciones independientes con `State API` para rate limiting.
+
+```php
+function jaraba_heatmap_cron() {
+  $time = \Drupal::time()->getRequestTime();
+  _jaraba_heatmap_cron_aggregation($time);      // Diario (86400s)
+  _jaraba_heatmap_cron_cleanup($time);           // Semanal (604800s)
+  _jaraba_heatmap_cron_anomaly_detection($time); // Diario (86400s)
+}
+```
+
+**Intervalos estándar:**
+| Intervalo | Segundos | Uso |
+|-----------|----------|-----|
+| Diario | `86400` | Agregación, anomalías, health check |
+| Cada 6h | `21600` | Auto-winner A/B testing |
+| Semanal | `604800` | Limpieza datos antiguos |
+
+> [!IMPORTANT]
+> **datetime.time Service ID** (HEATMAP-003): `\Drupal::time()` mapea al service ID `datetime.time` en el container, **NO** `time`.
+> En mocks de tests unitarios usar `$container->set('datetime.time', $timeMock);`
+
+### hook_mail para alertas (TRACKING-004)
+
+```php
+function jaraba_ab_testing_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'experiment_winner':
+      $message['subject'] = t('A/B Test Winner: @name', ['@name' => $params['experiment_name']]);
+      $message['body'][] = t('Experiment @id has a statistically significant winner.', ['@id' => $params['experiment_id']]);
+      break;
+  }
+}
+```
+
+**Patrón:** `$message['subject']` con `t()` + `$message['body'][]` array de líneas.
+
+### Cross-módulo Tracking Cron
+
+| Módulo | Servicio | Intervalo | State Key |
+|--------|----------|-----------|-----------|
+| `jaraba_ab_testing` | `ExperimentOrchestratorService::evaluateAll()` | 6h | `jaraba_ab_testing.last_auto_winner_check` |
+| `jaraba_pixels` | `PixelHealthCheckService::checkAllPixels()` | Diario | `jaraba_pixels.last_health_check` |
+| `jaraba_heatmap` | Agregación + limpieza + anomalías | Diario/Semanal | `jaraba_heatmap.last_*` |
+
+---
+
 ## 🏗️ PATRÓN: Nuevo Módulo Vertical (AgroConecta/ServiciosConecta/ComercioConecta)
 
 > Aprendizaje 2026-02-09 — Validado en 3 verticales

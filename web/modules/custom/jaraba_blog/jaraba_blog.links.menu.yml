@@ -1,0 +1,22 @@
+# Links de menu - /admin/structure para Field UI
+
+entity.blog_post.settings:
+  title: 'Blog Posts'
+  description: 'Configurar campos y display de entradas del blog.'
+  route_name: entity.blog_post.settings
+  parent: system.admin_structure
+  weight: 60
+
+entity.blog_category.settings:
+  title: 'Blog Categories'
+  description: 'Configurar campos y display de categorias del blog.'
+  route_name: entity.blog_category.settings
+  parent: system.admin_structure
+  weight: 61
+
+entity.blog_author.settings:
+  title: 'Blog Authors'
+  description: 'Configurar campos y display de autores del blog.'
+  route_name: entity.blog_author.settings
+  parent: system.admin_structure
+  weight: 62

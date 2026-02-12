@@ -417,3 +417,25 @@ timeline:
     - core/once
     - jaraba_page_builder/page-builder
 
+# =====================================================================
+# ACCESIBILIDAD WCAG - P0-02/P0-03 Cierre de Gaps 20260126
+# =====================================================================
+
+# Validador de accesibilidad ARIA en tiempo real para Canvas Editor
+accessibility-validator:
+  version: 1.0
+  js:
+    js/accessibility-validator.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Verificador de contraste WCAG AA/AAA para Canvas Editor
+contrast-checker:
+  version: 1.0
+  js:
+    js/contrast-checker.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+

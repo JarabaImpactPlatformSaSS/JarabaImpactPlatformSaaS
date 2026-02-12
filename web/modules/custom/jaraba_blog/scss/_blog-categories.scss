@@ -1,0 +1,45 @@
+// Blog Categories Navigation Styles
+
+.blog-categories-nav {
+  margin-bottom: var(--ej-spacing-lg, 2rem);
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.25rem);
+    padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-md, 1rem);
+    border-radius: var(--ej-radius-full, 9999px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    text-decoration: none;
+    color: var(--ej-text-secondary, #6b7280);
+    background: var(--ej-surface-alt, #f3f4f6);
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+
+    &:hover {
+      background: var(--ej-surface, #ffffff);
+      border-color: var(--category-color, var(--ej-primary, #233D63));
+      color: var(--ej-text-primary, #1a1a2e);
+    }
+
+    &.is-active {
+      background: var(--category-color, var(--ej-primary, #233D63));
+      color: #fff;
+      font-weight: var(--ej-font-weight-medium, 500);
+    }
+  }
+
+  &__count {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    opacity: 0.7;
+  }
+}

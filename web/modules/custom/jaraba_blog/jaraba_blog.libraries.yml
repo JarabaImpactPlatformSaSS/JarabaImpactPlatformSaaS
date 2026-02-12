@@ -1,0 +1,13 @@
+# Libraries del modulo Blog
+
+blog:
+  version: 1.0.0
+  css:
+    theme:
+      css/blog.css: {}
+  js:
+    js/blog.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

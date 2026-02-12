@@ -1,0 +1,11 @@
+id: empleabilidad_profesional_cv_builder
+label: 'Empleabilidad Profesional: Generador CV'
+vertical: empleabilidad
+plan: profesional
+feature_key: cv_builder
+limit_value: -1
+description: 'CVs generados con IA ilimitados en plan Profesional Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 322
+status: true

@@ -107,6 +107,7 @@ class LmsCredentialsIntegration
 
         // Preparar metadatos del enrollment
         $metadata = [
+            'trigger' => 'lms',
             'enrollment_id' => $enrollment->id(),
             'course_id' => $courseId,
             'completed_at' => $enrollment->get('completed_at')->value ?? date('c'),
@@ -280,6 +281,7 @@ class LmsCredentialsIntegration
 
         // Preparar metadatos.
         $metadata = [
+            'trigger' => 'exam',
             'interactive_result_id' => $result->id(),
             'interactive_content_id' => $contentId,
             'score' => $score,

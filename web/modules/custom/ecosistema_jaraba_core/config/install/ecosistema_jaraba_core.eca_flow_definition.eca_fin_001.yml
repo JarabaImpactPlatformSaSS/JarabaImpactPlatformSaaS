@@ -1,0 +1,11 @@
+id: eca_fin_001
+label: 'Alerta Churn Spike'
+description: 'Cuando el Health Score de un tenant cae por debajo de 40, se genera alerta de riesgo de churn, se notifica al equipo de Customer Success y se inicia secuencia de retencion.'
+domain: FIN
+trigger_event: 'health_score_threshold:below_40'
+module: jaraba_customer_success
+hook_function: jaraba_customer_success_health_score_alert
+spec_reference: 13_FOC
+implementation_status: implemented
+weight: 20
+status: true

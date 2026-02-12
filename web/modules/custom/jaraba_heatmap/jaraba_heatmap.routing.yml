@@ -63,6 +63,19 @@ jaraba_heatmap.summary:
     _permission: 'access heatmap data'
 
 # =============================================================================
+# Frontend: Dashboard de Heatmap Analytics
+# Ref: Spec 20260130a §8, §9
+# =============================================================================
+
+jaraba_heatmap.analytics_dashboard:
+  path: '/heatmap/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapDashboardController::dashboard'
+    _title_callback: '\Drupal\jaraba_heatmap\Controller\HeatmapDashboardController::getTitle'
+  requirements:
+    _permission: 'access heatmap data'
+
+# =============================================================================
 # Administración: Configuración
 # =============================================================================
 
@@ -75,3 +88,26 @@ jaraba_heatmap.settings:
     _permission: 'administer heatmap settings'
   options:
     _admin_route: TRUE
+
+# =============================================================================
+# API: Screenshots para Overlay de Heatmap
+# Ref: Spec 20260130a §6.1, §7.2
+# =============================================================================
+
+jaraba_heatmap.screenshot.get:
+  path: '/api/heatmap/pages/{page_path}/screenshot'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getScreenshot'
+  methods: [GET]
+  requirements:
+    _permission: 'access heatmap data'
+    page_path: .+
+
+jaraba_heatmap.screenshot.capture:
+  path: '/api/heatmap/pages/{page_path}/screenshot'
+  defaults:
+    _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::captureScreenshot'
+  methods: [POST]
+  requirements:
+    _permission: 'administer heatmap settings'
+    page_path: .+

@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-12
-**Versión:** 14.0.0 (Copilot v2 Gaps Closure — BD Triggers + SSE Streaming + Multi-Provider + Milestones + Metrics P50/P99)
+**Versión:** 15.0.0 (Heatmaps Nativos + Tracking Automation — Fases 1-5 Implementadas)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 5.0 / 5.0
 
@@ -729,13 +729,19 @@
 │   ├── Dashboard Admin: /admin/config/jaraba/journey                       │
 │   └── Estado: ✅ Producción (v1.0 - 100% avatares implementados)          │
 │                                                                         │
-│   📦 jaraba_heatmap 🔄 (Native Analytics)                                │
+│   📦 jaraba_heatmap ✅ (Native Analytics + Tracking Automation)            │
 │   ├── Tracking: Clics, movimiento mouse, scroll depth                    │
 │   ├── API: POST /api/heatmap/collect (Beacon API)                         │
 │   ├── Storage: 4 tablas (events, aggregated, scroll_depth, screenshots)  │
-│   ├── Agregación: Cron diario, buckets 5%/50px                            │
-│   ├── Visualización: Canvas overlay con gradientes                        │
-│   └── Estado: 🔄 Planificado (55-70h)                                     │
+│   ├── QueueWorker: HeatmapEventProcessor (cron 30s)                      │
+│   ├── Screenshots: HeatmapScreenshotService (wkhtmltoimage, UPSERT)     │
+│   ├── Agregación: Cron diario, limpieza semanal, anomaly detection       │
+│   │   └── Anomalías: drop 50% / spike 200% vs media 7 días              │
+│   ├── Dashboard: Canvas 2D Zero Region (/heatmap/analytics)              │
+│   ├── Cross-módulo: auto-winner A/B c/6h, pixel health check diario     │
+│   ├── hook_mail: experiment_winner + pixel_health_alert                   │
+│   ├── Tests: 53 unitarios (250 assertions)                               │
+│   └── Estado: ✅ Producción (Fases 1-5 completadas, 2026-02-12)          │
 │                                                                         │
 │   📦 jaraba_ai_agents ✅ (Agentic Workflows Framework)                    │
 │   ├── Sistema Agentic: Workflows multi-step con herramientas autónomas  │
@@ -1621,6 +1627,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 | **Aprendizajes Avatar + Empleabilidad** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_avatar_empleabilidad_activation.md` |
 | **Aprendizajes Self-Discovery Entities + Services** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_self_discovery_content_entities_services.md` |
 | **Plan Cierre Gaps Specs 20260122-25** ⭐ | `docs/implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260122_20260125.md` |
+| **Aprendizajes Heatmaps + Tracking Fases 1-5** ⭐ | `docs/tecnicos/aprendizajes/2026-02-12_heatmaps_tracking_phases_1_5.md` |
 
 ---
 
@@ -1639,5 +1646,5 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ---
 
-> **Versión:** 9.0.0 | **Fecha:** 2026-02-12 | **Autor:** IA Asistente
+> **Versión:** 15.0.0 | **Fecha:** 2026-02-12 | **Autor:** IA Asistente
 

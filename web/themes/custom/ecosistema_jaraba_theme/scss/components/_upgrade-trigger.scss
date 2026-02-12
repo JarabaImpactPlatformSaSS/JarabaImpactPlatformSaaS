@@ -1,0 +1,221 @@
+// === UPGRADE TRIGGER - Componente slide-panel de incentivo de upgrade ===
+// Doc 183 §4: Modal contextual que se muestra cuando un tenant alcanza
+// un limite freemium o cumple un criterio de upgrade.
+//
+// Usa las CSS Custom Properties del Design Token System:
+// - var(--ej-color-*): Colores del tema inyectados desde Drupal UI
+// - var(--ej-*): Spacing, radius, shadows, tipografia
+//
+// @see .agent/workflows/scss-estilos.md
+// @see .agent/workflows/slide-panel-modales.md
+
+@use 'sass:color';
+
+// =============================================================================
+// UPGRADE TRIGGER COMPONENT
+// =============================================================================
+
+.upgrade-trigger {
+
+  // Header con icono y titulo
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    background: linear-gradient(
+      135deg,
+      var(--ej-bg-surface, #FFFFFF) 0%,
+      color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 5%, var(--ej-bg-surface, #FFFFFF)) 100%
+    );
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ej-border-radius, 12px);
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+  }
+
+  &__title {
+    flex: 1;
+    margin: 0;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    line-height: 1.3;
+  }
+
+  // Body con mensaje y comparativa
+  &__body {
+    flex: 1;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    overflow-y: auto;
+  }
+
+  &__message {
+    margin: 0 0 var(--ej-spacing-lg, 1.5rem);
+    font-family: var(--ej-font-body, "Inter", sans-serif);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ej-color-body, #334155);
+  }
+
+  // =============================================================================
+  // PLAN COMPARISON - Dos columnas: actual vs recomendado
+  // =============================================================================
+
+  &__comparison {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, 1rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    background: var(--ej-bg-body, #F8FAFC);
+    border-radius: var(--ej-border-radius, 12px);
+    border: 1px solid var(--ej-border-color, #E5E7EB);
+  }
+
+  &__plan {
+    flex: 1;
+    text-align: center;
+    padding: var(--ej-spacing-md, 1rem);
+    border-radius: calc(var(--ej-border-radius, 12px) - 4px);
+
+    &--current {
+      background: var(--ej-bg-surface, #FFFFFF);
+      border: 1px solid var(--ej-border-color, #E5E7EB);
+    }
+
+    &--recommended {
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, var(--ej-bg-surface, #FFFFFF));
+      border: 2px solid var(--ej-color-impulse, #FF8C42);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent);
+    }
+  }
+
+  &__plan-badge {
+    display: inline-block;
+    padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: calc(var(--ej-btn-radius, 8px) - 2px);
+    color: var(--ej-color-muted, #64748B);
+    background: var(--ej-bg-body, #F8FAFC);
+
+    &--recommended {
+      color: var(--ej-color-impulse, #FF8C42);
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+    }
+  }
+
+  &__plan-name {
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: var(--ej-color-impulse, #FF8C42);
+  }
+
+  // =============================================================================
+  // FOOTER / CTAs
+  // =============================================================================
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+  }
+
+  &__cta-primary {
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  &__cta-secondary {
+    width: 100%;
+    text-align: center;
+    color: var(--ej-color-muted, #64748B);
+
+    &:hover {
+      color: var(--ej-color-body, #334155);
+    }
+  }
+
+  // =============================================================================
+  // TRIGGER TYPE VARIANTS
+  // =============================================================================
+
+  &--limit_reached {
+    .upgrade-trigger__icon {
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+    }
+  }
+
+  &--feature_blocked {
+    .upgrade-trigger__icon {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    }
+  }
+
+  &--first_sale {
+    .upgrade-trigger__icon {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+    }
+
+    .upgrade-trigger__header {
+      background: linear-gradient(
+        135deg,
+        var(--ej-bg-surface, #FFFFFF) 0%,
+        color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 5%, var(--ej-bg-surface, #FFFFFF)) 100%
+      );
+    }
+  }
+
+  &--competition_visible {
+    .upgrade-trigger__icon {
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+    }
+  }
+
+  &--time_on_platform {
+    .upgrade-trigger__icon {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    }
+  }
+
+  // =============================================================================
+  // MOBILE-FIRST RESPONSIVE
+  // =============================================================================
+
+  @media (max-width: 480px) {
+    &__comparison {
+      flex-direction: column;
+    }
+
+    &__arrow {
+      transform: rotate(90deg);
+    }
+
+    &__plan {
+      width: 100%;
+    }
+  }
+}

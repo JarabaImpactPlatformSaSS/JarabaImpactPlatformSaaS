@@ -1,0 +1,59 @@
+{#
+/**
+ * @file _landing-hero.html.twig
+ * Parcial reutilizable: Hero section para landing pages verticales.
+ *
+ * VARIABLES:
+ * - hero.headline: Titulo principal (string)
+ * - hero.subheadline: Subtitulo descriptivo (string)
+ * - hero.cta: { text, url } CTA principal
+ * - hero.cta_secondary: { text, url } CTA secundario (opcional)
+ * - hero.icon: { category, name } Icono del vertical
+ * - color: Color del vertical (impulse, agro, innovation, corporate)
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set hero = hero|default({}) %}
+
+<section class="landing-hero landing-hero--{{ vertical_key|default('default') }}">
+  <div class="landing-hero__bg">
+    <div class="landing-hero__gradient"></div>
+  </div>
+
+  <div class="landing-hero__content">
+    {% if hero.icon is defined %}
+      <span class="landing-hero__icon">
+        {{ jaraba_icon(hero.icon.category|default('verticals'), hero.icon.name|default('rocket'), {
+          variant: 'duotone',
+          color: color|default('impulse'),
+          size: '64px'
+        }) }}
+      </span>
+    {% endif %}
+
+    <h1 class="landing-hero__title">{{ hero.headline }}</h1>
+    <p class="landing-hero__subtitle">{{ hero.subheadline }}</p>
+
+    <div class="landing-hero__actions">
+      {% if hero.cta is defined %}
+        <a href="{{ hero.cta.url }}"
+           class="btn btn--primary btn--lg"
+           data-track-cta="hero_{{ vertical_key|default('') }}"
+           data-track-position="hero">
+          {{ hero.cta.text }}
+        </a>
+      {% endif %}
+      {% if hero.cta_secondary is defined %}
+        <a href="{{ hero.cta_secondary.url }}"
+           class="btn btn--outline btn--lg"
+           data-track-cta="hero_secondary_{{ vertical_key|default('') }}"
+           data-track-position="hero">
+          {{ hero.cta_secondary.text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>

@@ -88,6 +88,18 @@ services:
       - '@http_client'
       - '@logger.factory'
 
+  # =========================================================================
+  # Servicio: Health Check de Píxeles
+  # Ref: Spec 20260130b §8.3
+  # =========================================================================
+  jaraba_pixels.health_check:
+    class: Drupal\jaraba_pixels\Service\PixelHealthCheckService
+    arguments:
+      - '@database'
+      - '@jaraba_pixels.dispatcher'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_pixels'
+
   # Logger channel
   logger.channel.jaraba_pixels:
     class: Drupal\Core\Logger\LoggerChannel

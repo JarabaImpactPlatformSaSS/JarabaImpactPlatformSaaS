@@ -1,0 +1,11 @@
+id: empleabilidad_free_diagnostics
+label: 'Empleabilidad Free: Diagnosticos'
+vertical: empleabilidad
+plan: free
+feature_key: diagnostics
+limit_value: 1
+description: '1 diagnostico de competencias en plan gratuito Empleabilidad.'
+upgrade_message: 'Ya has realizado tu diagnostico gratuito. Actualiza a Starter para diagnosticos ilimitados.'
+expected_conversion: 0.28
+weight: 300
+status: true

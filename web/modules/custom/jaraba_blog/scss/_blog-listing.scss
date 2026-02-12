@@ -1,0 +1,199 @@
+// Blog Listing Styles
+// Grid responsive de cards con sidebar
+
+.blog-listing {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 2rem) var(--ej-spacing-md, 1rem);
+
+  &__header {
+    margin-bottom: var(--ej-spacing-lg, 2rem);
+    text-align: center;
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-3xl, 2rem);
+    font-weight: var(--ej-font-weight-bold, 700);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__description {
+    font-size: var(--ej-font-size-lg, 1.125rem);
+    color: var(--ej-text-secondary, #6b7280);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-xl, 2.5rem);
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 300px;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-lg, 2rem);
+
+    @media (min-width: 480px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--ej-spacing-3xl, 4rem) var(--ej-spacing-lg, 2rem);
+    color: var(--ej-text-secondary, #6b7280);
+  }
+}
+
+// Blog Post Card
+.blog-card {
+  background: var(--ej-surface, #ffffff);
+  border-radius: var(--ej-radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.15));
+    transform: translateY(-2px);
+  }
+
+  &__image-link {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+
+    .blog-card:hover & {
+      transform: scale(1.03);
+    }
+  }
+
+  &__content {
+    padding: var(--ej-spacing-md, 1rem);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__category {
+    display: inline-block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-sm, 4px);
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-lg, 1.125rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+    line-height: 1.3;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--ej-primary, #233D63);
+      }
+    }
+  }
+
+  &__excerpt {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-secondary, #6b7280);
+    line-height: 1.5;
+    flex: 1;
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+    flex-wrap: wrap;
+  }
+
+  &__author {
+    color: var(--ej-primary, #233D63);
+    text-decoration: none;
+    font-weight: var(--ej-font-weight-medium, 500);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__reading-time {
+    &::before {
+      content: '\00B7';
+      margin-right: var(--ej-spacing-xs, 0.25rem);
+    }
+  }
+
+  // Featured card variant
+  &--featured {
+    grid-column: 1 / -1;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+
+      .blog-card__image-link {
+        width: 50%;
+        aspect-ratio: auto;
+      }
+
+      .blog-card__content {
+        width: 50%;
+        padding: var(--ej-spacing-lg, 2rem);
+      }
+
+      .blog-card__title {
+        font-size: var(--ej-font-size-xl, 1.5rem);
+      }
+    }
+  }
+
+  // Compact variant
+  &--compact {
+    .blog-card__image-link {
+      aspect-ratio: 4 / 3;
+    }
+
+    .blog-card__title {
+      font-size: var(--ej-font-size-base, 1rem);
+    }
+
+    .blog-card__excerpt {
+      display: none;
+    }
+  }
+}

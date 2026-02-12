@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * blog-categories-nav.html.twig - Navegacion de categorias con conteo.
+ *
+ * Variables:
+ *   - categories: Array de categorias activas
+ *   - current_slug: Slug de la categoria seleccionada (o null)
+ */
+#}
+<nav class="blog-categories-nav" aria-label="{% trans %}Categorias del blog{% endtrans %}">
+  <ul class="blog-categories-nav__list">
+    <li class="blog-categories-nav__item">
+      <a href="/blog"
+         class="blog-categories-nav__link {{ current_slug is null ? 'is-active' : '' }}"
+         {% if current_slug is null %}aria-current="page"{% endif %}>
+        {% trans %}Todos{% endtrans %}
+      </a>
+    </li>
+    {% for category in categories %}
+      <li class="blog-categories-nav__item">
+        <a href="/blog/categoria/{{ category.getSlug() }}"
+           class="blog-categories-nav__link {{ current_slug == category.getSlug() ? 'is-active' : '' }}"
+           {% if current_slug == category.getSlug() %}aria-current="page"{% endif %}
+           style="--category-color: {{ category.getColor() }}">
+          {{ category.getName() }}
+          {% if category.getPostsCount() > 0 %}
+            <span class="blog-categories-nav__count">{{ category.getPostsCount() }}</span>
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

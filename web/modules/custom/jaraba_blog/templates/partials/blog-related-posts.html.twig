@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * blog-related-posts.html.twig - Grid de posts relacionados.
+ *
+ * Variables:
+ *   - posts: Array de entidades BlogPost
+ */
+#}
+<section class="blog-related" aria-labelledby="related-posts-title">
+  <h2 class="blog-related__title" id="related-posts-title">
+    {% trans %}Tambien te puede interesar{% endtrans %}
+  </h2>
+
+  <div class="blog-related__grid">
+    {% for post in posts %}
+      {% include '@jaraba_blog/partials/blog-post-card.html.twig' with {
+        post: post,
+        size: 'compact',
+      } only %}
+    {% endfor %}
+  </div>
+</section>

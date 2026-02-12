@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blog nativo per-tenant - SCSS compilation",
+  "scripts": {
+    "build": "sass scss/main.scss css/blog.css --style=compressed --no-source-map",
+    "watch": "sass scss/main.scss css/blog.css --watch --style=expanded"
+  },
+  "devDependencies": {
+    "sass": "^1.77.0"
+  }
+}

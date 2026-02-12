@@ -9,8 +9,11 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\jaraba_credentials\Entity\CredentialTemplate;
 use Drupal\jaraba_credentials\Entity\IssuedCredential;
 use Drupal\jaraba_credentials\Entity\IssuerProfile;
+use Drupal\jaraba_credentials\Event\CredentialEvents;
+use Drupal\jaraba_credentials\Event\CredentialIssuedEvent;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Servicio orquestador para emisión de credenciales.
@@ -41,18 +44,28 @@ class CredentialIssuer
     protected LoggerInterface $logger;
 
     /**
+     * Despachador de eventos Symfony.
+     *
+     * P1-04: Inyeccion opcional para despachar CredentialIssuedEvent
+     * tras la emision exitosa de una credencial.
+     */
+    protected ?EventDispatcherInterface $eventDispatcher;
+
+    /**
      * Constructor del servicio.
      */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         CryptographyService $cryptography,
         OpenBadgeBuilder $badgeBuilder,
-        LoggerChannelFactoryInterface $loggerFactory
+        LoggerChannelFactoryInterface $loggerFactory,
+        ?EventDispatcherInterface $eventDispatcher = NULL,
     ) {
         $this->entityTypeManager = $entityTypeManager;
         $this->cryptography = $cryptography;
         $this->badgeBuilder = $badgeBuilder;
         $this->logger = $loggerFactory->get('jaraba_credentials');
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -155,6 +168,13 @@ class CredentialIssuer
             '@id' => $params['uuid'],
             '@user' => $userId,
         ]);
+
+        // P1-04: Despachar evento para triggers reactivos
+        // (notificaciones, webhooks, evaluacion de stacks).
+        if ($this->eventDispatcher) {
+            $event = new CredentialIssuedEvent($credential, $context);
+            $this->eventDispatcher->dispatch($event, CredentialEvents::CREDENTIAL_ISSUED);
+        }
 
         return $credential;
     }

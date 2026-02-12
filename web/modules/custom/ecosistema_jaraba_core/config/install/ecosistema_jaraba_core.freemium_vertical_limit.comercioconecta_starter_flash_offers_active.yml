@@ -1,0 +1,11 @@
+id: comercioconecta_starter_flash_offers_active
+label: 'ComercioConecta Starter: Ofertas flash activas'
+vertical: comercioconecta
+plan: starter
+feature_key: flash_offers_active
+limit_value: 10
+description: '10 ofertas flash activas en plan Starter ComercioConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 ofertas flash activas. Actualiza a Profesional para ofertas ilimitadas.'
+expected_conversion: 0.22
+weight: 121
+status: true

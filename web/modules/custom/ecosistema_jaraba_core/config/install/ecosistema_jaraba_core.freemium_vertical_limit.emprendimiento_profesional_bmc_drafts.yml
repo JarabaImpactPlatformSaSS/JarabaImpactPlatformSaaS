@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_bmc_drafts
+label: 'Emprendimiento Profesional: Borradores BMC'
+vertical: emprendimiento
+plan: profesional
+feature_key: bmc_drafts
+limit_value: -1
+description: 'Borradores BMC ilimitados en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 402
+status: true

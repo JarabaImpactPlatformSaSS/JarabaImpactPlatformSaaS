@@ -1187,3 +1187,169 @@ function ecosistema_jaraba_core_update_9011() {
     '@migrated' => $migrated,
   ]);
 }
+
+/**
+ * F1-Doc185: Importa el catalogo inicial de 30 flujos ECA al ECA Flow Registry.
+ *
+ * Crea la ConfigEntity EcaFlowDefinition y carga las 30 definiciones de flujos
+ * automatizados desde config/install/ para instalaciones ya existentes.
+ *
+ * @see docs/implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260128_Clase_Mundial.md
+ */
+function ecosistema_jaraba_core_update_9012() {
+  $config_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core') . '/config/install';
+  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  $created = 0;
+  $skipped = 0;
+  foreach ($source->listAll('ecosistema_jaraba_core.eca_flow_definition') as $config_name) {
+    $data = $source->read($config_name);
+    if ($data && !empty($data['id'])) {
+      $existing = $entity_type_manager->getStorage('eca_flow_definition')->load($data['id']);
+      if (!$existing) {
+        $entity_type_manager->getStorage('eca_flow_definition')->create($data)->save();
+        $created++;
+      }
+      else {
+        $skipped++;
+      }
+    }
+  }
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'F1-Doc185: ECA Flow Registry importado. @created creados, @skipped ya existian.',
+    ['@created' => $created, '@skipped' => $skipped]
+  );
+
+  return t('F1-Doc185: ECA Flow Registry - @created flujos ECA importados, @skipped ya existian.', [
+    '@created' => $created,
+    '@skipped' => $skipped,
+  ]);
+}
+
+/**
+ * F2-Doc183: Crea tabla upgrade_trigger_events e importa limites freemium.
+ *
+ * 1. Crea la tabla upgrade_trigger_events para tracking de disparos de
+ *    upgrade y analytics de conversion PLG.
+ * 2. Importa las FreemiumVerticalLimit ConfigEntity desde config/install/
+ *    para instalaciones ya existentes.
+ *
+ * @see docs/implementacion/2026-02-12_F2_Freemium_Trial_Model_Doc183_Implementacion.md
+ */
+function ecosistema_jaraba_core_update_9013() {
+  $database = \Drupal::database();
+  $messages = [];
+
+  // 1. Crear tabla upgrade_trigger_events.
+  if (!$database->schema()->tableExists('upgrade_trigger_events')) {
+    $database->schema()->createTable('upgrade_trigger_events', [
+      'description' => 'Registro de disparos de triggers de upgrade para analytics de conversion.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'trigger_type' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+          'description' => 'Tipo: limit_reached, feature_blocked, first_sale, competition_visible, time_on_platform.',
+        ],
+        'tenant_id' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'vertical' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'plan' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+        ],
+        'feature_key' => [
+          'type' => 'varchar',
+          'length' => 128,
+          'not null' => FALSE,
+          'default' => '',
+        ],
+        'context_data' => [
+          'type' => 'text',
+          'size' => 'medium',
+          'not null' => FALSE,
+          'description' => 'Contexto adicional en JSON.',
+        ],
+        'converted' => [
+          'type' => 'int',
+          'size' => 'tiny',
+          'not null' => TRUE,
+          'default' => 0,
+          'description' => '1 si el tenant convirtio despues de este trigger.',
+        ],
+        'converted_at' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => FALSE,
+          'description' => 'Timestamp de conversion.',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'trigger_type' => ['trigger_type'],
+        'tenant_id' => ['tenant_id'],
+        'vertical' => ['vertical'],
+        'plan' => ['plan'],
+        'converted' => ['converted'],
+        'tenant_trigger' => ['tenant_id', 'trigger_type'],
+        'created' => ['created'],
+      ],
+    ]);
+    $messages[] = 'Tabla upgrade_trigger_events creada';
+  }
+  else {
+    $messages[] = 'Tabla upgrade_trigger_events ya existe';
+  }
+
+  // 2. Importar FreemiumVerticalLimit seed data.
+  $config_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core') . '/config/install';
+  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  $created = 0;
+  $skipped = 0;
+  foreach ($source->listAll('ecosistema_jaraba_core.freemium_vertical_limit') as $config_name) {
+    $data = $source->read($config_name);
+    if ($data && !empty($data['id'])) {
+      $existing = $entity_type_manager->getStorage('freemium_vertical_limit')->load($data['id']);
+      if (!$existing) {
+        $entity_type_manager->getStorage('freemium_vertical_limit')->create($data)->save();
+        $created++;
+      }
+      else {
+        $skipped++;
+      }
+    }
+  }
+
+  $messages[] = "$created limites freemium importados, $skipped ya existian";
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'F2-Doc183: @messages',
+    ['@messages' => implode('. ', $messages)]
+  );
+
+  return t('F2-Doc183: @messages', [
+    '@messages' => implode('. ', $messages),
+  ]);
+}

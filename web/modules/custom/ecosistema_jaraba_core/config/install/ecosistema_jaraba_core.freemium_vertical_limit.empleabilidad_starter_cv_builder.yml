@@ -1,0 +1,11 @@
+id: empleabilidad_starter_cv_builder
+label: 'Empleabilidad Starter: Generador CV'
+vertical: empleabilidad
+plan: starter
+feature_key: cv_builder
+limit_value: 5
+description: '5 versiones de CV generadas con IA en plan Starter Empleabilidad.'
+upgrade_message: 'Has alcanzado el limite de 5 CVs generados. Actualiza a Profesional para CVs ilimitados.'
+expected_conversion: 0.22
+weight: 321
+status: true

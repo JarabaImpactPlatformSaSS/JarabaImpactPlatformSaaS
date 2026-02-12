@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * page--heatmap--analytics.html.twig
+ *
+ * Page template limpio para el dashboard de Heatmap Analytics.
+ * Sin sidebars, layout full-width premium.
+ *
+ * Ruta: /heatmap/analytics
+ * Patrón: Zero Region (solo page.content)
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium">
+
+  {# HEADER #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan|default(''),
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# CONTENIDO PRINCIPAL #}
+  <main class="main-content main-content--full" role="main">
+    {% if page.breadcrumb %}
+      <div class="breadcrumb-wrapper container">
+        {{ page.breadcrumb }}
+      </div>
+    {% endif %}
+
+    {% if page.highlighted %}
+      <div class="highlighted container">
+        {{ page.highlighted }}
+      </div>
+    {% endif %}
+
+    <div class="main-content__inner main-content__inner--full">
+      {% if page.content %}
+        {{ page.content }}
+      {% endif %}
+    </div>
+  </main>
+
+  {# FOOTER #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+</div>

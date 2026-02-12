@@ -8,3 +8,12 @@
 @use 'site-tree';
 @use 'site-builder-dashboard';
 @use 'site-builder-seo';
+
+// Fase 1 Doc 177: Sistema de Navegación Global
+@use 'navigation';
+@use 'header';
+@use 'footer';
+@use 'mega-menu';
+@use 'mobile-menu';
+@use 'topbar';
+@use 'breadcrumbs';

@@ -1,0 +1,41 @@
+{#
+/**
+ * @file _landing-features-grid.html.twig
+ * Parcial reutilizable: Features Grid (6-8 features con iconos).
+ *
+ * VARIABLES:
+ * - features: Array de { icon: { category, name }, title, description }
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ */
+#}
+
+{% set items = features|default([]) %}
+
+{% if items|length > 0 %}
+<section class="landing-features" aria-labelledby="features-title">
+  <div class="landing-features__container">
+    <h2 id="features-title" class="landing-features__title">
+      {% trans %}Todo lo que necesitas{% endtrans %}
+    </h2>
+
+    <div class="landing-features__grid">
+      {% for feature in items %}
+        <div class="landing-feature">
+          <span class="landing-feature__icon" aria-hidden="true">
+            {{ jaraba_icon(feature.icon.category|default('business'), feature.icon.name|default('target'), {
+              variant: 'duotone',
+              color: color|default('impulse'),
+              size: 36
+            }) }}
+          </span>
+          <h3 class="landing-feature__title">{{ feature.title }}</h3>
+          <p class="landing-feature__description">{{ feature.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

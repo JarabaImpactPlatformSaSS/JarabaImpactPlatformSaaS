@@ -101,3 +101,23 @@ entity.badge.add_form:
   title: 'Añadir Insignia'
   appears_on:
     - entity.badge.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - ECA FLOW DEFINITIONS (Doc 185)
+# ---------------------------------------------------------------------------
+
+entity.eca_flow_definition.add_form:
+  route_name: entity.eca_flow_definition.add_form
+  title: 'Añadir Flujo ECA'
+  appears_on:
+    - entity.eca_flow_definition.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - FREEMIUM VERTICAL LIMITS (Doc 183)
+# ---------------------------------------------------------------------------
+
+entity.freemium_vertical_limit.add_form:
+  route_name: entity.freemium_vertical_limit.add_form
+  title: 'Añadir Limite Freemium'
+  appears_on:
+    - entity.freemium_vertical_limit.collection

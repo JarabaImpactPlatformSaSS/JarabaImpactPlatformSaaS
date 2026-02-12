@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * blog-pagination.html.twig - Paginacion numerada mobile-friendly.
+ *
+ * Variables:
+ *   - current_page: Pagina actual (0-indexed)
+ *   - total_pages: Total de paginas
+ *   - base_url: URL base para los links
+ */
+#}
+<nav class="blog-pagination" aria-label="{% trans %}Paginacion{% endtrans %}">
+  <ul class="blog-pagination__list">
+    {# Boton anterior #}
+    {% if current_page > 0 %}
+      <li class="blog-pagination__item">
+        <a href="{{ base_url }}?page={{ current_page - 1 }}"
+           class="blog-pagination__link blog-pagination__link--prev"
+           aria-label="{% trans %}Pagina anterior{% endtrans %}">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+          </svg>
+        </a>
+      </li>
+    {% endif %}
+
+    {# Numeros de pagina #}
+    {% for i in 0..total_pages - 1 %}
+      {% if i == 0 or i == total_pages - 1 or (i >= current_page - 2 and i <= current_page + 2) %}
+        <li class="blog-pagination__item">
+          {% if i == current_page %}
+            <span class="blog-pagination__link blog-pagination__link--current" aria-current="page">
+              {{ i + 1 }}
+            </span>
+          {% else %}
+            <a href="{{ base_url }}?page={{ i }}" class="blog-pagination__link">
+              {{ i + 1 }}
+            </a>
+          {% endif %}
+        </li>
+      {% elseif i == current_page - 3 or i == current_page + 3 %}
+        <li class="blog-pagination__item blog-pagination__item--ellipsis">
+          <span class="blog-pagination__ellipsis">&hellip;</span>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {# Boton siguiente #}
+    {% if current_page < total_pages - 1 %}
+      <li class="blog-pagination__item">
+        <a href="{{ base_url }}?page={{ current_page + 1 }}"
+           class="blog-pagination__link blog-pagination__link--next"
+           aria-label="{% trans %}Pagina siguiente{% endtrans %}">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>

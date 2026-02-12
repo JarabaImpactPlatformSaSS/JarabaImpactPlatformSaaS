@@ -1,0 +1,11 @@
+id: agroconecta_profesional_copilot_uses_per_month
+label: 'AgroConecta Profesional: Copiloto IA/mes'
+vertical: agroconecta
+plan: profesional
+feature_key: copilot_uses_per_month
+limit_value: -1
+description: 'Consultas al copiloto IA ilimitadas en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 22
+status: true

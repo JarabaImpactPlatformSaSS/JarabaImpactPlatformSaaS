@@ -30,14 +30,24 @@
   <section class="dashboard-panel">
     {% if can_edit %}
     <div class="site-builder-actions">
-      <button type="button" class="btn btn--primary js-add-root-page">
+      <button type="button" class="btn btn--primary" data-action="add-root">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
         </svg>
         {% trans %}Añadir página{% endtrans %}
       </button>
-      <button type="button" class="btn btn--secondary js-expand-all">{% trans %}Expandir todo{% endtrans %}</button>
-      <button type="button" class="btn btn--secondary js-collapse-all">{% trans %}Colapsar todo{% endtrans %}</button>
+      <button type="button" class="btn btn--secondary" data-action="expand-all">{% trans %}Expandir todo{% endtrans %}</button>
+      <button type="button" class="btn btn--secondary" data-action="collapse-all">{% trans %}Colapsar todo{% endtrans %}</button>
+    </div>
+
+    {# Barra de acciones bulk (visible cuando hay nodos seleccionados) #}
+    <div class="site-builder-bulk-actions" data-bulk-actions hidden>
+      <span class="site-builder-bulk-actions__count">
+        <strong data-bulk-count>0</strong> {% trans %}seleccionados{% endtrans %}
+      </span>
+      <button type="button" class="btn btn--success btn--sm" data-action="bulk-publish">{% trans %}Publicar{% endtrans %}</button>
+      <button type="button" class="btn btn--warning btn--sm" data-action="bulk-draft">{% trans %}Borrador{% endtrans %}</button>
+      <button type="button" class="btn btn--secondary btn--sm" data-action="bulk-archive">{% trans %}Archivar{% endtrans %}</button>
     </div>
     {% endif %}
 

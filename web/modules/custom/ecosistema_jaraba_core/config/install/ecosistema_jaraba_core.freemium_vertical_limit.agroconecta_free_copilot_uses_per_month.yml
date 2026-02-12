@@ -1,0 +1,11 @@
+id: agroconecta_free_copilot_uses_per_month
+label: 'AgroConecta Free: Copiloto IA/mes'
+vertical: agroconecta
+plan: free
+feature_key: copilot_uses_per_month
+limit_value: 3
+description: 'Maximo 3 consultas al copiloto IA mensuales en plan gratuito AgroConecta.'
+upgrade_message: 'Has usado tus 3 consultas de copiloto IA este mes. Actualiza a Starter para 30 consultas mensuales.'
+expected_conversion: 0.28
+weight: 20
+status: true

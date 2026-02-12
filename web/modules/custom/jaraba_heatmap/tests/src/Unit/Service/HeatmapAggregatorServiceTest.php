@@ -8,6 +8,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Delete;
+use Drupal\Core\Database\Query\Select;
+use Drupal\Core\Database\StatementInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\jaraba_heatmap\Service\HeatmapAggregatorService;
 use PHPUnit\Framework\TestCase;
@@ -220,6 +222,250 @@ class HeatmapAggregatorServiceTest extends TestCase {
 
     $result = $this->service->purgeOldAggregated();
     $this->assertSame(23, $result);
+  }
+
+  /**
+   * Tests purgeOldEvents with explicit days parameter bypasses config.
+   *
+   * @covers ::purgeOldEvents
+   */
+  public function testPurgeOldEventsWithExplicitDays(): void {
+    $expectedCutoff = strtotime('-3 days');
+
+    $deleteQuery = $this->createMock(Delete::class);
+    $deleteQuery->expects($this->once())
+      ->method('condition')
+      ->with(
+        'created_at',
+        $this->callback(function ($value) use ($expectedCutoff) {
+          return abs($value - $expectedCutoff) < 5;
+        }),
+        '<'
+      )
+      ->willReturnSelf();
+    $deleteQuery->method('execute')->willReturn(20);
+
+    $this->database->expects($this->once())
+      ->method('delete')
+      ->with('heatmap_events')
+      ->willReturn($deleteQuery);
+
+    // Config should NOT be consulted when explicit $days is passed.
+    $result = $this->service->purgeOldEvents(3);
+    $this->assertSame(20, $result);
+  }
+
+  /**
+   * Tests purgeOldAggregated with explicit days parameter.
+   *
+   * @covers ::purgeOldAggregated
+   */
+  public function testPurgeOldAggregatedWithExplicitDays(): void {
+    $expectedCutoffDate = date('Y-m-d', strtotime('-45 days'));
+
+    $deleteQueryAgg = $this->createMock(Delete::class);
+    $deleteQueryAgg->expects($this->once())
+      ->method('condition')
+      ->with('date', $expectedCutoffDate, '<')
+      ->willReturnSelf();
+    $deleteQueryAgg->method('execute')->willReturn(5);
+
+    $deleteQueryScroll = $this->createMock(Delete::class);
+    $deleteQueryScroll->expects($this->once())
+      ->method('condition')
+      ->with('date', $expectedCutoffDate, '<')
+      ->willReturnSelf();
+    $deleteQueryScroll->method('execute')->willReturn(3);
+
+    $this->database->expects($this->exactly(2))
+      ->method('delete')
+      ->willReturnCallback(function (string $table) use ($deleteQueryAgg, $deleteQueryScroll) {
+        return match ($table) {
+          'heatmap_aggregated' => $deleteQueryAgg,
+          'heatmap_scroll_depth' => $deleteQueryScroll,
+        };
+      });
+
+    $result = $this->service->purgeOldAggregated(45);
+    $this->assertSame(8, $result);
+  }
+
+  /**
+   * Tests detectAnomalies returns empty when no data for yesterday.
+   *
+   * @covers ::detectAnomalies
+   */
+  public function testDetectAnomaliesReturnsEmptyWhenNoData(): void {
+    $this->config->method('get')
+      ->willReturn(NULL);
+
+    $statement = $this->createMock(StatementInterface::class);
+    $statement->method('fetchAll')->willReturn([]);
+
+    $selectQuery = $this->createMock(Select::class);
+    $selectQuery->method('fields')->willReturnSelf();
+    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('groupBy')->willReturnSelf();
+    $selectQuery->method('execute')->willReturn($statement);
+
+    $this->database->method('select')->willReturn($selectQuery);
+
+    $result = $this->service->detectAnomalies();
+    $this->assertSame([], $result);
+  }
+
+  /**
+   * Tests detectAnomalies detects a traffic drop.
+   *
+   * Yesterday has 10 events, avg of 7 days is 100 → ratio = 0.1 → drop alert.
+   *
+   * @covers ::detectAnomalies
+   */
+  public function testDetectAnomaliesDetectsDrop(): void {
+    $this->config->method('get')
+      ->willReturn(NULL);
+
+    // Yesterday data: 10 events.
+    $yesterdayRow = (object) [
+      'tenant_id' => 1,
+      'page_path' => '/productos',
+      'total_events' => 10,
+    ];
+
+    $yesterdayStatement = $this->createMock(StatementInterface::class);
+    $yesterdayStatement->method('fetchAll')->willReturn([$yesterdayRow]);
+
+    // Average data: 100 avg events.
+    $avgRow = (object) [
+      'tenant_id' => 1,
+      'page_path' => '/productos',
+      'avg_events' => 100.0,
+    ];
+
+    $avgStatement = $this->createMock(StatementInterface::class);
+    $avgStatement->method('fetchAll')->willReturn([$avgRow]);
+
+    $selectCallCount = 0;
+    $this->database->method('select')
+      ->willReturnCallback(function () use (&$selectCallCount, $yesterdayStatement, $avgStatement) {
+        $selectCallCount++;
+        $selectQuery = $this->createMock(Select::class);
+        $selectQuery->method('fields')->willReturnSelf();
+        $selectQuery->method('addExpression')->willReturnSelf();
+        $selectQuery->method('condition')->willReturnSelf();
+        $selectQuery->method('groupBy')->willReturnSelf();
+        $selectQuery->method('execute')->willReturn(
+          $selectCallCount === 1 ? $yesterdayStatement : $avgStatement
+        );
+        return $selectQuery;
+      });
+
+    $result = $this->service->detectAnomalies();
+    $this->assertCount(1, $result);
+    $this->assertSame('drop', $result[0]['type']);
+    $this->assertSame(1, $result[0]['tenant_id']);
+    $this->assertSame('/productos', $result[0]['page_path']);
+    $this->assertSame(10, $result[0]['yesterday_count']);
+  }
+
+  /**
+   * Tests detectAnomalies detects a traffic spike.
+   *
+   * Yesterday has 500 events, avg of 7 days is 100 → ratio = 5.0 → spike alert.
+   *
+   * @covers ::detectAnomalies
+   */
+  public function testDetectAnomaliesDetectsSpike(): void {
+    $this->config->method('get')
+      ->willReturn(NULL);
+
+    $yesterdayRow = (object) [
+      'tenant_id' => 2,
+      'page_path' => '/landing',
+      'total_events' => 500,
+    ];
+
+    $yesterdayStatement = $this->createMock(StatementInterface::class);
+    $yesterdayStatement->method('fetchAll')->willReturn([$yesterdayRow]);
+
+    $avgRow = (object) [
+      'tenant_id' => 2,
+      'page_path' => '/landing',
+      'avg_events' => 100.0,
+    ];
+
+    $avgStatement = $this->createMock(StatementInterface::class);
+    $avgStatement->method('fetchAll')->willReturn([$avgRow]);
+
+    $selectCallCount = 0;
+    $this->database->method('select')
+      ->willReturnCallback(function () use (&$selectCallCount, $yesterdayStatement, $avgStatement) {
+        $selectCallCount++;
+        $selectQuery = $this->createMock(Select::class);
+        $selectQuery->method('fields')->willReturnSelf();
+        $selectQuery->method('addExpression')->willReturnSelf();
+        $selectQuery->method('condition')->willReturnSelf();
+        $selectQuery->method('groupBy')->willReturnSelf();
+        $selectQuery->method('execute')->willReturn(
+          $selectCallCount === 1 ? $yesterdayStatement : $avgStatement
+        );
+        return $selectQuery;
+      });
+
+    $result = $this->service->detectAnomalies();
+    $this->assertCount(1, $result);
+    $this->assertSame('spike', $result[0]['type']);
+    $this->assertSame(500, $result[0]['yesterday_count']);
+    $this->assertSame(100.0, $result[0]['avg_count']);
+  }
+
+  /**
+   * Tests detectAnomalies returns empty when traffic is within normal range.
+   *
+   * Yesterday has 90 events, avg is 100 → ratio = 0.9 → normal (within 50%).
+   *
+   * @covers ::detectAnomalies
+   */
+  public function testDetectAnomaliesNormalTraffic(): void {
+    $this->config->method('get')
+      ->willReturn(NULL);
+
+    $yesterdayRow = (object) [
+      'tenant_id' => 1,
+      'page_path' => '/home',
+      'total_events' => 90,
+    ];
+
+    $yesterdayStatement = $this->createMock(StatementInterface::class);
+    $yesterdayStatement->method('fetchAll')->willReturn([$yesterdayRow]);
+
+    $avgRow = (object) [
+      'tenant_id' => 1,
+      'page_path' => '/home',
+      'avg_events' => 100.0,
+    ];
+
+    $avgStatement = $this->createMock(StatementInterface::class);
+    $avgStatement->method('fetchAll')->willReturn([$avgRow]);
+
+    $selectCallCount = 0;
+    $this->database->method('select')
+      ->willReturnCallback(function () use (&$selectCallCount, $yesterdayStatement, $avgStatement) {
+        $selectCallCount++;
+        $selectQuery = $this->createMock(Select::class);
+        $selectQuery->method('fields')->willReturnSelf();
+        $selectQuery->method('addExpression')->willReturnSelf();
+        $selectQuery->method('condition')->willReturnSelf();
+        $selectQuery->method('groupBy')->willReturnSelf();
+        $selectQuery->method('execute')->willReturn(
+          $selectCallCount === 1 ? $yesterdayStatement : $avgStatement
+        );
+        return $selectQuery;
+      });
+
+    $result = $this->service->detectAnomalies();
+    $this->assertSame([], $result);
   }
 
 }

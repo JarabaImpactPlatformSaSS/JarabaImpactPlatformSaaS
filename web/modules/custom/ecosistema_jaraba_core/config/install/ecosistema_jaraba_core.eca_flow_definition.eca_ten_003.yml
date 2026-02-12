@@ -1,0 +1,11 @@
+id: eca_ten_003
+label: 'Trial Expiration Warning'
+description: 'Cron job que detecta tenants cuyo trial expira en 7 dias y envia notificacion con incentivo de upgrade. Incluye calculo de valor generado durante el trial.'
+domain: TEN
+trigger_event: 'cron:trial_expiration_7d'
+module: jaraba_billing
+hook_function: jaraba_billing_cron
+spec_reference: 13_FOC
+implementation_status: implemented
+weight: 12
+status: true
