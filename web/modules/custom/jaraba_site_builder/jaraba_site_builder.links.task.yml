@@ -44,3 +44,14 @@ entity.site_footer_config.collection:
   title: 'Listado'
   route_name: entity.site_footer_config.collection
   base_route: entity.site_footer_config.collection
+
+# Fase 4 Doc 179: SEO/GEO Avanzado
+entity.seo_page_config.collection:
+  title: 'Listado SEO'
+  route_name: entity.seo_page_config.collection
+  base_route: entity.seo_page_config.collection
+
+entity.seo_page_config.settings:
+  title: 'Configuración'
+  route_name: entity.seo_page_config.settings
+  base_route: entity.seo_page_config.settings

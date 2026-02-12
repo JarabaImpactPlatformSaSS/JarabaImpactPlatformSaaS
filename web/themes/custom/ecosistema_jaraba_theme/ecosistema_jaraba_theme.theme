@@ -897,10 +897,74 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     'ecosistema_jaraba_core.vertical.emprender',
     'ecosistema_jaraba_core.vertical.comercio',
     'ecosistema_jaraba_core.vertical.instituciones',
+    // F4 Doc 180 — Landing Pages Verticales con 9 secciones.
+    'ecosistema_jaraba_core.landing.agroconecta',
+    'ecosistema_jaraba_core.landing.comercioconecta',
+    'ecosistema_jaraba_core.landing.serviciosconecta',
+    'ecosistema_jaraba_core.landing.empleabilidad',
+    'ecosistema_jaraba_core.landing.emprendimiento',
   ];
   if (in_array($route, $vertical_routes)) {
     $variables['attributes']['class'][] = 'landing-page';
     $variables['attributes']['class'][] = 'page-vertical-landing';
+  }
+
+  // F4 Doc 180 — Meta SEO tags para landing pages verticales.
+  $landing_meta = [
+    'ecosistema_jaraba_core.landing.agroconecta' => [
+      'title' => 'AgroConecta - Vende sin intermediarios | Ecosistema Jaraba',
+      'description' => 'Tu tienda online en 10 minutos. Cobra directamente. Sin comisiones ocultas. Plataforma para productores rurales.',
+      'og_type' => 'website',
+    ],
+    'ecosistema_jaraba_core.landing.comercioconecta' => [
+      'title' => 'ComercioConecta - Digitaliza tu comercio | Ecosistema Jaraba',
+      'description' => 'Ofertas flash, click & collect, pedidos online. Todo integrado con tu TPV. Comercio local digitalizado.',
+      'og_type' => 'website',
+    ],
+    'ecosistema_jaraba_core.landing.serviciosconecta' => [
+      'title' => 'ServiciosConecta - Tu consulta digitalizada | Ecosistema Jaraba',
+      'description' => 'Agenda online, videollamadas, cobro automático, firma digital. Todo en un solo lugar para profesionales.',
+      'og_type' => 'website',
+    ],
+    'ecosistema_jaraba_core.landing.empleabilidad' => [
+      'title' => 'Empleabilidad - Reinvéntate profesionalmente | Ecosistema Jaraba',
+      'description' => 'Formación práctica, CV que destaca, ofertas que encajan contigo. Con ayuda de IA y mentores reales.',
+      'og_type' => 'website',
+    ],
+    'ecosistema_jaraba_core.landing.emprendimiento' => [
+      'title' => 'Emprendimiento - De idea a negocio rentable | Ecosistema Jaraba',
+      'description' => 'Metodología validada + herramientas digitales + mentoría experta. Todo para emprender con garantías.',
+      'og_type' => 'website',
+    ],
+  ];
+  if (isset($landing_meta[$route])) {
+    $meta = $landing_meta[$route];
+    $request = \Drupal::request();
+    $base_url = $request->getSchemeAndHttpHost();
+    $current_url = $base_url . $request->getRequestUri();
+
+    $variables['head_title']['title'] = $meta['title'];
+
+    $meta_tags = [
+      ['name' => 'description', 'content' => $meta['description']],
+      ['property' => 'og:title', 'content' => $meta['title']],
+      ['property' => 'og:description', 'content' => $meta['description']],
+      ['property' => 'og:type', 'content' => $meta['og_type']],
+      ['property' => 'og:url', 'content' => $current_url],
+      ['name' => 'twitter:card', 'content' => 'summary_large_image'],
+      ['name' => 'twitter:title', 'content' => $meta['title']],
+      ['name' => 'twitter:description', 'content' => $meta['description']],
+    ];
+    foreach ($meta_tags as $i => $tag) {
+      $key = $tag['name'] ?? $tag['property'];
+      $variables['page']['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => $tag,
+        ],
+        'landing_meta_' . $key,
+      ];
+    }
   }
 
   // Diagnostico de Empleabilidad - zero-region full-width (Spec 20260120b S3)
@@ -946,10 +1010,18 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     'jaraba_site_builder.settings',              // /admin/structure/site-builder/config
     'jaraba_site_builder.redirects',             // /admin/structure/site-builder/redirects
     'jaraba_site_builder.sitemap',               // /admin/structure/site-builder/sitemap
+    // Fase 4 Doc 179: SEO/GEO + IA routes.
+    'entity.seo_page_config.collection',         // /admin/content/seo-config
+    'entity.seo_page_config.settings',           // /admin/structure/seo-config
   ];
   if (in_array($route, $site_builder_frontend_routes)) {
     $variables['attributes']['class'][] = 'dashboard-page';
     $variables['attributes']['class'][] = 'page-site-builder';
+  }
+
+  // SEO entity forms get additional body class.
+  if (str_starts_with($route, 'entity.seo_page_config.')) {
+    $variables['attributes']['class'][] = 'page-seo-config';
   }
 
   // =========================================================================
@@ -2024,6 +2096,9 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_site_builder.settings',              // /admin/structure/site-builder/config
     'jaraba_site_builder.redirects',             // /admin/structure/site-builder/redirects
     'jaraba_site_builder.sitemap',               // /admin/structure/site-builder/sitemap
+    // Fase 4 Doc 179: SEO/GEO + IA routes.
+    'entity.seo_page_config.collection',         // /admin/content/seo-config
+    'entity.seo_page_config.settings',           // /admin/structure/seo-config
   ];
 
   if (in_array($route, $site_builder_frontend_routes)) {

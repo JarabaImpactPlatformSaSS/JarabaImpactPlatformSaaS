@@ -116,6 +116,16 @@ site-builder:
     - ecosistema_jaraba_theme/slide-panel
     - jaraba_page_builder/template-picker
 
+# Landing Sections — F4 Doc 180 vertical landing page sections
+landing-sections:
+  version: 1.0.0
+  css:
+    theme:
+      css/ecosistema-jaraba-theme.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_core/icons
+
 # Alpine.js - Framework reactivo ligero para interactividad
 # FE-08: Versión fija con SRI hash y crossorigin
 alpinejs:

@@ -1,0 +1,239 @@
+// Fase 4 Doc 179: AI Suggestions & Geo-Targeting Styles
+
+// ---------------------------------------------------------------------------
+// AI Suggestions Panel
+// ---------------------------------------------------------------------------
+
+.seo-ai-suggestions {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+
+    svg {
+      color: var(--ej-primary, #233D63);
+    }
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.25rem);
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0;
+  }
+
+  &__provider {
+    margin-left: auto;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-sm, 4px);
+    background: var(--ej-surface-alt, #f3f4f6);
+  }
+
+  &__suggestion {
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    padding-bottom: var(--ej-spacing-md, 1rem);
+    border-bottom: 1px solid var(--ej-border-light, #f3f4f6);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    display: block;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-secondary, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__value {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-primary, #1a1a2e);
+    line-height: 1.5;
+    padding: var(--ej-spacing-sm, 0.5rem);
+    background: var(--ej-surface-alt, #f3f4f6);
+    border-radius: var(--ej-radius-md, 8px);
+
+    &--copyable {
+      cursor: pointer;
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-primary, #233D63) 8%, transparent);
+      }
+    }
+  }
+
+  &__char-count {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #9ca3af);
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--ej-radius-full, 999px);
+    background: color-mix(in srgb, var(--ej-primary, #233D63) 10%, transparent);
+    color: var(--ej-primary, #233D63);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-medium, 500);
+  }
+
+  &__improvement {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-sm, 0.5rem);
+    border-radius: var(--ej-radius-md, 8px);
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+
+    &--high {
+      background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 6%, transparent);
+    }
+
+    &--medium {
+      background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 6%, transparent);
+    }
+
+    &--low {
+      background: color-mix(in srgb, var(--ej-color-info, #3B82F6) 6%, transparent);
+    }
+  }
+
+  &__priority {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: var(--ej-radius-sm, 4px);
+    font-size: 0.65rem;
+    font-weight: var(--ej-font-weight-bold, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+
+    .seo-ai-suggestions__improvement--high & { background: var(--ej-color-danger, #EF4444); }
+    .seo-ai-suggestions__improvement--medium & { background: var(--ej-color-warning, #F59E0B); }
+    .seo-ai-suggestions__improvement--low & { background: var(--ej-color-info, #3B82F6); }
+  }
+
+  &__category {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: var(--ej-radius-sm, 4px);
+    font-size: 0.65rem;
+    font-weight: var(--ej-font-weight-medium, 500);
+    text-transform: uppercase;
+    background: var(--ej-surface-alt, #f3f4f6);
+    color: var(--ej-text-secondary, #6b7280);
+  }
+
+  &__text {
+    flex: 1 1 100%;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-primary, #1a1a2e);
+    line-height: 1.4;
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Geo-Targeting Configuration
+// ---------------------------------------------------------------------------
+
+.seo-geo-targeting {
+  &__header {
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-lg, 1.25rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__description {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-secondary, #6b7280);
+    margin: 0;
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+
+    @media (min-width: 480px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-secondary, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-primary, #1a1a2e);
+
+    code {
+      padding: 2px 6px;
+      border-radius: var(--ej-radius-sm, 4px);
+      background: var(--ej-surface-alt, #f3f4f6);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: var(--ej-font-size-xs, 0.75rem);
+    }
+  }
+
+  &__empty {
+    color: var(--ej-text-muted, #9ca3af);
+    font-style: italic;
+  }
+
+  &__subtitle {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: var(--ej-font-weight-semibold, 600);
+    color: var(--ej-text-primary, #1a1a2e);
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__business-info {
+    padding: var(--ej-spacing-md, 1rem);
+    background: var(--ej-surface-alt, #f3f4f6);
+    border-radius: var(--ej-radius-md, 8px);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+
+    p {
+      margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

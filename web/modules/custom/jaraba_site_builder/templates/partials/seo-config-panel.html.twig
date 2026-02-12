@@ -1,0 +1,106 @@
+{#
+ * SEO Configuration Panel
+ *
+ * Panel de configuración SEO para slide-panel o página completa.
+ * Muestra meta tags, OG, Schema, hreflang y geo-targeting.
+ *
+ * Variables:
+ *   - seo_config: array con datos de SeoPageConfig
+ *   - page: objeto PageContent
+ *   - audit_results: array con score, issues, checks
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-config-panel">
+  {# Header con score #}
+  <div class="seo-config-panel__header">
+    <h3 class="seo-config-panel__title">{% trans %}Configuración SEO{% endtrans %}</h3>
+    {% if audit_results.score is defined %}
+      <div class="seo-config-panel__score seo-config-panel__score--{{ audit_results.score >= 80 ? 'good' : (audit_results.score >= 50 ? 'warning' : 'poor') }}">
+        <span class="seo-config-panel__score-value">{{ audit_results.score }}</span>
+        <span class="seo-config-panel__score-label">/100</span>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Meta Tags Section #}
+  <div class="seo-config-panel__section">
+    <h4 class="seo-config-panel__section-title">{% trans %}Meta Tags{% endtrans %}</h4>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}Meta título{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        {{ seo_config.meta_title|default('—') }}
+        {% if seo_config.meta_title %}
+          <span class="seo-config-panel__char-count">({{ seo_config.meta_title|length }}/70)</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}Meta descripción{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        {{ seo_config.meta_description|default('—') }}
+        {% if seo_config.meta_description %}
+          <span class="seo-config-panel__char-count">({{ seo_config.meta_description|length }}/160)</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}Robots{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        <code>{{ seo_config.robots|default('index,follow') }}</code>
+      </div>
+    </div>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}URL canónica{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        {{ seo_config.canonical_url|default('—') }}
+      </div>
+    </div>
+  </div>
+
+  {# Open Graph Section #}
+  <div class="seo-config-panel__section">
+    <h4 class="seo-config-panel__section-title">{% trans %}Open Graph{% endtrans %}</h4>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}OG título{% endtrans %}</label>
+      <div class="seo-config-panel__value">{{ seo_config.og_title|default('—') }}</div>
+    </div>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}Twitter Card{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        <code>{{ seo_config.twitter_card|default('summary_large_image') }}</code>
+      </div>
+    </div>
+  </div>
+
+  {# Schema.org Section #}
+  <div class="seo-config-panel__section">
+    <h4 class="seo-config-panel__section-title">{% trans %}Schema.org{% endtrans %}</h4>
+
+    <div class="seo-config-panel__field">
+      <label class="seo-config-panel__label">{% trans %}Tipo{% endtrans %}</label>
+      <div class="seo-config-panel__value">
+        <span class="seo-config-panel__badge">{{ seo_config.schema_type|default('WebPage') }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Keywords Section #}
+  {% if seo_config.keywords is not empty %}
+    <div class="seo-config-panel__section">
+      <h4 class="seo-config-panel__section-title">{% trans %}Keywords{% endtrans %}</h4>
+      <div class="seo-config-panel__tags">
+        {% for keyword in seo_config.keywords %}
+          <span class="seo-config-panel__tag">{{ keyword }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>

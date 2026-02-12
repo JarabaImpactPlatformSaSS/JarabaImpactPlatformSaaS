@@ -477,3 +477,107 @@ jaraba_site_builder.api.breadcrumbs:
   requirements:
     _user_is_logged_in: 'TRUE'
     pageTreeId: '\d+'
+
+# =========================================================================
+# Fase 4 Doc 179: SEO/GEO Avanzado
+# =========================================================================
+
+# --- Entity Settings (Field UI base route) ---
+
+entity.seo_page_config.settings:
+  path: '/admin/structure/seo-config'
+  defaults:
+    _form: '\Drupal\jaraba_site_builder\Form\SeoPageConfigSettingsForm'
+    _title: 'Configuración SEO de Páginas'
+  requirements:
+    _permission: 'administer site structure'
+
+# --- SEO API Endpoints ---
+
+jaraba_site_builder.seo.config_get:
+  path: '/api/v1/seo/config/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getSeoConfig'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.config_update:
+  path: '/api/v1/seo/config/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateSeoConfig'
+  methods: [PUT]
+  requirements:
+    _permission: 'manage seo configuration'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.suggest:
+  path: '/api/v1/seo/suggestions'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::suggestMetaTags'
+  methods: [POST]
+  requirements:
+    _permission: 'use seo ai assistant'
+
+jaraba_site_builder.seo.audit:
+  path: '/api/v1/seo/audit/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::auditPage'
+  methods: [POST]
+  requirements:
+    _permission: 'view seo audit'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.schema_get:
+  path: '/api/v1/seo/schema/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getSchema'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.hreflang_get:
+  path: '/api/v1/seo/hreflang/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getHreflang'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.hreflang_update:
+  path: '/api/v1/seo/hreflang/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateHreflang'
+  methods: [PUT]
+  requirements:
+    _permission: 'manage hreflang tags'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.geo_get:
+  path: '/api/v1/seo/geo/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getGeoTargeting'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.geo_update:
+  path: '/api/v1/seo/geo/{page_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateGeoTargeting'
+  methods: [PUT]
+  requirements:
+    _permission: 'manage geo targeting'
+    page_id: '\d+'
+
+jaraba_site_builder.seo.bulk_audit:
+  path: '/api/v1/seo/bulk-audit'
+  defaults:
+    _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::bulkAudit'
+  methods: [POST]
+  requirements:
+    _permission: 'view seo audit'

@@ -1,0 +1,60 @@
+{#
+ * SEO Hreflang Configuration
+ *
+ * Interfaz de configuración hreflang multi-idioma.
+ *
+ * Variables:
+ *   - languages: array de idiomas disponibles [{code, name, is_default}]
+ *   - current_config: array de entradas hreflang [{lang, url}]
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-hreflang-config">
+  <div class="seo-hreflang-config__header">
+    <h4 class="seo-hreflang-config__title">{% trans %}Configuración Hreflang{% endtrans %}</h4>
+    <p class="seo-hreflang-config__description">
+      {% trans %}Define las URLs alternativas para cada idioma. Esto ayuda a los motores de búsqueda a mostrar la versión correcta de tu página según el idioma del usuario.{% endtrans %}
+    </p>
+  </div>
+
+  {# Idiomas disponibles #}
+  <div class="seo-hreflang-config__languages">
+    <h5 class="seo-hreflang-config__subtitle">{% trans %}Idiomas disponibles{% endtrans %}</h5>
+    <div class="seo-hreflang-config__language-list">
+      {% for lang in languages %}
+        <span class="seo-hreflang-config__language {{ lang.is_default ? 'seo-hreflang-config__language--default' : '' }}">
+          {{ lang.code }}: {{ lang.name }}
+          {% if lang.is_default %}({% trans %}por defecto{% endtrans %}){% endif %}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Entradas hreflang actuales #}
+  {% if current_config is not empty %}
+    <div class="seo-hreflang-config__entries">
+      <h5 class="seo-hreflang-config__subtitle">{% trans %}Configuración actual{% endtrans %}</h5>
+      <table class="seo-hreflang-config__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Idioma{% endtrans %}</th>
+            <th>{% trans %}URL{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in current_config %}
+            <tr>
+              <td><code>{{ entry.lang }}</code></td>
+              <td>{{ entry.url }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="seo-hreflang-config__empty">
+      <p>{% trans %}No hay entradas hreflang configuradas para esta página.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

@@ -17,3 +17,8 @@
 @use 'mobile-menu';
 @use 'topbar';
 @use 'breadcrumbs';
+
+// Fase 4 Doc 179: SEO/GEO + IA Integration
+@use 'seo-audit-panel';
+@use 'seo-schema-preview';
+@use 'seo-ai-suggestions';

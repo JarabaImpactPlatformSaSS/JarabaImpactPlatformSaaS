@@ -19,3 +19,26 @@ view site config:
 edit site config:
   title: 'Editar configuración del sitio'
   description: 'Modificar nombre, logo, redes sociales y datos de contacto.'
+
+# =========================================================================
+# Fase 4 Doc 179: SEO/GEO Avanzado
+# =========================================================================
+manage seo configuration:
+  title: 'Gestionar configuración SEO'
+  description: 'Crear, editar y eliminar configuraciones SEO de páginas.'
+
+view seo audit:
+  title: 'Ver auditoría SEO'
+  description: 'Acceder a scores y recomendaciones de auditoría SEO.'
+
+use seo ai assistant:
+  title: 'Usar asistente IA SEO'
+  description: 'Generar sugerencias de meta tags con inteligencia artificial.'
+
+manage hreflang tags:
+  title: 'Gestionar etiquetas hreflang'
+  description: 'Configurar etiquetas hreflang multi-idioma por página.'
+
+manage geo targeting:
+  title: 'Gestionar geo-targeting'
+  description: 'Configurar segmentación geográfica y SEO local por página.'

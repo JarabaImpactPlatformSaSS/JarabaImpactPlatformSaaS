@@ -1,0 +1,34 @@
+{#
+ * SEO Schema.org JSON-LD Preview
+ *
+ * Muestra una vista previa del JSON-LD generado para la página.
+ *
+ * Variables:
+ *   - schema_json: string con el JSON-LD formateado
+ *   - schema_type: string con el tipo de Schema.org
+ *   - is_valid: bool indicando si el JSON es válido
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-schema-preview">
+  <div class="seo-schema-preview__header">
+    <h4 class="seo-schema-preview__title">
+      {% trans %}Schema.org JSON-LD{% endtrans %}
+    </h4>
+    <span class="seo-schema-preview__type">{{ schema_type }}</span>
+    {% if is_valid %}
+      <span class="seo-schema-preview__status seo-schema-preview__status--valid">
+        {% trans %}Válido{% endtrans %}
+      </span>
+    {% else %}
+      <span class="seo-schema-preview__status seo-schema-preview__status--invalid">
+        {% trans %}Inválido{% endtrans %}
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="seo-schema-preview__code">
+    <pre><code>{{ schema_json }}</code></pre>
+  </div>
+</div>

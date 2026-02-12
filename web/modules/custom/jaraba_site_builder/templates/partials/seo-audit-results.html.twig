@@ -1,0 +1,58 @@
+{#
+ * SEO Audit Results
+ *
+ * Muestra los resultados de auditoría SEO con score y issues.
+ *
+ * Variables:
+ *   - score: int (0-100)
+ *   - checks: array con resultados por check
+ *   - issues: array con issues individuales
+ *   - suggestions: array con sugerencias de mejora
+ *
+ * Fase 4 Doc 179.
+ #}
+
+<div class="seo-audit-results">
+  {# Score circular #}
+  <div class="seo-audit-results__score-ring seo-audit-results__score-ring--{{ score >= 80 ? 'good' : (score >= 50 ? 'warning' : 'poor') }}">
+    <div class="seo-audit-results__score-value">{{ score }}</div>
+    <div class="seo-audit-results__score-label">{% trans %}Score SEO{% endtrans %}</div>
+  </div>
+
+  {# Checks detallados #}
+  {% if checks is not empty %}
+    <div class="seo-audit-results__checks">
+      <h4 class="seo-audit-results__section-title">{% trans %}Comprobaciones{% endtrans %}</h4>
+      {% for key, check in checks %}
+        <div class="seo-audit-results__check">
+          <div class="seo-audit-results__check-name">{{ key|replace({'_': ' '})|capitalize }}</div>
+          <div class="seo-audit-results__check-bar">
+            <div class="seo-audit-results__check-fill seo-audit-results__check-fill--{{ check.score >= 80 ? 'good' : (check.score >= 50 ? 'warning' : 'poor') }}" style="width: {{ check.score }}%"></div>
+          </div>
+          <div class="seo-audit-results__check-score">{{ check.score }}%</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# Issues #}
+  {% if issues is not empty %}
+    <div class="seo-audit-results__issues">
+      <h4 class="seo-audit-results__section-title">{% trans %}Issues{% endtrans %}</h4>
+      {% for issue in issues %}
+        <div class="seo-audit-results__issue seo-audit-results__issue--{{ issue.type }}">
+          <span class="seo-audit-results__issue-icon">
+            {% if issue.type == 'error' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            {% elseif issue.type == 'warning' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {% else %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            {% endif %}
+          </span>
+          <span class="seo-audit-results__issue-message">{{ issue.message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

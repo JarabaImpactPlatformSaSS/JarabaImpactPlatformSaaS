@@ -281,6 +281,57 @@ function jaraba_site_builder_theme(): array {
       ],
       'template' => 'partials/jaraba-breadcrumbs',
     ],
+    // =========================================================================
+    // Fase 4 Doc 179: SEO/GEO Avanzado - Templates
+    // =========================================================================
+    'seo_config_panel' => [
+      'variables' => [
+        'seo_config' => NULL,
+        'page' => NULL,
+        'audit_results' => [],
+      ],
+      'template' => 'partials/seo-config-panel',
+    ],
+    'seo_schema_preview' => [
+      'variables' => [
+        'schema_json' => '',
+        'schema_type' => 'WebPage',
+        'is_valid' => TRUE,
+      ],
+      'template' => 'partials/seo-schema-preview',
+    ],
+    'seo_audit_results' => [
+      'variables' => [
+        'score' => 0,
+        'checks' => [],
+        'issues' => [],
+        'suggestions' => [],
+      ],
+      'template' => 'partials/seo-audit-results',
+    ],
+    'seo_ai_suggestions' => [
+      'variables' => [
+        'suggestions' => [],
+        'provider' => '',
+        'page_title' => '',
+      ],
+      'template' => 'partials/seo-ai-suggestions',
+    ],
+    'seo_hreflang_config' => [
+      'variables' => [
+        'languages' => [],
+        'current_config' => [],
+      ],
+      'template' => 'partials/seo-hreflang-config',
+    ],
+    'seo_geo_targeting' => [
+      'variables' => [
+        'geo_region' => '',
+        'geo_position' => '',
+        'local_business' => [],
+      ],
+      'template' => 'partials/seo-geo-targeting',
+    ],
   ];
 }
 

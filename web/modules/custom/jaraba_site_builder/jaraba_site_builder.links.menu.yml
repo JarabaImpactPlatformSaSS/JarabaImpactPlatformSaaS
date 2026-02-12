@@ -36,3 +36,18 @@ entity.site_footer_config.collection:
   route_name: entity.site_footer_config.collection
   parent: system.admin_structure
   weight: 14
+
+# Fase 4 Doc 179: SEO/GEO Avanzado
+entity.seo_page_config.collection:
+  title: 'Configuración SEO'
+  description: 'Gestiona la configuración SEO avanzada por página.'
+  route_name: entity.seo_page_config.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.seo_page_config.settings:
+  title: 'SEO - Estructura'
+  description: 'Configuración y campos de la entidad SEO Page Config.'
+  route_name: entity.seo_page_config.settings
+  parent: system.admin_structure
+  weight: 15
