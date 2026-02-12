@@ -225,11 +225,17 @@ class MicroAutomationService
      */
     protected function calculateProductScores(int $tenantId): array
     {
-        // TODO: Integrar con datos reales de analytics.
-        // Por ahora, retornar scores basados en fecha de creación.
         $scores = [];
 
         try {
+            // Obtener el grupo del tenant para filtrar productos.
+            $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+            if (!$tenant) {
+                return $scores;
+            }
+
+            $group = $tenant->getGroup();
+
             $query = $this->entityTypeManager->getStorage('node')->getQuery()
                 ->accessCheck(FALSE)
                 ->condition('type', 'product')
@@ -238,10 +244,38 @@ class MicroAutomationService
 
             $nids = $query->execute();
 
-            $score = 100;
+            if (empty($nids)) {
+                return $scores;
+            }
+
+            // Obtener estadísticas reales: nodos con más vistas recientes (node_counter si existe).
+            $viewCounts = [];
+            if (\Drupal::moduleHandler()->moduleExists('statistics')) {
+                try {
+                    $database = \Drupal::database();
+                    if ($database->schema()->tableExists('node_counter')) {
+                        $result = $database->select('node_counter', 'nc')
+                            ->fields('nc', ['nid', 'totalcount'])
+                            ->condition('nid', $nids, 'IN')
+                            ->execute();
+                        foreach ($result as $row) {
+                            $viewCounts[$row->nid] = (int) $row->totalcount;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Sin estadísticas, usar fallback.
+                }
+            }
+
+            // Calcular scores combinando recency y vistas.
+            $position = 0;
+            $totalProducts = count($nids);
             foreach ($nids as $nid) {
-                $scores[$nid] = $score;
-                $score = max(10, $score - 2); // Decrementar score.
+                $recencyScore = max(10, 100 - ($position * 2));
+                $viewScore = min(100, ($viewCounts[$nid] ?? 0) * 2);
+                // Combinar: 40% recency + 60% popularidad.
+                $scores[$nid] = ($recencyScore * 0.4) + ($viewScore * 0.6);
+                $position++;
             }
 
         } catch (\Exception $e) {
@@ -310,10 +344,27 @@ class MicroAutomationService
 
         // Ejecutar sort cada 6 horas.
         if ($now - $lastSortRun > 21600) {
-            // TODO: Iterar sobre tenants activos.
-            // Por ahora, solo actualizar timestamp.
+            try {
+                // Iterar sobre tenants activos.
+                $tenantIds = $this->entityTypeManager
+                    ->getStorage('tenant')
+                    ->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('status', TRUE)
+                    ->execute();
+
+                foreach ($tenantIds as $tenantId) {
+                    $this->smartSortCatalog((int) $tenantId);
+                    $processed++;
+                }
+            } catch (\Exception $e) {
+                $this->loggerFactory->get('micro_automation')->error(
+                    'Error processing tenant automations: @error',
+                    ['@error' => $e->getMessage()]
+                );
+            }
+
             $this->state->set('micro_automation_last_sort', $now);
-            $processed++;
         }
 
         return $processed;

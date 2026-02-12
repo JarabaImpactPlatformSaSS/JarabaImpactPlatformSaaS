@@ -497,6 +497,7 @@ services:
   ecosistema_jaraba_core.sandbox_tenant:
     class: Drupal\ecosistema_jaraba_core\Service\SandboxTenantService
     arguments:
+      - '@entity_type.manager'
       - '@state'
       - '@logger.factory'
 

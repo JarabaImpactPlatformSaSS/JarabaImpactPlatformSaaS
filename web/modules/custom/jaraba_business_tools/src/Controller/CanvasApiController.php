@@ -799,6 +799,28 @@ class CanvasApiController extends ControllerBase
     }
 
     /**
+     * POST /api/v1/business-tools/agent-rating - Receives agent rating feedback.
+     */
+    public function submitAgentRating(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['rating'])) {
+            return new JsonResponse(['error' => 'Rating is required'], 400);
+        }
+
+        $userId = (int) $this->currentUser()->id();
+
+        \Drupal::logger('jaraba_business_tools')->info('Agent rating: @rating from user @user (session: @session)', [
+            '@rating' => $data['rating'],
+            '@user' => $userId,
+            '@session' => $data['session_id'] ?? 'unknown',
+        ]);
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    /**
      * Checks access to a canvas.
      */
     protected function checkAccess($canvas, string $operation = 'view'): bool

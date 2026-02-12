@@ -325,4 +325,13 @@ jaraba_job_board.api.push_test:
   requirements:
     _user_is_logged_in: 'TRUE'
 
+# --- API Agent Rating ---
+jaraba_job_board.api.agent_rating:
+  path: '/api/v1/job-board/agent-rating'
+  defaults:
+    _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::submitAgentRating'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
 

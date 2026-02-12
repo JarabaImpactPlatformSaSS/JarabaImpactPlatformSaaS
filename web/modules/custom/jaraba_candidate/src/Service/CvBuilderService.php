@@ -367,13 +367,31 @@ HTML;
     /**
      * Gets language proficiencies.
      */
-    protected function getLanguages(int $profile_id): array
+    protected function getLanguages(int $userId): array
     {
-        // TODO: Load from candidate_language entity
-        return [
-            ['language' => 'Español', 'level' => 'Native'],
-            ['language' => 'English', 'level' => 'Professional'],
-        ];
+        try {
+            $languageEntities = $this->entityTypeManager
+                ->getStorage('candidate_language')
+                ->loadByProperties(['user_id' => $userId]);
+
+            if (empty($languageEntities)) {
+                return [];
+            }
+
+            $languages = [];
+            foreach ($languageEntities as $lang) {
+                $level = $lang->isNative() ? 'Native' : $lang->getProficiencyLevel();
+                $languages[] = [
+                    'language' => $lang->getLanguageName(),
+                    'level' => $level,
+                    'certification' => $lang->getCertification(),
+                ];
+            }
+
+            return $languages;
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**

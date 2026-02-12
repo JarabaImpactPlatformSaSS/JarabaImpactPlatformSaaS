@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +21,20 @@ class ApiController extends ControllerBase
 {
 
     /**
+     * Servicio de contexto de tenant.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container): self
     {
-        return new static();
+        $instance = new static();
+        $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
+        return $instance;
     }
 
     /**
@@ -154,13 +164,15 @@ class ApiController extends ControllerBase
             $plan = $tenant->getSubscriptionPlan();
             $limits = $plan ? $plan->getLimits() : [];
 
-            // TODO: Obtener métricas reales del TenantMeteringService
+            // Obtener métricas reales del TenantContextService.
+            $metrics = $this->tenantContext->getUsageMetrics($tenant);
+
             $usage = [
                 'tenant_id' => (int) $tenantId,
                 'period' => date('Y-m'),
-                'producers_count' => 0,
-                'products_count' => 0,
-                'storage_mb' => 0,
+                'producers_count' => $metrics['productores']['count'] ?? 0,
+                'products_count' => $metrics['contenido']['count'] ?? 0,
+                'storage_mb' => $metrics['almacenamiento']['used_mb'] ?? 0,
                 'ai_queries' => 0,
                 'api_requests' => 0,
                 'limits' => $limits,

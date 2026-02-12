@@ -138,8 +138,53 @@ class JobBoardApiController extends ControllerBase
      */
     public function getEmployerApplications(): JsonResponse
     {
-        // TODO: Implement employer applications retrieval
-        return new JsonResponse(['applications' => []]);
+        $userId = (int) $this->currentUser()->id();
+
+        try {
+            // Obtener los job_posting IDs del employer actual.
+            $jobIds = $this->entityTypeManager()
+                ->getStorage('job_posting')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('uid', $userId)
+                ->execute();
+
+            if (empty($jobIds)) {
+                return new JsonResponse(['applications' => []]);
+            }
+
+            // Obtener aplicaciones para esos jobs.
+            $applicationIds = $this->entityTypeManager()
+                ->getStorage('job_application')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('job_id', $jobIds, 'IN')
+                ->sort('created', 'DESC')
+                ->range(0, 50)
+                ->execute();
+
+            $applications = $this->entityTypeManager()
+                ->getStorage('job_application')
+                ->loadMultiple($applicationIds);
+
+            $result = [];
+            foreach ($applications as $app) {
+                $job = $app->getJob();
+                $result[] = [
+                    'id' => (int) $app->id(),
+                    'job_id' => $job ? (int) $job->id() : NULL,
+                    'job_title' => $job ? $job->getTitle() : '',
+                    'candidate_id' => (int) $app->getOwnerId(),
+                    'status' => $app->getStatus(),
+                    'match_score' => $app->getMatchScore(),
+                    'applied_at' => $app->getAppliedAt(),
+                ];
+            }
+
+            return new JsonResponse(['applications' => $result]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['applications' => [], 'error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -168,6 +213,28 @@ class JobBoardApiController extends ControllerBase
         $recommendations = $this->matchingService->getRecommendedJobs($user_id, 10);
 
         return new JsonResponse(['recommendations' => $recommendations]);
+    }
+
+    /**
+     * Receives agent rating feedback.
+     */
+    public function submitAgentRating(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (empty($data['rating'])) {
+            return new JsonResponse(['error' => 'Rating is required'], 400);
+        }
+
+        $userId = (int) $this->currentUser()->id();
+
+        \Drupal::logger('jaraba_job_board')->info('Agent rating: @rating from user @user (session: @session)', [
+            '@rating' => $data['rating'],
+            '@user' => $userId,
+            '@session' => $data['session_id'] ?? 'unknown',
+        ]);
+
+        return new JsonResponse(['status' => 'ok']);
     }
 
 }

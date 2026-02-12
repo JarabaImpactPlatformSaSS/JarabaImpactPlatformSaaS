@@ -214,11 +214,10 @@ class TrainingProduct extends ContentEntityBase implements TrainingProductInterf
             ->setDisplayConfigurable('view', TRUE);
 
         // === CONTENIDO FORMATIVO ===
-        // TODO: Cambiar a 'course' y 'mentoring_package' cuando las entities estén instaladas.
         $fields['course_ids'] = BaseFieldDefinition::create('entity_reference')
             ->setLabel(t('Cursos LMS Incluidos'))
             ->setDescription(t('Cursos del LMS que incluye este producto.'))
-            ->setSetting('target_type', 'node')
+            ->setSetting('target_type', 'lms_course')
             ->setSetting('handler_settings', ['target_bundles' => []])
             ->setCardinality(-1)
             ->setDisplayOptions('form', [

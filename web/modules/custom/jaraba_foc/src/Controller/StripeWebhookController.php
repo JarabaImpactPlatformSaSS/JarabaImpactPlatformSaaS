@@ -260,7 +260,29 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             '@payouts' => $payoutsEnabled ? 'true' : 'false',
         ]);
 
-        // TODO: Actualizar entidad de vendedor en Drupal
+        // Actualizar entidad foc_seller con datos de Stripe (account.updated).
+        try {
+            $sellerStorage = $this->entityTypeManager()->getStorage('foc_seller');
+            $sellers = $sellerStorage->loadByProperties(['stripe_account_id' => $accountId]);
+
+            if (!empty($sellers)) {
+                /** @var \Drupal\jaraba_foc\Entity\FocSellerInterface $seller */
+                $seller = reset($sellers);
+                $seller->set('charges_enabled', $chargesEnabled);
+                $seller->set('payouts_enabled', $payoutsEnabled);
+                $seller->set('stripe_status', ($chargesEnabled && $payoutsEnabled) ? 'active' : 'pending');
+                $seller->save();
+
+                $this->focLogger->info('Seller @id actualizado desde Stripe account.updated', [
+                    '@id' => $seller->id(),
+                ]);
+            }
+        }
+        catch (\Exception $e) {
+            $this->focLogger->error('Error actualizando seller desde account.updated: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return new JsonResponse(['status' => 'processed']);
     }
@@ -286,7 +308,40 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
 
         $this->logger->info('Suscripción cancelada: @id', ['@id' => $subscriptionId]);
 
-        // TODO: Actualizar métricas de churn
+        // Calcular y actualizar churn_rate en métricas de seller.
+        try {
+            $sellerStorage = $this->entityTypeManager()->getStorage('foc_seller');
+            $metadata = $data['metadata'] ?? [];
+            $tenantId = $metadata['tenant_id'] ?? NULL;
+
+            if ($tenantId) {
+                $sellers = $sellerStorage->loadByProperties(['tenant_id' => $tenantId]);
+                if (!empty($sellers)) {
+                    /** @var \Drupal\jaraba_foc\Entity\FocSellerInterface $seller */
+                    $seller = reset($sellers);
+
+                    $totalSubscriptions = (int) ($seller->get('total_subscriptions')->value ?? 0);
+                    $canceledSubscriptions = (int) ($seller->get('canceled_subscriptions')->value ?? 0) + 1;
+                    $seller->set('canceled_subscriptions', $canceledSubscriptions);
+
+                    $churnRate = $totalSubscriptions > 0
+                        ? round(($canceledSubscriptions / $totalSubscriptions) * 100, 2)
+                        : 0;
+                    $seller->set('churn_rate', $churnRate);
+                    $seller->save();
+
+                    $this->focLogger->info('Churn rate actualizado para seller @id: @rate%', [
+                        '@id' => $seller->id(),
+                        '@rate' => $churnRate,
+                    ]);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->focLogger->error('Error actualizando churn metrics: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return new JsonResponse(['status' => 'processed']);
     }
@@ -326,7 +381,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
                 'is_recurring' => $data['is_recurring'] ?? FALSE,
                 'description' => $data['description'] ?? '',
                 'related_tenant' => $data['related_tenant'] ?? NULL,
-                // TODO: Mapear transaction_type a término de taxonomía
+                'transaction_type' => $this->mapTransactionTypeToTerm($data['transaction_type'] ?? 'other'),
             ]);
 
             $transaction->save();
@@ -334,6 +389,49 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             return (int) $transaction->id();
         } catch (\Exception $e) {
             $this->focLogger->error('Error creando FinancialTransaction: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+            return NULL;
+        }
+    }
+
+    /**
+     * Maps a transaction_type string to a taxonomy term ID in foc_transaction_types.
+     *
+     * @param string $type
+     *   The transaction type machine name (e.g. 'one_time_sale', 'commission').
+     *
+     * @return int|null
+     *   The taxonomy term ID, or NULL if not found.
+     */
+    protected function mapTransactionTypeToTerm(string $type): ?int
+    {
+        try {
+            $termStorage = $this->entityTypeManager()->getStorage('taxonomy_term');
+            $terms = $termStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vid', 'foc_transaction_types')
+                ->condition('field_machine_name', $type)
+                ->range(0, 1)
+                ->execute();
+
+            if (!empty($terms)) {
+                return (int) reset($terms);
+            }
+
+            // Fallback: try matching by term name.
+            $termsByName = $termStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vid', 'foc_transaction_types')
+                ->condition('name', $type)
+                ->range(0, 1)
+                ->execute();
+
+            return !empty($termsByName) ? (int) reset($termsByName) : NULL;
+        }
+        catch (\Exception $e) {
+            $this->focLogger->warning('Could not map transaction_type @type to taxonomy: @error', [
+                '@type' => $type,
                 '@error' => $e->getMessage(),
             ]);
             return NULL;

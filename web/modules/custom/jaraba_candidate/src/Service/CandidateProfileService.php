@@ -89,10 +89,32 @@ class CandidateProfileService
     /**
      * Gets skills for a profile.
      */
-    public function getSkills(int $profile_id): array
+    public function getSkills(int $userId): array
     {
-        // TODO: Implement skills retrieval from candidate_skill entity
-        return [];
+        try {
+            $skillEntities = $this->entityTypeManager
+                ->getStorage('candidate_skill')
+                ->loadByProperties(['user_id' => $userId]);
+
+            $skills = [];
+            foreach ($skillEntities as $skill) {
+                $skills[] = [
+                    'id' => (int) $skill->id(),
+                    'skill_id' => $skill->getSkillId(),
+                    'level' => $skill->getLevel(),
+                    'years_experience' => $skill->getYearsExperience(),
+                    'is_verified' => $skill->isVerified(),
+                ];
+            }
+
+            return $skills;
+        } catch (\Exception $e) {
+            $this->logger->error('Error loading skills for user @user: @error', [
+                '@user' => $userId,
+                '@error' => $e->getMessage(),
+            ]);
+            return [];
+        }
     }
 
     /**

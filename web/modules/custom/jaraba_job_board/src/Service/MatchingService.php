@@ -350,8 +350,22 @@ class MatchingService
      */
     protected function getCandidateExperienceLevel(int $candidate_id): string
     {
-        // TODO: Integrate with candidate_profile entity
-        return 'mid'; // Default
+        try {
+            $profiles = $this->entityTypeManager
+                ->getStorage('candidate_profile')
+                ->loadByProperties(['user_id' => $candidate_id]);
+
+            if (!empty($profiles)) {
+                $profile = reset($profiles);
+                if ($profile->hasField('experience_level') && !$profile->get('experience_level')->isEmpty()) {
+                    return $profile->get('experience_level')->value;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback.
+        }
+
+        return 'mid';
     }
 
     /**
@@ -359,8 +373,22 @@ class MatchingService
      */
     protected function getCandidateEducationLevel(int $candidate_id): string
     {
-        // TODO: Integrate with candidate_profile entity
-        return 'bachelor'; // Default
+        try {
+            $profiles = $this->entityTypeManager
+                ->getStorage('candidate_profile')
+                ->loadByProperties(['user_id' => $candidate_id]);
+
+            if (!empty($profiles)) {
+                $profile = reset($profiles);
+                if ($profile->hasField('education_level') && !$profile->get('education_level')->isEmpty()) {
+                    return $profile->get('education_level')->value;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback.
+        }
+
+        return 'bachelor';
     }
 
     /**
@@ -368,18 +396,55 @@ class MatchingService
      */
     protected function getCandidateCity(int $candidate_id): string
     {
-        // TODO: Integrate with candidate_profile entity
-        return ''; // Default
+        try {
+            $profiles = $this->entityTypeManager
+                ->getStorage('candidate_profile')
+                ->loadByProperties(['user_id' => $candidate_id]);
+
+            if (!empty($profiles)) {
+                $profile = reset($profiles);
+                if ($profile->hasField('city') && !$profile->get('city')->isEmpty()) {
+                    return $profile->get('city')->value;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback.
+        }
+
+        return '';
     }
 
     /**
      * Generates embedding vector for a job.
+     *
+     * @todo EXTERNAL_API: Integrar con servicio de embeddings externo (OpenAI, Cohere).
      */
     protected function getJobEmbedding(JobPostingInterface $job): array
     {
-        // TODO: Integrate with embedding service (OpenAI, Cohere, etc.)
-        // For now, return a placeholder 384-dimensional vector
-        return array_fill(0, 384, 0.5);
+        // Placeholder: generar vector básico basado en TF-IDF simplificado.
+        $text = strtolower($job->getTitle() . ' ' . ($job->get('description')->value ?? ''));
+        $words = array_count_values(str_word_count($text, 1));
+        $totalWords = array_sum($words);
+
+        // Generar vector de 384 dimensiones basado en hash de palabras.
+        $vector = array_fill(0, 384, 0.0);
+        foreach ($words as $word => $count) {
+            $hash = crc32($word) % 384;
+            $tfidf = $count / max(1, $totalWords);
+            $vector[abs($hash)] += $tfidf;
+        }
+
+        // Normalizar el vector.
+        $magnitude = sqrt(array_sum(array_map(fn($v) => $v * $v, $vector)));
+        if ($magnitude > 0) {
+            $vector = array_map(fn($v) => $v / $magnitude, $vector);
+        }
+
+        $this->logger->warning('Using placeholder embedding for job @id. Integrate external embedding service.', [
+            '@id' => $job->id(),
+        ]);
+
+        return $vector;
     }
 
 }

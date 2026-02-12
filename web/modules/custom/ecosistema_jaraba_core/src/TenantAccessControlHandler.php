@@ -4,15 +4,35 @@ namespace Drupal\ecosistema_jaraba_core;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Control de acceso para la entidad Tenant.
  */
-class TenantAccessControlHandler extends EntityAccessControlHandler
+class TenantAccessControlHandler extends EntityAccessControlHandler implements EntityHandlerInterface
 {
+
+    /**
+     * The entity type manager.
+     *
+     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+     */
+    protected $entityTypeManager;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type)
+    {
+        $instance = new static($entity_type);
+        $instance->entityTypeManager = $container->get('entity_type.manager');
+        return $instance;
+    }
 
     /**
      * {@inheritdoc}
@@ -81,9 +101,28 @@ class TenantAccessControlHandler extends EntityAccessControlHandler
      */
     protected function isUserMemberOfTenant(TenantInterface $tenant, AccountInterface $account): bool
     {
-        // TODO: Implementar verificación de membresía vía Group module.
-        // Por ahora, retornar FALSE. Se integrará con Group cuando esté configurado.
-        return FALSE;
+        // Verificar membresía vía Group module.
+        try {
+            $group = $tenant->getGroup();
+            if (!$group) {
+                return FALSE;
+            }
+
+            // Consultar si existe una relación de membresía para este usuario en el grupo.
+            $membership = $this->entityTypeManager
+                ->getStorage('group_relationship')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('gid', $group->id())
+                ->condition('plugin_id', 'group_membership')
+                ->condition('entity_id', $account->id())
+                ->count()
+                ->execute();
+
+            return $membership > 0;
+        } catch (\Exception $e) {
+            return FALSE;
+        }
     }
 
 }

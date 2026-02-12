@@ -145,11 +145,10 @@ class CertificationProgram extends ContentEntityBase implements EntityChangedInt
             ->setDisplayConfigurable('view', TRUE);
 
         // === REQUISITOS ===
-        // TODO: Cambiar a 'course' cuando jaraba_lms entity esté instalada.
         $fields['required_courses'] = BaseFieldDefinition::create('entity_reference')
             ->setLabel(t('Cursos Obligatorios'))
             ->setDescription(t('Cursos LMS que deben completarse.'))
-            ->setSetting('target_type', 'node')
+            ->setSetting('target_type', 'lms_course')
             ->setSetting('handler_settings', ['target_bundles' => []])
             ->setCardinality(-1)
             ->setDisplayOptions('form', [

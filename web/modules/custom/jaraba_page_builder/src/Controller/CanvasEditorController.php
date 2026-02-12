@@ -310,13 +310,29 @@ class CanvasEditorController extends ControllerBase
         // Cargar todos los templates activos.
         $templates = $template_storage->loadByProperties(['status' => TRUE]);
 
+        // Determinar nivel de plan del tenant para filtrar templates premium.
+        $tenantPlan = NULL;
+        try {
+            $tenant = $this->tenantContext->getCurrentTenant();
+            if ($tenant) {
+                $plan = $tenant->getSubscriptionPlan();
+                $tenantPlan = $plan ? $plan->get('machine_name')->value : NULL;
+            }
+        } catch (\Exception $e) {
+            // Sin contexto de tenant, solo mostrar templates gratuitos.
+        }
+        $premiumPlans = ['professional', 'enterprise', 'unlimited'];
+        $hasPremiumAccess = $tenantPlan && in_array($tenantPlan, $premiumPlans, TRUE);
+
         $grouped = [];
         foreach ($templates as $template) {
             $category = $template->get('category') ?? 'general';
             $is_premium = $template->get('is_premium') ?? FALSE;
 
-            // TODO: Filtrar premium según plan del tenant.
-            // Por ahora incluimos todos.
+            // Filtrar templates premium según plan del tenant.
+            if ($is_premium && !$hasPremiumAccess) {
+                continue;
+            }
 
             $grouped[$category][] = [
                 'id' => $template->id(),

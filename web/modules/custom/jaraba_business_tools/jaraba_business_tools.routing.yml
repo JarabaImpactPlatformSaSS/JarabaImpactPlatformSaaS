@@ -389,4 +389,13 @@ jaraba_business_tools.program_dashboard:
   requirements:
     _permission: 'administer business model canvas'
 
+# --- API Agent Rating ---
+jaraba_business_tools.api.agent_rating:
+  path: '/api/v1/business-tools/agent-rating'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::submitAgentRating'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
 

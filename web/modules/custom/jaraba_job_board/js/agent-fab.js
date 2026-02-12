@@ -362,8 +362,19 @@
                             ? `<span class="rating-thanks">✅ ${Drupal.t('¡Gracias!')}</span>`
                             : `<span class="rating-thanks">📝 ${Drupal.t('Anotado para mejorar')}</span>`;
 
-                        // TODO: Send rating to backend
-                        console.log('Rating:', ratingValue, 'for response');
+                        // Enviar rating al backend.
+                        fetch('/api/v1/job-board/agent-rating', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify({
+                                rating: ratingValue,
+                                session_id: window.jarabaAgentSessionId || 'unknown',
+                                context: { agent: currentAgent, timestamp: Date.now() },
+                            }),
+                        }).catch(err => console.warn('Rating submit failed:', err));
                     });
                 });
                 wrapper.appendChild(rating);

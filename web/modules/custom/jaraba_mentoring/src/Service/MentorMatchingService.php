@@ -202,8 +202,29 @@ class MentorMatchingService
      */
     protected function calculateAvailabilityScore(MentorProfile $mentor): float
     {
-        // TODO: Check actual availability slots.
-        return $mentor->isAvailable() ? 100 : 0;
+        // Query the mentor profile for availability_slots field.
+        if (!$mentor->isAvailable()) {
+            return 0;
+        }
+
+        try {
+            if ($mentor->hasField('availability_slots') && !$mentor->get('availability_slots')->isEmpty()) {
+                $slotsJson = $mentor->get('availability_slots')->value;
+                $slots = json_decode($slotsJson, TRUE);
+
+                if (is_array($slots) && !empty($slots)) {
+                    // Score based on number of available slots (more slots = higher score).
+                    $slotCount = count($slots);
+                    return min(100, $slotCount * 20);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Fall through to default.
+        }
+
+        // Mentor is available but no detailed slots defined.
+        return 50;
     }
 
     /**

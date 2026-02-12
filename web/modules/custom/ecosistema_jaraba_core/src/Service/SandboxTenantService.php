@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
@@ -71,6 +72,11 @@ class SandboxTenantService
     ];
 
     /**
+     * Entity type manager.
+     */
+    protected EntityTypeManagerInterface $entityTypeManager;
+
+    /**
      * State service.
      */
     protected StateInterface $state;
@@ -84,9 +90,11 @@ class SandboxTenantService
      * Constructor.
      */
     public function __construct(
+        EntityTypeManagerInterface $entityTypeManager,
         StateInterface $state,
         LoggerChannelFactoryInterface $loggerFactory
     ) {
+        $this->entityTypeManager = $entityTypeManager;
         $this->state = $state;
         $this->loggerFactory = $loggerFactory;
     }
@@ -261,8 +269,54 @@ class SandboxTenantService
         // Calcular tiempo de conversión.
         $conversionTime = time() - $sandbox['created_at'];
 
-        // TODO: Crear cuenta real en Drupal.
-        // Por ahora, simular conversión.
+        // Crear cuenta real en Drupal.
+        try {
+            $email = $userData['email'] ?? '';
+            $name = $userData['name'] ?? explode('@', $email)[0];
+
+            // Verificar que el email no esté ya registrado.
+            $existingUsers = $this->entityTypeManager->getStorage('user')
+                ->loadByProperties(['mail' => $email]);
+
+            if (!empty($existingUsers)) {
+                return [
+                    'success' => FALSE,
+                    'error' => 'Email already registered',
+                ];
+            }
+
+            // Crear el usuario.
+            $user = $this->entityTypeManager->getStorage('user')->create([
+                'name' => $name,
+                'mail' => $email,
+                'status' => 1,
+                'pass' => $userData['password'] ?? \Drupal::service('password_generator')->generate(12),
+            ]);
+            $user->addRole('tenant_admin');
+            $user->save();
+
+            // Crear el Tenant asociado.
+            $templateData = self::SANDBOX_TEMPLATES[$sandbox['template']] ?? self::SANDBOX_TEMPLATES['agroconecta'];
+            $tenant = $this->entityTypeManager->getStorage('tenant')->create([
+                'name' => $userData['company_name'] ?? $templateData['name'],
+                'admin_user' => $user->id(),
+                'status' => TRUE,
+            ]);
+            $tenant->save();
+
+            $sandbox['user_id'] = (int) $user->id();
+            $sandbox['tenant_entity_id'] = (int) $tenant->id();
+
+        } catch (\Exception $e) {
+            $this->loggerFactory->get('sandbox')->error(
+                'Error creating account from sandbox @id: @error',
+                ['@id' => $sandboxId, '@error' => $e->getMessage()]
+            );
+            return [
+                'success' => FALSE,
+                'error' => 'Failed to create account: ' . $e->getMessage(),
+            ];
+        }
 
         // Marcar sandbox como convertido.
         $sandbox['status'] = 'converted';

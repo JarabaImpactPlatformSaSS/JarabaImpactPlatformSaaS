@@ -262,13 +262,47 @@ class DiagnosticScoringService
         $maturityLevel = $diagnostic->getMaturityLevel();
         $sector = $diagnostic->getBusinessSector();
 
-        // Buscar path matching en la BD
-        // TODO: Implementar cuando exista la entidad digitalization_path
+        // Query digitalization_path entity matching maturity level and sector.
         $this->logger->info('Recommendation requested for diagnostic @id: level=@level, sector=@sector', [
             '@id' => $diagnostic->id(),
             '@level' => $maturityLevel,
             '@sector' => $sector,
         ]);
+
+        try {
+            $pathStorage = $this->entityTypeManager->getStorage('digitalization_path');
+            $query = $pathStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('target_maturity_level', $maturityLevel)
+                ->condition('sector', $sector)
+                ->condition('status', TRUE)
+                ->sort('weight', 'ASC')
+                ->range(0, 1);
+
+            $pathIds = $query->execute();
+
+            if (!empty($pathIds)) {
+                return (int) reset($pathIds);
+            }
+
+            // Fallback: search by maturity level only (any sector).
+            $fallbackIds = $pathStorage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('target_maturity_level', $maturityLevel)
+                ->condition('status', TRUE)
+                ->sort('weight', 'ASC')
+                ->range(0, 1)
+                ->execute();
+
+            if (!empty($fallbackIds)) {
+                return (int) reset($fallbackIds);
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('digitalization_path entity not available: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
 
         return NULL;
     }

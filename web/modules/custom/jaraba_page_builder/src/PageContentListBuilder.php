@@ -90,7 +90,12 @@ class PageContentListBuilder extends EntityListBuilder
         // Filtrar por tenant si el usuario tiene uno asignado.
         $current_user = \Drupal::currentUser();
         if (!$current_user->hasPermission('administer page builder')) {
-            // TODO: Filtrar por tenant del usuario actual.
+            if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+                $tenantId = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId();
+                if ($tenantId) {
+                    $query->condition('tenant_id', $tenantId);
+                }
+            }
         }
 
         return $query->execute();

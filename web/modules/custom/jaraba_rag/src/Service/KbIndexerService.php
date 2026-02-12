@@ -169,11 +169,64 @@ class KbIndexerService
      */
     public function reindexTenant(int $tenantId): void
     {
-        // @todo Implementar reindexación por tenant
-        // Esto debería:
-        // 1. Eliminar todos los puntos del tenant
-        // 2. Obtener todas las entidades del tenant
-        // 3. Indexar cada una
+        $this->log("Reindexando tenant", ['tenant_id' => $tenantId]);
+
+        try {
+            // 1. Eliminar todos los puntos del tenant en Qdrant.
+            $this->deletePointsByFilter([
+                'must' => [
+                    ['key' => 'tenant_id', 'match' => ['value' => $tenantId]],
+                ],
+            ]);
+
+            // 2. Obtener el tenant y su grupo para cargar entidades asociadas.
+            $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+            if (!$tenant) {
+                $this->log("Tenant no encontrado", ['tenant_id' => $tenantId], 'error');
+                return;
+            }
+
+            $group = $tenant->getGroup();
+            if (!$group) {
+                $this->log("Tenant sin grupo asociado", ['tenant_id' => $tenantId], 'warning');
+                return;
+            }
+
+            // 3. Obtener entidades vinculadas al grupo vía group_relationship.
+            $config = $this->configFactory->get('jaraba_rag.settings');
+            $indexableConfig = $config->get('indexable_entities') ?? [];
+            $indexableTypes = array_keys($indexableConfig);
+
+            foreach ($indexableTypes as $entityType) {
+                $relationships = $this->entityTypeManager
+                    ->getStorage('group_relationship')
+                    ->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('gid', $group->id())
+                    ->condition('plugin_id', "group_{$entityType}:%", 'LIKE')
+                    ->execute();
+
+                if (!empty($relationships)) {
+                    $relationshipEntities = $this->entityTypeManager
+                        ->getStorage('group_relationship')
+                        ->loadMultiple($relationships);
+
+                    foreach ($relationshipEntities as $relationship) {
+                        $entity = $relationship->getEntity();
+                        if ($entity) {
+                            $this->indexEntity($entity);
+                        }
+                    }
+                }
+            }
+
+            $this->log("Reindexación completada", ['tenant_id' => $tenantId]);
+
+        } catch (\Exception $e) {
+            $this->log("Error reindexando tenant: " . $e->getMessage(), [
+                'tenant_id' => $tenantId,
+            ], 'error');
+        }
     }
 
     /**

@@ -177,9 +177,35 @@ class EntrepreneurContextService {
    *   Lista de temas recientes.
    */
   protected function getRecentTopics(int $userId, int $limit = 10): array {
-    // TODO: Implementar cuando exista entidad conversation_log
-    // Por ahora, devolver array vacío
-    return [];
+    // Query conversation_log entity by user_id for recent topics.
+    try {
+      $storage = $this->entityTypeManager->getStorage('conversation_log');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('user_id', $userId)
+        ->sort('created', 'DESC')
+        ->range(0, $limit)
+        ->execute();
+
+      if (empty($ids)) {
+        return [];
+      }
+
+      $topics = [];
+      foreach ($storage->loadMultiple($ids) as $log) {
+        $topics[] = [
+          'topic' => $log->get('topic')->value ?? '',
+          'summary' => $log->get('summary')->value ?? '',
+          'created' => $log->get('created')->value,
+        ];
+      }
+
+      return $topics;
+    }
+    catch (\Exception $e) {
+      // Entity conversation_log may not exist yet.
+      return [];
+    }
   }
 
   /**
@@ -192,8 +218,44 @@ class EntrepreneurContextService {
    *   Patrones identificados.
    */
   protected function getFrequentPatterns(int $userId): array {
-    // TODO: Implementar análisis de patrones con historial
-    return [];
+    // Basic pattern analysis: topic frequency over conversation history.
+    try {
+      $storage = $this->entityTypeManager->getStorage('conversation_log');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('user_id', $userId)
+        ->sort('created', 'DESC')
+        ->range(0, 50)
+        ->execute();
+
+      if (empty($ids)) {
+        return [];
+      }
+
+      $topicCounts = [];
+      foreach ($storage->loadMultiple($ids) as $log) {
+        $topic = $log->get('topic')->value ?? '';
+        if ($topic) {
+          $topicCounts[$topic] = ($topicCounts[$topic] ?? 0) + 1;
+        }
+      }
+
+      // Sort by frequency descending and return top patterns.
+      arsort($topicCounts);
+      $patterns = [];
+      foreach (array_slice($topicCounts, 0, 5, TRUE) as $topic => $count) {
+        $patterns[] = [
+          'topic' => $topic,
+          'frequency' => $count,
+        ];
+      }
+
+      return $patterns;
+    }
+    catch (\Exception $e) {
+      // Entity conversation_log may not exist yet.
+      return [];
+    }
   }
 
   /**

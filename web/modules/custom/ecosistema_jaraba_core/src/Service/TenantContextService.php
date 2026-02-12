@@ -177,7 +177,7 @@ class TenantContextService
 
         return [
             'productores' => $this->calculateMemberMetrics($group, $planLimits),
-            'almacenamiento' => $this->calculateStorageMetrics($planLimits),
+            'almacenamiento' => $this->calculateStorageMetrics($planLimits, $group),
             'contenido' => $this->calculateContentMetrics($group),
         ];
     }
@@ -232,14 +232,50 @@ class TenantContextService
      * @return array
      *   Métricas de almacenamiento.
      */
-    protected function calculateStorageMetrics(array $planLimits): array
+    protected function calculateStorageMetrics(array $planLimits, ?\Drupal\group\Entity\GroupInterface $group = NULL): array
     {
         // Límite en MB
         $limit = $planLimits['max_storage_mb'] ?? 1024;
 
-        // TODO: Calcular uso real mediante file_managed o directorio físico.
-        // Por ahora, simular un 30% de uso.
-        $used = round($limit * 0.3);
+        // Calcular uso real mediante file_managed filtrado por miembros del tenant.
+        $usedBytes = 0;
+        if ($group) {
+            try {
+                // Obtener UIDs de miembros del grupo.
+                $memberUids = $this->entityTypeManager
+                    ->getStorage('group_relationship')
+                    ->getQuery()
+                    ->accessCheck(FALSE)
+                    ->condition('gid', $group->id())
+                    ->condition('plugin_id', 'group_membership')
+                    ->execute();
+
+                if (!empty($memberUids)) {
+                    $relationships = $this->entityTypeManager
+                        ->getStorage('group_relationship')
+                        ->loadMultiple($memberUids);
+                    $uids = [];
+                    foreach ($relationships as $relationship) {
+                        $uids[] = $relationship->getEntity()->id();
+                    }
+
+                    if (!empty($uids)) {
+                        $usedBytes = (int) $this->entityTypeManager
+                            ->getStorage('file')
+                            ->getAggregateQuery()
+                            ->accessCheck(FALSE)
+                            ->aggregate('filesize', 'SUM')
+                            ->condition('uid', $uids, 'IN')
+                            ->execute()[0]['filesize_sum'] ?? 0;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Si hay error, el uso queda en 0.
+            }
+        }
+
+        // Convertir bytes a MB.
+        $used = (int) round($usedBytes / (1024 * 1024));
 
         $percentage = ($limit > 0) ? min(100, round(($used / $limit) * 100)) : 0;
 
@@ -247,7 +283,7 @@ class TenantContextService
             'used_mb' => $used,
             'limit_mb' => $limit,
             'percentage' => $percentage,
-            'used_formatted' => $this->formatBytes($used * 1024 * 1024),
+            'used_formatted' => $this->formatBytes($usedBytes),
             'limit_formatted' => $this->formatBytes($limit * 1024 * 1024),
         ];
     }
@@ -267,14 +303,27 @@ class TenantContextService
 
         if ($group) {
             try {
-                $nodeStorage = $this->entityTypeManager->getStorage('node');
-                $query = $nodeStorage->getQuery()
-                    ->accessCheck(FALSE)
-                    ->condition('type', ['article', 'producto', 'productor'], 'IN');
-
-                // TODO: Filtrar por grupo cuando gnode esté completamente configurado.
-                $count = $query->count()->execute();
-
+                // Si gnode está instalado, filtrar contenido vinculado al grupo.
+                if (\Drupal::moduleHandler()->moduleExists('gnode')) {
+                    $count = (int) $this->entityTypeManager
+                        ->getStorage('group_relationship')
+                        ->getQuery()
+                        ->accessCheck(FALSE)
+                        ->condition('gid', $group->id())
+                        ->condition('plugin_id', 'group_node:%', 'LIKE')
+                        ->count()
+                        ->execute();
+                }
+                else {
+                    // Sin gnode, contar nodos de tipos relevantes globalmente.
+                    $count = (int) $this->entityTypeManager
+                        ->getStorage('node')
+                        ->getQuery()
+                        ->accessCheck(FALSE)
+                        ->condition('type', ['article', 'producto', 'productor'], 'IN')
+                        ->count()
+                        ->execute();
+                }
             } catch (\Exception $e) {
                 // Si hay error, el count queda en 0.
             }
@@ -305,6 +354,18 @@ class TenantContextService
         } else {
             return $bytes . ' bytes';
         }
+    }
+
+    /**
+     * Obtiene el ID del Tenant actual.
+     *
+     * @return int|null
+     *   El ID del tenant actual, o NULL si no hay tenant.
+     */
+    public function getCurrentTenantId(): ?int
+    {
+        $tenant = $this->getCurrentTenant();
+        return $tenant ? (int) $tenant->id() : NULL;
     }
 
     /**

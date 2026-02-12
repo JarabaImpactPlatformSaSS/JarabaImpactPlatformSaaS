@@ -88,8 +88,37 @@ class LadderService
     {
         $userId = $userId ?? (int) $this->currentUser->id();
 
-        // TODO: Integrar con sistema de compras/enrollments.
-        // Por ahora devuelve 0 (Lead Magnet).
+        // Query completed enrollments to determine ladder level.
+        $enrollments = $this->entityTypeManager->getStorage('lms_enrollment')
+            ->loadByProperties(['user_id' => $userId]);
+
+        $completedCourses = 0;
+        foreach ($enrollments as $enrollment) {
+            $status = $enrollment->get('status')->value ?? '';
+            if ($status === 'completed') {
+                $completedCourses++;
+            }
+        }
+
+        // Determine ladder level based on completed courses.
+        // 0: Lead Magnet (no courses), 1: Microcurso (1+), 2: Membresía (3+),
+        // 3: Mastermind (6+), 4: Mentoring 1:1 (10+), 5: Certificación (15+).
+        if ($completedCourses >= 15) {
+            return 5;
+        }
+        if ($completedCourses >= 10) {
+            return 4;
+        }
+        if ($completedCourses >= 6) {
+            return 3;
+        }
+        if ($completedCourses >= 3) {
+            return 2;
+        }
+        if ($completedCourses >= 1) {
+            return 1;
+        }
+
         return 0;
     }
 
