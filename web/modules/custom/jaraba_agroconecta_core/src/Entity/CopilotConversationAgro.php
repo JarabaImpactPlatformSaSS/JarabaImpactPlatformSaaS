@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
+use Drupal\ecosistema_jaraba_core\Interface\CopilotConversationInterface;
+use Drupal\ecosistema_jaraba_core\Trait\CopilotConversationTrait;
 
 /**
  * Define la entidad CopilotConversationAgro.
@@ -48,11 +50,12 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class CopilotConversationAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface
+class CopilotConversationAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotConversationInterface
 {
 
     use EntityChangedTrait;
     use EntityOwnerTrait;
+    use CopilotConversationTrait;
 
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
     {

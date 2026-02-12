@@ -6,6 +6,8 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\ecosistema_jaraba_core\Interface\CopilotConversationInterface;
+use Drupal\ecosistema_jaraba_core\Trait\CopilotConversationTrait;
 
 /**
  * Define la entidad CopilotConversation para persistir conversaciones con copilotos.
@@ -53,10 +55,11 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   },
  * )
  */
-class CopilotConversation extends ContentEntityBase
+class CopilotConversation extends ContentEntityBase implements CopilotConversationInterface
 {
 
     use EntityChangedTrait;
+    use CopilotConversationTrait;
 
     /**
      * {@inheritdoc}

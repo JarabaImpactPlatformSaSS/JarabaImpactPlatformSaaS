@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * Servicio de Analytics integrado para Page Builder.
+ * Servicio de Tracking integrado para Page Builder.
  *
  * ESPECIFICACIÓN: Doc 167 - Platform_Analytics_PageBuilder_v1
  *
@@ -20,7 +20,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
  *
  * @package Drupal\jaraba_page_builder\Service
  */
-class AnalyticsService
+class PageBuilderTrackingService
 {
 
     /**
