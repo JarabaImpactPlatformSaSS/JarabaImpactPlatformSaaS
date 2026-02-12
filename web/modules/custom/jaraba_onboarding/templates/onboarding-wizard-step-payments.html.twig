@@ -1,0 +1,69 @@
+{#
+/**
+ * @file
+ * Paso 4: Configurar Pagos — Stripe Connect.
+ *
+ * Variables:
+ *  - vertical: string
+ *  - stripe_url: string
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~3min.
+ */
+#}
+<div class="wizard-step wizard-step--payments">
+  <h2 class="wizard-step__title">
+    {% trans %}Configura tus pagos{% endtrans %}
+  </h2>
+  <p class="wizard-step__subtitle">
+    {% trans %}Conecta tu cuenta de Stripe para recibir pagos de tus clientes de forma segura.{% endtrans %}
+  </p>
+
+  <div class="wizard-step__payments-card">
+    <div class="wizard-step__payments-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+    </div>
+
+    {% if step_data.stripe_account_id is defined and step_data.stripe_account_id %}
+      <div class="wizard-step__payments-connected">
+        <span class="wizard-step__payments-status wizard-step__payments-status--connected">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {% trans %}Stripe conectado{% endtrans %}
+        </span>
+        <p class="wizard-step__payments-account">
+          {% trans %}Cuenta:{% endtrans %} {{ step_data.stripe_account_id }}
+        </p>
+      </div>
+    {% else %}
+      <div class="wizard-step__payments-actions">
+        {% if stripe_url %}
+          <a href="{{ stripe_url }}" class="wizard__btn wizard__btn--stripe" target="_blank" rel="noopener">
+            {% trans %}Conectar con Stripe{% endtrans %}
+          </a>
+        {% else %}
+          <button type="button" class="wizard__btn wizard__btn--stripe" data-wizard-action="connect-stripe" disabled>
+            {% trans %}Conectar con Stripe{% endtrans %}
+          </button>
+          <p class="wizard-step__field-hint">
+            {% trans %}La configuracion de Stripe estara disponible tras completar los datos fiscales.{% endtrans %}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="wizard-step__payments-info">
+      <h4>{% trans %}¿Por que Stripe?{% endtrans %}</h4>
+      <ul>
+        <li>{% trans %}Comisiones competitivas (1.5% + 0.25€){% endtrans %}</li>
+        <li>{% trans %}Cobros en menos de 7 dias{% endtrans %}</li>
+        <li>{% trans %}Proteccion al vendedor incluida{% endtrans %}</li>
+        <li>{% trans %}Compatible con tarjetas, Bizum y transferencias{% endtrans %}</li>
+      </ul>
+    </div>
+  </div>
+</div>

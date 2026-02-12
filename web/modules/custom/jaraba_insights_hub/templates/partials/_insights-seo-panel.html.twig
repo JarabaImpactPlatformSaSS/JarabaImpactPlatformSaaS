@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * SEO panel partial for the Insights Hub dashboard.
+ *
+ * Variables:
+ * - data: Array with SEO metrics from Search Console.
+ *   - total_clicks: Total clicks in the period.
+ *   - total_impressions: Total impressions in the period.
+ *   - avg_ctr: Average CTR in the period.
+ *   - avg_position: Average position in the period.
+ *   - top_queries: Array of top search queries.
+ *   - top_pages: Array of top pages by clicks.
+ */
+#}
+<div class="insights-panel insights-panel--seo">
+  <h2 class="insights-panel__title">{{ 'Search Console'|t }}</h2>
+
+  <div class="insights-panel__kpis">
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ data.total_clicks|default(0)|number_format }}</span>
+      <span class="kpi-card__label">{{ 'Clics'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ data.total_impressions|default(0)|number_format }}</span>
+      <span class="kpi-card__label">{{ 'Impresiones'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ data.avg_ctr|default(0)|number_format(2) }}%</span>
+      <span class="kpi-card__label">{{ 'CTR Medio'|t }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__value">{{ data.avg_position|default(0)|number_format(1) }}</span>
+      <span class="kpi-card__label">{{ 'Posicion Media'|t }}</span>
+    </div>
+  </div>
+
+  {% if data.top_queries is not empty %}
+    <div class="insights-panel__table">
+      <h3>{{ 'Top Consultas'|t }}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'Consulta'|t }}</th>
+            <th>{{ 'Clics'|t }}</th>
+            <th>{{ 'Impresiones'|t }}</th>
+            <th>{{ 'CTR'|t }}</th>
+            <th>{{ 'Posicion'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for query in data.top_queries %}
+            <tr>
+              <td>{{ query.query }}</td>
+              <td>{{ query.clicks|number_format }}</td>
+              <td>{{ query.impressions|number_format }}</td>
+              <td>{{ query.ctr|number_format(2) }}%</td>
+              <td>{{ query.position|number_format(1) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>

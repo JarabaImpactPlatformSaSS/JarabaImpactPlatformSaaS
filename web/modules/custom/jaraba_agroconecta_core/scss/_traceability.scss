@@ -58,27 +58,27 @@
         border: 3px solid var(--ej-color-surface, #fff);
 
         &--harvest {
-            background: linear-gradient(135deg, #059669, #047857);
+            background: linear-gradient(135deg, var(--ej-color-success, #10B981), color-mix(in srgb, var(--ej-color-success, #10B981) 75%, black));
             color: #fff;
         }
 
         &--processing {
-            background: linear-gradient(135deg, #d97706, #b45309);
+            background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), color-mix(in srgb, var(--ej-color-warning, #F59E0B) 70%, black));
             color: #fff;
         }
 
         &--analysis {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black));
             color: #fff;
         }
 
         &--packaging {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 75%, black));
             color: #fff;
         }
 
         &--shipping {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), color-mix(in srgb, var(--ej-color-danger, #EF4444) 75%, black));
             color: #fff;
         }
 
@@ -184,21 +184,21 @@
     transition: all 0.3s ease;
 
     &--verified {
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-        border: 1px solid #6ee7b7;
-        color: #065f46;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--ej-color-success, #10B981) 6%, white), color-mix(in srgb, var(--ej-color-success, #10B981) 12%, white));
+        border: 1px solid color-mix(in srgb, var(--ej-color-success, #10B981) 40%, white);
+        color: color-mix(in srgb, var(--ej-color-success, #10B981) 50%, black);
     }
 
     &--pending {
-        background: #fef3c7;
-        border: 1px solid #fcd34d;
-        color: #92400e;
+        background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 12%, white);
+        border: 1px solid color-mix(in srgb, var(--ej-color-warning, #F59E0B) 35%, white);
+        color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 60%, black);
     }
 
     &--failed {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #991b1b;
+        background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 6%, white);
+        border: 1px solid color-mix(in srgb, var(--ej-color-danger, #EF4444) 20%, white);
+        color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 55%, black);
     }
 
     &__icon {
@@ -248,7 +248,7 @@
         overflow: hidden;
         border-radius: var(--ej-radius-xl, 16px);
         margin-bottom: var(--ej-spacing-xl, 2rem);
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black) 50%, color-mix(in srgb, var(--ej-color-corporate, #233D63) 60%, black) 100%);
         color: #fff;
         padding: var(--ej-spacing-2xl, 3rem) var(--ej-spacing-xl, 2rem);
         text-align: center;
@@ -331,11 +331,11 @@
         gap: 6px;
         padding: 6px 14px;
         border-radius: 8px;
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 8%, white);
+        border: 1px solid color-mix(in srgb, var(--ej-color-success, #10B981) 25%, white);
         font-size: var(--ej-font-size-sm, 0.875rem);
         font-weight: 500;
-        color: #166534;
+        color: color-mix(in srgb, var(--ej-color-success, #10B981) 55%, black);
     }
 
     // Producer card
@@ -371,7 +371,7 @@
     &__cta {
         text-align: center;
         padding: var(--ej-spacing-xl, 2rem);
-        background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--ej-color-success, #10B981) 6%, white), color-mix(in srgb, var(--ej-color-success, #10B981) 4%, white));
         border-radius: var(--ej-radius-lg, 12px);
         margin-bottom: var(--ej-spacing-lg, 1.5rem);
     }

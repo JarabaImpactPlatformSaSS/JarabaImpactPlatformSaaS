@@ -146,7 +146,7 @@
 
 .table-danger {
   th {
-    background: rgba(220, 38, 38, 0.05);
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 5%, transparent);
   }
 }
 
@@ -167,24 +167,24 @@
 }
 
 .health-excelente {
-  background: rgba(22, 163, 74, 0.1);
-  color: #15803d;
+  background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black);
 }
 
 .health-bueno {
-  background: rgba(37, 99, 235, 0.1);
-  color: #1d4ed8;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  color: var(--ej-color-corporate, #233D63);
 }
 
 .health-regular {
-  background: rgba(245, 158, 11, 0.1);
-  color: #b45309;
+  background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 65%, black);
 }
 
 .health-crítico,
 .health-critico {
-  background: rgba(220, 38, 38, 0.1);
-  color: #b91c1c;
+  background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black);
 }
 
 // ── Empty State ───────────────────────────────────────────────
@@ -235,43 +235,43 @@
 
 // ── State Badges ──────────────────────────────────────────────
 .badge-discovery {
-  background: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 12%, transparent);
+  color: var(--ej-color-corporate, #233D63);
 }
 
 .badge-activation {
-  background: rgba(37, 99, 235, 0.1);
-  color: #1d4ed8;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, black);
 }
 
 .badge-engagement {
-  background: rgba(0, 169, 165, 0.1);
-  color: #0d9488;
+  background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+  color: var(--ej-color-innovation, #00A9A5);
 }
 
 .badge-conversion {
-  background: rgba(22, 163, 74, 0.1);
-  color: #15803d;
+  background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-success, #10B981) 65%, black);
 }
 
 .badge-retention {
-  background: rgba(139, 92, 246, 0.1);
-  color: #7c3aed;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
+  color: color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, var(--ej-color-innovation, #00A9A5));
 }
 
 .badge-expansion {
-  background: rgba(245, 158, 11, 0.1);
-  color: #b45309;
+  background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 65%, black);
 }
 
 .badge-advocacy {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-success, #10B981) 80%, black);
 }
 
 .badge-at_risk {
-  background: rgba(220, 38, 38, 0.1);
-  color: #b91c1c;
+  background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+  color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, black);
 }
 
 // ── Responsive ────────────────────────────────────────────────

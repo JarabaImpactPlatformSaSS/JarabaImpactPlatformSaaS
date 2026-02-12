@@ -1,0 +1,1006 @@
+/**
+ * @file
+ * Onboarding Wizard — 7-step configuration wizard.
+ *
+ * BEM structure following project conventions.
+ * Uses var(--ej-*) design tokens from the platform token system.
+ *
+ * Fase 5 — Doc 179.
+ */
+
+/* ============================================================================
+   Wizard Container
+   ============================================================================ */
+
+.onboarding-wizard {
+  font-family: var(--ej-font-family, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  color: var(--ej-text-primary, #212121);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================================
+   Progress Bar
+   ============================================================================ */
+
+.wizard__progress {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.wizard__progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--ej-color-impulse, #FF8C42);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.wizard__progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--ej-bg-tertiary, #e0e0e0);
+  border-radius: 2px;
+}
+
+.wizard__progress-steps {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.25rem;
+  gap: 0.25rem;
+}
+
+.wizard__step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.wizard__step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 2px solid var(--ej-bg-tertiary, #e0e0e0);
+  background: var(--ej-bg-primary, #fff);
+  color: var(--ej-text-secondary, #757575);
+  transition: all 0.3s ease;
+}
+
+.wizard__step-indicator--active .wizard__step-number {
+  border-color: var(--ej-color-impulse, #FF8C42);
+  background: var(--ej-color-impulse, #FF8C42);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.2);
+}
+
+.wizard__step-indicator--completed .wizard__step-number {
+  border-color: var(--ej-color-success, #22c55e);
+  background: var(--ej-color-success, #22c55e);
+  color: #fff;
+}
+
+.wizard__step-indicator--skipped .wizard__step-number {
+  border-color: var(--ej-text-tertiary, #bdbdbd);
+  background: var(--ej-bg-secondary, #f5f5f5);
+  color: var(--ej-text-tertiary, #bdbdbd);
+}
+
+.wizard__step-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ej-text-secondary, #757575);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.wizard__step-indicator--active .wizard__step-label {
+  color: var(--ej-color-impulse, #FF8C42);
+  font-weight: 600;
+}
+
+.wizard__step-indicator--completed .wizard__step-label {
+  color: var(--ej-color-success, #22c55e);
+}
+
+.wizard__step-duration {
+  font-size: 0.625rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+}
+
+/* ============================================================================
+   Wizard Content Area
+   ============================================================================ */
+
+.wizard__content {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+/* ============================================================================
+   Wizard Footer (Navigation)
+   ============================================================================ */
+
+.wizard__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--ej-border-light, #e0e0e0);
+  margin-top: auto;
+  gap: 1rem;
+}
+
+.wizard__footer-left,
+.wizard__footer-right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.wizard__footer-center {
+  flex: 1;
+  text-align: center;
+}
+
+.wizard__step-counter {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+/* ============================================================================
+   Wizard Buttons
+   ============================================================================ */
+
+.wizard__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.wizard__btn--next,
+.wizard__btn--launch {
+  background: var(--ej-color-impulse, #FF8C42);
+  color: #fff;
+}
+
+.wizard__btn--next:hover,
+.wizard__btn--launch:hover {
+  background: var(--ej-color-impulse-hover, #e67a30);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+.wizard__btn--back {
+  background: transparent;
+  color: var(--ej-text-secondary, #757575);
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+}
+
+.wizard__btn--back:hover {
+  background: var(--ej-bg-secondary, #f5f5f5);
+}
+
+.wizard__btn--skip {
+  background: transparent;
+  color: var(--ej-text-tertiary, #bdbdbd);
+  padding: 0.75rem 1rem;
+}
+
+.wizard__btn--skip:hover {
+  color: var(--ej-text-secondary, #757575);
+}
+
+.wizard__btn--stripe {
+  background: #635bff;
+  color: #fff;
+}
+
+.wizard__btn--stripe:hover {
+  background: #5046e5;
+}
+
+.wizard__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   Wizard Step — Shared styles
+   ============================================================================ */
+
+.wizard-step {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.wizard-step__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #212121);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.wizard-step__subtitle {
+  font-size: 1rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0 0 2rem;
+  line-height: 1.5;
+}
+
+.wizard-step__subtitle--large {
+  font-size: 1.125rem;
+}
+
+.wizard-step__section-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wizard-step__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.wizard-step__field--full {
+  grid-column: 1 / -1;
+}
+
+.wizard-step__field--logo {
+  grid-column: 1 / -1;
+}
+
+/* ============================================================================
+   Form Fields
+   ============================================================================ */
+
+.wizard-step__label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+  margin-bottom: 0.375rem;
+}
+
+.wizard-step__input,
+.wizard-step__select,
+.wizard-step__textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--ej-text-primary, #212121);
+  background: var(--ej-bg-primary, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wizard-step__input:focus,
+.wizard-step__select:focus,
+.wizard-step__textarea:focus {
+  outline: none;
+  border-color: var(--ej-color-impulse, #FF8C42);
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+}
+
+.wizard-step__input::placeholder,
+.wizard-step__textarea::placeholder {
+  color: var(--ej-text-tertiary, #bdbdbd);
+}
+
+.wizard-step__input-group {
+  display: flex;
+  align-items: center;
+}
+
+.wizard-step__input-group .wizard-step__input {
+  border-radius: 8px 0 0 8px;
+}
+
+.wizard-step__input-suffix {
+  padding: 0.625rem 0.75rem;
+  background: var(--ej-bg-secondary, #f5f5f5);
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.wizard-step__field-hint {
+  font-size: 0.75rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+  margin-top: 0.25rem;
+}
+
+.wizard-step__field-error {
+  font-size: 0.75rem;
+  color: var(--ej-color-danger, #ef4444);
+  margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   Step Welcome — Hero & Vertical Confirm
+   ============================================================================ */
+
+.wizard-step--welcome .wizard-step__hero {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.wizard-step__icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.1), rgba(255, 140, 66, 0.05));
+  color: var(--ej-color-impulse, #FF8C42);
+}
+
+.wizard-step__icon--agro {
+  background: linear-gradient(135deg, rgba(85, 107, 47, 0.1), rgba(85, 107, 47, 0.05));
+  color: var(--ej-color-agro, #556B2F);
+}
+
+.wizard-step__icon--innovation {
+  background: linear-gradient(135deg, rgba(0, 169, 165, 0.1), rgba(0, 169, 165, 0.05));
+  color: var(--ej-color-innovation, #00A9A5);
+}
+
+.wizard-step__icon--success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  color: var(--ej-color-success, #22c55e);
+}
+
+.wizard-step__vertical-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid var(--ej-color-impulse, #FF8C42);
+  background: rgba(255, 140, 66, 0.05);
+  margin-bottom: 0.5rem;
+}
+
+.wizard-step__vertical-card--agroconecta {
+  border-color: var(--ej-color-agro, #556B2F);
+  background: rgba(85, 107, 47, 0.05);
+}
+
+.wizard-step__vertical-card--comercioconecta {
+  border-color: var(--ej-color-success, #22c55e);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.wizard-step__vertical-card--serviciosconecta,
+.wizard-step__vertical-card--empleabilidad {
+  border-color: var(--ej-color-innovation, #00A9A5);
+  background: rgba(0, 169, 165, 0.05);
+}
+
+.wizard-step__vertical-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.wizard-step__vertical-check {
+  color: var(--ej-color-success, #22c55e);
+}
+
+.wizard-step__hint {
+  font-size: 0.8125rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+  margin: 0.5rem 0 1rem;
+}
+
+.wizard-step__vertical-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wizard-step__vertical-option {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  background: var(--ej-bg-primary, #fff);
+  color: var(--ej-text-secondary, #757575);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wizard-step__vertical-option:hover {
+  border-color: var(--ej-color-impulse, #FF8C42);
+  color: var(--ej-color-impulse, #FF8C42);
+}
+
+/* Timeline */
+.wizard-step__timeline {
+  margin-top: 2rem;
+}
+
+.wizard-step__timeline-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: timeline;
+}
+
+.wizard-step__timeline-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--ej-border-light, #e0e0e0);
+  counter-increment: timeline;
+}
+
+.wizard-step__timeline-list li::before {
+  content: counter(timeline);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ej-bg-secondary, #f5f5f5);
+  color: var(--ej-text-secondary, #757575);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.wizard-step__time {
+  font-size: 0.75rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+
+.wizard-step__total-time {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   Step Identity — Logo Upload & Color Palette
+   ============================================================================ */
+
+.wizard-step__logo-upload {
+  border: 2px dashed var(--ej-border-light, #e0e0e0);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  position: relative;
+}
+
+.wizard-step__logo-upload:hover {
+  border-color: var(--ej-color-impulse, #FF8C42);
+  background: rgba(255, 140, 66, 0.03);
+}
+
+.wizard-step__logo-upload.is-dragover {
+  border-color: var(--ej-color-impulse, #FF8C42);
+  background: rgba(255, 140, 66, 0.08);
+}
+
+.wizard-step__logo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+}
+
+.wizard-step__logo-preview img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+.wizard-step__logo-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+/* Color Swatches */
+.wizard-step__color-swatches {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.wizard-step__color-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.wizard-step__color-input {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--ej-border-light, #e0e0e0);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.wizard-step__color-hex {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.wizard-step__ai-badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ej-color-impulse, #FF8C42);
+  background: rgba(255, 140, 66, 0.1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+}
+
+/* Preview Card */
+.wizard-step__preview {
+  margin-top: 2rem;
+}
+
+.wizard-step__preview-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.wizard-step__preview-header {
+  height: 60px;
+  background: var(--ej-color-corporate, #233D63);
+  transition: background 0.3s ease;
+}
+
+.wizard-step__preview-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wizard-step__preview-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.wizard-step__preview-tagline {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+/* ============================================================================
+   Step Payments — Stripe Connect
+   ============================================================================ */
+
+.wizard-step__payments-card {
+  background: var(--ej-bg-secondary, #f5f5f5);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.wizard-step__payments-icon {
+  color: #635bff;
+  margin-bottom: 1rem;
+}
+
+.wizard-step__payments-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.wizard-step__payments-status--connected {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--ej-color-success, #22c55e);
+}
+
+.wizard-step__payments-account {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+  margin-top: 0.5rem;
+}
+
+.wizard-step__payments-actions {
+  margin: 1.5rem 0;
+}
+
+.wizard-step__payments-info {
+  text-align: left;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ej-border-light, #e0e0e0);
+}
+
+.wizard-step__payments-info h4 {
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.wizard-step__payments-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.wizard-step__payments-info li {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+  padding: 0.375rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.wizard-step__payments-info li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--ej-color-success, #22c55e);
+  font-weight: 700;
+}
+
+/* ============================================================================
+   Step Team — Invite Rows
+   ============================================================================ */
+
+.wizard-step__team-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: end;
+}
+
+.wizard-step__team-row .wizard-step__select {
+  width: auto;
+  min-width: 140px;
+}
+
+.wizard-step__add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px dashed var(--ej-border-light, #e0e0e0);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ej-text-secondary, #757575);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wizard-step__add-row:hover {
+  border-color: var(--ej-color-impulse, #FF8C42);
+  color: var(--ej-color-impulse, #FF8C42);
+}
+
+.wizard-step__skip-hint {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--ej-bg-secondary, #f5f5f5);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.wizard-step__skip-hint p {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0;
+}
+
+/* ============================================================================
+   Step Content — Image Upload
+   ============================================================================ */
+
+.wizard-step__image-upload {
+  border: 2px dashed var(--ej-border-light, #e0e0e0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-text-tertiary, #bdbdbd);
+}
+
+.wizard-step__image-upload:hover {
+  border-color: var(--ej-color-impulse, #FF8C42);
+}
+
+/* ============================================================================
+   Step Launch — Celebration
+   ============================================================================ */
+
+.wizard-step--launch {
+  text-align: center;
+}
+
+.wizard-step__launch-hero {
+  padding: 2rem 0;
+}
+
+.wizard-step__launch-icon {
+  color: var(--ej-color-impulse, #FF8C42);
+  margin-bottom: 1rem;
+  animation: wizard-launch-pulse 2s ease infinite;
+}
+
+@keyframes wizard-launch-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.wizard-step__launch-summary {
+  text-align: left;
+  margin: 2rem 0;
+}
+
+.wizard-step__launch-checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.wizard-step__launch-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  font-size: 0.9375rem;
+  color: var(--ej-text-primary, #212121);
+}
+
+.wizard-step__launch-check svg {
+  color: var(--ej-color-success, #22c55e);
+  flex-shrink: 0;
+}
+
+.wizard-step__launch-actions {
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.wizard-step__launch-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.wizard-step__launch-card {
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--ej-border-light, #e0e0e0);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wizard-step__launch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.wizard-step__launch-card svg {
+  color: var(--ej-color-impulse, #FF8C42);
+  margin-bottom: 0.75rem;
+}
+
+.wizard-step__launch-card h4 {
+  font-size: 0.875rem;
+  margin: 0 0 0.375rem;
+}
+
+.wizard-step__launch-card p {
+  font-size: 0.75rem;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Confetti Canvas */
+.wizard-step__confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================================================
+   Vertical Color Overrides
+   ============================================================================ */
+
+.wizard--agroconecta .wizard__progress-bar,
+.wizard--agroconecta .wizard__btn--next,
+.wizard--agroconecta .wizard__btn--launch {
+  background: var(--ej-color-agro, #556B2F);
+}
+
+.wizard--agroconecta .wizard__btn--next:hover,
+.wizard--agroconecta .wizard__btn--launch:hover {
+  background: #445622;
+  box-shadow: 0 4px 12px rgba(85, 107, 47, 0.3);
+}
+
+.wizard--agroconecta .wizard__step-indicator--active .wizard__step-number {
+  border-color: var(--ej-color-agro, #556B2F);
+  background: var(--ej-color-agro, #556B2F);
+  box-shadow: 0 0 0 4px rgba(85, 107, 47, 0.2);
+}
+
+.wizard--comercioconecta .wizard__progress-bar,
+.wizard--comercioconecta .wizard__btn--next,
+.wizard--comercioconecta .wizard__btn--launch {
+  background: var(--ej-color-success, #22c55e);
+}
+
+.wizard--comercioconecta .wizard__btn--next:hover,
+.wizard--comercioconecta .wizard__btn--launch:hover {
+  background: #16a34a;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.wizard--comercioconecta .wizard__step-indicator--active .wizard__step-number {
+  border-color: var(--ej-color-success, #22c55e);
+  background: var(--ej-color-success, #22c55e);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+}
+
+.wizard--serviciosconecta .wizard__progress-bar,
+.wizard--serviciosconecta .wizard__btn--next,
+.wizard--serviciosconecta .wizard__btn--launch,
+.wizard--empleabilidad .wizard__progress-bar,
+.wizard--empleabilidad .wizard__btn--next,
+.wizard--empleabilidad .wizard__btn--launch {
+  background: var(--ej-color-innovation, #00A9A5);
+}
+
+.wizard--serviciosconecta .wizard__btn--next:hover,
+.wizard--serviciosconecta .wizard__btn--launch:hover,
+.wizard--empleabilidad .wizard__btn--next:hover,
+.wizard--empleabilidad .wizard__btn--launch:hover {
+  background: #008f8b;
+  box-shadow: 0 4px 12px rgba(0, 169, 165, 0.3);
+}
+
+.wizard--serviciosconecta .wizard__step-indicator--active .wizard__step-number,
+.wizard--empleabilidad .wizard__step-indicator--active .wizard__step-number {
+  border-color: var(--ej-color-innovation, #00A9A5);
+  background: var(--ej-color-innovation, #00A9A5);
+  box-shadow: 0 0 0 4px rgba(0, 169, 165, 0.2);
+}
+
+/* ============================================================================
+   Responsive — Mobile First
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .onboarding-wizard {
+    padding: 1rem;
+  }
+
+  .wizard__progress-steps {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .wizard__step-label {
+    display: none;
+  }
+
+  .wizard__step-duration {
+    display: none;
+  }
+
+  .wizard-step__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-step__launch-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard__footer {
+    flex-wrap: wrap;
+  }
+
+  .wizard__footer-center {
+    order: -1;
+    flex-basis: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .wizard-step__color-swatches {
+    justify-content: center;
+  }
+
+  .wizard-step__team-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
+   Reduced Motion
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard__progress-bar {
+    transition: none;
+  }
+
+  .wizard__btn {
+    transition: none;
+  }
+
+  .wizard-step__launch-icon {
+    animation: none;
+  }
+}

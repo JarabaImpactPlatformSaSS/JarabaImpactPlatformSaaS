@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Uptime panel partial for the Insights Hub dashboard.
+ *
+ * Variables:
+ * - checks: Array of recent uptime check results.
+ * - incidents: Array of recent/active uptime incidents.
+ */
+#}
+<div class="insights-panel insights-panel--uptime">
+  <h2 class="insights-panel__title">{{ 'Uptime Monitoring'|t }}</h2>
+
+  {% if incidents is not empty %}
+    <div class="insights-panel__incidents">
+      <h3>{{ 'Incidentes Activos'|t }}</h3>
+      {% for incident in incidents %}
+        <div class="incident-card incident-card--{{ incident.status }}">
+          <span class="incident-card__endpoint">{{ incident.endpoint }}</span>
+          <span class="incident-card__status">{{ incident.status == 'ongoing' ? 'En Curso'|t : 'Resuelto'|t }}</span>
+          <span class="incident-card__started">{{ incident.started_at }}</span>
+          {% if incident.duration_seconds %}
+            <span class="incident-card__duration">{{ incident.duration_seconds }}s</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if checks is not empty %}
+    <div class="insights-panel__table">
+      <h3>{{ 'Ultimos Checks'|t }}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'Endpoint'|t }}</th>
+            <th>{{ 'Estado'|t }}</th>
+            <th>{{ 'Tiempo (ms)'|t }}</th>
+            <th>{{ 'Verificado'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in checks %}
+            <tr class="check-row check-row--{{ check.status }}">
+              <td>{{ check.endpoint }}</td>
+              <td>{{ check.status }}</td>
+              <td>{{ check.response_time_ms|default('-') }}</td>
+              <td>{{ check.checked_at }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="insights-panel__empty">{{ 'No hay datos de uptime disponibles.'|t }}</p>
+  {% endif %}
+</div>

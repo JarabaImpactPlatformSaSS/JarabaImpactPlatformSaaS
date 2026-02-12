@@ -1,0 +1,104 @@
+{#
+/**
+ * @file
+ * Wrapper principal del wizard de onboarding de 7 pasos.
+ *
+ * Variables:
+ *  - step: string — key del paso actual (welcome, identity, etc.)
+ *  - step_number: int — numero del paso (1-7)
+ *  - steps_config: array — configuracion de todos los pasos
+ *  - progress: array — datos de progreso del wizard
+ *  - vertical: string — vertical del tenant
+ *  - step_content: render array — contenido del paso actual
+ *
+ * Fase 5 — Doc 179.
+ */
+#}
+{% set vertical_class = 'wizard--' ~ vertical|default('default') %}
+
+<div class="onboarding-wizard {{ vertical_class }}" data-wizard-step="{{ step }}" data-wizard-vertical="{{ vertical }}">
+
+  {# --- Progress Bar --- #}
+  <div class="wizard__progress" role="progressbar" aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="wizard__progress-bar" style="width: {{ progress.percentage }}%"></div>
+    <div class="wizard__progress-steps">
+      {% for num, config in steps_config %}
+        {% if config.active %}
+          {% set state = 'pending' %}
+          {% if num in progress.completed_steps %}
+            {% set state = 'completed' %}
+          {% elseif num in progress.skipped_steps %}
+            {% set state = 'skipped' %}
+          {% elseif num == step_number %}
+            {% set state = 'active' %}
+          {% endif %}
+          <div class="wizard__step-indicator wizard__step-indicator--{{ state }}" data-step="{{ num }}">
+            <span class="wizard__step-number">
+              {% if state == 'completed' %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              {% elseif state == 'skipped' %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 17l5-5-5-5M6 17l5-5-5-5"></path>
+                </svg>
+              {% else %}
+                {{ num }}
+              {% endif %}
+            </span>
+            <span class="wizard__step-label">{{ config.label }}</span>
+            <span class="wizard__step-duration">{{ config.duration }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {# --- Step Content --- #}
+  <div class="wizard__content" role="main">
+    {{ step_content }}
+  </div>
+
+  {# --- Wizard Footer (navigation) --- #}
+  <div class="wizard__footer">
+    <div class="wizard__footer-left">
+      {% if step_number > 1 %}
+        <button type="button" class="wizard__btn wizard__btn--back" data-wizard-action="back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          {% trans %}Atras{% endtrans %}
+        </button>
+      {% endif %}
+    </div>
+    <div class="wizard__footer-center">
+      <span class="wizard__step-counter">
+        {% trans %}Paso{% endtrans %} {{ step_number }}/{{ steps_config|length }}
+      </span>
+    </div>
+    <div class="wizard__footer-right">
+      {% set step_config = steps_config[step_number]|default({}) %}
+      {% if not step_config.required and step_number < 7 %}
+        <button type="button" class="wizard__btn wizard__btn--skip" data-wizard-action="skip">
+          {% trans %}Omitir{% endtrans %}
+        </button>
+      {% endif %}
+      {% if step_number < 7 %}
+        <button type="button" class="wizard__btn wizard__btn--next" data-wizard-action="next">
+          {% trans %}Continuar{% endtrans %}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      {% else %}
+        <button type="button" class="wizard__btn wizard__btn--launch" data-wizard-action="launch">
+          {% trans %}Lanzar mi negocio{% endtrans %}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+</div>

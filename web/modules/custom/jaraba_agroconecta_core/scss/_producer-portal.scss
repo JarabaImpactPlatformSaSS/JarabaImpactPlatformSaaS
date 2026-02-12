@@ -86,7 +86,7 @@ $producer-gap: var(--spacing-lg, 24px);
 
         &--error {
             background: #f8d7da;
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid var(--ej-color-danger, #EF4444);
         }
     }
 

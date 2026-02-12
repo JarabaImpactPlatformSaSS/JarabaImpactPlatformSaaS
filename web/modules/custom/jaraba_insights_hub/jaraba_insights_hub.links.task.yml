@@ -1,0 +1,12 @@
+# Enlaces de pestaña (tabs) del módulo Insights Hub
+
+jaraba_insights_hub.settings:
+  title: 'Settings'
+  route_name: jaraba_insights_hub.settings
+  base_route: jaraba_insights_hub.settings
+
+jaraba_insights_hub.search_console_connect:
+  title: 'Search Console'
+  route_name: jaraba_insights_hub.search_console_connect
+  base_route: jaraba_insights_hub.settings
+  weight: 5

@@ -1,0 +1,126 @@
+{#
+/**
+ * @file
+ * Paso 6: Contenido Inicial — Primer producto/servicio segun vertical.
+ *
+ * Variables:
+ *  - vertical: string
+ *  - content_type_label: string
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~3min.
+ */
+#}
+<div class="wizard-step wizard-step--content">
+  <h2 class="wizard-step__title">
+    {% trans %}Crea {{ content_type_label }}{% endtrans %}
+  </h2>
+  <p class="wizard-step__subtitle">
+    {% trans %}Tu primer paso hacia el exito. Podras editarlo despues.{% endtrans %}
+  </p>
+
+  <div class="wizard-step__form-grid">
+    {# --- Common fields --- #}
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-content-name">{% trans %}Nombre{% endtrans %}</label>
+      <input type="text" id="wizard-content-name" class="wizard-step__input" data-field="content_name"
+        placeholder="{% if vertical == 'agroconecta' or vertical == 'comercioconecta' %}{{ 'Nombre del producto'|t }}{% elseif vertical == 'serviciosconecta' %}{{ 'Nombre del servicio'|t }}{% elseif vertical == 'empleabilidad' %}{{ 'Tu nombre completo'|t }}{% else %}{{ 'Nombre del proyecto'|t }}{% endif %}"
+        value="{{ step_data.content_name|default('') }}" required />
+    </div>
+
+    <div class="wizard-step__field wizard-step__field--full">
+      <label class="wizard-step__label" for="wizard-content-desc">{% trans %}Descripcion{% endtrans %}</label>
+      <textarea id="wizard-content-desc" class="wizard-step__textarea" data-field="content_description" rows="3"
+        placeholder="{% if vertical == 'agroconecta' or vertical == 'comercioconecta' %}{{ 'Describe tu producto...'|t }}{% elseif vertical == 'serviciosconecta' %}{{ 'Describe tu servicio...'|t }}{% elseif vertical == 'empleabilidad' %}{{ 'Resumen profesional...'|t }}{% else %}{{ 'Describe tu idea de negocio...'|t }}{% endif %}"
+      >{{ step_data.content_description|default('') }}</textarea>
+    </div>
+
+    {# --- Vertical-specific fields --- #}
+    {% if vertical == 'agroconecta' or vertical == 'comercioconecta' %}
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-price">{% trans %}Precio{% endtrans %}</label>
+        <div class="wizard-step__input-group">
+          <input type="number" id="wizard-content-price" class="wizard-step__input" data-field="content_price"
+            placeholder="0.00" step="0.01" min="0" value="{{ step_data.content_price|default('') }}" />
+          <span class="wizard-step__input-suffix">€</span>
+        </div>
+      </div>
+
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-unit">{% trans %}Unidad{% endtrans %}</label>
+        <select id="wizard-content-unit" class="wizard-step__select" data-field="content_unit">
+          <option value="unit">{% trans %}Unidad{% endtrans %}</option>
+          <option value="kg">{% trans %}Kilogramo{% endtrans %}</option>
+          <option value="box">{% trans %}Caja{% endtrans %}</option>
+          <option value="dozen">{% trans %}Docena{% endtrans %}</option>
+        </select>
+      </div>
+    {% elseif vertical == 'serviciosconecta' %}
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-price">{% trans %}Precio/hora{% endtrans %}</label>
+        <div class="wizard-step__input-group">
+          <input type="number" id="wizard-content-price" class="wizard-step__input" data-field="content_price"
+            placeholder="0.00" step="0.01" min="0" value="{{ step_data.content_price|default('') }}" />
+          <span class="wizard-step__input-suffix">€/h</span>
+        </div>
+      </div>
+
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-category">{% trans %}Categoria{% endtrans %}</label>
+        <select id="wizard-content-category" class="wizard-step__select" data-field="content_category">
+          <option value="">{% trans %}Seleccionar...{% endtrans %}</option>
+          <option value="consulting">{% trans %}Consultoria{% endtrans %}</option>
+          <option value="training">{% trans %}Formacion{% endtrans %}</option>
+          <option value="technical">{% trans %}Tecnico{% endtrans %}</option>
+          <option value="creative">{% trans %}Creativo{% endtrans %}</option>
+        </select>
+      </div>
+    {% elseif vertical == 'empleabilidad' %}
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-sector">{% trans %}Sector profesional{% endtrans %}</label>
+        <input type="text" id="wizard-content-sector" class="wizard-step__input" data-field="content_sector"
+          placeholder="{{ 'Ej: Tecnologia, Agricultura, Comercio...'|t }}" value="{{ step_data.content_sector|default('') }}" />
+      </div>
+
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-experience">{% trans %}Anos de experiencia{% endtrans %}</label>
+        <select id="wizard-content-experience" class="wizard-step__select" data-field="content_experience">
+          <option value="0-1">{% trans %}Menos de 1 ano{% endtrans %}</option>
+          <option value="1-3">{% trans %}1-3 anos{% endtrans %}</option>
+          <option value="3-5">{% trans %}3-5 anos{% endtrans %}</option>
+          <option value="5-10">{% trans %}5-10 anos{% endtrans %}</option>
+          <option value="10+">{% trans %}Mas de 10 anos{% endtrans %}</option>
+        </select>
+      </div>
+    {% elseif vertical == 'emprendimiento' %}
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-stage">{% trans %}Fase del proyecto{% endtrans %}</label>
+        <select id="wizard-content-stage" class="wizard-step__select" data-field="content_stage">
+          <option value="idea">{% trans %}Idea{% endtrans %}</option>
+          <option value="validation">{% trans %}Validacion{% endtrans %}</option>
+          <option value="mvp">{% trans %}MVP{% endtrans %}</option>
+          <option value="growth">{% trans %}Crecimiento{% endtrans %}</option>
+        </select>
+      </div>
+
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-content-market">{% trans %}Mercado objetivo{% endtrans %}</label>
+        <input type="text" id="wizard-content-market" class="wizard-step__input" data-field="content_market"
+          placeholder="{{ 'Ej: Jovenes rurales, Comercios locales...'|t }}" value="{{ step_data.content_market|default('') }}" />
+      </div>
+    {% endif %}
+
+    {# --- Image Upload --- #}
+    <div class="wizard-step__field wizard-step__field--full">
+      <label class="wizard-step__label">{% trans %}Imagen (opcional){% endtrans %}</label>
+      <div class="wizard-step__image-upload" data-content-image-upload>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <span>{% trans %}Arrastra una imagen o haz clic{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</div>

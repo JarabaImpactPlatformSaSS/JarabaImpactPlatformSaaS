@@ -99,6 +99,14 @@ class ExperimentApiController extends ControllerBase
             ], 500);
         }
 
+        // Despachar evento GA4 para impression (P3-03).
+        $this->experimentService->dispatchGA4Event('experiment_impression', [
+            'experiment_id' => (string) $experiment->id(),
+            'experiment_name' => $experiment->getName(),
+            'variant_id' => (string) $variant->id(),
+            'variant_name' => $variant->getName(),
+        ]);
+
         return new JsonResponse([
             'experiment_id' => (int) $experiment->id(),
             'variant_id' => (int) $variant->id(),
@@ -136,6 +144,13 @@ class ExperimentApiController extends ControllerBase
                 'error' => 'Could not record conversion',
             ], 500);
         }
+
+        // Despachar evento GA4 para conversion (P3-03).
+        $this->experimentService->dispatchGA4Event('experiment_conversion', [
+            'experiment_id' => (string) $experimentId,
+            'variant_id' => (string) $variantId,
+            'goal_type' => $data['goal_type'] ?? 'conversion',
+        ]);
 
         return new JsonResponse([
             'success' => TRUE,
@@ -298,6 +313,34 @@ class ExperimentApiController extends ControllerBase
                 'winner_variant_id' => $variantId,
                 'status' => 'completed',
             ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtiene analisis multivariate con matrix pairwise.
+     *
+     * GET /api/v1/experiments/{id}/multivariate
+     *
+     * Compara cada par de variantes entre si para tests con 3+ variantes.
+     */
+    public function getMultivariateResults(int $id): JsonResponse
+    {
+        try {
+            $experiment = $this->entityTypeManager()->getStorage('page_experiment')->load($id);
+
+            if (!$experiment) {
+                return new JsonResponse([
+                    'error' => 'Experiment not found',
+                ], 404);
+            }
+
+            $results = $this->experimentService->analyzeMultivariate($experiment);
+
+            return new JsonResponse($results);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),

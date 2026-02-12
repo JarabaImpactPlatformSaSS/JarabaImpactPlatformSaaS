@@ -18,3 +18,10 @@ jaraba_onboarding.settings:
   route_name: jaraba_onboarding.settings
   parent: system.admin_config_system
   weight: 50
+
+jaraba_onboarding.tenant_progress:
+  title: 'Wizard Onboarding Tenants'
+  description: 'Progreso del wizard de configuracion inicial de tenants.'
+  route_name: entity.tenant_onboarding_progress.collection
+  parent: system.admin_content
+  weight: 32

@@ -6,11 +6,11 @@
 // Añadir @import "components/autofirma"; al archivo main.scss
 // ============================================================================
 
-// Variables
+// Variables — mapped to Jaraba palette
 @use 'sass:color';
-$autofirma-primary: #1565C0;
-$autofirma-success: #2E7D32;
-$autofirma-danger: #C62828;
+$autofirma-primary: var(--ej-color-corporate, #233D63);
+$autofirma-success: var(--ej-color-success, #10B981);
+$autofirma-danger: var(--ej-color-danger, #EF4444);
 $autofirma-overlay-bg: rgba(0, 0, 0, 0.6);
 $autofirma-modal-bg: #ffffff;
 $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -102,7 +102,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
 .autofirma-message {
   font-size: 1rem;
-  color: #333;
+  color: var(--ej-color-text-primary, #1a1a2e);
   line-height: 1.5;
 }
 
@@ -111,8 +111,8 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 // ---------------------------------------------------------------------------
 .autofirma-modal-footer {
   padding: 1rem 1.5rem;
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+  background: var(--ej-color-surface-alt, #f9fafb);
+  border-top: 1px solid var(--ej-color-border, #e5e7eb);
 
   p {
     font-size: 0.8rem;
@@ -165,9 +165,9 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 // TARJETA DE DOCUMENTO PENDIENTE
 // ---------------------------------------------------------------------------
 .documento-firma-card {
-  background: #fff;
+  background: var(--ej-color-surface, #fff);
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--ej-color-border, #e5e7eb);
   padding: 1.25rem;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
@@ -179,7 +179,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
   // Estados
   &.estado-pendiente {
-    border-left: 4px solid #FFA000;
+    border-left: 4px solid var(--ej-color-warning, #F59E0B);
   }
 
   &.estado-firmado {
@@ -191,7 +191,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
 
   &.estado-expirado {
-    border-left: 4px solid #757575;
+    border-left: 4px solid var(--ej-color-text-muted, #6b7280);
     opacity: 0.7;
   }
 }
@@ -210,7 +210,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #E3F2FD;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, white);
   color: $autofirma-primary;
   font-size: 1.25rem;
   flex-shrink: 0;
@@ -224,7 +224,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     margin: 0 0 0.25rem;
     font-size: 1rem;
     font-weight: 600;
-    color: #212529;
+    color: var(--ej-color-text-primary, #1a1a2e);
   }
 }
 
@@ -233,7 +233,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.8rem;
-  color: #6c757d;
+  color: var(--ej-color-text-muted, #6b7280);
   margin-bottom: 1rem;
 
   span {
@@ -262,23 +262,23 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   font-weight: 600;
 
   &.pendiente {
-    background: #FFF3E0;
-    color: #E65100;
+    background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 12%, white);
+    color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 70%, black);
   }
 
   &.firmado {
-    background: #E8F5E9;
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, white);
     color: $autofirma-success;
   }
 
   &.rechazado {
-    background: #FFEBEE;
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, white);
     color: $autofirma-danger;
   }
 
   &.expirado {
-    background: #EEEEEE;
-    color: #616161;
+    background: var(--ej-color-surface-alt, #f3f4f6);
+    color: var(--ej-color-text-muted, #6b7280);
   }
 }
 
@@ -359,7 +359,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     justify-content: space-between;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid var(--ej-color-border, #e5e7eb);
 
     h3 {
       margin: 0;
@@ -382,12 +382,12 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   .empty-state {
     text-align: center;
     padding: 3rem 1rem;
-    color: #6c757d;
+    color: var(--ej-color-text-muted, #6b7280);
 
     i {
       font-size: 3rem;
       margin-bottom: 1rem;
-      color: #dee2e6;
+      color: var(--ej-color-border, #e5e7eb);
     }
 
     p {

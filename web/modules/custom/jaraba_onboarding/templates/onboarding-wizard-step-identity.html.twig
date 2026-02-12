@@ -1,0 +1,91 @@
+{#
+/**
+ * @file
+ * Paso 2: Identidad de Marca — Logo upload + AI paleta + nombre.
+ *
+ * Variables:
+ *  - vertical: string
+ *  - colors: array{primary, secondary, accent}
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~2min.
+ */
+#}
+<div class="wizard-step wizard-step--identity">
+  <h2 class="wizard-step__title">
+    {% trans %}Tu identidad de marca{% endtrans %}
+  </h2>
+  <p class="wizard-step__subtitle">
+    {% trans %}Sube tu logo y personalizaremos los colores automaticamente.{% endtrans %}
+  </p>
+
+  <div class="wizard-step__form-grid">
+    {# --- Logo Upload --- #}
+    <div class="wizard-step__field wizard-step__field--logo">
+      <label class="wizard-step__label">{% trans %}Logo{% endtrans %}</label>
+      <div class="wizard-step__logo-upload" data-logo-upload>
+        <div class="wizard-step__logo-preview" data-logo-preview>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>{% trans %}Arrastra o haz clic{% endtrans %}</span>
+        </div>
+        <input type="file" class="wizard-step__logo-input" data-logo-input accept="image/png,image/jpeg,image/svg+xml,image/webp" />
+      </div>
+      <p class="wizard-step__field-hint">{% trans %}PNG, JPG, SVG o WebP. Maximo 2 MB.{% endtrans %}</p>
+    </div>
+
+    {# --- Business Name --- #}
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-business-name">{% trans %}Nombre comercial{% endtrans %}</label>
+      <input type="text" id="wizard-business-name" class="wizard-step__input" data-field="business_name" placeholder="{{ 'Mi Negocio'|t }}" value="{{ step_data.business_name|default('') }}" required />
+    </div>
+
+    {# --- Tagline --- #}
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-tagline">{% trans %}Eslogan (opcional){% endtrans %}</label>
+      <input type="text" id="wizard-tagline" class="wizard-step__input" data-field="tagline" placeholder="{{ 'Lo mejor de tu tierra'|t }}" value="{{ step_data.tagline|default('') }}" />
+    </div>
+  </div>
+
+  {# --- Color Palette --- #}
+  <div class="wizard-step__colors" data-color-palette>
+    <h3 class="wizard-step__section-title">
+      {% trans %}Paleta de colores{% endtrans %}
+      <span class="wizard-step__ai-badge" data-ai-badge style="display: none;">
+        {% trans %}Detectado por IA{% endtrans %}
+      </span>
+    </h3>
+    <div class="wizard-step__color-swatches">
+      <div class="wizard-step__color-swatch">
+        <label class="wizard-step__label">{% trans %}Primario{% endtrans %}</label>
+        <input type="color" class="wizard-step__color-input" data-field="color_primary" value="{{ colors.primary }}" />
+        <span class="wizard-step__color-hex" data-color-hex>{{ colors.primary }}</span>
+      </div>
+      <div class="wizard-step__color-swatch">
+        <label class="wizard-step__label">{% trans %}Secundario{% endtrans %}</label>
+        <input type="color" class="wizard-step__color-input" data-field="color_secondary" value="{{ colors.secondary }}" />
+        <span class="wizard-step__color-hex" data-color-hex>{{ colors.secondary }}</span>
+      </div>
+      <div class="wizard-step__color-swatch">
+        <label class="wizard-step__label">{% trans %}Acento{% endtrans %}</label>
+        <input type="color" class="wizard-step__color-input" data-field="color_accent" value="{{ colors.accent }}" />
+        <span class="wizard-step__color-hex" data-color-hex>{{ colors.accent }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# --- Live Preview --- #}
+  <div class="wizard-step__preview">
+    <h3 class="wizard-step__section-title">{% trans %}Vista previa{% endtrans %}</h3>
+    <div class="wizard-step__preview-card" data-preview-card>
+      <div class="wizard-step__preview-header" data-preview-header></div>
+      <div class="wizard-step__preview-body">
+        <span class="wizard-step__preview-name" data-preview-name>{% trans %}Mi Negocio{% endtrans %}</span>
+        <span class="wizard-step__preview-tagline" data-preview-tagline></span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -62,6 +62,74 @@ function jaraba_onboarding_theme() {
       ],
       'template' => 'jaraba-onboarding-step-complete',
     ],
+    // F5 — Wizard de 7 pasos (Doc 179).
+    'onboarding_wizard' => [
+      'variables' => [
+        'step' => NULL,
+        'step_number' => 1,
+        'steps_config' => [],
+        'progress' => NULL,
+        'vertical' => '',
+        'step_content' => [],
+      ],
+      'template' => 'onboarding-wizard',
+    ],
+    'onboarding_wizard_step_welcome' => [
+      'variables' => [
+        'vertical' => '',
+        'vertical_label' => '',
+        'vertical_color' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-welcome',
+    ],
+    'onboarding_wizard_step_identity' => [
+      'variables' => [
+        'vertical' => '',
+        'colors' => [],
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-identity',
+    ],
+    'onboarding_wizard_step_fiscal' => [
+      'variables' => [
+        'vertical' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-fiscal',
+    ],
+    'onboarding_wizard_step_payments' => [
+      'variables' => [
+        'vertical' => '',
+        'stripe_url' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-payments',
+    ],
+    'onboarding_wizard_step_team' => [
+      'variables' => [
+        'vertical' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-team',
+    ],
+    'onboarding_wizard_step_content' => [
+      'variables' => [
+        'vertical' => '',
+        'content_type_label' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-content',
+    ],
+    'onboarding_wizard_step_launch' => [
+      'variables' => [
+        'vertical' => '',
+        'tenant_name' => '',
+        'preview_url' => '',
+        'step_data' => [],
+      ],
+      'template' => 'onboarding-wizard-step-launch',
+    ],
   ];
 }
 

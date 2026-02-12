@@ -393,7 +393,7 @@
         color: white;
 
         &:hover {
-            background: #E67A35;
+            background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black);
         }
     }
 
@@ -1317,11 +1317,11 @@ body.slide-panel-open {
     }
 
     &--a:hover {
-        border-color: #10B981;
+        border-color: var(--ej-color-success, #10B981);
     }
 
     &--b:hover {
-        border-color: #3B82F6;
+        border-color: var(--ej-color-corporate, #233D63);
     }
 
     &__name {

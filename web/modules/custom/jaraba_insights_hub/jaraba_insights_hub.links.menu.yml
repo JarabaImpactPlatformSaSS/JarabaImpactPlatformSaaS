@@ -1,0 +1,14 @@
+# Enlaces de menú del módulo Insights Hub
+
+jaraba_insights_hub.admin_overview:
+  title: 'Insights Hub'
+  parent: system.admin_content
+  route_name: jaraba_insights_hub.admin_overview
+  weight: 15
+
+jaraba_insights_hub.settings:
+  title: 'Insights Hub'
+  description: 'Configure Insights Hub settings.'
+  parent: system.admin_config_services
+  route_name: jaraba_insights_hub.settings
+  weight: 10

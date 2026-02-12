@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Paso 3: Datos Fiscales — NIF/CIF + direccion (solo commerce).
+ *
+ * Variables:
+ *  - vertical: string
+ *  - step_data: array
+ *
+ * Fase 5 — Doc 179 — ~2min.
+ */
+#}
+<div class="wizard-step wizard-step--fiscal">
+  <h2 class="wizard-step__title">
+    {% trans %}Datos fiscales{% endtrans %}
+  </h2>
+  <p class="wizard-step__subtitle">
+    {% trans %}Necesarios para emitir facturas y cumplir con la normativa.{% endtrans %}
+  </p>
+
+  <div class="wizard-step__form-grid">
+    {# --- NIF/CIF --- #}
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-nif">{% trans %}NIF / CIF{% endtrans %}</label>
+      <input type="text" id="wizard-nif" class="wizard-step__input" data-field="nif" placeholder="B12345678" value="{{ step_data.nif|default('') }}" required maxlength="9" />
+      <p class="wizard-step__field-hint">{% trans %}Introduce tu NIF (persona fisica) o CIF (empresa).{% endtrans %}</p>
+      <span class="wizard-step__field-error" data-nif-error style="display: none;"></span>
+    </div>
+
+    {# --- Razon Social --- #}
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-legal-name">{% trans %}Razon social{% endtrans %}</label>
+      <input type="text" id="wizard-legal-name" class="wizard-step__input" data-field="legal_name" placeholder="{{ 'Nombre completo o razon social'|t }}" value="{{ step_data.legal_name|default('') }}" required />
+    </div>
+
+    {# --- Direccion --- #}
+    <div class="wizard-step__field wizard-step__field--full">
+      <label class="wizard-step__label" for="wizard-address">{% trans %}Direccion fiscal{% endtrans %}</label>
+      <input type="text" id="wizard-address" class="wizard-step__input" data-field="address" placeholder="{{ 'Calle, numero, piso'|t }}" value="{{ step_data.address|default('') }}" required />
+    </div>
+
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-city">{% trans %}Ciudad{% endtrans %}</label>
+      <input type="text" id="wizard-city" class="wizard-step__input" data-field="city" value="{{ step_data.city|default('') }}" required />
+    </div>
+
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-postal">{% trans %}Codigo postal{% endtrans %}</label>
+      <input type="text" id="wizard-postal" class="wizard-step__input" data-field="postal_code" placeholder="28001" value="{{ step_data.postal_code|default('') }}" required maxlength="5" pattern="[0-9]{5}" />
+    </div>
+
+    <div class="wizard-step__field">
+      <label class="wizard-step__label" for="wizard-province">{% trans %}Provincia{% endtrans %}</label>
+      <input type="text" id="wizard-province" class="wizard-step__input" data-field="province" value="{{ step_data.province|default('') }}" required />
+    </div>
+  </div>
+</div>

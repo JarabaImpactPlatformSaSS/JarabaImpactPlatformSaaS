@@ -1,0 +1,205 @@
+{#
+/**
+ * @file
+ * Admin Center Dashboard — Vista unificada para Super Admin.
+ *
+ * Variables:
+ *   - kpis: Array of KPI objects (mrr, arr, tenants, mau, churn, health_avg)
+ *     Each with: value, label, format (currency|number|percent|score), trend
+ *   - alerts: Array of active AlertRule entities
+ *     Each with: id, label, metric, channel
+ *   - tenant_stats: Aggregates (active, trial, suspended, total)
+ *   - quick_links: Array of sidebar links
+ *     Each with: label, url, icon, shortcut
+ *
+ * BEM structure:
+ *   .admin-center
+ *     .admin-center__header
+ *     .admin-center__kpis
+ *     .admin-center__body (.admin-center__main + .admin-center__sidebar)
+ *     .admin-center__alerts
+ *     .admin-center__tenants
+ *
+ * F6 — Doc 181.
+ */
+#}
+
+{# Format helpers #}
+{% set format_icons = {
+  'currency': '€',
+  'number': '#',
+  'percent': '%',
+  'score': '★',
+} %}
+
+<div class="admin-center">
+
+  {# ===== HEADER ===== #}
+  <div class="admin-center__header">
+    <div class="admin-center__header-content">
+      <h1 class="admin-center__title">
+        {% trans %}Admin Center{% endtrans %}
+      </h1>
+      <p class="admin-center__subtitle">
+        {% trans %}Vista unificada de la plataforma. Pulsa{% endtrans %}
+        <kbd class="admin-center__kbd">⌘K</kbd>
+        {% trans %}para el Command Palette.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center__header-actions">
+      <a href="/admin/config/system/alert-rules" class="admin-center__btn admin-center__btn--secondary">
+        {% trans %}Configurar Alertas{% endtrans %}
+      </a>
+      <a href="/admin/structure/group" class="admin-center__btn admin-center__btn--primary">
+        {% trans %}Gestionar Tenants{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# ===== KPI CARDS ===== #}
+  <div class="admin-center__kpis">
+    {% for key, kpi in kpis %}
+      <div class="admin-center-kpi admin-center-kpi--{{ key }}">
+        <div class="admin-center-kpi__header">
+          <span class="admin-center-kpi__format-icon">{{ format_icons[kpi.format]|default('#') }}</span>
+          <span class="admin-center-kpi__label">{{ kpi.label }}</span>
+        </div>
+        <div class="admin-center-kpi__value">
+          {% if kpi.format == 'currency' %}
+            {{ kpi.value|number_format(0, ',', '.') }} €
+          {% elseif kpi.format == 'percent' %}
+            {{ kpi.value }}%
+          {% elseif kpi.format == 'score' %}
+            {{ kpi.value }}/100
+          {% else %}
+            {{ kpi.value|number_format(0, ',', '.') }}
+          {% endif %}
+        </div>
+        {% if kpi.trend != 0 %}
+          <div class="admin-center-kpi__trend admin-center-kpi__trend--{{ kpi.trend > 0 ? 'up' : 'down' }}">
+            {{ kpi.trend > 0 ? '↑' : '↓' }} {{ kpi.trend|abs }}%
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ===== BODY: MAIN + SIDEBAR ===== #}
+  <div class="admin-center__body">
+
+    {# --- Main Column --- #}
+    <div class="admin-center__main">
+
+      {# Tenant Stats Overview #}
+      <div class="admin-center__section">
+        <h2 class="admin-center__section-title">
+          {% trans %}Tenants{% endtrans %}
+        </h2>
+        <div class="admin-center__tenant-stats">
+          <div class="admin-center-stat admin-center-stat--total">
+            <span class="admin-center-stat__value">{{ tenant_stats.total }}</span>
+            <span class="admin-center-stat__label">{% trans %}Total{% endtrans %}</span>
+          </div>
+          <div class="admin-center-stat admin-center-stat--active">
+            <span class="admin-center-stat__value">{{ tenant_stats.active }}</span>
+            <span class="admin-center-stat__label">{% trans %}Activos{% endtrans %}</span>
+          </div>
+          <div class="admin-center-stat admin-center-stat--trial">
+            <span class="admin-center-stat__value">{{ tenant_stats.trial }}</span>
+            <span class="admin-center-stat__label">{% trans %}En Trial{% endtrans %}</span>
+          </div>
+          <div class="admin-center-stat admin-center-stat--suspended">
+            <span class="admin-center-stat__value">{{ tenant_stats.suspended }}</span>
+            <span class="admin-center-stat__label">{% trans %}Suspendidos{% endtrans %}</span>
+          </div>
+        </div>
+      </div>
+
+      {# Active Alerts #}
+      <div class="admin-center__section">
+        <div class="admin-center__section-header">
+          <h2 class="admin-center__section-title">
+            {% trans %}Alertas Activas{% endtrans %}
+          </h2>
+          <a href="/admin/config/system/alert-rules" class="admin-center__section-link">
+            {% trans %}Ver todas{% endtrans %} →
+          </a>
+        </div>
+        {% if alerts is empty %}
+          <div class="admin-center__empty">
+            <p>{% trans %}No hay alertas activas. Todo funciona correctamente.{% endtrans %}</p>
+          </div>
+        {% else %}
+          <div class="admin-center__alerts-list">
+            {% for alert in alerts %}
+              <div class="admin-center-alert">
+                <div class="admin-center-alert__icon">
+                  {% if alert.channel == 'slack' %}
+                    <span title="Slack">💬</span>
+                  {% elseif alert.channel == 'email' %}
+                    <span title="Email">📧</span>
+                  {% else %}
+                    <span title="Webhook">🔔</span>
+                  {% endif %}
+                </div>
+                <div class="admin-center-alert__content">
+                  <span class="admin-center-alert__label">{{ alert.label }}</span>
+                  <span class="admin-center-alert__metric">{{ alert.metric }}</span>
+                </div>
+                <div class="admin-center-alert__channel">
+                  {{ alert.channel }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {# --- Sidebar --- #}
+    <div class="admin-center__sidebar">
+      <h2 class="admin-center__section-title">
+        {% trans %}Accesos Rapidos{% endtrans %}
+      </h2>
+      <nav class="admin-center__quick-links" aria-label="{% trans %}Accesos rapidos{% endtrans %}">
+        {% for link in quick_links %}
+          <a href="{{ link.url }}" class="admin-center-link">
+            <span class="admin-center-link__icon admin-center-link__icon--{{ link.icon }}">
+              {% if link.icon == 'building' %}🏢
+              {% elseif link.icon == 'users' %}👥
+              {% elseif link.icon == 'dollar-sign' %}💰
+              {% elseif link.icon == 'activity' %}📊
+              {% elseif link.icon == 'bar-chart' %}📈
+              {% elseif link.icon == 'bell' %}🔔
+              {% elseif link.icon == 'shield' %}🛡️
+              {% elseif link.icon == 'mail' %}📧
+              {% else %}📌
+              {% endif %}
+            </span>
+            <span class="admin-center-link__label">{{ link.label }}</span>
+            {% if link.shortcut %}
+              <kbd class="admin-center-link__shortcut">{{ link.shortcut }}</kbd>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </nav>
+
+      {# Day-in-the-life workflow hints #}
+      <div class="admin-center__workflow">
+        <h3 class="admin-center__workflow-title">
+          {% trans %}Flujo Diario{% endtrans %}
+        </h3>
+        <ol class="admin-center__workflow-steps">
+          <li>{% trans %}Revisar KPIs y alertas{% endtrans %}</li>
+          <li>{% trans %}Triage de tenants en riesgo{% endtrans %}</li>
+          <li>{% trans %}Aprobar solicitudes pendientes{% endtrans %}</li>
+          <li>{% trans %}Revision financiera{% endtrans %}</li>
+          <li>{% trans %}Escalaciones de soporte{% endtrans %}</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+
+</div>

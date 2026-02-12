@@ -377,6 +377,58 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   if ($page_content) {
     _jaraba_page_builder_inject_seo_meta($attachments, $page_content);
   }
+
+  // ============================================================
+  // INTEGRACIONES ANALYTICS EXTERNAS - P2-04
+  // ============================================================
+  _jaraba_page_builder_inject_external_analytics($attachments, $page_content ?? NULL);
+}
+
+/**
+ * Inyecta scripts de analytics externas (Clarity, GA4 dataLayer).
+ *
+ * P2-04: Inyecta el script de Microsoft Clarity si esta habilitado
+ * y envia page_view server-side a GA4 via ExternalAnalyticsService.
+ *
+ * @param array &$attachments
+ *   Array de attachments de la pagina.
+ * @param \Drupal\Core\Entity\ContentEntityInterface|null $page
+ *   Entidad PageContent o NULL.
+ */
+function _jaraba_page_builder_inject_external_analytics(array &$attachments, $page): void {
+  $config = \Drupal::config('jaraba_page_builder.tracking');
+
+  // Microsoft Clarity: inyectar script client-side.
+  if ($config->get('clarity_enabled') && $config->get('clarity_project_id')) {
+    $project_id = $config->get('clarity_project_id');
+    $clarity_script = "(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script','{$project_id}');";
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#value' => $clarity_script,
+        '#attributes' => ['type' => 'text/javascript'],
+      ],
+      'clarity_tracking',
+    ];
+  }
+
+  // GA4: enviar page_view server-side si esta habilitado.
+  if ($config->get('ga4_enabled') && $page) {
+    try {
+      /** @var \Drupal\jaraba_page_builder\Service\ExternalAnalyticsService $analytics */
+      $analytics = \Drupal::service('jaraba_page_builder.external_analytics');
+      $request = \Drupal::request();
+      $analytics->sendGA4Event('page_view', [
+        'page_location' => $request->getUri(),
+        'page_title' => $page->label(),
+        'page_referrer' => $request->headers->get('referer', ''),
+      ]);
+    }
+    catch (\Exception $e) {
+      // No bloquear la carga de la pagina si GA4 falla.
+    }
+  }
 }
 
 /**

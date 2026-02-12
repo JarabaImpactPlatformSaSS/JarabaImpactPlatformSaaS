@@ -40,10 +40,10 @@ class IssuedCredentialListBuilder extends EntityListBuilder
 
         $status = $entity->get('status')->value ?? '';
         $row['status'] = match ($status) {
-            'active' => $this->t('✓ Activa'),
-            'revoked' => $this->t('✗ Revocada'),
-            'expired' => $this->t('⏰ Expirada'),
-            'suspended' => $this->t('⏸ Suspendida'),
+            'active' => $this->t('Activa'),
+            'revoked' => $this->t('Revocada'),
+            'expired' => $this->t('Expirada'),
+            'suspended' => $this->t('Suspendida'),
             default => $status,
         };
 
@@ -55,7 +55,7 @@ class IssuedCredentialListBuilder extends EntityListBuilder
         $row['verify'] = [
             'data' => [
                 '#type' => 'link',
-                '#title' => $this->t('🔗 Verificar'),
+                '#title' => $this->t('Verificar'),
                 '#url' => $verifyUrl,
                 '#attributes' => [
                     'target' => '_blank',

@@ -475,11 +475,11 @@ body.slide-panel-open {
   }
 
   &--success {
-    background: linear-gradient(135deg, #10B981, #059669);
+    background: linear-gradient(135deg, var(--ej-color-success, #10B981), color-mix(in srgb, var(--ej-color-success, #10B981) 80%, black));
   }
 
   &--error {
-    background: linear-gradient(135deg, #EF4444, #DC2626);
+    background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), color-mix(in srgb, var(--ej-color-danger, #EF4444) 80%, black));
   }
 }
 

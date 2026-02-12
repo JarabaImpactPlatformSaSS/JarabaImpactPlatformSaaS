@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Insights Hub module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_insights_hub_install(): void {
+  \Drupal::messenger()->addStatus(t('Insights Hub module installed. Configure at /admin/config/services/insights-hub'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_insights_hub_uninstall(): void {
+  \Drupal::state()->deleteMultiple([
+    'jaraba_insights_hub.uptime_last_run',
+    'jaraba_insights_hub.search_console_last_sync',
+    'jaraba_insights_hub.web_vitals_last_aggregate',
+  ]);
+}

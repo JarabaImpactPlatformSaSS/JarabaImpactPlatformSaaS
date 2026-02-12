@@ -211,3 +211,101 @@ function jaraba_page_builder_update_9002(&$sandbox) {
 
   return t('ScheduledPublish entity type definition not found.');
 }
+
+/**
+ * Enable Content Moderation + Workflows and install editorial_i18n workflow (P2-03).
+ *
+ * Habilita los modulos workflows y content_moderation si no estan activos,
+ * y crea el workflow editorial_i18n para page_content con estados:
+ * draft (Borrador), review (En Revision), published (Publicado).
+ */
+function jaraba_page_builder_update_9003(&$sandbox) {
+  $module_installer = \Drupal::service('module_installer');
+  $installed = [];
+
+  // Habilitar modulos si no estan activos.
+  foreach (['workflows', 'content_moderation'] as $module) {
+    if (!\Drupal::moduleHandler()->moduleExists($module)) {
+      $module_installer->install([$module]);
+      $installed[] = $module;
+    }
+  }
+
+  // Crear el workflow si no existe.
+  $workflow_storage = \Drupal::entityTypeManager()->getStorage('workflow');
+  if (!$workflow_storage->load('editorial_i18n')) {
+    $yaml = file_get_contents(\Drupal::service('extension.list.module')->getPath('jaraba_page_builder') . '/../../../config/sync/workflows.workflow.editorial_i18n.yml');
+    if ($yaml) {
+      $data = \Symfony\Component\Yaml\Yaml::parse($yaml);
+      unset($data['uuid']);
+      $config = \Drupal::configFactory()->getEditable('workflows.workflow.editorial_i18n');
+      $config->setData($data);
+      $config->save();
+    }
+  }
+
+  $msg = 'Workflow editorial_i18n instalado para page_content.';
+  if (!empty($installed)) {
+    $msg .= ' Modulos habilitados: ' . implode(', ', $installed) . '.';
+  }
+  return t($msg);
+}
+
+/**
+ * Import 55 vertical template configs for Page Builder (P2-01).
+ *
+ * Los archivos YAML en config/install/ solo se procesan durante la
+ * instalacion del modulo. Este update hook importa los 55 templates
+ * verticales (5 verticales x 11 tipos) como config entities.
+ */
+function jaraba_page_builder_update_9004(&$sandbox) {
+  $verticals = [
+    'agroconecta',
+    'comercioconecta',
+    'serviciosconecta',
+    'empleabilidad',
+    'emprendimiento',
+  ];
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
+  $config_path = $module_path . '/config/install';
+  $imported = 0;
+  $skipped = 0;
+
+  foreach ($verticals as $vertical) {
+    $pattern = $config_path . '/jaraba_page_builder.template.' . $vertical . '_*.yml';
+    $files = glob($pattern);
+
+    foreach ($files as $file) {
+      $yaml_content = file_get_contents($file);
+      if (!$yaml_content) {
+        continue;
+      }
+
+      $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+      if (empty($data['id'])) {
+        continue;
+      }
+
+      $config_name = 'jaraba_page_builder.template.' . $data['id'];
+      $existing = \Drupal::configFactory()->get($config_name);
+
+      // Solo importar si no existe.
+      if ($existing->isNew()) {
+        \Drupal::configFactory()
+          ->getEditable($config_name)
+          ->setData($data)
+          ->save();
+        $imported++;
+      }
+      else {
+        $skipped++;
+      }
+    }
+  }
+
+  return t('Vertical templates imported: @imported, already existed: @skipped.', [
+    '@imported' => $imported,
+    '@skipped' => $skipped,
+  ]);
+}

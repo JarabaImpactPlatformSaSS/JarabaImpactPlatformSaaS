@@ -357,3 +357,34 @@ jaraba_analytics.api.scheduled_reports.preview:
     _permission: 'manage scheduled reports'
     reportId: \d+
 
+# ===========================================================================
+# F7 — Program Dashboard Elena (Doc 182)
+# ===========================================================================
+
+# Dashboard institucional para Elena (entity admin).
+jaraba_analytics.programa.dashboard:
+  path: '/programa/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ProgramDashboardController::dashboard'
+    _title: 'Dashboard de Programa'
+  requirements:
+    _permission: 'access programa dashboard'
+
+# API: Estado actual del grant.
+jaraba_analytics.api.programa.grant_status:
+  path: '/api/v1/programa/grant-status'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ProgramDashboardController::grantStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'access programa dashboard'
+
+# API: Generar informe institucional PDF.
+jaraba_analytics.api.programa.reports.generate:
+  path: '/api/v1/programa/reports/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\ProgramDashboardController::generateReport'
+  methods: [POST]
+  requirements:
+    _permission: 'generate institutional reports'
+

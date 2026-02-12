@@ -34,7 +34,7 @@ class IssuerProfileListBuilder extends EntityListBuilder
         $row['name'] = $entity->get('name')->value;
         $row['url'] = $entity->get('url')->value ?? '-';
         $row['is_default'] = $entity->get('is_default')->value ? $this->t('Sí') : $this->t('No');
-        $row['has_keys'] = $entity->hasKeys() ? $this->t('✓ Configuradas') : $this->t('✗ Sin claves');
+        $row['has_keys'] = $entity->hasKeys() ? $this->t('Configuradas') : $this->t('Sin claves');
         return $row + parent::buildRow($entity);
     }
 

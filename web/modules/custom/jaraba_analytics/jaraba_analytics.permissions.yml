@@ -44,3 +44,11 @@
 'create dashboards':
   title: 'Crear Dashboards de Analytics'
   description: 'Crear nuevos dashboards personalizados de analytics.'
+
+'access programa dashboard':
+  title: 'Acceder al Dashboard de Programa'
+  description: 'Ver el dashboard institucional con Grant Burn Rate, cohortes e informes.'
+
+'generate institutional reports':
+  title: 'Generar Informes Institucionales'
+  description: 'Generar informes PDF de seguimiento, memoria economica, impacto y justificacion.'

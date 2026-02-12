@@ -38,3 +38,16 @@ tours:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+# F5 — Wizard de 7 pasos (Doc 179).
+wizard:
+  version: 1.0
+  css:
+    theme:
+      css/onboarding-wizard.css: {}
+  js:
+    js/onboarding-wizard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

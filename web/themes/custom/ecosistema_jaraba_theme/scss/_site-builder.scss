@@ -97,13 +97,13 @@ body.page-site-builder {
         transition: all 0.2s ease;
 
         &:hover {
-            color: var(--ej-color-primary, #f97316);
-            border-bottom-color: var(--ej-color-primary, #f97316);
+            color: var(--ej-color-primary, #FF8C42);
+            border-bottom-color: var(--ej-color-primary, #FF8C42);
         }
 
         &.is-active {
-            color: var(--ej-color-primary, #f97316);
-            border-bottom-color: var(--ej-color-primary, #f97316);
+            color: var(--ej-color-primary, #FF8C42);
+            border-bottom-color: var(--ej-color-primary, #FF8C42);
             font-weight: 600;
         }
     }
@@ -118,7 +118,7 @@ body.page-site-builder {
     gap: 2rem;
     padding: 2rem;
     margin-bottom: 2rem;
-    background: linear-gradient(135deg, var(--ej-color-primary, #f97316), #ea580c);
+    background: linear-gradient(135deg, var(--ej-color-primary, #FF8C42), color-mix(in srgb, var(--ej-color-primary, #FF8C42) 75%, black));
     border-radius: 16px;
     color: white;
     overflow: hidden;
@@ -231,7 +231,7 @@ body.page-site-builder {
         display: block;
         font-size: 2rem;
         font-weight: 700;
-        color: var(--ej-color-primary, #f97316);
+        color: var(--ej-color-primary, #FF8C42);
         margin-bottom: 0.25rem;
     }
 
@@ -292,7 +292,7 @@ body.page-site-builder {
             color: var(--ej-color-body, #4b5563);
 
             &--primary {
-                background: var(--ej-color-primary, #f97316);
+                background: var(--ej-color-primary, #FF8C42);
                 color: white;
             }
         }
@@ -319,7 +319,7 @@ body.page-site-builder {
     cursor: pointer;
 
     &:hover {
-        border-color: var(--ej-color-primary, #f97316);
+        border-color: var(--ej-color-primary, #FF8C42);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
@@ -330,7 +330,7 @@ body.page-site-builder {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--ej-color-primary, #f97316);
+        background: var(--ej-color-primary, #FF8C42);
         color: white;
         border-radius: 12px;
     }
@@ -356,11 +356,11 @@ body.page-site-builder {
     transition: all 0.2s ease;
 
     &--primary {
-        background: var(--ej-color-primary, #f97316);
+        background: var(--ej-color-primary, #FF8C42);
         color: white;
 
         &:hover {
-            background: color.adjust(#f97316, $lightness: -10%);
+            background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 80%, black);
         }
     }
 
@@ -450,8 +450,8 @@ body.page-site-builder {
     color: var(--ej-color-body, #374151);
 
     &--success {
-        background: #d1fae5;
-        color: #059669;
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 12%, white);
+        color: var(--ej-color-success, #10B981);
     }
 
     &--muted {

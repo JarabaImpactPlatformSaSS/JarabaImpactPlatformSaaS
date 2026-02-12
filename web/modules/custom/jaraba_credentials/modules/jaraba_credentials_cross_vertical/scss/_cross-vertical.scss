@@ -61,8 +61,8 @@
 
     // Rarity borders.
     &--rare {
-      border-color: #3B82F6;
-      &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #3B82F6; }
+      border-color: var(--ej-color-corporate, #233D63);
+      &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ej-color-corporate, #233D63); }
     }
     &--epic {
       border-color: #8B5CF6;

@@ -77,7 +77,7 @@ class FaqGeneratorForm extends FormBase
         // Estadísticas actuales
         $form['stats'] = [
             '#type' => 'details',
-            '#title' => $this->t('📊 Estadísticas de Preguntas'),
+            '#title' => $this->t('Estadisticas de Preguntas'),
             '#open' => TRUE,
             '#attributes' => ['class' => ['faq-stats-box']],
         ];
@@ -93,7 +93,7 @@ class FaqGeneratorForm extends FormBase
         // Configuración
         $form['config'] = [
             '#type' => 'fieldset',
-            '#title' => $this->t('⚙️ Configuración'),
+            '#title' => $this->t('Configuracion'),
         ];
 
         $form['config']['days'] = [
@@ -119,11 +119,11 @@ class FaqGeneratorForm extends FormBase
             '#type' => 'select',
             '#title' => $this->t('Segmento de origen'),
             '#options' => [
-                'all' => $this->t('📋 Todos los orígenes'),
-                'public' => $this->t('🌐 Público (landing/home)'),
-                'empleabilidad' => $this->t('💼 Empleabilidad'),
-                'emprendimiento' => $this->t('🚀 Emprendimiento'),
-                'comercio' => $this->t('🛒 Comercio/Marketplace'),
+                'all' => $this->t('Todos los origenes'),
+                'public' => $this->t('Publico (landing/home)'),
+                'empleabilidad' => $this->t('Empleabilidad'),
+                'emprendimiento' => $this->t('Emprendimiento'),
+                'comercio' => $this->t('Comercio/Marketplace'),
             ],
             '#default_value' => 'all',
             '#description' => $this->t('Filtrar FAQs según la vertical o contexto de origen de las preguntas.'),
@@ -137,7 +137,7 @@ class FaqGeneratorForm extends FormBase
 
         $form['actions']['preview'] = [
             '#type' => 'submit',
-            '#value' => $this->t('🔍 Preview FAQs'),
+            '#value' => $this->t('Preview FAQs'),
             '#submit' => ['::previewFaqs'],
             '#attributes' => ['class' => ['button', 'button--primary']],
         ];
@@ -147,7 +147,7 @@ class FaqGeneratorForm extends FormBase
         if (!empty($generatedFaqs)) {
             $form['results'] = [
                 '#type' => 'details',
-                '#title' => $this->t('✨ FAQs Generadas (@count)', ['@count' => count($generatedFaqs)]),
+                '#title' => $this->t('FAQs Generadas (@count)', ['@count' => count($generatedFaqs)]),
                 '#open' => TRUE,
                 '#attributes' => ['class' => ['faq-results-box']],
             ];
@@ -174,7 +174,7 @@ class FaqGeneratorForm extends FormBase
             // Botón para guardar
             $form['actions']['save'] = [
                 '#type' => 'submit',
-                '#value' => $this->t('💾 Guardar como Nodos FAQ'),
+                '#value' => $this->t('Guardar como Nodos FAQ'),
                 '#submit' => ['::saveFaqs'],
                 '#attributes' => ['class' => ['button', 'button--action']],
             ];

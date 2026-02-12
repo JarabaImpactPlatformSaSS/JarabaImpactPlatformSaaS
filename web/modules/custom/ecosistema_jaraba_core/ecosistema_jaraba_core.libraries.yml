@@ -395,3 +395,33 @@ lead-magnet:
     - core/drupalSettings
     - core/once
 
+# ---------------------------------------------------------------------------
+# ADMIN CENTER DASHBOARD (F6 Doc 181)
+# ---------------------------------------------------------------------------
+
+admin-center:
+  version: 1.x
+  css:
+    theme:
+      css/admin-center.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+# ---------------------------------------------------------------------------
+# GLOBAL COMMAND PALETTE + KEYBOARD SHORTCUTS (F6 Doc 181)
+# ---------------------------------------------------------------------------
+# Adjuntado via hook_preprocess_html() en todas las rutas admin.
+
+admin-command-palette:
+  version: 1.x
+  css:
+    theme:
+      css/admin-command-palette.css: {}
+  js:
+    js/admin-command-palette.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+

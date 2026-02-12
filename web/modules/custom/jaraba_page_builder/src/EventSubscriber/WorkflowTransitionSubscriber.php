@@ -4,34 +4,28 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\EventSubscriber;
 
-use Drupal\content_moderation\Event\ContentModerationStateChangedEvent;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Reacciona a transiciones del workflow editorial i18n de Page Builder.
+ * Servicio que reacciona a transiciones del workflow editorial i18n.
  *
- * P2-03: Escucha cambios de estado en content moderation para page_content
+ * P2-03: Procesa cambios de estado en content moderation para page_content
  * y ejecuta acciones reactivas:
  * - Logging estructurado de cada transicion.
  * - Notificacion por cola a revisores cuando se envia a revision.
  * - Notificacion al autor cuando se aprueba o solicitan cambios.
  *
- * Solo reacciona al workflow 'editorial_i18n' para no interferir
- * con otros workflows del sistema.
+ * Se invoca desde hook_entity_update() del modulo cuando detecta
+ * un cambio en moderation_state para entidades page_content.
  */
-class WorkflowTransitionSubscriber implements EventSubscriberInterface {
+class WorkflowTransitionSubscriber {
 
   use StringTranslationTrait;
-
-  /**
-   * ID del workflow que este subscriber monitorea.
-   */
-  protected const WORKFLOW_ID = 'editorial_i18n';
 
   /**
    * El entity type manager.
@@ -54,7 +48,7 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
   protected AccountProxyInterface $currentUser;
 
   /**
-   * Construye el subscriber.
+   * Construye el servicio.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   El entity type manager.
@@ -78,36 +72,21 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function getSubscribedEvents(): array {
-    return [
-      'content_moderation.state_changed' => [
-        ['onStateChanged', 0],
-      ],
-    ];
-  }
-
-  /**
-   * Reacciona al cambio de estado de content moderation.
+   * Procesa un cambio de estado de moderacion en page_content.
    *
-   * @param \Drupal\content_moderation\Event\ContentModerationStateChangedEvent $event
-   *   El evento de cambio de estado.
+   * Llamado desde jaraba_page_builder_entity_update() cuando se detecta
+   * que moderation_state cambio.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   La entidad page_content actualizada.
+   * @param string $original_state
+   *   El estado de moderacion anterior.
+   * @param string $new_state
+   *   El nuevo estado de moderacion.
    */
-  public function onStateChanged(ContentModerationStateChangedEvent $event): void {
-    $entity = $event->getModeratedEntity();
-
-    // Solo reaccionar a page_content del workflow editorial_i18n.
-    if ($entity->getEntityTypeId() !== 'page_content') {
-      return;
-    }
-
-    $original_state = $event->getOriginalState();
-    $new_state = $event->getNewState();
-
+  public function onStateChanged(ContentEntityInterface $entity, string $original_state, string $new_state): void {
     // Log estructurado de la transicion.
-    $this->logger->info('Workflow editorial_i18n: @entity_type @id transicion @from -> @to por usuario @uid', [
-      '@entity_type' => $entity->getEntityTypeId(),
+    $this->logger->info('Workflow editorial_i18n: page_content @id transicion @from -> @to por usuario @uid', [
       '@id' => $entity->id(),
       '@from' => $original_state,
       '@to' => $new_state,
@@ -131,7 +110,7 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
    * @param string $from_state
    *   Estado anterior.
    */
-  protected function notifyReviewers($entity, string $from_state): void {
+  protected function notifyReviewers(ContentEntityInterface $entity, string $from_state): void {
     $queue = $this->queueFactory->get('jaraba_page_builder_workflow_notify');
     $queue->createItem([
       'type' => 'submit_for_review',
@@ -156,7 +135,7 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   La entidad page_content.
    */
-  protected function notifyAuthorApproved($entity): void {
+  protected function notifyAuthorApproved(ContentEntityInterface $entity): void {
     $queue = $this->queueFactory->get('jaraba_page_builder_workflow_notify');
     $queue->createItem([
       'type' => 'approved',
@@ -181,7 +160,7 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   La entidad page_content.
    */
-  protected function notifyAuthorChangesRequested($entity): void {
+  protected function notifyAuthorChangesRequested(ContentEntityInterface $entity): void {
     $queue = $this->queueFactory->get('jaraba_page_builder_workflow_notify');
     $queue->createItem([
       'type' => 'changes_requested',

@@ -1040,19 +1040,19 @@
         transition: all 0.2s ease;
 
         &--twitter {
-            color: #1DA1F2;
+            color: var(--ej-color-social-twitter, #1DA1F2);
 
             &:hover {
-                background: #1DA1F2;
+                background: var(--ej-color-social-twitter, #1DA1F2);
                 color: white;
             }
         }
 
         &--linkedin {
-            color: #0A66C2;
+            color: var(--ej-color-social-linkedin, #0A66C2);
 
             &:hover {
-                background: #0A66C2;
+                background: var(--ej-color-social-linkedin, #0A66C2);
                 color: white;
             }
         }
@@ -2156,23 +2156,23 @@
     text-transform: uppercase;
 
     &--published {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+        color: color-mix(in srgb, var(--ej-color-success, #10B981) 80%, black);
     }
 
     &--draft {
-        background: rgba(245, 158, 11, 0.1);
-        color: #d97706;
+        background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+        color: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 75%, black);
     }
 
     &--success {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+        color: color-mix(in srgb, var(--ej-color-success, #10B981) 80%, black);
     }
 
     &--error {
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
+        background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+        color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 85%, black);
     }
 }
 

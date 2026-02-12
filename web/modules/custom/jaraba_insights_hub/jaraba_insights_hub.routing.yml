@@ -1,0 +1,159 @@
+# Rutas del módulo Insights Hub
+
+# Frontend dashboard (NOT admin)
+jaraba_insights_hub.dashboard:
+  path: '/insights'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\InsightsDashboardController::dashboard'
+    _title: 'Insights Hub'
+  requirements:
+    _permission: 'view insights dashboard'
+  options:
+    _admin_route: FALSE
+
+# Admin overview
+jaraba_insights_hub.admin_overview:
+  path: '/admin/content/insights'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\InsightsAdminController::overview'
+    _title: 'Insights Hub'
+  requirements:
+    _permission: 'administer insights hub'
+
+# Settings form
+jaraba_insights_hub.settings:
+  path: '/admin/config/services/insights-hub'
+  defaults:
+    _form: '\Drupal\jaraba_insights_hub\Form\InsightsSettingsForm'
+    _title: 'Insights Hub Settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+# Search Console connect form
+jaraba_insights_hub.search_console_connect:
+  path: '/admin/config/services/insights-hub/connect'
+  defaults:
+    _form: '\Drupal\jaraba_insights_hub\Form\SearchConsoleConnectForm'
+    _title: 'Connect Search Console'
+  requirements:
+    _permission: 'administer insights hub'
+
+# ============================================
+# API: DASHBOARD
+# ============================================
+
+# API: Dashboard summary
+jaraba_insights_hub.api.summary:
+  path: '/api/v1/insights/summary'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\InsightsDashboardController::apiSummary'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# ============================================
+# API: WEB VITALS
+# ============================================
+
+# API: Web Vitals collect (anonymous, RUM data)
+jaraba_insights_hub.api.web_vitals.collect:
+  path: '/api/v1/insights/web-vitals'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\WebVitalsApiController::collect'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# API: Web Vitals summary
+jaraba_insights_hub.api.web_vitals.summary:
+  path: '/api/v1/insights/web-vitals/summary'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\WebVitalsApiController::summary'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# ============================================
+# API: ERROR TRACKING
+# ============================================
+
+# API: Error collect (anonymous)
+jaraba_insights_hub.api.errors.collect:
+  path: '/api/v1/insights/errors'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\ErrorTrackingApiController::collect'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# API: Error list
+jaraba_insights_hub.api.errors.list:
+  path: '/api/v1/insights/errors/list'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\ErrorTrackingApiController::list'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# API: Error resolve
+jaraba_insights_hub.api.errors.resolve:
+  path: '/api/v1/insights/errors/{id}/resolve'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\ErrorTrackingApiController::resolve'
+  requirements:
+    _permission: 'administer insights hub'
+    id: '\d+'
+  methods: [POST]
+
+# ============================================
+# API: SEARCH CONSOLE
+# ============================================
+
+# API: Search Console queries
+jaraba_insights_hub.api.search_console.queries:
+  path: '/api/v1/insights/search-console/queries'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::queries'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# API: Search Console pages
+jaraba_insights_hub.api.search_console.pages:
+  path: '/api/v1/insights/search-console/pages'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::pages'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# ============================================
+# API: UPTIME MONITORING
+# ============================================
+
+# API: Uptime status
+jaraba_insights_hub.api.uptime.status:
+  path: '/api/v1/insights/uptime/status'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\UptimeApiController::status'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# API: Uptime incidents
+jaraba_insights_hub.api.uptime.incidents:
+  path: '/api/v1/insights/uptime/incidents'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\UptimeApiController::incidents'
+  requirements:
+    _permission: 'view insights dashboard'
+  methods: [GET]
+
+# API: Uptime add endpoint
+jaraba_insights_hub.api.uptime.add_endpoint:
+  path: '/api/v1/insights/uptime/endpoints'
+  defaults:
+    _controller: '\Drupal\jaraba_insights_hub\Controller\UptimeApiController::addEndpoint'
+  requirements:
+    _permission: 'manage uptime checks'
+  methods: [POST]

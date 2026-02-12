@@ -1809,19 +1809,19 @@ body.menu-open {
         }
 
         &.rating-up:hover {
-            border-color: var(--ej-color-success, #059669);
-            background: rgba(5, 150, 105, 0.1);
+            border-color: var(--ej-color-success, #10B981);
+            background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
         }
 
         &.rating-down:hover {
-            border-color: var(--ej-color-error, #dc2626);
-            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--ej-color-error, #EF4444);
+            background: color-mix(in srgb, var(--ej-color-error, #EF4444) 10%, transparent);
         }
     }
 
     .rating-thanks {
         font-size: 12px;
-        color: var(--ej-color-success, #059669);
+        color: var(--ej-color-success, #10B981);
         font-weight: 500;
     }
 

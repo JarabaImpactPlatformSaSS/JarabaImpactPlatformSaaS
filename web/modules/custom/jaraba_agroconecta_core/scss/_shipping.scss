@@ -57,7 +57,7 @@
             position: relative;
 
             &::after {
-                content: '❄️ Refrigerado';
+                content: '\2744  Refrigerado';
                 position: absolute;
                 top: -8px;
                 right: 12px;
@@ -101,7 +101,7 @@
         white-space: nowrap;
 
         &--free {
-            color: #059669;
+            color: color-mix(in srgb, var(--ej-color-success, #10B981) 80%, black);
             font-weight: 700;
         }
     }

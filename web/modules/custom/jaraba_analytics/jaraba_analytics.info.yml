@@ -5,4 +5,5 @@ package: Jaraba
 core_version_requirement: ^10.3 || ^11
 dependencies:
   - drupal:system
+  - jaraba_pixels:jaraba_pixels
 configure: jaraba_analytics.settings

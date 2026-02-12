@@ -53,3 +53,96 @@ jaraba_onboarding.api.checklist.get:
   requirements:
     _permission: 'view onboarding progress'
   methods: [GET]
+
+# =============================================
+# F5 — Wizard de 7 pasos (Doc 179)
+# =============================================
+
+jaraba_onboarding.wizard.welcome:
+  path: '/onboarding/wizard/welcome'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepWelcome'
+    _title: 'Bienvenida'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.identity:
+  path: '/onboarding/wizard/identity'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepIdentity'
+    _title: 'Identidad de Marca'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.fiscal:
+  path: '/onboarding/wizard/fiscal'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepFiscal'
+    _title: 'Datos Fiscales'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.payments:
+  path: '/onboarding/wizard/payments'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepPayments'
+    _title: 'Configurar Pagos'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.team:
+  path: '/onboarding/wizard/team'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepTeam'
+    _title: 'Tu Equipo'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.content:
+  path: '/onboarding/wizard/content'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepContent'
+    _title: 'Contenido Inicial'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.launch:
+  path: '/onboarding/wizard/launch'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stepLaunch'
+    _title: 'Lanzamiento'
+  requirements:
+    _permission: 'view onboarding progress'
+
+jaraba_onboarding.wizard.stripe_callback:
+  path: '/onboarding/wizard/stripe-callback'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::stripeCallback'
+    _title: 'Procesando pago'
+  requirements:
+    _permission: 'view onboarding progress'
+
+# API — Wizard
+jaraba_onboarding.api.wizard.advance:
+  path: '/api/v1/onboarding/wizard/advance'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::apiAdvanceStep'
+  requirements:
+    _permission: 'view onboarding progress'
+  methods: [POST]
+
+jaraba_onboarding.api.wizard.skip:
+  path: '/api/v1/onboarding/wizard/skip'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::apiSkipStep'
+  requirements:
+    _permission: 'view onboarding progress'
+  methods: [POST]
+
+jaraba_onboarding.api.wizard.logo_colors:
+  path: '/api/v1/onboarding/wizard/logo-colors'
+  defaults:
+    _controller: '\Drupal\jaraba_onboarding\Controller\TenantOnboardingWizardController::apiExtractLogoColors'
+  requirements:
+    _permission: 'view onboarding progress'
+  methods: [POST]

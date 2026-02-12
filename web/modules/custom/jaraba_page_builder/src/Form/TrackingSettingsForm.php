@@ -117,6 +117,113 @@ class TrackingSettingsForm extends ConfigFormBase
             '#description' => $this->t('Los eventos raw se eliminan automáticamente después de este período.'),
         ];
 
+        // Seccion: Google Analytics 4 (P2-04).
+        $form['ga4'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Google Analytics 4'),
+            '#open' => !empty($config->get('ga4_enabled')),
+            '#description' => $this->t('Conecta con GA4 para enviar eventos server-side via Measurement Protocol.'),
+        ];
+
+        $form['ga4']['ga4_enabled'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Habilitar Google Analytics 4'),
+            '#default_value' => $config->get('ga4_enabled') ?? FALSE,
+            '#description' => $this->t('Envia eventos del Page Builder a tu propiedad GA4 en tiempo real.'),
+        ];
+
+        $form['ga4']['ga4_measurement_id'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Measurement ID'),
+            '#default_value' => $config->get('ga4_measurement_id') ?? '',
+            '#placeholder' => 'G-XXXXXXXXXX',
+            '#description' => $this->t('ID de medicion de tu propiedad GA4 (formato G-XXXXXXXXXX).'),
+            '#states' => [
+                'visible' => [':input[name="ga4_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
+        $form['ga4']['ga4_api_secret'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('API Secret'),
+            '#default_value' => $config->get('ga4_api_secret') ?? '',
+            '#description' => $this->t('Secret de la API de Measurement Protocol. Obtenlo en Admin > Data Streams > Measurement Protocol API secrets.'),
+            '#states' => [
+                'visible' => [':input[name="ga4_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
+        $form['ga4']['ga4_property_id'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Property ID (para reportes)'),
+            '#default_value' => $config->get('ga4_property_id') ?? '',
+            '#placeholder' => '123456789',
+            '#description' => $this->t('ID numerico de la propiedad GA4 para consultar reportes via Data API.'),
+            '#states' => [
+                'visible' => [':input[name="ga4_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
+        // Seccion: Google Search Console (P2-04).
+        $form['search_console'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Google Search Console'),
+            '#open' => !empty($config->get('search_console_enabled')),
+            '#description' => $this->t('Conecta con Search Console para ver datos de busqueda organica en el dashboard.'),
+        ];
+
+        $form['search_console']['search_console_enabled'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Habilitar Google Search Console'),
+            '#default_value' => $config->get('search_console_enabled') ?? FALSE,
+        ];
+
+        $form['search_console']['search_console_site_url'] = [
+            '#type' => 'url',
+            '#title' => $this->t('URL del sitio'),
+            '#default_value' => $config->get('search_console_site_url') ?? '',
+            '#placeholder' => 'https://mi-sitio.com',
+            '#description' => $this->t('La URL del sitio verificada en Search Console (sc-domain: o URL prefix).'),
+            '#states' => [
+                'visible' => [':input[name="search_console_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
+        $form['search_console']['search_console_oauth_credentials'] = [
+            '#type' => 'textarea',
+            '#title' => $this->t('Credenciales OAuth2 (JSON)'),
+            '#default_value' => $config->get('search_console_oauth_credentials') ?? '',
+            '#rows' => 4,
+            '#description' => $this->t('Credenciales OAuth2 en formato JSON con access_token, refresh_token, client_id, client_secret.'),
+            '#states' => [
+                'visible' => [':input[name="search_console_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
+        // Seccion: Microsoft Clarity (P2-04).
+        $form['clarity'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Microsoft Clarity'),
+            '#open' => !empty($config->get('clarity_enabled')),
+            '#description' => $this->t('Heatmaps y grabaciones de sesion con Microsoft Clarity.'),
+        ];
+
+        $form['clarity']['clarity_enabled'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Habilitar Microsoft Clarity'),
+            '#default_value' => $config->get('clarity_enabled') ?? FALSE,
+        ];
+
+        $form['clarity']['clarity_project_id'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Project ID'),
+            '#default_value' => $config->get('clarity_project_id') ?? '',
+            '#description' => $this->t('ID del proyecto Clarity. Se inyectara automaticamente el script de tracking.'),
+            '#states' => [
+                'visible' => [':input[name="clarity_enabled"]' => ['checked' => TRUE]],
+            ],
+        ];
+
         // Sección: Privacidad.
         $form['privacy'] = [
             '#type' => 'details',
@@ -165,6 +272,18 @@ class TrackingSettingsForm extends ConfigFormBase
             ->set('enable_heatmaps', $form_state->getValue('enable_heatmaps'))
             ->set('heatmap_sample_rate', $form_state->getValue('heatmap_sample_rate'))
             ->set('heatmap_retention_days', $form_state->getValue('heatmap_retention_days'))
+            // GA4 (P2-04).
+            ->set('ga4_enabled', $form_state->getValue('ga4_enabled'))
+            ->set('ga4_measurement_id', $form_state->getValue('ga4_measurement_id'))
+            ->set('ga4_api_secret', $form_state->getValue('ga4_api_secret'))
+            ->set('ga4_property_id', $form_state->getValue('ga4_property_id'))
+            // Search Console (P2-04).
+            ->set('search_console_enabled', $form_state->getValue('search_console_enabled'))
+            ->set('search_console_site_url', $form_state->getValue('search_console_site_url'))
+            ->set('search_console_oauth_credentials', $form_state->getValue('search_console_oauth_credentials'))
+            // Clarity (P2-04).
+            ->set('clarity_enabled', $form_state->getValue('clarity_enabled'))
+            ->set('clarity_project_id', $form_state->getValue('clarity_project_id'))
             // Privacy.
             ->set('respect_dnt', $form_state->getValue('respect_dnt'))
             ->set('anonymize_ip', $form_state->getValue('anonymize_ip'))

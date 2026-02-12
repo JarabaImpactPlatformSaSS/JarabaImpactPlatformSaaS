@@ -1,0 +1,34 @@
+# Librerías del módulo Insights Hub
+
+# Dashboard principal del Insights Hub
+dashboard:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-insights-hub.css: {}
+  js:
+    js/insights-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Web Vitals RUM tracker (carga diferida en frontend)
+web-vitals-tracker:
+  version: VERSION
+  js:
+    js/web-vitals-tracker.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Error tracker (carga diferida en frontend)
+error-tracker:
+  version: VERSION
+  js:
+    js/error-tracker.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

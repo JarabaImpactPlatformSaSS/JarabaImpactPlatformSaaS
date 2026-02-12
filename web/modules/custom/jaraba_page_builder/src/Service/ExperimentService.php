@@ -7,10 +7,11 @@ namespace Drupal\jaraba_page_builder\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_page_builder\Entity\PageExperiment;
 use Drupal\jaraba_page_builder\Entity\ExperimentVariant;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Servicio para gestión de experimentos A/B Testing.
+ * Servicio para gestión de experimentos A/B Testing y Multivariate.
  *
  * ESPECIFICACIÓN: Doc 168 - Platform_AB_Testing_Pages_v1
  *
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * - Calcular conversión rate
  * - Calcular Z-score y confidence level
  * - Determinar ganador estadístico
+ * - Análisis multivariate con matrix pairwise (P3-03)
+ * - Integración GA4 para eventos de experimento (P3-03)
  *
  * @package Drupal\jaraba_page_builder\Service
  */
@@ -541,6 +544,154 @@ class ExperimentService
                 '@message' => $e->getMessage(),
             ]);
             return FALSE;
+        }
+    }
+
+    /**
+     * Analisis multivariate: matrix de comparacion pairwise.
+     *
+     * Compara cada par de variantes entre si y genera una matrix
+     * de confianza estadistica para tests multivariantes.
+     *
+     * @param \Drupal\jaraba_page_builder\Entity\PageExperiment $experiment
+     *   El experimento.
+     *
+     * @return array
+     *   Resultados multivariate con pairwise matrix.
+     */
+    public function analyzeMultivariate(PageExperiment $experiment): array
+    {
+        $variants = $this->getExperimentVariants($experiment);
+
+        if (count($variants) < 2) {
+            return [
+                'status' => 'insufficient_variants',
+                'variants' => [],
+                'pairwise_matrix' => [],
+                'ranking' => [],
+            ];
+        }
+
+        // Indexar variantes.
+        $variantList = array_values($variants);
+        $variantResults = [];
+        foreach ($variantList as $variant) {
+            $variantResults[] = [
+                'id' => (int) $variant->id(),
+                'name' => $variant->getName(),
+                'is_control' => $variant->isControl(),
+                'visitors' => $variant->getVisitors(),
+                'conversions' => $variant->getConversions(),
+                'conversion_rate' => round($variant->getConversionRate(), 4),
+            ];
+        }
+
+        // Matrix pairwise: comparar cada par.
+        $pairwiseMatrix = [];
+        $count = count($variantList);
+
+        for ($i = 0; $i < $count; $i++) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                $vi = $variantList[$i];
+                $vj = $variantList[$j];
+
+                $zScore = $this->calculateZScore(
+                    $vi->getVisitors(),
+                    $vi->getConversions(),
+                    $vj->getVisitors(),
+                    $vj->getConversions()
+                );
+                $confidence = $this->zScoreToConfidence($zScore);
+
+                $pairwiseMatrix[] = [
+                    'variant_a_id' => (int) $vi->id(),
+                    'variant_a_name' => $vi->getName(),
+                    'variant_b_id' => (int) $vj->id(),
+                    'variant_b_name' => $vj->getName(),
+                    'z_score' => round($zScore, 3),
+                    'confidence' => round($confidence, 1),
+                    'significant' => $confidence >= $experiment->getConfidenceThreshold(),
+                    'better' => $zScore > 0 ? $vi->getName() : $vj->getName(),
+                    'improvement' => $this->calculateImprovement($vi, $vj),
+                ];
+            }
+        }
+
+        // Ranking por conversion rate.
+        $ranking = $variantResults;
+        usort($ranking, fn($a, $b) => $b['conversion_rate'] <=> $a['conversion_rate']);
+
+        // Calcular wins count para cada variante.
+        $wins = [];
+        foreach ($variantList as $v) {
+            $wins[(int) $v->id()] = 0;
+        }
+        foreach ($pairwiseMatrix as $pair) {
+            if ($pair['significant']) {
+                $winnerId = $pair['z_score'] > 0 ? $pair['variant_a_id'] : $pair['variant_b_id'];
+                $wins[$winnerId] = ($wins[$winnerId] ?? 0) + 1;
+            }
+        }
+
+        foreach ($ranking as &$item) {
+            $item['significant_wins'] = $wins[$item['id']] ?? 0;
+        }
+
+        return [
+            'status' => 'analyzed',
+            'experiment_id' => (int) $experiment->id(),
+            'experiment_name' => $experiment->getName(),
+            'variant_count' => $count,
+            'variants' => $variantResults,
+            'pairwise_matrix' => $pairwiseMatrix,
+            'ranking' => $ranking,
+            'threshold' => $experiment->getConfidenceThreshold(),
+            'total_visitors' => array_sum(array_column($variantResults, 'visitors')),
+            'total_conversions' => array_sum(array_column($variantResults, 'conversions')),
+        ];
+    }
+
+    /**
+     * Calcula mejora relativa entre dos variantes.
+     */
+    protected function calculateImprovement(ExperimentVariant $a, ExperimentVariant $b): float
+    {
+        $rateA = $a->getConversionRate();
+        $rateB = $b->getConversionRate();
+        $baseRate = min($rateA, $rateB);
+
+        if ($baseRate <= 0) {
+            return 0.0;
+        }
+
+        return round((abs($rateA - $rateB) / $baseRate) * 100, 1);
+    }
+
+    /**
+     * Despacha evento GA4 para tracking de experimento.
+     *
+     * Envia el evento a GA4 via ExternalAnalyticsService si esta disponible.
+     *
+     * @param string $eventName
+     *   Nombre del evento GA4 (experiment_impression, experiment_conversion).
+     * @param array $params
+     *   Parametros del evento.
+     */
+    public function dispatchGA4Event(string $eventName, array $params): void
+    {
+        if (!\Drupal::hasService('jaraba_page_builder.external_analytics')) {
+            return;
+        }
+
+        try {
+            $analyticsService = \Drupal::service('jaraba_page_builder.external_analytics');
+            if (!$analyticsService->isGA4Active()) {
+                return;
+            }
+
+            $analyticsService->sendGA4Event($eventName, $params);
+        } catch (\Exception $e) {
+            // Silently fail — analytics should not break experiments.
         }
     }
 

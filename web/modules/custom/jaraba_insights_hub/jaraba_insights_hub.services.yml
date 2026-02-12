@@ -1,0 +1,34 @@
+services:
+  logger.channel.jaraba_insights_hub:
+    parent: logger.channel_base
+    arguments: ['jaraba_insights_hub']
+
+  jaraba_insights_hub.search_console:
+    class: Drupal\jaraba_insights_hub\Service\SearchConsoleService
+    arguments: ['@http_client', '@config.factory', '@entity_type.manager', '@logger.channel.jaraba_insights_hub']
+
+  jaraba_insights_hub.web_vitals_collector:
+    class: Drupal\jaraba_insights_hub\Service\WebVitalsCollectorService
+    arguments: ['@entity_type.manager', '@ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
+
+  jaraba_insights_hub.web_vitals_aggregator:
+    class: Drupal\jaraba_insights_hub\Service\WebVitalsAggregatorService
+    arguments: ['@entity_type.manager', '@database']
+
+  jaraba_insights_hub.error_tracking:
+    class: Drupal\jaraba_insights_hub\Service\ErrorTrackingService
+    arguments: ['@entity_type.manager', '@ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
+
+  jaraba_insights_hub.uptime_monitor:
+    class: Drupal\jaraba_insights_hub\Service\UptimeMonitorService
+    arguments: ['@http_client', '@entity_type.manager', '@state', '@logger.channel.jaraba_insights_hub']
+
+  jaraba_insights_hub.aggregator:
+    class: Drupal\jaraba_insights_hub\Service\InsightsAggregatorService
+    arguments:
+      - '@jaraba_insights_hub.search_console'
+      - '@jaraba_insights_hub.web_vitals_aggregator'
+      - '@jaraba_insights_hub.error_tracking'
+      - '@jaraba_insights_hub.uptime_monitor'
+      - '@?jaraba_analytics.analytics_service'
+      - '@?jaraba_site_builder.seo_manager'

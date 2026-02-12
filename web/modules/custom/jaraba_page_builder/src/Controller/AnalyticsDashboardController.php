@@ -124,19 +124,31 @@ class AnalyticsDashboardController extends ControllerBase
     {
         $storage = $this->entityTypeManager()->getStorage('page_content');
 
-        // Contar páginas publicadas.
+        // Contar paginas publicadas.
         $published_count = $storage->getQuery()
             ->condition('status', 1)
             ->accessCheck(FALSE)
             ->count()
             ->execute();
 
-        // En producción, estos datos vendrían de GA4/Clarity API.
-        // Por ahora usamos datos simulados basados en las páginas existentes.
-        $base_views = $published_count * 150;
-        $avg_time_seconds = 127;
-        $total_ctas = (int) ($base_views * 0.12);
-        $conversion_rate = 4.7;
+        // P2-04: Intentar obtener datos reales de GA4 si esta configurado.
+        $ga4_data = $this->getGA4RealData();
+
+        if ($ga4_data && $ga4_data['source'] === 'ga4') {
+            $base_views = $ga4_data['total_views'];
+            $avg_time_seconds = (int) $ga4_data['avg_time'];
+            $total_ctas = (int) ($base_views * 0.12);
+            $conversion_rate = 100 - $ga4_data['bounce_rate'];
+            $data_source = 'ga4';
+        }
+        else {
+            // Fallback: datos simulados basados en las paginas existentes.
+            $base_views = $published_count * 150;
+            $avg_time_seconds = 127;
+            $total_ctas = (int) ($base_views * 0.12);
+            $conversion_rate = 4.7;
+            $data_source = 'simulated';
+        }
 
         return [
             'total_views' => [
@@ -171,7 +183,44 @@ class AnalyticsDashboardController extends ControllerBase
                 'trend' => '+2.1%',
                 'trend_positive' => TRUE,
             ],
+            'data_source' => $data_source,
         ];
+    }
+
+    /**
+     * Intenta obtener datos reales de GA4 via ExternalAnalyticsService.
+     *
+     * P2-04: Si el servicio esta disponible y GA4 configurado, consulta
+     * la Data API para metricas reales. Cache de 15 minutos.
+     *
+     * @return array|null
+     *   Datos de GA4 o NULL si no esta configurado/disponible.
+     */
+    protected function getGA4RealData(): ?array {
+        if (!\Drupal::hasService('jaraba_page_builder.external_analytics')) {
+            return NULL;
+        }
+
+        /** @var \Drupal\jaraba_page_builder\Service\ExternalAnalyticsService $service */
+        $service = \Drupal::service('jaraba_page_builder.external_analytics');
+
+        if (!$service->isGA4Active()) {
+            return NULL;
+        }
+
+        // Cache de 15 minutos para no saturar la API.
+        $cid = 'jaraba_page_builder:ga4_dashboard_metrics';
+        $cache = \Drupal::cache()->get($cid);
+        if ($cache) {
+            return $cache->data;
+        }
+
+        $data = $service->getGA4DashboardMetrics(30);
+        if ($data['source'] === 'ga4') {
+            \Drupal::cache()->set($cid, $data, time() + 900);
+        }
+
+        return $data;
     }
 
     /**
@@ -324,6 +373,81 @@ class AnalyticsDashboardController extends ControllerBase
             }
         }
         return 0;
+    }
+
+    /**
+     * Devuelve metricas de Search Console para una pagina (P2-04).
+     *
+     * GET /api/v1/page-builder/analytics/search-console/{page_id}
+     *
+     * @param int $page_id
+     *   ID de la pagina PageContent.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Datos de Search Console.
+     */
+    public function searchConsoleMetrics(int $page_id): \Symfony\Component\HttpFoundation\JsonResponse {
+        if (!\Drupal::hasService('jaraba_page_builder.external_analytics')) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Servicio de analytics externo no disponible.'),
+            ], 503);
+        }
+
+        /** @var \Drupal\jaraba_page_builder\Service\ExternalAnalyticsService $service */
+        $service = \Drupal::service('jaraba_page_builder.external_analytics');
+
+        if (!$service->isSearchConsoleActive()) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Search Console no esta configurado.'),
+            ], 404);
+        }
+
+        // Obtener URL de la pagina.
+        $page = $this->entityTypeManager()->getStorage('page_content')->load($page_id);
+        if (!$page) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Pagina no encontrada.'),
+            ], 404);
+        }
+
+        $page_url = $page->toUrl('canonical', ['absolute' => TRUE])->toString();
+        $data = $service->getSearchConsoleData($page_url, 28);
+
+        return new \Symfony\Component\HttpFoundation\JsonResponse([
+            'success' => TRUE,
+            'page_id' => $page_id,
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * Verifica las credenciales GA4 configuradas (P2-04).
+     *
+     * POST /api/v1/page-builder/analytics/ga4/verify
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Resultado de la verificacion.
+     */
+    public function verifyGA4(): \Symfony\Component\HttpFoundation\JsonResponse {
+        if (!\Drupal::hasService('jaraba_page_builder.external_analytics')) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Servicio no disponible.'),
+            ], 503);
+        }
+
+        /** @var \Drupal\jaraba_page_builder\Service\ExternalAnalyticsService $service */
+        $service = \Drupal::service('jaraba_page_builder.external_analytics');
+        $result = $service->verifyGA4Credentials();
+
+        return new \Symfony\Component\HttpFoundation\JsonResponse([
+            'success' => TRUE,
+            'valid' => $result['valid'],
+            'messages' => $result['messages'],
+        ]);
     }
 
 }

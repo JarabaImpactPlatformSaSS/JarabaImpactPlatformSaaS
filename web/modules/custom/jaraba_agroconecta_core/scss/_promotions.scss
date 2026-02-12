@@ -21,22 +21,22 @@
     line-height: 1;
 
     &--percentage {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), color-mix(in srgb, var(--ej-color-danger, #EF4444) 80%, black));
         color: #fff;
     }
 
     &--bogo {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), color-mix(in srgb, var(--ej-color-warning, #F59E0B) 75%, black));
         color: #fff;
     }
 
     &--free-shipping {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, var(--ej-color-success, #10B981), color-mix(in srgb, var(--ej-color-success, #10B981) 75%, black));
         color: #fff;
     }
 
     &--fixed {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black));
         color: #fff;
     }
 }
@@ -52,7 +52,7 @@
     }
 
     &--discounted {
-        color: #dc2626;
+        color: var(--ej-color-danger, #EF4444);
         font-weight: 700;
     }
 }
@@ -99,16 +99,16 @@
         }
 
         &--error {
-            border-color: #ef4444;
+            border-color: var(--ej-color-danger, #EF4444);
 
             &:focus {
-                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-danger, #EF4444) 15%, transparent);
             }
         }
 
         &--success {
-            border-color: #059669;
-            background: #f0fdf4;
+            border-color: var(--ej-color-success, #10B981);
+            background: color-mix(in srgb, var(--ej-color-success, #10B981) 5%, white);
         }
     }
 
@@ -135,12 +135,12 @@
 
         &--remove {
             background: transparent;
-            color: #ef4444;
+            color: var(--ej-color-danger, #EF4444);
             padding: var(--ej-spacing-xs, 0.5rem);
             font-size: var(--ej-font-size-xs, 0.75rem);
 
             &:hover {
-                background: #fef2f2;
+                background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 5%, white);
             }
         }
     }
@@ -153,11 +153,11 @@
         gap: 4px;
 
         &--success {
-            color: #059669;
+            color: var(--ej-color-success, #10B981);
         }
 
         &--error {
-            color: #ef4444;
+            color: var(--ej-color-danger, #EF4444);
         }
     }
 
@@ -167,8 +167,8 @@
         align-items: center;
         justify-content: space-between;
         padding: var(--ej-spacing-sm, 0.75rem);
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 5%, white);
+        border: 1px solid color-mix(in srgb, var(--ej-color-success, #10B981) 25%, white);
         border-radius: var(--ej-radius-md, 8px);
     }
 
@@ -181,13 +181,13 @@
     &__applied-code {
         font-family: monospace;
         font-weight: 700;
-        color: #065f46;
+        color: color-mix(in srgb, var(--ej-color-success, #10B981) 50%, black);
         text-transform: uppercase;
     }
 
     &__applied-discount {
         font-size: var(--ej-font-size-sm, 0.875rem);
-        color: #059669;
+        color: var(--ej-color-success, #10B981);
         font-weight: 600;
     }
 }
@@ -200,7 +200,7 @@
     padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
     border-radius: var(--ej-radius-lg, 12px);
     margin-bottom: var(--ej-spacing-lg, 1.5rem);
-    background: linear-gradient(135deg, #2d6a4f, #40916c, #52b788);
+    background: linear-gradient(135deg, var(--ej-color-primary, #2d6a4f), color-mix(in srgb, var(--ej-color-success, #10B981) 60%, var(--ej-color-primary, #2d6a4f)), var(--ej-color-success, #10B981));
     background-size: 200% 200%;
     animation: agro-promo-gradient 6s ease infinite;
     color: #fff;

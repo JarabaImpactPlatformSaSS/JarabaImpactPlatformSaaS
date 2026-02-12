@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Drupal\jaraba_credentials\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\jaraba_credentials\Service\CredentialExportService;
 use Drupal\jaraba_credentials\Service\RevocationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controlador API para credenciales.
@@ -22,12 +24,18 @@ class CredentialsApiController extends ControllerBase
     protected RevocationService $revocationService;
 
     /**
+     * Servicio de exportacion.
+     */
+    protected CredentialExportService $exportService;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container): static
     {
         $instance = new static();
         $instance->revocationService = $container->get('jaraba_credentials.revocation');
+        $instance->exportService = $container->get('jaraba_credentials.export');
         return $instance;
     }
 
@@ -144,6 +152,69 @@ class CredentialsApiController extends ControllerBase
         catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], 500);
         }
+    }
+
+    /**
+     * Exporta credencial como Open Badge 3.0 JSON-LD.
+     *
+     * @param string $uuid
+     *   UUID de la credencial.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Credencial OB3 completa.
+     */
+    public function exportOpenBadge(string $uuid): JsonResponse
+    {
+        $ob3 = $this->exportService->exportOpenBadge($uuid);
+        if (!$ob3) {
+            return new JsonResponse(['error' => $this->t('Credencial no encontrada o sin datos OB3.')], 404);
+        }
+
+        return new JsonResponse($ob3, 200, [
+            'Content-Type' => 'application/ld+json',
+            'Content-Disposition' => 'attachment; filename="credential-' . $uuid . '.json"',
+        ]);
+    }
+
+    /**
+     * Genera URL para agregar credencial a LinkedIn.
+     *
+     * @param string $uuid
+     *   UUID de la credencial.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   URL de LinkedIn y metadatos.
+     */
+    public function linkedInUrl(string $uuid): JsonResponse
+    {
+        $data = $this->exportService->getLinkedInCertificateUrl($uuid);
+        if (!$data) {
+            return new JsonResponse(['error' => $this->t('Credencial no encontrada.')], 404);
+        }
+
+        return new JsonResponse($data);
+    }
+
+    /**
+     * Exporta credencial como Europass Digital Credential XML.
+     *
+     * @param string $uuid
+     *   UUID de la credencial.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *   Respuesta XML descargable.
+     */
+    public function exportEuropass(string $uuid): Response
+    {
+        $xml = $this->exportService->exportEuropass($uuid);
+        if (!$xml) {
+            return new JsonResponse(['error' => $this->t('Credencial no encontrada.')], 404);
+        }
+
+        return new Response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="europass-credential-' . $uuid . '.xml"',
+        ]);
     }
 
 }
