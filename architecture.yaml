@@ -234,6 +234,19 @@ security:
   secrets:
     manager: drupal_key
     rotation: 90  # days
+    key_entities:
+      - qdrant_api
+      - openai_api
+      - anthropic_api
+      - google_gemini_api_key
+
+  config_sync:
+    directory: config/sync/          # Relative to repo root (git-tracked)
+    drupal_setting: ../config/sync   # Relative to DRUPAL_ROOT (web/)
+    override_file: web/modules/custom/jaraba_rag/config/settings.jaraba_rag.php
+    files: 589                       # YML config files
+    languages: [es, en]              # Translation overrides
+    uuid: 31e467f0-a3f3-4fa7-bd61-222cc2ce07a3  # Site UUID (must match for config:import)
   
   authentication:
     mfa_required: false  # Per tenant configuration
