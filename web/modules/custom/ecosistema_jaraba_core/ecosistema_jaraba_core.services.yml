@@ -286,11 +286,15 @@ services:
   # ===========================================
 
   # Monitoreo de límites de uso
+  # Integra con UpgradeTriggerService (F2) para resolver limites por
+  # FreemiumVerticalLimit ConfigEntity y disparar triggers de upgrade.
   ecosistema_jaraba_core.usage_limits:
     class: Drupal\ecosistema_jaraba_core\Service\UsageLimitsService
     arguments:
       - '@database'
       - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@logger.channel.ecosistema_jaraba_core'
 
   # Programa de referidos
   ecosistema_jaraba_core.referral_program:

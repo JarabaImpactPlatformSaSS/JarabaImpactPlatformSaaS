@@ -1,0 +1,30 @@
+# Enlaces de menu del modulo Funding Intelligence
+
+jaraba_funding.admin:
+  title: 'Subvenciones'
+  description: 'Gestion de convocatorias e inteligencia de subvenciones.'
+  parent: system.admin_content
+  route_name: jaraba_funding.admin
+  weight: 15
+
+jaraba_funding.admin_calls:
+  title: 'Convocatorias'
+  parent: jaraba_funding.admin
+  route_name: jaraba_funding.admin_calls
+
+jaraba_funding.admin_subscriptions:
+  title: 'Suscripciones'
+  parent: jaraba_funding.admin
+  route_name: jaraba_funding.admin_subscriptions
+
+jaraba_funding.admin_alerts:
+  title: 'Alertas'
+  parent: jaraba_funding.admin
+  route_name: jaraba_funding.admin_alerts
+
+jaraba_funding.settings:
+  title: 'Funding Intelligence'
+  description: 'Configuracion de APIs, matching y alertas de subvenciones.'
+  parent: system.admin_config_services
+  route_name: jaraba_funding.settings
+  weight: 20

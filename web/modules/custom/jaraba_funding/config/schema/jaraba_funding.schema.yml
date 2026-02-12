@@ -1,0 +1,28 @@
+jaraba_funding.settings:
+  type: config_object
+  label: 'Funding Intelligence settings'
+  mapping:
+    bdns_api_url:
+      type: string
+      label: 'BDNS API base URL'
+    boja_api_url:
+      type: string
+      label: 'BOJA API base URL'
+    matching_threshold:
+      type: float
+      label: 'Matching score threshold (0-100)'
+    max_matches_per_tenant:
+      type: integer
+      label: 'Maximum matches per tenant'
+    alert_frequency:
+      type: string
+      label: 'Default alert frequency (immediate, daily, weekly)'
+    qdrant_collection:
+      type: string
+      label: 'Qdrant collection name for funding calls'
+    sync_interval_hours:
+      type: integer
+      label: 'BDNS sync interval in hours'
+    copilot_enabled:
+      type: boolean
+      label: 'Enable funding copilot'

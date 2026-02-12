@@ -1,0 +1,49 @@
+services:
+  logger.channel.jaraba_funding:
+    parent: logger.channel_base
+    arguments: ['jaraba_funding']
+
+  # API Clients
+  jaraba_funding.bdns_client:
+    class: Drupal\jaraba_funding\Service\Api\BdnsApiClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.jaraba_funding']
+
+  jaraba_funding.boja_client:
+    class: Drupal\jaraba_funding\Service\Api\BojaApiClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.jaraba_funding']
+
+  # Ingestion Pipeline
+  jaraba_funding.ingestion:
+    class: Drupal\jaraba_funding\Service\Ingestion\FundingIngestionService
+    arguments: ['@entity_type.manager', '@jaraba_funding.bdns_client', '@jaraba_funding.boja_client', '@jaraba_funding.normalizer', '@queue', '@logger.channel.jaraba_funding']
+
+  jaraba_funding.normalizer:
+    class: Drupal\jaraba_funding\Service\Ingestion\FundingNormalizerService
+    arguments: ['@logger.channel.jaraba_funding']
+
+  # Intelligence
+  jaraba_funding.matching_engine:
+    class: Drupal\jaraba_funding\Service\Intelligence\FundingMatchingEngine
+    arguments: ['@entity_type.manager', '@config.factory', '@logger.channel.jaraba_funding']
+
+  jaraba_funding.eligibility:
+    class: Drupal\jaraba_funding\Service\Intelligence\FundingEligibilityCalculator
+    arguments: ['@entity_type.manager', '@logger.channel.jaraba_funding']
+
+  jaraba_funding.copilot:
+    class: Drupal\jaraba_funding\Service\Intelligence\FundingCopilotService
+    arguments: ['@entity_type.manager', '@jaraba_funding.matching_engine', '@config.factory', '@logger.channel.jaraba_funding']
+
+  # Alerts
+  jaraba_funding.alerts:
+    class: Drupal\jaraba_funding\Service\Alerts\FundingAlertService
+    arguments: ['@entity_type.manager', '@plugin.manager.mail', '@logger.channel.jaraba_funding']
+
+  jaraba_funding.notification_dispatcher:
+    class: Drupal\jaraba_funding\Service\Alerts\FundingNotificationDispatcher
+    arguments: ['@jaraba_funding.alerts', '@queue', '@logger.channel.jaraba_funding']
+
+  # Cache
+  jaraba_funding.cache:
+    class: Drupal\jaraba_funding\Service\FundingCacheService
+    arguments: ['@cache.default', '@logger.channel.jaraba_funding']

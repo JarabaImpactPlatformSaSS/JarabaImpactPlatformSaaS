@@ -1,0 +1,20 @@
+administer jaraba funding:
+  title: 'Administer Jaraba Funding'
+  description: 'Full access to funding intelligence configuration and data.'
+  restrict access: true
+
+view funding dashboard:
+  title: 'View Funding Dashboard'
+  description: 'Ver dashboard de subvenciones.'
+
+view own funding matches:
+  title: 'View Own Funding Matches'
+  description: 'Ver matches propios.'
+
+manage funding subscriptions:
+  title: 'Manage Funding Subscriptions'
+  description: 'Gestionar suscripciones a alertas.'
+
+use funding copilot:
+  title: 'Use Funding Copilot'
+  description: 'Usar el copilot de subvenciones.'

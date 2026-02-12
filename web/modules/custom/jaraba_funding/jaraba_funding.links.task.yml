@@ -1,0 +1,6 @@
+# Enlaces de pestana (tabs) del modulo Funding Intelligence
+
+jaraba_funding.settings:
+  title: 'Configuracion'
+  route_name: jaraba_funding.settings
+  base_route: jaraba_funding.settings

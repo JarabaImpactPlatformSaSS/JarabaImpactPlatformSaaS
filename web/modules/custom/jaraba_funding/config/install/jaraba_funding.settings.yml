@@ -1,0 +1,8 @@
+bdns_api_url: 'https://www.pap.hacienda.gob.es/bdnstrans/api/'
+boja_api_url: 'https://www.juntadeandalucia.es/boja/api/'
+matching_threshold: 60.0
+max_matches_per_tenant: 50
+alert_frequency: 'daily'
+qdrant_collection: 'funding_calls'
+sync_interval_hours: 12
+copilot_enabled: true

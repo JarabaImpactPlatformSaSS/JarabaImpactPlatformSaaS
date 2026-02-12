@@ -1,0 +1,175 @@
+# Rutas del modulo Funding Intelligence
+
+# ============================================
+# FRONTEND
+# ============================================
+
+# Dashboard principal de subvenciones (NOT admin)
+jaraba_funding.dashboard:
+  path: '/funding'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingDashboardController::dashboard'
+    _title: 'Subvenciones e Incentivos'
+  requirements:
+    _permission: 'view funding dashboard'
+  options:
+    _admin_route: FALSE
+
+# Copilot de subvenciones (NOT admin)
+jaraba_funding.copilot:
+  path: '/funding/copilot'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingCopilotController::chat'
+    _title: 'Copilot de Subvenciones'
+  requirements:
+    _permission: 'use funding copilot'
+  options:
+    _admin_route: FALSE
+
+# ============================================
+# ADMIN
+# ============================================
+
+# Admin overview
+jaraba_funding.admin:
+  path: '/admin/content/funding'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingAdminController::overview'
+    _title: 'Subvenciones'
+  requirements:
+    _permission: 'administer jaraba funding'
+
+# Admin convocatorias list
+jaraba_funding.admin_calls:
+  path: '/admin/content/funding/calls'
+  defaults:
+    _entity_list: 'funding_call'
+    _title: 'Convocatorias'
+  requirements:
+    _permission: 'administer jaraba funding'
+
+# Admin suscripciones list
+jaraba_funding.admin_subscriptions:
+  path: '/admin/content/funding/subscriptions'
+  defaults:
+    _entity_list: 'funding_subscription'
+    _title: 'Suscripciones'
+  requirements:
+    _permission: 'administer jaraba funding'
+
+# Admin alertas list
+jaraba_funding.admin_alerts:
+  path: '/admin/content/funding/alerts'
+  defaults:
+    _entity_list: 'funding_alert'
+    _title: 'Alertas'
+  requirements:
+    _permission: 'administer jaraba funding'
+
+# Settings form
+jaraba_funding.settings:
+  path: '/admin/config/services/funding'
+  defaults:
+    _form: '\Drupal\jaraba_funding\Form\FundingSettingsForm'
+    _title: 'Funding Intelligence'
+  requirements:
+    _permission: 'administer jaraba funding'
+
+# Subscription form (frontend)
+jaraba_funding.subscription_form:
+  path: '/funding/subscription/{subscription_id}'
+  defaults:
+    _form: '\Drupal\jaraba_funding\Form\FundingSubscriptionForm'
+    _title: 'Mi Perfil de Subvenciones'
+    subscription_id: 0
+  requirements:
+    _permission: 'manage funding subscriptions'
+  options:
+    _admin_route: FALSE
+
+# Admin sync status
+jaraba_funding.admin_sync_status:
+  path: '/admin/content/funding/sync-status'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingAdminController::syncStatus'
+  requirements:
+    _permission: 'administer jaraba funding'
+  methods: [GET]
+
+# ============================================
+# API: FUNDING CALLS
+# ============================================
+
+# API: Search funding calls
+jaraba_funding.api.search:
+  path: '/api/v1/funding/calls'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingDashboardController::apiSearch'
+  requirements:
+    _permission: 'view funding dashboard'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+# API: Call detail
+jaraba_funding.api.call_detail:
+  path: '/api/v1/funding/calls/{call_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingDashboardController::apiCallDetail'
+  requirements:
+    _permission: 'view funding dashboard'
+    call_id: '\d+'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+# API: Matches
+jaraba_funding.api.matches:
+  path: '/api/v1/funding/matches'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingDashboardController::apiMatches'
+  requirements:
+    _permission: 'view own funding matches'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+# API: Stats
+jaraba_funding.api.stats:
+  path: '/api/v1/funding/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingDashboardController::apiStats'
+  requirements:
+    _permission: 'view funding dashboard'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+# ============================================
+# API: COPILOT
+# ============================================
+
+# API: Copilot chat
+jaraba_funding.api.copilot:
+  path: '/api/v1/funding/copilot'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingCopilotController::apiChat'
+  requirements:
+    _permission: 'use funding copilot'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+# API: Copilot history
+jaraba_funding.api.copilot_history:
+  path: '/api/v1/funding/copilot/history'
+  defaults:
+    _controller: '\Drupal\jaraba_funding\Controller\FundingCopilotController::apiHistory'
+  requirements:
+    _permission: 'use funding copilot'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']

@@ -13,11 +13,15 @@ services:
 
   # Validador de límites de planes SaaS.
   # P1-01/P1-02: Extendido con límites de Page Builder y Credentials.
+  # F2: Integra con UpgradeTriggerService para consultar FreemiumVerticalLimit.
+  # El tercer argumento es nullable (?) para backwards compatibility cuando
+  # ecosistema_jaraba_core.upgrade_trigger no esta disponible.
   jaraba_billing.plan_validator:
     class: Drupal\jaraba_billing\Service\PlanValidator
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+      - '@?ecosistema_jaraba_core.upgrade_trigger'
     calls:
       - [setStringTranslation, ['@string_translation']]
 

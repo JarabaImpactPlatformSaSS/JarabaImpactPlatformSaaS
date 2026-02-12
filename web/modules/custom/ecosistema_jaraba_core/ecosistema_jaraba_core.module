@@ -2070,6 +2070,163 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
   }
 }
 
+// ===========================================================================
+// F2: FIRST SALE UPGRADE TRIGGER (Doc 183)
+// ===========================================================================
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Detects when a tenant's first successful order happens (Commerce order
+ * transitions to 'completed') and fires the 'first_sale' upgrade trigger
+ * via UpgradeTriggerService.
+ *
+ * Key guards:
+ * - Only fires if Commerce module is installed.
+ * - Only fires for commerce_order entities transitioning to 'completed'.
+ * - Only fires once per tenant (checks existing completed orders count).
+ *
+ * F2 — Doc 183 §4: first_sale trigger (42% expected conversion).
+ */
+function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+  // Guard: Only process commerce_order entities.
+  if ($entity->getEntityTypeId() !== 'commerce_order') {
+    return;
+  }
+
+  // Guard: Commerce module must be installed.
+  if (!\Drupal::moduleHandler()->moduleExists('commerce_order')) {
+    return;
+  }
+
+  // Guard: Order must have just transitioned to 'completed'.
+  $newState = NULL;
+  if ($entity->hasField('state')) {
+    $newState = $entity->get('state')->value ?? NULL;
+  }
+
+  if ($newState !== 'completed') {
+    return;
+  }
+
+  // Check original state to confirm a transition happened.
+  if (isset($entity->original) && $entity->original->hasField('state')) {
+    $oldState = $entity->original->get('state')->value ?? NULL;
+    if ($oldState === 'completed') {
+      // Already was completed, not a transition.
+      return;
+    }
+  }
+
+  // Resolve the tenant for this order.
+  $tenant = NULL;
+  try {
+    // Try to get tenant from the order's store owner or tenant field.
+    if ($entity->hasField('field_tenant')) {
+      $tenantRef = $entity->get('field_tenant')->entity;
+      if ($tenantRef) {
+        $tenant = $tenantRef;
+      }
+    }
+
+    // Fallback: resolve tenant from the store's owner via TenantContextService.
+    if (!$tenant && \Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+      $store = $entity->getStore();
+      if ($store) {
+        $storeOwner = $store->getOwner();
+        if ($storeOwner) {
+          $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+          $tenant = $tenantContext->getTenantForUser($storeOwner);
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Non-blocking: if we cannot resolve tenant, skip silently.
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'F2 first_sale: Could not resolve tenant for order @order: @error',
+      [
+        '@order' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+    return;
+  }
+
+  if (!$tenant) {
+    return;
+  }
+
+  // Guard: Only fire if this is the FIRST completed order for this tenant.
+  try {
+    $tenantId = $tenant->id();
+
+    // Check for other completed orders belonging to this tenant.
+    $existingCompletedCount = 0;
+
+    // Query completed orders for the same store(s).
+    if ($entity->hasField('field_tenant')) {
+      $existingCompletedCount = (int) \Drupal::entityTypeManager()
+        ->getStorage('commerce_order')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('state', 'completed')
+        ->condition('field_tenant', $tenantId)
+        ->condition('order_id', $entity->id(), '<>')
+        ->count()
+        ->execute();
+    }
+    else {
+      // Fallback: count by store.
+      $store = $entity->getStore();
+      if ($store) {
+        $existingCompletedCount = (int) \Drupal::entityTypeManager()
+          ->getStorage('commerce_order')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('state', 'completed')
+          ->condition('store_id', $store->id())
+          ->condition('order_id', $entity->id(), '<>')
+          ->count()
+          ->execute();
+      }
+    }
+
+    if ($existingCompletedCount > 0) {
+      // Not the first sale, skip.
+      return;
+    }
+
+    // Fire the first_sale upgrade trigger.
+    if (\Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTriggerService */
+      $upgradeTriggerService = \Drupal::service('ecosistema_jaraba_core.upgrade_trigger');
+      $upgradeTriggerService->fire('first_sale', $tenant, [
+        'order_id' => (string) $entity->id(),
+        'order_total' => $entity->hasField('total_price') ? ($entity->get('total_price')->number ?? '0') : '0',
+      ]);
+
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        'F2 first_sale: Fired upgrade trigger for tenant @tenant (order @order)',
+        [
+          '@tenant' => $tenantId,
+          '@order' => $entity->id(),
+        ]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    // Non-blocking: trigger failure should not break order processing.
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'F2 first_sale: Error firing trigger for tenant @tenant: @error',
+      [
+        '@tenant' => $tenant->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
 /**
  * Implements hook_preprocess_html().
  *

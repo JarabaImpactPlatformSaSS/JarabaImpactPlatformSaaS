@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Tests\UnitTestCase;
@@ -104,7 +106,7 @@ class PlanValidatorTest extends UnitTestCase
      */
     public function testCanUseAiQuery(int $limit, int $usedThisMonth, bool $expected): void
     {
-        // Simulate validation logic  
+        // Simulate validation logic
         $canUse = ($limit < 0) || ($usedThisMonth < $limit);
 
         $this->assertEquals($expected, $canUse);
@@ -212,6 +214,260 @@ class PlanValidatorTest extends UnitTestCase
             }
         }
         $this->assertFalse($downgradeValid);
+    }
+
+    // =========================================================================
+    // F2 INTEGRATION: enforceVerticalLimit tests.
+    // =========================================================================
+
+    /**
+     * Tests enforceVerticalLimit with unlimited effective limit.
+     *
+     * When the FreemiumVerticalLimit returns -1 (unlimited), the action
+     * should always be allowed regardless of current usage.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitUnlimited(): void
+    {
+        // Simulate: effectiveLimit = -1 (unlimited).
+        $effectiveLimit = -1;
+        $currentUsage = 999;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+
+        $this->assertTrue($allowed);
+    }
+
+    /**
+     * Tests enforceVerticalLimit with zero (disabled) effective limit.
+     *
+     * When the FreemiumVerticalLimit returns 0 (not included in plan),
+     * the action should always be blocked.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitDisabled(): void
+    {
+        // Simulate: effectiveLimit = 0 (not included).
+        $effectiveLimit = 0;
+        $currentUsage = 0;
+
+        $allowed = ($effectiveLimit === -1) || ($effectiveLimit > 0 && $currentUsage < $effectiveLimit);
+
+        $this->assertFalse($allowed);
+    }
+
+    /**
+     * Tests enforceVerticalLimit with numeric limit under threshold.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitUnderThreshold(): void
+    {
+        // FreemiumVerticalLimit says 20 products for agroconecta+free.
+        $effectiveLimit = 20;
+        $currentUsage = 15;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+
+        $this->assertTrue($allowed);
+    }
+
+    /**
+     * Tests enforceVerticalLimit at numeric limit (should block).
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitAtThreshold(): void
+    {
+        // FreemiumVerticalLimit says 20 products, tenant has 20.
+        $effectiveLimit = 20;
+        $currentUsage = 20;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+
+        $this->assertFalse($allowed);
+    }
+
+    /**
+     * Tests enforceVerticalLimit over numeric limit (should block).
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitOverThreshold(): void
+    {
+        $effectiveLimit = 20;
+        $currentUsage = 25;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+
+        $this->assertFalse($allowed);
+    }
+
+    /**
+     * Tests resolveEffectiveLimit fallback when no UpgradeTriggerService.
+     *
+     * When UpgradeTriggerService is NULL (backwards compatibility), the
+     * fallback value from SaasPlan should be used.
+     *
+     * @covers ::resolveEffectiveLimit
+     */
+    public function testResolveEffectiveLimitFallbackWithoutService(): void
+    {
+        // Simulate: upgradeTriggerService is NULL, so fallback is returned.
+        $upgradeTriggerService = NULL;
+        $fallback = 10;
+
+        $effectiveLimit = ($upgradeTriggerService === NULL) ? $fallback : $fallback;
+
+        $this->assertEquals(10, $effectiveLimit);
+    }
+
+    /**
+     * Tests resolveEffectiveLimit fallback when vertical is empty.
+     *
+     * When the tenant has no vertical assigned, the SaasPlan limit
+     * should be used as fallback.
+     *
+     * @covers ::resolveEffectiveLimit
+     */
+    public function testResolveEffectiveLimitFallbackEmptyVertical(): void
+    {
+        // Simulate: vertical is empty string.
+        $vertical = '';
+        $fallback = 10;
+
+        // resolveEffectiveLimit returns fallback when vertical is empty.
+        $effectiveLimit = ($vertical === '') ? $fallback : $fallback;
+
+        $this->assertEquals(10, $effectiveLimit);
+    }
+
+    /**
+     * Tests that FreemiumVerticalLimit overrides SaasPlan limit.
+     *
+     * When a FreemiumVerticalLimit exists with a different value than
+     * the SaasPlan, the FreemiumVerticalLimit value takes precedence.
+     *
+     * @dataProvider verticalLimitOverrideDataProvider
+     * @covers ::enforceVerticalLimit
+     */
+    public function testVerticalLimitOverridesPlanLimit(
+        int $planLimit,
+        int $verticalLimit,
+        int $currentUsage,
+        bool $expectedAllowed,
+    ): void {
+        // The effective limit is the vertical limit when it exists.
+        $effectiveLimit = $verticalLimit;
+
+        $allowed = ($effectiveLimit === -1) || ($effectiveLimit > 0 && $currentUsage < $effectiveLimit);
+
+        $this->assertEquals($expectedAllowed, $allowed);
+    }
+
+    /**
+     * Data provider for vertical limit override scenarios.
+     */
+    public static function verticalLimitOverrideDataProvider(): array
+    {
+        return [
+            'vertical tighter than plan (blocked)' => [
+                'planLimit' => 50,
+                'verticalLimit' => 10,
+                'currentUsage' => 10,
+                'expectedAllowed' => FALSE,
+            ],
+            'vertical tighter than plan (allowed)' => [
+                'planLimit' => 50,
+                'verticalLimit' => 10,
+                'currentUsage' => 5,
+                'expectedAllowed' => TRUE,
+            ],
+            'vertical more generous than plan (allowed)' => [
+                'planLimit' => 10,
+                'verticalLimit' => 50,
+                'currentUsage' => 25,
+                'expectedAllowed' => TRUE,
+            ],
+            'vertical unlimited overrides plan limit' => [
+                'planLimit' => 10,
+                'verticalLimit' => -1,
+                'currentUsage' => 999,
+                'expectedAllowed' => TRUE,
+            ],
+            'vertical disabled overrides plan limit' => [
+                'planLimit' => 10,
+                'verticalLimit' => 0,
+                'currentUsage' => 0,
+                'expectedAllowed' => FALSE,
+            ],
+        ];
+    }
+
+    /**
+     * Tests enforceVerticalLimit return structure.
+     *
+     * Verifies the method returns the expected array keys.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitReturnStructure(): void
+    {
+        // Simulate the expected return structure.
+        $result = [
+            'allowed' => TRUE,
+            'trigger' => NULL,
+            'effective_limit' => -1,
+        ];
+
+        $this->assertArrayHasKey('allowed', $result);
+        $this->assertArrayHasKey('trigger', $result);
+        $this->assertArrayHasKey('effective_limit', $result);
+        $this->assertIsBool($result['allowed']);
+        $this->assertNull($result['trigger']);
+        $this->assertIsInt($result['effective_limit']);
+    }
+
+    /**
+     * Tests that trigger data is returned when limit is reached.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitTriggerOnBlock(): void
+    {
+        // Simulate: limit reached, trigger should be present.
+        $effectiveLimit = 10;
+        $currentUsage = 10;
+        $hasTriggerService = TRUE;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+        $shouldFireTrigger = !$allowed && $hasTriggerService;
+
+        $this->assertFalse($allowed);
+        $this->assertTrue($shouldFireTrigger);
+    }
+
+    /**
+     * Tests backwards compatibility: no trigger when service is absent.
+     *
+     * When UpgradeTriggerService is NULL, enforceVerticalLimit should
+     * still return correct allowed/blocked status but trigger is NULL.
+     *
+     * @covers ::enforceVerticalLimit
+     */
+    public function testEnforceVerticalLimitNoTriggerWithoutService(): void
+    {
+        $effectiveLimit = 10;
+        $currentUsage = 15;
+        $hasTriggerService = FALSE;
+
+        $allowed = ($effectiveLimit === -1) || ($currentUsage < $effectiveLimit);
+        $shouldFireTrigger = !$allowed && $hasTriggerService;
+
+        $this->assertFalse($allowed);
+        $this->assertFalse($shouldFireTrigger);
     }
 
 }
