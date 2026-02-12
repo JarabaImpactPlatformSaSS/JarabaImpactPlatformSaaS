@@ -11,6 +11,9 @@ use Drupal\Core\Session\AccountInterface;
  *
  * Agrega toda la información de autodescubrimiento del usuario para
  * proporcionar contexto completo al Copilot.
+ *
+ * Refactorizado para delegar a servicios especializados manteniendo
+ * compatibilidad retroactiva con user.data.
  */
 class SelfDiscoveryContextService
 {
@@ -31,16 +34,44 @@ class SelfDiscoveryContextService
     protected $entityTypeManager;
 
     /**
+     * LifeWheel service.
+     */
+    protected ?LifeWheelService $lifeWheelService;
+
+    /**
+     * Timeline analysis service.
+     */
+    protected ?TimelineAnalysisService $timelineService;
+
+    /**
+     * RIASEC service.
+     */
+    protected ?RiasecService $riasecService;
+
+    /**
+     * Strength analysis service.
+     */
+    protected ?StrengthAnalysisService $strengthService;
+
+    /**
      * Constructor.
      */
     public function __construct(
         AccountInterface $current_user,
         $user_data,
-        $entity_type_manager
+        $entity_type_manager,
+        ?LifeWheelService $life_wheel_service = NULL,
+        ?TimelineAnalysisService $timeline_service = NULL,
+        ?RiasecService $riasec_service = NULL,
+        ?StrengthAnalysisService $strength_service = NULL
     ) {
         $this->currentUser = $current_user;
         $this->userData = $user_data;
         $this->entityTypeManager = $entity_type_manager;
+        $this->lifeWheelService = $life_wheel_service;
+        $this->timelineService = $timeline_service;
+        $this->riasecService = $riasec_service;
+        $this->strengthService = $strength_service;
     }
 
     /**
@@ -70,6 +101,25 @@ class SelfDiscoveryContextService
      */
     protected function getLifeWheelContext(int $uid): array
     {
+        if ($this->lifeWheelService) {
+            $assessment = $this->lifeWheelService->getLatestAssessment($uid);
+            if (!$assessment) {
+                return ['completed' => FALSE];
+            }
+
+            $scores = $assessment->getAllScores();
+            $lowest = $this->lifeWheelService->getLowestAreas($uid, 2);
+
+            return [
+                'completed' => TRUE,
+                'scores' => $scores,
+                'average' => round(array_sum($scores) / count($scores), 1),
+                'lowest_areas' => array_keys($lowest),
+                'lowest_values' => $lowest,
+            ];
+        }
+
+        // Fallback directo a entity query (retrocompatibilidad).
         try {
             $storage = $this->entityTypeManager->getStorage('life_wheel_assessment');
             $ids = $storage->getQuery()
@@ -86,7 +136,6 @@ class SelfDiscoveryContextService
             $assessment = $storage->load(reset($ids));
             $scores = $assessment->getAllScores();
 
-            // Identificar áreas más bajas.
             asort($scores);
             $lowest = array_slice($scores, 0, 2, TRUE);
 
@@ -107,6 +156,27 @@ class SelfDiscoveryContextService
      */
     protected function getTimelineContext(int $uid): array
     {
+        if ($this->timelineService) {
+            $events = $this->timelineService->getAllEvents($uid);
+            if (empty($events)) {
+                return ['completed' => FALSE, 'events_count' => 0];
+            }
+
+            $highMoments = count(array_filter($events, fn($e) => $e['type'] === 'high_moment'));
+            $lowMoments = count(array_filter($events, fn($e) => $e['type'] === 'low_moment'));
+
+            return [
+                'completed' => TRUE,
+                'events_count' => count($events),
+                'events' => $events,
+                'high_moments' => $highMoments,
+                'low_moments' => $lowMoments,
+                'top_skills' => $this->timelineService->getTopSkills($uid),
+                'top_values' => $this->timelineService->getTopValues($uid),
+            ];
+        }
+
+        // Fallback directo (retrocompatibilidad).
         try {
             $storage = $this->entityTypeManager->getStorage('life_timeline');
             $ids = $storage->getQuery()
@@ -127,7 +197,6 @@ class SelfDiscoveryContextService
             $allValues = [];
 
             foreach ($entities as $entity) {
-                /** @var \Drupal\jaraba_self_discovery\Entity\LifeTimeline $entity */
                 $type = $entity->get('event_type')->value;
                 if ($type === 'high_moment') {
                     $highMoments++;
@@ -150,7 +219,6 @@ class SelfDiscoveryContextService
                 ];
             }
 
-            // Frecuencia de habilidades para identificar patrones.
             $skillFrequency = array_count_values($allSkills);
             arsort($skillFrequency);
             $valueFrequency = array_count_values($allValues);
@@ -175,6 +243,23 @@ class SelfDiscoveryContextService
      */
     protected function getRiasecContext(int $uid): array
     {
+        if ($this->riasecService) {
+            $code = $this->riasecService->getCode($uid);
+            if (!$code) {
+                return ['completed' => FALSE];
+            }
+
+            return [
+                'completed' => TRUE,
+                'code' => $code,
+                'scores' => $this->riasecService->getScores($uid),
+                'primary_type' => $code[0] ?? '',
+                'primary_description' => $this->getTypeDescription($code[0] ?? ''),
+                'profile_description' => $this->riasecService->getProfileDescription($uid),
+            ];
+        }
+
+        // Fallback a user.data (retrocompatibilidad).
         $code = $this->userData->get('jaraba_self_discovery', $uid, 'riasec_code');
         $scores = $this->userData->get('jaraba_self_discovery', $uid, 'riasec_scores');
         $completed = $this->userData->get('jaraba_self_discovery', $uid, 'riasec_completed');
@@ -184,15 +269,14 @@ class SelfDiscoveryContextService
         }
 
         $typeDescriptions = [
-            'R' => 'Realista - práctico, técnico',
-            'I' => 'Investigador - analítico, científico',
-            'A' => 'Artístico - creativo, expresivo',
-            'S' => 'Social - colaborador, empático',
-            'E' => 'Emprendedor - líder, persuasivo',
+            'R' => 'Realista - practico, tecnico',
+            'I' => 'Investigador - analitico, cientifico',
+            'A' => 'Artistico - creativo, expresivo',
+            'S' => 'Social - colaborador, empatico',
+            'E' => 'Emprendedor - lider, persuasivo',
             'C' => 'Convencional - organizado, estructurado',
         ];
 
-        // Describir el código.
         $letters = str_split($code);
         $descriptions = array_map(fn($l) => $typeDescriptions[$l] ?? $l, $letters);
 
@@ -212,6 +296,20 @@ class SelfDiscoveryContextService
      */
     protected function getStrengthsContext(int $uid): array
     {
+        if ($this->strengthService) {
+            $top5 = $this->strengthService->getTop5($uid);
+            if (empty($top5)) {
+                return ['completed' => FALSE];
+            }
+
+            return [
+                'completed' => TRUE,
+                'top5' => $top5,
+                'top_strength' => !empty($top5) ? reset($top5) : NULL,
+            ];
+        }
+
+        // Fallback a user.data (retrocompatibilidad).
         $top5 = $this->userData->get('jaraba_self_discovery', $uid, 'strengths_top5');
         $completed = $this->userData->get('jaraba_self_discovery', $uid, 'strengths_completed');
 
@@ -242,7 +340,7 @@ class SelfDiscoveryContextService
 
         if ($context['life_wheel']['completed']) {
             $lowest = implode(' y ', $context['life_wheel']['lowest_areas'] ?? []);
-            $parts[] = "Sus áreas más bajas en Rueda de Vida son: {$lowest}.";
+            $parts[] = "Sus areas mas bajas en Rueda de Vida son: {$lowest}.";
         }
 
         if ($context['riasec']['completed']) {
@@ -254,7 +352,7 @@ class SelfDiscoveryContextService
             $parts[] = "Su fortaleza principal es: {$top}.";
         }
 
-        return implode(' ', $parts) ?: 'El usuario aún no ha completado herramientas de autodescubrimiento.';
+        return implode(' ', $parts) ?: 'El usuario aun no ha completado herramientas de autodescubrimiento.';
     }
 
     /**
@@ -271,6 +369,23 @@ CONTEXTO DE AUTODESCUBRIMIENTO DEL USUARIO:
 
 Usa esta información para dar orientación personalizada sobre su carrera profesional.
 PROMPT;
+    }
+
+    /**
+     * Obtiene la descripcion de un tipo RIASEC.
+     */
+    protected function getTypeDescription(string $letter): string
+    {
+        $descriptions = [
+            'R' => 'Realista - practico, tecnico',
+            'I' => 'Investigador - analitico, cientifico',
+            'A' => 'Artistico - creativo, expresivo',
+            'S' => 'Social - colaborador, empatico',
+            'E' => 'Emprendedor - lider, persuasivo',
+            'C' => 'Convencional - organizado, estructurado',
+        ];
+
+        return $descriptions[$letter] ?? '';
     }
 
 }

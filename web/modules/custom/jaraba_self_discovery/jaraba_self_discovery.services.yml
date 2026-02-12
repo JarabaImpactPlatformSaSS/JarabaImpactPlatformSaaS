@@ -1,7 +1,47 @@
 services:
+  # Servicios dedicados por area de Self-Discovery
+  jaraba_self_discovery.life_wheel:
+    class: Drupal\jaraba_self_discovery\Service\LifeWheelService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_self_discovery'
+
+  jaraba_self_discovery.timeline_analysis:
+    class: Drupal\jaraba_self_discovery\Service\TimelineAnalysisService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_self_discovery'
+
+  jaraba_self_discovery.riasec:
+    class: Drupal\jaraba_self_discovery\Service\RiasecService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@user.data'
+      - '@logger.channel.jaraba_self_discovery'
+
+  jaraba_self_discovery.strength_analysis:
+    class: Drupal\jaraba_self_discovery\Service\StrengthAnalysisService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@user.data'
+      - '@logger.channel.jaraba_self_discovery'
+
+  # Servicio agregador de contexto (delega a servicios especializados)
   jaraba_self_discovery.context:
     class: Drupal\jaraba_self_discovery\Service\SelfDiscoveryContextService
     arguments:
       - '@current_user'
       - '@user.data'
       - '@entity_type.manager'
+      - '@jaraba_self_discovery.life_wheel'
+      - '@jaraba_self_discovery.timeline_analysis'
+      - '@jaraba_self_discovery.riasec'
+      - '@jaraba_self_discovery.strength_analysis'
+
+  logger.channel.jaraba_self_discovery:
+    parent: logger.channel_base
+    arguments: ['jaraba_self_discovery']

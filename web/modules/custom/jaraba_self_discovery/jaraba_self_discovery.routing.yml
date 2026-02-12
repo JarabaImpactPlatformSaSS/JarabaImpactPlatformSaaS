@@ -99,6 +99,110 @@ entity.life_timeline.canonical:
     _permission: 'administer self discovery'
 
 # ============================================
+# INTEREST PROFILE (RIASEC)
+# ============================================
+
+entity.interest_profile.collection:
+  path: '/admin/content/interest-profiles'
+  defaults:
+    _entity_list: 'interest_profile'
+    _title: 'Perfiles de Intereses RIASEC'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.interest_profile.add_form:
+  path: '/admin/content/interest-profiles/add'
+  defaults:
+    _entity_form: 'interest_profile.add'
+    _title: 'Anadir Perfil RIASEC'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.interest_profile.edit_form:
+  path: '/admin/content/interest-profile/{interest_profile}/edit'
+  defaults:
+    _entity_form: 'interest_profile.edit'
+    _title: 'Editar Perfil RIASEC'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.interest_profile.delete_form:
+  path: '/admin/content/interest-profile/{interest_profile}/delete'
+  defaults:
+    _entity_form: 'interest_profile.delete'
+    _title: 'Eliminar Perfil RIASEC'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.interest_profile.canonical:
+  path: '/admin/content/interest-profile/{interest_profile}'
+  defaults:
+    _entity_view: 'interest_profile'
+    _title: 'Perfil de Intereses RIASEC'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.interest_profile.settings:
+  path: '/admin/structure/interest-profile'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\InterestProfileSettingsForm'
+    _title: 'Configurar Perfil de Intereses'
+  requirements:
+    _permission: 'administer self discovery'
+
+# ============================================
+# STRENGTH ASSESSMENT
+# ============================================
+
+entity.strength_assessment.collection:
+  path: '/admin/content/strength-assessments'
+  defaults:
+    _entity_list: 'strength_assessment'
+    _title: 'Evaluaciones de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.strength_assessment.add_form:
+  path: '/admin/content/strength-assessments/add'
+  defaults:
+    _entity_form: 'strength_assessment.add'
+    _title: 'Anadir Evaluacion de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.strength_assessment.edit_form:
+  path: '/admin/content/strength-assessment/{strength_assessment}/edit'
+  defaults:
+    _entity_form: 'strength_assessment.edit'
+    _title: 'Editar Evaluacion de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.strength_assessment.delete_form:
+  path: '/admin/content/strength-assessment/{strength_assessment}/delete'
+  defaults:
+    _entity_form: 'strength_assessment.delete'
+    _title: 'Eliminar Evaluacion de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.strength_assessment.canonical:
+  path: '/admin/content/strength-assessment/{strength_assessment}'
+  defaults:
+    _entity_view: 'strength_assessment'
+    _title: 'Evaluacion de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+entity.strength_assessment.settings:
+  path: '/admin/structure/strength-assessment'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\StrengthAssessmentSettingsForm'
+    _title: 'Configurar Evaluacion de Fortalezas'
+  requirements:
+    _permission: 'administer self discovery'
+
+# ============================================
 # FRONTEND ROUTES (Usuario)
 # ============================================
 
@@ -139,6 +243,30 @@ jaraba_self_discovery.strengths:
   defaults:
     _controller: '\Drupal\jaraba_self_discovery\Controller\SelfDiscoveryController::strengths'
     _title: 'Mis Fortalezas'
+  requirements:
+    _permission: 'access self discovery tools'
+
+# ============================================
+# TIMELINE PHASE 2/3 (Usuario)
+# ============================================
+
+jaraba_self_discovery.timeline_phase2:
+  path: '/my-profile/self-discovery/timeline/{life_timeline}/describe'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\TimelinePhase2Form'
+    _title: 'Describir Evento'
+  requirements:
+    _permission: 'access self discovery tools'
+  options:
+    parameters:
+      life_timeline:
+        type: entity:life_timeline
+
+jaraba_self_discovery.timeline_phase3:
+  path: '/my-profile/self-discovery/timeline/patterns'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\TimelinePhase3Form'
+    _title: 'Patrones de tu Timeline'
   requirements:
     _permission: 'access self discovery tools'
 
