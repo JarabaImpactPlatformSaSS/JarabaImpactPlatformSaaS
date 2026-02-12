@@ -43,5 +43,5 @@ consent-banner:
     - core/drupal
     - core/drupalSettings
     - core/once
-    - ecosistema_jaraba_theme/global
+    - ecosistema_jaraba_theme/global-styling
 

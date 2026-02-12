@@ -52,6 +52,9 @@ eca.eca.*:
     weight:
       type: weight
       label: 'Weight'
+    template:
+      type: boolean
+      label: 'Template'
     events:
       type: sequence
       label: 'Events'

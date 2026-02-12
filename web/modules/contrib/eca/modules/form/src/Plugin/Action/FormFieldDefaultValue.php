@@ -5,14 +5,20 @@ namespace Drupal\eca_form\Plugin\Action;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Datetime\Element\DateElementBase;
+use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\Button;
+use Drupal\Core\Render\Element\Checkboxes;
+use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\eca\Attribute\EcaAction;
 use Drupal\eca\Plugin\DataType\DataTransferObject;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Set default value of a form field.
@@ -29,6 +35,22 @@ use Drupal\eca\Plugin\DataType\DataTransferObject;
 class FormFieldDefaultValue extends FormFieldActionBase {
 
   /**
+   * The element info manager.
+   *
+   * @var \Drupal\Core\Render\ElementInfoManagerInterface
+   */
+  protected ElementInfoManagerInterface $elementInfoManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->elementInfoManager = $container->get('plugin.manager.element_info');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function doExecute(): void {
@@ -37,11 +59,57 @@ class FormFieldDefaultValue extends FormFieldActionBase {
       $value = $this->configuration['value'];
       $default_value_key = '#default_value';
 
+      // Normalizing the element type.
       switch ($element['#type'] ?? NULL) {
 
         case 'date':
         case 'datelist':
         case 'datetime':
+          $type = 'date';
+          break;
+
+        case 'entity_autocomplete':
+          $type = 'entity_autocomplete';
+          break;
+
+        case 'checkboxes':
+          $type = 'checkboxes';
+          break;
+
+        case 'button':
+        case 'hidden':
+        case 'submit':
+          $type = 'button';
+          break;
+
+        default:
+          $type = $element['#type'] ?? NULL;
+          if ($type !== NULL) {
+            // Determine if the given type is a sub-type of one of the core
+            // types.
+            $definition = $this->elementInfoManager->getDefinition($type) ?? [];
+            $plugin_class = $definition['class'] ?? NULL;
+            if ($plugin_class !== NULL) {
+              if (is_subclass_of($plugin_class, DateElementBase::class)) {
+                $type = 'date';
+              }
+              elseif (is_subclass_of($plugin_class, EntityAutocomplete::class)) {
+                $type = 'entity_autocomplete';
+              }
+              elseif (is_subclass_of($plugin_class, Checkboxes::class)) {
+                $type = 'checkboxes';
+              }
+              elseif (is_subclass_of($plugin_class, Button::class)) {
+                $type = 'button';
+              }
+            }
+          }
+
+      }
+
+      switch ($type) {
+
+        case 'date':
           $value = (string) $this->tokenService->replaceClear($value);
           $this->filterFormFieldValue($value);
           if (mb_substr($value, 0, 1) === '@') {
@@ -101,9 +169,7 @@ class FormFieldDefaultValue extends FormFieldActionBase {
           }
           break;
 
-        case 'submit':
         case 'button':
-        case 'hidden':
           $default_value_key = '#value';
 
         default:

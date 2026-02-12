@@ -32,6 +32,7 @@ use Symfony\Contracts\EventDispatcher\Event;
     'id' => 'id',
     'uuid' => 'uuid',
     'status' => 'status',
+    'template' => 'template',
     'weight' => 'weight',
   ],
   handlers: [
@@ -47,6 +48,7 @@ use Symfony\Contracts\EventDispatcher\Event;
     'uuid',
     'status',
     'weight',
+    'template',
     'events',
     'conditions',
     'gateways',
@@ -133,6 +135,16 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
    */
   public function label(): string {
     return $this->getThirdPartySetting('modeler_api', 'label', 'undefined');
+  }
+
+  /**
+   * Determines if the current model is a template or not.
+   *
+   * @return bool
+   *   TRUE, if the model is a template, FALSE otherwise.
+   */
+  public function isTemplate(): bool {
+    return (bool) $this->get('template');
   }
 
   /**
