@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 15.0.0 (Heatmaps Nativos + Tracking Automation — Fases 1-5 Implementadas)
+**Versión:** 17.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
 
 ---
 
@@ -47,13 +47,15 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
 - **Theming**: Personalización visual por Tenant
 - **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorías, Template Registry SSoT v5.0, Feature Flags, IA Asistente integrada, Template Marketplace, Multi-Page Editor, SEO Assistant, Responsive Preview 8 viewports)
-- **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 módulos, Sprint AC6-2 ✅):
-  - `jaraba_agroconecta_core` ✅: 20 Content Entities, 6 Controllers, 7 Services, 15 Forms
+- **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 módulos, Copilots ✅):
+  - `jaraba_agroconecta_core` ✅: 20 Content Entities, 6 Controllers, 17 Services, 15 Forms
     - Fases 1-3: Commerce Core + Orders + Producer/Customer Portal
     - Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)
     - Sprint AC6-2: Partner Document Hub B2B (magic link auth, 17 API endpoints, audit log)
+    - Fase 9: Producer Copilot (DemandForecasterService, MarketSpyService, CopilotConversationInterface)
+    - Fase 10: Sales Agent (CrossSellEngine, CartRecoveryService, WhatsAppApiService, SalesAgentService)
   - `jaraba_agroconecta_traceability` 📋: Trazabilidad hash-anchoring, QR dinámico, certificados
-  - `jaraba_agroconecta_ai` 📋: Producer Copilot + Sales Agent (RAG Qdrant)
+  - `jaraba_agroconecta_ai` ✅: Producer Copilot + Sales Agent completados en jaraba_agroconecta_core + jaraba_ai_agents (SalesAgent, MerchantCopilotAgent)
 - **ServiciosConecta** ⭐: Marketplace de servicios profesionales (1 módulo, Fase 1 ✅):
   - `jaraba_servicios_conecta` ✅: 5 Content Entities, 3 Controllers, 4 Services, 2 Taxonomías
     - Fase 1: Marketplace + Provider Portal + Booking Engine
@@ -106,7 +108,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Testing Enhancement** ⭐: k6 + BackstopJS + CI coverage (✅ Completado):
   - `tests/performance/load_test.js`: smoke/load/stress scenarios, p95 < 500ms
 - **Marketing AI Stack** ⭐: 9 módulos nativos al 100% (✅ Clase Mundial):
-  - `jaraba_crm`: CRM Pipeline completo — 5 Content Entities (Company, Contact, Opportunity, Activity, PipelineStage), CrmApiController (22 endpoints), CrmForecastingService, PipelineStageService, PipelineKanbanController. 10 unit tests
+  - `jaraba_crm`: CRM Pipeline completo + B2B Sales Flow — 5 Content Entities (Company, Contact, Opportunity +5 BANT fields, Activity, PipelineStage), CrmApiController (24 endpoints), CrmForecastingService, PipelineStageService (8 etapas B2B: Lead→MQL→SQL→Demo→Proposal→Negotiation→Won→Lost), SalesPlaybookService (match expression stage+BANT→next action), PipelineKanbanController. BANT qualification (Budget/Authority/Need/Timeline, score 0-4 computado en preSave). Directriz #20 YAML allowed values. 10 unit tests
   - `jaraba_email`: Email Marketing AI — 5 Content Entities (EmailCampaign, EmailList, EmailSequence, EmailTemplate, EmailSequenceStep), EmailApiController (17 endpoints), EmailWebhookController (SendGrid HMAC), SendGridClientService, SequenceManagerService, EmailAIService. 24 plantillas MJML. 12 unit tests
   - `jaraba_ab_testing`: A/B Testing Engine — 4 Content Entities (Experiment, ExperimentVariant, ExperimentExposure, ExperimentResult), ABTestingApiController, ExposureTrackingService, ResultCalculationService, StatisticalEngineService, VariantAssignmentService, ExperimentOrchestratorService (auto-winner batch c/6h). hook_cron auto-winner + hook_mail notificaciones. 17 unit tests
   - `jaraba_pixels`: Pixel Manager CAPI — 4 Content Entities (TrackingPixel, TrackingEvent, ConsentRecord, PixelCredential), PixelDispatcherService, ConsentManagementService, CredentialManagerService, RedisQueueService, BatchProcessorService, PixelHealthCheckService (monitoreo proactivo 48h threshold). hook_mail alertas health. 11 unit tests
@@ -138,6 +140,46 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - **WCAG 2.1 AA**: focus-visible, prefers-reduced-motion, keyboard navigation, ARIA completo en todos los templates
   - **Patrón**: Hooks nativos (NO ECA YAML), anti-recursión via evidence JSON, State API para rate limiting cron
   - **Total**: 115 archivos, 8 Content Entities, 16 Services, 20 API endpoints, 5 Twig templates, 4 SCSS, 4 JS
+- **AI Agents Elevación Clase Mundial (F11)** ⭐: Brand Voice Training + Prompt A/B + MultiModal (✅ Completado):
+  - `jaraba_ai_agents` (extendido): +3 Services (BrandVoiceTrainerService, PromptExperimentService, MultiModalBridgeService), +3 Controllers (BrandVoiceTrainerApiController, PromptExperimentApiController, MultiModalApiController), +8 rutas API, +1 permiso
+  - BrandVoiceTrainerService: Qdrant collection `jaraba_brand_voice` (1536 dims), feedback loop (approve/reject/edit), alineación coseno, refinamiento LLM
+  - PromptExperimentService: experiment_type='prompt_variant', integrado con jaraba_ab_testing (StatisticalEngineService + QualityEvaluatorService auto-conversion score>=0.7)
+  - MultiModal Preparation: PHP interfaces (MultiModalInputInterface, MultiModalOutputInterface), exception custom, bridge stub para futuro Whisper/ElevenLabs/DALL-E
+- **Scaling Infrastructure (F10)** ⭐: Backup per-tenant + k6 + Prometheus (✅ Completado):
+  - `scripts/restore_tenant.sh`: 4 comandos (backup/restore/list/tables), auto-descubre 159+ tablas con tenant_id via INFORMATION_SCHEMA
+  - `tests/performance/multi_tenant_load_test.js`: k6, 4 escenarios, 7 custom metrics, tenant isolation check, breakpoint 100 VUs
+  - `monitoring/prometheus/rules/scaling_alerts.yml`: 10 alert rules + 5 recording rules para 3 fases escalado horizontal
+  - `docs/arquitectura/scaling-horizontal-guide.md`: 3 fases (Single Server ≤50 → Separated DB ≤200 → Load Balanced 1000+)
+- **Lenis Integration Premium (F12)** ⭐: Smooth scroll landing pages (✅ Completado):
+  - Lenis v1.3.17 CDN (jsDelivr), `lenis-scroll.js` (Drupal.behaviors, once(), prefers-reduced-motion, admin exclusion)
+  - Attach: homepage template + hook_preprocess_html landing pages verticales
+- **Insights Hub** ⭐: Monitoreo técnico unificado (✅ Nuevo módulo):
+  - `jaraba_insights_hub` ✅: 6 Content Entities (SearchConsoleConnection, SearchConsoleData, WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident), 6 Services, 6 Controllers, 1 Form
+    - Search Console: OAuth2 + API sync diario
+    - Core Web Vitals: RUM tracker JS + WebVitalsAggregatorService
+    - Error Tracking: JS + PHP error handlers + deduplicación por hash
+    - Uptime Monitor: Health endpoints + alertas email
+    - Dashboard: /insights con 4 tabs (SEO | Performance | Errors | Uptime)
+    - Frontend: Zero-Region page template, SCSS BEM + var(--ej-*), JS Canvas dashboard
+- **Legal Knowledge** ⭐: Base normativa RAG para emprendedores (✅ Nuevo módulo):
+  - `jaraba_legal_knowledge` ✅: 4 Content Entities (LegalNorm, LegalChunk, LegalQueryLog, NormChangeAlert), 10 Services, 3 Controllers, 2 Forms, 2 QueueWorkers
+    - API BOE: BoeApiClient + LegalIngestionService pipeline
+    - RAG Pipeline: LegalRagService (query → Qdrant → Claude → citas BOE)
+    - Chunking: LegalChunkingService (~500 tokens por artículo/sección)
+    - Embeddings: LegalEmbeddingService (OpenAI text-embedding-3-small)
+    - Alertas: LegalAlertService + NormChangeAlert entity
+    - Calculadoras: TaxCalculatorService (IRPF/IVA)
+    - Frontend: /legal + /legal/calculadoras, Zero-Region page template
+- **Funding Intelligence** ⭐: Motor de subvenciones con matching IA (✅ Nuevo módulo):
+  - `jaraba_funding` ✅: 4 Content Entities (FundingCall, FundingSubscription, FundingMatch, FundingAlert), 10 Services, 2 Controllers, 2 QueueWorkers
+    - API Clients: BdnsApiClient + BojaApiClient
+    - Matching IA: FundingMatchingEngine (scoring 5 criterios ponderados 0-100)
+    - Eligibility: FundingEligibilityCalculator
+    - Copilot: FundingCopilotService (RAG + intenciones)
+    - Alertas: FundingAlertService + FundingNotificationDispatcher
+    - Cache: FundingCacheService (calls 30min, matches 5min, stats 15min)
+    - BD Optimizada: 12 índices, particionamiento HASH(tenant_id) + RANGE(created)
+    - Frontend: /funding + /funding/copilot, Zero-Region page template, calendario
 
 ### 1.5 Idioma de Documentación
 - **Documentación**: Español
@@ -165,7 +207,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 | **Twig** | Motor de plantillas Drupal |
 | **CSS/SCSS** | Estilos con variables dinámicas por sede |
 | **JavaScript (ES6+)** | Interactividad y agentes IA |
-| **Tema personalizado** | `agroconecta_theme` con sistema de sedes |
+| **Tema personalizado** | `ecosistema_jaraba_theme` con 70+ opciones UI, Lenis smooth scroll (F12) |
 
 #### 2.2.1 Flujo de Trabajo SCSS
 
@@ -207,7 +249,7 @@ npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
 > El proyecto implementa el patrón **"Federated Design Tokens"** para SCSS:
 > - **SSOT**: `ecosistema_jaraba_core/scss/_variables.scss` + `_injectable.scss`
 > - **Módulos satélite**: Solo consumen CSS Custom Properties `var(--ej-*)`
-> - **14 módulos con package.json**: Compilación estandarizada (core, agroconecta, candidate, comercio, credentials, foc, i18n, interactive, page_builder, self_discovery, servicios, site_builder, social, tenant_knowledge)
+> - **17 módulos con package.json**: Compilación estandarizada (core, agroconecta, candidate, comercio, credentials, foc, funding, i18n, insights_hub, interactive, legal_knowledge, page_builder, self_discovery, servicios, site_builder, social, tenant_knowledge)
 > - **Documento maestro**: [docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md](./arquitectura/2026-02-05_arquitectura_theming_saas_master.md)
 
 #### 2.2.2 Plantillas Twig Limpias (Sin Regiones)
@@ -231,6 +273,9 @@ npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
 | `page--ads.html.twig` | `/ads` | Dashboard campañas publicitarias full-width |
 | `page--social.html.twig` | `/social` | Dashboard social media full-width |
 | `page--pixels.html.twig` | `/pixels` | Dashboard gestión píxeles full-width |
+| `page--insights.html.twig` | `/insights` | Dashboard Insights Hub full-width |
+| `page--legal.html.twig` | `/legal` | Dashboard Legal Knowledge full-width |
+| `page--funding.html.twig` | `/funding` | Dashboard Funding Intelligence full-width |
 
 **Cuándo usar:**
 - ✅ Landings de marketing con secciones hero, features, CTA

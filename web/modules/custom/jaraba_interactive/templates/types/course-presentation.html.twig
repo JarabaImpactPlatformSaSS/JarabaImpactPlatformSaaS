@@ -1,0 +1,100 @@
+{#
+ # Template para presentación interactiva con slides.
+ #
+ # Estructura: Visor de slides con navegación, indicadores de progreso
+ # y quizzes embebidos opcionales por slide.
+ #
+ # Variables:
+ # - slides: Array de slides con layout, contenido y quiz opcional
+ # - settings: Configuración de la presentación
+ #}
+
+<div class="course-presentation"
+     data-slides="{{ slides|json_encode }}"
+     data-settings="{{ settings|json_encode }}">
+
+  {# Contenedor principal de la slide activa #}
+  <div class="course-presentation__stage">
+    {% for slide in slides %}
+      <div class="course-presentation__slide {{ loop.first ? 'is-active' : '' }}"
+           data-slide-id="{{ slide.id }}"
+           data-slide-index="{{ loop.index0 }}"
+           data-layout="{{ slide.layout|default('full') }}"
+           {% if slide.required|default(false) %}data-required="true"{% endif %}>
+
+        <div class="course-presentation__slide-content course-presentation__slide-content--{{ slide.layout|default('full') }}">
+          {% if slide.content.text is defined and slide.content.text %}
+            <div class="course-presentation__text">{{ slide.content.text }}</div>
+          {% endif %}
+
+          {% if slide.content.image_url is defined and slide.content.image_url %}
+            <div class="course-presentation__media">
+              <img src="{{ slide.content.image_url }}" alt="{{ slide.title }}" loading="lazy">
+            </div>
+          {% endif %}
+
+          {% if slide.content.video_url is defined and slide.content.video_url %}
+            <div class="course-presentation__media">
+              <video src="{{ slide.content.video_url }}" controls preload="metadata"></video>
+            </div>
+          {% endif %}
+
+          {% if slide.content.code is defined and slide.content.code %}
+            <div class="course-presentation__code">
+              <pre><code class="language-{{ slide.content.code_language|default('plaintext') }}">{{ slide.content.code }}</code></pre>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Quiz embebido en la slide #}
+        {% if slide.quiz is defined and slide.quiz %}
+          <div class="course-presentation__quiz" data-quiz="{{ slide.quiz|json_encode }}">
+            <p class="course-presentation__quiz-question">{{ slide.quiz.question }}</p>
+            <div class="course-presentation__quiz-options">
+              {% for option in slide.quiz.options %}
+                <label class="course-presentation__quiz-option">
+                  <input type="radio"
+                         name="quiz-{{ slide.id }}"
+                         value="{{ option.id }}"
+                         class="course-presentation__quiz-input">
+                  <span class="course-presentation__quiz-label">{{ option.text }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Barra de navegación inferior #}
+  <div class="course-presentation__navigation">
+    <button class="course-presentation__nav-btn course-presentation__nav-btn--prev" disabled aria-label="{% trans %}Anterior{% endtrans %}">
+      {{ jaraba_icon('ui/chevron-left', 'outline') }}
+      <span>{% trans %}Anterior{% endtrans %}</span>
+    </button>
+
+    {# Indicadores de progreso (dots) #}
+    <div class="course-presentation__progress-dots">
+      {% for slide in slides %}
+        <button class="course-presentation__dot {{ loop.first ? 'is-active' : '' }}"
+                data-slide="{{ loop.index0 }}"
+                aria-label="{% trans %}Slide{% endtrans %} {{ loop.index }}">
+        </button>
+      {% endfor %}
+    </div>
+
+    {% if settings.show_slide_numbers|default(true) %}
+      <span class="course-presentation__counter">
+        <span class="course-presentation__current">1</span> / {{ slides|length }}
+      </span>
+    {% endif %}
+
+    <button class="course-presentation__nav-btn course-presentation__nav-btn--next" aria-label="{% trans %}Siguiente{% endtrans %}">
+      <span>{% trans %}Siguiente{% endtrans %}</span>
+      {{ jaraba_icon('ui/chevron-right', 'outline') }}
+    </button>
+  </div>
+
+</div>

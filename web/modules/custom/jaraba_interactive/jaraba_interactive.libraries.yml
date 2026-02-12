@@ -17,7 +17,14 @@ editor:
     theme:
       css/editor.css: {}
   js:
-    js/editor.js: {}
+    js/editor/content-editor.js: {}
+    js/editor/preview-engine.js: {}
+    js/editor/type-editors/question-set-editor.js: {}
+    js/editor/type-editors/interactive-video-editor.js: {}
+    js/editor/type-editors/course-presentation-editor.js: {}
+    js/editor/type-editors/branching-scenario-editor.js: {}
+    js/editor/type-editors/drag-and-drop-editor.js: {}
+    js/editor/type-editors/essay-editor.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
@@ -47,3 +54,57 @@ engine-loader:
   dependencies:
     - core/drupal
     - core/drupalSettings
+
+# ============================================================================
+# Librerías JS por tipo de contenido interactivo (Sprint 3 — INT-001)
+# ============================================================================
+
+type-interactive-video:
+  version: 1.x
+  js:
+    js/types/interactive-video.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_interactive/player
+
+type-course-presentation:
+  version: 1.x
+  js:
+    js/types/course-presentation.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_interactive/player
+
+type-branching-scenario:
+  version: 1.x
+  js:
+    js/types/branching-scenario.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_interactive/player
+
+type-drag-and-drop:
+  version: 1.x
+  js:
+    js/types/drag-and-drop.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_interactive/player
+
+type-essay:
+  version: 1.x
+  js:
+    js/types/essay.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_interactive/player

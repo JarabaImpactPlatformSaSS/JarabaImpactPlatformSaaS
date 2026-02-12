@@ -17,3 +17,12 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
+
+  # Servicio de orquestacion de compra (TRN-001)
+  jaraba_training.purchase_service:
+    class: Drupal\jaraba_training\Service\PurchaseService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_training.ladder_service'
+      - '@logger.channel.default'

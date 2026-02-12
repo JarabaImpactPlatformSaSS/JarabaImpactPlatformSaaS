@@ -5,6 +5,7 @@
  *
  * Variables:
  * - participante: Entidad ProgramaParticipanteEi del usuario (o NULL).
+ * - is_admin: Boolean indicando si el usuario tiene permisos de gestion.
  *
  * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
  */
@@ -131,6 +132,64 @@
         <a href="/contacto" class="btn btn-primary">
           {% trans %}Solicitar Información{% endtrans %}
         </a>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === Seccion de Gestion (AND-001: slide-panel CRUD) === #}
+  {% if is_admin %}
+    <section class="andalucia-ei-admin" aria-label="{% trans %}Gestión de participantes{% endtrans %}">
+      <header class="admin-header">
+        <h2>{% trans %}Gestión de Participantes{% endtrans %}</h2>
+        <button type="button"
+                class="btn btn-primary"
+                data-slide-panel="participante-form"
+                data-slide-panel-url="/api/v1/andalucia-ei/participant/add"
+                data-slide-panel-title="{% trans %}Nuevo Participante{% endtrans %}">
+          + {% trans %}Añadir Participante{% endtrans %}
+        </button>
+      </header>
+
+      {# Filtros rapidos #}
+      <div class="admin-filters">
+        <select class="filter-fase" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
+          <option value="">{% trans %}Todas las fases{% endtrans %}</option>
+          <option value="atencion">{% trans %}Atención{% endtrans %}</option>
+          <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
+        </select>
+        <select class="filter-provincia" data-filter="provincia" aria-label="{% trans %}Filtrar por provincia{% endtrans %}">
+          <option value="">{% trans %}Todas las provincias{% endtrans %}</option>
+          <option value="almeria">{% trans %}Almería{% endtrans %}</option>
+          <option value="cadiz">{% trans %}Cádiz{% endtrans %}</option>
+          <option value="cordoba">{% trans %}Córdoba{% endtrans %}</option>
+          <option value="granada">{% trans %}Granada{% endtrans %}</option>
+          <option value="huelva">{% trans %}Huelva{% endtrans %}</option>
+          <option value="jaen">{% trans %}Jaén{% endtrans %}</option>
+          <option value="malaga">{% trans %}Málaga{% endtrans %}</option>
+          <option value="sevilla">{% trans %}Sevilla{% endtrans %}</option>
+        </select>
+      </div>
+
+      {# Tabla de participantes (cargada via AJAX) #}
+      <div class="participants-table-wrapper"
+           data-participants-api="/api/v1/andalucia-ei/participants"
+           data-participants-edit-url="/api/v1/andalucia-ei/participant/{id}/edit">
+        <table class="participants-table">
+          <thead>
+            <tr>
+              <th>{% trans %}DNI/NIE{% endtrans %}</th>
+              <th>{% trans %}Colectivo{% endtrans %}</th>
+              <th>{% trans %}Fase{% endtrans %}</th>
+              <th>{% trans %}H. Orientación{% endtrans %}</th>
+              <th>{% trans %}H. Formación{% endtrans %}</th>
+              <th>{% trans %}Acciones{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody class="participants-body">
+            {# Filas cargadas via JS desde la API #}
+          </tbody>
+        </table>
+        <nav class="participants-pagination" aria-label="{% trans %}Paginación{% endtrans %}"></nav>
       </div>
     </section>
   {% endif %}

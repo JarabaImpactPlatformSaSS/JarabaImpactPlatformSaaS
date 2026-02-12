@@ -35,3 +35,29 @@ services:
       - '@jaraba_ai_agents.orchestrator'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_interactive'
+
+  # ============================================================================
+  # EVENT SUBSCRIBERS (Sprint 3 — Cierre Gaps INT-002)
+  # ============================================================================
+
+  # Suscriptor de completitud: dispara certificados, XP y progreso
+  jaraba_interactive.completion_subscriber:
+    class: Drupal\jaraba_interactive\EventSubscriber\CompletionSubscriber
+    arguments:
+      - '@jaraba_interactive.xapi_emitter'
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_interactive'
+    tags:
+      - { name: event_subscriber }
+
+  # Suscriptor xAPI: emite sentencias al visualizar contenido
+  jaraba_interactive.xapi_subscriber:
+    class: Drupal\jaraba_interactive\EventSubscriber\XapiSubscriber
+    arguments:
+      - '@jaraba_interactive.xapi_emitter'
+      - '@plugin.manager.interactive_type'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_interactive'
+    tags:
+      - { name: event_subscriber }

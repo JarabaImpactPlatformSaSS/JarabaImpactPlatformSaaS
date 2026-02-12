@@ -1,0 +1,99 @@
+{#
+ # Template del editor de contenido interactivo (zero-region).
+ #
+ # Estructura: Layout limpio sin regiones de Drupal para el editor
+ # visual de contenido interactivo. Incluye panel lateral de herramientas,
+ # area de edicion y preview en iframe.
+ #
+ # Variables:
+ # - content: Datos basicos del contenido (id, title, content_type, status)
+ #}
+
+<div class="interactive-editor" id="interactive-editor" data-content-id="{{ content.id }}">
+
+  {# Barra superior del editor #}
+  <header class="interactive-editor__header">
+    <div class="interactive-editor__header-left">
+      <a href="/interactive" class="interactive-editor__back" aria-label="{% trans %}Volver al dashboard{% endtrans %}">
+        {{ jaraba_icon('ui/arrow-left', 'outline') }}
+      </a>
+      <input type="text"
+             class="interactive-editor__title-input"
+             value="{{ content.title }}"
+             placeholder="{% trans %}Título del contenido{% endtrans %}"
+             aria-label="{% trans %}Título{% endtrans %}">
+      <span class="interactive-editor__type-badge">{{ content.content_type }}</span>
+    </div>
+
+    <div class="interactive-editor__header-right">
+      <select class="interactive-editor__difficulty-select" aria-label="{% trans %}Dificultad{% endtrans %}">
+        <option value="beginner" {{ content.difficulty == 'beginner' ? 'selected' : '' }}>{% trans %}Principiante{% endtrans %}</option>
+        <option value="intermediate" {{ content.difficulty == 'intermediate' ? 'selected' : '' }}>{% trans %}Intermedio{% endtrans %}</option>
+        <option value="advanced" {{ content.difficulty == 'advanced' ? 'selected' : '' }}>{% trans %}Avanzado{% endtrans %}</option>
+      </select>
+
+      <button class="interactive-editor__preview-btn" aria-label="{% trans %}Vista previa{% endtrans %}">
+        {{ jaraba_icon('ui/eye', 'outline') }}
+        <span>{% trans %}Preview{% endtrans %}</span>
+      </button>
+
+      <button class="interactive-editor__save-btn" aria-label="{% trans %}Guardar{% endtrans %}">
+        {{ jaraba_icon('ui/save', 'outline') }}
+        <span>{% trans %}Guardar{% endtrans %}</span>
+      </button>
+
+      <button class="interactive-editor__publish-btn {{ content.status ? 'is-published' : '' }}" aria-label="{% trans %}Publicar{% endtrans %}">
+        {{ jaraba_icon('ui/globe', 'outline') }}
+        <span>{{ content.status ? '{% trans %}Publicado{% endtrans %}' : '{% trans %}Borrador{% endtrans %}' }}</span>
+      </button>
+    </div>
+  </header>
+
+  {# Cuerpo del editor: panel lateral + area de edicion #}
+  <div class="interactive-editor__body">
+
+    {# Panel lateral de herramientas #}
+    <aside class="interactive-editor__sidebar">
+      <div class="interactive-editor__sidebar-section">
+        <h3 class="interactive-editor__sidebar-title">{% trans %}Estructura{% endtrans %}</h3>
+        <div class="interactive-editor__tree" id="content-tree">
+          {# Arbol de contenido renderizado por JS #}
+        </div>
+      </div>
+
+      <div class="interactive-editor__sidebar-section">
+        <h3 class="interactive-editor__sidebar-title">{% trans %}Añadir{% endtrans %}</h3>
+        <div class="interactive-editor__add-buttons" id="add-buttons">
+          {# Botones de añadir renderizados por JS segun content_type #}
+        </div>
+      </div>
+
+      <div class="interactive-editor__sidebar-section">
+        <h3 class="interactive-editor__sidebar-title">{% trans %}Configuración{% endtrans %}</h3>
+        <div class="interactive-editor__settings-panel" id="settings-panel">
+          {# Panel de settings renderizado por JS #}
+        </div>
+      </div>
+    </aside>
+
+    {# Area principal de edicion #}
+    <main class="interactive-editor__main">
+      <div class="interactive-editor__canvas" id="editor-canvas">
+        {# Contenido editable renderizado por JS segun el sub-editor #}
+      </div>
+    </main>
+
+    {# Panel de preview (oculto por defecto) #}
+    <aside class="interactive-editor__preview-panel" id="preview-panel" style="display: none;">
+      <div class="interactive-editor__preview-header">
+        <h3>{% trans %}Vista previa{% endtrans %}</h3>
+        <button class="interactive-editor__preview-close" aria-label="{% trans %}Cerrar preview{% endtrans %}">
+          {{ jaraba_icon('ui/x', 'outline') }}
+        </button>
+      </div>
+      <iframe class="interactive-editor__preview-iframe" id="preview-iframe" src="about:blank"></iframe>
+    </aside>
+
+  </div>
+
+</div>

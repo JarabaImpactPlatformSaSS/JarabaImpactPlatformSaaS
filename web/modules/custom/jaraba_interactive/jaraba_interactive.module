@@ -50,6 +50,61 @@ function jaraba_interactive_theme(): array {
       ],
       'template' => 'interactive-question-set',
     ],
+    // =========================================================================
+    // Editor de contenido interactivo (Sprint 3 — INT-003)
+    // =========================================================================
+    'interactive_editor' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'interactive-editor',
+    ],
+    // =========================================================================
+    // Templates de tipos interactivos (Sprint 3 — INT-001)
+    // =========================================================================
+    'interactive_video' => [
+      'variables' => [
+        'video_url' => '',
+        'poster_url' => '',
+        'chapters' => [],
+        'checkpoints' => [],
+        'settings' => [],
+      ],
+      'template' => 'types/interactive-video',
+    ],
+    'interactive_course_presentation' => [
+      'variables' => [
+        'slides' => [],
+        'settings' => [],
+      ],
+      'template' => 'types/course-presentation',
+    ],
+    'interactive_branching_scenario' => [
+      'variables' => [
+        'start_node' => '',
+        'nodes' => [],
+        'settings' => [],
+      ],
+      'template' => 'types/branching-scenario',
+    ],
+    'interactive_drag_and_drop' => [
+      'variables' => [
+        'drop_zones' => [],
+        'draggables' => [],
+        'background_image' => '',
+        'settings' => [],
+      ],
+      'template' => 'types/drag-and-drop',
+    ],
+    'interactive_essay' => [
+      'variables' => [
+        'prompt' => '',
+        'instructions' => '',
+        'rubric' => [],
+        'settings' => [],
+      ],
+      'template' => 'types/essay',
+    ],
   ];
 }
 
@@ -69,6 +124,7 @@ function jaraba_interactive_preprocess_html(array &$variables): void {
   $frontend_routes = [
     'jaraba_interactive.dashboard',
     'jaraba_interactive.player',
+    'jaraba_interactive.editor',
   ];
 
   if (in_array($route, $frontend_routes, TRUE)) {
@@ -85,5 +141,11 @@ function jaraba_interactive_preprocess_html(array &$variables): void {
   // Ruta específica del dashboard.
   if ($route === 'jaraba_interactive.dashboard') {
     $variables['attributes']['class'][] = 'page-interactive-dashboard';
+  }
+
+  // Ruta específica del editor.
+  if ($route === 'jaraba_interactive.editor') {
+    $variables['attributes']['class'][] = 'page-interactive-editor';
+    $variables['attributes']['class'][] = 'zero-region-layout';
   }
 }

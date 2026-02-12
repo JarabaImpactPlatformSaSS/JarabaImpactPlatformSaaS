@@ -144,3 +144,12 @@ jaraba_training.api.recommend:
   methods: [GET]
   requirements:
     _user_is_logged_in: 'TRUE'
+
+# Endpoint de compra (TRN-001)
+jaraba_training.api.purchase:
+  path: '/api/v1/training/purchase'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::purchase'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'

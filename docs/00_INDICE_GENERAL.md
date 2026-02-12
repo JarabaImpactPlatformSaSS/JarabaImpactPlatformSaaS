@@ -4,7 +4,27 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-12 23:59
-**Versión:** 23.0.0 (Heatmaps Nativos + Tracking Automation — Fases 1-5 Implementadas)
+**Versión:** 25.0.0 (Módulos 20260201: Insights Hub + Legal Knowledge + Funding Intelligence + AgroConecta Copilots)
+
+> **📦 MÓDULOS 20260201 — INSIGHTS HUB + LEGAL KNOWLEDGE + FUNDING + AGROCONECTA COPILOTS** (2026-02-12)
+> - **3 módulos nuevos**: `jaraba_insights_hub` (52 archivos), `jaraba_legal_knowledge` (54 archivos), `jaraba_funding` (65 archivos) — 171 archivos totales
+> - **jaraba_insights_hub** (Spec 179a): 6 Content Entities (SearchConsoleConnection, SearchConsoleData, WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident), 6 Services, 6 Controllers, JS trackers (web-vitals + error), Dashboard /insights 4 tabs, SCSS BEM, hook_cron (uptime + search_console + web_vitals)
+> - **jaraba_legal_knowledge** (Specs 178/178b): 4 Content Entities (LegalNorm, LegalChunk, LegalQueryLog, NormChangeAlert), Pipeline BOE→chunking→embeddings→Qdrant, LegalRagService (query→search→Claude→citas), TaxCalculatorService (IRPF/IVA), LegalAlertService, 2 QueueWorkers, Frontend /legal + /legal/calculadoras
+> - **jaraba_funding** (Specs 179/179b): 4 Content Entities (FundingCall, FundingSubscription, FundingMatch, FundingAlert), BdnsApiClient + BojaApiClient, FundingMatchingEngine (5 criterios scoring 0-100), FundingCopilotService (RAG), FundingCacheService, 12 índices BD + particionamiento, Frontend /funding + /funding/copilot
+> - **AgroConecta Copilots completados** (Docs 67-68): Fase 9 Producer Copilot (DemandForecasterService, MarketSpyService, CopilotConversationInterface/CopilotMessageInterface en ecosistema_jaraba_core). Fase 10 Sales Agent (CrossSellEngine, CartRecoveryService, WhatsAppApiService, SalesAgentService). SalesAgent + MerchantCopilotAgent en jaraba_ai_agents
+> - **Fase 0 Consolidación**: ConsentRecord unificado (jaraba_pixels canónico), AnalyticsService renombrado a PageBuilderTrackingService, SalesAgent creado en jaraba_ai_agents
+> - **3 page templates nuevos**: page--insights.html.twig, page--legal.html.twig, page--funding.html.twig
+> - **Aprendizaje**: [2026-02-12_insights_legal_funding_agroconecta_copilots.md](./tecnicos/aprendizajes/2026-02-12_insights_legal_funding_agroconecta_copilots.md)
+>
+
+> **🏆 PLAN CIERRE GAPS CLASE MUNDIAL — 12/12 FASES COMPLETADAS** (2026-02-12)
+> - **F9 — B2B Sales Flow (Doc 186)**: Pipeline 8 etapas B2B (Lead→MQL→SQL→Demo→Proposal→Negotiation→Won→Lost). BANT qualification (Budget/Authority/Need/Timeline) con score 0-4 computado en preSave(). SalesPlaybookService (match expression stage+BANT → next action). 2 nuevos API endpoints (playbook GET, bant PUT). Directriz #20 YAML-based allowed values. Update hook 10001 para migración 5 campos BANT
+> - **F10 — Scaling Infrastructure (Doc 187)**: `scripts/restore_tenant.sh` (17KB, 4 comandos: backup/restore/list/tables, auto-descubre 159+ tablas con tenant_id via INFORMATION_SCHEMA). `tests/performance/multi_tenant_load_test.js` (k6, 4 escenarios, 7 custom metrics, breakpoint 100 VUs, tenant isolation check). `monitoring/prometheus/rules/scaling_alerts.yml` (10 alert rules + 5 recording rules, 3 fases escalado). `docs/arquitectura/scaling-horizontal-guide.md` (13KB, 3 fases: Single Server ≤50 → Separated DB ≤200 → Load Balanced 1000+)
+> - **F11 — Elevacion IA Clase Mundial**: BrandVoiceTrainerService (Qdrant collection `jaraba_brand_voice` 1536 dims, feedback loop approve/reject/edit, LLM refinement). PromptExperimentService (A/B prompts integrado con jaraba_ab_testing, experiment_type='prompt_variant', QualityEvaluator auto-conversion). MultiModal Preparation (2 interfaces PHP + bridge stub + custom exception). 3 API controllers, 8 rutas, 1 permiso nuevo
+> - **F12 — Lenis Integration Premium**: Lenis v1.3.17 CDN (jsDelivr, patrón como Alpine.js). `lenis-scroll.js` (Drupal.behaviors + once(), prefers-reduced-motion, admin exclusion, smoothTouch:false). Attach: homepage template + hook_preprocess_html landing pages verticales
+> - **4 reglas nuevas**: BANT-001 (computed field preSave), SCALING-001 (INFORMATION_SCHEMA auto-discovery), BRAND-VOICE-001 (feedback loop Qdrant), LENIS-001 (CDN + admin exclusion)
+> - **Aprendizaje**: [2026-02-12_clase_mundial_f9_f12_gaps_closure.md](./tecnicos/aprendizajes/2026-02-12_clase_mundial_f9_f12_gaps_closure.md)
+>
 
 > **🔥 HEATMAPS NATIVOS + TRACKING AUTOMATION — FASES 1-5 100%** (2026-02-12)
 > - **Módulo `jaraba_heatmap` completo**: install (4 tablas), QueueWorker plugin, HeatmapScreenshotService (wkhtmltoimage), Dashboard Analytics (Canvas 2D + filtros), SCSS responsive, 38 unit tests
@@ -402,9 +422,9 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **LEER AL INICIO** | 2026-02-12 (v14.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v14.0** - Copilot v2 Gaps Closure (BD triggers, SSE, multi-provider, milestones, metrics) | 2026-02-12 |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-12 (v22.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **LEER AL INICIO** | 2026-02-12 (v16.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v16.0** - Plan Cierre Gaps Clase Mundial 12/12 Fases (F9 B2B + F10 Scaling + F11 IA + F12 Lenis) | 2026-02-12 |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-12 (v24.0.0) |
 
 ---
 
@@ -535,6 +555,10 @@
 | [2026-02-12_plan_cierre_gaps_avatar_empleabilidad.md](./implementacion/2026-02-12_plan_cierre_gaps_avatar_empleabilidad.md) | 🎯 **Avatar + Empleabilidad Gaps** ⭐ - Cierre gaps flujo empleabilidad end-to-end, AvatarDetectionService, EmployabilityDiagnostic, CopilotAgent 6 modos | 2026-02-12 |
 | [2026-02-12_Plan_Cierre_Gaps_Copiloto_v2_Specs_20260121.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Copiloto_v2_Specs_20260121.md) | 🤖 **Copilot v2 Gaps Closure** ⭐ - 8 fases: 5 Access Handlers + 5 ListBuilders, 22 API endpoints REST (Hypothesis CRUD+ICE, Experiment Lifecycle, BMC Validation semáforos, Entrepreneur CRUD+DIME, Session History, Knowledge Search), 14 servicios completados, 3 páginas frontend (BMC Dashboard, Hypothesis Manager, Experiment Lifecycle), 4 suites unit tests, Impact Points gamification | 2026-02-12 |
 | [2026-02-12_Plan_Implementacion_Fases_1_5_Heatmaps_Tracking.md](./implementacion/2026-02-12_Plan_Implementacion_Fases_1_5_Heatmaps_Tracking.md) | 🔥 **Heatmaps Nativos + Tracking Automation** ⭐ - 5 fases: Heatmap Core (install+QueueWorker+screenshots), hook_cron automation (3 funciones), Dashboard Frontend (Canvas 2D), Tracking cron cross-módulo (auto-winner+health check), Services+Email (orchestrator+hook_mail). 53 tests, 250 assertions | 2026-02-12 |
+| [2026-02-12_F9_B2B_Sales_Flow_Doc186_Implementacion.md](./implementacion/2026-02-12_F9_B2B_Sales_Flow_Doc186_Implementacion.md) | 🏢 **F9 — B2B Sales Flow (Doc 186)** ⭐ — Pipeline 8 etapas B2B, BANT qualification (score 0-4 preSave), SalesPlaybookService (match expression), 2 API endpoints, Directriz #20 YAML allowed values | 2026-02-12 |
+| [2026-02-12_F10_Scaling_Infrastructure_Doc187_Implementacion.md](./implementacion/2026-02-12_F10_Scaling_Infrastructure_Doc187_Implementacion.md) | 🏗️ **F10 — Scaling Infrastructure (Doc 187)** ⭐ — Per-tenant backup/restore (auto-discovery 159+ tablas), k6 multi-tenant tests (4 escenarios, tenant isolation), Prometheus scaling alerts (10+5 rules), guía escalado horizontal 3 fases | 2026-02-12 |
+| [2026-02-12_F11_Elevacion_IA_Clase_Mundial_Implementacion.md](./implementacion/2026-02-12_F11_Elevacion_IA_Clase_Mundial_Implementacion.md) | 🧠 **F11 — Elevacion IA Clase Mundial** ⭐ — BrandVoiceTrainerService (Qdrant feedback loop), PromptExperimentService (A/B testing prompts), MultiModal Preparation (2 interfaces + bridge stub), 3 controllers, 8 rutas API | 2026-02-12 |
+| [2026-02-12_F12_Lenis_Integration_Premium_Implementacion.md](./implementacion/2026-02-12_F12_Lenis_Integration_Premium_Implementacion.md) | 🎨 **F12 — Lenis Integration Premium** ⭐ — Smooth scroll Lenis v1.3.17 CDN, Drupal.behaviors + once(), prefers-reduced-motion, admin exclusion, homepage + landing pages verticales | 2026-02-12 |
 
 ### 6.2 Bloques de Implementación Plan Maestro v3.0 ⭐
 
@@ -551,7 +575,7 @@
 
 **Total Bloques:** 7 (~4,500h en 24 meses)
 
-**Total documentos implementación:** 29
+**Total documentos implementación:** 33
 
 ---
 
@@ -609,7 +633,7 @@
 | 58 | Admin Panel | 1 | ⬜ Fase 6 |
 | **59** | **Notifications System** | 1 | 🔶 **Fase 4 planificada** |
 | 60-61 | Mobile App, API Guide | 2 | ⬜ Fase 9 |
-| **67-68** | **AI Agents: Producer Copilot, Sales Agent** ⭐ | 2 | ⬜ Fase 8 |
+| **67-68** | **AI Agents: Producer Copilot, Sales Agent** ⭐ | 2 | ✅ Completado (Fases 9-10) |
 | 80-82 | Traceability System, Dynamic QR, Partner Hub | 3 | ⬜ Fase 7 |
 
 **Plan de Implementación:** [20260208-Plan_Implementacion_AgroConecta_v1.md](./implementacion/20260208-Plan_Implementacion_AgroConecta_v1.md) ⭐
@@ -719,8 +743,11 @@
 
 | [2026-02-12_self_discovery_content_entities_services.md](./tecnicos/aprendizajes/2026-02-12_self_discovery_content_entities_services.md) | 🧠 **Self-Discovery Content Entities + Services** ⭐ — 2 Content Entities (InterestProfile RIASEC, StrengthAssessment VIA). 4 servicios dedicados con fallback user.data. Dual storage (entity + user.data). SelfDiscoveryContextService refactorizado (4 DI nullable). Copilot v2 injection (10o arg nullable + buildSystemPrompt). Infraestructura Lando (.lando/redis.conf, .env.example, setup-dev.sh, settings.local.php). Reglas ENTITY-SD-001, SERVICE-SD-001, COPILOT-SD-001, INFRA-SD-001 | 2026-02-12 |
 | [2026-02-12_copilot_v2_gaps_closure_db_streaming_metrics.md](./tecnicos/aprendizajes/2026-02-12_copilot_v2_gaps_closure_db_streaming_metrics.md) | 🤖 **Copilot v2 Gaps Closure — BD Triggers + SSE + Metrics** ⭐ — 7 fases: triggers BD configurables (175 triggers, cache 1h, fallback const), multi-proveedor optimizado (Gemini Flash/Claude/GPT-4o), widget chat SSE (Alpine.js ReadableStream), milestones persistentes, métricas P50/P99 (State API). PHP 8.4 fixes: create()→store(), property redeclaration, Kernel→Unit. 64 tests, 184 assertions. Reglas COPILOT-DB-001, API-NAMING-001, KERNEL-TEST-001, SSE-001, MILESTONE-001, METRICS-001, PROVIDER-001 | 2026-02-12 |
+| [2026-02-12_clase_mundial_f9_f12_gaps_closure.md](./tecnicos/aprendizajes/2026-02-12_clase_mundial_f9_f12_gaps_closure.md) | 🏆 **Plan Clase Mundial F9-F12 Completion** ⭐ — 4 fases finales del plan 12/12: F9 B2B Sales Flow (BANT qualification score 0-4 preSave, SalesPlaybookService match expression, Directriz #20 YAML allowed values, pipeline 8 etapas, 2 API endpoints). F10 Scaling Infra (restore_tenant.sh auto-discovery INFORMATION_SCHEMA 159+ tablas, k6 multi-tenant 4 escenarios + tenant isolation, Prometheus 10+5 rules 3 fases escalado, guía horizontal). F11 IA Clase Mundial (BrandVoiceTrainer Qdrant feedback loop, PromptExperiment A/B integrado con jaraba_ab_testing, MultiModal interfaces + bridge stub). F12 Lenis Premium (CDN v1.3.17 patrón Alpine.js, Drupal.behaviors, prefers-reduced-motion, admin exclusion). Reglas BANT-001, SCALING-001, BRAND-VOICE-001, LENIS-001 | 2026-02-12 |
 
-**Total aprendizajes:** 69
+| [2026-02-12_insights_legal_funding_agroconecta_copilots.md](./tecnicos/aprendizajes/2026-02-12_insights_legal_funding_agroconecta_copilots.md) | 📦 **Módulos 20260201 — Insights Hub + Legal Knowledge + Funding + AgroConecta Copilots** ⭐ — 3 módulos nuevos (171 archivos: 52+54+65). Insights Hub (6 entities, Search Console OAuth, Web Vitals RUM, Error Tracking dedup, Uptime Monitor). Legal Knowledge (BOE pipeline, RAG citas, TaxCalculator IRPF/IVA, alertas normativas). Funding Intelligence (BDNS+BOJA APIs, matching 5 criterios scoring 0-100, copilot RAG, cache TTL, particionamiento BD). AgroConecta Copilots (DemandForecaster, MarketSpy, CrossSellEngine, CartRecovery, WhatsApp, SalesAgent + MerchantCopilotAgent en jaraba_ai_agents). Fase 0 consolidación (ConsentRecord, PageBuilderTrackingService, CopilotConversation/MessageInterface). 3 page templates. 17 módulos SCSS | 2026-02-12 |
+
+**Total aprendizajes:** 71
 
 ---
 
@@ -776,32 +803,33 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Total documentos técnicos** | 290+ (37 con prefijo 20260118 mapeados + GO_LIVE_RUNBOOK + SECURITY_PLAYBOOK + learning #69) |
-| **Documentos de implementación** | 29 |
+| **Total documentos técnicos** | 296+ (37 con prefijo 20260118 mapeados + GO_LIVE_RUNBOOK + SECURITY_PLAYBOOK + learning #70 + 4 impl F9-F12 + scaling guide) |
+| **Documentos de implementación** | 33 (29 base + 4 Clase Mundial F9-F12) |
 | **Bloques Plan Maestro v3** | 7 (A-G) |
 | **Documentos de planificación** | 15 |
-| **Documentos de arquitectura** | 26 |
+| **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 69 |
+| **Aprendizajes documentados** | 71 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
-| **Servicios IA implementados** | 4 nuevos (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown) |
+| **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
 | **Landing pages verticales** | 5 (empleo, talento, emprender, comercio, instituciones) |
 | **Plantillas disponibles** | 4 |
-| **Módulos custom** | 33 (9 Marketing AI + 10 Platform Services v3) |
-| **Módulos con package.json** | 14 (compilación Dart Sass estandarizada) |
+| **Módulos custom** | 36 (9 Marketing AI + 10 Platform Services v3 + 3 Módulos 20260201) |
+| **Módulos con package.json** | 17 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
-| **Page templates Twig** | 14 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion) |
+| **Page templates Twig** | 17 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding) |
 | **Bloques Page Builder** | 67 (45 base + 22 premium) |
 | **Docs Page Builder** | 20 (160-179) |
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
 | **Skills AI verticales** | 30 (7+7+6+5+5 por vertical) |
-| **Monitoring alertas** | 14 reglas Prometheus |
+| **Monitoring alertas** | 24 reglas Prometheus (14 base + 10 scaling F10) + 5 recording rules |
 | **Email templates MJML** | 24 transaccionales (auth, billing, marketplace, empleabilidad) |
 | **Stripe precios** | 40 (5 productos × 4 tiers × 2 intervalos) |
-| **Go-live scripts** | 3 (preflight, validation, rollback) |
+| **Go-live scripts** | 4 (preflight, validation, rollback + restore_tenant F10) |
 | **Security CI scans** | Daily (Trivy + ZAP + composer/npm audit) |
 | **PHPUnit tests ejecutados** | 789 (730 pass, 92.5%) |
+| **k6 load tests** | 4 escenarios multi-tenant (7 custom metrics, tenant isolation check) |
 | **Total horas roadmap** | ~4,500h + **775-970h** (Page Builder + Site Builder) |
 | **Timeline roadmap** | 24 meses + 14 sprints (7 meses Page Builder) |
 
@@ -843,6 +871,8 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-12 | **25.0.0** | 📦 **Módulos 20260201 — Insights Hub + Legal Knowledge + Funding + AgroConecta Copilots:** 3 módulos nuevos (171 archivos: jaraba_insights_hub 52, jaraba_legal_knowledge 54, jaraba_funding 65). Insights Hub (6 entities, Search Console, Web Vitals, Error Tracking, Uptime Monitor, dashboard /insights). Legal Knowledge (4 entities, BOE API + RAG pipeline + citas + TaxCalculator + alertas, /legal). Funding Intelligence (4 entities, BDNS+BOJA APIs, matching 5 criterios, copilot RAG, cache, BD optimizada, /funding). AgroConecta Copilots (Fases 9-10: DemandForecaster, MarketSpy, CrossSellEngine, CartRecovery, WhatsApp, SalesAgent). Fase 0 consolidación. 3 page templates nuevos. Aprendizaje #71. Directrices v17.0.0, Maestro v17.0.0. 71 aprendizajes |
+| 2026-02-12 | **24.0.0** | 🏆 **Plan Cierre Gaps Clase Mundial — 12/12 Fases Completadas:** F9 B2B Sales Flow (BANT qualification, pipeline 8 etapas, SalesPlaybookService, 2 API endpoints). F10 Scaling Infrastructure (restore_tenant.sh auto-discovery INFORMATION_SCHEMA, k6 multi-tenant 4 escenarios, Prometheus 10+5 reglas, scaling-horizontal-guide 3 fases). F11 IA Clase Mundial (BrandVoiceTrainerService Qdrant feedback loop, PromptExperimentService A/B testing, MultiModal interfaces+bridge). F12 Lenis Integration Premium (v1.3.17 CDN jsDelivr, Drupal.behaviors + once(), prefers-reduced-motion, admin exclusion, homepage + landing pages). 4 reglas nuevas (BANT-001, SCALING-001, BRAND-VOICE-001, LENIS-001). Aprendizaje #70. Madurez 5.0/5.0. Directrices v16.0.0, Maestro v16.0.0. 70 aprendizajes |
 | 2026-02-12 | **23.0.0** | 🔥 **Heatmaps Nativos + Tracking Automation — Fases 1-5 100%:** Módulo `jaraba_heatmap` completado (install 4 tablas, QueueWorker, HeatmapScreenshotService, Dashboard Analytics Canvas 2D, SCSS responsive). hook_cron automation (3 funciones independientes: agregación diaria, limpieza semanal, anomalías). Dashboard Frontend (HeatmapDashboardController + Twig + JS Canvas + SCSS). Tracking cron cross-módulo (jaraba_ab_testing auto-winner 6h, jaraba_pixels PixelHealthCheckService 48h). ExperimentOrchestratorService + hook_mail (ab_testing winner + pixel health alert). 53 tests, 250 assertions. 9 reglas (HEATMAP-001 a 005, TRACKING-001 a 004). Plan implementación + Aprendizaje #69. Directrices v15.0.0, Maestro v15.0.0. 69 aprendizajes |
 | 2026-02-12 | **20.0.0** | 🧠 **Self-Discovery Content Entities + Services — Specs 20260122-25 100%:** Cierre 14 gaps Docs 159-165. 2 Content Entities nuevas (InterestProfile RIASEC 6 scores + StrengthAssessment 24 fortalezas). 4 servicios dedicados (LifeWheelService, TimelineAnalysisService, RiasecService, StrengthAnalysisService) con fallback user.data. SelfDiscoveryContextService refactorizado (4 DI nullable). 2 forms Phase 2/3 (TimelinePhase2Form, TimelinePhase3Form). Copilot v2 context injection (10o arg nullable + buildSystemPrompt). Infraestructura Lando (.lando/redis.conf, .env.example, scripts/setup-dev.sh, settings.local.php completado). Admin navigation (2 tabs + 2 links + 2 actions). 5 unit tests (38 methods). Dual storage entity + user.data. 4 reglas: ENTITY-SD-001, SERVICE-SD-001, COPILOT-SD-001, INFRA-SD-001. Doc implementacion + Aprendizaje #68. Directrices v12.0.0, Maestro v12.0.0. 68 aprendizajes |
 | 2026-02-12 | **19.0.0** | 🤖 **Copilot v2 Gaps Closure — Specs 20260121 100%:** 8 fases implementadas para cierre completo de gaps Copiloto v2 (Emprendimiento Digital). **Fase 1**: 5 Access Handlers + 5 ListBuilders para EntrepreneurProfile, Hypothesis, Experiment, EntrepreneurLearning, FieldExit. Navegación admin completa (/admin/content + /admin/structure). **Fase 2**: Hypothesis API — 5 endpoints REST (CRUD + Prioritize ICE), HypothesisPrioritizationService (Importance×Confidence×Evidence). **Fase 3**: Experiment Lifecycle API — 5 endpoints REST (create Test Card, start, record Learning Card), Impact Points (PERSEVERE=100, PIVOT/ZOOM=75, KILL=50). **Fase 4**: BMC Validation + Entrepreneur API — BmcValidationService (semáforos RED<33%, YELLOW 33-66%, GREEN>66%, GRAY sin datos), 6 endpoints. **Fase 5**: Session History + Knowledge Search — 2 endpoints, CopilotQueryLoggerService expandido. **Fase 6**: 9 servicios stub→producción (ModeDetector 100+ triggers, CopilotCache, CustomerDiscoveryGamification, PivotDetector, ContentGrounding, VPC, BusinessPatternDetector, ClaudeApi, FaqGenerator). **Fase 7**: 3 páginas frontend full-width (BMC Dashboard grid 5×3, Hypothesis Manager filtros/modales, Experiment Lifecycle Test→Learning Card), 7 Twig templates (3 page + 4 partials), SCSS BEM + var(--ej-*), CSS compilado, hook_theme() + hook_page_attachments() + hook_preprocess_html(). **Fase 8**: 4 unit test suites + doc implementación + aprendizaje #67. 22 API endpoints totales, 14 servicios, 3 page templates theme. Directrices v11.0.0, Maestro v11.0.0. 67 aprendizajes |
