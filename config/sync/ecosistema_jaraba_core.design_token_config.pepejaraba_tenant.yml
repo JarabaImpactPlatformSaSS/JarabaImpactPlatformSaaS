@@ -10,42 +10,9 @@ vertical_id: null
 plan_id: null
 tenant_id: null
 preset_id: personal-brand-premium
-color_tokens:
-  primary: '#FF8C42'
-  secondary: '#00A9A5'
-  corporate: '#233D63'
-  headings: '#1a1a2e'
-  body: '#2d3436'
-  muted: '#6c757d'
-  success: '#28a745'
-  warning: '#ffc107'
-  danger: '#dc3545'
-  neutral: '#f8f9fa'
-  agro: '#4caf50'
-typography_tokens:
-  family_headings: Montserrat
-  family_body: Roboto
-  size_base: 16px
-  size_h1: 3rem
-  size_h2: 2.25rem
-  size_h3: 1.75rem
-  weight_headings: '700'
-  weight_body: '400'
-  line_height: '1.6'
-spacing_tokens:
-  xs: 0.5rem
-  sm: 1rem
-  md: 1.5rem
-  lg: 2rem
-  xl: 3rem
-  xxl: 4rem
-effect_tokens:
-  shadow_sm: 0 1px 3px rgba(0, 0, 0, 0.12)
-  shadow_md: 0 4px 12px rgba(0, 0, 0, 0.15)
-  shadow_lg: 0 10px 30px rgba(0, 0, 0, 0.2)
-  radius_sm: 0.375rem
-  radius_md: 0.75rem
-  radius_lg: 1rem
-  radius_pill: 50rem
-component_variants: {  }
+color_tokens: '{"primary":"#FF8C42","secondary":"#00A9A5","corporate":"#233D63","headings":"#1a1a2e","body":"#2d3436","muted":"#6c757d","success":"#28a745","warning":"#ffc107","danger":"#dc3545","neutral":"#f8f9fa","agro":"#4caf50"}'
+typography_tokens: '{"family_headings":"Montserrat","family_body":"Roboto","size_base":"16px","size_h1":"3rem","size_h2":"2.25rem","size_h3":"1.75rem","weight_headings":"700","weight_body":"400","line_height":"1.6"}'
+spacing_tokens: '{"xs":"0.5rem","sm":"1rem","md":"1.5rem","lg":"2rem","xl":"3rem","xxl":"4rem"}'
+effect_tokens: '{"shadow_sm":"0 1px 3px rgba(0, 0, 0, 0.12)","shadow_md":"0 4px 12px rgba(0, 0, 0, 0.15)","shadow_lg":"0 10px 30px rgba(0, 0, 0, 0.2)","radius_sm":"0.375rem","radius_md":"0.75rem","radius_lg":"1rem","radius_pill":"50rem"}'
+component_variants: '{}'
 weight: 0
