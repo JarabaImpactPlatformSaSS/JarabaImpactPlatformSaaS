@@ -438,7 +438,7 @@
          */
         function showSeoSuggestionsPanel(editor, result) {
             const modal = editor.Modal;
-            modal.setTitle(Drupal.t('🤖 Sugerencias SEO con IA'));
+            modal.setTitle('');
 
             const priorityColors = {
                 high: '#ef4444',
@@ -463,7 +463,7 @@
                             </span>
                         </div>
                         <p style="margin: 0 0 6px; color: #475569;">${s.message || ''}</p>
-                        ${s.fix ? `<p style="margin: 0; font-style: italic; color: #00A9A5;">💡 ${s.fix}</p>` : ''}
+                        ${s.fix ? `<p style="margin: 0; font-style: italic; color: #00A9A5;">${s.fix}</p>` : ''}
                     </div>
                 `).join('');
             } else {
@@ -471,27 +471,45 @@
             }
 
             const scoreColor = result.score >= 80 ? '#22c55e' : result.score >= 50 ? '#f59e0b' : '#ef4444';
+            const count = result.suggestions?.length || 0;
 
             const container = document.createElement('div');
             container.innerHTML = `
-                <div style="padding: 16px;">
-                    <div style="text-align: center; margin-bottom: 20px;">
+                <div style="padding: 0; background: #fff;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #233D63;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff;">${Drupal.t('Auditoría SEO con IA')}</h3>
+                            <p style="margin: 4px 0 0; font-size: 12px; color: rgba(255,255,255,0.7);">${count} ${count === 1 ? Drupal.t('sugerencia encontrada') : Drupal.t('sugerencias encontradas')}</p>
+                        </div>
+                        <button type="button" id="jaraba-seo-ai-close" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 8px 20px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                            ${Drupal.t('Cerrar')}
+                        </button>
+                    </div>
+                    <div style="text-align: center; padding: 20px 16px 12px; background: #fff;">
                         <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background: ${scoreColor}20; border: 4px solid ${scoreColor}; line-height: 72px; font-size: 28px; font-weight: 800; color: ${scoreColor};">
                             ${result.score || 0}
                         </div>
-                        <p style="margin-top: 8px; font-size: 14px; color: #64748b;">${Drupal.t('Score SEO estimado')}</p>
+                        <p style="margin-top: 8px; font-size: 14px; font-weight: 600; color: #0f172a;">${Drupal.t('Score SEO estimado')}</p>
                     </div>
-                    <div class="jaraba-seo-suggestions-list">
+                    <div style="padding: 0 20px 20px; max-height: 400px; overflow-y: auto;">
                         ${suggestionsHtml}
                     </div>
-                    <p style="margin-top: 12px; font-size: 12px; color: #94a3b8; text-align: center;">
-                        ${Drupal.t('Generado por')}: ${result.provider || 'IA'}
-                    </p>
+                    <div style="padding: 12px 20px; border-top: 1px solid #e2e8f0; text-align: center;">
+                        <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                            ${Drupal.t('Generado por')}: ${result.provider || 'IA'}
+                        </p>
+                    </div>
                 </div>
             `;
 
             modal.setContent(container);
             modal.open();
+
+            // Botón cerrar
+            const closeBtn = container.querySelector('#jaraba-seo-ai-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => modal.close());
+            }
         }
 
         // ──────────────────────────────────────────────────────
@@ -505,16 +523,35 @@
                     return;
                 }
 
+                // Mostrar loading inmediatamente para dar feedback al usuario
+                const modal = editor.Modal;
+                modal.setTitle('');
+                const loadingEl = document.createElement('div');
+                loadingEl.style.cssText = 'padding: 0; text-align: center; background: #fff;';
+                loadingEl.innerHTML = `
+                    <div style="padding: 16px 20px; border-bottom: 2px solid #233D63; background: #233D63;">
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff;">${Drupal.t('Auditoría SEO con IA')}</h3>
+                    </div>
+                    <div style="padding: 48px 24px; background: #fff;">
+                        <div style="display: inline-block; width: 48px; height: 48px; border: 4px solid #cbd5e1; border-top-color: #00A9A5; border-radius: 50%; animation: jaraba-seo-spin 0.8s linear infinite;"></div>
+                        <p style="margin-top: 16px; color: #0f172a; font-size: 15px; font-weight: 700;">${Drupal.t('Analizando contenido con IA...')}</p>
+                        <p style="margin-top: 6px; color: #334155; font-size: 13px; font-weight: 500;">${Drupal.t('Esto puede tardar unos segundos')}</p>
+                    </div>
+                    <style>@keyframes jaraba-seo-spin { to { transform: rotate(360deg); } }</style>
+                `;
+                modal.setContent(loadingEl);
+                modal.open();
+
                 try {
                     const result = await fetchSeoSuggestions(html);
                     if (result.success) {
                         showSeoSuggestionsPanel(editor, result);
                     } else {
-                        alert(result.error || Drupal.t('Error al obtener sugerencias SEO.'));
+                        modal.setContent(`<div style="padding: 24px; text-align: center; color: #ef4444;">${result.error || Drupal.t('Error al obtener sugerencias SEO.')}</div>`);
                     }
                 } catch (error) {
                     console.error('Error SEO AI:', error);
-                    alert(Drupal.t('Error al obtener sugerencias SEO.'));
+                    modal.setContent(`<div style="padding: 24px; text-align: center; color: #ef4444;">${Drupal.t('Error al obtener sugerencias SEO. Inténtalo de nuevo.')}</div>`);
                 }
             },
         });

@@ -190,21 +190,23 @@
 
       {# Sugerencias SEO con IA — Sprint C4.1 #}
         <button type="button"
-                class="canvas-editor__btn canvas-editor__btn--icon"
+                class="canvas-editor__btn canvas-editor__btn--secondary"
                 id="seo-ai-suggest-btn"
                 title="{% trans %}Sugerencias SEO con IA{% endtrans %}"
                 aria-label="{% trans %}Analizar SEO del contenido actual con IA{% endtrans %}">
-          {{ jaraba_icon('ui', 'sparkles', { size: '18px' }) }}
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '18px' }) }}
+          <span>{% trans %}SEO IA{% endtrans %}</span>
         </button>
 
       {# SEO Toggle #}
         <button type="button"
-                class="canvas-editor__btn canvas-editor__btn--icon"
+                class="canvas-editor__btn canvas-editor__btn--secondary"
                 id="seo-panel-toggle"
                 title="{% trans %}Auditoría SEO{% endtrans %}"
                 aria-pressed="false"
                 aria-controls="gjs-seo-panel">
           {{ jaraba_icon('ui', 'search', { variant: 'duotone', size: '18px' }) }}
+          <span>{% trans %}SEO{% endtrans %}</span>
         </button>
     </div>
 
@@ -220,18 +222,20 @@
         } only %}
       {% endif %}
 
-      {# Botón ⚙ Página — icon-only para ahorrar espacio #}
+      {# Botón ⚙ Página #}
       <button type="button"
-              class="canvas-editor__btn canvas-editor__btn--icon"
+              class="canvas-editor__btn canvas-editor__btn--secondary"
               id="page-config-toggle-btn"
               title="{% trans %}Configuración de Página{% endtrans %}"
               aria-label="{% trans %}Configuración de Página{% endtrans %}">
         {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '18px' }) }}
+        <span>{% trans %}Página{% endtrans %}</span>
       </button>
 
-      <button type="button" class="canvas-editor__btn canvas-editor__btn--icon" id="canvas-preview-btn"
+      <button type="button" class="canvas-editor__btn canvas-editor__btn--secondary" id="canvas-preview-btn"
               title="{% trans %}Vista previa{% endtrans %}" aria-label="{% trans %}Vista previa{% endtrans %}">
         {{ jaraba_icon('ui', 'eye', { size: '18px' }) }}
+        <span>{% trans %}Vista previa{% endtrans %}</span>
       </button>
       <div class="canvas-editor__toolbar-separator"></div>
       <button type="button" class="canvas-editor__btn canvas-editor__btn--primary" id="canvas-save-btn">
@@ -353,27 +357,26 @@
            Estructura completa con paneles laterales y canvas central.
            ============================================================ #}
         <div class="jaraba-grapesjs-layout">
-          {# Panel izquierdo: Plantillas + Bloques disponibles #}
+          {# Panel izquierdo: Bloques disponibles #}
           <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--left" id="gjs-blocks-panel">
             {# Fondo de partículas animadas #}
             <div class="jaraba-grapesjs-panel__particles" id="gjs-panel-particles"></div>
 
-            {# Tab switcher: Plantillas / Bloques #}
-            <div class="jaraba-grapesjs-panel__tabs" id="gjs-left-panel-tabs">
-              <button type="button" class="jaraba-grapesjs-panel__tab is-active" data-left-panel="blocks">
-                {{ jaraba_icon('ui', 'layout-grid', { size: '14px' }) }}
-                {% trans %}Bloques{% endtrans %}
-              </button>
-              <button type="button" class="jaraba-grapesjs-panel__tab" data-left-panel="templates">
-                {{ jaraba_icon('ui', 'layout-template', { size: '14px' }) }}
-                {% trans %}Plantillas{% endtrans %}
-              </button>
+            <div class="jaraba-grapesjs-panel__header">
+              <h3>{% trans %}Bloques{% endtrans %}</h3>
             </div>
 
-            {# Contenido: Bloques (visible por defecto) #}
-            <div class="jaraba-grapesjs-panel__section" id="gjs-blocks-section">
+            {# Botón de acceso a galería completa de templates #}
+            <a href="{{ path('jaraba_page_builder.template_picker') }}"
+               class="jaraba-grapesjs-panel__gallery-link"
+               target="_blank"
+               title="{% trans %}Ver galería completa de plantillas{% endtrans %}">
+              {{ jaraba_icon('ui', 'layout-grid', { size: '16px' }) }}
+              <span>{% trans %}Ver Galería de Plantillas{% endtrans %}</span>
+              {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
+            </a>
 
-            {# Issue 3: Buscador de bloques #}
+            {# Buscador de bloques #}
             <div class="jaraba-grapesjs-panel__search">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -387,37 +390,9 @@
                      placeholder="{% trans %}Buscar bloques...{% endtrans %}"
                      autocomplete="off" />
             </div>
-            
-            <div id="gjs-blocks-container" class="jaraba-grapesjs-panel__content"></div>
-            </div>{# /gjs-blocks-section #}
 
-            {# Contenido: Plantillas (oculto por defecto) #}
-            <div class="jaraba-grapesjs-panel__section" id="gjs-templates-section" hidden>
-              <div class="jaraba-grapesjs-panel__search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round" class="jaraba-grapesjs-panel__search-icon" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="search"
-                       id="gjs-templates-search"
-                       class="jaraba-grapesjs-panel__search-input"
-                       placeholder="{% trans %}Buscar plantillas...{% endtrans %}"
-                       autocomplete="off" />
-              </div>
-              <div id="gjs-templates-container" class="jaraba-grapesjs-panel__content">
-                <p class="jaraba-grapesjs-panel__placeholder">{% trans %}Cargando plantillas...{% endtrans %}</p>
-              </div>
-              <a href="{{ path('jaraba_page_builder.template_picker') }}"
-                 class="jaraba-grapesjs-panel__gallery-link"
-                 target="_blank"
-                 title="{% trans %}Ver galería completa de plantillas{% endtrans %}">
-                {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
-                <span>{% trans %}Galería completa{% endtrans %}</span>
-              </a>
-            </div>{# /gjs-templates-section #}
-          </div>{# /gjs-blocks-panel #}
+            <div id="gjs-blocks-container" class="jaraba-grapesjs-panel__content"></div>
+          </div>
 
           {# Canvas central: Área de edición GrapesJS #}
           <div class="jaraba-grapesjs-canvas-wrapper">

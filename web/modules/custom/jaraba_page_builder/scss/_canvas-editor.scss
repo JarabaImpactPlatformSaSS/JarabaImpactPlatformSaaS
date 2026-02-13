@@ -152,6 +152,20 @@ body.canvas-editor-page {
         }
     }
 
+    // En pantallas < 1440px: botones secondary solo icono para ahorrar espacio
+    // Guardar y Publicar (--primary y --success) siempre conservan texto
+    @media (max-width: 1439px) {
+        .canvas-editor__toolbar-center .canvas-editor__btn--secondary span,
+        .canvas-editor__toolbar-right .canvas-editor__btn--secondary span {
+            display: none;
+        }
+
+        .canvas-editor__toolbar-center .canvas-editor__btn--secondary,
+        .canvas-editor__toolbar-right .canvas-editor__btn--secondary {
+            padding: 8px;
+        }
+    }
+
     // NOTE: El header/footer del tenant NO se oculta
     // Estos elementos muestran la personalización del tenant y deben ser visibles/editables
     // Solo ocultamos elementos administrativos, no de frontend
