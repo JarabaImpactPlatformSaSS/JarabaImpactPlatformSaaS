@@ -37,7 +37,7 @@
   function HeatmapDashboard(el) {
     this.el = el;
     this.config = drupalSettings.jarabaHeatmap || {};
-    this.apiBase = this.config.apiBase || '/api/heatmap';
+    this.apiBase = this.config.apiBase || '/api/v1/heatmap';
     this.tenantId = this.config.tenantId || 0;
 
     // State.

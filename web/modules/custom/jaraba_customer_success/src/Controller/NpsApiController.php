@@ -63,7 +63,7 @@ class NpsApiController extends ControllerBase {
    */
   public function getActiveSurvey(Request $request): JsonResponse {
     try {
-      $tenant_id = $request->query->get('tenant_id', '');
+      $tenant_id = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id', '');
 
       $can_send = TRUE;
       if ($tenant_id) {
@@ -214,7 +214,7 @@ class NpsApiController extends ControllerBase {
    */
   public function getResults(Request $request): JsonResponse {
     try {
-      $tenant_id = $request->query->get('tenant_id', '');
+      $tenant_id = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id', '');
 
       if (empty($tenant_id)) {
         // Aggregate from all tenants with health scores.

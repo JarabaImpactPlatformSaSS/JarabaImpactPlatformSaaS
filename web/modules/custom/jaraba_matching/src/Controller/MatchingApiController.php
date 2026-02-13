@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_matching\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_matching\Service\MatchingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,11 +27,19 @@ class MatchingApiController extends ControllerBase
     protected $matchingService;
 
     /**
+     * The tenant context service.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * Constructor.
      */
-    public function __construct(MatchingService $matching_service)
+    public function __construct(MatchingService $matching_service, TenantContextService $tenant_context)
     {
         $this->matchingService = $matching_service;
+        $this->tenantContext = $tenant_context;
     }
 
     /**
@@ -39,7 +48,8 @@ class MatchingApiController extends ControllerBase
     public static function create(ContainerInterface $container)
     {
         return new static(
-            $container->get('jaraba_matching.matching_service')
+            $container->get('jaraba_matching.matching_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context')
         );
     }
 
@@ -51,7 +61,7 @@ class MatchingApiController extends ControllerBase
     public function getJobCandidates(int $job_id, Request $request): JsonResponse
     {
         $limit = (int) $request->query->get('limit', 20);
-        $tenant_id = (int) $request->query->get('tenant_id', 0);
+        $tenant_id = (int) ($this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id', 0));
 
         try {
             $results = $this->matchingService->getTopCandidatesForJob($job_id, $limit, $tenant_id);
@@ -78,7 +88,7 @@ class MatchingApiController extends ControllerBase
     public function getCandidateJobs(int $profile_id, Request $request): JsonResponse
     {
         $limit = (int) $request->query->get('limit', 20);
-        $tenant_id = (int) $request->query->get('tenant_id', 0);
+        $tenant_id = (int) ($this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id', 0));
 
         try {
             // Cargar candidato
@@ -191,7 +201,7 @@ class MatchingApiController extends ControllerBase
     public function getSimilarJobs(int $job_id, Request $request): JsonResponse
     {
         $limit = (int) $request->query->get('limit', 5);
-        $tenantId = (int) $request->query->get('tenant_id', 0);
+        $tenantId = (int) ($this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id', 0));
 
         try {
             $job = $this->entityTypeManager()->getStorage('job_posting')->load($job_id);
