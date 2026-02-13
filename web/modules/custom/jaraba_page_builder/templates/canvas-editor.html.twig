@@ -18,9 +18,29 @@
 #}
 
 <div class="canvas-editor" data-page-id="{{ page.id() }}">
-  {# TODO: Header SaaS - Temporalmente deshabilitado por conflicto de layout.
-     Requiere integración CSS más cuidadosa con el layout flex existente.
-     Ver Sprint 5: Re-implementar header SaaS sin romper el grid de 3 columnas. #}
+  {# Header SaaS — Barra compacta de branding del tenant (40px) #}
+  <div class="canvas-editor__saas-header" role="banner">
+    <div class="canvas-editor__saas-branding">
+      {% if tenant_logo %}
+        <a href="{{ path('jaraba_page_builder.my_pages') }}"
+           class="canvas-editor__saas-logo-link"
+           title="{% trans %}Volver a Mis Páginas{% endtrans %}">
+          <img src="{{ tenant_logo }}"
+               alt="{{ tenant_name|default('') }}"
+               class="canvas-editor__saas-logo" />
+        </a>
+      {% endif %}
+      {% if tenant_name %}
+        <span class="canvas-editor__saas-name">{{ tenant_name }}</span>
+      {% endif %}
+    </div>
+    <div class="canvas-editor__saas-context">
+      <span class="canvas-editor__saas-badge">
+        {{ jaraba_icon('ui', 'layout-template', { size: '14px' }) }}
+        <span>{% trans %}Canvas Editor{% endtrans %}</span>
+      </span>
+    </div>
+  </div>
 
   {# Toolbar Superior #}
   <header class="canvas-editor__toolbar">
@@ -174,9 +194,15 @@
 
 
     <div class="canvas-editor__toolbar-right">
-      {# TODO: i18n-selector temporalmente removido por conflicto de estilos.
-         El componente tiene CSS que crea barras de colores que superponen la UI.
-         Sprint 5: Estilizar correctamente el i18n-selector para el Canvas Editor. #}
+      {# Selector i18n — Contexto canvas con overrides de tema claro #}
+      {% if page.isTranslatable() is defined and page.isTranslatable() %}
+        {% include '@jaraba_i18n/i18n-selector.html.twig' with {
+          entity_id: page.id(),
+          entity_type: page.getEntityTypeId(),
+          current_language: page.language().getId(),
+          can_translate: true,
+        } only %}
+      {% endif %}
 
       {# Botón ⚙ Página — Abre slide-panel de configuración de página #}
       <button type="button"

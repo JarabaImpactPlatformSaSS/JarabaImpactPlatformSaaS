@@ -10,9 +10,7 @@ use Drupal\jaraba_interactive\Entity\InteractiveResultInterface;
 use Drupal\jaraba_interactive\Service\XApiEmitter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Drupal\core_event_dispatcher\EntityHookEvents;
-use Drupal\core_event_dispatcher\Event\Entity\EntityInsertEvent;
-use Drupal\core_event_dispatcher\Event\Entity\EntityUpdateEvent;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Suscriptor de eventos de completitud de contenido interactivo.
@@ -56,26 +54,26 @@ class CompletionSubscriber implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      *
-     * Registra los eventos que escucha este suscriptor.
+     * Returns an empty array since the module dependency (core_event_dispatcher)
+     * is not installed. The entity lifecycle logic should be implemented
+     * via hook_entity_insert()/hook_entity_update() in the .module file
+     * until the dependency is resolved.
+     *
+     * @todo Install hook_event_dispatcher or migrate to Drupal 11 Hooks system.
      */
     public static function getSubscribedEvents(): array
     {
-        return [
-            EntityHookEvents::ENTITY_INSERT => ['onEntityInsert', 100],
-            EntityHookEvents::ENTITY_UPDATE => ['onEntityUpdate', 100],
-        ];
+        return [];
     }
 
     /**
-     * Reacciona a la insercion de una entidad.
+     * Reacciona a la insercion de una entidad interactive_result.
      *
-     * @param \Drupal\core_event_dispatcher\Event\Entity\EntityInsertEvent $event
-     *   El evento de insercion.
+     * @param \Drupal\Core\Entity\EntityInterface $entity
+     *   La entidad insertada.
      */
-    public function onEntityInsert(EntityInsertEvent $event): void
+    public function onEntityInsert(EntityInterface $entity): void
     {
-        $entity = $event->getEntity();
-
         if ($entity->getEntityTypeId() !== 'interactive_result') {
             return;
         }
@@ -86,15 +84,13 @@ class CompletionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Reacciona a la actualizacion de una entidad.
+     * Reacciona a la actualizacion de una entidad interactive_result.
      *
-     * @param \Drupal\core_event_dispatcher\Event\Entity\EntityUpdateEvent $event
-     *   El evento de actualizacion.
+     * @param \Drupal\Core\Entity\EntityInterface $entity
+     *   La entidad actualizada.
      */
-    public function onEntityUpdate(EntityUpdateEvent $event): void
+    public function onEntityUpdate(EntityInterface $entity): void
     {
-        $entity = $event->getEntity();
-
         if ($entity->getEntityTypeId() !== 'interactive_result') {
             return;
         }
@@ -134,8 +130,7 @@ class CompletionSubscriber implements EventSubscriberInterface
                 '@score' => $result->getScore(),
                 '@passed' => $result->hasPassed() ? 'SI' : 'NO',
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('Error al procesar completitud: @message', [
                 '@message' => $e->getMessage(),
             ]);
@@ -184,8 +179,7 @@ class CompletionSubscriber implements EventSubscriberInterface
                 '@uid' => $result->getOwnerId(),
                 '@cid' => $content->id(),
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('Error al otorgar XP: @message', [
                 '@message' => $e->getMessage(),
             ]);
@@ -225,8 +219,7 @@ class CompletionSubscriber implements EventSubscriberInterface
                 '@uid' => $result->getOwnerId(),
                 '@cid' => $content->id(),
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('Error al actualizar progreso de certificación: @message', [
                 '@message' => $e->getMessage(),
             ]);

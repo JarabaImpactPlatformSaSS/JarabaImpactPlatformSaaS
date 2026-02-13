@@ -43,6 +43,7 @@ services:
       - '@plugin.manager.mail'
       - '@state'
       - '@logger.factory'
+      - '@http_client'
 
   # =========================================================================
   # Servicio: Mapeo de Eventos

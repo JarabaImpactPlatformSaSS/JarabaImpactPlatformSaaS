@@ -144,9 +144,8 @@ function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
     }
   }
 
-  // Stock disponible.
-  // TODO: Integrar con inventario de Commerce cuando esté disponible.
-  $productData['in_stock'] = TRUE;
+  // Stock: consultar módulo commerce_stock, campo field_stock_quantity o variation.
+  $productData['in_stock'] = _jaraba_commerce_resolve_stock($product, $variations);
 
   // Datos del tenant/vendedor.
   $tenant = [];
@@ -192,5 +191,70 @@ function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
       '@error' => $e->getMessage(),
     ]);
   }
+}
+
+/**
+ * Determina disponibilidad de stock de un producto Commerce.
+ *
+ * Estrategia por prioridad:
+ * 1. commerce_stock module: usa StockServiceManager si está instalado.
+ * 2. field_stock_quantity en variaciones: suma de cantidades > 0.
+ * 3. field_stock_quantity en producto: cantidad > 0.
+ * 4. status del producto: si está publicado, asumimos disponible.
+ *
+ * @param \Drupal\commerce_product\Entity\ProductInterface $product
+ *   El producto Commerce.
+ * @param array $variations
+ *   Variaciones ya cargadas del producto.
+ *
+ * @return bool
+ *   TRUE si hay stock disponible.
+ */
+function _jaraba_commerce_resolve_stock($product, array $variations): bool {
+  // 1. commerce_stock module con servicio StockServiceManager.
+  if (\Drupal::moduleHandler()->moduleExists('commerce_stock')
+      && \Drupal::hasService('commerce_stock.service_manager')) {
+    try {
+      $stockService = \Drupal::service('commerce_stock.service_manager');
+      foreach ($variations as $variation) {
+        $stock = $stockService->getStockLevel($variation);
+        if ($stock > 0) {
+          return TRUE;
+        }
+      }
+      return !empty($variations) ? FALSE : TRUE;
+    }
+    catch (\Exception $e) {
+      // Fallback al siguiente método.
+    }
+  }
+
+  // 2. field_stock_quantity en variaciones.
+  foreach ($variations as $variation) {
+    if ($variation->hasField('field_stock_quantity')
+        && !$variation->get('field_stock_quantity')->isEmpty()) {
+      $qty = (int) $variation->get('field_stock_quantity')->value;
+      if ($qty > 0) {
+        return TRUE;
+      }
+    }
+  }
+
+  // Si alguna variación tenía el campo pero todas con stock 0, está agotado.
+  if (!empty($variations)) {
+    $firstVariation = reset($variations);
+    if ($firstVariation->hasField('field_stock_quantity')) {
+      return FALSE;
+    }
+  }
+
+  // 3. field_stock_quantity en el producto directamente.
+  if ($product->hasField('field_stock_quantity')
+      && !$product->get('field_stock_quantity')->isEmpty()) {
+    return (int) $product->get('field_stock_quantity')->value > 0;
+  }
+
+  // 4. Sin gestión de stock: asumir disponible si el producto está publicado.
+  return $product->isPublished();
 }
 

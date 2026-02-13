@@ -146,8 +146,11 @@ jobs:
       - name: Checkout codigo
         uses: actions/checkout@v4
 
+      - name: Prepare workspace for ZAP
+        run: chmod 777 ${{ github.workspace }}
+
       - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           target: ${{ secrets.STAGING_URL || 'https://staging.jaraba.io' }}
           rules_file_name: '.zap/rules.tsv'
@@ -160,7 +163,7 @@ jobs:
         with:
           sarif_file: 'report_sarif.json'
           category: 'owasp-zap'
-        if: always()
+        if: always() && hashFiles('report_sarif.json') != ''
         continue-on-error: true
 
       - name: ZAP summary

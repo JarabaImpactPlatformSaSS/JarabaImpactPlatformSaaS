@@ -1,0 +1,239 @@
+/**
+ * @file
+ * Pricing Comparison Table - Tabla de comparación detallada de planes.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - BEM naming: .jaraba-pricing__comparison-*
+ * - Mobile-first: Tabla oculta en mobile, acordeón visible; tabla visible desde 768px
+ * - Design Tokens: var(--ej-*) con fallbacks SCSS
+ * - jaraba_icon(): Iconos check/x sin emojis
+ * - Accesibilidad: role="grid", aria-label, visually-hidden
+ *
+ * @package jaraba_page_builder
+ */
+
+// ============================================================================
+// COMPARISON CONTAINER
+// ============================================================================
+
+.jaraba-pricing__comparison {
+    margin-top: var(--ej-spacing-2xl, 3rem);
+    padding-top: var(--ej-spacing-xl, 2rem);
+    border-top: 1px solid var(--ej-border-color, #E5E7EB);
+}
+
+.jaraba-pricing__comparison-title {
+    text-align: center;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    font-size: var(--ej-font-size-xl, 1.25rem);
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    margin: 0 0 var(--ej-spacing-xl, 2rem);
+}
+
+// ============================================================================
+// DESKTOP TABLE (oculta en mobile, visible desde 768px)
+// ============================================================================
+
+.jaraba-pricing__comparison-table-wrapper {
+    display: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @media (min-width: 768px) {
+        display: block;
+    }
+}
+
+.jaraba-pricing__comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+// Cabecera de la tabla
+.jaraba-pricing__comparison-feature-header {
+    text-align: left;
+    padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+    font-weight: 600;
+    color: var(--ej-color-headings, #1A1A2E);
+    background: var(--ej-bg-body, #F8FAFC);
+    border-bottom: 2px solid var(--ej-border-color, #E5E7EB);
+    min-width: 200px;
+}
+
+.jaraba-pricing__comparison-plan-header {
+    text-align: center;
+    padding: var(--ej-spacing-md, 1rem);
+    font-weight: 700;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    color: var(--ej-color-headings, #1A1A2E);
+    background: var(--ej-bg-body, #F8FAFC);
+    border-bottom: 2px solid var(--ej-border-color, #E5E7EB);
+    min-width: 120px;
+
+    &--popular {
+        color: var(--ej-color-corporate, #233D63);
+        background: linear-gradient(
+            180deg,
+            rgba(35, 61, 99, 0.06) 0%,
+            rgba(35, 61, 99, 0.02) 100%
+        );
+        border-bottom-color: var(--ej-color-corporate, #233D63);
+    }
+}
+
+// Filas de la tabla
+.jaraba-pricing__comparison-row {
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: rgba(35, 61, 99, 0.02);
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+// Celdas
+.jaraba-pricing__comparison-cell {
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+
+    &--label {
+        text-align: left;
+        padding-left: var(--ej-spacing-lg, 1.5rem);
+        font-weight: 500;
+        color: var(--ej-color-body, #334155);
+    }
+
+    &--value {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    &--popular {
+        background: rgba(35, 61, 99, 0.02);
+    }
+}
+
+// Iconos de check/x
+.jaraba-pricing__comparison-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+
+    &--included {
+        background: var(--ej-color-success-bg, rgba(16, 185, 129, 0.1));
+        color: var(--ej-color-success, #10B981);
+    }
+
+    &--excluded {
+        background: transparent;
+        color: var(--ej-color-muted, #64748B);
+        opacity: 0.4;
+    }
+}
+
+// ============================================================================
+// MOBILE ACCORDION (visible en mobile, oculto desde 768px)
+// ============================================================================
+
+.jaraba-pricing__comparison-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+
+.jaraba-pricing__comparison-accordion {
+    border: 1px solid var(--ej-border-color, #E5E7EB);
+    border-radius: var(--ej-radius-md, 8px);
+    overflow: hidden;
+
+    &--popular {
+        border-color: var(--ej-color-corporate, #233D63);
+    }
+
+    &[open] {
+        .jaraba-pricing__comparison-accordion-header {
+            border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+        }
+    }
+}
+
+.jaraba-pricing__comparison-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+    font-weight: 600;
+    font-family: var(--ej-font-headings, "Outfit", sans-serif);
+    color: var(--ej-color-headings, #1A1A2E);
+    cursor: pointer;
+    list-style: none;
+    background: var(--ej-bg-surface, #FFFFFF);
+
+    &::-webkit-details-marker {
+        display: none;
+    }
+
+    &::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid var(--ej-color-muted, #64748B);
+        border-bottom: 2px solid var(--ej-color-muted, #64748B);
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
+    }
+
+    [open] > & {
+        &::after {
+            transform: rotate(-135deg);
+        }
+    }
+}
+
+.jaraba-pricing__comparison-accordion-badge {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    font-weight: 600;
+    padding: 2px 8px;
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #233D63) 0%,
+        var(--ej-color-impulse, #FF8C42) 100%);
+    color: #fff;
+    border-radius: var(--ej-radius-full, 9999px);
+}
+
+.jaraba-pricing__comparison-accordion-list {
+    list-style: none;
+    margin: 0;
+    padding: var(--ej-spacing-sm, 0.5rem) 0;
+}
+
+.jaraba-pricing__comparison-accordion-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-lg, 1.5rem);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-body, #334155);
+
+    &--excluded {
+        opacity: 0.5;
+        text-decoration: line-through;
+    }
+}
+
+.jaraba-pricing__comparison-accordion-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+}

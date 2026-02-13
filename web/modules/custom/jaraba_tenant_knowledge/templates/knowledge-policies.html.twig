@@ -1,0 +1,125 @@
+{#
+/**
+ * @file
+ * Listado CRUD de Políticas del Knowledge Training.
+ *
+ * PROPÓSITO:
+ * Muestra las políticas del tenant (devolución, envío, privacidad, etc.)
+ * con acciones CRUD via rutas de entidad estándar.
+ *
+ * DIRECTRICES:
+ * - jaraba_icon() para iconografía
+ * - Textos con filtro |t para i18n
+ * - BEM naming: .knowledge-policies__*
+ * - Mobile-first responsive
+ *
+ * VARIABLES:
+ * - policies: Array de entidades TenantPolicy
+ * - can_edit: Boolean — permiso de edición
+ *
+ * @see KnowledgeDashboardController::policies()
+ */
+#}
+
+<div class="knowledge-policies">
+  {# Header #}
+  <header class="knowledge-policies__header">
+    <div class="knowledge-policies__header-left">
+      <a href="{{ path('jaraba_tenant_knowledge.dashboard') }}"
+         class="knowledge-policies__back"
+         title="{{ 'Volver al dashboard'|t }}">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
+      </a>
+      <h1 class="knowledge-policies__title">
+        {{ jaraba_icon('ui', 'file-text', { size: '24px' }) }}
+        {{ 'Políticas'|t }}
+      </h1>
+      <span class="knowledge-policies__count">{{ policies|length }}</span>
+    </div>
+
+    {% if can_edit %}
+      <a href="{{ path('jaraba_tenant_knowledge.policy.add') }}"
+         class="jaraba-btn jaraba-btn--primary jaraba-btn--sm"
+         data-dialog-type="modal"
+         data-dialog-options='{"width": 800, "title": "{{ 'Nueva Política'|t }}"}'>
+        {{ jaraba_icon('actions', 'plus', { size: '16px' }) }}
+        <span>{{ 'Nueva Política'|t }}</span>
+      </a>
+    {% endif %}
+  </header>
+
+  {% if policies is empty %}
+    {# Estado vacío #}
+    <div class="knowledge-policies__empty">
+      {{ jaraba_icon('ui', 'file-text', { size: '48px', color: 'neutral' }) }}
+      <h2>{{ 'Sin políticas'|t }}</h2>
+      <p>{{ 'Define tus políticas de devolución, envío, privacidad y otras para que el Copiloto las conozca.'|t }}</p>
+      {% if can_edit %}
+        <a href="{{ path('jaraba_tenant_knowledge.policy.add') }}"
+           class="jaraba-btn jaraba-btn--primary"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 800, "title": "{{ 'Nueva Política'|t }}"}'>
+          {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+          {{ 'Crear primera política'|t }}
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    {# Grid de políticas como cards #}
+    <div class="knowledge-policies__grid">
+      {% for policy in policies %}
+        <article class="knowledge-policies__card{{ not policy.get('is_published').value ? ' knowledge-policies__card--draft' : '' }}">
+          <header class="knowledge-policies__card-header">
+            <div class="knowledge-policies__card-type">
+              {% if policy.get('policy_type').value %}
+                <span class="knowledge-policies__type-badge">{{ policy.get('policy_type').value }}</span>
+              {% endif %}
+              {% if not policy.get('is_published').value %}
+                <span class="knowledge-policies__badge--draft">{{ 'Borrador'|t }}</span>
+              {% endif %}
+            </div>
+            {% if can_edit %}
+              <div class="knowledge-policies__card-actions">
+                <a href="{{ path('jaraba_tenant_knowledge.policy.edit', { 'tenant_policy': policy.id() }) }}"
+                   class="knowledge-policies__action"
+                   data-dialog-type="modal"
+                   data-dialog-options='{"width": 800, "title": "{{ 'Editar Política'|t }}"}'
+                   title="{{ 'Editar'|t }}">
+                  {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                </a>
+                <a href="{{ path('jaraba_tenant_knowledge.policy.delete', { 'tenant_policy': policy.id() }) }}"
+                   class="knowledge-policies__action knowledge-policies__action--danger"
+                   data-dialog-type="modal"
+                   data-dialog-options='{"width": 500, "title": "{{ 'Eliminar Política'|t }}"}'
+                   title="{{ 'Eliminar'|t }}">
+                  {{ jaraba_icon('actions', 'trash', { size: '16px' }) }}
+                </a>
+              </div>
+            {% endif %}
+          </header>
+
+          <h2 class="knowledge-policies__card-title">{{ policy.get('title').value }}</h2>
+
+          {% if policy.get('summary').value %}
+            <p class="knowledge-policies__card-summary">{{ policy.get('summary').value|length > 160 ? policy.get('summary').value|slice(0, 160) ~ '...' : policy.get('summary').value }}</p>
+          {% endif %}
+
+          <footer class="knowledge-policies__card-footer">
+            <span class="knowledge-policies__version">
+              {{ 'v@version'|t({ '@version': policy.get('version_number').value|default(1) }) }}
+            </span>
+            {% if policy.get('effective_date').value %}
+              <span class="knowledge-policies__date">
+                {{ jaraba_icon('ui', 'calendar', { size: '14px' }) }}
+                {{ policy.get('effective_date').value|date('d/m/Y') }}
+              </span>
+            {% endif %}
+            <span class="knowledge-policies__updated">
+              {{ 'Actualizada'|t }}: {{ policy.get('changed').value|date('d/m/Y') }}
+            </span>
+          </footer>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

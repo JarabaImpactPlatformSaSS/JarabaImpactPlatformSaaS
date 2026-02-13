@@ -158,13 +158,37 @@ class KnowledgeDashboardController extends ControllerBase
     }
 
     /**
-     * Página de FAQs.
+     * Página de FAQs del tenant.
+     *
+     * Lista todas las FAQs filtradas por tenant_id, ordenadas por
+     * prioridad y con acciones CRUD via modales de entidad.
+     *
+     * @return array
+     *   Render array con el listado de FAQs.
      */
     public function faqs(): array
     {
-        // TODO: Implementar en Sprint TK2.
+        $tenantId = $this->getCurrentTenantId();
+        $faqs = [];
+
+        if ($tenantId) {
+            $storage = $this->entityTypeManager()->getStorage('tenant_faq');
+            $ids = $storage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('tenant_id', $tenantId)
+                ->sort('priority', 'DESC')
+                ->sort('changed', 'DESC')
+                ->execute();
+
+            if ($ids) {
+                $faqs = $storage->loadMultiple($ids);
+            }
+        }
+
         return [
-            '#markup' => $this->t('Sección de FAQs - Próximamente'),
+            '#theme' => 'knowledge_faqs',
+            '#faqs' => $faqs,
+            '#can_edit' => $this->currentUser()->hasPermission('edit tenant knowledge'),
             '#attached' => [
                 'library' => ['jaraba_tenant_knowledge/dashboard'],
             ],
@@ -172,24 +196,56 @@ class KnowledgeDashboardController extends ControllerBase
     }
 
     /**
-     * Página para añadir FAQ.
+     * Formulario para añadir una FAQ.
+     *
+     * Crea una entidad TenantFaq con el tenant_id preasignado
+     * y devuelve el formulario de la entidad.
+     *
+     * @return array
+     *   Render array con el formulario.
      */
     public function addFaq(): array
     {
-        // TODO: Implementar en Sprint TK2.
-        return [
-            '#markup' => $this->t('Formulario de FAQ - Próximamente'),
-        ];
+        $tenantId = $this->getCurrentTenantId();
+        $faq = $this->entityTypeManager()->getStorage('tenant_faq')->create([
+            'tenant_id' => $tenantId,
+        ]);
+
+        return $this->entityFormBuilder()->getForm($faq, 'add');
     }
 
     /**
-     * Página de Políticas.
+     * Página de Políticas del tenant.
+     *
+     * Lista todas las políticas filtradas por tenant_id, ordenadas por
+     * tipo y fecha de vigencia, con acciones CRUD via modales.
+     *
+     * @return array
+     *   Render array con el listado de políticas.
      */
     public function policies(): array
     {
-        // TODO: Implementar en Sprint TK3.
+        $tenantId = $this->getCurrentTenantId();
+        $policies = [];
+
+        if ($tenantId) {
+            $storage = $this->entityTypeManager()->getStorage('tenant_policy');
+            $ids = $storage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('tenant_id', $tenantId)
+                ->sort('policy_type', 'ASC')
+                ->sort('changed', 'DESC')
+                ->execute();
+
+            if ($ids) {
+                $policies = $storage->loadMultiple($ids);
+            }
+        }
+
         return [
-            '#markup' => $this->t('Sección de Políticas - Próximamente'),
+            '#theme' => 'knowledge_policies',
+            '#policies' => $policies,
+            '#can_edit' => $this->currentUser()->hasPermission('edit tenant knowledge'),
             '#attached' => [
                 'library' => ['jaraba_tenant_knowledge/dashboard'],
             ],
@@ -197,13 +253,36 @@ class KnowledgeDashboardController extends ControllerBase
     }
 
     /**
-     * Página de Documentos.
+     * Página de Documentos del tenant.
+     *
+     * Lista todos los documentos filtrados por tenant_id, ordenados
+     * por fecha de creación, con indicadores de estado de procesamiento.
+     *
+     * @return array
+     *   Render array con el listado de documentos.
      */
     public function documents(): array
     {
-        // TODO: Implementar en Sprint TK4.
+        $tenantId = $this->getCurrentTenantId();
+        $documents = [];
+
+        if ($tenantId) {
+            $storage = $this->entityTypeManager()->getStorage('tenant_document');
+            $ids = $storage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('tenant_id', $tenantId)
+                ->sort('created', 'DESC')
+                ->execute();
+
+            if ($ids) {
+                $documents = $storage->loadMultiple($ids);
+            }
+        }
+
         return [
-            '#markup' => $this->t('Sección de Documentos - Próximamente'),
+            '#theme' => 'knowledge_documents',
+            '#documents' => $documents,
+            '#can_edit' => $this->currentUser()->hasPermission('edit tenant knowledge'),
             '#attached' => [
                 'library' => ['jaraba_tenant_knowledge/dashboard'],
             ],

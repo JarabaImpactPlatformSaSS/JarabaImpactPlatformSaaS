@@ -221,7 +221,7 @@
           renderBadge(result, badge);
         }, 5000);
 
-        // Click en badge muestra detalles.
+        // Click en badge muestra el panel de accesibilidad.
         badge.addEventListener('click', function () {
           var iframe = page.querySelector('.gjs-frame');
           if (!iframe || !iframe.contentDocument || !iframe.contentDocument.body) {
@@ -243,14 +243,11 @@
           })
           .then(function (response) { return response.json(); })
           .then(function (serverResult) {
-            // Combinar resultados client + server.
             var combined = serverResult.data || result;
-            console.table(combined.violations);
-            // TODO: Mostrar en slide-panel cuando se implemente.
+            renderA11yPanel(combined, page);
           })
           .catch(function () {
-            // Usar resultado client-side si falla el server.
-            console.table(result.violations);
+            renderA11yPanel(result, page);
           });
         });
 
@@ -262,9 +259,158 @@
     }
   };
 
+  /**
+   * Renderiza el slide-panel de accesibilidad con resultados de auditoria.
+   *
+   * Muestra un panel lateral con:
+   * - Score general y nivel WCAG alcanzado
+   * - Lista de violaciones agrupadas por impacto
+   * - Lista de checks superados
+   * - Elementos afectados con selector CSS
+   *
+   * @param {Object} result
+   *   Resultado de la validacion (violations, passes, score, level).
+   * @param {HTMLElement} page
+   *   Elemento contenedor de la pagina del editor.
+   */
+  function renderA11yPanel(result, page) {
+    // Eliminar panel anterior si existe.
+    var existing = page.querySelector('.jaraba-a11y-panel');
+    if (existing) {
+      existing.remove();
+      return; // Toggle: si ya estaba abierto, solo cerrar.
+    }
+
+    var panel = document.createElement('div');
+    panel.className = 'jaraba-a11y-panel jaraba-slide-panel';
+
+    // Overlay.
+    var overlay = document.createElement('div');
+    overlay.className = 'jaraba-slide-panel__overlay';
+    overlay.addEventListener('click', function () {
+      panel.remove();
+    });
+    panel.appendChild(overlay);
+
+    // Contenido del panel.
+    var content = document.createElement('div');
+    content.className = 'jaraba-slide-panel__content jaraba-a11y-panel__content';
+
+    // Header.
+    var header = document.createElement('header');
+    header.className = 'jaraba-slide-panel__header';
+    header.innerHTML = '<h3>' + Drupal.t('Auditoría de Accesibilidad') + '</h3>'
+      + '<button type="button" class="jaraba-slide-panel__close" aria-label="' + Drupal.t('Cerrar') + '">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+      + '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+      + '</svg></button>';
+    header.querySelector('.jaraba-slide-panel__close').addEventListener('click', function () {
+      panel.remove();
+    });
+    content.appendChild(header);
+
+    // Body.
+    var body = document.createElement('div');
+    body.className = 'jaraba-slide-panel__body';
+
+    // Score banner.
+    var scoreColor = result.score >= 80 ? 'var(--ej-color-success, #22c55e)' :
+                     result.score >= 50 ? 'var(--ej-color-warning, #f59e0b)' :
+                     'var(--ej-color-danger, #ef4444)';
+    var scoreBanner = document.createElement('div');
+    scoreBanner.className = 'jaraba-a11y-panel__score';
+    scoreBanner.innerHTML = '<div class="jaraba-a11y-panel__score-circle" style="border-color: ' + scoreColor + '">'
+      + '<span class="jaraba-a11y-panel__score-value">' + result.score + '</span>'
+      + '<span class="jaraba-a11y-panel__score-label">/100</span>'
+      + '</div>'
+      + '<div class="jaraba-a11y-panel__score-meta">'
+      + '<span class="jaraba-a11y-panel__level" style="color: ' + scoreColor + '">WCAG ' + result.level + '</span>'
+      + '<span class="jaraba-a11y-panel__summary">'
+      + result.violations.length + ' ' + Drupal.t('violaciones') + ' · '
+      + result.passes.length + ' ' + Drupal.t('superados')
+      + '</span>'
+      + '</div>';
+    body.appendChild(scoreBanner);
+
+    // Sección de violaciones.
+    if (result.violations.length > 0) {
+      var violationsSection = document.createElement('div');
+      violationsSection.className = 'jaraba-a11y-panel__section';
+      violationsSection.innerHTML = '<h4 class="jaraba-a11y-panel__section-title jaraba-a11y-panel__section-title--error">'
+        + Drupal.t('Violaciones') + ' (' + result.violations.length + ')</h4>';
+
+      result.violations.forEach(function (violation) {
+        var impactClass = violation.impact === 'critical' ? 'critical' :
+                          violation.impact === 'serious' ? 'serious' : 'moderate';
+        var item = document.createElement('div');
+        item.className = 'jaraba-a11y-panel__item jaraba-a11y-panel__item--' + impactClass;
+        var elementsHtml = '';
+        if (violation.elements && violation.elements.length > 0) {
+          elementsHtml = '<div class="jaraba-a11y-panel__elements">';
+          violation.elements.forEach(function (el) {
+            var selector = el.tag;
+            if (el.id) selector += '#' + el.id;
+            else if (el.className) selector += '.' + el.className.split(' ')[0];
+            elementsHtml += '<code class="jaraba-a11y-panel__selector">' + selector + '</code>';
+          });
+          elementsHtml += '</div>';
+        }
+        item.innerHTML = '<div class="jaraba-a11y-panel__item-header">'
+          + '<span class="jaraba-a11y-panel__impact jaraba-a11y-panel__impact--' + impactClass + '">'
+          + violation.impact + '</span>'
+          + '<span class="jaraba-a11y-panel__rule-level">WCAG ' + violation.level + '</span>'
+          + (violation.count > 1 ? '<span class="jaraba-a11y-panel__count">&times;' + violation.count + '</span>' : '')
+          + '</div>'
+          + '<p class="jaraba-a11y-panel__message">' + violation.message + '</p>'
+          + elementsHtml;
+        violationsSection.appendChild(item);
+      });
+      body.appendChild(violationsSection);
+    }
+
+    // Sección de checks superados.
+    if (result.passes.length > 0) {
+      var passesSection = document.createElement('div');
+      passesSection.className = 'jaraba-a11y-panel__section';
+      passesSection.innerHTML = '<h4 class="jaraba-a11y-panel__section-title jaraba-a11y-panel__section-title--success">'
+        + Drupal.t('Superados') + ' (' + result.passes.length + ')</h4>';
+
+      result.passes.forEach(function (pass) {
+        var passItem = document.createElement('div');
+        passItem.className = 'jaraba-a11y-panel__item jaraba-a11y-panel__item--pass';
+        passItem.innerHTML = '<div class="jaraba-a11y-panel__item-header">'
+          + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+          + '<polyline points="20 6 9 17 4 12"/></svg>'
+          + '<span class="jaraba-a11y-panel__rule-level">WCAG ' + pass.level + '</span>'
+          + '</div>'
+          + '<p class="jaraba-a11y-panel__message">' + pass.message + '</p>';
+        passesSection.appendChild(passItem);
+      });
+      body.appendChild(passesSection);
+    }
+
+    // Timestamp.
+    var timestamp = document.createElement('p');
+    timestamp.className = 'jaraba-a11y-panel__timestamp';
+    timestamp.textContent = Drupal.t('Analizado: @time', {
+      '@time': new Date(result.timestamp).toLocaleTimeString(),
+    });
+    body.appendChild(timestamp);
+
+    content.appendChild(body);
+    panel.appendChild(content);
+    page.appendChild(panel);
+
+    // Animar entrada.
+    requestAnimationFrame(function () {
+      panel.classList.add('is-open');
+    });
+  }
+
   // Exponer funcion para uso externo.
   Drupal.jarabaAccessibilityValidator = {
     validate: validateContainer,
+    renderPanel: renderA11yPanel,
   };
 
 })(Drupal, once);

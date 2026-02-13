@@ -285,6 +285,21 @@ class Course extends ContentEntityBase implements CourseInterface
         'weight' => -4,
       ]);
 
+    $fields['field_category'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Category'))
+      ->setDescription(t('Course category for grouping and filtering.'))
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default')
+      ->setSetting('handler_settings', [
+        'target_bundles' => ['course_category'],
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['tenant_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Tenant ID'))
       ->setDescription(t('Tenant owner (NULL = global).'));

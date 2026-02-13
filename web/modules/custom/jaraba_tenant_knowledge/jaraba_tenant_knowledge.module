@@ -57,6 +57,32 @@ function jaraba_tenant_knowledge_theme(): array {
     ],
 
     // =========================================================================
+    // DASHBOARD CRUD: FAQs, Policies, Documents (Sprint TK2-TK4)
+    // =========================================================================
+
+    'knowledge_faqs' => [
+      'variables' => [
+        'faqs' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'knowledge-faqs',
+    ],
+    'knowledge_policies' => [
+      'variables' => [
+        'policies' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'knowledge-policies',
+    ],
+    'knowledge_documents' => [
+      'variables' => [
+        'documents' => [],
+        'can_edit' => FALSE,
+      ],
+      'template' => 'knowledge-documents',
+    ],
+
+    // =========================================================================
     // CENTRO DE AYUDA PÚBLICO (G114 / f114)
     // =========================================================================
 

@@ -9,8 +9,7 @@ use Drupal\jaraba_interactive\Plugin\InteractiveTypeManager;
 use Drupal\jaraba_interactive\Service\XApiEmitter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Drupal\core_event_dispatcher\EntityHookEvents;
-use Drupal\core_event_dispatcher\Event\Entity\EntityViewEvent;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Suscriptor de eventos xAPI para contenido interactivo.
@@ -53,34 +52,35 @@ class XapiSubscriber implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      *
-     * Registra los eventos que escucha este suscriptor.
+     * Returns an empty array since the module dependency (core_event_dispatcher)
+     * is not installed. The entity view logic should be migrated to Drupal 11
+     * Hooks system or implemented via hook_entity_view() in the .module file.
+     *
+     * @todo Install hook_event_dispatcher or migrate to Drupal 11 Hooks system.
      */
     public static function getSubscribedEvents(): array
     {
-        return [
-            EntityHookEvents::ENTITY_VIEW => ['onEntityView', 50],
-        ];
+        return [];
     }
 
     /**
-     * Reacciona a la visualizacion de una entidad.
+     * Reacciona a la visualizacion de un contenido interactivo.
      *
      * Emite una sentencia xAPI "attempted" cuando se visualiza
      * un contenido interactivo en modo player.
      *
-     * @param \Drupal\core_event_dispatcher\Event\Entity\EntityViewEvent $event
-     *   El evento de visualizacion.
+     * @param \Drupal\Core\Entity\EntityInterface $entity
+     *   La entidad visualizada.
+     * @param string $viewMode
+     *   El modo de visualización.
      */
-    public function onEntityView(EntityViewEvent $event): void
+    public function onEntityView(EntityInterface $entity, string $viewMode = 'full'): void
     {
-        $entity = $event->getEntity();
-
         if ($entity->getEntityTypeId() !== 'interactive_content') {
             return;
         }
 
         // Solo emitir en modo de visualizacion completa (player).
-        $viewMode = $event->getViewMode();
         if ($viewMode !== 'full' && $viewMode !== 'default') {
             return;
         }
@@ -94,8 +94,7 @@ class XapiSubscriber implements EventSubscriberInterface
                 '@id' => $content->id(),
                 '@type' => $content->getContentType(),
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('Error al emitir xAPI attempted: @message', [
                 '@message' => $e->getMessage(),
             ]);

@@ -36,8 +36,9 @@ class AndaluciaEiApiController extends ControllerBase
      *   El gestor de tipos de entidad.
      */
     public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager,
+        EntityTypeManagerInterface $entityTypeManager,
     ) {
+        $this->entityTypeManager = $entityTypeManager;
     }
 
     /**

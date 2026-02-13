@@ -131,6 +131,51 @@ class PixelDispatcherService
     }
 
     /**
+     * Dispatch directo usando datos raw (sin entidad analytics_event).
+     *
+     * Utilizado por BatchProcessorService cuando la entidad original ha sido
+     * eliminada pero los datos están cacheados en la cola Redis.
+     *
+     * @param int $tenantId
+     *   ID del tenant propietario del evento.
+     * @param array $data
+     *   Datos del evento con al menos: event_type, tenant_id.
+     *   Formato idéntico al retornado por extractEventData().
+     */
+    public function dispatchFromData(int $tenantId, array $data): void
+    {
+        if (empty($data['event_type'])) {
+            return;
+        }
+
+        $data['tenant_id'] = $tenantId;
+
+        if (empty($data['event_id'])) {
+            $data['event_id'] = $this->generateEventId();
+        }
+
+        // Verificar consentimiento de marketing.
+        if (!$this->hasMarketingConsent($data['visitor_id'] ?? '', $tenantId)) {
+            $this->logEvent($tenantId, 'all', $data['event_id'], $data['event_type'], '', 'skipped', NULL, 'No marketing consent');
+            return;
+        }
+
+        // Obtener credenciales habilitadas.
+        $credentials = $this->credentialManager->getEnabledCredentials($tenantId);
+        if (empty($credentials)) {
+            return;
+        }
+
+        // Dispatch a cada plataforma.
+        foreach ($credentials as $platform => $credential) {
+            $this->dispatchToPlatform($platform, $credential, $data);
+        }
+
+        // Reenviar eventos de conversión al módulo de ads para ROAS tracking.
+        $this->forwardConversionToAds($data);
+    }
+
+    /**
      * Dispatch a una plataforma específica.
      *
      * @param string $platform

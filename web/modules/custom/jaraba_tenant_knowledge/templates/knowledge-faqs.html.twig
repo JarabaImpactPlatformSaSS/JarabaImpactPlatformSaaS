@@ -1,0 +1,112 @@
+{#
+/**
+ * @file
+ * Listado CRUD de FAQs del Knowledge Training.
+ *
+ * PROPÓSITO:
+ * Muestra las preguntas frecuentes del tenant con acciones de
+ * crear, editar y eliminar via rutas de entidad estándar.
+ *
+ * DIRECTRICES:
+ * - jaraba_icon() para iconografía (NO SVG inline, NO emojis)
+ * - Textos con filtro |t para i18n
+ * - BEM naming: .knowledge-faqs__*
+ * - Mobile-first responsive
+ * - MODAL-CRUD: enlaces data-dialog-type="modal"
+ *
+ * VARIABLES:
+ * - faqs: Array de entidades TenantFaq
+ * - can_edit: Boolean — permiso de edición
+ *
+ * @see KnowledgeDashboardController::faqs()
+ */
+#}
+
+<div class="knowledge-faqs">
+  {# Header con título y botón de añadir #}
+  <header class="knowledge-faqs__header">
+    <div class="knowledge-faqs__header-left">
+      <a href="{{ path('jaraba_tenant_knowledge.dashboard') }}"
+         class="knowledge-faqs__back"
+         title="{{ 'Volver al dashboard'|t }}">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
+      </a>
+      <h1 class="knowledge-faqs__title">
+        {{ jaraba_icon('ui', 'help-circle', { size: '24px' }) }}
+        {{ 'Preguntas Frecuentes'|t }}
+      </h1>
+      <span class="knowledge-faqs__count">{{ faqs|length }}</span>
+    </div>
+
+    {% if can_edit %}
+      <a href="{{ path('jaraba_tenant_knowledge.faq.add') }}"
+         class="jaraba-btn jaraba-btn--primary jaraba-btn--sm"
+         data-dialog-type="modal"
+         data-dialog-options='{"width": 700, "title": "{{ 'Nueva FAQ'|t }}"}'>
+        {{ jaraba_icon('actions', 'plus', { size: '16px' }) }}
+        <span>{{ 'Nueva FAQ'|t }}</span>
+      </a>
+    {% endif %}
+  </header>
+
+  {% if faqs is empty %}
+    {# Estado vacío #}
+    <div class="knowledge-faqs__empty">
+      {{ jaraba_icon('ui', 'help-circle', { size: '48px', color: 'neutral' }) }}
+      <h2>{{ 'Sin preguntas frecuentes'|t }}</h2>
+      <p>{{ 'Añade las preguntas más comunes de tus clientes para que el Copiloto pueda responderlas.'|t }}</p>
+      {% if can_edit %}
+        <a href="{{ path('jaraba_tenant_knowledge.faq.add') }}"
+           class="jaraba-btn jaraba-btn--primary"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 700, "title": "{{ 'Nueva FAQ'|t }}"}'>
+          {{ jaraba_icon('actions', 'plus', { size: '18px' }) }}
+          {{ 'Crear primera FAQ'|t }}
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    {# Listado de FAQs como acordeón #}
+    <div class="knowledge-faqs__list">
+      {% for faq in faqs %}
+        <details class="knowledge-faqs__item{{ not faq.get('is_published').value ? ' knowledge-faqs__item--draft' : '' }}">
+          <summary class="knowledge-faqs__question">
+            <div class="knowledge-faqs__question-text">
+              {{ jaraba_icon('ui', 'chevron-right', { size: '16px' }) }}
+              <span>{{ faq.get('question').value }}</span>
+            </div>
+            <div class="knowledge-faqs__meta">
+              {% if not faq.get('is_published').value %}
+                <span class="knowledge-faqs__badge knowledge-faqs__badge--draft">{{ 'Borrador'|t }}</span>
+              {% endif %}
+              {% if faq.get('category').value %}
+                <span class="knowledge-faqs__badge">{{ faq.get('category').value }}</span>
+              {% endif %}
+              {% if can_edit %}
+                <div class="knowledge-faqs__actions">
+                  <a href="{{ path('jaraba_tenant_knowledge.faq.edit', { 'tenant_faq': faq.id() }) }}"
+                     class="knowledge-faqs__action"
+                     data-dialog-type="modal"
+                     data-dialog-options='{"width": 700, "title": "{{ 'Editar FAQ'|t }}"}'
+                     title="{{ 'Editar'|t }}">
+                    {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                  </a>
+                  <a href="{{ path('jaraba_tenant_knowledge.faq.delete', { 'tenant_faq': faq.id() }) }}"
+                     class="knowledge-faqs__action knowledge-faqs__action--danger"
+                     data-dialog-type="modal"
+                     data-dialog-options='{"width": 500, "title": "{{ 'Eliminar FAQ'|t }}"}'
+                     title="{{ 'Eliminar'|t }}">
+                    {{ jaraba_icon('actions', 'trash', { size: '16px' }) }}
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </summary>
+          <div class="knowledge-faqs__answer">
+            {{ faq.get('answer').value|raw }}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

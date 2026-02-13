@@ -1477,11 +1477,151 @@
         }
 
         /**
-         * Muestra revisión de respuestas.
+         * Muestra revisión detallada de respuestas.
+         *
+         * Genera un overlay dentro del player con el listado completo
+         * de preguntas, la respuesta del usuario (correcta/incorrecta),
+         * la respuesta correcta y la puntuación global.
+         * Incluye botón para reintentar el cuestionario.
          */
         showReview() {
-            // TODO: Implementar vista de revisión.
-            alert(Drupal.t('Función de revisión próximamente.'));
+            const questions = this.config.contentData?.questions || [];
+            if (questions.length === 0) {
+                return;
+            }
+
+            // Calcular resultados para el resumen.
+            const results = this.calculateScore();
+
+            // Construir HTML de la revisión.
+            var reviewHtml = '<div class="jaraba-player-review">';
+
+            // Cabecera con puntuación.
+            reviewHtml += '<div class="jaraba-player-review__header">';
+            reviewHtml += '<h3 class="jaraba-player-review__title">' + Drupal.t('Revisión de respuestas') + '</h3>';
+            reviewHtml += '<div class="jaraba-player-review__score">';
+            reviewHtml += '<span class="jaraba-player-review__score-value">' + results.correct + '/' + results.rawMax + '</span>';
+            reviewHtml += '<span class="jaraba-player-review__score-label">' + Drupal.t('respuestas correctas') + '</span>';
+            reviewHtml += '</div>';
+            reviewHtml += '</div>';
+
+            // Listado de preguntas.
+            reviewHtml += '<div class="jaraba-player-review__items">';
+
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
+                var userAnswer = this.state.responses[q.id];
+                var isCorrect = this.isCorrect(q, userAnswer);
+                var statusClass = userAnswer ? (isCorrect ? 'jaraba-player-review__item--correct' : 'jaraba-player-review__item--incorrect') : 'jaraba-player-review__item--skipped';
+
+                reviewHtml += '<div class="jaraba-player-review__item ' + statusClass + '">';
+
+                // Número y estado.
+                reviewHtml += '<div class="jaraba-player-review__item-header">';
+                reviewHtml += '<span class="jaraba-player-review__item-number">' + (i + 1) + '</span>';
+                if (userAnswer) {
+                    if (isCorrect) {
+                        reviewHtml += '<span class="jaraba-player-review__item-status jaraba-player-review__item-status--correct">' + Drupal.t('Correcta') + '</span>';
+                    } else {
+                        reviewHtml += '<span class="jaraba-player-review__item-status jaraba-player-review__item-status--incorrect">' + Drupal.t('Incorrecta') + '</span>';
+                    }
+                } else {
+                    reviewHtml += '<span class="jaraba-player-review__item-status jaraba-player-review__item-status--skipped">' + Drupal.t('Sin responder') + '</span>';
+                }
+                reviewHtml += '</div>';
+
+                // Texto de la pregunta.
+                reviewHtml += '<p class="jaraba-player-review__item-question">' + (q.text || '') + '</p>';
+
+                // Respuesta del usuario.
+                if (userAnswer) {
+                    var userAnswerText = this.getAnswerText(q, userAnswer);
+                    reviewHtml += '<div class="jaraba-player-review__item-answer">';
+                    reviewHtml += '<span class="jaraba-player-review__item-answer-label">' + Drupal.t('Tu respuesta') + ':</span> ';
+                    reviewHtml += '<span>' + userAnswerText + '</span>';
+                    reviewHtml += '</div>';
+                }
+
+                // Respuesta correcta (solo si la del usuario fue incorrecta).
+                if (userAnswer && !isCorrect) {
+                    var correctText = this.getCorrectAnswerText(q);
+                    if (correctText) {
+                        reviewHtml += '<div class="jaraba-player-review__item-correct">';
+                        reviewHtml += '<span class="jaraba-player-review__item-answer-label">' + Drupal.t('Respuesta correcta') + ':</span> ';
+                        reviewHtml += '<span>' + correctText + '</span>';
+                        reviewHtml += '</div>';
+                    }
+                }
+
+                reviewHtml += '</div>';
+            }
+
+            reviewHtml += '</div>';
+
+            // Botón reintentar.
+            reviewHtml += '<div class="jaraba-player-review__actions">';
+            reviewHtml += '<button type="button" class="btn btn--primary jaraba-player-review__retry-btn">' + Drupal.t('Reintentar') + '</button>';
+            reviewHtml += '</div>';
+
+            reviewHtml += '</div>';
+
+            // Insertar en el contenedor del player.
+            var playerContent = this.container.querySelector('.interactive-player__content');
+            var resultsPanel = document.querySelector('#results-panel');
+
+            if (resultsPanel) {
+                resultsPanel.classList.add('hidden');
+            }
+            if (playerContent) {
+                playerContent.classList.remove('hidden');
+                playerContent.innerHTML = reviewHtml;
+            }
+
+            // Vincular evento de reintentar.
+            var retryBtn = this.container.querySelector('.jaraba-player-review__retry-btn');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => this.retry());
+            }
+
+            this.emitXapi('reviewed');
+        }
+
+        /**
+         * Obtiene el texto legible de la respuesta del usuario.
+         *
+         * @param {Object} question - Datos de la pregunta.
+         * @param {string} answer - Valor de la respuesta del usuario.
+         * @return {string} Texto de la respuesta.
+         */
+        getAnswerText(question, answer) {
+            if (question.type === 'true_false') {
+                return answer === 'true' ? Drupal.t('Verdadero') : Drupal.t('Falso');
+            }
+            if (question.type === 'multiple_choice' && question.options) {
+                var option = question.options.find(function (o) { return o.id === answer; });
+                return option ? option.text : answer;
+            }
+            return answer;
+        }
+
+        /**
+         * Obtiene el texto de la respuesta correcta de una pregunta.
+         *
+         * @param {Object} question - Datos de la pregunta.
+         * @return {string|null} Texto de la respuesta correcta.
+         */
+        getCorrectAnswerText(question) {
+            if (question.type === 'true_false') {
+                return question.correct_answer === 'true' ? Drupal.t('Verdadero') : Drupal.t('Falso');
+            }
+            if (question.type === 'multiple_choice' && question.options) {
+                var correct = question.options.find(function (o) { return o.correct; });
+                return correct ? correct.text : null;
+            }
+            if (question.type === 'short_answer') {
+                return question.correct_answer || null;
+            }
+            return null;
         }
 
         /**

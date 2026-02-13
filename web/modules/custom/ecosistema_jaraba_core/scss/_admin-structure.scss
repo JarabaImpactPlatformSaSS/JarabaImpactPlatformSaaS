@@ -1,0 +1,294 @@
+// =============================================================================
+// ADMIN STRUCTURE ENHANCED - PÁGINA /admin/structure CATEGORIZADA
+// =============================================================================
+// Secciones categorizadas con cards y búsqueda en tiempo real.
+// Renderiza en admin theme (Claro), por lo que usa variables CSS inyectables
+// con fallbacks SCSS para compatibilidad.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ── Container ──
+.ej-admin-structure {
+    max-width: $ej-container-max-width;
+    margin: 0 auto;
+    padding: 0 $ej-container-padding;
+}
+
+// ── Search Bar ──
+.ej-admin-structure__search {
+    margin-bottom: $ej-spacing-xl;
+    position: sticky;
+    top: 0;
+    z-index: $ej-z-index-sticky;
+    padding: $ej-spacing-md 0 $ej-spacing-sm;
+    background: var(--ej-color-surface, #{$ej-color-surface-fallback});
+}
+
+.ej-admin-structure__search-inner {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    background: $white;
+    border: $ej-border-width-thick solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $ej-border-radius-lg;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    transition: border-color $ej-transition-duration-normal $ej-transition-easing,
+        box-shadow $ej-transition-duration-normal $ej-transition-easing;
+}
+
+.ej-admin-structure__search-inner:focus-within {
+    border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+    box-shadow: 0 0 0 3px rgba($ej-color-corporate-fallback, 0.15);
+}
+
+.ej-admin-structure__search-icon {
+    flex-shrink: 0;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+.ej-admin-structure__search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: $ej-font-size-md;
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    outline: none;
+    padding: $ej-spacing-xs 0;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+
+    &::placeholder {
+        color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    }
+}
+
+.ej-admin-structure__search-count {
+    flex-shrink: 0;
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    background: $ej-gray-100;
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: $ej-border-radius-full;
+    font-weight: $ej-font-weight-medium;
+}
+
+// ── Tab Navigation ──
+.ej-admin-structure__tabs {
+    position: sticky;
+    top: 60px;
+    z-index: $ej-z-index-sticky - 1;
+    background: var(--ej-color-surface, #{$ej-color-surface-fallback});
+    padding: $ej-spacing-xs 0 $ej-spacing-sm;
+    margin-bottom: $ej-spacing-lg;
+}
+
+.ej-admin-structure__tabs-track {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-xs;
+}
+
+.ej-admin-structure__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    white-space: nowrap;
+    padding: $ej-spacing-xs $ej-spacing-md;
+    border: $ej-border-width solid $ej-gray-200;
+    border-radius: $ej-border-radius-full;
+    background: $white;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-medium;
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    cursor: pointer;
+    transition: all $ej-transition-duration-fast $ej-transition-easing;
+    flex-shrink: 0;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        background: rgba($ej-color-corporate-fallback, 0.04);
+    }
+
+    &.is-active {
+        background: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        color: $white;
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        font-weight: $ej-font-weight-semibold;
+        box-shadow: 0 2px 8px rgba($ej-color-corporate-fallback, 0.25);
+    }
+}
+
+.ej-admin-structure__tab-icon {
+    font-size: $ej-font-size-md;
+    line-height: 1;
+}
+
+// ── Section ──
+.ej-admin-structure__section {
+    margin-bottom: $ej-spacing-xl;
+    scroll-margin-top: 140px;
+}
+
+.ej-admin-structure__section-header {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm 0;
+    border-bottom: $ej-border-width-thick solid var(--ej-border-color, #{$ej-border-color-fallback});
+    margin-bottom: $ej-spacing-md;
+    flex-wrap: wrap;
+}
+
+.ej-admin-structure__section-icon {
+    font-size: $ej-font-size-2xl;
+    line-height: 1;
+}
+
+.ej-admin-structure__section-title {
+    font-size: $ej-font-size-lg;
+    font-weight: $ej-font-weight-bold;
+    margin: 0;
+    color: var(--ej-text-primary, #{$ej-color-text-fallback});
+}
+
+.ej-admin-structure__section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: $ej-spacing-lg;
+    height: $ej-spacing-lg;
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-semibold;
+    background: rgba($ej-color-corporate-fallback, 0.1);
+    color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+    border-radius: $ej-border-radius-full;
+    padding: 0 $ej-spacing-xs;
+}
+
+.ej-admin-structure__section-desc {
+    flex: 1 1 100%;
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    margin-top: 2px;
+}
+
+// ── Card Grid ──
+.ej-admin-structure__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $ej-spacing-md;
+}
+
+// ── Card (Premium Glassmorphism Pattern) ──
+.ej-admin-structure__card {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: $ej-border-width solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: $ej-border-radius-md;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color $ej-transition-duration-normal $ej-transition-easing,
+        box-shadow $ej-transition-duration-slow $ej-transition-easing,
+        transform $ej-transition-duration-slow cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    // Shine effect sweep
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.6s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        box-shadow: 0 4px 24px rgba($ej-color-corporate-fallback, 0.12),
+            0 1px 2px rgba(0, 0, 0, 0.02),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        transform: translateY(-4px) scale(1.01);
+        text-decoration: none;
+        color: inherit;
+
+        &::before {
+            left: 150%;
+        }
+    }
+
+    &:focus {
+        outline: 2px solid var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        outline-offset: 2px;
+    }
+}
+
+.ej-admin-structure__card-title {
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-semibold;
+    margin: 0 0 $ej-spacing-xs;
+    color: var(--ej-color-azul-profundo, #{$ej-color-azul-profundo-fallback});
+}
+
+.ej-admin-structure__card:hover .ej-admin-structure__card-title {
+    color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+}
+
+.ej-admin-structure__card-desc {
+    font-size: $ej-font-size-sm;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+    margin: 0 0 $ej-spacing-sm;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ej-admin-structure__card-module {
+    font-size: $ej-font-size-xs;
+    font-weight: $ej-font-weight-medium;
+    color: $ej-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+// ── Empty State ──
+.ej-admin-structure__empty {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-3xl $ej-spacing-md;
+    text-align: center;
+    color: var(--ej-text-muted, #{$ej-color-text-muted-fallback});
+
+    svg {
+        color: $ej-gray-300;
+    }
+
+    p {
+        font-size: $ej-font-size-md;
+        margin: 0;
+    }
+}
+
+// ── Responsive (mobile-first) ──
+@media (max-width: $ej-breakpoint-md) {
+    .ej-admin-structure__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ej-admin-structure__section-desc {
+        display: none;
+    }
+}
