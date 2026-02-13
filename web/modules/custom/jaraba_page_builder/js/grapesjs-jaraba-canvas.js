@@ -356,9 +356,6 @@
             // Configurar tabs del panel derecho (Estilos, Propiedades, Capas)
             this.setupPanelTabs();
 
-            // Configurar tabs del panel izquierdo (Bloques/Plantillas)
-            this.setupLeftPanelTabs();
-
             // Configurar toggle de viewport (Desktop, Tablet, Mobile)
             this.setupViewportToggle();
 
@@ -976,109 +973,6 @@
                 }
             } catch (error) {
                 console.error('Error cargando contenido:', error);
-            }
-        }
-
-        /**
-         * Configura los tabs del panel derecho (Estilos, Propiedades, Capas).
-         * 
-         * Configura tabs del panel izquierdo (Bloques / Plantillas).
-         */
-        setupLeftPanelTabs() {
-            const tabs = document.querySelectorAll('[data-left-panel]');
-            const blocksSection = document.getElementById('gjs-blocks-section');
-            const templatesSection = document.getElementById('gjs-templates-section');
-
-            if (!tabs.length || !blocksSection || !templatesSection) return;
-
-            let templatesLoaded = false;
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const panel = tab.dataset.leftPanel;
-
-                    // Actualizar estado activo de tabs
-                    tabs.forEach(t => t.classList.remove('is-active'));
-                    tab.classList.add('is-active');
-
-                    // Mostrar/ocultar secciones
-                    if (panel === 'blocks') {
-                        blocksSection.hidden = false;
-                        templatesSection.hidden = true;
-                    } else {
-                        blocksSection.hidden = true;
-                        templatesSection.hidden = false;
-
-                        // Cargar plantillas la primera vez
-                        if (!templatesLoaded) {
-                            templatesLoaded = true;
-                            this.loadTemplatesPanel();
-                        }
-                    }
-                });
-            });
-        }
-
-        /**
-         * Carga las plantillas desde el API en el panel izquierdo.
-         */
-        async loadTemplatesPanel() {
-            const container = document.getElementById('gjs-templates-container');
-            if (!container) return;
-
-            try {
-                const response = await fetch('/api/v1/page-builder/templates');
-                if (!response.ok) throw new Error('Error al cargar plantillas');
-
-                const templates = await response.json();
-                container.innerHTML = '';
-
-                if (!templates.length) {
-                    container.innerHTML = `<p class="jaraba-grapesjs-panel__placeholder">${Drupal.t('No hay plantillas disponibles.')}</p>`;
-                    return;
-                }
-
-                templates.forEach(tpl => {
-                    const card = document.createElement('div');
-                    card.className = 'jaraba-grapesjs-template-card';
-                    card.dataset.templateId = tpl.id;
-                    card.draggable = true;
-                    card.innerHTML = `
-                        <div class="jaraba-grapesjs-template-card__thumb">
-                            ${tpl.thumbnail ? `<img src="${tpl.thumbnail}" alt="${tpl.label}" loading="lazy" />` : '<div class="jaraba-grapesjs-template-card__placeholder-icon">📄</div>'}
-                        </div>
-                        <span class="jaraba-grapesjs-template-card__label">${tpl.label}</span>
-                    `;
-
-                    // Click para insertar la plantilla en el canvas
-                    card.addEventListener('click', () => {
-                        if (tpl.html && this.editor) {
-                            this.editor.addComponents(tpl.html);
-                            if (tpl.css) {
-                                const existing = this.editor.getCss() || '';
-                                this.editor.setStyle(existing + '\n' + tpl.css);
-                            }
-                            console.log(`[Jaraba Canvas] Plantilla "${tpl.label}" insertada.`);
-                        }
-                    });
-
-                    container.appendChild(card);
-                });
-
-                // Buscador de plantillas
-                const searchInput = document.getElementById('gjs-templates-search');
-                if (searchInput) {
-                    searchInput.addEventListener('input', () => {
-                        const query = searchInput.value.toLowerCase();
-                        container.querySelectorAll('.jaraba-grapesjs-template-card').forEach(card => {
-                            const label = card.querySelector('.jaraba-grapesjs-template-card__label')?.textContent?.toLowerCase() || '';
-                            card.style.display = label.includes(query) ? '' : 'none';
-                        });
-                    });
-                }
-            } catch (error) {
-                console.warn('[Jaraba Canvas] Error cargando plantillas:', error);
-                container.innerHTML = `<p class="jaraba-grapesjs-panel__placeholder">${Drupal.t('Error al cargar plantillas. Intenta de nuevo.')}</p>`;
             }
         }
 
