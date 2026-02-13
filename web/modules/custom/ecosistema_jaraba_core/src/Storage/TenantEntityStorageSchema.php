@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Storage;
 
+use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema;
 
 /**
@@ -23,11 +24,10 @@ class TenantEntityStorageSchema extends SqlContentEntityStorageSchema {
   /**
    * {@inheritdoc}
    */
-  protected function getEntitySchema(array $storage_definitions, $optional = FALSE): array {
-    $schema = parent::getEntitySchema($storage_definitions, $optional);
+  protected function getEntitySchema(ContentEntityTypeInterface $entity_type, $reset = FALSE) {
+    $schema = parent::getEntitySchema($entity_type, $reset);
 
-    $entityType = $this->entityType;
-    $baseTable = $entityType->getBaseTable();
+    $baseTable = $entity_type->getBaseTable();
 
     if (!$baseTable || empty($schema[$baseTable])) {
       return $schema;
