@@ -1,0 +1,60 @@
+_core:
+  default_config_hash: IMADHprsCZdvQfx4dLK2wmz20uCpaLRCzTbUwpZQztk
+vector_db:
+  host: 'http://qdrant:6333'
+  api_key: ''
+  collection: jaraba_kb
+  dimensions: 1536
+  distance_metric: cosine
+embeddings:
+  model: text-embedding-3-small
+  chunk_size: 500
+  chunk_overlap: 100
+search:
+  top_k: 5
+  min_score: 0.7
+  include_vertical_content: true
+  include_platform_content: true
+grounding:
+  enabled: true
+  min_entailment_score: 0.7
+  fallback_message: 'No tengo esa información. ¿Puedo ayudarte con algo más?'
+analytics:
+  enabled: true
+  classify_intent: true
+  detect_gaps: true
+  gap_alert_threshold: 5
+llm:
+  model: gpt-4o-mini
+  temperature: 0.3
+  max_tokens: 500
+indexable_entities:
+  commerce_product:
+    enabled: true
+    fields:
+      - title
+      - body
+      - field_ai_summary
+    answer_capsule_boost: 1.5
+  node:
+    article:
+      enabled: true
+      fields:
+        - title
+        - body
+        - field_summary
+    faq:
+      enabled: true
+      fields:
+        - field_question
+        - field_answer
+    page:
+      enabled: true
+      fields:
+        - title
+        - body
+  taxonomy_term:
+    enabled: true
+    fields:
+      - name
+      - description

@@ -1,0 +1,16 @@
+price_storage_mb: 0.02
+price_api_request: 0.001
+price_cpu_hour: 0.1
+monthly_budget: 5000
+warning_threshold: 75
+critical_threshold: 90
+tier_limits:
+  basic:
+    warning: 50
+    critical: 100
+  professional:
+    warning: 200
+    critical: 500
+  enterprise:
+    warning: 1000
+    critical: 2500

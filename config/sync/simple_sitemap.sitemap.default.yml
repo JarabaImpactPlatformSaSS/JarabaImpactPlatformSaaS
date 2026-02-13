@@ -1,0 +1,13 @@
+uuid: 57e5315d-6545-4aed-b9ac-6ae0cfa55bb9
+langcode: es
+status: true
+dependencies:
+  config:
+    - simple_sitemap.type.default_hreflang
+_core:
+  default_config_hash: rzLPapRSW-bgTs4MObzlqsqwj5IxPGO9EQZolw2ZzFc
+id: default
+label: Predeterminado
+description: 'El mapa del sitio hreflang predeterminado: enumera las URL que deben indexar los motores de búsqueda modernos.'
+type: default_hreflang
+weight: 0

@@ -1,0 +1,88 @@
+uuid: 431fd9a5-9f94-48c8-a9d6-2f5ec5116e52
+langcode: es
+status: true
+dependencies: {  }
+id: hover_glow_cards
+label: 'Tarjetas con Glow'
+description: 'Tarjetas con efecto de resplandor al hover.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/hover-glow-cards.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    cards:
+      type: array
+      title: Tarjetas
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+          description:
+            type: string
+          glow_color:
+            type: string
+            enum:
+              - primary
+              - secondary
+              - success
+              - warning
+              - custom
+          url:
+            type: string
+    columns:
+      type: integer
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    glow_intensity:
+      type: string
+      enum:
+        - subtle
+        - medium
+        - strong
+      default: medium
+    background:
+      type: string
+      enum:
+        - dark
+        - gradient
+      default: dark
+  required:
+    - cards
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  title: 'Premium Features'
+  subtitle: 'Hover over cards to see the glow effect'
+  cards:
+    -
+      icon: bolt
+      title: 'Instant Setup'
+      description: 'Get started in under 5 minutes with zero configuration'
+      glow_color: primary
+    -
+      icon: shield
+      title: 'Advanced Security'
+      description: 'Enterprise-grade protection for your data'
+      glow_color: secondary
+    -
+      icon: chart-bar
+      title: 'Deep Analytics'
+      description: 'Insights that help you make better decisions'
+      glow_color: success
+  columns: 3
+  glow_intensity: medium
+  background: dark
+weight: 0

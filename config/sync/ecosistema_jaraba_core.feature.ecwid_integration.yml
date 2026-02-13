@@ -1,0 +1,14 @@
+uuid: dabec887-e8a0-40a8-85be-3b6597bf58de
+langcode: es
+status: true
+dependencies: {  }
+id: ecwid_integration
+label: 'Integración Ecwid'
+description: 'Conexión con tienda Ecwid para gestión de productos y pedidos.'
+category: integraciones
+icon: shopping-cart
+weight: 2
+base_cost_monthly: 0.0
+unit_cost: 0.0
+cost_category: compute
+usage_metric: ''

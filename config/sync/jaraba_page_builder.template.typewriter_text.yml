@@ -1,0 +1,86 @@
+uuid: bf841989-a40a-46b9-b6e8-315ec2d16413
+langcode: es
+status: true
+dependencies: {  }
+id: typewriter_text
+label: 'Texto Máquina de Escribir'
+description: 'Texto con efecto de escritura automática.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/typewriter-text.html.twig'
+fields_schema:
+  type: object
+  properties:
+    prefix:
+      type: string
+      title: 'Texto fijo inicial'
+    phrases:
+      type: array
+      title: 'Frases a rotar'
+      items:
+        type: string
+    suffix:
+      type: string
+      title: 'Texto fijo final'
+    typing_speed:
+      type: number
+      title: 'Velocidad escritura (ms)'
+      default: 100
+    delete_speed:
+      type: number
+      title: 'Velocidad borrado (ms)'
+      default: 50
+    pause_time:
+      type: number
+      title: 'Pausa entre frases (ms)'
+      default: 2000
+    cursor_style:
+      type: string
+      enum:
+        - bar
+        - underscore
+        - none
+      default: bar
+    font_size:
+      type: string
+      enum:
+        - medium
+        - large
+        - xl
+        - hero
+      default: large
+    text_align:
+      type: string
+      enum:
+        - left
+        - center
+        - right
+      default: center
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - phrases
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  prefix: 'We help you '
+  phrases:
+    - 'grow faster'
+    - 'work smarter'
+    - 'achieve more'
+    - 'scale easily'
+  suffix: ' than ever before.'
+  typing_speed: 100
+  delete_speed: 50
+  pause_time: 2000
+  cursor_style: bar
+  font_size: hero
+  text_align: center
+  background: light
+weight: 0

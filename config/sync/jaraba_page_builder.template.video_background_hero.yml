@@ -1,0 +1,86 @@
+uuid: 517131ab-46d2-4895-a4c0-ad9c9a1b99f0
+langcode: es
+status: true
+dependencies: {  }
+id: video_background_hero
+label: 'Hero con Vídeo de Fondo'
+description: 'Hero section premium con vídeo de fondo en loop, overlay gradiente y contenido centrado. Impacto visual máximo.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/video-background-hero.html.twig'
+fields_schema:
+  type: object
+  properties:
+    video_url:
+      type: string
+      title: 'URL del Vídeo'
+      description: 'URL de vídeo MP4 o WebM. Recomendado: 1920x1080, <10MB, sin audio.'
+    poster_image:
+      type: string
+      format: image
+      title: 'Imagen Poster'
+      description: 'Se muestra mientras el vídeo carga.'
+    title:
+      type: string
+    subtitle:
+      type: string
+    cta_text:
+      type: string
+    cta_url:
+      type: string
+    secondary_cta_text:
+      type: string
+    secondary_cta_url:
+      type: string
+    overlay_style:
+      type: string
+      enum:
+        - dark
+        - light
+        - gradient
+        - brand
+      default: gradient
+    overlay_opacity:
+      type: integer
+      minimum: 0
+      maximum: 100
+      default: 60
+    content_alignment:
+      type: string
+      enum:
+        - left
+        - center
+        - right
+      default: center
+    height:
+      type: string
+      enum:
+        - medium
+        - tall
+        - fullscreen
+      default: tall
+    scroll_indicator:
+      type: boolean
+      default: true
+  required:
+    - video_url
+    - title
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  video_url: 'https://assets.mixkit.co/videos/preview/mixkit-people-working-in-a-modern-office-4820-large.mp4'
+  poster_image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80'
+  title: 'Transforma tu negocio digital'
+  subtitle: 'Plataforma integral para escalar tu empresa con tecnología de vanguardia'
+  cta_text: 'Comenzar gratis'
+  cta_url: /register
+  secondary_cta_text: 'Ver demo'
+  secondary_cta_url: /demo
+  overlay_style: gradient
+  overlay_opacity: 60
+  content_alignment: center
+  height: tall
+  scroll_indicator: true
+weight: 0

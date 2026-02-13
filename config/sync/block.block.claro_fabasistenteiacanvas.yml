@@ -1,0 +1,25 @@
+uuid: 3944f384-3c83-4503-95db-d12df6fff175
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_business_tools
+    - system
+  theme:
+    - claro
+id: claro_fabasistenteiacanvas
+theme: claro
+region: header
+weight: 0
+provider: null
+plugin: entrepreneur_agent_fab
+settings:
+  id: entrepreneur_agent_fab
+  label: 'FAB Asistente IA Canvas'
+  label_display: visible
+  provider: jaraba_business_tools
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/admin/content/business-canvas\r\n/admin/content/business-canvas/*"

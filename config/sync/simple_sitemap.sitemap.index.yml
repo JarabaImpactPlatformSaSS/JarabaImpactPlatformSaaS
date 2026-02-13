@@ -1,0 +1,13 @@
+uuid: 0cf4e7d7-73fc-4094-9e75-6ef49999ede0
+langcode: es
+status: false
+dependencies:
+  config:
+    - simple_sitemap.type.index
+_core:
+  default_config_hash: WffB95XdMvoUEvymTyLFLB-Q_JnCbbjy9Kj7TvlzN9s
+id: index
+label: 'Índice del mapa del sitio'
+description: 'Índice de mapas de sitios que incluye todos los demás mapas de sitios: útil si hay al menos otros dos mapas de sitios. En la mayoría de los casos, este mapa de sitios debe ser el último en la cola de generación y configurarse como el mapa de sitios predeterminado.'
+type: index
+weight: 1000

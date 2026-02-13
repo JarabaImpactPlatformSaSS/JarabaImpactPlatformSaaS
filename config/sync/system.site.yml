@@ -2,9 +2,9 @@ _core:
   default_config_hash: ijfbzDTN4CbE7Sr-6ubWzy_t1vH4OtU1doNCLssVz-4
 langcode: es
 uuid: 31e467f0-a3f3-4fa7-bd61-222cc2ce07a3
-name: 'Jaraba Impact Platform'
+name: Jaraba
 mail: contacto@plataformadeecosistemas.com
-slogan: 'Ecosistema Digital'
+slogan: 'Impact Platform'
 page:
   403: ''
   404: ''

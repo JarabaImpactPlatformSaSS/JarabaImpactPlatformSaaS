@@ -1,0 +1,215 @@
+uuid: 8c6d2938-10d2-4c5d-80f9-31ef10171d80
+langcode: es
+status: true
+dependencies: {  }
+id: animated_beam
+label: 'Animated Beam (Magic UI)'
+description: 'Visualización animada de conexiones entre elementos, perfecta para mostrar integraciones o flujos.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/premium/animated-beam.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: 'Título de la sección'
+      maxLength: 100
+      default: 'Integraciones sin límites'
+    subtitle:
+      type: text
+      title: Subtítulo
+      rows: 2
+      default: 'Conectamos todas tus herramientas en un solo lugar.'
+    center_element:
+      type: object
+      title: 'Elemento central'
+      open: true
+      properties:
+        type:
+          type: select
+          title: Tipo
+          enum:
+            - logo
+            - icon
+            - text
+          enumLabels:
+            - 'Logo (imagen)'
+            - Icono
+            - Texto/Iniciales
+          default: logo
+        logo_url:
+          type: image
+          title: Logo
+          description: 'Imagen del logo central.'
+        icon:
+          type: select
+          title: Icono
+          enum:
+            - hub
+            - network
+            - zap
+            - cpu
+          enumLabels:
+            - 'Hub central'
+            - Red
+            - Conexión
+            - Procesador
+        text:
+          type: string
+          title: Texto
+          maxLength: 10
+        label:
+          type: string
+          title: Etiqueta
+          description: 'Texto debajo del elemento central.'
+          maxLength: 50
+    connected_elements:
+      type: array
+      title: 'Elementos conectados'
+      description: 'Elementos que se conectan al centro con beams animados.'
+      minItems: 4
+      maxItems: 8
+      itemLabel: elemento
+      items:
+        type: object
+        properties:
+          type:
+            type: select
+            title: Tipo
+            enum:
+              - logo
+              - icon
+            enumLabels:
+              - Logo
+              - Icono
+            default: icon
+          logo_url:
+            type: image
+            title: Logo
+          icon:
+            type: select
+            title: Icono
+            enum:
+              - slack
+              - github
+              - google
+              - stripe
+              - database
+              - cloud
+              - mail
+              - calendar
+            enumLabels:
+              - Slack
+              - GitHub
+              - Google
+              - Stripe
+              - 'Base de datos'
+              - Cloud
+              - Email
+              - Calendario
+          label:
+            type: string
+            title: Etiqueta
+            maxLength: 30
+          beam_color:
+            type: select
+            title: 'Color del beam'
+            enum:
+              - primary
+              - secondary
+              - gradient
+            enumLabels:
+              - Primario
+              - Secundario
+              - Degradado
+            default: gradient
+        required:
+          - label
+    beam_style:
+      type: select
+      title: 'Estilo de los beams'
+      enum:
+        - solid
+        - dashed
+        - gradient
+        - glowing
+      enumLabels:
+        - 'Línea sólida'
+        - 'Línea punteada'
+        - Degradado
+        - 'Con brillo'
+      default: glowing
+    beam_speed:
+      type: select
+      title: 'Velocidad de animación'
+      enum:
+        - slow
+        - normal
+        - fast
+      enumLabels:
+        - Lenta
+        - Normal
+        - Rápida
+      default: normal
+    background:
+      type: select
+      title: Fondo
+      enum:
+        - dark
+        - light
+        - grid
+      enumLabels:
+        - Oscuro
+        - Claro
+        - 'Con cuadrícula'
+      default: dark
+  required:
+    - center_element
+    - connected_elements
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/animated-beam.png
+preview_data:
+  title: 'Seamless Integrations'
+  subtitle: 'Connect all your tools in one powerful platform'
+  center_element:
+    type: text
+    text: HUB
+    label: 'Central Platform'
+  connected_elements:
+    -
+      type: icon
+      icon: link
+      label: Slack
+      beam_color: gradient
+    -
+      type: icon
+      icon: code
+      label: GitHub
+      beam_color: gradient
+    -
+      type: icon
+      icon: globe
+      label: Google
+      beam_color: gradient
+    -
+      type: icon
+      icon: shopping-cart
+      label: Stripe
+      beam_color: gradient
+    -
+      type: icon
+      icon: database
+      label: Database
+      beam_color: gradient
+    -
+      type: icon
+      icon: globe
+      label: Cloud
+      beam_color: gradient
+  beam_style: glowing
+  beam_speed: normal
+  background: dark
+weight: 110

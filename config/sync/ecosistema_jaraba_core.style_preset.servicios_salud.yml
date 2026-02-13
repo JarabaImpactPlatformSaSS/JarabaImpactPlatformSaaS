@@ -1,0 +1,20 @@
+uuid: a4559527-e68a-4197-9b5e-06c876724296
+langcode: es
+status: true
+dependencies: {  }
+id: servicios_salud
+label: 'Salud & Bienestar'
+description: 'Para clínicas, fisioterapeutas, psicólogos, dentistas. Limpieza, cuidado, profesionalidad médica.'
+vertical: serviciosconecta
+sector: salud
+mood: '["clean", "caring", "professional", "medical"]'
+target_audience: 'Clínicas, fisioterapeutas, psicólogos, dentistas'
+color_tokens: '{"primary":"#0891B2","secondary":"#10B981","accent":"#F59E0B","surface":"#F0FDFA","surface-dark":"#042F2E","text-primary":"#134E4A","text-secondary":"#475569","text-muted":"#94A3B8","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Poppins, sans-serif","family-body":"Inter, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"10px","shadow-md":"0 4px 16px rgba(8,145,178,0.06)","shadow-lg":"0 8px 32px rgba(8,145,178,0.10)"}'
+effect_tokens: '{"glass-bg":"rgba(240,253,250,0.90)","glass-blur":"blur(12px)","glass-border":"1px solid rgba(8,145,178,0.08)","gradient-primary":"linear-gradient(135deg, #0891B2, #10B981)"}'
+component_variants: '{"header":"sticky","hero":"split","cards":"profile-casual","footer":"informative"}'
+animation_config: '{"type":"friendly","speed":"400ms","reveal":"fade-up"}'
+content_guidelines: '{"photography":"Espacios luminosos y limpios, profesional sonriendo, equipamiento moderno","copywriting":"Tono cálido y profesional, vocabulario de salud (cuidamos, bienestar, tu salud)","iconography":"Redondeado, limpio, médico"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"]'
+weight: 21

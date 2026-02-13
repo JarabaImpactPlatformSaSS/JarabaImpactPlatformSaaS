@@ -1,0 +1,20 @@
+uuid: ee0709a1-e5c0-4eb0-a2d3-c3b01c8692d7
+langcode: es
+status: true
+dependencies: {  }
+id: comercio_wellness
+label: 'Zen & Natural'
+description: 'Para herbolarios, parafarmacias, yoga shops, cosmética natural. Bienestar, calma, naturaleza, salud.'
+vertical: comercioconecta
+sector: wellness
+mood: '["zen", "calm", "natural", "healthy"]'
+target_audience: 'Herbolarios, parafarmacias, yoga shops, cosmética natural'
+color_tokens: '{"primary":"#047857","secondary":"#6B7280","accent":"#FDE68A","surface":"#F0FDF4","surface-dark":"#022C22","text-primary":"#064E3B","text-secondary":"#4B5563","text-muted":"#9CA3AF","text-inverse":"#FFFFFF"}'
+typography_tokens: '{"family-heading":"Josefin Sans, sans-serif","family-body":"Lato, sans-serif","family-mono":"JetBrains Mono, monospace"}'
+spacing_tokens: '{"radius-md":"12px","shadow-md":"0 4px 16px rgba(4,120,87,0.06)","shadow-lg":"0 8px 32px rgba(4,120,87,0.10)"}'
+effect_tokens: '{"glass-bg":"rgba(240,253,244,0.88)","glass-blur":"blur(14px)","glass-border":"1px solid rgba(4,120,87,0.08)","gradient-primary":"linear-gradient(135deg, #047857, #6B7280)"}'
+component_variants: '{"header":"minimal","hero":"centered","cards":"service-glass","footer":"simple"}'
+animation_config: '{"type":"organic","speed":"600ms","reveal":"fade-in"}'
+content_guidelines: '{"photography":"Tonos pastel, productos con plantas, fondos minimalistas, luz suave difusa","copywriting":"Tono sereno, vocabulario de bienestar (equilibrio, natural, esencia, armonía)","iconography":"Orgánico, líneas finas, minimalista"}'
+font_imports: '["https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Lato:wght@400;700&display=swap"]'
+weight: 14

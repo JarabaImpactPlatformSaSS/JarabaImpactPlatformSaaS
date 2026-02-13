@@ -1,0 +1,8 @@
+_core:
+  default_config_hash: y_bcOivGaoiqpDp5gx90NM74rDONc0MTRh1yMfLiIjY
+horas_minimas_orientacion: 10
+horas_minimas_formacion: 50
+horas_por_sesion_ia: 0.25
+maximo_horas_ia_dia: 4
+sto_sync_enabled: false
+sto_endpoint: ''

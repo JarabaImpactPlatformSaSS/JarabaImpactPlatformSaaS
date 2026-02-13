@@ -1,0 +1,13 @@
+uuid: 68628de5-3fa0-4b9e-b2fe-517ef4f114e0
+langcode: es
+status: true
+dependencies:
+  module:
+    - commerce_product
+_core:
+  default_config_hash: 6gfQWDjHFkJsE2C2ayhUL7x1jBGPgOhr3SGF15Kxy-w
+id: commerce_unpublish_product
+label: 'Despublicar producto'
+type: commerce_product
+plugin: commerce_unpublish_product
+configuration: {  }
