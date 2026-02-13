@@ -25,7 +25,7 @@
 
   {# Answer text #}
   <div class="legal-response__answer">
-    {{ response|raw }}
+    {{ response|safe_html }}
   </div>
 
   {# Citations #}

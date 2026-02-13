@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Twig;
 
+use Drupal\Component\Utility\Xss;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 /**
@@ -49,6 +51,39 @@ class JarabaTwigExtension extends AbstractExtension
     public function getName(): string
     {
         return 'jaraba_twig';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilters(): array {
+        return [
+            new TwigFilter('safe_html', [$this, 'filterSafeHtml'], [
+                'is_safe' => ['html'],
+            ]),
+        ];
+    }
+
+    /**
+     * AUDIT-SEC-N04: Sanitiza HTML para prevenir XSS almacenado.
+     *
+     * Permite tags HTML seguros (div, span, p, h1-h6, ul, ol, li, a, img,
+     * table, strong, em, etc.) pero elimina <script>, <iframe>, event handlers
+     * (onclick, onerror), y otros vectores XSS.
+     *
+     * Uso en Twig: {{ content|safe_html }} en vez de {{ content|raw }}
+     *
+     * @param string|null $html
+     *   HTML potencialmente inseguro.
+     *
+     * @return string
+     *   HTML sanitizado.
+     */
+    public function filterSafeHtml(?string $html): string {
+        if ($html === NULL || $html === '') {
+            return '';
+        }
+        return Xss::filterAdmin($html);
     }
 
     /**

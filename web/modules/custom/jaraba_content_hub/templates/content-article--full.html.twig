@@ -45,7 +45,7 @@
   </header>
 
   <div class="content-article__body">
-    {{ article.body|raw }}
+    {{ article.body|safe_html }}
   </div>
 
   <footer class="content-article__footer">

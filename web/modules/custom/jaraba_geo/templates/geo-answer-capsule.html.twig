@@ -33,7 +33,7 @@
   {# Detalles Expandidos #}
   {% if capsule.details %}
   <div class="geo-answer-capsule__details" itemprop="description">
-    {{ capsule.details|raw }}
+    {{ capsule.details|safe_html }}
   </div>
   {% endif %}
   

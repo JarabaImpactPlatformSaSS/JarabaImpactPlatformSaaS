@@ -89,7 +89,7 @@
   {% if group.description.value %}
   <section class="group-detail__description">
     <h2>{{ 'Sobre este grupo'|t }}</h2>
-    {{ group.description.value|raw }}
+    {{ group.description.value|safe_html }}
   </section>
   {% endif %}
   

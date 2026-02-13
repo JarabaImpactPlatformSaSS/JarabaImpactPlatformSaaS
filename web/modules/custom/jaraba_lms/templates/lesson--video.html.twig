@@ -117,7 +117,7 @@
   {# Lesson Content (if any supplementary text) #}
   {% if lesson.content.value %}
     <div class="lesson__content">
-      {{ lesson.content.value|raw }}
+      {{ lesson.content.value|safe_html }}
     </div>
   {% endif %}
 

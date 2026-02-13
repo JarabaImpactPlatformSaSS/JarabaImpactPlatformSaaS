@@ -31,7 +31,7 @@
     </header>
 
     <div class="help-article__body">
-      {{ faq.answer|raw }}
+      {{ faq.answer|safe_html }}
     </div>
 
     <footer class="help-article__footer">

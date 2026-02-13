@@ -56,7 +56,7 @@
   <section class="servicios-provider-detail__about">
     <h2>{{ 'Sobre el profesional'|t }}</h2>
     <div class="servicios-provider-detail__description">
-      {{ provider.description.value|raw }}
+      {{ provider.description.value|safe_html }}
     </div>
 
     {% if provider.license_number.value %}

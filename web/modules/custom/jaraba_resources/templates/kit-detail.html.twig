@@ -87,7 +87,7 @@
   <div class="ej-kit-detail__section">
     <h2 class="ej-section-title">{{ 'Descripción'|t }}</h2>
     <div class="ej-kit-detail__description">
-      {{ kit.description.value|raw }}
+      {{ kit.description.value|safe_html }}
     </div>
   </div>
   

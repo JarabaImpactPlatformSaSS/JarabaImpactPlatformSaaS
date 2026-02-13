@@ -23,11 +23,11 @@
                data-animation="{{ item.animation|default('fade-up') }}"
                data-delay="{{ item.delay|default(0) }}">
             {% if item.type == 'text' %}
-              <div class="jaraba-scroll-reveal__text">{{ item.content|raw }}</div>
+              <div class="jaraba-scroll-reveal__text">{{ item.content|safe_html }}</div>
             {% elseif item.type == 'image' %}
               <img src="{{ item.image }}" alt="" class="jaraba-scroll-reveal__image" loading="lazy">
             {% elseif item.type == 'card' %}
-              <div class="jaraba-scroll-reveal__card">{{ item.content|raw }}</div>
+              <div class="jaraba-scroll-reveal__card">{{ item.content|safe_html }}</div>
             {% endif %}
           </div>
         {% endfor %}

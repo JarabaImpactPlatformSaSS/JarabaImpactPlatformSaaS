@@ -27,7 +27,7 @@
 
     <div class="generated-story-card">
       <div class="story-content">
-        {{ generated_story|raw }}
+        {{ generated_story|safe_html }}
       </div>
       <div class="story-actions">
         <button class="regenerate-btn" id="regenerate-story">

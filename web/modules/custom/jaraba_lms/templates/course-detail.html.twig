@@ -94,7 +94,7 @@
       <section class="course-detail__description">
         <h2>{{ 'Sobre este curso'|t }}</h2>
         <div itemprop="description">
-          {{ course.description.value|raw }}
+          {{ course.description.value|safe_html }}
         </div>
       </section>
 
@@ -102,7 +102,7 @@
         <section class="course-detail__objectives">
           <h2>{{ '¿Qué aprenderás?'|t }}</h2>
           <div class="objectives-list">
-            {{ course.learning_objectives.value|raw }}
+            {{ course.learning_objectives.value|safe_html }}
           </div>
         </section>
       {% endif %}
@@ -140,7 +140,7 @@
         <section class="course-detail__requirements">
           <h2>{{ 'Requisitos previos'|t }}</h2>
           <div>
-            {{ course.requirements.value|raw }}
+            {{ course.requirements.value|safe_html }}
           </div>
         </section>
       {% endif %}

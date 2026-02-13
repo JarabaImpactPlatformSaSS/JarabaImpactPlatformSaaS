@@ -175,7 +175,7 @@
         {% if product.get('description').value %}
           <div class="comercio-product-detail__description">
             <h3>{% trans %}Descripción{% endtrans %}</h3>
-            <div itemprop="description">{{ product.get('description').value|raw }}</div>
+            <div itemprop="description">{{ product.get('description').value|safe_html }}</div>
           </div>
         {% endif %}
 
@@ -256,7 +256,7 @@
         </p>
         {% if merchant.get('description').value %}
           <div class="comercio-merchant-page__description">
-            {{ merchant.get('description').value|raw }}
+            {{ merchant.get('description').value|safe_html }}
           </div>
         {% endif %}
       </div>

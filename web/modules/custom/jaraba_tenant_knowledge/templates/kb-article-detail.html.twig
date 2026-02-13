@@ -47,7 +47,7 @@
       </header>
 
       <div class="kb-article__body">
-        {{ article.body|raw }}
+        {{ article.body|safe_html }}
       </div>
 
       {# Vídeos vinculados #}

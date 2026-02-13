@@ -65,7 +65,7 @@
       <section class="profile-section">
         <h2>{{ 'Sobre mí'|t }}</h2>
         <div class="bio-content">
-          {{ mentor.bio|raw }}
+          {{ mentor.bio|safe_html }}
         </div>
       </section>
 
