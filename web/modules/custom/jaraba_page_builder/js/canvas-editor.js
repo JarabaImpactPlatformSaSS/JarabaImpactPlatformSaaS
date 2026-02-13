@@ -121,24 +121,157 @@
 
 
         /**
-         * Guarda cambios.
+         * Obtiene los datos actuales del canvas para persistir.
+         *
+         * Recopila el estado de secciones, configuración de página y
+         * metadatos necesarios para reconstruir el canvas al recargar.
+         *
+         * @return {Object} Datos del canvas serializables a JSON.
+         */
+        getCanvasData() {
+            // Recopilar secciones desde el sidebar del editor.
+            const sections = [];
+            const blocks = this.element.querySelectorAll('.canvas-editor__block');
+
+            blocks.forEach((block, index) => {
+                sections.push({
+                    uuid: block.dataset.uuid || '',
+                    template_id: block.dataset.templateId || '',
+                    weight: index,
+                    visible: !block.classList.contains('canvas-editor__block--hidden'),
+                });
+            });
+
+            return {
+                sections: sections,
+                editor_state: {
+                    viewport: this.element.querySelector('.canvas-editor__viewport-btn.is-active')?.dataset.viewport || 'desktop',
+                },
+            };
+        }
+
+        /**
+         * Guarda cambios del canvas via API PATCH.
+         *
+         * Envía los datos del canvas al endpoint PATCH /api/v1/pages/{id}/canvas
+         * que ya existe en el backend. Incluye CSRF token para seguridad.
+         *
+         * @return {Promise<boolean>} true si el guardado fue exitoso.
          */
         async save() {
             this.showSaveStatus(Drupal.t('Guardando...'));
 
-            // TODO: Implementar guardado completo.
-            setTimeout(() => {
-                this.hideSaveStatus();
+            try {
+                const response = await fetch('/api/v1/pages/' + this.pageId + '/canvas', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': drupalSettings.csrfToken || '',
+                    },
+                    body: JSON.stringify({
+                        canvas_data: this.getCanvasData(),
+                        updated: new Date().toISOString(),
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(Drupal.t('Error del servidor: @status', {
+                        '@status': response.status,
+                    }));
+                }
+
                 this.isDirty = false;
-            }, 1000);
+                this.showSaveStatus(Drupal.t('Guardado correctamente'));
+                setTimeout(() => this.hideSaveStatus(), 2500);
+                return true;
+            }
+            catch (error) {
+                this.showSaveStatus(Drupal.t('Error al guardar'), true);
+                console.error('Canvas save error:', error);
+                setTimeout(() => this.hideSaveStatus(), 4000);
+                return false;
+            }
         }
 
         /**
-         * Publica la página.
+         * Publica la página del canvas.
+         *
+         * Primero guarda cambios pendientes si los hay, después envía
+         * petición POST al endpoint de publicación. Al publicar, muestra
+         * la URL pública resultante al usuario.
          */
         async publish() {
-            // TODO: Implementar publicación.
-            console.log('Publicar página:', this.pageId);
+            // Guardar cambios pendientes antes de publicar.
+            if (this.isDirty) {
+                var saved = await this.save();
+                if (!saved) {
+                    return;
+                }
+            }
+
+            this.showSaveStatus(Drupal.t('Publicando...'));
+
+            try {
+                const response = await fetch('/api/v1/pages/' + this.pageId + '/publish', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': drupalSettings.csrfToken || '',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(Drupal.t('Error del servidor: @status', {
+                        '@status': response.status,
+                    }));
+                }
+
+                const data = await response.json();
+                this.showSaveStatus(Drupal.t('Publicado correctamente'));
+
+                // Mostrar URL pública si el backend la devuelve.
+                if (data.url) {
+                    this.showPublishUrl(data.url);
+                }
+
+                setTimeout(() => this.hideSaveStatus(), 3000);
+            }
+            catch (error) {
+                this.showSaveStatus(Drupal.t('Error al publicar'), true);
+                console.error('Canvas publish error:', error);
+                setTimeout(() => this.hideSaveStatus(), 4000);
+            }
+        }
+
+        /**
+         * Muestra la URL pública después de publicar.
+         *
+         * Crea un enlace temporal bajo el status bar para que el usuario
+         * pueda acceder directamente a la página publicada.
+         *
+         * @param {string} url - URL pública de la página.
+         */
+        showPublishUrl(url) {
+            var existing = this.element.querySelector('.canvas-editor__publish-url');
+            if (existing) {
+                existing.remove();
+            }
+
+            var container = document.createElement('div');
+            container.className = 'canvas-editor__publish-url';
+            container.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener">'
+                + Drupal.t('Ver página publicada') + ' →</a>';
+
+            if (this.saveStatus && this.saveStatus.parentNode) {
+                this.saveStatus.parentNode.insertBefore(container, this.saveStatus.nextSibling);
+            }
+
+            // Auto-ocultar después de 10 segundos.
+            setTimeout(function () {
+                if (container.parentNode) {
+                    container.remove();
+                }
+            }, 10000);
         }
 
         /**

@@ -235,6 +235,7 @@ class SectionApiController extends ControllerBase
                 'category' => $template->getCategory(),
                 'thumbnail' => $template->getThumbnail(),
                 'premium' => $template->isPremium(),
+                'fields_schema' => $template->getFieldsSchema(),
             ];
         }
 

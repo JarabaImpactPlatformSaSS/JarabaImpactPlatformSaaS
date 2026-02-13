@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_pixels\Service;
 
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\State\StateInterface;
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -54,6 +57,13 @@ class TokenVerificationService
     protected LoggerInterface $logger;
 
     /**
+     * Cliente HTTP para verificación en vivo.
+     *
+     * @var \GuzzleHttp\ClientInterface
+     */
+    protected ClientInterface $httpClient;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -61,11 +71,13 @@ class TokenVerificationService
         MailManagerInterface $mail_manager,
         StateInterface $state,
         $logger_factory,
+        ClientInterface $http_client,
     ) {
         $this->credentialManager = $credential_manager;
         $this->mailManager = $mail_manager;
         $this->state = $state;
         $this->logger = $logger_factory->get('jaraba_pixels.tokens');
+        $this->httpClient = $http_client;
     }
 
     /**
@@ -163,10 +175,158 @@ class TokenVerificationService
             }
         }
 
-        // TODO: En V2.1, hacer llamada de prueba a cada plataforma
-        // para verificar que el token sigue siendo válido.
+        // V2.1: Llamada de prueba a la API de cada plataforma.
+        if (!$this->verifyPlatformToken($platform, $credential)) {
+            return 'expired';
+        }
 
         return 'valid';
+    }
+
+    /**
+     * Verifica un token haciendo una llamada ligera a la API de la plataforma.
+     *
+     * Cada plataforma tiene un endpoint de verificación diferente:
+     * - Meta: GET /me?access_token=... (Graph API introspection).
+     * - Google: POST /debug/mp/collect (Measurement Protocol debug).
+     * - LinkedIn: GET /v2/me (perfil del titular del token).
+     * - TikTok: GET /open_api/v1.3/pixel/list/ (verifica acceso).
+     *
+     * @param string $platform
+     *   Nombre de la plataforma (meta, google, linkedin, tiktok).
+     * @param array $credential
+     *   Datos de la credencial con pixel_id, access_token, api_secret.
+     *
+     * @return bool
+     *   TRUE si el token responde correctamente.
+     */
+    protected function verifyPlatformToken(string $platform, array $credential): bool
+    {
+        $token = $credential['access_token'] ?? '';
+        $pixelId = $credential['pixel_id'] ?? '';
+
+        if (empty($token)) {
+            return FALSE;
+        }
+
+        try {
+            $valid = match ($platform) {
+                'meta' => $this->verifyMetaToken($pixelId, $token),
+                'google' => $this->verifyGoogleToken($pixelId, $credential['api_secret'] ?? ''),
+                'linkedin' => $this->verifyLinkedInToken($token),
+                'tiktok' => $this->verifyTikTokToken($pixelId, $token),
+                default => TRUE,
+            };
+
+            if (!$valid) {
+                $this->logger->warning('Token de @platform no superó la verificación en vivo.', [
+                    '@platform' => $platform,
+                ]);
+            }
+
+            return $valid;
+        } catch (\Exception $e) {
+            $this->logger->error('Error verificando token de @platform: @msg', [
+                '@platform' => $platform,
+                '@msg' => $e->getMessage(),
+            ]);
+            // En caso de error de red, no invalidar el token.
+            return TRUE;
+        }
+    }
+
+    /**
+     * Verifica token de Meta via Graph API introspection.
+     */
+    protected function verifyMetaToken(string $pixelId, string $accessToken): bool
+    {
+        $response = $this->httpClient->get('https://graph.facebook.com/v18.0/me', [
+            'query' => ['access_token' => $accessToken],
+            'timeout' => 5,
+            'connect_timeout' => 3,
+            'http_errors' => FALSE,
+        ]);
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
+     * Verifica credenciales de Google Measurement Protocol via debug endpoint.
+     */
+    protected function verifyGoogleToken(string $measurementId, string $apiSecret): bool
+    {
+        if (empty($apiSecret)) {
+            return FALSE;
+        }
+
+        $response = $this->httpClient->post('https://www.google-analytics.com/debug/mp/collect', [
+            'query' => [
+                'measurement_id' => $measurementId,
+                'api_secret' => $apiSecret,
+            ],
+            'json' => [
+                'client_id' => 'jaraba_verify_' . time(),
+                'events' => [
+                    ['name' => 'page_view', 'params' => []],
+                ],
+            ],
+            'timeout' => 5,
+            'connect_timeout' => 3,
+            'http_errors' => FALSE,
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            return FALSE;
+        }
+
+        $body = json_decode($response->getBody()->getContents(), TRUE);
+
+        // El endpoint debug devuelve validationMessages; sin errores = válido.
+        return empty($body['validationMessages']);
+    }
+
+    /**
+     * Verifica token de LinkedIn via /v2/me.
+     */
+    protected function verifyLinkedInToken(string $accessToken): bool
+    {
+        $response = $this->httpClient->get('https://api.linkedin.com/v2/me', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $accessToken,
+                'X-Restli-Protocol-Version' => '2.0.0',
+            ],
+            'timeout' => 5,
+            'connect_timeout' => 3,
+            'http_errors' => FALSE,
+        ]);
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
+     * Verifica token de TikTok via pixel list endpoint.
+     */
+    protected function verifyTikTokToken(string $pixelCode, string $accessToken): bool
+    {
+        $response = $this->httpClient->get('https://business-api.tiktok.com/open_api/v1.3/pixel/list/', [
+            'headers' => [
+                'Access-Token' => $accessToken,
+            ],
+            'query' => [
+                'advertiser_id' => $pixelCode,
+            ],
+            'timeout' => 5,
+            'connect_timeout' => 3,
+            'http_errors' => FALSE,
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            return FALSE;
+        }
+
+        $body = json_decode($response->getBody()->getContents(), TRUE);
+
+        return ($body['code'] ?? -1) === 0;
     }
 
     /**

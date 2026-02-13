@@ -35,10 +35,11 @@ function jaraba_geo_page_attachments(array &$attachments): void {
     'description' => 'Plataforma SaaS AI-First para productores locales con e-commerce, trazabilidad, certificación digital y agentes de IA.',
     'url' => $base_url,
     'logo' => $base_url . '/themes/custom/ecosistema_jaraba_theme/logo.png',
-    'sameAs' => [
+    'sameAs' => array_filter([
       'https://www.linkedin.com/company/jaraba-impact-platform',
-      // TODO: Añadir Wikidata, Crunchbase cuando estén disponibles.
-    ],
+      \Drupal::config('jaraba_geo.settings')->get('wikidata_url') ?: NULL,
+      \Drupal::config('jaraba_geo.settings')->get('crunchbase_url') ?: NULL,
+    ]),
     'contactPoint' => [
       '@type' => 'ContactPoint',
       'contactType' => 'customer service',

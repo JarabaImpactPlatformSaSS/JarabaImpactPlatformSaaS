@@ -43,14 +43,10 @@ class TenantProvisioningTest extends KernelTestBase
      */
     protected function setUp(): void
     {
-        // Los módulos group y domain no pueden arrancar en aislamiento Kernel:
-        // tienen dependencias de servicio que requieren un entorno Drupal completo
-        // (BrowserTestBase). El error es CheckExceptionOnInvalidReferenceBehaviorPass
-        // durante la compilación del contenedor DI.
-        // TODO: Migrar estos tests a Functional (BrowserTestBase) cuando se
-        // configure el entorno de testing completo con group + domain.
+        // Migrado a Functional/TenantProvisioningFunctionalTest.php
+        // Los módulos group y domain requieren BrowserTestBase (contenedor DI completo).
         $this->markTestSkipped(
-            'TenantProvisioningTest requiere BrowserTestBase para arrancar group y domain correctamente.'
+            'Migrado a TenantProvisioningFunctionalTest (BrowserTestBase). Ver tests/src/Functional/.'
         );
     }
 

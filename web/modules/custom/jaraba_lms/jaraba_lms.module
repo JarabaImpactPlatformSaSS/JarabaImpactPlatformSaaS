@@ -133,9 +133,15 @@ function jaraba_lms_cron(): void {
   }
 
   // Procesar certificados pendientes.
+  // @todo Implementar CertificationService::processQueuedCertificates()
+  //       cuando exista la cola de certificados pendientes.
   try {
-    $certification_service = \Drupal::service('jaraba_lms.certification');
-    $certification_service->processQueuedCertificates();
+    if (\Drupal::hasService('jaraba_lms.certification')) {
+      $certification_service = \Drupal::service('jaraba_lms.certification');
+      if (method_exists($certification_service, 'processQueuedCertificates')) {
+        $certification_service->processQueuedCertificates();
+      }
+    }
   }
   catch (\Exception $e) {
     \Drupal::logger('jaraba_lms')->error('Certification cron error: @error', ['@error' => $e->getMessage()]);

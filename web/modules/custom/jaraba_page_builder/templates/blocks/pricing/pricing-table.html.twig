@@ -128,7 +128,99 @@
     {% if content.show_comparison and plans is not empty %}
       <div class="jaraba-pricing__comparison">
         <h3 class="jaraba-pricing__comparison-title">{% trans %}Comparación detallada{% endtrans %}</h3>
-        {# TODO: Implementar tabla de comparación #}
+
+        {# Recopilar todas las features únicas de todos los planes #}
+        {% set all_features = [] %}
+        {% for plan in plans %}
+          {% for feature in plan.features|default([]) %}
+            {% if feature.text not in all_features %}
+              {% set all_features = all_features|merge([feature.text]) %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
+        {# Tabla responsive: visible en desktop, oculta en mobile #}
+        <div class="jaraba-pricing__comparison-table-wrapper">
+          <table class="jaraba-pricing__comparison-table" role="grid"
+                 aria-label="{% trans %}Comparación de planes{% endtrans %}">
+            <thead>
+              <tr>
+                <th class="jaraba-pricing__comparison-feature-header" scope="col">
+                  {% trans %}Característica{% endtrans %}
+                </th>
+                {% for plan in plans %}
+                  <th class="jaraba-pricing__comparison-plan-header {{ plan.is_popular ? 'jaraba-pricing__comparison-plan-header--popular' : '' }}"
+                      scope="col">
+                    {{ plan.name }}
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for feature_text in all_features %}
+                <tr class="jaraba-pricing__comparison-row">
+                  <td class="jaraba-pricing__comparison-cell jaraba-pricing__comparison-cell--label">
+                    {{ feature_text }}
+                  </td>
+                  {% for plan in plans %}
+                    {% set feature_found = false %}
+                    {% set feature_included = false %}
+                    {% for feature in plan.features|default([]) %}
+                      {% if feature.text == feature_text %}
+                        {% set feature_found = true %}
+                        {% set feature_included = feature.included %}
+                      {% endif %}
+                    {% endfor %}
+                    <td class="jaraba-pricing__comparison-cell jaraba-pricing__comparison-cell--value {{ plan.is_popular ? 'jaraba-pricing__comparison-cell--popular' : '' }}"
+                        aria-label="{{ plan.name }}: {{ feature_text }}">
+                      {% if feature_found and feature_included %}
+                        <span class="jaraba-pricing__comparison-icon jaraba-pricing__comparison-icon--included">
+                          {{ jaraba_icon('ui', 'check', { variant: 'outline', size: '18px', color: 'success' }) }}
+                          <span class="visually-hidden">{% trans %}Incluido{% endtrans %}</span>
+                        </span>
+                      {% else %}
+                        <span class="jaraba-pricing__comparison-icon jaraba-pricing__comparison-icon--excluded">
+                          {{ jaraba_icon('ui', 'x', { variant: 'outline', size: '18px', color: 'muted' }) }}
+                          <span class="visually-hidden">{% trans %}No incluido{% endtrans %}</span>
+                        </span>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {# Vista mobile: cada plan como card independiente #}
+        <div class="jaraba-pricing__comparison-mobile">
+          {% for plan in plans %}
+            <details class="jaraba-pricing__comparison-accordion {{ plan.is_popular ? 'jaraba-pricing__comparison-accordion--popular' : '' }}">
+              <summary class="jaraba-pricing__comparison-accordion-header">
+                {{ plan.name }}
+                {% if plan.is_popular %}
+                  <span class="jaraba-pricing__comparison-accordion-badge">
+                    {% trans %}Popular{% endtrans %}
+                  </span>
+                {% endif %}
+              </summary>
+              <ul class="jaraba-pricing__comparison-accordion-list">
+                {% for feature in plan.features|default([]) %}
+                  <li class="jaraba-pricing__comparison-accordion-item {{ feature.included ? '' : 'jaraba-pricing__comparison-accordion-item--excluded' }}">
+                    <span class="jaraba-pricing__comparison-accordion-icon">
+                      {% if feature.included %}
+                        {{ jaraba_icon('ui', 'check', { variant: 'outline', size: '16px', color: 'success' }) }}
+                      {% else %}
+                        {{ jaraba_icon('ui', 'x', { variant: 'outline', size: '16px', color: 'muted' }) }}
+                      {% endif %}
+                    </span>
+                    <span>{{ feature.text }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            </details>
+          {% endfor %}
+        </div>
       </div>
     {% endif %}
     

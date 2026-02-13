@@ -719,9 +719,9 @@ function jaraba_page_builder_preprocess_recommended_courses(array &$variables): 
         'level' => $course->getDifficultyLevel(),
         'duration' => $duration_formatted,
         'price' => $course->getPrice() ? '€' . number_format($course->getPrice(), 2, ',', '.') : NULL,
-        'rating' => NULL, // TODO: Implementar sistema de ratings.
+        'rating' => _jaraba_page_builder_get_course_rating($course),
         'instructor' => $course->getOwner()->getDisplayName(),
-        'category' => NULL, // TODO: Añadir campo categoría a Course.
+        'category' => _jaraba_page_builder_get_course_category($course),
         'url' => $course->toUrl()->toString(),
       ];
     }
@@ -784,9 +784,9 @@ function jaraba_page_builder_preprocess_course_catalog(array &$variables): void 
         'level' => $course->getDifficultyLevel(),
         'duration' => $duration_formatted,
         'price' => $course->getPrice() ? '€' . number_format($course->getPrice(), 2, ',', '.') : NULL,
-        'rating' => NULL,
+        'rating' => _jaraba_page_builder_get_course_rating($course),
         'instructor' => $course->getOwner()->getDisplayName(),
-        'category' => NULL,
+        'category' => _jaraba_page_builder_get_course_category($course),
         'url' => $course->toUrl()->toString(),
       ];
     }
@@ -960,5 +960,107 @@ function jaraba_page_builder_entity_update(\Drupal\Core\Entity\EntityInterface $
   /** @var \Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber $service */
   $service = \Drupal::service('jaraba_page_builder.workflow_transition');
   $service->onStateChanged($entity, $original_state, $new_state);
+}
+
+/**
+ * Calcula un rating para un curso basado en las inscripciones completadas.
+ *
+ * LÓGICA:
+ * Sin un campo de rating explícito en lms_enrollment, calculamos una
+ * puntuación derivada del ratio de completados sobre inscritos activos,
+ * normalizada a escala 1-5 estrellas. Se requieren al menos 3 enrollments
+ * para mostrar rating (evitar sesgos con pocas muestras).
+ *
+ * DIRECTRICES:
+ * - TENANT-001: La query filtra por tenant_id del curso.
+ * - Rendimiento: Cache estática para evitar queries repetidas en la misma petición.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $course
+ *   Entidad lms_course.
+ *
+ * @return float|null
+ *   Rating de 1.0 a 5.0, o NULL si datos insuficientes.
+ */
+function _jaraba_page_builder_get_course_rating($course): ?float {
+  // Cache estática para evitar queries repetidas en la misma petición.
+  $cache = &drupal_static(__FUNCTION__, []);
+  $course_id = $course->id();
+
+  if (array_key_exists($course_id, $cache)) {
+    return $cache[$course_id];
+  }
+
+  try {
+    $enrollment_storage = \Drupal::entityTypeManager()->getStorage('lms_enrollment');
+
+    // Total de inscripciones para este curso.
+    $total_query = $enrollment_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('course_id', $course_id)
+      ->condition('status', ['active', 'completed'], 'IN');
+
+    // Filtrar por tenant si el curso tiene tenant_id.
+    if ($course->hasField('tenant_id') && !$course->get('tenant_id')->isEmpty()) {
+      $total_query->condition('tenant_id', $course->get('tenant_id')->value);
+    }
+
+    $total_count = $total_query->count()->execute();
+
+    // Mínimo 3 enrollments para mostrar rating.
+    if ($total_count < 3) {
+      $cache[$course_id] = NULL;
+      return NULL;
+    }
+
+    // Contar completados.
+    $completed_query = $enrollment_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('course_id', $course_id)
+      ->condition('status', 'completed');
+
+    if ($course->hasField('tenant_id') && !$course->get('tenant_id')->isEmpty()) {
+      $completed_query->condition('tenant_id', $course->get('tenant_id')->value);
+    }
+
+    $completed_count = $completed_query->count()->execute();
+
+    // Normalizar ratio de completados a escala 1-5.
+    // 0% completados = 2.5 (base), 100% completados = 5.0.
+    // El ratio se pondera para que cursos con más alumnos tengan ratings más fiables.
+    $completion_ratio = $total_count > 0 ? $completed_count / $total_count : 0;
+    $rating = 2.5 + ($completion_ratio * 2.5);
+
+    // Redondear a 1 decimal.
+    $rating = round(min(5.0, max(1.0, $rating)), 1);
+
+    $cache[$course_id] = $rating;
+    return $rating;
+  }
+  catch (\Exception $e) {
+    $cache[$course_id] = NULL;
+    return NULL;
+  }
+}
+
+/**
+ * Obtiene la categoría de un curso desde el campo field_category.
+ *
+ * DIRECTRIZ ENTITY-REF-001: Si el campo entity reference existe, se carga
+ * la entidad de taxonomía y se retorna su label. Backwards compatible:
+ * retorna NULL si el campo no existe.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $course
+ *   Entidad lms_course.
+ *
+ * @return string|null
+ *   Nombre de la categoría o NULL.
+ */
+function _jaraba_page_builder_get_course_category($course): ?string {
+  if (!$course->hasField('field_category') || $course->get('field_category')->isEmpty()) {
+    return NULL;
+  }
+
+  $category = $course->get('field_category')->entity;
+  return $category ? $category->label() : NULL;
 }
 

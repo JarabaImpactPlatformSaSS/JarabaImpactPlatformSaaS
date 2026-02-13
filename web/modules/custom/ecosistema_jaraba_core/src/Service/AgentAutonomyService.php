@@ -361,18 +361,69 @@ class AgentAutonomyService
         unset($pending[$requestId]);
         $this->state->set($pendingKey, $pending);
 
-        // TODO: Re-ejecutar la acción con el executor guardado.
-        // Por ahora, solo marcamos como aprobada.
+        // Re-ejecutar la acción con el executor guardado.
+        $executorClass = $request['executor_class'] ?? '';
+        $context = $request['context'] ?? [];
+        $action = $request['action'] ?? 'unknown';
+        $result = NULL;
 
-        $this->loggerFactory->get('agent_autonomy')->info(
-            '✅ Acción @id aprobada por tenant @tenant',
-            ['@id' => $requestId, '@tenant' => $tenantId]
-        );
+        // Intentar re-instanciar el executor desde el contenedor de servicios.
+        // Las closures (Closure) no pueden re-instanciarse; se requiere un
+        // servicio invocable registrado en el contenedor DI.
+        if ($executorClass && $executorClass !== 'Closure' && $executorClass !== \Closure::class) {
+            try {
+                // Buscar el servicio por clase en el contenedor.
+                $executor = NULL;
+                $agentId = $request['agent_id'] ?? NULL;
+
+                if ($agentId) {
+                    $agent = $this->entityTypeManager->getStorage('ai_agent')->load($agentId);
+                    if ($agent && $agent->getServiceId()) {
+                        $service = \Drupal::service($agent->getServiceId());
+                        if ($service instanceof $executorClass && is_callable($service)) {
+                            $executor = $service;
+                        }
+                    }
+                }
+
+                if ($executor) {
+                    $result = $executor($context);
+
+                    $this->loggerFactory->get('agent_autonomy')->info(
+                        'Accion @id re-ejecutada exitosamente para tenant @tenant (accion: @action)',
+                        ['@id' => $requestId, '@tenant' => $tenantId, '@action' => $action]
+                    );
+                } else {
+                    $this->loggerFactory->get('agent_autonomy')->warning(
+                        'Accion @id aprobada pero executor no re-instanciable (clase: @class). Se marca como aprobada sin re-ejecucion.',
+                        ['@id' => $requestId, '@class' => $executorClass]
+                    );
+                }
+            } catch (\Exception $e) {
+                $this->loggerFactory->get('agent_autonomy')->error(
+                    'Error al re-ejecutar accion @id: @message',
+                    ['@id' => $requestId, '@message' => $e->getMessage()]
+                );
+
+                return [
+                    'status' => 'error',
+                    'request_id' => $requestId,
+                    'message' => 'Acción aprobada pero error en la ejecución: ' . $e->getMessage(),
+                ];
+            }
+        } else {
+            // Closure u otro callable no serializable.
+            $this->loggerFactory->get('agent_autonomy')->notice(
+                'Accion @id aprobada (executor tipo Closure, no re-ejecutable). Accion: @action, Tenant: @tenant',
+                ['@id' => $requestId, '@action' => $action, '@tenant' => $tenantId]
+            );
+        }
 
         return [
             'status' => 'approved',
             'request_id' => $requestId,
             'message' => 'Acción aprobada y ejecutada.',
+            'result' => $result,
         ];
     }
 

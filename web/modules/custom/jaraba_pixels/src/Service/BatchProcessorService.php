@@ -176,19 +176,22 @@ class BatchProcessorService
             return FALSE;
         }
 
-        // Usar el dispatcher internamente para enviar a plataformas.
-        // El dispatcher necesita una entidad, así que creamos una wrapper.
+        $tenantId = (int) $event_data['tenant_id'];
+
         try {
-            // Llamar directamente a los métodos internos del dispatcher
-            // sería mejor, pero por ahora re-encolamos hasta tener batch nativo.
-            $this->logger->debug('Dispatched event @id from cache', [
+            $this->dispatcher->dispatchFromData($tenantId, $event_data);
+
+            $this->logger->debug('Dispatched event @id from cache for tenant @tid', [
                 '@id' => $event_data['event_id'] ?? 'unknown',
+                '@tid' => $tenantId,
             ]);
 
-            // TODO: Implementar dispatch directo sin entidad en V2.1
-            // Por ahora retornamos TRUE ya que el log quedó registrado.
             return TRUE;
         } catch (\Exception $e) {
+            $this->logger->error('Error dispatching cached event @id: @msg', [
+                '@id' => $event_data['event_id'] ?? 'unknown',
+                '@msg' => $e->getMessage(),
+            ]);
             return FALSE;
         }
     }

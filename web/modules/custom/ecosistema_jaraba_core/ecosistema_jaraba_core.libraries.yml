@@ -425,3 +425,19 @@ admin-command-palette:
     - core/drupalSettings
     - core/once
 
+# ---------------------------------------------------------------------------
+# ADMIN STRUCTURE ENHANCED UX
+# ---------------------------------------------------------------------------
+# Página /admin/structure categorizada con búsqueda en tiempo real.
+
+admin-structure:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-structure.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+

@@ -475,6 +475,115 @@
             getTemplateThumbnail(templateId) {
                 const template = this.templates.find(t => t.id === templateId);
                 return template?.thumbnail || '/modules/custom/jaraba_page_builder/images/placeholder.png';
+            },
+
+            // ─────────────────────────────────────────────────────────────────
+            // Campos dinámicos: renderizado según fields_schema
+            // ─────────────────────────────────────────────────────────────────
+
+            /**
+             * Obtiene los campos del schema para el template de la sección seleccionada.
+             *
+             * Transforma las properties del JSON Schema en un array plano de
+             * objetos campo con {name, type, title, widget, options, ...}.
+             *
+             * @return {Array} Array de definiciones de campo.
+             */
+            getEditableFields() {
+                if (!this.selectedSection) return [];
+
+                const template = this.templates.find(
+                    t => t.id === this.selectedSection.template_id
+                );
+
+                if (!template || !template.fields_schema || !template.fields_schema.properties) {
+                    return [];
+                }
+
+                const schema = template.fields_schema;
+                const required = schema.required || [];
+
+                return Object.entries(schema.properties).map(([name, def]) => ({
+                    name: name,
+                    type: def.type || 'string',
+                    title: def.title || name.replace(/_/g, ' '),
+                    description: def.description || '',
+                    widget: def['ui:widget'] || this.inferWidget(def),
+                    placeholder: def['ui:placeholder'] || '',
+                    required: required.includes(name),
+                    options: def.enum || [],
+                    min: def.minimum,
+                    max: def.maximum,
+                    maxLength: def.maxLength,
+                    defaultValue: def.default,
+                }));
+            },
+
+            /**
+             * Infiere el widget apropiado según el tipo y formato del campo.
+             *
+             * @param {Object} fieldDef - Definición JSON Schema del campo.
+             * @return {string} Identificador del widget.
+             */
+            inferWidget(fieldDef) {
+                if (fieldDef.enum && fieldDef.enum.length > 0) return 'select';
+                if (fieldDef.format === 'uri') return 'url';
+                if (fieldDef.format === 'email') return 'email';
+                if (fieldDef.format === 'image') return 'image-upload';
+                if (fieldDef.type === 'boolean') return 'checkbox';
+                if (fieldDef.type === 'number' || fieldDef.type === 'integer') return 'number';
+                if (fieldDef.type === 'text') return 'textarea';
+                if (fieldDef.maxLength && fieldDef.maxLength > 200) return 'textarea';
+                return 'text';
+            },
+
+            /**
+             * Obtiene el valor de un campo desde el contenido de la sección.
+             *
+             * @param {string} fieldName - Nombre del campo.
+             * @return {*} Valor del campo o cadena vacía.
+             */
+            getFieldValue(fieldName) {
+                if (!this.selectedSection || !this.selectedSection.content) return '';
+
+                var content = this.selectedSection.content;
+                if (typeof content === 'string') {
+                    try {
+                        content = JSON.parse(content);
+                    } catch (e) {
+                        return '';
+                    }
+                }
+
+                return content[fieldName] !== undefined ? content[fieldName] : '';
+            },
+
+            /**
+             * Establece el valor de un campo en el contenido de la sección.
+             *
+             * Parsea el contenido si es string JSON, actualiza el campo,
+             * y guarda el resultado como objeto para que la API lo reciba correctamente.
+             *
+             * @param {string} fieldName - Nombre del campo.
+             * @param {*} value - Nuevo valor.
+             */
+            setFieldValue(fieldName, value) {
+                if (!this.selectedSection) return;
+
+                var content = this.selectedSection.content;
+                if (typeof content === 'string') {
+                    try {
+                        content = JSON.parse(content);
+                    } catch (e) {
+                        content = {};
+                    }
+                }
+                if (typeof content !== 'object' || content === null) {
+                    content = {};
+                }
+
+                content[fieldName] = value;
+                this.selectedSection.content = content;
             }
         }));
     });

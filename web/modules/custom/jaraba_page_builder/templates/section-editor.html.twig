@@ -310,14 +310,160 @@
       </header>
 
       <div class="jaraba-slide-panel__body" x-show="selectedSection">
-        {# TODO: Generar campos dinámicamente según fields_schema del template #}
-        <div class="canvas-editor__form-group">
-          <label for="section-content">{% trans %}Contenido (JSON){% endtrans %}</label>
-          <textarea id="section-content"
-                    class="jaraba-textarea"
-                    x-model="selectedSection.content"
-                    rows="12"></textarea>
-        </div>
+        {# Campos dinámicos generados según fields_schema del template #}
+        <template x-if="getEditableFields().length > 0">
+          <div class="canvas-editor__dynamic-fields">
+            <template x-for="field in getEditableFields()" :key="field.name">
+              <div class="canvas-editor__form-group"
+                   :class="{ 'canvas-editor__form-group--required': field.required }">
+
+                {# Label #}
+                <label class="canvas-editor__field-label"
+                       :for="'field-' + field.name"
+                       x-text="field.title"></label>
+
+                {# Descripción del campo #}
+                <template x-if="field.description">
+                  <p class="canvas-editor__field-hint" x-text="field.description"></p>
+                </template>
+
+                {# Widget: text #}
+                <template x-if="field.widget === 'text'">
+                  <input type="text"
+                         class="jaraba-input"
+                         :id="'field-' + field.name"
+                         :value="getFieldValue(field.name)"
+                         @input="setFieldValue(field.name, $event.target.value)"
+                         :placeholder="field.placeholder"
+                         :maxlength="field.maxLength"
+                         :required="field.required" />
+                </template>
+
+                {# Widget: textarea #}
+                <template x-if="field.widget === 'textarea'">
+                  <textarea class="jaraba-textarea"
+                            :id="'field-' + field.name"
+                            :value="getFieldValue(field.name)"
+                            @input="setFieldValue(field.name, $event.target.value)"
+                            :placeholder="field.placeholder"
+                            :maxlength="field.maxLength"
+                            rows="4"></textarea>
+                </template>
+
+                {# Widget: url #}
+                <template x-if="field.widget === 'url'">
+                  <input type="url"
+                         class="jaraba-input"
+                         :id="'field-' + field.name"
+                         :value="getFieldValue(field.name)"
+                         @input="setFieldValue(field.name, $event.target.value)"
+                         :placeholder="field.placeholder || 'https://'"
+                         :required="field.required" />
+                </template>
+
+                {# Widget: email #}
+                <template x-if="field.widget === 'email'">
+                  <input type="email"
+                         class="jaraba-input"
+                         :id="'field-' + field.name"
+                         :value="getFieldValue(field.name)"
+                         @input="setFieldValue(field.name, $event.target.value)"
+                         :placeholder="field.placeholder"
+                         :required="field.required" />
+                </template>
+
+                {# Widget: number / slider #}
+                <template x-if="field.widget === 'number' || field.widget === 'slider'">
+                  <div class="canvas-editor__field-number">
+                    <input :type="field.widget === 'slider' ? 'range' : 'number'"
+                           class="jaraba-input"
+                           :class="{ 'canvas-editor__field-slider': field.widget === 'slider' }"
+                           :id="'field-' + field.name"
+                           :value="getFieldValue(field.name) || field.defaultValue || field.min || 0"
+                           @input="setFieldValue(field.name, Number($event.target.value))"
+                           :min="field.min"
+                           :max="field.max"
+                           :required="field.required" />
+                    <template x-if="field.widget === 'slider'">
+                      <output class="canvas-editor__field-slider-value"
+                              x-text="getFieldValue(field.name) || field.defaultValue || field.min || 0"></output>
+                    </template>
+                  </div>
+                </template>
+
+                {# Widget: checkbox (boolean) #}
+                <template x-if="field.widget === 'checkbox'">
+                  <label class="canvas-editor__field-toggle">
+                    <input type="checkbox"
+                           class="jaraba-checkbox"
+                           :id="'field-' + field.name"
+                           :checked="!!getFieldValue(field.name)"
+                           @change="setFieldValue(field.name, $event.target.checked)" />
+                    <span class="canvas-editor__field-toggle-label" x-text="field.title"></span>
+                  </label>
+                </template>
+
+                {# Widget: select #}
+                <template x-if="field.widget === 'select'">
+                  <select class="jaraba-select"
+                          :id="'field-' + field.name"
+                          :value="getFieldValue(field.name)"
+                          @change="setFieldValue(field.name, $event.target.value)"
+                          :required="field.required">
+                    <option value="">—</option>
+                    <template x-for="opt in field.options" :key="opt">
+                      <option :value="opt"
+                              :selected="getFieldValue(field.name) == opt"
+                              x-text="opt"></option>
+                    </template>
+                  </select>
+                </template>
+
+                {# Widget: color #}
+                <template x-if="field.widget === 'color'">
+                  <div class="canvas-editor__field-color">
+                    <input type="color"
+                           class="jaraba-color-input"
+                           :id="'field-' + field.name"
+                           :value="getFieldValue(field.name) || '#000000'"
+                           @input="setFieldValue(field.name, $event.target.value)" />
+                    <span class="canvas-editor__field-color-value"
+                          x-text="getFieldValue(field.name) || '#000000'"></span>
+                  </div>
+                </template>
+
+                {# Widget: image-upload (URL manual por ahora) #}
+                <template x-if="field.widget === 'image-upload'">
+                  <div class="canvas-editor__field-image">
+                    <input type="url"
+                           class="jaraba-input"
+                           :id="'field-' + field.name"
+                           :value="getFieldValue(field.name)"
+                           @input="setFieldValue(field.name, $event.target.value)"
+                           :placeholder="'{% trans %}URL de la imagen{% endtrans %}'"
+                           :required="field.required" />
+                    <template x-if="getFieldValue(field.name)">
+                      <img :src="getFieldValue(field.name)"
+                           :alt="field.title"
+                           class="canvas-editor__field-image-preview" />
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        {# Fallback: JSON textarea si no hay schema definido #}
+        <template x-if="getEditableFields().length === 0">
+          <div class="canvas-editor__form-group">
+            <label for="section-content">{% trans %}Contenido (JSON){% endtrans %}</label>
+            <textarea id="section-content"
+                      class="jaraba-textarea"
+                      x-model="selectedSection.content"
+                      rows="12"></textarea>
+          </div>
+        </template>
       </div>
 
       <footer class="jaraba-slide-panel__footer">

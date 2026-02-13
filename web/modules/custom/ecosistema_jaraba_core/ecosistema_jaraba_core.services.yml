@@ -672,3 +672,14 @@ services:
       - '@ecosistema_jaraba_core.audit_log'
     tags:
       - { name: drush.command }
+
+  # ===========================================
+  # ADMIN STRUCTURE UX OVERRIDE
+  # ===========================================
+
+  # RouteSubscriber que reemplaza la página /admin/structure plana
+  # del core por una versión categorizada con búsqueda y filtros.
+  ecosistema_jaraba_core.admin_structure_route_subscriber:
+    class: Drupal\ecosistema_jaraba_core\Routing\AdminStructureRouteSubscriber
+    tags:
+      - { name: event_subscriber }

@@ -491,6 +491,20 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'admin-center-dashboard',
       'path' => $path . '/templates',
     ],
+
+    // =========================================================================
+    // ADMIN STRUCTURE ENHANCED (UX Improvement)
+    // =========================================================================
+
+    // Página /admin/structure con secciones categorizadas y búsqueda
+    'admin_structure_overview' => [
+      'variables' => [
+        'categories' => [],
+        'total_items' => 0,
+      ],
+      'template' => 'admin-structure-overview',
+      'path' => $path . '/templates',
+    ],
   ];
 
 

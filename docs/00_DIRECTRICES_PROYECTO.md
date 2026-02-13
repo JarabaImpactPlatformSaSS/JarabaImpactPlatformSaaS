@@ -2,9 +2,9 @@
 
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
-**Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-12 23:59
-**Versión:** 19.0.0 (Sprint Inmediato: Tenant Filtering + Data Integration — 48 TODOs, 27 modulos, 2 entidades nuevas)
+**Fecha de creación:** 2026-01-09 15:28
+**Última actualización:** 2026-02-13 23:59
+**Versión:** 21.0.0 (Sprint Diferido 22/22 TODOs — 5 fases completadas, 6 directrices aplicadas, Pixels V2.1, Knowledge Base CRUD, Webhook Dispatch)
 
 ---
 
@@ -1038,6 +1038,36 @@ graph TB
 | **Parámetros de Ruta** | Toda ruta con parámetros dinámicos DEBE incluir restricciones regex (ej: `profileId: '[a-z_]+'`) |
 | **Mensajes de Error** | NUNCA exponer mensajes de excepción internos al usuario. Logging detallado + mensajes genéricos al frontend |
 
+### 4.7 Seguridad y Consistencia Post-Auditoría Integral (2026-02-13)
+
+> **Referencia:** [Auditoría Integral Estado SaaS v1](./tecnicos/auditorias/20260213-Auditoria_Integral_Estado_SaaS_v1_Claude.md) — 65 hallazgos (7 Críticos, 20 Altos, 26 Medios, 12 Bajos)
+
+#### 4.7.1 Reglas de Seguridad
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **HMAC en TODOS los webhooks** | AUDIT-SEC-001 | Todo webhook (Stripe, WhatsApp, externo) DEBE implementar verificación HMAC con `hash_equals()`. La validación de token en query string NO es aceptable como único mecanismo | P0 |
+| **`_permission` en rutas sensibles** | AUDIT-SEC-002 | Toda ruta que acceda a datos de tenant o realice operaciones CRUD DEBE usar `_permission: 'administer {module}'` o permiso granular. `_user_is_logged_in` es insuficiente para rutas sensibles | P0 |
+| **Sanitización server-side para `\|raw`** | AUDIT-SEC-003 | Todo uso de `\|raw` en templates Twig DEBE ir precedido de sanitización server-side con `Xss::filterAdmin()` o `Html::escape()`. `\|raw` sin sanitización previa está prohibido | P0 |
+
+#### 4.7.2 Reglas de Rendimiento
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **Índices DB obligatorios** | AUDIT-PERF-001 | Toda Content Entity DEBE definir índices en `baseFieldDefinitions()` para `tenant_id` + campos usados en consultas frecuentes (status, created, type). Entidades sin índices custom son inaceptables en producción | P0 |
+| **LockBackendInterface financiero** | AUDIT-PERF-002 | Toda operación financiera (cobros Stripe, ajuste créditos, facturación) DEBE adquirir lock exclusivo via `LockBackendInterface` con key format `{operation}:{tenant_id}:{entity_id}` y timeout configurable | P0 |
+| **Queue async para APIs externas** | AUDIT-PERF-003 | Publicaciones a redes sociales, envío de webhooks salientes, y llamadas a APIs externas que no requieran respuesta inmediata DEBEN ejecutarse via `QueueWorker`. Llamadas síncronas que bloqueen al usuario están prohibidas | P0 |
+
+#### 4.7.3 Reglas de Consistencia
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **AccessControlHandler obligatorio** | AUDIT-CONS-001 | Toda Content Entity DEBE tener un `AccessControlHandler` declarado en su anotación `@ContentEntityType`. Entidades sin control de acceso explícito son una vulnerabilidad de seguridad | P0 |
+| **Servicios canónicos únicos** | AUDIT-CONS-002 | Cada responsabilidad del sistema DEBE tener un único servicio canónico. Duplicados (ej: `TenantContextService` en múltiples módulos, `ImpactCreditService` duplicado) DEBEN eliminarse consolidando en el módulo propietario | P0 |
+| **API response envelope estándar** | AUDIT-CONS-003 | Todas las respuestas API DEBEN usar el envelope estándar: `{success: bool, data: mixed, error: string\|null, message: string\|null}`. Los 28 patrones de respuesta diferentes identificados DEBEN consolidarse | P1 |
+| **Prefijo API versionado** | AUDIT-CONS-004 | Todas las rutas API DEBEN usar el prefijo `/api/v1/`. Rutas sin versionado (76 identificadas) DEBEN migrarse antes de exponer la API a terceros | P1 |
+| **tenant_id como entity_reference** | AUDIT-CONS-005 | El campo `tenant_id` DEBE ser `entity_reference` apuntando a la entidad Tenant, NUNCA un campo `integer`. Las 6 entidades con tenant_id integer DEBEN migrarse | P0 |
+
 ---
 
 ## 5. Principios de Desarrollo
@@ -1295,6 +1325,24 @@ Si la respuesta a cualquiera es "No" y debería ser "Sí", **refactorizar antes 
 | **Tablas custom para logs** | MILESTONE-001 | Para registros append-only de alto volumen (milestones, audit logs), preferir tablas custom vía `hook_update_N()` sobre Content Entities |
 | **Métricas con State API** | METRICS-001 | Para métricas temporales (latencia diaria), usar State API con claves fechadas (`ai_latency_YYYY-MM-DD`). Limitar muestras por día (max 1000) |
 | **Routing multi-proveedor** | PROVIDER-001 | Rutear modos de alto volumen a Gemini Flash (coste-eficiente). Mantener Claude/GPT-4o para modos que requieren calidad superior (empatía, cálculo). Actualizar model IDs cada sprint |
+
+#### 5.8.3 Reglas Post-Auditoría Integral (2026-02-13)
+
+> **Referencia:** [Plan Remediación Auditoría Integral v1](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md)
+
+| Regla | ID | Dimensión | Descripción | Prioridad |
+|-------|----|-----------|-------------|-----------|
+| **HMAC en webhooks** | AUDIT-SEC-001 | Seguridad | HMAC obligatorio en TODOS los webhooks con `hash_equals()` | P0 |
+| **Permisos granulares** | AUDIT-SEC-002 | Seguridad | `_permission` en rutas sensibles, no solo `_user_is_logged_in` | P0 |
+| **Sanitización `\|raw`** | AUDIT-SEC-003 | Seguridad | Sanitización server-side antes de `\|raw` en Twig | P0 |
+| **Índices DB** | AUDIT-PERF-001 | Rendimiento | Índices obligatorios en tenant_id + campos frecuentes en toda Content Entity | P0 |
+| **Lock financiero** | AUDIT-PERF-002 | Rendimiento | `LockBackendInterface` para operaciones financieras concurrentes | P0 |
+| **Queue async** | AUDIT-PERF-003 | Rendimiento | APIs externas síncronas → `QueueWorker` async | P0 |
+| **AccessControlHandler** | AUDIT-CONS-001 | Consistencia | Obligatorio en TODA Content Entity | P0 |
+| **Servicio canónico único** | AUDIT-CONS-002 | Consistencia | Eliminar servicios duplicados (una responsabilidad = un servicio) | P0 |
+| **API envelope estándar** | AUDIT-CONS-003 | Consistencia | `{success, data, error, message}` en todas las respuestas API | P1 |
+| **API versioning** | AUDIT-CONS-004 | Consistencia | Todas las rutas API con prefijo `/api/v1/` | P1 |
+| **tenant_id entity_reference** | AUDIT-CONS-005 | Consistencia | tenant_id DEBE ser entity_reference, NUNCA integer | P0 |
 
 ---
 
@@ -1887,6 +1935,8 @@ El asistente IA debe:
 | 2026-02-02 | 5.0.0 | **Frontend Limpio Page Builder (Zero Region Policy):** Template ultra-limpia para PageContent entities. Header inline sin menú ecosistema. Body classes via `hook_preprocess_html()` (`page-page-builder`, `full-width-layout`). SCSS reset grid. Sin breadcrumbs/sidebars heredados. Documento aprendizaje #34 |
 | 2026-02-12 | **18.0.0** | **Plan Maestro 7 Fases Completado:** jaraba_interactive 6 plugins PHP + editor + CRUD API + 5 event subscribers. PurchaseService (jaraba_training). CacheTagsInvalidator (jaraba_page_builder). 5 Cypress E2E specs (60+ tests). SCSS compliance 14 modulos. pepejaraba.com tenant provisionado (7 paginas + menu + design tokens). 11 PHPUnit test files (121+ tests). seed_pepejaraba.php (766 LOC). Nginx vhost produccion. 7 reglas nuevas (INT-001/002, PB-002, TRN-001, SCSS-002, TEST-003, SEED-001) |
 | 2026-02-12 | **19.0.0** | **Sprint Inmediato Tenant Filtering + Data Integration:** 48 TODOs resueltos del catalogo v1.2.0 en 8 fases, 27 modulos. F1: Infraestructura tenant (TenantContextService.getCurrentTenantId(), TenantAccessControlHandler Group membership, ImpactCreditService filtrado tenant, MicroAutomationService iteracion tenants reales). F2: Tenant filtering en 9 controladores/servicios (CRM, Analytics, PageBuilder, Canvas, Marketplace, Connectors, KbIndexer, ApiController, SandboxTenant). F3: 2 entidades nuevas (CandidateLanguage CEFR + EmployerProfile empresa). F4: Entity references TrainingProduct/CertificationProgram a lms_course. F5: Data integration candidate/job_board (skills, idiomas CV, dashboard, matching, employer, applications, agent rating JS+rutas). F6: LMS/Training (lecciones, enrollment, ladder, cursos completados, template usage). F7: Analytics (ExpansionRevenue, Stripe webhook, diagnosticos, xAPI, conversation_log, mentor availability, cart/cupones, tokens RAG). F8: Calculos (week_streak, recomendaciones, learning analytics). 49 ficheros, +3337/-183 lineas. 4 reglas nuevas (TENANT-001, TENANT-002, ENTITY-REF-001, BILLING-001). Aprendizaje: sprint_inmediato_tenant_filtering_data_integration |
+| 2026-02-13 | **20.0.0** | **Auditoría Integral Estado SaaS — 11 reglas AUDIT-*:** Auditoría 15 disciplinas sobre 62 módulos, 268 entidades, ~769 rutas API. 65 hallazgos (7 Críticos, 20 Altos, 26 Medios, 12 Bajos) en 4 dimensiones (Seguridad, Rendimiento, Consistencia, Specs). Nueva sección 4.7 con 3 sub-secciones: 4.7.1 Seguridad (AUDIT-SEC-001/002/003: HMAC webhooks, _permission rutas sensibles, sanitización |raw), 4.7.2 Rendimiento (AUDIT-PERF-001/002/003: índices DB, LockBackendInterface financiero, queue async), 4.7.3 Consistencia (AUDIT-CONS-001 a 005: AccessControlHandler, servicio canónico, API envelope, API versioning, tenant_id entity_reference). Nueva sección 5.8.3 tabla consolidada 11 reglas. Plan remediación 3 fases (P0 semana 1-2, P1 semana 3-4, P2 semana 5-8). Madurez ajustada 5.0→4.5 |
+| 2026-02-13 | **21.0.0** | **Sprint Diferido 22/22 TODOs — 5 Fases Completadas:** Implementación completa del backlog diferido del Catálogo TODOs v1.2.0 (22 TODOs restantes). **FASE 1 Quick Wins (4):** Tabla comparativa pricing (SCSS BEM + mobile-first), sistema ratings cursos LMS (hook_preprocess + AggregateRating Schema.org), canvas save/publish (endpoint PATCH + indicadores UI), player review interactivo. **FASE 2 UX Sprint 5 (4):** Header SaaS en canvas editor (tenant branding 40px), selector i18n en toolbar (include condicional + override SCSS light-theme), campos dinámicos section editor (JSON Schema → Alpine.js widgets: text/textarea/url/email/number/slider/checkbox/select/color/image), panel accesibilidad slide-panel (score circle, violations by impact, WCAG level). **FASE 3 Knowledge Base CRUD (4):** FAQs accordion `<details>` + policies card grid + documents file-type icons, todo con modal CRUD via data-dialog-type="modal", 3 hook_theme() nuevos. **FASE 4 Infraestructura (4):** Agent action re-execution (service-based via getServiceId()), migración TenantProvisioningTest a BrowserTestBase, WebhookReceiverController refactorizado con EventDispatcher (WebhookReceivedEvent + WebhookEvents), Course entity field_category taxonomy reference. **FASE 5 Integraciones Comerciales (5+1):** TokenVerificationService V2.1 (verificación en vivo 4 plataformas: Meta Graph API, Google MP debug, LinkedIn /v2/me, TikTok pixel/list), BatchProcessorService dispatch directo sin entidad (dispatchFromData() en PixelDispatcherService), Commerce stock dinámico (4 estrategias: commerce_stock module → field_stock_quantity variación → field_stock_quantity producto → fallback publicado), Schema.org sameAs configurable (Wikidata/Crunchbase via jaraba_geo.settings), StripeConnect ya existía en jaraba_foc. **Directrices aplicadas:** TENANT-001 (FAQs/policies/documents filtrado tenant_id), DRUPAL11-001 (readonly constructor promotion WebhookReceivedEvent), PHP-STRICT (declare(strict_types=1) en TokenVerificationService), BEM (partials knowledge base), MODAL-CRUD (data-dialog-type="modal"), ALPINE-JS (dynamic fields section editor). **Archivos:** ~25 editados, ~8 creados. Plan implementación v2.0.0. Aprendizaje: sprint_diferido_22_todos_5_fases |
 
 ---
 

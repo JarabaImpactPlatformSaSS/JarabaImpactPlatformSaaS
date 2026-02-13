@@ -1,0 +1,141 @@
+{#
+/**
+ * @file
+ * Listado CRUD de Documentos del Knowledge Training.
+ *
+ * PROPÓSITO:
+ * Muestra los documentos subidos por el tenant con indicadores
+ * de estado de procesamiento (pendiente, procesando, completado, error).
+ *
+ * DIRECTRICES:
+ * - jaraba_icon() para iconografía
+ * - Textos con filtro |t para i18n
+ * - BEM naming: .knowledge-documents__*
+ * - Mobile-first responsive
+ *
+ * VARIABLES:
+ * - documents: Array de entidades TenantDocument
+ * - can_edit: Boolean — permiso de edición
+ *
+ * @see KnowledgeDashboardController::documents()
+ */
+#}
+
+{# Mapeo de estados de procesamiento a clases CSS #}
+{% set status_map = {
+  'pending': { label: 'Pendiente'|t, class: 'pending' },
+  'processing': { label: 'Procesando'|t, class: 'processing' },
+  'completed': { label: 'Completado'|t, class: 'completed' },
+  'error': { label: 'Error'|t, class: 'error' },
+} %}
+
+<div class="knowledge-documents">
+  {# Header #}
+  <header class="knowledge-documents__header">
+    <div class="knowledge-documents__header-left">
+      <a href="{{ path('jaraba_tenant_knowledge.dashboard') }}"
+         class="knowledge-documents__back"
+         title="{{ 'Volver al dashboard'|t }}">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
+      </a>
+      <h1 class="knowledge-documents__title">
+        {{ jaraba_icon('ui', 'folder-open', { size: '24px' }) }}
+        {{ 'Documentos'|t }}
+      </h1>
+      <span class="knowledge-documents__count">{{ documents|length }}</span>
+    </div>
+
+    {% if can_edit %}
+      <a href="{{ path('jaraba_tenant_knowledge.document.add') }}"
+         class="jaraba-btn jaraba-btn--primary jaraba-btn--sm"
+         data-dialog-type="modal"
+         data-dialog-options='{"width": 700, "title": "{{ 'Subir Documento'|t }}"}'>
+        {{ jaraba_icon('actions', 'upload', { size: '16px' }) }}
+        <span>{{ 'Subir Documento'|t }}</span>
+      </a>
+    {% endif %}
+  </header>
+
+  {% if documents is empty %}
+    {# Estado vacío #}
+    <div class="knowledge-documents__empty">
+      {{ jaraba_icon('ui', 'folder-open', { size: '48px', color: 'neutral' }) }}
+      <h2>{{ 'Sin documentos'|t }}</h2>
+      <p>{{ 'Sube manuales, catálogos, guías y otros documentos para que el Copiloto pueda consultarlos.'|t }}</p>
+      {% if can_edit %}
+        <a href="{{ path('jaraba_tenant_knowledge.document.add') }}"
+           class="jaraba-btn jaraba-btn--primary"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 700, "title": "{{ 'Subir Documento'|t }}"}'>
+          {{ jaraba_icon('actions', 'upload', { size: '18px' }) }}
+          {{ 'Subir primer documento'|t }}
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    {# Grid de documentos #}
+    <div class="knowledge-documents__grid">
+      {% for doc in documents %}
+        {% set proc_status = doc.get('processing_status').value|default('pending') %}
+        {% set status_info = status_map[proc_status]|default(status_map.pending) %}
+
+        <article class="knowledge-documents__card knowledge-documents__card--{{ status_info.class }}">
+          <div class="knowledge-documents__card-icon">
+            {% if doc.get('category').value == 'pdf' %}
+              {{ jaraba_icon('ui', 'file-text', { size: '32px', color: 'danger' }) }}
+            {% elseif doc.get('category').value == 'image' %}
+              {{ jaraba_icon('ui', 'image', { size: '32px', color: 'impulse' }) }}
+            {% else %}
+              {{ jaraba_icon('ui', 'file', { size: '32px', color: 'corporate' }) }}
+            {% endif %}
+          </div>
+
+          <div class="knowledge-documents__card-body">
+            <h2 class="knowledge-documents__card-title">{{ doc.get('title').value }}</h2>
+
+            {% if doc.get('description').value %}
+              <p class="knowledge-documents__card-desc">{{ doc.get('description').value|length > 100 ? doc.get('description').value|slice(0, 100) ~ '...' : doc.get('description').value }}</p>
+            {% endif %}
+
+            <div class="knowledge-documents__card-meta">
+              <span class="knowledge-documents__status knowledge-documents__status--{{ status_info.class }}">
+                {{ status_info.label }}
+              </span>
+              {% if doc.get('chunk_count').value > 0 %}
+                <span class="knowledge-documents__chunks">
+                  {{ '%count chunks'|t({ '%count': doc.get('chunk_count').value }) }}
+                </span>
+              {% endif %}
+              <span class="knowledge-documents__date">
+                {{ doc.get('created').value|date('d/m/Y') }}
+              </span>
+            </div>
+
+            {% if proc_status == 'error' and doc.get('error_message').value %}
+              <p class="knowledge-documents__error">{{ doc.get('error_message').value }}</p>
+            {% endif %}
+          </div>
+
+          {% if can_edit %}
+            <div class="knowledge-documents__card-actions">
+              <a href="{{ path('jaraba_tenant_knowledge.document.edit', { 'tenant_document': doc.id() }) }}"
+                 class="knowledge-documents__action"
+                 data-dialog-type="modal"
+                 data-dialog-options='{"width": 700, "title": "{{ 'Editar Documento'|t }}"}'
+                 title="{{ 'Editar'|t }}">
+                {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+              </a>
+              <a href="{{ path('jaraba_tenant_knowledge.document.delete', { 'tenant_document': doc.id() }) }}"
+                 class="knowledge-documents__action knowledge-documents__action--danger"
+                 data-dialog-type="modal"
+                 data-dialog-options='{"width": 500, "title": "{{ 'Eliminar Documento'|t }}"}'
+                 title="{{ 'Eliminar'|t }}">
+                {{ jaraba_icon('actions', 'trash', { size: '16px' }) }}
+              </a>
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

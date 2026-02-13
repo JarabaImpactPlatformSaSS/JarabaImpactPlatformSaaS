@@ -11,9 +11,9 @@ Procedimiento para realizar una auditoría multidisciplinar completa del SaaS.
 - Acceso a `/docs/tecnicos/` para especificaciones
 - Acceso a `/web/modules/custom/` para código fuente
 
-## Metodología (8 Disciplinas)
+## Metodología (15 Disciplinas)
 
-La auditoría debe cubrir 8 perspectivas:
+La auditoría debe cubrir 15 perspectivas:
 
 1. **Consultor de Negocio Senior** - Modelo de negocio, Unit Economics, GTM
 2. **Analista Financiero Senior** - FOC, métricas SaaS, cash flow
@@ -24,6 +24,12 @@ La auditoría debe cubrir 8 perspectivas:
 7. **Ingeniero SEO/GEO Senior** - Schema.org, Answer Capsules, llms.txt
 8. **Ingeniero IA Senior** - Agentes, RAG, guardrails, costos
 9. **Tech Lead Drupal** - Content Entities, Field UI, SCSS inyectable, i18n
+10. **Ingeniero de Seguridad** - HMAC, permisos, sanitización, OWASP
+11. **Ingeniero de Rendimiento** - Índices DB, locking, caching, colas async
+12. **Ingeniero de Consistencia** - Servicios canónicos, API versioning, patrones
+13. **Ingeniero DevOps/CI** - Pipelines, SAST, DAST, contenedores, Trivy
+14. **Ingeniero de Testing** - PHPUnit, Cypress, k6, cobertura, tipos test
+15. **Ingeniero de Observabilidad** - Telemetría, logging, métricas, alertas
 
 ## Pasos de la Auditoría
 
@@ -65,15 +71,28 @@ Get-ChildItem -Path "web/modules/custom/*/*.services.yml"
 > [!CAUTION]
 > **REGLA CRÍTICA (lección 2026-02-09):** `grep` y `find` NUNCA son suficientes para afirmar que código NO existe.
 > La auditoría v1.0 del Page Builder usó grep y concluyó que 3 funcionalidades no existían. Las 3 SÍ existían.
-> 
+>
 > **Protocolo obligatorio:**
 > 1. `grep`/`find` para **localizar** archivos rápido (fase rápida)
 > 2. `view_file` para **leer completo** cada archivo relevante (fase exhaustiva)
 > 3. Si grep devuelve 0 resultados → **OBLIGATORIO** leer el archivo completo
 > 4. Verificar diferentes variaciones del patrón (prefijos, namespaces, encoding)
 > 5. Afirmaciones de alto impacto requieren verificación con 2+ métodos independientes
-> 
+>
 > **Referencia:** [2026-02-09_auditoria_v2_falsos_positivos_page_builder.md](docs/tecnicos/aprendizajes/2026-02-09_auditoria_v2_falsos_positivos_page_builder.md)
+
+> [!CAUTION]
+> **7 VERIFICACIONES OBLIGATORIAS (lección 2026-02-13):** La Auditoría Integral descubrió patrones críticos recurrentes:
+>
+> 1. **Índices DB**: Verificar que TODA Content Entity tiene `->addIndex()` en `baseFieldDefinitions()` para tenant_id + campos frecuentes
+> 2. **LockBackendInterface**: Verificar que TODA operación financiera (Stripe, créditos, facturación) adquiere lock exclusivo
+> 3. **AccessControlHandler**: Verificar que TODA Content Entity declara `access` handler en anotación `@ContentEntityType`
+> 4. **Servicios duplicados**: Verificar que NO existen servicios con la misma responsabilidad en múltiples módulos (ej: TenantContextService duplicado)
+> 5. **tenant_id consistente**: Verificar que tenant_id es `entity_reference` (no `integer`) en TODAS las entidades
+> 6. **`|raw` en Twig**: Verificar que TODO uso de `|raw` tiene sanitización server-side previa (`Xss::filterAdmin()`)
+> 7. **`_user_is_logged_in` vs `_permission`**: Verificar que rutas sensibles usan `_permission` con permiso granular
+>
+> **Referencia:** [Auditoría Integral Estado SaaS v1](docs/tecnicos/auditorias/20260213-Auditoria_Integral_Estado_SaaS_v1_Claude.md)
 
 ### 4. Calcular Conformidad
 - Listar specs implementadas / total specs
@@ -116,7 +135,13 @@ docs/tecnicos/aprendizajes/YYYY-MM-DD_auditoria_exhaustiva_gaps_resueltos.md
 
 ## Documentos de Referencia
 
-### Auditoría v2.1 (2026-02-09 — Más Reciente) ⭐
+### Auditoría Integral (2026-02-13 — Más Reciente) ⭐
+- [Auditoría Integral Estado SaaS v1](docs/tecnicos/auditorias/20260213-Auditoria_Integral_Estado_SaaS_v1_Claude.md) - 65 hallazgos (7 Críticos), 15 disciplinas, 62 módulos
+- [Plan Remediación Auditoría Integral v1](docs/implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) - 3 fases, ~250-350h
+- [Aprendizajes Auditoría Integral](docs/tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md) - 11 reglas AUDIT-*
+- [Directrices v20.0.0](docs/00_DIRECTRICES_PROYECTO.md) - Secciones 4.7 y 5.8.3 con reglas AUDIT-*
+
+### Auditoría v2.1 (2026-02-09) ⭐
 - [Plan v2.1 (Corrección Falsos Positivos)](docs/planificacion/20260209-Plan_Elevacion_Page_Site_Builder_v2.md) - Score 10/10, 3 falsos positivos corregidos
 - [Aprendizajes v2.1](docs/tecnicos/aprendizajes/2026-02-09_auditoria_v2_falsos_positivos_page_builder.md) - Regla "nunca confiar solo en grep"
 - [Arquitectura v1.2.0](docs/arquitectura/2026-02-08_plan_elevacion_page_builder_clase_mundial.md) - Gaps G1/G2/G7 marcados como falsos positivos
@@ -154,6 +179,11 @@ docs/tecnicos/aprendizajes/YYYY-MM-DD_auditoria_exhaustiva_gaps_resueltos.md
 | G5 | Page Builder Schema.org | ¿Schemas por vertical implementados? |
 | G6 | Site Builder Extensions | ¿Docs 176-179 iniciados? |
 | G7 | WCAG 2.1 AA | ¿Blockes cumplen accesibilidad? |
+| G8 | Índices DB Content Entities | ¿268 entidades tienen `->addIndex()` en `baseFieldDefinitions()`? |
+| G9 | AccessControlHandler | ¿Todas las Content Entities declaran `access` handler? |
+| G10 | Servicios duplicados | ¿TenantContextService, ImpactCreditService sin duplicados? |
+| G11 | tenant_id entity_reference | ¿Todas las entidades usan entity_reference (no integer)? |
+| G12 | API versioning | ¿Todas las rutas API con prefijo /api/v1/? |
 
 ## Frecuencia Recomendada
 
