@@ -1,9 +1,9 @@
-uuid: 4e0a1038-bdd0-4f39-8995-c821ffc259fa
+uuid: 840cce1f-a09e-4292-87ed-36a0a83752ff
 langcode: es
 status: true
 dependencies: {  }
 id: es
-label: Spanish
+label: Español
 direction: ltr
-weight: 1
+weight: 0
 locked: false

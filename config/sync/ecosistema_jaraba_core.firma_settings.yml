@@ -1,3 +1,5 @@
+_core:
+  default_config_hash: GnM6w0TkEQtXpbipOFzozCVG3UcbAkgGs9lZkHNguWA
 certificate_path: /etc/ssl/private/ecosistema-jaraba-sello.p12
 certificate_password: ''
 tsa_url: 'http://tsa.fnmt.es/tsa/tss'

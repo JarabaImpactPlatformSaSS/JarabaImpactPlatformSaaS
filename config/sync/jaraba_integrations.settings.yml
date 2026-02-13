@@ -1,8 +1,0 @@
-_core:
-  default_config_hash: c0b-AuqWRacvKqcMkHb2zfEBVVhxa5BV7_6LXzDsxZs
-webhook_max_retries: 3
-webhook_timeout: 30
-webhook_disable_after_failures: 10
-oauth_token_lifetime: 3600
-oauth_refresh_token_lifetime: 30
-api_rate_limit: 60

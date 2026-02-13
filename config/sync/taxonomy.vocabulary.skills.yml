@@ -1,9 +1,0 @@
-uuid: 4c690fa5-c89a-43c9-88ad-d63fef6e70d6
-langcode: es
-status: true
-dependencies: {  }
-name: Skills
-vid: skills
-description: 'Habilidades profesionales para perfiles de candidatos'
-weight: 0
-new_revision: false
