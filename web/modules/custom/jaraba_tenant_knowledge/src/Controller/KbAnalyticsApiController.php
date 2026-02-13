@@ -7,6 +7,7 @@ namespace Drupal\jaraba_tenant_knowledge\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_tenant_knowledge\Service\KbAnalyticsService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,16 +38,23 @@ class KbAnalyticsApiController extends ControllerBase {
   protected LoggerInterface $kbLogger;
 
   /**
+   * The tenant context service.
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor con inyección de dependencias.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     KbAnalyticsService $analytics_service,
     LoggerInterface $logger,
+    TenantContextService $tenantContext,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->analyticsService = $analytics_service;
     $this->kbLogger = $logger;
+    $this->tenantContext = $tenantContext;
   }
 
   /**
@@ -57,6 +65,7 @@ class KbAnalyticsApiController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_tenant_knowledge.kb_analytics'),
       $container->get('logger.channel.jaraba_tenant_knowledge'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -68,7 +77,7 @@ class KbAnalyticsApiController extends ControllerBase {
    */
   public function analytics(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $tenantIdInt = $tenantId !== NULL ? (int) $tenantId : NULL;
 
       $stats = $this->analyticsService->getArticleStats($tenantIdInt);

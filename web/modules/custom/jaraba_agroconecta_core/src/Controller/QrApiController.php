@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_agroconecta_core\Service\QrService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,6 +36,7 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
 
     public function __construct(
         protected QrService $qrService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -42,6 +44,7 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
     {
         return new static(
             $container->get('jaraba_agroconecta.qr_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -191,7 +194,7 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
             ], 400);
         }
 
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $results = [];
         $errors = [];
 

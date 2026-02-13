@@ -4,6 +4,7 @@ namespace Drupal\jaraba_candidate\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_candidate\Service\CopilotInsightsService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,12 +34,20 @@ class InsightsApiController extends ControllerBase
     protected CopilotInsightsService $insightsService;
 
     /**
+     * The tenant context service.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container)
     {
         $instance = parent::create($container);
         $instance->insightsService = $container->get('jaraba_candidate.copilot_insights');
+        $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
         return $instance;
     }
 
@@ -54,7 +63,7 @@ class InsightsApiController extends ControllerBase
 
             $userId = (int) $this->currentUser()->id();
             $copilotType = $data['copilot_type'] ?? 'generic';
-            $tenantId = $data['tenant_id'] ?? NULL;
+            $tenantId = $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL);
 
             $conversation = $this->insightsService->getOrCreateConversation(
                 $userId,
@@ -187,7 +196,7 @@ class InsightsApiController extends ControllerBase
     public function getSummary(Request $request): JsonResponse
     {
         $period = $request->query->get('period', 'week');
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
         $metrics = $this->insightsService->getEffectivenessMetrics(
             $period,
@@ -208,7 +217,7 @@ class InsightsApiController extends ControllerBase
     public function getTopics(Request $request): JsonResponse
     {
         $period = $request->query->get('period', 'week');
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
         $topics = $this->insightsService->aggregateTopics(
             $tenantId ? (int) $tenantId : NULL,

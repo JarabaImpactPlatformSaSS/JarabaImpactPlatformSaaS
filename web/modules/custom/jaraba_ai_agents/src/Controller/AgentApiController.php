@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Service\RateLimiterService;
 use Drupal\jaraba_ai_agents\Agent\AgentInterface;
 use Drupal\jaraba_ai_agents\Service\AgentOrchestrator;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,6 +52,13 @@ class AgentApiController extends ControllerBase
     protected RateLimiterService $rateLimiter;
 
     /**
+     * The tenant context service.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * Array de agentes disponibles.
      *
      * @var array<string, \Drupal\jaraba_ai_agents\Agent\AgentInterface>
@@ -67,9 +75,11 @@ class AgentApiController extends ControllerBase
         AgentInterface $storytellingAgent,
         AgentInterface $customerExperienceAgent,
         AgentInterface $supportAgent,
+        TenantContextService $tenantContext,
     ) {
         $this->orchestrator = $orchestrator;
         $this->rateLimiter = $rateLimiter;
+        $this->tenantContext = $tenantContext;
 
         // Registrar agentes en el orquestador.
         $this->agents = [
@@ -96,6 +106,7 @@ class AgentApiController extends ControllerBase
             $container->get('jaraba_ai_agents.storytelling_agent'),
             $container->get('jaraba_ai_agents.customer_experience_agent'),
             $container->get('jaraba_ai_agents.support_agent'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -250,7 +261,7 @@ class AgentApiController extends ControllerBase
 
         $context = $data['context'] ?? [];
         // Soportar tenant via header X-Tenant-ID o body.
-        $tenantId = $request->headers->get('X-Tenant-ID') ?? $data['tenant_id'] ?? NULL;
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->headers->get('X-Tenant-ID') ?? $data['tenant_id'] ?? NULL;
         $vertical = $data['vertical'] ?? 'general';
 
         $result = $this->orchestrator->execute(

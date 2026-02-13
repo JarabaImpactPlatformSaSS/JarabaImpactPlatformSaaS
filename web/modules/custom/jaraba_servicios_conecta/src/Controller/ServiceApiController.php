@@ -3,6 +3,7 @@
 namespace Drupal\jaraba_servicios_conecta\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_servicios_conecta\Service\ProviderService;
 use Drupal\jaraba_servicios_conecta\Service\ServiceOfferingService;
 use Drupal\jaraba_servicios_conecta\Service\AvailabilityService;
@@ -37,16 +38,23 @@ class ServiceApiController extends ControllerBase {
   protected AvailabilityService $availabilityService;
 
   /**
+   * The tenant context service.
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    */
   public function __construct(
     ProviderService $provider_service,
     ServiceOfferingService $offering_service,
     AvailabilityService $availability_service,
+    TenantContextService $tenant_context,
   ) {
     $this->providerService = $provider_service;
     $this->offeringService = $offering_service;
     $this->availabilityService = $availability_service;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -57,6 +65,7 @@ class ServiceApiController extends ControllerBase {
       $container->get('jaraba_servicios_conecta.provider'),
       $container->get('jaraba_servicios_conecta.service_offering'),
       $container->get('jaraba_servicios_conecta.availability'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -68,7 +77,7 @@ class ServiceApiController extends ControllerBase {
       'category' => $request->query->get('category'),
       'city' => $request->query->get('city'),
       'search' => $request->query->get('search'),
-      'tenant_id' => $request->query->get('tenant_id'),
+      'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id'),
     ];
     $limit = min(50, max(1, (int) $request->query->get('limit', 12)));
     $offset = max(0, (int) $request->query->get('offset', 0));

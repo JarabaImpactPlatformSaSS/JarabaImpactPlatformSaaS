@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_security_compliance\Service\ComplianceTrackerService;
 use Drupal\jaraba_security_compliance\Service\PolicyEnforcerService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,16 +37,25 @@ class ComplianceApiController extends ControllerBase {
   protected PolicyEnforcerService $policyEnforcer;
 
   /**
+   * The tenant context service.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor con inyección de dependencias.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     ComplianceTrackerService $complianceTracker,
     PolicyEnforcerService $policyEnforcer,
+    TenantContextService $tenantContext,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->complianceTracker = $complianceTracker;
     $this->policyEnforcer = $policyEnforcer;
+    $this->tenantContext = $tenantContext;
   }
 
   /**
@@ -56,6 +66,7 @@ class ComplianceApiController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_security_compliance.compliance_tracker'),
       $container->get('jaraba_security_compliance.policy_enforcer'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -72,7 +83,7 @@ class ComplianceApiController extends ControllerBase {
    */
   public function getStatus(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $tenantIdInt = $tenantId !== NULL ? (int) $tenantId : NULL;
 
       $status = $this->complianceTracker->getComplianceStatus($tenantIdInt);
@@ -110,7 +121,7 @@ class ComplianceApiController extends ControllerBase {
    */
   public function getPolicies(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $tenantIdInt = $tenantId !== NULL ? (int) $tenantId : NULL;
 
       $policies = $this->policyEnforcer->getActivePolicies($tenantIdInt);

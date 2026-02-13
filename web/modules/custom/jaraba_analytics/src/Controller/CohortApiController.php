@@ -6,6 +6,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_analytics\Service\CohortAnalysisService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,14 +34,23 @@ class CohortApiController extends ControllerBase {
   protected CohortAnalysisService $cohortAnalysisService;
 
   /**
+   * Servicio de contexto de tenant.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    */
   public function __construct(
     CohortAnalysisService $cohort_analysis_service,
     EntityTypeManagerInterface $entity_type_manager,
+    TenantContextService $tenant_context,
   ) {
     $this->cohortAnalysisService = $cohort_analysis_service;
     $this->entityTypeManager = $entity_type_manager;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -49,7 +59,8 @@ class CohortApiController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_analytics.cohort_analysis'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context')
     );
   }
 
@@ -59,7 +70,7 @@ class CohortApiController extends ControllerBase {
    * Lists all cohort definitions, optionally filtered by tenant_id.
    */
   public function listCohorts(Request $request): JsonResponse {
-    $tenantId = $request->query->get('tenant_id');
+    $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
     $storage = $this->entityTypeManager->getStorage('cohort_definition');
     $query = $storage->getQuery()
@@ -163,8 +174,9 @@ class CohortApiController extends ControllerBase {
       'cohort_type' => $content['cohort_type'],
     ];
 
-    if (!empty($content['tenant_id'])) {
-      $values['tenant_id'] = (int) $content['tenant_id'];
+    $resolvedTenantId = $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? NULL);
+    if (!empty($resolvedTenantId)) {
+      $values['tenant_id'] = (int) $resolvedTenantId;
     }
     if (!empty($content['date_range_start'])) {
       $values['date_range_start'] = $content['date_range_start'];

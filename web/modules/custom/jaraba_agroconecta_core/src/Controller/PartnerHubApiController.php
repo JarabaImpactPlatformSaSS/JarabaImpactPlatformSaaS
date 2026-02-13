@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,8 +17,26 @@ use Symfony\Component\HttpFoundation\Request;
  * Endpoints autenticados para gestión de partners, documentos y analytics.
  * Sprint AC6-2, Doc 82.
  */
-class PartnerHubApiController extends ControllerBase
+class PartnerHubApiController extends ControllerBase implements ContainerInjectionInterface
 {
+
+    /**
+     * Constructor.
+     */
+    public function __construct(
+        protected TenantContextService $tenantContext,
+    ) {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static
+    {
+        return new static(
+            $container->get('ecosistema_jaraba_core.tenant_context'),
+        );
+    }
 
     /**
      * Obtiene el servicio de documentos partner.
@@ -64,7 +85,7 @@ class PartnerHubApiController extends ControllerBase
             $data['partner_name'],
             $data['partner_type'],
             $accessLevel,
-            (int) ($data['tenant_id'] ?? 1)
+            $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1)
         );
 
         if (isset($result['error'])) {
@@ -171,7 +192,7 @@ class PartnerHubApiController extends ControllerBase
         }
 
         $data['producer_id'] = $data['producer_id'] ?? $this->currentUser()->id();
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
 
         $result = $this->partnerService()->uploadDocument($data, $tenantId);
         return new JsonResponse($result, 201);

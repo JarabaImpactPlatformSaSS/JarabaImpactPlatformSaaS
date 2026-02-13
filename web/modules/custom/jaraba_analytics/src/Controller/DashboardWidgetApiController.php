@@ -6,6 +6,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_analytics\Service\AnalyticsDataService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,14 +36,23 @@ class DashboardWidgetApiController extends ControllerBase {
   protected AnalyticsDataService $analyticsDataService;
 
   /**
+   * Servicio de contexto de tenant.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    */
   public function __construct(
     AnalyticsDataService $analytics_data_service,
     EntityTypeManagerInterface $entity_type_manager,
+    TenantContextService $tenant_context,
   ) {
     $this->analyticsDataService = $analytics_data_service;
     $this->entityTypeManager = $entity_type_manager;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -51,7 +61,8 @@ class DashboardWidgetApiController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_analytics.analytics_data'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context')
     );
   }
 
@@ -302,7 +313,7 @@ class DashboardWidgetApiController extends ControllerBase {
       }
 
       $queryConfig = $widget->getQueryConfig();
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $tenantIdInt = $tenantId ? (int) $tenantId : NULL;
 
       $data = $this->analyticsDataService->executeQuery($queryConfig, $tenantIdInt);

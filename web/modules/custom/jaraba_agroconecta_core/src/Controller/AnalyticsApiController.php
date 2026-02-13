@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +28,7 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
 
     public function __construct(
         protected AgroAnalyticsService $analyticsService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -34,6 +36,7 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
     {
         return new static(
             $container->get('jaraba_agroconecta.analytics_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -102,7 +105,7 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
     public function evaluateAlerts(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), TRUE);
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
 
         $triggered = $this->analyticsService->evaluateAlerts($tenantId);
         return new JsonResponse([

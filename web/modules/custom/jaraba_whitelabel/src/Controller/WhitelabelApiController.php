@@ -6,6 +6,7 @@ namespace Drupal\jaraba_whitelabel\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_whitelabel\Service\ConfigResolverService;
 use Drupal\jaraba_whitelabel\Service\DomainManagerService;
 use Psr\Log\LoggerInterface;
@@ -37,6 +38,11 @@ class WhitelabelApiController extends ControllerBase {
   protected LoggerInterface $logger;
 
   /**
+   * The tenant context service.
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -47,17 +53,21 @@ class WhitelabelApiController extends ControllerBase {
    *   The domain manager service.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger channel.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+   *   The tenant context service.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     ConfigResolverService $config_resolver,
     DomainManagerService $domain_manager,
     LoggerInterface $logger,
+    TenantContextService $tenant_context,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->configResolver = $config_resolver;
     $this->domainManager = $domain_manager;
     $this->logger = $logger;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -69,6 +79,7 @@ class WhitelabelApiController extends ControllerBase {
       $container->get('jaraba_whitelabel.config_resolver'),
       $container->get('jaraba_whitelabel.domain_manager'),
       $container->get('logger.channel.jaraba_whitelabel'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -83,7 +94,7 @@ class WhitelabelApiController extends ControllerBase {
    */
   public function getConfig(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $tenantIdInt = ($tenantId !== NULL && is_numeric($tenantId))
         ? (int) $tenantId
         : NULL;
@@ -125,7 +136,7 @@ class WhitelabelApiController extends ControllerBase {
    */
   public function getDomains(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       if ($tenantId === NULL || !is_numeric($tenantId)) {
         return new JsonResponse([
           'status' => 'error',
@@ -175,7 +186,7 @@ class WhitelabelApiController extends ControllerBase {
         ], 400);
       }
 
-      $tenantId = $data['tenant_id'] ?? NULL;
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL);
       $domain = $data['domain'] ?? NULL;
 
       if (!is_numeric($tenantId) || empty($domain) || !is_string($domain)) {
