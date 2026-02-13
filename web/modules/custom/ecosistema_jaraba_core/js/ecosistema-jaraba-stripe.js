@@ -246,7 +246,7 @@
                 const billingPeriod = billingToggle?.checked ? 'yearly' : 'monthly';
 
                 // 3. Enviar al backend para crear suscripción
-                const response = await fetch('/api/stripe/create-subscription', {
+                const response = await fetch('/api/v1/stripe/create-subscription', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -276,7 +276,7 @@
                     }
 
                     // Confirmar al backend que el pago fue exitoso
-                    await fetch('/api/stripe/confirm-subscription', {
+                    await fetch('/api/v1/stripe/confirm-subscription', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -181,8 +181,8 @@
           // Determine which endpoint to use based on authentication
           const isAuthenticated = drupalSettings.user && drupalSettings.user.uid > 0;
           const endpoint = isAuthenticated
-            ? '/api/copilot/chat'
-            : '/api/public-copilot/chat';
+            ? '/api/v1/copilot/chat'
+            : '/api/v1/public-copilot/chat';
 
           // Call real API with conversation history for context
           fetch(endpoint, {
@@ -283,7 +283,7 @@
                 rating.innerHTML = `<span class="rating-thanks">${Drupal.t('¡Gracias por tu feedback!')}</span>`;
 
                 // Send feedback to backend for AI learning
-                fetch('/api/copilot/feedback', {
+                fetch('/api/v1/copilot/feedback', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({

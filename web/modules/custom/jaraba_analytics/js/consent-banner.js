@@ -13,7 +13,7 @@
 
   const COOKIE_NAME = 'jaraba_visitor_id';
   const CONSENT_KEY = 'jaraba_consent';
-  const API_BASE = '/api/consent';
+  const API_BASE = '/api/v1/consent';
 
   /**
    * Comportamiento principal del banner de consentimiento.

@@ -27,7 +27,7 @@
     // Tiempo de espera para conexión (ms)
     CONNECTION_TIMEOUT: 10000,
     // Endpoint base de la API
-    API_BASE: '/api/autofirma',
+    API_BASE: '/api/v1/autofirma',
     // Formato de firma para PDF
     SIGN_FORMAT: 'PAdES',
     // Algoritmo de firma

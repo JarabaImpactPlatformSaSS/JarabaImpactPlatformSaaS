@@ -163,7 +163,7 @@ jaraba_analytics.api.cohorts.retention:
 
 # API: Estado de consentimiento.
 jaraba_analytics.api.consent.status:
-  path: '/api/consent/status'
+  path: '/api/v1/consent/status'
   defaults:
     _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::status'
   methods: [GET]
@@ -174,7 +174,7 @@ jaraba_analytics.api.consent.status:
 
 # API: Guardar consentimiento.
 jaraba_analytics.api.consent.grant:
-  path: '/api/consent/grant'
+  path: '/api/v1/consent/grant'
   defaults:
     _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::grant'
   methods: [POST]
@@ -185,7 +185,7 @@ jaraba_analytics.api.consent.grant:
 
 # API: Revocar consentimiento.
 jaraba_analytics.api.consent.revoke:
-  path: '/api/consent/revoke'
+  path: '/api/v1/consent/revoke'
   defaults:
     _controller: '\Drupal\jaraba_analytics\Controller\ConsentController::revoke'
   methods: [POST]

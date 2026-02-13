@@ -117,9 +117,9 @@
      */
     loadChartData: function (chartType, callback) {
       const endpoints = {
-        sales: '/api/tenant/analytics/sales',
-        mrr: '/api/tenant/analytics/mrr',
-        customers: '/api/tenant/analytics/customers'
+        sales: '/api/v1/tenant/analytics/sales',
+        mrr: '/api/v1/tenant/analytics/mrr',
+        customers: '/api/v1/tenant/analytics/customers'
       };
 
       const url = endpoints[chartType];

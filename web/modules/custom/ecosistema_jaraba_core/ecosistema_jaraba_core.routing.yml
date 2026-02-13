@@ -201,7 +201,7 @@ entity.tenant.canonical:
 
 # Obtener documento en Base64 para firmar con AutoFirma
 ecosistema_jaraba_core.autofirma.get_documento:
-  path: '/api/autofirma/documento/{document_id}'
+  path: '/api/v1/autofirma/documento/{document_id}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getDocumento'
   methods: [GET]
@@ -210,7 +210,7 @@ ecosistema_jaraba_core.autofirma.get_documento:
 
 # Endpoint para recibir el documento firmado desde AutoFirma
 ecosistema_jaraba_core.autofirma.recibir_firma:
-  path: '/api/autofirma/firmar'
+  path: '/api/v1/autofirma/firmar'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::recibirFirma'
   methods: [POST]
@@ -221,7 +221,7 @@ ecosistema_jaraba_core.autofirma.recibir_firma:
 
 # Consultar estado de firma de un documento
 ecosistema_jaraba_core.autofirma.get_estado:
-  path: '/api/autofirma/estado/{document_id}'
+  path: '/api/v1/autofirma/estado/{document_id}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getEstado'
   methods: [GET]
@@ -230,7 +230,7 @@ ecosistema_jaraba_core.autofirma.get_estado:
 
 # Verificar disponibilidad de AutoFirma (endpoint público)
 ecosistema_jaraba_core.autofirma.check:
-  path: '/api/autofirma/check'
+  path: '/api/v1/autofirma/check'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::checkAutoFirma'
   methods: [GET]
@@ -239,7 +239,7 @@ ecosistema_jaraba_core.autofirma.check:
 
 # Generar nuevo documento PDF para firma
 ecosistema_jaraba_core.autofirma.generar:
-  path: '/api/autofirma/generar'
+  path: '/api/v1/autofirma/generar'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::generarDocumento'
   methods: [POST]
@@ -327,7 +327,7 @@ ecosistema_jaraba_core.webhook.custom:
 
 # Obtener lista de precios para una vertical (para páginas de pricing)
 ecosistema_jaraba_core.api.pricing:
-  path: '/api/pricing/{vertical}'
+  path: '/api/v1/pricing/{vertical}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::getPricing'
   requirements:
@@ -344,7 +344,7 @@ ecosistema_jaraba_core.api.pricing:
 
 # Crear suscripción con método de pago de Stripe Elements
 ecosistema_jaraba_core.api.stripe.create_subscription:
-  path: '/api/stripe/create-subscription'
+  path: '/api/v1/stripe/create-subscription'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createSubscription'
   requirements:
@@ -353,7 +353,7 @@ ecosistema_jaraba_core.api.stripe.create_subscription:
 
 # Confirmar suscripción después de 3D Secure
 ecosistema_jaraba_core.api.stripe.confirm_subscription:
-  path: '/api/stripe/confirm-subscription'
+  path: '/api/v1/stripe/confirm-subscription'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::confirmSubscription'
   requirements:
@@ -362,7 +362,7 @@ ecosistema_jaraba_core.api.stripe.confirm_subscription:
 
 # Crear sesión del portal de clientes de Stripe
 ecosistema_jaraba_core.api.stripe.portal:
-  path: '/api/stripe/portal-session'
+  path: '/api/v1/stripe/portal-session'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createPortalSession'
   requirements:
@@ -375,7 +375,7 @@ ecosistema_jaraba_core.api.stripe.portal:
 
 # Iniciar onboarding de cuenta Connect (crear cuenta Express y redirigir a Stripe)
 ecosistema_jaraba_core.api.stripe.connect.onboard:
-  path: '/api/stripe/connect/onboard'
+  path: '/api/v1/stripe/connect/onboard'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::startConnectOnboarding'
   requirements:
@@ -402,7 +402,7 @@ ecosistema_jaraba_core.stripe.connect.refresh:
 
 # Obtener estado de cuenta Connect del tenant actual
 ecosistema_jaraba_core.api.stripe.connect.status:
-  path: '/api/stripe/connect/status'
+  path: '/api/v1/stripe/connect/status'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectStatus'
   requirements:
@@ -411,7 +411,7 @@ ecosistema_jaraba_core.api.stripe.connect.status:
 
 # Acceder al dashboard de Stripe Express del tenant
 ecosistema_jaraba_core.api.stripe.connect.dashboard:
-  path: '/api/stripe/connect/dashboard'
+  path: '/api/v1/stripe/connect/dashboard'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectDashboard'
   requirements:
@@ -525,7 +525,7 @@ ecosistema_jaraba_core.tenant_self_service.settings:
 
 # API para datos de tendencias de ventas
 ecosistema_jaraba_core.api.tenant_analytics.sales:
-  path: '/api/tenant/analytics/sales'
+  path: '/api/v1/tenant/analytics/sales'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::salesTrend'
   requirements:
@@ -534,7 +534,7 @@ ecosistema_jaraba_core.api.tenant_analytics.sales:
 
 # API para datos de MRR
 ecosistema_jaraba_core.api.tenant_analytics.mrr:
-  path: '/api/tenant/analytics/mrr'
+  path: '/api/v1/tenant/analytics/mrr'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::mrrTrend'
   requirements:
@@ -543,7 +543,7 @@ ecosistema_jaraba_core.api.tenant_analytics.mrr:
 
 # API para datos de clientes
 ecosistema_jaraba_core.api.tenant_analytics.customers:
-  path: '/api/tenant/analytics/customers'
+  path: '/api/v1/tenant/analytics/customers'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::customersTrend'
   requirements:
@@ -552,7 +552,7 @@ ecosistema_jaraba_core.api.tenant_analytics.customers:
 
 # API para productos top
 ecosistema_jaraba_core.api.tenant_analytics.products:
-  path: '/api/tenant/analytics/products'
+  path: '/api/v1/tenant/analytics/products'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::topProducts'
   requirements:
@@ -714,7 +714,7 @@ ecosistema_jaraba_core.demo_storytelling:
 
 # API: Track demo action
 ecosistema_jaraba_core.demo_api_track:
-  path: '/api/demo/track'
+  path: '/api/v1/demo/track'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::trackAction'
   requirements:
@@ -723,7 +723,7 @@ ecosistema_jaraba_core.demo_api_track:
 
 # API: Get session data
 ecosistema_jaraba_core.demo_api_session:
-  path: '/api/demo/session/{sessionId}'
+  path: '/api/v1/demo/session/{sessionId}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::getSessionData'
   requirements:
@@ -733,7 +733,7 @@ ecosistema_jaraba_core.demo_api_session:
 
 # API: Convert demo to real account
 ecosistema_jaraba_core.demo_api_convert:
-  path: '/api/demo/convert'
+  path: '/api/v1/demo/convert'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::convertToReal'
   requirements:
@@ -749,7 +749,7 @@ ecosistema_jaraba_core.demo_api_convert:
 
 # Documentación Swagger UI
 ecosistema_jaraba_core.api.docs:
-  path: '/api/docs'
+  path: '/api/v1/docs'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::docs'
     _title: 'API Documentation'
@@ -758,7 +758,7 @@ ecosistema_jaraba_core.api.docs:
 
 # OpenAPI Spec (YAML)
 ecosistema_jaraba_core.api.openapi:
-  path: '/api/openapi.yaml'
+  path: '/api/v1/openapi.yaml'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::openApiSpec'
   requirements:
@@ -839,7 +839,7 @@ ecosistema_jaraba_core.api.v1.marketplace.categories:
 
 # Obtener contexto de página para copilot
 ecosistema_jaraba_core.api.copilot.context:
-  path: '/api/copilot/context'
+  path: '/api/v1/copilot/context'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::getContext'
   requirements:
@@ -848,7 +848,7 @@ ecosistema_jaraba_core.api.copilot.context:
 
 # Generar contenido con IA
 ecosistema_jaraba_core.api.copilot.generate:
-  path: '/api/copilot/generate'
+  path: '/api/v1/copilot/generate'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::generateContent'
   requirements:
@@ -857,7 +857,7 @@ ecosistema_jaraba_core.api.copilot.generate:
 
 # Autocompletado inteligente
 ecosistema_jaraba_core.api.copilot.autocomplete:
-  path: '/api/copilot/autocomplete/{field}'
+  path: '/api/v1/copilot/autocomplete/{field}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::autocomplete'
   requirements:
@@ -870,7 +870,7 @@ ecosistema_jaraba_core.api.copilot.autocomplete:
 
 # Crear nuevo sandbox temporal
 ecosistema_jaraba_core.api.sandbox.create:
-  path: '/api/sandbox/create'
+  path: '/api/v1/sandbox/create'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::createSandbox'
   requirements:
@@ -879,7 +879,7 @@ ecosistema_jaraba_core.api.sandbox.create:
 
 # Obtener sandbox por ID
 ecosistema_jaraba_core.api.sandbox.get:
-  path: '/api/sandbox/{id}'
+  path: '/api/v1/sandbox/{id}'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::get'
   requirements:
@@ -888,7 +888,7 @@ ecosistema_jaraba_core.api.sandbox.get:
 
 # Registrar engagement en sandbox
 ecosistema_jaraba_core.api.sandbox.track:
-  path: '/api/sandbox/{id}/track'
+  path: '/api/v1/sandbox/{id}/track'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::track'
   requirements:
@@ -897,7 +897,7 @@ ecosistema_jaraba_core.api.sandbox.track:
 
 # Convertir sandbox a cuenta real
 ecosistema_jaraba_core.api.sandbox.convert:
-  path: '/api/sandbox/{id}/convert'
+  path: '/api/v1/sandbox/{id}/convert'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::convert'
   requirements:
@@ -906,7 +906,7 @@ ecosistema_jaraba_core.api.sandbox.convert:
 
 # Listar templates disponibles
 ecosistema_jaraba_core.api.sandbox.templates:
-  path: '/api/sandbox/templates'
+  path: '/api/v1/sandbox/templates'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::templates'
   requirements:
@@ -915,7 +915,7 @@ ecosistema_jaraba_core.api.sandbox.templates:
 
 # Estadísticas de sandboxes
 ecosistema_jaraba_core.api.sandbox.stats:
-  path: '/api/sandbox/stats'
+  path: '/api/v1/sandbox/stats'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::stats'
   requirements:
@@ -1383,7 +1383,7 @@ ecosistema_jaraba_core.lead_magnet.template_propuesta:
 
 # POST: Envio de resultados de Calculadora de Madurez Digital
 ecosistema_jaraba_core.lead_magnet.calculadora_submit:
-  path: '/api/lead-magnet/calculadora-madurez'
+  path: '/api/v1/lead-magnet/calculadora-madurez'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitCalculadora'
   methods: [POST]
@@ -1392,7 +1392,7 @@ ecosistema_jaraba_core.lead_magnet.calculadora_submit:
 
 # POST: Envio de formulario Guia Vende Online
 ecosistema_jaraba_core.lead_magnet.guia_submit:
-  path: '/api/lead-magnet/guia-vende-online'
+  path: '/api/v1/lead-magnet/guia-vende-online'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitGuia'
   methods: [POST]
@@ -1401,7 +1401,7 @@ ecosistema_jaraba_core.lead_magnet.guia_submit:
 
 # POST: Envio de formulario Auditoria SEO Local
 ecosistema_jaraba_core.lead_magnet.auditoria_submit:
-  path: '/api/lead-magnet/auditoria-seo'
+  path: '/api/v1/lead-magnet/auditoria-seo'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitAuditoria'
   methods: [POST]
@@ -1410,7 +1410,7 @@ ecosistema_jaraba_core.lead_magnet.auditoria_submit:
 
 # POST: Envio de formulario Template Propuesta Profesional
 ecosistema_jaraba_core.lead_magnet.propuesta_submit:
-  path: '/api/lead-magnet/template-propuesta'
+  path: '/api/v1/lead-magnet/template-propuesta'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::submitPropuesta'
   methods: [POST]
@@ -1445,7 +1445,7 @@ ecosistema_jaraba_core.lead_magnet.propuesta_pdf:
 
 # POST: Ejecutar auditoria SEO y devolver resultados JSON
 ecosistema_jaraba_core.lead_magnet.auditoria_result:
-  path: '/api/lead-magnet/auditoria-seo/analizar'
+  path: '/api/v1/lead-magnet/auditoria-seo/analizar'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\LeadMagnetController::analyzeUrl'
   methods: [POST]

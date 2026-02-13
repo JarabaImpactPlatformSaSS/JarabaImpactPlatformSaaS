@@ -259,7 +259,7 @@ block-timeline:
 # Motor de edición drag-and-drop con inline editing y undo/redo nativo
 # v5.3: Fix GrapesJS init lifecycle, SEO guard, viewport dropdown, loading skeleton
 grapesjs-canvas:
-  version: 5.6
+  version: 5.7
   css:
     theme:
       # GrapesJS core CSS (local, descargado de unpkg.com para evitar CSP)

@@ -17,7 +17,7 @@ jaraba_rag.dashboard:
     _permission: 'view jaraba_rag analytics'
 
 jaraba_rag.api.query:
-  path: '/api/jaraba-rag/query'
+  path: '/api/v1/jaraba-rag/query'
   defaults:
     _controller: '\Drupal\jaraba_rag\Controller\RagApiController::query'
   methods: [POST]
@@ -25,7 +25,7 @@ jaraba_rag.api.query:
     _permission: 'use jaraba_rag copilot'
 
 jaraba_rag.api.reindex:
-  path: '/api/jaraba-rag/reindex/{entity_type}/{entity_id}'
+  path: '/api/v1/jaraba-rag/reindex/{entity_type}/{entity_id}'
   defaults:
     _controller: '\Drupal\jaraba_rag\Controller\RagApiController::reindex'
   methods: [POST]

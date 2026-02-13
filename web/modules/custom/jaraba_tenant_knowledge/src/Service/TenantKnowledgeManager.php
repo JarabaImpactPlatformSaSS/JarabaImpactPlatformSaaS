@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
  * incluyendo creación lazy de TenantKnowledgeConfig.
  *
  * MULTI-TENANCY:
- * Obtiene el tenant actual mediante jaraba_multitenancy.tenant_context.
+ * Obtiene el tenant actual mediante ecosistema_jaraba_core.tenant_context.
  * Todas las operaciones están filtradas por tenant.
  */
 class TenantKnowledgeManager
@@ -245,9 +245,9 @@ class TenantKnowledgeManager
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('jaraba_multitenancy.tenant_context')) {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
             /** @var \Drupal\jaraba_multitenancy\Service\TenantContextService $tenantContext */
-            $tenantContext = \Drupal::service('jaraba_multitenancy.tenant_context');
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

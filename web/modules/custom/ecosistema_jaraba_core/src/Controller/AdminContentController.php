@@ -5,20 +5,27 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Menu\LocalTaskManagerInterface;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Enhanced admin/content page with categorized sections and search.
  *
- * Replaces the default SystemController::systemAdminMenuBlockPage with a
- * version that groups content items into logical sections, sorts them
- * alphabetically, and provides client-side search/filter with tab navigation.
+ * Replaces the default content admin page with a version that groups ALL
+ * content items (menu links + local task tabs) into logical sections, sorts
+ * them alphabetically, and provides client-side search/filter with tabs.
  *
- * Categories cover ALL platform verticals so that every menu item from the
- * Drupal sidebar under "Contenido" is represented on this page.
+ * Items come from two Drupal sources:
+ *   1. Menu links with parent: system.admin_content (*.links.menu.yml)
+ *   2. Local tasks with base_route: system.admin_content (*.links.task.yml)
+ *
+ * Both are merged and de-duplicated by route name so the page matches
+ * exactly what the Drupal Navigation sidebar shows.
  */
 class AdminContentController extends ControllerBase
 {
@@ -27,7 +34,7 @@ class AdminContentController extends ControllerBase
      * Category definitions for content items.
      *
      * Order determines display order on the page. Every jaraba_* module that
-     * registers menu links under system.admin_content MUST appear here.
+     * registers content under system.admin_content MUST appear here.
      */
     protected const CATEGORIES = [
         'lms_training' => [
@@ -218,6 +225,7 @@ class AdminContentController extends ControllerBase
                 'block_content',
                 'paragraphs_library',
                 'domain_content',
+                'content_moderation',
                 'ecosistema_jaraba_core',
             ],
         ],
@@ -234,6 +242,8 @@ class AdminContentController extends ControllerBase
      */
     public function __construct(
         protected MenuLinkTreeInterface $menuTree,
+        protected LocalTaskManagerInterface $localTaskManager,
+        protected RequestStack $requestStack,
     ) {
     }
 
@@ -244,6 +254,8 @@ class AdminContentController extends ControllerBase
     {
         return new static(
             $container->get('menu.link_tree'),
+            $container->get('plugin.manager.menu.local_task'),
+            $container->get('request_stack'),
         );
     }
 
@@ -255,7 +267,7 @@ class AdminContentController extends ControllerBase
      */
     public function overview(): array
     {
-        $items = $this->getContentItems();
+        $items = $this->getAllContentItems();
         $categorized = $this->categorizeItems($items);
 
         // Sort items alphabetically within each category.
@@ -283,12 +295,47 @@ class AdminContentController extends ControllerBase
     }
 
     /**
-     * Gets all menu link items under system.admin_content.
+     * Gets ALL content items: menu links + local tasks.
+     *
+     * Merges both sources and de-duplicates by route_name so items
+     * that appear in both sources are only shown once.
      *
      * @return array
      *   Array of items with title, description, url, and provider.
      */
-    protected function getContentItems(): array
+    protected function getAllContentItems(): array
+    {
+        $items = [];
+        $seenRoutes = [];
+
+        // 1. Menu tree items (from *.links.menu.yml).
+        foreach ($this->getMenuItems() as $item) {
+            $routeKey = $item['route_name'] ?: $item['url'];
+            if (!isset($seenRoutes[$routeKey])) {
+                $seenRoutes[$routeKey] = TRUE;
+                $items[] = $item;
+            }
+        }
+
+        // 2. Local task items (from *.links.task.yml).
+        foreach ($this->getLocalTaskItems() as $item) {
+            $routeKey = $item['route_name'] ?: $item['url'];
+            if (!isset($seenRoutes[$routeKey])) {
+                $seenRoutes[$routeKey] = TRUE;
+                $items[] = $item;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Gets menu link items under system.admin_content.
+     *
+     * @return array
+     *   Array of items.
+     */
+    protected function getMenuItems(): array
     {
         $parameters = new MenuTreeParameters();
         $parameters->setRoot('system.admin_content');
@@ -320,6 +367,65 @@ class AdminContentController extends ControllerBase
                 'url' => $url instanceof Url ? $url->toString() : '',
                 'provider' => $definition['provider'] ?? 'unknown',
                 'route_name' => $definition['route_name'] ?? '',
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * Gets local task items that use system.admin_content as base route.
+     *
+     * These are the tabs that Drupal renders on the /admin/content page
+     * (e.g., Bloques, Archivos, Multimedia, all entity listings).
+     *
+     * @return array
+     *   Array of items.
+     */
+    protected function getLocalTaskItems(): array
+    {
+        $items = [];
+
+        try {
+            $taskDefinitions = $this->localTaskManager->getDefinitions();
+        } catch (\Exception $e) {
+            return $items;
+        }
+
+        foreach ($taskDefinitions as $pluginId => $definition) {
+            // Only include tasks whose base_route is system.admin_content.
+            $baseRoute = $definition['base_route'] ?? '';
+            if ($baseRoute !== 'system.admin_content') {
+                continue;
+            }
+
+            // Skip the "Resumen" tab itself (it points to the same route).
+            $routeName = $definition['route_name'] ?? '';
+            if ($routeName === 'system.admin_content') {
+                continue;
+            }
+
+            $title = (string) ($definition['title'] ?? '');
+            if (empty($title) || empty($routeName)) {
+                continue;
+            }
+
+            // Build URL from route name.
+            $url = '';
+            try {
+                $urlObj = Url::fromRoute($routeName);
+                $url = $urlObj->toString();
+            } catch (\Exception $e) {
+                // Route may not exist or may have required parameters.
+                continue;
+            }
+
+            $items[] = [
+                'title' => $title,
+                'description' => '',
+                'url' => $url,
+                'provider' => $definition['provider'] ?? 'unknown',
+                'route_name' => $routeName,
             ];
         }
 

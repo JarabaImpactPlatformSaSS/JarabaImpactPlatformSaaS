@@ -24,7 +24,7 @@
                     this.innerHTML = '<span class="spinner-small"></span> ' + Drupal.t('Verificando...');
 
                     // Llamar API de test
-                    fetch('/api/pixels/test/' + platform, {
+                    fetch('/api/v1/pixels/test/' + platform, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

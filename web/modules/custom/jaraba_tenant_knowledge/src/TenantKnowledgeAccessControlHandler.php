@@ -81,9 +81,9 @@ class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler
     protected function getUserTenantId(AccountInterface $account): ?int
     {
         // Usar el servicio de contexto de tenant si está disponible.
-        if (\Drupal::hasService('jaraba_multitenancy.tenant_context')) {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
             /** @var \Drupal\jaraba_multitenancy\Service\TenantContextService $tenantContext */
-            $tenantContext = \Drupal::service('jaraba_multitenancy.tenant_context');
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

@@ -8,6 +8,8 @@ dependencies:
   - drupal:ai
   - ecosistema_jaraba_core:ecosistema_jaraba_core
   - group:group
+  - jaraba_ab_testing:jaraba_ab_testing
+  - jaraba_rag:jaraba_rag
   - jaraba_tenant_knowledge:jaraba_tenant_knowledge
 
 configure: jaraba_ai_agents.settings

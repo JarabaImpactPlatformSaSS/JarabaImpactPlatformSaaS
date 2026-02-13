@@ -8,7 +8,7 @@
  *
  * FLUJO:
  * 1. Usuario hace click en el botón
- * 2. Se envía POST a /api/stripe/portal-session
+ * 2. Se envía POST a /api/v1/stripe/portal-session
  * 3. Backend crea sesión en Stripe y devuelve URL
  * 4. Se redirige al usuario al portal de Stripe
  * 5. Al terminar, Stripe redirige de vuelta al dashboard
@@ -40,7 +40,7 @@
               window.location.pathname;
 
             // Crear sesión del portal
-            const response = await fetch('/api/stripe/portal-session', {
+            const response = await fetch('/api/v1/stripe/portal-session', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

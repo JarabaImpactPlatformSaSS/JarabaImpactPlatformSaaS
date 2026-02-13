@@ -11,3 +11,4 @@ dependencies:
   - drupal:datetime
   - drupal:link
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_email:jaraba_email

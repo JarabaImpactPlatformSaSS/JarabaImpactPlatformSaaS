@@ -6,7 +6,7 @@
 # =============================================================================
 
 jaraba_heatmap.collect:
-  path: '/api/heatmap/collect'
+  path: '/api/v1/heatmap/collect'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapCollectorController::collect'
   methods: [POST]
@@ -20,7 +20,7 @@ jaraba_heatmap.collect:
 # =============================================================================
 
 jaraba_heatmap.pages:
-  path: '/api/heatmap/pages'
+  path: '/api/v1/heatmap/pages'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::listPages'
   methods: [GET]
@@ -28,7 +28,7 @@ jaraba_heatmap.pages:
     _permission: 'access heatmap data'
 
 jaraba_heatmap.page_clicks:
-  path: '/api/heatmap/pages/{path}/clicks'
+  path: '/api/v1/heatmap/pages/{path}/clicks'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getClickData'
   methods: [GET]
@@ -37,7 +37,7 @@ jaraba_heatmap.page_clicks:
     path: .+
 
 jaraba_heatmap.page_scroll:
-  path: '/api/heatmap/pages/{path}/scroll'
+  path: '/api/v1/heatmap/pages/{path}/scroll'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getScrollData'
   methods: [GET]
@@ -46,7 +46,7 @@ jaraba_heatmap.page_scroll:
     path: .+
 
 jaraba_heatmap.page_movement:
-  path: '/api/heatmap/pages/{path}/movement'
+  path: '/api/v1/heatmap/pages/{path}/movement'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getMovementData'
   methods: [GET]
@@ -55,7 +55,7 @@ jaraba_heatmap.page_movement:
     path: .+
 
 jaraba_heatmap.summary:
-  path: '/api/heatmap/summary'
+  path: '/api/v1/heatmap/summary'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getSummary'
   methods: [GET]
@@ -95,7 +95,7 @@ jaraba_heatmap.settings:
 # =============================================================================
 
 jaraba_heatmap.screenshot.get:
-  path: '/api/heatmap/pages/{page_path}/screenshot'
+  path: '/api/v1/heatmap/pages/{page_path}/screenshot'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::getScreenshot'
   methods: [GET]
@@ -104,7 +104,7 @@ jaraba_heatmap.screenshot.get:
     page_path: .+
 
 jaraba_heatmap.screenshot.capture:
-  path: '/api/heatmap/pages/{page_path}/screenshot'
+  path: '/api/v1/heatmap/pages/{page_path}/screenshot'
   defaults:
     _controller: '\Drupal\jaraba_heatmap\Controller\HeatmapApiController::captureScreenshot'
   methods: [POST]

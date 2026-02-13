@@ -3,7 +3,7 @@
  * Copilot Chat Widget - Drupal behavior con Alpine.js para reactividad.
  *
  * Implementa:
- * - Conexion SSE a /api/copilot/chat/stream
+ * - Conexion SSE a /api/v1/copilot/chat/stream
  * - Indicador visual de modo (icono + color + label)
  * - Animacion de "Copiloto pensando..."
  * - Botones de feedback (util/no util) post-respuesta
@@ -138,7 +138,7 @@
       scrollToBottom();
 
       // Llamar al endpoint SSE.
-      fetch(Drupal.url('api/copilot/chat/stream'), {
+      fetch(Drupal.url('api/v1/copilot/chat/stream'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -413,7 +413,7 @@
      * Envia feedback al servidor.
      */
     function sendFeedback(value) {
-      fetch(Drupal.url('api/copilot/feedback'), {
+      fetch(Drupal.url('api/v1/copilot/feedback'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

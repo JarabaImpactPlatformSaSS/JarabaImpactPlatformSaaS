@@ -53,7 +53,7 @@
             translationError: null,
 
             // API base path.
-            apiBasePath: '/api/jaraba-i18n',
+            apiBasePath: '/api/v1/jaraba-i18n',
 
             /**
              * Inicializa el componente.

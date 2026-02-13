@@ -7,4 +7,6 @@ dependencies:
   - drupal:field
   - drupal:options
   - drupal:user
+  - jaraba_ai_agents:jaraba_ai_agents
+  - jaraba_rag:jaraba_rag
 configure: jaraba_skills.settings

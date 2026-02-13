@@ -143,8 +143,8 @@ class HelpCenterController extends ControllerBase {
     }
 
     // Resolver tenant ID.
-    if (\Drupal::hasService('jaraba_multitenancy.tenant_context')) {
-      $tenantContext = \Drupal::service('jaraba_multitenancy.tenant_context');
+    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
       $tenant = $tenantContext->getCurrentTenant();
       if ($tenant) {
         $faqBotTenantId = (int) $tenant->id();

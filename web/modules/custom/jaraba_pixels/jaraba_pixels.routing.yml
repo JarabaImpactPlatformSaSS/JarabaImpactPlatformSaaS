@@ -16,7 +16,7 @@ jaraba_pixels.settings:
 
 # API: Guardar credenciales
 jaraba_pixels.api.save_credential:
-  path: '/api/pixels/credentials'
+  path: '/api/v1/pixels/credentials'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::saveCredential'
   methods: [POST]
@@ -27,7 +27,7 @@ jaraba_pixels.api.save_credential:
 
 # API: Obtener credenciales por plataforma
 jaraba_pixels.api.get_credentials:
-  path: '/api/pixels/credentials/{platform}'
+  path: '/api/v1/pixels/credentials/{platform}'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getCredential'
   methods: [GET]
@@ -37,7 +37,7 @@ jaraba_pixels.api.get_credentials:
 
 # API: Eliminar credencial
 jaraba_pixels.api.delete_credential:
-  path: '/api/pixels/credentials/{platform}'
+  path: '/api/v1/pixels/credentials/{platform}'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::deleteCredential'
   methods: [DELETE]
@@ -47,7 +47,7 @@ jaraba_pixels.api.delete_credential:
 
 # API: Test de conexión
 jaraba_pixels.api.test_connection:
-  path: '/api/pixels/test/{platform}'
+  path: '/api/v1/pixels/test/{platform}'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::testConnection'
   methods: [POST]
@@ -57,7 +57,7 @@ jaraba_pixels.api.test_connection:
 
 # API: Estadísticas de eventos
 jaraba_pixels.api.stats:
-  path: '/api/pixels/stats'
+  path: '/api/v1/pixels/stats'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getStats'
   methods: [GET]
@@ -66,7 +66,7 @@ jaraba_pixels.api.stats:
 
 # API: Formulario de configuración (para slide-panel)
 jaraba_pixels.api.config_form:
-  path: '/api/pixels/config-form/{platform}'
+  path: '/api/v1/pixels/config-form/{platform}'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelApiController::getConfigForm'
   methods: [GET]
@@ -91,7 +91,7 @@ jaraba_pixels.stats:
 
 # API: Estadísticas completas JSON
 jaraba_pixels.api.stats_full:
-  path: '/api/pixels/stats/full'
+  path: '/api/v1/pixels/stats/full'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelStatsController::getStats'
   methods: [GET]
@@ -102,7 +102,7 @@ jaraba_pixels.api.stats_full:
 
 # API: Datos para gráficos Chart.js
 jaraba_pixels.api.chart_data:
-  path: '/api/pixels/stats/chart-data'
+  path: '/api/v1/pixels/stats/chart-data'
   defaults:
     _controller: '\Drupal\jaraba_pixels\Controller\PixelStatsController::getChartData'
   methods: [GET]

@@ -67,7 +67,7 @@ jaraba_copilot_v2.experiment_detail:
 
 # SSE Streaming endpoint para chat del copiloto
 jaraba_copilot_v2.api.chat_stream:
-  path: '/api/copilot/chat/stream'
+  path: '/api/v1/copilot/chat/stream'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotStreamController::stream'
   methods: [POST]
@@ -76,7 +76,7 @@ jaraba_copilot_v2.api.chat_stream:
 
 # API Endpoints
 jaraba_copilot_v2.api.chat:
-  path: '/api/copilot/chat'
+  path: '/api/v1/copilot/chat'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::chat'
   methods: [POST]
@@ -86,7 +86,7 @@ jaraba_copilot_v2.api.chat:
 
 # Endpoint público para usuarios anónimos (rate limited)
 jaraba_copilot_v2.api.public_chat:
-  path: '/api/public-copilot/chat'
+  path: '/api/v1/public-copilot/chat'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\PublicCopilotController::chat'
   methods: [POST]
@@ -96,7 +96,7 @@ jaraba_copilot_v2.api.public_chat:
 
 # Endpoint para guardar feedback de usuarios (aprendizaje IA)
 jaraba_copilot_v2.api.feedback:
-  path: '/api/copilot/feedback'
+  path: '/api/v1/copilot/feedback'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\PublicCopilotController::saveFeedback'
   methods: [POST]
@@ -105,7 +105,7 @@ jaraba_copilot_v2.api.feedback:
     _format: 'json'
 
 jaraba_copilot_v2.api.context:
-  path: '/api/copilot/context'
+  path: '/api/v1/copilot/context'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::getContext'
   methods: [GET]
@@ -114,7 +114,7 @@ jaraba_copilot_v2.api.context:
     _format: 'json'
 
 jaraba_copilot_v2.api.unlock_status:
-  path: '/api/copilot/unlock-status'
+  path: '/api/v1/copilot/unlock-status'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::unlockStatus'
   methods: [GET]
@@ -123,7 +123,7 @@ jaraba_copilot_v2.api.unlock_status:
     _format: 'json'
 
 jaraba_copilot_v2.api.experiments:
-  path: '/api/copilot/experiments'
+  path: '/api/v1/copilot/experiments'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::list'
   methods: [GET]
@@ -132,7 +132,7 @@ jaraba_copilot_v2.api.experiments:
     _format: 'json'
 
 jaraba_copilot_v2.api.experiment_suggest:
-  path: '/api/copilot/experiments/suggest'
+  path: '/api/v1/copilot/experiments/suggest'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\ExperimentApiController::suggest'
   methods: [POST]
@@ -141,7 +141,7 @@ jaraba_copilot_v2.api.experiment_suggest:
     _format: 'json'
 
 jaraba_copilot_v2.api.modes:
-  path: '/api/copilot/modes'
+  path: '/api/v1/copilot/modes'
   defaults:
     _controller: '\Drupal\jaraba_copilot_v2\Controller\CopilotApiController::getModes'
   methods: [GET]
