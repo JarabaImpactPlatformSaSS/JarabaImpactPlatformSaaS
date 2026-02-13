@@ -876,7 +876,7 @@ if (getenv('LANDO') === 'ON') {
   ];
 }
 
-$settings['config_sync_directory'] = 'sites/default/files/config_N9RMPpp-TBpzUeXFquIUSSr56TmsudkY6DrDHrJgb-zWcc08TD0T6pYS6GSqKMq6s2sPaPex-Q/sync';
+$settings['config_sync_directory'] = '../config/sync';
 
 // JARABA RAG - Configuración
 $_jaraba_rag_config = __DIR__ . '/../../modules/custom/jaraba_rag/config/settings.jaraba_rag.php';
