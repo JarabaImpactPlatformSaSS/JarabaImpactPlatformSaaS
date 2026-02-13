@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_agroconecta_core\Service\PromotionService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +30,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
      */
     public function __construct(
         protected PromotionService $promotionService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -39,6 +41,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
     {
         return new static(
             $container->get('jaraba_agroconecta.promotion_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -89,7 +92,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
             return new JsonResponse(['error' => 'JSON inválido.'], 400);
         }
 
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $items = $data['items'] ?? [];
         $subtotal = (float) ($data['subtotal'] ?? 0);
 
@@ -132,7 +135,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
         }
 
         $code = (string) $data['code'];
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $subtotal = (float) ($data['subtotal'] ?? 0);
 
         $result = $this->promotionService->validateCoupon($code, $tenantId, $subtotal);
@@ -157,7 +160,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
         }
 
         $code = (string) $data['code'];
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
 
         $success = $this->promotionService->redeemCoupon($code, $tenantId);
 

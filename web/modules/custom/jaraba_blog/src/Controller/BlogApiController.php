@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_blog\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_blog\Service\BlogService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +24,7 @@ class BlogApiController extends ControllerBase {
    */
   public function __construct(
     protected BlogService $blogService,
+    protected TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -31,6 +33,7 @@ class BlogApiController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_blog.blog'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -117,7 +120,7 @@ class BlogApiController extends ControllerBase {
       $slug = $data['slug'] ?? $this->generateSlug($data['title']);
 
       $entity = $storage->create([
-        'tenant_id' => $data['tenant_id'] ?? NULL,
+        'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL),
         'title' => $data['title'],
         'slug' => $slug,
         'excerpt' => $data['excerpt'] ?? '',
@@ -314,7 +317,7 @@ class BlogApiController extends ControllerBase {
 
       $storage = $this->entityTypeManager()->getStorage('blog_category');
       $entity = $storage->create([
-        'tenant_id' => $data['tenant_id'] ?? NULL,
+        'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL),
         'name' => $data['name'],
         'slug' => $data['slug'] ?? $this->generateSlug($data['name']),
         'description' => $data['description'] ?? '',
@@ -424,7 +427,7 @@ class BlogApiController extends ControllerBase {
 
       $storage = $this->entityTypeManager()->getStorage('blog_author');
       $entity = $storage->create([
-        'tenant_id' => $data['tenant_id'] ?? NULL,
+        'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL),
         'user_id' => $data['user_id'] ?? NULL,
         'display_name' => $data['display_name'],
         'slug' => $data['slug'] ?? $this->generateSlug($data['display_name']),

@@ -6,6 +6,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,16 +72,26 @@ class AnalyticsExportController extends ControllerBase {
   protected LoggerInterface $logger;
 
   /**
+   * Servicio de contexto de tenant.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor del controlador de exportacion.
    *
    * @param \Drupal\Core\Database\Connection $database
    *   Conexion a base de datos.
    * @param \Psr\Log\LoggerInterface $logger
    *   Canal de log.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+   *   Servicio de contexto de tenant.
    */
-  public function __construct(Connection $database, LoggerInterface $logger) {
+  public function __construct(Connection $database, LoggerInterface $logger, TenantContextService $tenant_context) {
     $this->database = $database;
     $this->logger = $logger;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -90,6 +101,7 @@ class AnalyticsExportController extends ControllerBase {
     return new static(
       $container->get('database'),
       $container->get('logger.factory')->get('jaraba_analytics'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -191,7 +203,7 @@ class AnalyticsExportController extends ControllerBase {
    *   Array con tenant_id, date_from, date_to, metric_type y error.
    */
   protected function extractParams(Request $request): array {
-    $tenantId = $request->query->get('tenant_id');
+    $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
     if (!$tenantId || !is_numeric($tenantId)) {
       return [

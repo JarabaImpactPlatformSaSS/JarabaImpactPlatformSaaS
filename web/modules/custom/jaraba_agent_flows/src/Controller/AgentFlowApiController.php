@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_agent_flows\Service\AgentFlowExecutionService;
 use Drupal\jaraba_agent_flows\Service\AgentFlowMetricsService;
 use Drupal\jaraba_agent_flows\Service\AgentFlowTemplateService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,6 +47,7 @@ class AgentFlowApiController extends ControllerBase {
     protected AgentFlowExecutionService $executionService,
     protected AgentFlowMetricsService $metricsService,
     protected AgentFlowTemplateService $templateService,
+    protected TenantContextService $tenantContext,
   ) {
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -59,6 +61,7 @@ class AgentFlowApiController extends ControllerBase {
       $container->get('jaraba_agent_flows.execution'),
       $container->get('jaraba_agent_flows.metrics'),
       $container->get('jaraba_agent_flows.template'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -76,7 +79,7 @@ class AgentFlowApiController extends ControllerBase {
    */
   public function listFlows(Request $request): JsonResponse {
     try {
-      $tenantId = $request->query->get('tenant_id');
+      $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       $status = $request->query->get('status');
 
       $storage = $this->entityTypeManager->getStorage('agent_flow');

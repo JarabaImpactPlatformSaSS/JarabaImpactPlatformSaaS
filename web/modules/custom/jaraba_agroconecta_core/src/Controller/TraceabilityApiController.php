@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_agroconecta_core\Service\QrService;
 use Drupal\jaraba_agroconecta_core\Service\TraceabilityService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,6 +35,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     public function __construct(
         protected TraceabilityService $traceabilityService,
         protected QrService $qrService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -42,6 +44,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
         return new static(
             $container->get('jaraba_agroconecta.traceability_service'),
             $container->get('jaraba_agroconecta.qr_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -131,7 +134,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
             return new JsonResponse(['error' => 'type y target_id son requeridos.'], 400);
         }
 
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $campaign = $data['utm_campaign'] ?? NULL;
 
         $result = match ($data['type']) {

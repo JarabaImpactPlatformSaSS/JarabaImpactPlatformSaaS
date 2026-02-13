@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_social\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ class SocialApiController extends ControllerBase
      */
     public function __construct(
         protected SocialPostService $postService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -31,6 +33,7 @@ class SocialApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_social.post_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -52,7 +55,7 @@ class SocialApiController extends ControllerBase
         }
 
         $result = $this->postService->generateContent($prompt, $platform, [
-            'tenant_id' => $data['tenant_id'] ?? NULL,
+            'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL),
         ]);
 
         return new JsonResponse($result);
@@ -63,10 +66,10 @@ class SocialApiController extends ControllerBase
      */
     public function stats(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? ($request->query->get('tenant_id') ? (int) $request->query->get('tenant_id') : NULL);
 
         $stats = $this->postService->getStats(
-            $tenantId ? (int) $tenantId : NULL
+            $tenantId
         );
 
         return new JsonResponse([

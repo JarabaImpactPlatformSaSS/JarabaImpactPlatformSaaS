@@ -10,6 +10,7 @@ use Drupal\jaraba_skills\Entity\AiSkill;
 use Drupal\jaraba_skills\Entity\AiSkillRevision;
 use Drupal\jaraba_skills\Service\SkillManager;
 use Drupal\jaraba_skills\Service\SkillRevisionService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class SkillsDashboardController extends ControllerBase
         protected SkillManager $skillManager,
         protected RendererInterface $renderer,
         protected SkillRevisionService $revisionService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -43,6 +45,7 @@ class SkillsDashboardController extends ControllerBase
             $container->get('jaraba_skills.skill_manager'),
             $container->get('renderer'),
             $container->get('jaraba_skills.revision_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -402,7 +405,7 @@ class SkillsDashboardController extends ControllerBase
 
             $filters = [
                 'skill_id' => $request->query->get('skill_id'),
-                'tenant_id' => $request->query->get('tenant_id'),
+                'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id'),
                 'date_from' => $request->query->get('date_from')
                     ? strtotime($request->query->get('date_from'))
                     : NULL,

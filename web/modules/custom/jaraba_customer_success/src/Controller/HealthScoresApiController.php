@@ -13,6 +13,7 @@ use Drupal\jaraba_customer_success\Entity\ExpansionSignal;
 use Drupal\jaraba_customer_success\Service\HealthScoreCalculatorService;
 use Drupal\jaraba_customer_success\Service\ChurnPredictionService;
 use Drupal\jaraba_customer_success\Service\PlaybookExecutorService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador REST API para Customer Success.
@@ -32,6 +33,7 @@ class HealthScoresApiController extends ControllerBase {
     protected HealthScoreCalculatorService $healthCalculator,
     protected ChurnPredictionService $churnPrediction,
     protected PlaybookExecutorService $playbookExecutor,
+    protected TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -42,6 +44,7 @@ class HealthScoresApiController extends ControllerBase {
       $container->get('jaraba_customer_success.health_calculator'),
       $container->get('jaraba_customer_success.churn_prediction'),
       $container->get('jaraba_customer_success.playbook_executor'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -210,7 +213,7 @@ class HealthScoresApiController extends ControllerBase {
    */
   public function executePlaybook(CsPlaybook $cs_playbook, Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
-    $tenant_id = $content['tenant_id'] ?? NULL;
+    $tenant_id = $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? NULL);
 
     if (!$tenant_id) {
       return new JsonResponse(['error' => 'tenant_id is required.'], 400);

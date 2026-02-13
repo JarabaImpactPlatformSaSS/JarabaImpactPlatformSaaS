@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\jaraba_customer_success\Service\NpsSurveyService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador REST API para encuestas NPS.
@@ -30,6 +31,7 @@ class NpsApiController extends ControllerBase {
     EntityTypeManagerInterface $entityTypeManager,
     protected NpsSurveyService $npsSurveyService,
     protected LoggerInterface $logger,
+    protected TenantContextService $tenantContext,
   ) {
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -42,6 +44,7 @@ class NpsApiController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_customer_success.nps_survey'),
       $container->get('logger.channel.jaraba_customer_success'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -125,7 +128,7 @@ class NpsApiController extends ControllerBase {
         ], 400);
       }
 
-      $tenant_id = $content['tenant_id'] ?? '';
+      $tenant_id = $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? '');
       $score = $content['score'] ?? NULL;
       $comment = $content['comment'] ?? '';
 

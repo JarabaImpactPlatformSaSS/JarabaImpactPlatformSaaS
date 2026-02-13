@@ -4,6 +4,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_analytics\Service\AnalyticsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,12 +33,20 @@ class AnalyticsApiController extends ControllerBase
     protected Connection $database;
 
     /**
+     * Servicio de contexto de tenant.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * Constructor.
      */
-    public function __construct(AnalyticsService $analytics_service, Connection $database)
+    public function __construct(AnalyticsService $analytics_service, Connection $database, TenantContextService $tenant_context)
     {
         $this->analyticsService = $analytics_service;
         $this->database = $database;
+        $this->tenantContext = $tenant_context;
     }
 
     /**
@@ -47,7 +56,8 @@ class AnalyticsApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_analytics.analytics_service'),
-            $container->get('database')
+            $container->get('database'),
+            $container->get('ecosistema_jaraba_core.tenant_context')
         );
     }
 
@@ -69,7 +79,7 @@ class AnalyticsApiController extends ControllerBase
         $event = $this->analyticsService->trackEvent(
             $content['event_type'],
             $content['data'] ?? [],
-            $content['tenant_id'] ?? NULL
+            $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? NULL)
         );
 
         if ($event) {
@@ -109,7 +119,7 @@ class AnalyticsApiController extends ControllerBase
             $event = $this->analyticsService->trackEvent(
                 $eventData['event_type'],
                 $eventData['data'] ?? [],
-                $eventData['tenant_id'] ?? NULL
+                $this->tenantContext->getCurrentTenantId() ?? ($eventData['tenant_id'] ?? NULL)
             );
 
             $results[] = [
@@ -131,7 +141,7 @@ class AnalyticsApiController extends ControllerBase
      */
     public function getDashboard(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
         $startDate = $request->query->get('start_date', date('Y-m-d', strtotime('-30 days')));
         $endDate = $request->query->get('end_date', date('Y-m-d'));
 
@@ -178,7 +188,7 @@ class AnalyticsApiController extends ControllerBase
      */
     public function getRealtime(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
         if (!$tenantId) {
             return new JsonResponse(['error' => 'Missing tenant_id'], 400);
@@ -200,7 +210,7 @@ class AnalyticsApiController extends ControllerBase
      */
     public function getFunnel(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
         if (!$tenantId) {
             return new JsonResponse(['error' => 'Missing tenant_id'], 400);
@@ -253,7 +263,7 @@ class AnalyticsApiController extends ControllerBase
      */
     public function getTopPages(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
         $limit = $request->query->get('limit', 10);
         $startDate = $request->query->get('start_date', '');
         $endDate = $request->query->get('end_date', '');
@@ -282,7 +292,7 @@ class AnalyticsApiController extends ControllerBase
      */
     public function getTrafficSources(Request $request): JsonResponse
     {
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
         $startDate = $request->query->get('start_date', '');
         $endDate = $request->query->get('end_date', '');
 

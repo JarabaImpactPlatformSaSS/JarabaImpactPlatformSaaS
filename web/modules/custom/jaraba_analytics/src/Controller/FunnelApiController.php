@@ -6,6 +6,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_analytics\Service\FunnelTrackingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,19 +34,30 @@ class FunnelApiController extends ControllerBase {
   protected FunnelTrackingService $funnelTrackingService;
 
   /**
+   * Servicio de contexto de tenant.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\jaraba_analytics\Service\FunnelTrackingService $funnel_tracking_service
    *   Funnel tracking service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+   *   Servicio de contexto de tenant.
    */
   public function __construct(
     FunnelTrackingService $funnel_tracking_service,
     EntityTypeManagerInterface $entity_type_manager,
+    TenantContextService $tenant_context,
   ) {
     $this->funnelTrackingService = $funnel_tracking_service;
     $this->entityTypeManager = $entity_type_manager;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -55,6 +67,7 @@ class FunnelApiController extends ControllerBase {
     return new static(
       $container->get('jaraba_analytics.funnel_tracking'),
       $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -71,7 +84,7 @@ class FunnelApiController extends ControllerBase {
    *   Lista de funnels.
    */
   public function list(Request $request): JsonResponse {
-    $tenantId = $request->query->get('tenant_id');
+    $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
     $storage = $this->entityTypeManager->getStorage('funnel_definition');
     $query = $storage->getQuery()->accessCheck(TRUE);
@@ -133,7 +146,7 @@ class FunnelApiController extends ControllerBase {
    *   Resultado del cálculo del funnel.
    */
   public function calculate(Request $request, int $funnel_id): JsonResponse {
-    $tenantId = $request->query->get('tenant_id');
+    $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
     if (!$tenantId) {
       return new JsonResponse([
@@ -220,7 +233,7 @@ class FunnelApiController extends ControllerBase {
 
       $entity = $storage->create([
         'name' => $content['name'],
-        'tenant_id' => $content['tenant_id'] ?? NULL,
+        'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? NULL),
         'steps' => [$steps],
         'conversion_window_hours' => $content['conversion_window_hours'] ?? 72,
       ]);

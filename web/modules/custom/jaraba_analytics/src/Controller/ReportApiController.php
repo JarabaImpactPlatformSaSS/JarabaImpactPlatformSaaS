@@ -6,6 +6,7 @@ namespace Drupal\jaraba_analytics\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_analytics\Service\ReportExecutionService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,19 +33,30 @@ class ReportApiController extends ControllerBase {
   protected ReportExecutionService $reportExecutionService;
 
   /**
+   * Servicio de contexto de tenant.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor del controlador.
    *
    * @param \Drupal\jaraba_analytics\Service\ReportExecutionService $report_execution_service
    *   Servicio de ejecución de informes.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Gestor de tipos de entidad.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+   *   Servicio de contexto de tenant.
    */
   public function __construct(
     ReportExecutionService $report_execution_service,
     EntityTypeManagerInterface $entity_type_manager,
+    TenantContextService $tenant_context,
   ) {
     $this->reportExecutionService = $report_execution_service;
     $this->entityTypeManager = $entity_type_manager;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -54,6 +66,7 @@ class ReportApiController extends ControllerBase {
     return new static(
       $container->get('jaraba_analytics.report_execution'),
       $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -70,7 +83,7 @@ class ReportApiController extends ControllerBase {
    *   Lista de informes personalizados.
    */
   public function list(Request $request): JsonResponse {
-    $tenantId = $request->query->get('tenant_id');
+    $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
     $storage = $this->entityTypeManager->getStorage('custom_report');
     $query = $storage->getQuery()->accessCheck(TRUE);

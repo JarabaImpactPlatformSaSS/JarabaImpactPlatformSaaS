@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_agroconecta_core\Service\ShippingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,7 @@ class ShippingApiController extends ControllerBase implements ContainerInjection
 
     public function __construct(
         protected ShippingService $shippingService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -35,6 +37,7 @@ class ShippingApiController extends ControllerBase implements ContainerInjection
     {
         return new static(
             $container->get('jaraba_agroconecta.shipping_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -91,7 +94,7 @@ class ShippingApiController extends ControllerBase implements ContainerInjection
             return new JsonResponse(['error' => 'Código postal requerido.'], 400);
         }
 
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $postalCode = (string) $data['postal_code'];
         $country = (string) ($data['country'] ?? 'ES');
         $subtotal = (float) ($data['subtotal'] ?? 0);
@@ -124,7 +127,7 @@ class ShippingApiController extends ControllerBase implements ContainerInjection
             return new JsonResponse(['error' => 'Código postal requerido.'], 400);
         }
 
-        $tenantId = (int) ($data['tenant_id'] ?? 1);
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
         $postalCode = (string) $data['postal_code'];
         $country = (string) ($data['country'] ?? 'ES');
 

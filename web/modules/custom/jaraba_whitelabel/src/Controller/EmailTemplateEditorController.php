@@ -6,6 +6,7 @@ namespace Drupal\jaraba_whitelabel\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_whitelabel\Entity\WhitelabelEmailTemplate;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,19 +26,28 @@ class EmailTemplateEditorController extends ControllerBase {
   protected LoggerInterface $logger;
 
   /**
+   * The tenant context service.
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger channel.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+   *   The tenant context service.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     LoggerInterface $logger,
+    TenantContextService $tenant_context,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
+    $this->tenantContext = $tenant_context;
   }
 
   /**
@@ -47,6 +57,7 @@ class EmailTemplateEditorController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('logger.channel.jaraba_whitelabel'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -167,6 +178,11 @@ class EmailTemplateEditorController extends ControllerBase {
    *   The tenant ID or NULL if not determinable.
    */
   protected function getTenantIdFromRequest(): ?int {
+    $contextTenantId = $this->tenantContext->getCurrentTenantId();
+    if ($contextTenantId !== NULL) {
+      return $contextTenantId;
+    }
+
     $request = \Drupal::request();
 
     $tenantId = $request->query->get('tenant_id');

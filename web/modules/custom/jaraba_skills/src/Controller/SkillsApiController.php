@@ -9,6 +9,7 @@ use Drupal\jaraba_skills\Entity\AiSkill;
 use Drupal\jaraba_skills\Service\SkillManager;
 use Drupal\jaraba_skills\Service\SkillEmbeddingService;
 use Drupal\jaraba_skills\Service\SkillRevisionService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +37,7 @@ class SkillsApiController extends ControllerBase
         protected SkillManager $skillManager,
         protected SkillEmbeddingService $embeddingService,
         protected SkillRevisionService $revisionService,
+        protected TenantContextService $tenantContext,
     ) {
     }
 
@@ -48,6 +50,7 @@ class SkillsApiController extends ControllerBase
             $container->get('jaraba_skills.skill_manager'),
             $container->get('jaraba_skills.skill_embedding'),
             $container->get('jaraba_skills.revision_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -71,14 +74,14 @@ class SkillsApiController extends ControllerBase
             $context = [
                 'vertical' => $data['vertical'] ?? NULL,
                 'agent_type' => $data['agent_type'] ?? NULL,
-                'tenant_id' => $data['tenant_id'] ?? NULL,
+                'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? ($data['tenant_id'] ?? NULL),
             ];
             $format = $data['format'] ?? 'json';
         } else {
             $context = [
                 'vertical' => $request->query->get('vertical'),
                 'agent_type' => $request->query->get('agent_type'),
-                'tenant_id' => $request->query->get('tenant_id'),
+                'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id'),
             ];
             $format = $request->query->get('format', 'json');
         }
@@ -156,7 +159,7 @@ class SkillsApiController extends ControllerBase
         $context = [
             'vertical' => $request->query->get('vertical'),
             'agent_type' => $request->query->get('agent_type'),
-            'tenant_id' => $request->query->get('tenant_id'),
+            'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id'),
         ];
         $context = array_filter($context);
 

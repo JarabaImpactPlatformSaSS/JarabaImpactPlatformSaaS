@@ -6,6 +6,7 @@ namespace Drupal\jaraba_ai_agents\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,11 +25,19 @@ class ObservabilityApiController extends ControllerBase
     protected AIObservabilityService $observability;
 
     /**
+     * The tenant context service.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * Constructs an ObservabilityApiController.
      */
-    public function __construct(AIObservabilityService $observability)
+    public function __construct(AIObservabilityService $observability, TenantContextService $tenantContext)
     {
         $this->observability = $observability;
+        $this->tenantContext = $tenantContext;
     }
 
     /**
@@ -38,6 +47,7 @@ class ObservabilityApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_ai_agents.observability'),
+            $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
 
@@ -53,7 +63,7 @@ class ObservabilityApiController extends ControllerBase
     public function getStats(Request $request): JsonResponse
     {
         $period = $request->query->get('period', 'day');
-        $tenantId = $request->query->get('tenant_id');
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
 
         $stats = $this->observability->getStats($period, $tenantId);
 
