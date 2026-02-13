@@ -1,4 +1,4 @@
-uuid: null
+uuid: 19e2ec8f-b860-4ad2-acb7-bd08b8ea28b2
 langcode: es
 status: true
 dependencies:
@@ -12,38 +12,26 @@ type_settings:
   states:
     draft:
       label: Borrador
-      published: false
-      default_revision: false
       weight: 0
-    review:
-      label: 'En Revision'
       published: false
       default_revision: false
-      weight: 1
     published:
       label: Publicado
+      weight: 2
       published: true
       default_revision: true
-      weight: 2
+    review:
+      label: 'En Revision'
+      weight: 1
+      published: false
+      default_revision: false
   transitions:
-    submit_for_review:
-      label: 'Enviar a Revision'
-      from:
-        - draft
-      to: review
-      weight: 0
     approve_and_publish:
       label: 'Aprobar y Publicar'
       from:
         - review
       to: published
       weight: 1
-    request_changes:
-      label: 'Solicitar Cambios'
-      from:
-        - review
-      to: draft
-      weight: 2
     create_new_draft:
       label: 'Crear Nuevo Borrador'
       from:
@@ -56,6 +44,18 @@ type_settings:
         - draft
       to: published
       weight: 4
+    request_changes:
+      label: 'Solicitar Cambios'
+      from:
+        - review
+      to: draft
+      weight: 2
+    submit_for_review:
+      label: 'Enviar a Revision'
+      from:
+        - draft
+      to: review
+      weight: 0
   entity_types:
     page_content:
       - page_content
