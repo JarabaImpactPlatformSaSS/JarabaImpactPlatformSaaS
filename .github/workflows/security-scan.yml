@@ -123,12 +123,38 @@ jobs:
         continue-on-error: true
 
       - name: Upload Trivy SARIF to GitHub Security tab
+        # NOTE: Requires GitHub Advanced Security (GHAS). For private repos
+        # on personal accounts this step will silently fail. Results are
+        # printed in the step summary below as a fallback.
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-filesystem'
         if: always()
         continue-on-error: true
+
+      - name: Trivy table output (fallback for repos without GHAS)
+        if: always()
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,secret'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          output: 'trivy-table.txt'
+          exit-code: '0'
+
+      - name: Append Trivy table to step summary
+        if: always()
+        run: |
+          if [ -f trivy-table.txt ] && [ -s trivy-table.txt ]; then
+            echo '## Trivy Detailed Results' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat trivy-table.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Trivy summary
         if: always()

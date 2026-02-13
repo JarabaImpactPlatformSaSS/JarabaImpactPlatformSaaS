@@ -30,7 +30,7 @@
     <header class="kb-category__header">
       <h1 class="kb-category__title">{{ category.name }}</h1>
       {% if category.description %}
-        <p class="kb-category__description">{{ category.description|raw }}</p>
+        <p class="kb-category__description">{{ category.description|safe_html }}</p>
       {% endif %}
     </header>
 

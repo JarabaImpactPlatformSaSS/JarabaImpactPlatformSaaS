@@ -22,7 +22,7 @@
       {% endif %}
       
       <div class="jaraba-rich-text__content prose">
-        {{ content.content|raw }}
+        {{ content.content|safe_html }}
       </div>
       
     </div>

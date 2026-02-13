@@ -38,7 +38,7 @@
     <h1 class="jaraba-hero__title">{{ content.title }}</h1>
 
     {% if content.subtitle %}
-      <div class="jaraba-hero__subtitle">{{ content.subtitle|raw }}</div>
+      <div class="jaraba-hero__subtitle">{{ content.subtitle|safe_html }}</div>
     {% endif %}
 
     {# CTAs #}

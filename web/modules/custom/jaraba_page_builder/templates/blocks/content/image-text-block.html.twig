@@ -38,7 +38,7 @@
         
         {% if content.content %}
           <div class="jaraba-image-text__text">
-            {{ content.content|raw }}
+            {{ content.content|safe_html }}
           </div>
         {% endif %}
         

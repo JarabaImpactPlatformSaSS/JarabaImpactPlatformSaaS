@@ -22,7 +22,7 @@
           <h2 class="jaraba-split-screen__title">{{ content.left_section.title }}</h2>
         {% endif %}
         {% if content.left_section.content %}
-          <div class="jaraba-split-screen__text">{{ content.left_section.content|raw }}</div>
+          <div class="jaraba-split-screen__text">{{ content.left_section.content|safe_html }}</div>
         {% endif %}
         {% if content.left_section.cta.text %}
           <a href="{{ content.left_section.cta.url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
@@ -48,7 +48,7 @@
           <h2 class="jaraba-split-screen__title">{{ content.right_section.title }}</h2>
         {% endif %}
         {% if content.right_section.content %}
-          <div class="jaraba-split-screen__text">{{ content.right_section.content|raw }}</div>
+          <div class="jaraba-split-screen__text">{{ content.right_section.content|safe_html }}</div>
         {% endif %}
         {% if content.right_section.cta.text %}
           <a href="{{ content.right_section.cta.url }}" class="jaraba-btn jaraba-btn--secondary jaraba-btn--lg">

@@ -164,6 +164,7 @@ class StripeController extends ControllerBase
             $customerId = $tenant->get('stripe_customer_id')->value;
 
             if (!$customerId) {
+                // AUDIT-PERF-007: Idempotency key para prevenir clientes duplicados.
                 $customer = \Stripe\Customer::create([
                     'email' => $this->currentUser()->getEmail(),
                     'name' => $tenant->getName(),
@@ -171,6 +172,8 @@ class StripeController extends ControllerBase
                         'tenant_id' => $tenant->id(),
                         'drupal_user_id' => $this->currentUser()->id(),
                     ],
+                ], [
+                    'idempotency_key' => 'cust_create_' . $tenant->id() . '_' . $this->currentUser()->id(),
                 ]);
                 $customerId = $customer->id;
 
@@ -213,7 +216,16 @@ class StripeController extends ControllerBase
                 }
             }
 
-            $subscription = \Stripe\Subscription::create($subscriptionParams);
+            // AUDIT-PERF-007: Idempotency key para prevenir suscripciones duplicadas en double-click.
+            $subscription = \Stripe\Subscription::create($subscriptionParams, [
+                'idempotency_key' => sprintf(
+                    'sub_create_%d_%s_%s_%d',
+                    $tenant->id(),
+                    $data['plan_id'],
+                    $data['payment_method_id'],
+                    floor(time() / 30)
+                ),
+            ]);
 
             // Verificar si requiere autenticación 3D Secure
             $paymentIntent = $subscription->latest_invoice->payment_intent;
@@ -387,9 +399,12 @@ class StripeController extends ControllerBase
 
             $returnUrl = $request->getSchemeAndHttpHost() . '/admin/config/subscription';
 
+            // AUDIT-PERF-007: Idempotency key para deduplicar portal sessions.
             $portalSession = \Stripe\BillingPortal\Session::create([
                 'customer' => $customerId,
                 'return_url' => $returnUrl,
+            ], [
+                'idempotency_key' => sprintf('portal_%s_%d', $customerId, floor(time() / 60)),
             ]);
 
             return new JsonResponse([

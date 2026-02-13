@@ -96,7 +96,7 @@
     <section class="job-detail__description">
       <h2>{{ 'Descripción del puesto'|t }}</h2>
       <div itemprop="description">
-        {{ job.description.value|raw }}
+        {{ job.description.value|safe_html }}
       </div>
     </section>
 
@@ -104,7 +104,7 @@
       <section class="job-detail__requirements">
         <h2>{{ 'Requisitos'|t }}</h2>
         <div itemprop="qualifications">
-          {{ job.requirements.value|raw }}
+          {{ job.requirements.value|safe_html }}
         </div>
       </section>
     {% endif %}
@@ -113,7 +113,7 @@
       <section class="job-detail__responsibilities">
         <h2>{{ 'Responsabilidades'|t }}</h2>
         <div itemprop="responsibilities">
-          {{ job.responsibilities.value|raw }}
+          {{ job.responsibilities.value|safe_html }}
         </div>
       </section>
     {% endif %}

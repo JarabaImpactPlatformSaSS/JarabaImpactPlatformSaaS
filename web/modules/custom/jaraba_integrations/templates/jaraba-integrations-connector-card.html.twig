@@ -53,7 +53,7 @@
 
   <div class="connector-detail__body">
     <div class="connector-detail__description">
-      {{ connector.get('description').value|raw }}
+      {{ connector.get('description').value|safe_html }}
     </div>
 
     <div class="connector-detail__specs">

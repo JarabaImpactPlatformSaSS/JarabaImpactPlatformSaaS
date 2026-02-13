@@ -103,7 +103,7 @@
             </div>
           </summary>
           <div class="knowledge-faqs__answer">
-            {{ faq.get('answer').value|raw }}
+            {{ faq.get('answer').value|safe_html }}
           </div>
         </details>
       {% endfor %}

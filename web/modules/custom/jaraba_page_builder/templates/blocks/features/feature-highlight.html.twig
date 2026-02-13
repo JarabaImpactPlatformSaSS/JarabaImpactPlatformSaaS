@@ -28,7 +28,7 @@
         
         {% if content.description %}
           <div class="jaraba-feature-highlight__description">
-            {{ content.description|raw }}
+            {{ content.description|safe_html }}
           </div>
         {% endif %}
         

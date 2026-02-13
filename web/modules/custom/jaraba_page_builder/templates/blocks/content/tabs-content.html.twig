@@ -60,7 +60,7 @@
                      loading="lazy">
               {% endif %}
               <div class="jaraba-tabs__panel-text">
-                {{ tab.content|raw }}
+                {{ tab.content|safe_html }}
               </div>
             </div>
             

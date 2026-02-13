@@ -59,7 +59,7 @@
 
     {% if product.description.value %}
       <div class="agro-product-detail__description">
-        {{ product.description.value|raw }}
+        {{ product.description.value|safe_html }}
       </div>
     {% endif %}
   </div>

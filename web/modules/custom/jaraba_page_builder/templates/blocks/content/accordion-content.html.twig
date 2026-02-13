@@ -44,7 +44,7 @@
               </span>
             </summary>
             <div class="jaraba-accordion__content">
-              {{ item.content|raw }}
+              {{ item.content|safe_html }}
             </div>
           </details>
         {% endfor %}

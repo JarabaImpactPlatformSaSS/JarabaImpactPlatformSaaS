@@ -58,7 +58,7 @@
             {# Footer mockup #}
             <div class="whitelabel-preview__mockup-footer">
               {% if config.custom_footer_html %}
-                {{ config.custom_footer_html|raw }}
+                {{ config.custom_footer_html|safe_html }}
               {% else %}
                 <span class="whitelabel-preview__mockup-footer-text">{% trans %}Footer content{% endtrans %}</span>
               {% endif %}

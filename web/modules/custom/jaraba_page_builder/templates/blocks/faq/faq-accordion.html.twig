@@ -56,7 +56,7 @@
                       </span>
                     </summary>
                     <div class="jaraba-faq__answer">
-                      {{ faq.answer|raw }}
+                      {{ faq.answer|safe_html }}
                     </div>
                   </details>
                 {% endfor %}

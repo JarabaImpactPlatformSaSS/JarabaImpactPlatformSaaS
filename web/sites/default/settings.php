@@ -907,13 +907,28 @@ $settings['trusted_host_patterns'] = [
   '^www\.pepejaraba\.com$',
 ];
 
-// REDIS CACHE BACKEND - Solo en Lando (contenedor Redis)
-if (getenv('LANDO') === 'ON' && extension_loaded('redis') && class_exists('Redis')) {
+// REDIS CACHE BACKEND
+// AUDIT-PERF-010: Habilitado en cualquier entorno con REDIS_HOST definido.
+// - Lando: REDIS_HOST=redis (automático via .lando.yml)
+// - Producción IONOS: Definir REDIS_HOST en variables de entorno del hosting
+// - Sin REDIS_HOST: Fallback seguro a cache.backend.database
+$redis_host = getenv('REDIS_HOST');
+if ($redis_host && extension_loaded('redis') && class_exists('Redis')) {
   $settings['redis.connection']['interface'] = 'PhpRedis';
-  $settings['redis.connection']['host'] = 'redis';
-  $settings['redis.connection']['port'] = 6379;
+  $settings['redis.connection']['host'] = $redis_host;
+  $settings['redis.connection']['port'] = getenv('REDIS_PORT') ?: 6379;
+  if ($redis_password = getenv('REDIS_PASSWORD')) {
+    $settings['redis.connection']['password'] = $redis_password;
+  }
   $settings['cache_prefix'] = 'jaraba_';
   $settings['cache']['default'] = 'cache.backend.redis';
+
+  // Cache bins de IA (alto volumen, alto impacto en rendimiento).
+  $settings['cache']['bins']['ai_embeddings'] = 'cache.backend.redis';
+  $settings['cache']['bins']['ai_recommendations'] = 'cache.backend.redis';
+  $settings['cache']['bins']['ai_tenant_knowledge'] = 'cache.backend.redis';
+  $settings['cache']['bins']['matching_results'] = 'cache.backend.redis';
+  $settings['cache']['bins']['copilot_responses'] = 'cache.backend.redis';
 }
 
 /**

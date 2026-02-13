@@ -19,7 +19,7 @@
     <div class="jaraba-columns__wrapper">
       {% for column in content.columns %}
         <div class="jaraba-columns__column jaraba-columns__column--align-{{ column.align|default('left') }} jaraba-columns__column--valign-{{ column.vertical_align|default('top') }}">
-          {{ column.content|raw }}
+          {{ column.content|safe_html }}
         </div>
       {% endfor %}
     </div>

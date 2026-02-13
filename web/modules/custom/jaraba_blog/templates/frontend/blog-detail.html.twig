@@ -77,7 +77,7 @@
 
   {# Contenido #}
   <div class="blog-detail__body" itemprop="articleBody">
-    {{ post.get('body').value|raw }}
+    {{ post.get('body').value|safe_html }}
   </div>
 
   {# Tags #}

@@ -43,7 +43,7 @@
       {% endif %}
       {% if video.description %}
         <div class="kb-video__description">
-          {{ video.description|raw }}
+          {{ video.description|safe_html }}
         </div>
       {% endif %}
     </div>
