@@ -6,10 +6,9 @@ dependencies:
     - filter.format.restricted_html
   module:
     - comment
-    - commerce_checkout
-    - commerce_product
     - filter
     - media
+    - search
     - system
 _core:
   default_config_hash: xLG41YbRo2NP-0SgRNTkMzLEuaeibanGXgUTbdIcIIg
@@ -18,9 +17,8 @@ label: 'Usuario anónimo'
 weight: 0
 is_admin: false
 permissions:
-  - 'access checkout'
   - 'access comments'
   - 'access content'
+  - 'search content'
   - 'use text format restricted_html'
-  - 'view commerce_product'
   - 'view media'

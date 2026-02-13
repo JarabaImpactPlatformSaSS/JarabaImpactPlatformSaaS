@@ -1,7 +1,0 @@
-default_plans_limit:
-  starter: 5
-  professional: 25
-  enterprise: -1
-enable_revisions: true
-enable_seo: true
-enable_ab_testing: false

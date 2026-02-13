@@ -6,7 +6,7 @@ _core:
   default_config_hash: VWUWqwszm5ZaqT3frIPWjyyVmvmWnWMFRphkVXCl8t0
 id: image
 label: Imagen
-description: 'Un archivo de imagen alojado localmente.'
+description: 'A locally hosted image file.'
 source: image
 queue_thumbnail_downloads: false
 new_revision: true

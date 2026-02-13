@@ -1,9 +1,0 @@
-_core:
-  default_config_hash: Z7dTCV3WPNaN5ZzA9MKM6MVBDSWp_qCrcoHXDoGPWcI
-enabled: true
-buffer_size: 50
-flush_interval: 10000
-throttle_move: 100
-throttle_scroll: 200
-retention_raw_days: 7
-retention_aggregated_days: 90

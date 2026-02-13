@@ -7,7 +7,7 @@ dependencies:
 _core:
   default_config_hash: 7j93b7xTUtF_uT4TbFN9poAQ51pf380UhVCK9tVHTzs
 id: domain_access_edit_all_action
-label: 'Asignar editores a todos los afiliados'
+label: 'Assign editors to all affiliates'
 type: user
 plugin: domain_access_edit_all_action
 configuration: {  }
