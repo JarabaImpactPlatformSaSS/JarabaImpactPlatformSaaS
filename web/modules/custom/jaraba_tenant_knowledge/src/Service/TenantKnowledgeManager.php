@@ -246,7 +246,7 @@ class TenantKnowledgeManager
     protected function getCurrentTenantId(): ?int
     {
         if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            /** @var \Drupal\jaraba_multitenancy\Service\TenantContextService $tenantContext */
+            /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
             $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
