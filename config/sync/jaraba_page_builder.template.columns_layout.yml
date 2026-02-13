@@ -1,0 +1,86 @@
+uuid: 5c4fa61e-1b0b-4108-be73-4736951f7abf
+langcode: es
+status: true
+dependencies: {  }
+id: columns_layout
+label: 'Layout de Columnas'
+description: 'Divide contenido en columnas flexibles (50/50, 33/66, etc).'
+category: layout
+twig_template: '@jaraba_page_builder/blocks/layout/columns-layout.html.twig'
+fields_schema:
+  type: object
+  properties:
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - 50-50
+        - 33-66
+        - 66-33
+        - 33-33-33
+        - 25-50-25
+      default: 50-50
+    gap:
+      type: string
+      title: 'Espacio entre columnas'
+      enum:
+        - small
+        - medium
+        - large
+      default: medium
+    columns:
+      type: array
+      title: Columnas
+      items:
+        type: object
+        properties:
+          content:
+            type: string
+            format: richtext
+          align:
+            type: string
+            enum:
+              - left
+              - center
+              - right
+            default: left
+          vertical_align:
+            type: string
+            enum:
+              - top
+              - center
+              - bottom
+            default: top
+    reverse_mobile:
+      type: boolean
+      title: 'Invertir en móvil'
+      default: false
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - columns
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  layout: 50-50
+  gap: medium
+  columns:
+    -
+      content: '<h3>Our Mission</h3><p>To empower businesses of all sizes with tools that were once only available to enterprise companies. We believe everyone deserves access to world-class technology.</p>'
+      align: left
+      vertical_align: center
+    -
+      content: '<h3>Our Vision</h3><p>A world where technology removes barriers instead of creating them. Where small teams can compete with industry giants through smart automation and intelligent insights.</p>'
+      align: left
+      vertical_align: center
+  reverse_mobile: false
+  background: light
+weight: 0

@@ -1,0 +1,61 @@
+uuid: null
+langcode: es
+status: true
+dependencies:
+  module:
+    - content_moderation
+    - jaraba_page_builder
+id: editorial_i18n
+label: 'Workflow Editorial i18n'
+type: content_moderation
+type_settings:
+  states:
+    draft:
+      label: Borrador
+      published: false
+      default_revision: false
+      weight: 0
+    review:
+      label: 'En Revision'
+      published: false
+      default_revision: false
+      weight: 1
+    published:
+      label: Publicado
+      published: true
+      default_revision: true
+      weight: 2
+  transitions:
+    submit_for_review:
+      label: 'Enviar a Revision'
+      from:
+        - draft
+      to: review
+      weight: 0
+    approve_and_publish:
+      label: 'Aprobar y Publicar'
+      from:
+        - review
+      to: published
+      weight: 1
+    request_changes:
+      label: 'Solicitar Cambios'
+      from:
+        - review
+      to: draft
+      weight: 2
+    create_new_draft:
+      label: 'Crear Nuevo Borrador'
+      from:
+        - published
+      to: draft
+      weight: 3
+    direct_publish:
+      label: 'Publicar Directamente'
+      from:
+        - draft
+      to: published
+      weight: 4
+  entity_types:
+    page_content:
+      - page_content

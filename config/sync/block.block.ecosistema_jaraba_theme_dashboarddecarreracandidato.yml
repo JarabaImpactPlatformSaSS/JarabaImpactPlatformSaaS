@@ -1,0 +1,25 @@
+uuid: 7486ab92-74c3-40cb-908b-139e9b010147
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_candidate
+    - system
+  theme:
+    - ecosistema_jaraba_theme
+id: ecosistema_jaraba_theme_dashboarddecarreracandidato
+theme: ecosistema_jaraba_theme
+region: content
+weight: -6
+provider: null
+plugin: career_dashboard
+settings:
+  id: career_dashboard
+  label: 'Dashboard de Carrera Candidato'
+  label_display: visible
+  provider: jaraba_candidate
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/user\r\n/user/*"

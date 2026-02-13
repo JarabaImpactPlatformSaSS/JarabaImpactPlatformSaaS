@@ -1,0 +1,120 @@
+uuid: f6c1ba63-db42-45e1-93f6-093ee324df3d
+langcode: es
+status: true
+dependencies: {  }
+id: icon_cards
+label: 'Tarjetas con Iconos'
+description: 'Grid de tarjetas con iconos destacados y descripción breve.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/features/icon-cards.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+    subtitle:
+      type: string
+      title: Subtítulo
+    cards:
+      type: array
+      title: Tarjetas
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            title: Icono
+          icon_color:
+            type: string
+            title: 'Color del icono'
+            enum:
+              - azul-corporativo
+              - naranja-impulso
+              - verde-innovacion
+              - success
+              - warning
+            default: azul-corporativo
+          title:
+            type: string
+            title: Título
+          description:
+            type: string
+            title: Descripción
+          url:
+            type: string
+            title: 'URL (opcional)'
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    card_style:
+      type: string
+      title: 'Estilo de tarjeta'
+      enum:
+        - simple
+        - bordered
+        - elevated
+        - filled
+      default: elevated
+    icon_position:
+      type: string
+      title: 'Posición del icono'
+      enum:
+        - top
+        - left
+        - inline
+      default: top
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - title
+    - cards
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: FEATURES
+  title: 'What We Offer'
+  subtitle: 'Powerful features to accelerate your business'
+  cards:
+    -
+      icon: star
+      icon_color: azul-corporativo
+      title: 'Product Features'
+      description: 'Comprehensive tools to streamline your workflow and boost productivity.'
+    -
+      icon: fire
+      icon_color: verde-innovacion
+      title: 'Analytics Dashboard'
+      description: 'Real-time insights and reports to drive data-informed decisions.'
+    -
+      icon: shield
+      icon_color: naranja-impulso
+      title: 'Security & Compliance'
+      description: 'Enterprise-grade security with full regulatory compliance.'
+    -
+      icon: users
+      icon_color: azul-corporativo
+      title: 'Team Collaboration'
+      description: 'Seamless teamwork with shared workspaces and real-time sync.'
+  columns: 4
+  card_style: elevated
+  icon_position: top
+  background: light
+weight: 0

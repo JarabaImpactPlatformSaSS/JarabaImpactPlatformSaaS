@@ -228,7 +228,7 @@ display:
           entity_type: group_relationship
           entity_field: created
           plugin_id: field
-          label: Joined
+          label: Unido
           exclude: false
           alter:
             alter_text: false
@@ -291,7 +291,7 @@ display:
           field: view_group_relationship
           relationship: none
           group_type: group
-          admin_label: 'View member link'
+          admin_label: 'Ver enlace de miembro'
           entity_type: group_relationship
           plugin_id: entity_link
           label: ''
@@ -335,7 +335,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text: 'View member'
+          text: 'Ver miembro'
           output_url_as_text: false
           absolute: false
         edit_group_relationship:
@@ -344,7 +344,7 @@ display:
           field: edit_group_relationship
           relationship: none
           group_type: group
-          admin_label: 'Edit member link'
+          admin_label: 'Editar enlace de miembro'
           entity_type: group_relationship
           plugin_id: entity_link_edit
           label: ''
@@ -388,14 +388,14 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text: 'Edit member'
+          text: 'Editar miembro'
         delete_group_relationship:
           id: delete_group_relationship
           table: group_relationship
           field: delete_group_relationship
           relationship: none
           group_type: group
-          admin_label: 'Remove member link'
+          admin_label: 'Eliminar enlace de miembro'
           entity_type: group_relationship
           plugin_id: entity_link_delete
           label: ''
@@ -439,7 +439,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text: 'Remove member'
+          text: 'Eliminar miembro'
         dropbutton:
           id: dropbutton
           table: views
@@ -546,7 +546,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: 'No members available.'
+          content: 'No hay miembros disponibles.'
           tokenize: false
       sorts: {  }
       arguments:
@@ -566,7 +566,7 @@ display:
             title_enable: false
             title: Todo
           title_enable: true
-          title: '{{ arguments.gid|placeholder }} members'
+          title: '{{ arguments.gid|placeholder }} miembros'
           default_argument_type: fixed
           default_argument_options:
             argument: ''

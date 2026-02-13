@@ -1,0 +1,21 @@
+_core:
+  default_config_hash: guxvDFg4zPmEeFvJXPIbCuGYJvKCsNOx5bJRZ0u47cg
+health_score_weights:
+  engagement: 30
+  adoption: 25
+  satisfaction: 20
+  support: 15
+  growth: 10
+health_score_thresholds:
+  healthy: 80
+  neutral: 60
+  at_risk: 40
+calculation_interval: 24
+cron_batch_size: 50
+churn_model_version: '1.0'
+playbook_max_retries: 3
+nps_survey_cooldown: 90
+expansion_usage_threshold: 80
+alert_channels:
+  - email
+  - slack

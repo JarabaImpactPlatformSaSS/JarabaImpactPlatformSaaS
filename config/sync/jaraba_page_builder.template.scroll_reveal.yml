@@ -1,0 +1,86 @@
+uuid: 195d7804-f4f5-4417-a519-7106fc49de08
+langcode: es
+status: true
+dependencies: {  }
+id: scroll_reveal
+label: 'Revelado por Scroll'
+description: 'Contenido que se revela con animaciones al hacer scroll.'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/scroll-reveal.html.twig'
+fields_schema:
+  type: object
+  properties:
+    items:
+      type: array
+      title: Elementos
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - text
+              - image
+              - card
+          content:
+            type: string
+          image:
+            type: string
+            format: image
+          animation:
+            type: string
+            enum:
+              - fade-up
+              - fade-down
+              - fade-left
+              - fade-right
+              - zoom-in
+              - flip
+          delay:
+            type: number
+    stagger:
+      type: boolean
+      title: 'Escalonar animaciones'
+      default: true
+    threshold:
+      type: number
+      title: 'Umbral de visibilidad'
+      default: 0.2
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - items
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  items:
+    -
+      type: text
+      content: "<h2>Discover What's Possible</h2><p>Scroll down to see our story unfold</p>"
+      animation: fade-up
+    -
+      type: image
+      image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80'
+      animation: fade-left
+      delay: 200
+    -
+      type: card
+      content: 'Experience seamless collaboration with tools designed for modern teams'
+      animation: fade-right
+      delay: 400
+    -
+      type: image
+      image: 'https://images.unsplash.com/photo-1553484771-047a44eee27b?w=800&q=80'
+      animation: zoom-in
+      delay: 600
+  stagger: true
+  threshold: 0.2
+  background: light
+weight: 0

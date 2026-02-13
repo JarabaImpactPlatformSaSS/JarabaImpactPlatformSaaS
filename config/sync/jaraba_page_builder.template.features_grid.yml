@@ -1,0 +1,130 @@
+uuid: 0baf6858-f854-4d21-a354-69dfa94eabf6
+langcode: es
+status: true
+dependencies: {  }
+id: features_grid
+label: 'Grid de Características'
+description: 'Sección con grid de features/beneficios. Cada card tiene icono, título, descripción y badge opcional.'
+category: features
+twig_template: '@jaraba_page_builder/blocks/features/features-grid.html.twig'
+fields_schema:
+  type: object
+  title: 'Features Grid'
+  properties:
+    section_title:
+      type: string
+      title: 'Título de la Sección'
+      maxLength: 100
+      'ui:placeholder': '¿Por qué elegirnos?'
+    section_subtitle:
+      type: string
+      title: 'Subtítulo de la Sección'
+      maxLength: 200
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    features:
+      type: array
+      title: Características
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            title: Icono
+            'ui:widget': icon-picker
+          title:
+            type: string
+            title: Título
+            maxLength: 80
+          description:
+            type: string
+            title: Descripción
+            maxLength: 200
+          badge:
+            type: string
+            title: 'Badge (opcional)'
+            maxLength: 30
+          badge_variant:
+            type: string
+            title: 'Variante del Badge'
+            enum:
+              - primary
+              - secondary
+              - corporate
+              - success
+            default: primary
+  required:
+    - section_title
+    - features
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/features-grid.png
+preview_data:
+  section_title: 'Features Grid'
+  background_variant: light-green
+  columns: 3
+  features:
+    -
+      icon: bolt
+      icon_category: ui
+      icon_color: impulse
+      title: 'Lightning Fast'
+      description: 'Instant results with our optimized engine.'
+    -
+      icon: shield
+      icon_category: business
+      icon_color: innovation
+      title: 'Secure & Private'
+      description: 'Bank-level encryption for your data.'
+    -
+      icon: fire
+      icon_category: analytics
+      icon_color: corporate
+      title: 'Scalable Growth'
+      description: 'Grows with your business seamlessly.'
+    -
+      icon: brain
+      icon_category: ui
+      icon_color: success
+      title: 'AI-Powered Insights'
+      description: 'Smart analytics to drive decisions.'
+    -
+      icon: globe
+      icon_category: ui
+      icon_color: innovation
+      title: 'Global Reach'
+      description: 'Connect with customers everywhere.'
+    -
+      icon: link
+      icon_category: ui
+      icon_color: success
+      title: 'Easy Integration'
+      description: 'Works with all your favorite tools.'
+    -
+      icon: message
+      icon_category: ui
+      icon_color: innovation
+      title: '24/7 Support'
+      description: 'Always here to help you succeed.'
+    -
+      icon: cog
+      icon_category: ui
+      icon_color: corporate
+      title: Customizable
+      description: 'Tailor the platform to your brand.'
+    -
+      icon: euro
+      icon_category: analytics
+      icon_color: success
+      title: 'Affordable Pricing'
+      description: 'Flexible plans for every budget.'
+weight: 10

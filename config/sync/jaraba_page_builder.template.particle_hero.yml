@@ -1,0 +1,101 @@
+uuid: 68ac3d67-61d6-4887-86b1-194c059aaf97
+langcode: es
+status: true
+dependencies: {  }
+id: particle_hero
+label: 'Hero con Partículas'
+description: 'Hero con sistema de partículas interactivas (inspirado en particles.js).'
+category: premium
+twig_template: '@jaraba_page_builder/blocks/premium/particle-hero.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    particle_config:
+      type: object
+      title: 'Configuración de partículas'
+      properties:
+        shape:
+          type: string
+          enum:
+            - circle
+            - square
+            - triangle
+            - star
+          default: circle
+        count:
+          type: integer
+          minimum: 20
+          maximum: 200
+          default: 80
+        connect_lines:
+          type: boolean
+          default: true
+        interactive:
+          type: boolean
+          default: true
+        color:
+          type: string
+          enum:
+            - white
+            - primary
+            - rainbow
+          default: white
+    ctas:
+      type: array
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+          url:
+            type: string
+          style:
+            type: string
+            enum:
+              - primary
+              - secondary
+              - outline
+    background_color:
+      type: string
+      enum:
+        - dark
+        - gradient
+        - corporate
+      default: dark
+    min_height:
+      type: string
+      enum:
+        - tall
+        - fullscreen
+      default: fullscreen
+  required:
+    - title
+plans_required:
+  - enterprise
+is_premium: true
+preview_image: ''
+preview_data:
+  title: 'Innovation Starts Here'
+  subtitle: 'The most advanced platform for modern businesses'
+  particle_config:
+    shape: circle
+    count: 80
+    connect_lines: true
+    interactive: true
+    color: white
+  ctas:
+    -
+      text: 'Get Started'
+      url: '#'
+      style: primary
+    -
+      text: 'Learn More'
+      url: '#'
+      style: secondary
+  background_color: gradient
+  min_height: fullscreen
+weight: 0

@@ -1,0 +1,11 @@
+_core:
+  default_config_hash: WpzQRj18lpjMYwlbsOqcqy7BZIdyt-2xoYiudTDWTYg
+enable_tracking: true
+track_page_views: true
+track_ecommerce: true
+event_retention_days: 90
+daily_retention_days: 730
+anonymize_ip: true
+respect_dnt: true
+cookie_consent_required: false
+cache_ttl: 300

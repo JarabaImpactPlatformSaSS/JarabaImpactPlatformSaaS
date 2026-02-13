@@ -1,0 +1,145 @@
+uuid: ba6011d3-3059-40ed-b7ad-3ebdda963eae
+langcode: es
+status: true
+dependencies: {  }
+id: product_showcase
+label: 'Escaparate de Productos'
+description: 'Grid de productos para verticales de comercio con filtros y categorías.'
+category: commerce
+twig_template: '@jaraba_page_builder/blocks/commerce/product-showcase.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+      default: 'Productos destacados'
+    subtitle:
+      type: string
+      title: Subtítulo
+    source:
+      type: string
+      title: Origen
+      enum:
+        - manual
+        - dynamic
+      default: dynamic
+    dynamic_config:
+      type: object
+      title: 'Configuración dinámica'
+      properties:
+        product_type:
+          type: string
+          title: 'Tipo de producto'
+        category:
+          type: string
+          title: Categoría
+        limit:
+          type: integer
+          default: 8
+        sort:
+          type: string
+          enum:
+            - newest
+            - popular
+            - price_asc
+            - price_desc
+          default: newest
+    products:
+      type: array
+      title: 'Productos (modo manual)'
+      items:
+        type: object
+        properties:
+          image:
+            type: string
+            format: image
+          name:
+            type: string
+          price:
+            type: string
+          original_price:
+            type: string
+          badge:
+            type: string
+          url:
+            type: string
+          rating:
+            type: number
+          reviews_count:
+            type: integer
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 4
+    show_filters:
+      type: boolean
+      title: 'Mostrar filtros'
+      default: false
+    show_cta:
+      type: boolean
+      title: 'Mostrar Ver todos'
+      default: true
+    cta_text:
+      type: string
+      title: 'Texto CTA'
+      default: 'Ver todos los productos'
+    cta_url:
+      type: string
+      title: 'URL CTA'
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+      default: light
+  required: {  }
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'Featured Products'
+  subtitle: 'Handpicked items for you'
+  source: manual
+  products:
+    -
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'
+      name: 'Smart Watch Pro'
+      price: €299
+      original_price: €349
+      badge: SALE
+      rating: 4.8
+      reviews_count: 128
+    -
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80'
+      name: 'Wireless Headphones'
+      price: €199
+      rating: 4.9
+      reviews_count: 256
+    -
+      image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80'
+      name: 'Polaroid Camera'
+      price: €149
+      badge: NEW
+      rating: 4.7
+      reviews_count: 94
+    -
+      image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80'
+      name: 'Designer Sunglasses'
+      price: €89
+      rating: 4.5
+      reviews_count: 67
+  columns: 4
+  show_filters: false
+  show_cta: true
+  cta_text: 'View All Products'
+  cta_url: '#'
+  background: light
+weight: 0

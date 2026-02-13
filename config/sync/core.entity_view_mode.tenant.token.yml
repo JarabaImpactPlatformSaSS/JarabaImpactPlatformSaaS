@@ -1,0 +1,11 @@
+uuid: 8d521851-c03d-41d4-bd18-babbd9c02576
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+id: tenant.token
+label: Token
+description: null
+targetEntityType: tenant
+cache: true

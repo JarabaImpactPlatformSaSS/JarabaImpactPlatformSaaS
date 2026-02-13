@@ -1,0 +1,90 @@
+uuid: 7e46cb0d-1951-4931-b8d4-09b3457aab1f
+langcode: es
+status: true
+dependencies: {  }
+id: partners_carousel
+label: 'Carrusel de Partners'
+description: 'Carrusel animado de logos de partners o clientes.'
+category: trust
+twig_template: '@jaraba_page_builder/blocks/trust/partners-carousel.html.twig'
+fields_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Título
+      default: 'Confían en nosotros'
+    logos:
+      type: array
+      title: Logos
+      items:
+        type: object
+        properties:
+          image:
+            type: string
+            format: image
+          alt:
+            type: string
+          url:
+            type: string
+    speed:
+      type: string
+      title: Velocidad
+      enum:
+        - slow
+        - normal
+        - fast
+      default: normal
+    direction:
+      type: string
+      title: Dirección
+      enum:
+        - left
+        - right
+      default: left
+    pause_on_hover:
+      type: boolean
+      title: 'Pausar al hover'
+      default: true
+    grayscale:
+      type: boolean
+      title: 'Escala de grises'
+      default: true
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+      default: light
+  required:
+    - logos
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  title: 'Trusted by Industry Leaders'
+  logos:
+    -
+      image: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg'
+      alt: Google
+    -
+      image: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg'
+      alt: Amazon
+    -
+      image: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg'
+      alt: Microsoft
+    -
+      image: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg'
+      alt: Apple
+    -
+      image: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg'
+      alt: Netflix
+  speed: normal
+  direction: left
+  pause_on_hover: true
+  grayscale: true
+  background: light
+weight: 0

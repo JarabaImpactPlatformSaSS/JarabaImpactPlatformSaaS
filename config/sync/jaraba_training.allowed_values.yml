@@ -1,0 +1,26 @@
+product_types:
+  lead_magnet: 'Lead Magnet (Gratis)'
+  microcourse: 'Microcurso ($19-49)'
+  membership: 'Membresía ($97/mes)'
+  mastermind: 'Mastermind Group ($497/mes)'
+  mentoring: 'Mentoring 1:1 ($997+)'
+  certification_consultant: 'Certificación Consultor'
+  certification_entity: 'Certificación Entidad'
+  regional_franchise: 'Franquicia Regional'
+billing_types:
+  free: Gratuito
+  one_time: 'Pago Único'
+  recurring_monthly: 'Recurrente Mensual'
+  recurring_annual: 'Recurrente Anual'
+  cohort: 'Cohorte / Convocatoria'
+certification_types:
+  consultant: 'Consultor Certificado'
+  entity: 'Entidad Certificada'
+  regional_franchise: 'Franquicia Regional'
+  master_trainer: 'Master Trainer'
+certification_statuses:
+  in_progress: 'En Proceso'
+  pending_exam: 'Pendiente de Examen'
+  certified: Certificado
+  expired: Expirado
+  revoked: Revocado

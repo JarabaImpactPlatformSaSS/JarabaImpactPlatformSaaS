@@ -1,0 +1,14 @@
+uuid: d39bfc22-80a5-498f-afad-41563aa08bd8
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_servicios_conecta
+_core:
+  default_config_hash: XNCv_91-S3NtUEF8uoLUz4XxTCa4soWxL2XJIcylNoA
+name: 'Categorías Servicios'
+vid: servicios_category
+description: 'Categorías jerárquicas de servicios profesionales para ServiciosConecta. Nivel 1: sector. Nivel 2: especialidades.'
+weight: 0
+new_revision: false

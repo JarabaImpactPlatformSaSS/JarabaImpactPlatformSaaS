@@ -1,0 +1,19 @@
+uuid: d1f2db88-352d-486f-885f-00e489b711ff
+langcode: es
+status: true
+dependencies: {  }
+id: smart_marketing
+label: 'Smart Marketing Agent'
+description: 'Marketing con routing inteligente: usa modelos económicos para tareas simples, premium para complejas. Ahorro estimado 40%.'
+service_id: jaraba_ai_agents.smart_marketing_agent
+icon: bullhorn
+color: '#ff5722'
+weight: -12
+autonomy_level: 2
+requires_approval: false
+max_daily_auto_actions: 50
+allowed_actions:
+  - social_post
+  - email_promo
+  - ad_copy
+  - campaign_strategy

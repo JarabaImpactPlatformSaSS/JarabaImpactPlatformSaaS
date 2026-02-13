@@ -1,0 +1,81 @@
+uuid: ac91076a-b276-44d7-9a49-0c62bba57b4f
+langcode: es
+status: true
+dependencies: {  }
+id: download_box
+label: 'Caja de Descarga'
+description: 'Promociona recursos descargables (ebooks, PDFs, guías).'
+category: cta
+twig_template: '@jaraba_page_builder/blocks/cta/download-box.html.twig'
+fields_schema:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Eyebrow
+    title:
+      type: string
+      title: Título
+      default: 'Descarga nuestra guía'
+    description:
+      type: string
+      title: Descripción
+    cover_image:
+      type: string
+      title: 'Imagen de portada'
+      format: image
+    file_type:
+      type: string
+      title: 'Tipo de archivo'
+      enum:
+        - pdf
+        - ebook
+        - whitepaper
+        - template
+      default: pdf
+    file_size:
+      type: string
+      title: Tamaño
+    download_url:
+      type: string
+      title: 'URL de descarga'
+    require_email:
+      type: boolean
+      title: 'Requiere email'
+      default: true
+    benefits:
+      type: array
+      title: Beneficios
+      items:
+        type: string
+    background:
+      type: string
+      enum:
+        - light
+        - dark
+        - gradient
+      default: light
+  required:
+    - title
+    - download_url
+plans_required:
+  - professional
+  - enterprise
+is_premium: false
+preview_image: ''
+preview_data:
+  eyebrow: 'FREE RESOURCE'
+  title: 'The Ultimate Growth Guide 2026'
+  description: 'Discover proven strategies to scale your business and increase revenue by 300%.'
+  cover_image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80'
+  file_type: ebook
+  file_size: '3.2 MB'
+  download_url: '#'
+  require_email: true
+  benefits:
+    - '50+ actionable strategies'
+    - 'Real case studies from top companies'
+    - 'Templates and worksheets included'
+    - 'Expert insights from industry leaders'
+  background: light
+weight: 0
