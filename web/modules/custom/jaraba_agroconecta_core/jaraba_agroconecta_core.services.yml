@@ -1,5 +1,9 @@
 # Servicios del módulo AgroConecta Core
 services:
+  logger.channel.jaraba_agroconecta_core:
+    parent: logger.channel_base
+    arguments: ['jaraba_agroconecta_core']
+
   jaraba_agroconecta.product_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProductAgroService
     arguments:

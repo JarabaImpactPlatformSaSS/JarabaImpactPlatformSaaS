@@ -54,7 +54,7 @@
          * Configuración del tracker.
          */
         config: {
-            endpoint: '/api/heatmap/collect',
+            endpoint: '/api/v1/heatmap/collect',
             tenantId: 0,
             sessionId: '',
             bufferSize: 50,

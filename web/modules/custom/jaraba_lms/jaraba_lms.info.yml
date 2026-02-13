@@ -8,6 +8,7 @@ php: 8.1
 dependencies:
   - drupal:user
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_page_builder:jaraba_page_builder
 
 # Entidades custom del módulo
 # - course: Curso o programa formativo

@@ -185,7 +185,7 @@
         var self = this;
         var select = this.container.querySelector('#heatmap-page-select');
 
-        fetch('/api/heatmap/pages')
+        fetch('/api/v1/heatmap/pages')
             .then(function (response) {
                 return response.json();
             })
@@ -246,7 +246,7 @@
         }
 
         // El valor de page ahora es un ID numérico, no necesita encoding.
-        var endpoint = '/api/heatmap/pages/' + page + '/' + endpointType;
+        var endpoint = '/api/v1/heatmap/pages/' + page + '/' + endpointType;
         var url = endpoint + '?days=' + days + '&device=' + device;
 
         fetch(url)

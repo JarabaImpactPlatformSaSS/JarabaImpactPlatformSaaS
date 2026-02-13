@@ -675,6 +675,81 @@
         rect(13, 9, 9, 13)
     );
 
+    thumbnails['_cat_maps'] = svg(
+        stroke('M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z') +
+        bg('M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z') +
+        stroke('M8 2v16') +
+        stroke('M16 6v16')
+    );
+
+    thumbnails['_cat_trust'] = svg(
+        stroke('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z') +
+        bg('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z') +
+        stroke('M9 12l2 2 4-4')
+    );
+
+    thumbnails['_cat_events'] = svg(
+        rect(3, 4, 18, 18) +
+        stroke('M16 2v4M8 2v4M3 10h18') +
+        `<circle cx="8" cy="15" r="1.5" fill="currentColor" opacity="0.35"/>` +
+        `<circle cx="12" cy="15" r="1.5" fill="currentColor" opacity="0.35"/>`
+    );
+
+    thumbnails['_cat_forms'] = svg(
+        rect(3, 3, 18, 18) +
+        stroke('M7 8h4') +
+        `<rect x="7" y="11" width="10" height="2.5" rx="1" fill="currentColor" opacity="0.15"/>` +
+        `<rect x="7" y="11" width="10" height="2.5" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
+        `<rect x="7" y="15.5" width="10" height="2.5" rx="1" fill="currentColor" opacity="0.15"/>` +
+        `<rect x="7" y="15.5" width="10" height="2.5" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>`
+    );
+
+    thumbnails['_cat_social_proof'] = svg(
+        circle(12, 8, 4, true) +
+        stroke('M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6') +
+        stroke('M17 4l1 2 2-.5') +
+        stroke('M19 7l-1-2')
+    );
+
+    thumbnails['_cat_conversion'] = svg(
+        stroke('M22 12h-4l-3 9L9 3l-3 9H2') +
+        bg('M22 12h-4l-3 9L9 3l-3 9H2')
+    );
+
+    thumbnails['_cat_agroconecta'] = svg(
+        stroke('M12 22V8') +
+        stroke('M8 12l4-4 4 4') +
+        bg('M7 18c-2 0-4-1-4-3s2-4 5-4c.5-3 3-5 5-5s4 2 5 5c3 0 5 2 5 4s-2 3-4 3') +
+        stroke('M7 18c-2 0-4-1-4-3s2-4 5-4c.5-3 3-5 5-5s4 2 5 5c3 0 5 2 5 4s-2 3-4 3') +
+        `<path d="M12 22c-1 0-3-.5-3-2s2-2 3-2 3 0 3 2-2 2-3 2z" fill="currentColor" opacity="0.3"/>`
+    );
+
+    thumbnails['_cat_comercioconecta'] = svg(
+        stroke('M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z') +
+        bg('M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z') +
+        rect(9, 14, 6, 8)
+    );
+
+    thumbnails['_cat_serviciosconecta'] = svg(
+        stroke('M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91A6 6 0 016.73 2.67l3.77 3.77') +
+        bg('M12 12l-6.5 6.5')
+    );
+
+    thumbnails['_cat_empleabilidad'] = svg(
+        rect(2, 7, 20, 14) +
+        stroke('M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2') +
+        stroke('M12 12h.01') +
+        stroke('M2 12h20')
+    );
+
+    thumbnails['_cat_emprendimiento'] = svg(
+        stroke('M12 2L2 7l10 5 10-5-10-5z') +
+        bg('M12 2L2 7l10 5 10-5-10-5z') +
+        stroke('M2 12l10 5 10-5') +
+        stroke('M12 22V12') +
+        `<circle cx="12" cy="17" r="2" fill="currentColor" opacity="0.35"/>`
+    );
+
     // =========================================================================
     // API PÚBLICA
     // =========================================================================
@@ -755,6 +830,24 @@
         'Línea de Tiempo': 'timeline',
         'Formación': 'lms',
         'Capacitación': 'training',
+        'Preguntas frecuentes': 'faq',
+        'maps': 'maps',
+        'Mapas': 'maps',
+        'events': 'events',
+        'Eventos': 'events',
+        'Formularios': 'forms',
+        'Prueba Social': 'social_proof',
+        'Conversión': 'conversion',
+        'agroconecta': 'agroconecta',
+        'AgroConecta': 'agroconecta',
+        'comercioconecta': 'comercioconecta',
+        'ComercioConecta': 'comercioconecta',
+        'serviciosconecta': 'serviciosconecta',
+        'ServiciosConecta': 'serviciosconecta',
+        'empleabilidad': 'empleabilidad',
+        'Empleabilidad': 'empleabilidad',
+        'emprendimiento': 'emprendimiento',
+        'Emprendimiento': 'emprendimiento',
     };
 
     // =========================================================================

@@ -9,3 +9,4 @@ dependencies:
   - drupal:views
   - drupal:field_ui
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_crm:jaraba_crm

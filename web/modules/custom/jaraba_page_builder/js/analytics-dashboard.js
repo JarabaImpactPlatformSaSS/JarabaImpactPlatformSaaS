@@ -617,7 +617,7 @@
      * Carga la lista de páginas disponibles para heatmaps.
      */
     function loadHeatmapPages(selectElement) {
-        fetch('/api/heatmap/pages')
+        fetch('/api/v1/heatmap/pages')
             .then(function (response) { return response.json(); })
             .then(function (data) {
                 if (data.success && data.data) {
@@ -655,7 +655,7 @@
         var days = periodSelect ? periodSelect.value : '7';
         var device = deviceSelect ? deviceSelect.value : 'all';
 
-        var endpoint = '/api/heatmap/pages/' + page + '/' + (type === 'click' ? 'clicks' : type);
+        var endpoint = '/api/v1/heatmap/pages/' + page + '/' + (type === 'click' ? 'clicks' : type);
         endpoint += '?days=' + days + '&device=' + device;
 
         // Mostrar loading

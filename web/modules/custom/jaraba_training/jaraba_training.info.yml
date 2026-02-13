@@ -9,6 +9,7 @@ dependencies:
   - drupal:user
   - drupal:field_ui
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_commerce:jaraba_commerce
   - jaraba_lms:jaraba_lms
   - jaraba_mentoring:jaraba_mentoring
 

@@ -24,7 +24,7 @@ jaraba_i18n.dashboard:
 
 # Obtener estado de traducciones de una entidad
 jaraba_i18n.api.status:
-  path: '/api/jaraba-i18n/status/{entity_type}/{entity_id}'
+  path: '/api/v1/jaraba-i18n/status/{entity_type}/{entity_id}'
   defaults:
     _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::getStatus'
   requirements:
@@ -35,7 +35,7 @@ jaraba_i18n.api.status:
 
 # Traducir entidad con IA
 jaraba_i18n.api.translate:
-  path: '/api/jaraba-i18n/translate'
+  path: '/api/v1/jaraba-i18n/translate'
   defaults:
     _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::translate'
   requirements:
@@ -46,7 +46,7 @@ jaraba_i18n.api.translate:
 
 # Obtener estadísticas de traducción
 jaraba_i18n.api.stats:
-  path: '/api/jaraba-i18n/stats/{entity_type}'
+  path: '/api/v1/jaraba-i18n/stats/{entity_type}'
   defaults:
     _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::getStats'
   requirements:

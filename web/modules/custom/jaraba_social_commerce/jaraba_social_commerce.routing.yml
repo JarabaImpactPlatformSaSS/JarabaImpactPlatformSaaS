@@ -2,7 +2,7 @@
 
 # Webhook genérico para recibir datos desde Make.com
 jaraba_social_commerce.webhook.receive:
-  path: '/api/social-commerce/webhook/{channel}'
+  path: '/api/v1/social-commerce/webhook/{channel}'
   defaults:
     _controller: '\Drupal\jaraba_social_commerce\Controller\SocialWebhookController::receive'
   requirements:
@@ -11,7 +11,7 @@ jaraba_social_commerce.webhook.receive:
 
 # Endpoint para obtener productos en formato Meta Catalog
 jaraba_social_commerce.api.products.meta:
-  path: '/api/social-commerce/products/meta'
+  path: '/api/v1/social-commerce/products/meta'
   defaults:
     _controller: '\Drupal\jaraba_social_commerce\Controller\SocialWebhookController::getProductsForMeta'
   requirements:
@@ -20,7 +20,7 @@ jaraba_social_commerce.api.products.meta:
 
 # Endpoint para obtener productos en formato Google Merchant
 jaraba_social_commerce.api.products.google:
-  path: '/api/social-commerce/products/google'
+  path: '/api/v1/social-commerce/products/google'
   defaults:
     _controller: '\Drupal\jaraba_social_commerce\Controller\SocialWebhookController::getProductsForGoogle'
   requirements:
@@ -29,7 +29,7 @@ jaraba_social_commerce.api.products.google:
 
 # Endpoint para sincronización manual (trigger Make.com scenario)
 jaraba_social_commerce.api.sync:
-  path: '/api/social-commerce/sync/{channel}'
+  path: '/api/v1/social-commerce/sync/{channel}'
   defaults:
     _controller: '\Drupal\jaraba_social_commerce\Controller\SocialWebhookController::triggerSync'
   requirements:

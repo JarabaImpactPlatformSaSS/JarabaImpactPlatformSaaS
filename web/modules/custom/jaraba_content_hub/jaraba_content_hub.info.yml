@@ -13,7 +13,9 @@ dependencies:
   - drupal:views
   - drupal:field_ui
   - drupal:options
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
   - group:group
   - jaraba_ai_agents:jaraba_ai_agents
+  - jaraba_rag:jaraba_rag
 
 configure: jaraba_content_hub.settings

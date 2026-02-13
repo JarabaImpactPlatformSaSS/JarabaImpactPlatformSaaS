@@ -42,7 +42,7 @@ jaraba_billing.tenant_addon.settings:
 
 # Webhook endpoint for Stripe billing events.
 jaraba_billing.stripe_webhook:
-  path: '/api/billing/stripe-webhook'
+  path: '/api/v1/billing/stripe-webhook'
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\BillingWebhookController::handle'
   requirements:

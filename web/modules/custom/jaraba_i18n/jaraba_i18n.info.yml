@@ -9,4 +9,5 @@ dependencies:
   - drupal:language
   - drupal:content_translation
   - drupal:locale
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
   - jaraba_ai_agents:jaraba_ai_agents

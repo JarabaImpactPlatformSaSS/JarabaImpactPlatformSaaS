@@ -80,7 +80,7 @@ jaraba_foc.transaction.view:
 # ═══════════════════════════════════════════════════════════════════════════
 
 jaraba_foc.stripe_webhook:
-  path: '/api/foc/stripe-webhook'
+  path: '/api/v1/foc/stripe-webhook'
   defaults:
     _controller: '\Drupal\jaraba_foc\Controller\StripeWebhookController::handle'
   requirements:
@@ -93,7 +93,7 @@ jaraba_foc.stripe_webhook:
 # ═══════════════════════════════════════════════════════════════════════════
 
 jaraba_foc.api.metrics:
-  path: '/api/foc/metrics'
+  path: '/api/v1/foc/metrics'
   defaults:
     _controller: '\Drupal\jaraba_foc\Controller\ApiController::getMetrics'
   requirements:
@@ -101,7 +101,7 @@ jaraba_foc.api.metrics:
   methods: [GET]
 
 jaraba_foc.api.snapshot:
-  path: '/api/foc/snapshot'
+  path: '/api/v1/foc/snapshot'
   defaults:
     _controller: '\Drupal\jaraba_foc\Controller\ApiController::createSnapshot'
   requirements:

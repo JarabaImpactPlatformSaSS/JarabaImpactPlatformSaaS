@@ -6,3 +6,4 @@ core_version_requirement: ^10.3 || ^11
 dependencies:
   - ecosistema_jaraba_core:ecosistema_jaraba_core
   - jaraba_legal_knowledge:jaraba_legal_knowledge
+  - jaraba_matching:jaraba_matching

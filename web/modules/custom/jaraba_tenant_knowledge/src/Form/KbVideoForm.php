@@ -108,8 +108,8 @@ class KbVideoForm extends ContentEntityForm
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('jaraba_multitenancy.tenant_context')) {
-            $tenantContext = \Drupal::service('jaraba_multitenancy.tenant_context');
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }
