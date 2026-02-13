@@ -249,34 +249,34 @@ class TranslationManagerService
     public function getTranslationStats(string $entityTypeId): array
     {
         $storage = $this->entityTypeManager->getStorage($entityTypeId);
-        $entities = $storage->loadMultiple();
+
+        // AUDIT-PERF-N09: Usar entity queries O(L) en lugar de loadMultiple O(E*L).
+        $total = (int) $storage->getQuery()
+            ->accessCheck(FALSE)
+            ->count()
+            ->execute();
 
         $stats = [
-            'total' => count($entities),
+            'total' => $total,
             'translated' => [],
             'missing' => [],
         ];
 
         $languages = $this->getAvailableLanguages();
+        $defaultLang = \Drupal::languageManager()->getDefaultLanguage()->getId();
+
         foreach ($languages as $langcode => $language) {
-            $stats['translated'][$langcode] = 0;
-            $stats['missing'][$langcode] = 0;
-        }
+            // Contar entidades con traducción en este idioma via query (1 query por idioma).
+            $count = (int) $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('langcode', $langcode)
+                ->count()
+                ->execute();
 
-        foreach ($entities as $entity) {
-            if (!$entity instanceof ContentEntityInterface || !$entity->isTranslatable()) {
-                continue;
-            }
-
-            $originalLangcode = $entity->getUntranslated()->language()->getId();
-
-            foreach ($languages as $langcode => $language) {
-                if ($entity->hasTranslation($langcode)) {
-                    $stats['translated'][$langcode]++;
-                } elseif ($langcode !== $originalLangcode) {
-                    $stats['missing'][$langcode]++;
-                }
-            }
+            $stats['translated'][$langcode] = $count;
+            $stats['missing'][$langcode] = ($langcode !== $defaultLang)
+                ? max(0, $total - $count)
+                : 0;
         }
 
         return $stats;

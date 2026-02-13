@@ -2,7 +2,7 @@ name: 'Jaraba Security Compliance'
 type: module
 description: 'Módulo de seguridad y compliance — auditoría, políticas de seguridad, SOC2/ISO27001/ENS/GDPR, retención de datos'
 package: Jaraba
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 php: 8.4
 
 dependencies:

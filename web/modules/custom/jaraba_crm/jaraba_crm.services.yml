@@ -42,3 +42,4 @@ services:
       - '@jaraba_crm.opportunity'
       - '@jaraba_crm.pipeline_stage'
       - '@logger.channel.jaraba_crm'
+      - '@cache.default'

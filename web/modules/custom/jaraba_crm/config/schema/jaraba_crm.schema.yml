@@ -1,0 +1,14 @@
+# AUDIT-CONS-N16: Config schema for jaraba_crm.
+jaraba_crm.settings:
+  type: config_object
+  label: 'CRM settings'
+  mapping:
+    show_pipeline:
+      type: boolean
+      label: 'Show pipeline view'
+    recent_activities_count:
+      type: integer
+      label: 'Number of recent activities to display'
+    enable_auto_scoring:
+      type: boolean
+      label: 'Enable automatic lead scoring'

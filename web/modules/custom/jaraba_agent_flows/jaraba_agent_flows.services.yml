@@ -49,6 +49,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agent_flows'
+      - '@cache.default'
 
   # ===========================================
   # SERVICIO DE TEMPLATES

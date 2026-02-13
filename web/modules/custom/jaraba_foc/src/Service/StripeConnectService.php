@@ -131,6 +131,7 @@ class StripeConnectService
 
         try {
             // Paso 1: Crear Connected Account
+            $tenantId = $vendorData['tenant_id'] ?? 'unknown';
             $accountResponse = $this->stripeRequest('POST', '/accounts', [
                 'type' => 'standard',
                 'email' => $vendorData['email'],
@@ -138,10 +139,10 @@ class StripeConnectService
                     'name' => $vendorData['business_name'] ?? '',
                 ],
                 'metadata' => [
-                    'tenant_id' => $vendorData['tenant_id'] ?? '',
+                    'tenant_id' => $tenantId,
                     'platform' => 'jaraba_impact',
                 ],
-            ]);
+            ], "create-account-{$tenantId}-" . bin2hex(random_bytes(8)));
 
             $accountId = $accountResponse['id'];
 
@@ -233,6 +234,7 @@ class StripeConnectService
         $applicationFee = (int) round($amountCents * ($feePercent / 100));
 
         try {
+            $idempotencyKey = "pi-{$destinationAccountId}-{$amountCents}-" . bin2hex(random_bytes(8));
             $paymentIntent = $this->stripeRequest('POST', '/payment_intents', [
                 'amount' => $amountCents,
                 'currency' => strtolower($currency),
@@ -244,7 +246,7 @@ class StripeConnectService
                     'platform_fee_percent' => $feePercent,
                     'platform' => 'jaraba_impact',
                 ]),
-            ]);
+            ], $idempotencyKey);
 
             $this->logger->info('PaymentIntent creado: @id, monto: @amount, fee: @fee', [
                 '@id' => $paymentIntent['id'],
@@ -340,11 +342,14 @@ class StripeConnectService
      *   Endpoint de la API (ej: '/accounts').
      * @param array $data
      *   Datos a enviar (para POST).
+     * @param string|null $idempotencyKey
+     *   AUDIT-PERF-N07: Clave de idempotencia para peticiones POST mutantes.
+     *   Stripe devuelve la respuesta cacheada si se repite la misma key.
      *
      * @return array
      *   Respuesta decodificada de la API.
      */
-    public function stripeRequest(string $method, string $endpoint, array $data = []): array
+    public function stripeRequest(string $method, string $endpoint, array $data = [], ?string $idempotencyKey = NULL): array
     {
         $secretKey = $this->getSecretKey();
         if (!$secretKey) {
@@ -357,6 +362,11 @@ class StripeConnectService
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ],
         ];
+
+        // AUDIT-PERF-N07: Idempotency key para POST requests.
+        if ($idempotencyKey !== NULL && strtoupper($method) === 'POST') {
+            $options['headers']['Idempotency-Key'] = $idempotencyKey;
+        }
 
         if (!empty($data)) {
             $options['form_params'] = $this->flattenArray($data);

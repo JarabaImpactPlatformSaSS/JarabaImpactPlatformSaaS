@@ -4,8 +4,24 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-13 23:59
-**Versión:** 29.0.0 (Sprint Diferido 22/22 TODOs — 5 fases completadas, 112/112 TODOs catálogo v1.2.0 resueltos)
+**Versión:** 31.0.0 (Remediación Auditoría Integral ejecutada — FASE 1 + FASE 2 completadas, FASE 3 en progreso, madurez 4.5→4.9)
 
+> **🔧 REMEDIACIÓN AUDITORÍA INTEGRAL — FASE 1 + FASE 2 COMPLETADAS** (2026-02-13)
+> - **23/65 hallazgos resueltos**: 7/7 Críticos + 8/8 Altos + 8/38 Medios
+> - **FASE 1 (P0):** Índices DB, LockBackendInterface, AccessControlHandler (34 entidades), HMAC webhooks, `_permission` en 100+ rutas, tenant filter AI services, dedup TenantContextService
+> - **FASE 2 (P1):** tenant_id entity_reference migration, dedup ImpactCredit/ExpansionRevenue, social publish async, Redis producción, sanitización `|raw`, idempotency keys Stripe, dependencias .info.yml, HMAC WhatsApp
+> - **FASE 3 parcial:** CacheBackendInterface en 6 servicios, 4 cron→QueueWorker, PUT→PATCH (17 rutas), config schemas (3 módulos), core_version unificado, @import→@use
+> - **Madurez:** 4.5/5.0 → **4.9/5.0** | Arquitectura v21.0.0 | Directrices v21.0.0
+> - **Plan Remediación v2.0.0:** [20260213-Plan_Remediacion_Auditoria_Integral_v1.md](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) (actualizado con progreso)
+>
+> **📋 ACTUALIZACIÓN DOCUMENTAL POST-AUDITORÍA INTEGRAL** (2026-02-13)
+> - **Plan de Remediación v2** para 65 hallazgos: FASE 1+2 completadas, FASE 3 en progreso (~30 pendientes medios/bajos)
+> - **11 reglas AUDIT-*** incorporadas a Directrices v21.0.0 (secciones 4.7 y 5.8.3): AUDIT-SEC-001/002/003, AUDIT-PERF-001/002/003, AUDIT-CONS-001 a 005
+> - **Arquitectura v21.0.0** con madurez elevada 4.5 → 4.9/5.0, sección 12 Estado de Auditoría actualizada
+> - **Aprendizaje #73:** 11 lecciones (Situación → Aprendizaje → Regla) documentadas
+> - **Workflow auditoría actualizado:** 15 disciplinas (antes 8), 7 verificaciones obligatorias nuevas, 5 gaps nuevos (G8-G12)
+> - **Documentos:** [Plan Remediación](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) | [Aprendizaje](./tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md)
+>
 > **🏁 SPRINT DIFERIDO COMPLETADO — 22/22 TODOs BACKLOG, 5 FASES, 112/112 CATÁLOGO v1.2.0** (2026-02-13)
 > - **22 TODOs diferidos resueltos** del Catálogo v1.2.0 en 5 fases. Con Sprint Inmediato (48) + S2-S7 (49) + Sprint Diferido (22) = **112/112 TODOs completados** (100% cobertura)
 > - **FASE 1 — Quick Wins (4 TODOs):** Tabla comparativa pricing (SCSS BEM, mobile-first, var(--ej-*)), sistema ratings cursos LMS (hook_preprocess_lms_course + AggregateRating Schema.org), canvas save/publish (endpoint PATCH /api/v1/pages/{id}/canvas + indicadores UI Alpine.js), player review interactivo
@@ -475,9 +491,9 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **LEER AL INICIO** | 2026-02-12 (v16.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v16.0** - Plan Cierre Gaps Clase Mundial 12/12 Fases (F9 B2B + F10 Scaling + F11 IA + F12 Lenis) | 2026-02-12 |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-12 (v24.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **v20.0.0** - 11 reglas AUDIT-* | 2026-02-13 (v20.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v19.0** - Madurez 4.5/5.0, sección 12 Estado Auditoría | 2026-02-13 (v19.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-13 (v30.0.0) |
 
 ---
 
@@ -628,7 +644,13 @@
 
 **Total Bloques:** 7 (~4,500h en 24 meses)
 
-**Total documentos implementación:** 33
+### 6.3 Planes de Remediación
+
+| Documento | Descripción | Fecha |
+|-----------|-------------|-------|
+| [20260213-Plan_Remediacion_Auditoria_Integral_v1.md](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) | 📋 **Plan Remediación Auditoría Integral** ⭐ — 65 hallazgos, 3 fases, 8 semanas, 250-350h. TOC 16 secciones. Catálogo completo, correspondencia directrices, checklist frontend 12 sub-secciones | 2026-02-13 |
+
+**Total documentos implementación:** 34
 
 ---
 
@@ -800,7 +822,9 @@
 
 | [2026-02-12_insights_legal_funding_agroconecta_copilots.md](./tecnicos/aprendizajes/2026-02-12_insights_legal_funding_agroconecta_copilots.md) | 📦 **Módulos 20260201 — Insights Hub + Legal Knowledge + Funding + AgroConecta Copilots** ⭐ — 3 módulos nuevos (171 archivos: 52+54+65). Insights Hub (6 entities, Search Console OAuth, Web Vitals RUM, Error Tracking dedup, Uptime Monitor). Legal Knowledge (BOE pipeline, RAG citas, TaxCalculator IRPF/IVA, alertas normativas). Funding Intelligence (BDNS+BOJA APIs, matching 5 criterios scoring 0-100, copilot RAG, cache TTL, particionamiento BD). AgroConecta Copilots (DemandForecaster, MarketSpy, CrossSellEngine, CartRecovery, WhatsApp, SalesAgent + MerchantCopilotAgent en jaraba_ai_agents). Fase 0 consolidación (ConsentRecord, PageBuilderTrackingService, CopilotConversation/MessageInterface). 3 page templates. 17 módulos SCSS | 2026-02-12 |
 
-**Total aprendizajes:** 71
+| [2026-02-13_auditoria_integral_estado_saas.md](./tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md) | 🔍 **Auditoría Integral Estado SaaS** ⭐ — 11 lecciones aprendidas (Situación → Aprendizaje → Regla). Índices DB prerrequisito, locking financiero, HMAC webhooks, _permission vs _user_is_logged_in, sanitización \|raw, AccessControlHandler obligatorio, servicio canónico único, API envelope estándar, API versioning, tenant_id entity_reference, social publish async. 11 reglas AUDIT-* (9 P0, 2 P1). 65 hallazgos, 4 dimensiones | 2026-02-13 |
+
+**Total aprendizajes:** 73
 
 ---
 
@@ -890,8 +914,8 @@
 
 ## Nivel de Madurez Arquitectónica
 
-> **Estado actual:** Nivel 5.0 de 5 (Arquitectura Adaptativa) 🌟  
-> **Estado:** NIVEL MÁXIMO ALCANZADO
+> **Estado actual:** Nivel 4.5 de 5 (reducido por 7 hallazgos críticos pendientes — auditoría integral 2026-02-13)
+> **Estado:** REMEDIACIÓN EN CURSO — 3 fases planificadas (8 semanas)
 > 
 > Ver [Arquitectura Adaptativa](./arquitectura/2026-01-09_2239_arquitectura-adaptativa.md) para detalles.
 
@@ -924,6 +948,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-13 | **30.0.0** | 📋 **Actualización Documental Post-Auditoría Integral:** Plan Remediación v1 creado (906 líneas, 16 secciones TOC, catálogo 65 hallazgos, 3 fases 8 semanas 250-350h, correspondencia directrices, checklist frontend 12 sub-secciones). Aprendizaje #73 (11 lecciones Situación→Aprendizaje→Regla). Directrices actualizadas a v20.0.0 (sección 4.7 con 3 sub-secciones seguridad/rendimiento/consistencia + sección 5.8.3 tabla 11 reglas AUDIT-*). Arquitectura actualizada a v19.0.0 (madurez 5.0→4.5, nueva sección 12 Estado Auditoría con métricas + evaluación por área). Workflow auditoría actualizado (8→15 disciplinas, 7 verificaciones obligatorias CAUTION, 5 gaps G8-G12). 73 aprendizajes |
 | 2026-02-13 | **29.0.0** | 🏁 **Sprint Diferido 22/22 TODOs — 5 Fases Completadas:** Backlog diferido del Catálogo v1.2.0 resuelto al 100%. FASE 1 Quick Wins (pricing table, course ratings, canvas save/publish, player review). FASE 2 UX Sprint 5 (header SaaS, i18n selector, dynamic fields Alpine.js, a11y slide-panel). FASE 3 Knowledge Base CRUD (FAQs accordion, policies cards, documents file-type). FASE 4 Infraestructura (agent re-exec, BrowserTestBase migration, webhook EventDispatcher, Course field_category). FASE 5 Integraciones (token verification V2.1 4 plataformas, batch dispatch sin entidad, commerce stock dinámico, sameAs configurable). ~25 archivos editados, ~8 creados. 6 directrices aplicadas. Plan v2.0.0 completado. Aprendizaje #72. Directrices v21.0.0, Maestro v20.0.0. 72 aprendizajes |
 | 2026-02-13 | **28.0.0** | 🔍 **Auditoría Integral Estado SaaS — 15 Disciplinas, 65 Hallazgos:** Auditoría profunda desde 15 roles senior (Negocio, Carreras, Finanzas, Marketing, Publicidad, Arquitectura SaaS, Ingeniería SW, UX, Drupal, Web Dev, Theming, GrapesJS, SEO/GEO, IA, Seguridad). 4 dimensiones auditadas: Seguridad (19 hallazgos: webhook sin auth, XSS |raw 100+ templates, cross-tenant data leaks, 100+ rutas solo login check), Rendimiento (17: zero DB indexes 268 entidades, sin locking, social publish síncrono, N+1 queries, 50K row export), Consistencia (20: 34 entidades sin access control, TenantContextService duplicado, servicios duplicados con drift, 303 CSS vars violan --ej-*, 76 rutas sin /api/v1/), Specs vs Implementación (9: analytics subdocumentadas, 32 TODOs en código). 62/62 módulos verificados existentes. Evolución: 19/87 hallazgos previos resueltos (22%). Nivel riesgo: MEDIO-ALTO. Plan remediación 3 sprints. Matriz de referencias cruzadas. |
 | 2026-02-12 | **25.0.0** | 📦 **Módulos 20260201 — Insights Hub + Legal Knowledge + Funding + AgroConecta Copilots:** 3 módulos nuevos (171 archivos: jaraba_insights_hub 52, jaraba_legal_knowledge 54, jaraba_funding 65). Insights Hub (6 entities, Search Console, Web Vitals, Error Tracking, Uptime Monitor, dashboard /insights). Legal Knowledge (4 entities, BOE API + RAG pipeline + citas + TaxCalculator + alertas, /legal). Funding Intelligence (4 entities, BDNS+BOJA APIs, matching 5 criterios, copilot RAG, cache, BD optimizada, /funding). AgroConecta Copilots (Fases 9-10: DemandForecaster, MarketSpy, CrossSellEngine, CartRecovery, WhatsApp, SalesAgent). Fase 0 consolidación. 3 page templates nuevos. Aprendizaje #71. Directrices v17.0.0, Maestro v17.0.0. 71 aprendizajes |

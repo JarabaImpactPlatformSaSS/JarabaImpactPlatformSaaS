@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 
@@ -89,6 +90,9 @@ class PageContentViewBuilder extends EntityViewBuilder
             $renderedHtml = $canvasData['html'] ?? '';
         }
 
+        // AUDIT-SEC-003: Sanitizar HTML antes de renderizar con |raw.
+        $renderedHtml = Xss::filterAdmin($renderedHtml);
+
         if (!empty($renderedHtml)) {
             // Renderizar el HTML del canvas
             $build['content']['canvas_html'] = [
@@ -101,6 +105,8 @@ class PageContentViewBuilder extends EntityViewBuilder
             // Inyectar CSS personalizado del canvas si existe
             $css = $canvasData['css'] ?? '';
             if (!empty($css)) {
+                // AUDIT-SEC-003: Sanitizar CSS para prevenir inyección.
+                $css = $this->sanitizeCss($css);
                 $build['#attached']['html_head'][] = [
                     [
                         '#tag' => 'style',
@@ -144,6 +150,9 @@ class PageContentViewBuilder extends EntityViewBuilder
         $template_id = $entity->get('template_id')->value ?? '';
         $content_data_raw = $entity->get('content_data')->value ?? '{}';
         $content_data = json_decode($content_data_raw, TRUE) ?: [];
+
+        // AUDIT-SEC-003: Sanitizar campos HTML antes de pasarlos a Twig |raw.
+        $content_data = $this->sanitizeContentData($content_data);
 
         if (!empty($template_id)) {
             $build['content']['section_0'] = [
@@ -193,6 +202,9 @@ class PageContentViewBuilder extends EntityViewBuilder
             $content = $section['content'] ?? [];
             $uuid = $section['uuid'] ?? '';
 
+            // AUDIT-SEC-003: Sanitizar campos HTML antes de pasarlos a Twig |raw.
+            $content = $this->sanitizeContentData($content);
+
             if (empty($template_id)) {
                 continue;
             }
@@ -229,6 +241,60 @@ class PageContentViewBuilder extends EntityViewBuilder
         $build = parent::viewMultiple($entities, $view_mode, $langcode);
 
         return $build;
+    }
+
+    /**
+     * Sanitiza recursivamente campos HTML en arrays de contenido.
+     *
+     * AUDIT-SEC-003: Los templates Twig usan |raw para campos como
+     * description, content, html, body. Estos campos DEBEN sanitizarse
+     * server-side con Xss::filterAdmin() antes de llegar al template.
+     *
+     * @param array $data
+     *   Array de contenido (content_data o section content).
+     *
+     * @return array
+     *   Array con campos HTML sanitizados.
+     */
+    protected function sanitizeContentData(array $data): array
+    {
+        $htmlFields = ['description', 'content', 'html', 'body', 'text', 'summary', 'rendered'];
+
+        $sanitized = [];
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $sanitized[$key] = $this->sanitizeContentData($value);
+            } elseif (is_string($value) && in_array($key, $htmlFields, TRUE)) {
+                $sanitized[$key] = Xss::filterAdmin($value);
+            } else {
+                $sanitized[$key] = $value;
+            }
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * Sanitiza CSS para prevenir inyección de código.
+     *
+     * AUDIT-SEC-003: CSS personalizado del canvas puede contener vectores XSS
+     * como javascript:, expression(), @import con URLs maliciosas, o behavior:.
+     *
+     * @param string $css
+     *   CSS a sanitizar.
+     *
+     * @return string
+     *   CSS sanitizado.
+     */
+    protected function sanitizeCss(string $css): string
+    {
+        $css = preg_replace('/javascript\s*:/i', '', $css);
+        $css = preg_replace('/expression\s*\(/i', '', $css);
+        $css = preg_replace('/@import\b/i', '', $css);
+        $css = preg_replace('/behavior\s*:/i', '', $css);
+        $css = preg_replace('/-moz-binding\s*:/i', '', $css);
+
+        return $css;
     }
 
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_foc\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -55,7 +56,8 @@ class MetricsCalculatorService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected Connection $database,
         protected TimeInterface $time,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        protected CacheBackendInterface $cache,
     ) {
     }
 
@@ -237,6 +239,13 @@ class MetricsCalculatorService
      */
     public function getTenantAnalytics(): array
     {
+        // AUDIT-PERF-N08: Cache 5 min — evita N+1 queries por tenant.
+        $cacheKey = 'jaraba_foc:tenant_analytics';
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $tenants = [];
 
         try {
@@ -268,6 +277,8 @@ class MetricsCalculatorService
                 '@error' => $e->getMessage(),
             ]);
         }
+
+        $this->cache->set($cacheKey, $tenants, $this->time->getRequestTime() + 300);
 
         return $tenants;
     }

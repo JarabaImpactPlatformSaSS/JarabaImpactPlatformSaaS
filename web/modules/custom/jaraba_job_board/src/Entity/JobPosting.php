@@ -272,9 +272,11 @@ class JobPosting extends ContentEntityBase implements JobPostingInterface
                 'weight' => -9,
             ]);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('Associated tenant.'));
+        // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Associated tenant.'))
+            ->setSetting('target_type', 'tenant');
 
         // === Descripción del Puesto ===
         $fields['description'] = BaseFieldDefinition::create('text_long')

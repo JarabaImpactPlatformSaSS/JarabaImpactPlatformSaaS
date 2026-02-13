@@ -70,6 +70,12 @@
             run() {
                 this.issues = [];
 
+                // Guard: verificar que el editor y DomComponents estén disponibles
+                if (!this.editor || !this.editor.DomComponents) {
+                    console.warn('[Jaraba SEO] Editor o DomComponents no disponible, omitiendo auditoría.');
+                    return this.issues;
+                }
+
                 // Obtener HTML del canvas
                 const wrapper = this.editor.DomComponents.getWrapper();
                 if (!wrapper) return this.issues;
@@ -459,6 +465,11 @@
 
         // Función para ejecutar auditoría (solo si panel visible)
         const runAudit = () => {
+            if (!editor || !editor.DomComponents) {
+                console.warn('[Jaraba SEO] Editor no listo para auditoría, reintentando en 1s...');
+                setTimeout(runAudit, 1000);
+                return;
+            }
             const container = createPanel();
             if (!panel) {
                 panel = new SEOPanel(container);

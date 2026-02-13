@@ -215,56 +215,36 @@ function _jaraba_groups_remind_upcoming_events(): void {
   $state = \Drupal::state();
   $lastRun = $state->get('jaraba_groups_event_reminder_last', 0);
   $now = \Drupal::time()->getRequestTime();
-  
+
   // Run once per hour.
   if ($now - $lastRun < 3600) {
     return;
   }
-  
+
   $storage = \Drupal::entityTypeManager()->getStorage('group_event');
   $tomorrow = date('Y-m-d\TH:i:s', $now + 86400);
   $in25hours = date('Y-m-d\TH:i:s', $now + 90000);
-  
+
   $query = $storage->getQuery()
     ->condition('status', 'published')
     ->condition('start_datetime', $tomorrow, '>=')
     ->condition('start_datetime', $in25hours, '<=')
     ->accessCheck(FALSE);
-  
-  $ids = $query->execute();
-  
-  $mailManager = \Drupal::service('plugin.manager.mail');
-  $userStorage = \Drupal::entityTypeManager()->getStorage('user');
 
-  foreach ($storage->loadMultiple($ids) as $event) {
-    // Get registered attendees via group_relationship.
-    try {
-      $group = $event->getGroup();
-      if ($group) {
-        $members = $group->getMembers();
-        foreach ($members as $membership) {
-          $member = $membership->getUser();
-          if ($member && $member->getEmail()) {
-            $mailManager->mail('jaraba_groups', 'event_reminder', $member->getEmail(), $member->getPreferredLangcode(), [
-              'user_name' => $member->getDisplayName(),
-              'event_title' => $event->label(),
-              'start_datetime' => $event->get('start_datetime')->value ?? '',
-              'location' => $event->get('location')->value ?? 'Por confirmar',
-              'event_url' => $event->toUrl('canonical', ['absolute' => TRUE])->toString(),
-            ]);
-          }
-        }
-      }
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('jaraba_groups')->error('Failed to send event reminders for @id: @error', [
-        '@id' => $event->id(),
-        '@error' => $e->getMessage(),
-      ]);
-    }
-    \Drupal::logger('jaraba_groups')->info('Reminder sent for event @id', ['@id' => $event->id()]);
+  $ids = $query->execute();
+
+  // AUDIT-PERF-N11: Queue per-event reminders instead of synchronous N×M email loop.
+  $queue = \Drupal::queue('jaraba_groups_event_reminder');
+  foreach ($ids as $eventId) {
+    $queue->createItem(['event_id' => $eventId]);
   }
-  
+
+  if (!empty($ids)) {
+    \Drupal::logger('jaraba_groups')->info('Cron: @count events queued for reminders.', [
+      '@count' => count($ids),
+    ]);
+  }
+
   $state->set('jaraba_groups_event_reminder_last', $now);
 }
 

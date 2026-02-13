@@ -35,7 +35,7 @@ jaraba_ads.api.campaigns:
     _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::listCampaigns'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 jaraba_ads.api.campaigns.detail:
   path: '/api/v1/ads/{campaign_id}'
@@ -43,7 +43,7 @@ jaraba_ads.api.campaigns.detail:
     _controller: '\Drupal\jaraba_ads\Controller\AdsApiController::getCampaign'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
     campaign_id: '\d+'
 
 jaraba_ads.api.campaigns.metrics:

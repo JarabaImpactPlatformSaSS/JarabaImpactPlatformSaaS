@@ -61,7 +61,15 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
         }
 
         // POST = Mensaje entrante.
-        $payload = json_decode($request->getContent(), TRUE);
+        // AUDIT-SEC-001: Validar firma HMAC antes de procesar.
+        $rawPayload = $request->getContent();
+        $signatureHeader = $request->headers->get('X-Hub-Signature-256', '');
+        if (!$this->verifyHmacSignature($rawPayload, $signatureHeader)) {
+            $this->logger->warning('WhatsApp webhook: firma HMAC inválida.');
+            return new JsonResponse(['error' => 'Invalid signature'], 403);
+        }
+
+        $payload = json_decode($rawPayload, TRUE);
         if (empty($payload)) {
             return new JsonResponse(['error' => 'Invalid payload'], 400);
         }
@@ -104,6 +112,36 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
 
         $this->logger->warning('WhatsApp webhook verificación fallida.');
         return new JsonResponse(['error' => 'Verification failed'], 403);
+    }
+
+    /**
+     * Verifica la firma HMAC-SHA256 del payload de Meta.
+     *
+     * AUDIT-SEC-001: Toda petición POST debe validar X-Hub-Signature-256
+     * contra el app_secret configurado. Usa hash_equals() para prevenir
+     * timing attacks.
+     *
+     * @param string $payload
+     *   Cuerpo raw de la petición.
+     * @param string $signatureHeader
+     *   Valor del header X-Hub-Signature-256 (formato: "sha256=XXXX").
+     *
+     * @return bool
+     *   TRUE si la firma es válida.
+     */
+    protected function verifyHmacSignature(string $payload, string $signatureHeader): bool {
+        $appSecret = $this->config('jaraba_agroconecta_core.settings')->get('whatsapp_app_secret');
+        if (empty($appSecret) || empty($signatureHeader)) {
+            return FALSE;
+        }
+
+        $parts = explode('=', $signatureHeader, 2);
+        if (count($parts) !== 2 || $parts[0] !== 'sha256') {
+            return FALSE;
+        }
+
+        $expected = hash_hmac('sha256', $payload, $appSecret);
+        return hash_equals($expected, $parts[1]);
     }
 
 }

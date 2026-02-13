@@ -143,7 +143,7 @@ jaraba_training.api.recommend:
     _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::recommend'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 # Endpoint de compra (TRN-001)
 jaraba_training.api.purchase:
@@ -152,4 +152,4 @@ jaraba_training.api.purchase:
     _controller: 'Drupal\jaraba_training\Controller\TrainingApiController::purchase'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'

@@ -300,9 +300,11 @@ class Course extends ContentEntityBase implements CourseInterface
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('Tenant ID'))
-      ->setDescription(t('Tenant owner (NULL = global).'));
+    // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant owner (NULL = global).'))
+      ->setSetting('target_type', 'tenant');
 
     $fields['is_published'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Published'))

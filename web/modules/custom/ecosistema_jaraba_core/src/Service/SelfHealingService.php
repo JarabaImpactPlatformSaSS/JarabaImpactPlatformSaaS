@@ -360,8 +360,15 @@ class SelfHealingService
 
     /**
      * Obtiene historial de incidentes.
+     *
+     * @param int $days
+     *   Días de historial.
+     * @param string|null $status
+     *   Filtro de estado opcional.
+     * @param int|null $tenantId
+     *   AUDIT-SEC-N14: Filtrar por tenant. NULL = todos (solo plataforma).
      */
-    public function getIncidentHistory(int $days = 7, ?string $status = NULL): array
+    public function getIncidentHistory(int $days = 7, ?string $status = NULL, ?int $tenantId = NULL): array
     {
         $since = time() - ($days * 24 * 60 * 60);
 
@@ -374,34 +381,49 @@ class SelfHealingService
             $query->condition('status', $status);
         }
 
+        // AUDIT-SEC-N14: Aislamiento tenant.
+        if ($tenantId !== NULL) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
         return $query->execute()->fetchAll();
     }
 
     /**
      * Obtiene estadísticas de self-healing.
+     *
+     * @param int $days
+     *   Días de estadísticas.
+     * @param int|null $tenantId
+     *   AUDIT-SEC-N14: Filtrar por tenant. NULL = todos (solo plataforma).
      */
-    public function getStats(int $days = 30): array
+    public function getStats(int $days = 30, ?int $tenantId = NULL): array
     {
         $since = time() - ($days * 24 * 60 * 60);
 
-        $total = $this->database->select('self_healing_incidents', 'i')
-            ->condition('created', $since, '>')
-            ->countQuery()
-            ->execute()
-            ->fetchField();
+        $totalQuery = $this->database->select('self_healing_incidents', 'i')
+            ->condition('created', $since, '>');
+        if ($tenantId !== NULL) {
+            $totalQuery->condition('tenant_id', $tenantId);
+        }
+        $total = $totalQuery->countQuery()->execute()->fetchField();
 
-        $healed = $this->database->select('self_healing_incidents', 'i')
+        $healedQuery = $this->database->select('self_healing_incidents', 'i')
             ->condition('created', $since, '>')
-            ->condition('status', self::STATUS_HEALED)
-            ->countQuery()
-            ->execute()
-            ->fetchField();
+            ->condition('status', self::STATUS_HEALED);
+        if ($tenantId !== NULL) {
+            $healedQuery->condition('tenant_id', $tenantId);
+        }
+        $healed = $healedQuery->countQuery()->execute()->fetchField();
 
         $query = $this->database->select('self_healing_incidents', 'i')
             ->fields('i', ['failure_type'])
             ->condition('created', $since, '>')
             ->groupBy('failure_type');
         $query->addExpression('COUNT(*)', 'count');
+        if ($tenantId !== NULL) {
+            $query->condition('tenant_id', $tenantId);
+        }
 
         $byType = $query->execute()->fetchAllKeyed();
 
@@ -411,21 +433,34 @@ class SelfHealingService
             'auto_healed' => (int) $healed,
             'healing_rate' => $total > 0 ? round(($healed / $total) * 100, 1) : 0,
             'by_failure_type' => $byType,
-            'mttr_minutes' => $this->calculateMTTR($since),
+            'mttr_minutes' => $this->calculateMTTR($since, $tenantId),
         ];
     }
 
     /**
      * Calcula MTTR (Mean Time To Recovery).
+     *
+     * @param int $since
+     *   Timestamp desde.
+     * @param int|null $tenantId
+     *   AUDIT-SEC-N14: Filtrar por tenant.
      */
-    protected function calculateMTTR(int $since): float
+    protected function calculateMTTR(int $since, ?int $tenantId = NULL): float
     {
+        $args = [':since' => $since];
+        $tenantFilter = '';
+        if ($tenantId !== NULL) {
+            $tenantFilter = 'AND tenant_id = :tenant_id';
+            $args[':tenant_id'] = $tenantId;
+        }
+
         $result = $this->database->query("
       SELECT AVG(resolved_at - created) / 60 as mttr
       FROM {self_healing_incidents}
       WHERE created > :since
         AND resolved_at IS NOT NULL
-    ", [':since' => $since])->fetchField();
+        {$tenantFilter}
+    ", $args)->fetchField();
 
         return round((float) $result, 1);
     }

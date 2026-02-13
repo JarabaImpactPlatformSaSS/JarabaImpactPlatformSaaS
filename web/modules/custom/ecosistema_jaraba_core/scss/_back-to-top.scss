@@ -1,0 +1,61 @@
+// =============================================================================
+// BACK TO TOP - Botón flotante "Volver arriba" para páginas admin
+// =============================================================================
+// Botón circular fijo en esquina inferior derecha.
+// Se muestra al hacer scroll > 400px.
+// =============================================================================
+
+@use 'variables' as *;
+
+.ej-back-to-top {
+    position: fixed;
+    bottom: $ej-spacing-xl;
+    right: $ej-spacing-xl;
+    z-index: $ej-z-index-fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: $ej-border-radius-full;
+    background: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+    color: $white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba($ej-color-corporate-fallback, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px);
+    transition: opacity $ej-transition-duration-normal $ej-transition-easing,
+        visibility $ej-transition-duration-normal $ej-transition-easing,
+        transform $ej-transition-duration-normal $ej-transition-easing,
+        background $ej-transition-duration-fast $ej-transition-easing,
+        box-shadow $ej-transition-duration-fast $ej-transition-easing;
+
+    &.is-visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    &:hover {
+        background: var(--ej-color-azul-profundo, #{$ej-color-azul-profundo-fallback});
+        box-shadow: 0 6px 20px rgba($ej-color-corporate-fallback, 0.4),
+            0 2px 6px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:focus {
+        outline: 2px solid var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        outline-offset: 3px;
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+}

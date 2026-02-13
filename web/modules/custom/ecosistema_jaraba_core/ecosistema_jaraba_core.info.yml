@@ -2,7 +2,7 @@ name: 'Ecosistema Jaraba Core'
 type: module
 description: 'Módulo core de Jaraba Impact Platform SaaS - Entidades Multi-tenant, Trazabilidad, Firma Digital, Agentes IA'
 package: Jaraba
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 php: 8.4
 
 dependencies:

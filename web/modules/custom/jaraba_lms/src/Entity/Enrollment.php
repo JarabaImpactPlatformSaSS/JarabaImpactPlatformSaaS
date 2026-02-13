@@ -228,9 +228,11 @@ class Enrollment extends ContentEntityBase implements EnrollmentInterface
                 'type' => 'entity_reference_label',
             ]);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('Tenant of the enrollment.'));
+        // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant of the enrollment.'))
+            ->setSetting('target_type', 'tenant');
 
         $fields['enrollment_type'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Enrollment type'))

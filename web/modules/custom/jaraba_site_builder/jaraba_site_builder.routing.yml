@@ -285,7 +285,7 @@ jaraba_site_builder.api.config_update:
   path: '/api/v1/site/config'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\SiteConfigApiController::updateConfig'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit site config'
 
@@ -332,13 +332,13 @@ jaraba_site_builder.api.header_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getHeader'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site config'
 
 jaraba_site_builder.api.header_update:
   path: '/api/v1/site/header'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::updateHeader'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit site config'
 
@@ -366,13 +366,13 @@ jaraba_site_builder.api.footer_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getFooter'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site config'
 
 jaraba_site_builder.api.footer_update:
   path: '/api/v1/site/footer'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::updateFooter'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit site config'
 
@@ -392,7 +392,7 @@ jaraba_site_builder.api.menus_list:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::listMenus'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site structure'
 
 jaraba_site_builder.api.menus_create:
   path: '/api/v1/site/menus'
@@ -408,7 +408,7 @@ jaraba_site_builder.api.menus_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getMenu'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site structure'
     id: '\d+'
 
 jaraba_site_builder.api.menus_delete:
@@ -426,7 +426,7 @@ jaraba_site_builder.api.menus_tree:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getMenuTree'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site structure'
     id: '\d+'
 
 jaraba_site_builder.api.menus_add_item:
@@ -475,7 +475,7 @@ jaraba_site_builder.api.breadcrumbs:
     _controller: '\Drupal\jaraba_site_builder\Controller\NavigationApiController::getBreadcrumbs'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view site structure'
     pageTreeId: '\d+'
 
 # =========================================================================
@@ -500,14 +500,14 @@ jaraba_site_builder.seo.config_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getSeoConfig'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage seo configuration'
     page_id: '\d+'
 
 jaraba_site_builder.seo.config_update:
   path: '/api/v1/seo/config/{page_id}'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateSeoConfig'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'manage seo configuration'
     page_id: '\d+'
@@ -535,7 +535,7 @@ jaraba_site_builder.seo.schema_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getSchema'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage seo configuration'
     page_id: '\d+'
 
 jaraba_site_builder.seo.hreflang_get:
@@ -544,14 +544,14 @@ jaraba_site_builder.seo.hreflang_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getHreflang'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage hreflang tags'
     page_id: '\d+'
 
 jaraba_site_builder.seo.hreflang_update:
   path: '/api/v1/seo/hreflang/{page_id}'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateHreflang'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'manage hreflang tags'
     page_id: '\d+'
@@ -562,14 +562,14 @@ jaraba_site_builder.seo.geo_get:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::getGeoTargeting'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage geo targeting'
     page_id: '\d+'
 
 jaraba_site_builder.seo.geo_update:
   path: '/api/v1/seo/geo/{page_id}'
   defaults:
     _controller: '\Drupal\jaraba_site_builder\Controller\SeoApiController::updateGeoTargeting'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'manage geo targeting'
     page_id: '\d+'

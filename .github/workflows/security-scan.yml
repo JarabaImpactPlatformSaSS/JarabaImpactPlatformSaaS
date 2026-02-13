@@ -113,7 +113,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          exit-code: '0'
+          # AUDIT-SEC-N10: exit-code 1 para fallar el build con vulnerabilidades.
+          exit-code: '1'
 
       - name: Upload Trivy SARIF to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
@@ -152,7 +153,8 @@ jobs:
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
-          target: ${{ secrets.STAGING_URL || 'https://staging.jaraba.io' }}
+          # AUDIT-SEC-N17: No exponer URL de staging como fallback.
+          target: ${{ secrets.STAGING_URL }}
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a -j'
           allow_issue_writing: false

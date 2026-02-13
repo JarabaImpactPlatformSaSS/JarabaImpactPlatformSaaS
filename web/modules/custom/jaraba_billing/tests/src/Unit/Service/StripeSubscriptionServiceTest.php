@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_billing\Unit\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\jaraba_billing\Service\StripeSubscriptionService;
 use Drupal\jaraba_billing\Service\TenantSubscriptionService;
 use Drupal\jaraba_foc\Service\StripeConnectService;
@@ -23,6 +24,7 @@ class StripeSubscriptionServiceTest extends UnitTestCase {
   protected $tenantSubscription;
   protected $entityTypeManager;
   protected $logger;
+  protected $lock;
   protected StripeSubscriptionService $service;
 
   /**
@@ -35,12 +37,15 @@ class StripeSubscriptionServiceTest extends UnitTestCase {
     $this->tenantSubscription = $this->createMock(TenantSubscriptionService::class);
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->lock = $this->createMock(LockBackendInterface::class);
+    $this->lock->method('acquire')->willReturn(TRUE);
 
     $this->service = new StripeSubscriptionService(
       $this->stripeConnect,
       $this->tenantSubscription,
       $this->entityTypeManager,
       $this->logger,
+      $this->lock,
     );
   }
 

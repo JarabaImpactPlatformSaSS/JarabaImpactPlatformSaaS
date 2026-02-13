@@ -198,8 +198,10 @@ class CandidateProfile extends ContentEntityBase implements CandidateProfileInte
             ->setSetting('target_type', 'user')
             ->addConstraint('UniqueField');
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'));
+        // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setSetting('target_type', 'tenant');
 
         // === Datos Personales ===
         $fields['first_name'] = BaseFieldDefinition::create('string')

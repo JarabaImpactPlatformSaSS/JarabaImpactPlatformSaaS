@@ -63,71 +63,100 @@
         {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
         <span>{% trans %}Volver{% endtrans %}</span>
       </a>
-      <h1 class="canvas-editor__title">{{ page.label() }}</h1>
+      <h1 class="canvas-editor__title" title="{{ page.label() }}">{{ page.label() }}</h1>
     </div>
 
     <div class="canvas-editor__toolbar-center">
 
-      {# Viewport Toggle — Sprint C3: 8 dispositivos + slider + rotación #}
-      <div class="canvas-editor__viewport-toggle" role="group" aria-label="{% trans %}Cambiar viewport{% endtrans %}">
-        {# Grupo Desktop #}
-        <div class="canvas-editor__viewport-group" data-group="desktop">
-          <button type="button" class="canvas-editor__viewport-btn is-active" data-viewport="desktop-xl" title="{% trans %}Escritorio XL{% endtrans %}">
+      {# Viewport Dropdown — Compacto: trigger + panel desplegable #}
+      <div class="canvas-editor__viewport-dropdown" role="group" aria-label="{% trans %}Cambiar viewport{% endtrans %}">
+        {# Trigger: muestra viewport activo + ancho #}
+        <button type="button" class="canvas-editor__viewport-trigger" id="viewport-dropdown-trigger"
+                title="{% trans %}Cambiar resolución{% endtrans %}" aria-expanded="false" aria-haspopup="true">
+          <span class="canvas-editor__viewport-trigger-icon" id="viewport-trigger-icon">
             {{ jaraba_icon('ui', 'monitor', { size: '18px' }) }}
-          </button>
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="desktop" title="{% trans %}Escritorio{% endtrans %} (1280px)">
-            {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
-          </button>
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="laptop" title="{% trans %}Portátil{% endtrans %} (1024px)">
-            {{ jaraba_icon('ui', 'laptop', { size: '18px' }) }}
-          </button>
-        </div>
+          </span>
+          <span class="canvas-editor__viewport-trigger-label" id="viewport-trigger-label">1920px</span>
+          <svg class="canvas-editor__viewport-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
 
-        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
+        {# Panel desplegable #}
+        <div class="canvas-editor__viewport-panel" id="viewport-dropdown-panel" aria-hidden="true">
+          {# Grupo Desktop #}
+          <div class="canvas-editor__viewport-panel-group">
+            <span class="canvas-editor__viewport-panel-label">{% trans %}Escritorio{% endtrans %}</span>
+            <div class="canvas-editor__viewport-panel-buttons">
+              <button type="button" class="canvas-editor__viewport-btn is-active" data-viewport="desktop-xl" title="{% trans %}Escritorio XL{% endtrans %} (1920px)">
+                {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
+                <span>XL</span>
+              </button>
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="desktop" title="{% trans %}Escritorio{% endtrans %} (1280px)">
+                {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
+                <span>1280</span>
+              </button>
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="laptop" title="{% trans %}Portátil{% endtrans %} (1024px)">
+                {{ jaraba_icon('ui', 'laptop', { size: '16px' }) }}
+                <span>1024</span>
+              </button>
+            </div>
+          </div>
 
-        {# Grupo Tablet #}
-        <div class="canvas-editor__viewport-group" data-group="tablet">
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet-landscape" title="{% trans %}Tablet horizontal{% endtrans %} (1024×768)">
-            {{ jaraba_icon('ui', 'tablet', { size: '18px' }) }}
-          </button>
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet" title="{% trans %}Tablet{% endtrans %} (768px)">
-            {{ jaraba_icon('ui', 'tablet', { size: '16px' }) }}
-          </button>
-        </div>
+          {# Grupo Tablet #}
+          <div class="canvas-editor__viewport-panel-group">
+            <span class="canvas-editor__viewport-panel-label">{% trans %}Tablet{% endtrans %}</span>
+            <div class="canvas-editor__viewport-panel-buttons">
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet-landscape" title="{% trans %}Tablet horizontal{% endtrans %} (1024×768)">
+                {{ jaraba_icon('ui', 'tablet', { size: '16px' }) }}
+                <span>H</span>
+              </button>
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="tablet" title="{% trans %}Tablet{% endtrans %} (768px)">
+                {{ jaraba_icon('ui', 'tablet', { size: '16px' }) }}
+                <span>768</span>
+              </button>
+            </div>
+          </div>
 
-        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
+          {# Grupo Mobile #}
+          <div class="canvas-editor__viewport-panel-group">
+            <span class="canvas-editor__viewport-panel-label">{% trans %}Móvil{% endtrans %}</span>
+            <div class="canvas-editor__viewport-panel-buttons">
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-lg" title="{% trans %}Móvil grande{% endtrans %} (428px)">
+                {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
+                <span>428</span>
+              </button>
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile" title="{% trans %}Móvil{% endtrans %} (375px)">
+                {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
+                <span>375</span>
+              </button>
+              <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-sm" title="{% trans %}Móvil pequeño{% endtrans %} (320px)">
+                {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
+                <span>320</span>
+              </button>
+            </div>
+          </div>
 
-        {# Grupo Mobile #}
-        <div class="canvas-editor__viewport-group" data-group="mobile">
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-lg" title="{% trans %}Móvil grande{% endtrans %} (428px)">
-            {{ jaraba_icon('ui', 'smartphone', { size: '18px' }) }}
-          </button>
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile" title="{% trans %}Móvil{% endtrans %} (375px)">
-            {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
-          </button>
-          <button type="button" class="canvas-editor__viewport-btn" data-viewport="mobile-sm" title="{% trans %}Móvil pequeño{% endtrans %} (320px)">
-            {{ jaraba_icon('ui', 'smartphone', { size: '14px' }) }}
-          </button>
-        </div>
-
-        <div class="canvas-editor__viewport-separator" aria-hidden="true"></div>
-
-        {# Ancho personalizado + Rotación #}
-        <div class="canvas-editor__viewport-custom">
-          <input type="range"
-                 id="viewport-custom-width"
-                 class="canvas-editor__viewport-slider"
-                 min="320" max="1920" value="1920" step="1"
-                 aria-label="{% trans %}Ancho personalizado{% endtrans %}" />
-          <output for="viewport-custom-width"
-                  class="canvas-editor__viewport-value"
-                  id="viewport-custom-value">1920px</output>
-          <button type="button"
-                  class="canvas-editor__viewport-btn canvas-editor__viewport-btn--rotate"
-                  id="viewport-rotate-btn"
-                  title="{% trans %}Rotar orientación{% endtrans %}">
-            {{ jaraba_icon('ui', 'rotate-ccw', { size: '16px' }) }}
-          </button>
+          {# Slider personalizado + Rotación #}
+          <div class="canvas-editor__viewport-panel-custom">
+            <label class="canvas-editor__viewport-panel-label" for="viewport-custom-width">{% trans %}Personalizado{% endtrans %}</label>
+            <div class="canvas-editor__viewport-panel-slider-row">
+              <input type="range"
+                     id="viewport-custom-width"
+                     class="canvas-editor__viewport-slider"
+                     min="320" max="1920" value="1920" step="1"
+                     aria-label="{% trans %}Ancho personalizado{% endtrans %}" />
+              <output for="viewport-custom-width"
+                      class="canvas-editor__viewport-value"
+                      id="viewport-custom-value">1920px</output>
+              <button type="button"
+                      class="canvas-editor__viewport-btn canvas-editor__viewport-btn--rotate"
+                      id="viewport-rotate-btn"
+                      title="{% trans %}Rotar orientación{% endtrans %}">
+                {{ jaraba_icon('ui', 'rotate-ccw', { size: '14px' }) }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -159,36 +188,23 @@
           </button>
         </div>
 
-      {# Template Marketplace — Sprint C1: Abre slide-panel con catálogo de templates #}
+      {# Sugerencias SEO con IA — Sprint C4.1 #}
         <button type="button"
-                class="canvas-editor__btn canvas-editor__btn--secondary"
-                id="marketplace-toggle-btn"
-                title="{% trans %}Template Marketplace{% endtrans %}"
-                aria-label="{% trans %}Abrir catálogo de plantillas{% endtrans %}"
-                aria-pressed="false">
-          {{ jaraba_icon('ui', 'layout-template', { variant: 'duotone', size: '18px' }) }}
-          <span>{% trans %}Plantillas{% endtrans %}</span>
-        </button>
-
-      {# Sugerencias SEO con IA — Sprint C4.1: Analiza el canvas y sugiere mejoras SEO #}
-        <button type="button"
-                class="canvas-editor__btn canvas-editor__btn--secondary"
+                class="canvas-editor__btn canvas-editor__btn--icon"
                 id="seo-ai-suggest-btn"
                 title="{% trans %}Sugerencias SEO con IA{% endtrans %}"
                 aria-label="{% trans %}Analizar SEO del contenido actual con IA{% endtrans %}">
-          🤖
-          <span>{% trans %}SEO IA{% endtrans %}</span>
+          {{ jaraba_icon('ui', 'sparkles', { size: '18px' }) }}
         </button>
 
-      {# SEO Toggle - Botón para abrir/cerrar panel de auditoría SEO #}
-        <button type="button" 
-                class="canvas-editor__seo-toggle" 
+      {# SEO Toggle #}
+        <button type="button"
+                class="canvas-editor__btn canvas-editor__btn--icon"
                 id="seo-panel-toggle"
                 title="{% trans %}Auditoría SEO{% endtrans %}"
                 aria-pressed="false"
                 aria-controls="gjs-seo-panel">
           {{ jaraba_icon('ui', 'search', { variant: 'duotone', size: '18px' }) }}
-          <span>{% trans %}SEO{% endtrans %}</span>
         </button>
     </div>
 
@@ -204,20 +220,20 @@
         } only %}
       {% endif %}
 
-      {# Botón ⚙ Página — Abre slide-panel de configuración de página #}
+      {# Botón ⚙ Página — icon-only para ahorrar espacio #}
       <button type="button"
-              class="canvas-editor__btn canvas-editor__btn--secondary"
+              class="canvas-editor__btn canvas-editor__btn--icon"
               id="page-config-toggle-btn"
               title="{% trans %}Configuración de Página{% endtrans %}"
               aria-label="{% trans %}Configuración de Página{% endtrans %}">
         {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '18px' }) }}
-        <span>{% trans %}Página{% endtrans %}</span>
       </button>
 
-      <button type="button" class="canvas-editor__btn canvas-editor__btn--secondary" id="canvas-preview-btn">
+      <button type="button" class="canvas-editor__btn canvas-editor__btn--icon" id="canvas-preview-btn"
+              title="{% trans %}Vista previa{% endtrans %}" aria-label="{% trans %}Vista previa{% endtrans %}">
         {{ jaraba_icon('ui', 'eye', { size: '18px' }) }}
-        <span>{% trans %}Vista previa{% endtrans %}</span>
       </button>
+      <div class="canvas-editor__toolbar-separator"></div>
       <button type="button" class="canvas-editor__btn canvas-editor__btn--primary" id="canvas-save-btn">
         {{ jaraba_icon('ui', 'save', { size: '18px' }) }}
         <span>{% trans %}Guardar{% endtrans %}</span>
@@ -337,24 +353,25 @@
            Estructura completa con paneles laterales y canvas central.
            ============================================================ #}
         <div class="jaraba-grapesjs-layout">
-          {# Panel izquierdo: Bloques disponibles #}
+          {# Panel izquierdo: Plantillas + Bloques disponibles #}
           <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--left" id="gjs-blocks-panel">
             {# Fondo de partículas animadas #}
             <div class="jaraba-grapesjs-panel__particles" id="gjs-panel-particles"></div>
-            
-            <div class="jaraba-grapesjs-panel__header">
-              <h3>{% trans %}Bloques{% endtrans %}</h3>
+
+            {# Tab switcher: Plantillas / Bloques #}
+            <div class="jaraba-grapesjs-panel__tabs" id="gjs-left-panel-tabs">
+              <button type="button" class="jaraba-grapesjs-panel__tab is-active" data-left-panel="blocks">
+                {{ jaraba_icon('ui', 'layout-grid', { size: '14px' }) }}
+                {% trans %}Bloques{% endtrans %}
+              </button>
+              <button type="button" class="jaraba-grapesjs-panel__tab" data-left-panel="templates">
+                {{ jaraba_icon('ui', 'layout-template', { size: '14px' }) }}
+                {% trans %}Plantillas{% endtrans %}
+              </button>
             </div>
-            
-            {# Botón de acceso a galería completa de templates #}
-            <a href="{{ path('jaraba_page_builder.template_picker') }}" 
-               class="jaraba-grapesjs-panel__gallery-link" 
-               target="_blank"
-               title="{% trans %}Ver galería completa de plantillas{% endtrans %}">
-              {{ jaraba_icon('ui', 'layout-grid', { size: '16px' }) }}
-              <span>{% trans %}Ver Galería de Plantillas{% endtrans %}</span>
-              {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
-            </a>
+
+            {# Contenido: Bloques (visible por defecto) #}
+            <div class="jaraba-grapesjs-panel__section" id="gjs-blocks-section">
 
             {# Issue 3: Buscador de bloques #}
             <div class="jaraba-grapesjs-panel__search">
@@ -372,10 +389,43 @@
             </div>
             
             <div id="gjs-blocks-container" class="jaraba-grapesjs-panel__content"></div>
-          </div>
+            </div>{# /gjs-blocks-section #}
+
+            {# Contenido: Plantillas (oculto por defecto) #}
+            <div class="jaraba-grapesjs-panel__section" id="gjs-templates-section" hidden>
+              <div class="jaraba-grapesjs-panel__search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" class="jaraba-grapesjs-panel__search-icon" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search"
+                       id="gjs-templates-search"
+                       class="jaraba-grapesjs-panel__search-input"
+                       placeholder="{% trans %}Buscar plantillas...{% endtrans %}"
+                       autocomplete="off" />
+              </div>
+              <div id="gjs-templates-container" class="jaraba-grapesjs-panel__content">
+                <p class="jaraba-grapesjs-panel__placeholder">{% trans %}Cargando plantillas...{% endtrans %}</p>
+              </div>
+              <a href="{{ path('jaraba_page_builder.template_picker') }}"
+                 class="jaraba-grapesjs-panel__gallery-link"
+                 target="_blank"
+                 title="{% trans %}Ver galería completa de plantillas{% endtrans %}">
+                {{ jaraba_icon('ui', 'external-link', { size: '14px' }) }}
+                <span>{% trans %}Galería completa{% endtrans %}</span>
+              </a>
+            </div>{# /gjs-templates-section #}
+          </div>{# /gjs-blocks-panel #}
 
           {# Canvas central: Área de edición GrapesJS #}
           <div class="jaraba-grapesjs-canvas-wrapper">
+            {# Loading skeleton — se oculta cuando GrapesJS dispara 'load' #}
+            <div id="gjs-loading-skeleton" class="jaraba-grapesjs-loading">
+              <div class="jaraba-grapesjs-loading__spinner"></div>
+              <p class="jaraba-grapesjs-loading__text" id="gjs-loading-step">{% trans %}Inicializando editor...{% endtrans %}</p>
+            </div>
             <div id="gjs-editor" class="jaraba-grapesjs-container">
               {# GrapesJS se inicializa aquí vía JS #}
             </div>

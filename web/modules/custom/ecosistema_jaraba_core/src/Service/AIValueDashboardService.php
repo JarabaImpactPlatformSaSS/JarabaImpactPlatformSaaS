@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
 
 /**
@@ -45,6 +46,7 @@ class AIValueDashboardService
      */
     public function __construct(
         protected Connection $database,
+        protected CacheBackendInterface $cache,
     ) {
     }
 
@@ -81,6 +83,13 @@ class AIValueDashboardService
     {
         $period = $period ?? date('Y-m');
 
+        // AUDIT-PERF-N08: Cache 5 min para valor total por tenant/período.
+        $cacheKey = "ej_core:ai_total_value:{$tenantId}:{$period}";
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $query = $this->database->select('ai_value_tracking', 'avt')
             ->fields('avt', ['value_type'])
             ->condition('tenant_id', $tenantId)
@@ -103,13 +112,17 @@ class AIValueDashboardService
             $totalValue += (float) $row->value_total;
         }
 
-        return [
+        $result = [
             'tenant_id' => $tenantId,
             'period' => $period,
             'total_value' => round($totalValue, 2),
             'breakdown' => $breakdown,
             'roi' => $this->calculateROI($tenantId, $totalValue),
         ];
+
+        $this->cache->set($cacheKey, $result, time() + 300);
+
+        return $result;
     }
 
     /**
@@ -233,6 +246,13 @@ class AIValueDashboardService
      */
     public function getExecutiveSummary(string $tenantId): array
     {
+        // AUDIT-PERF-N08: Cache 10 min para resumen ejecutivo.
+        $cacheKey = "ej_core:ai_value_summary:{$tenantId}";
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $currentValue = $this->getTotalValue($tenantId);
         $trends = $this->getValueTrends($tenantId, 3);
         $topAgents = array_slice($this->getValueByAgent($tenantId), 0, 3, TRUE);
@@ -242,7 +262,7 @@ class AIValueDashboardService
             ? round(array_sum(array_column($trendValues, 'growth_percent')) / count($trendValues), 1)
             : 0;
 
-        return [
+        $summary = [
             'headline' => [
                 'total_value' => $currentValue['total_value'],
                 'roi' => $currentValue['roi'],
@@ -253,6 +273,10 @@ class AIValueDashboardService
             'avg_monthly_growth' => $avgGrowth,
             'recommendation' => $this->getRecommendation($currentValue, $avgGrowth),
         ];
+
+        $this->cache->set($cacheKey, $summary, time() + 600);
+
+        return $summary;
     }
 
     /**

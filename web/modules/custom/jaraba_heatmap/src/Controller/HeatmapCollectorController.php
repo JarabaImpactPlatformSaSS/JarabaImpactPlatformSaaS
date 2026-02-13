@@ -3,6 +3,7 @@
 namespace Drupal\jaraba_heatmap\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,14 +33,22 @@ class HeatmapCollectorController extends ControllerBase
     protected $collector;
 
     /**
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+     */
+    protected $tenantContext;
+
+    /**
      * Constructor.
      *
      * @param \Drupal\jaraba_heatmap\Service\HeatmapCollectorService $collector
      *   Servicio de recolección de eventos.
+     * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext
+     *   Servicio de contexto de tenant.
      */
-    public function __construct(HeatmapCollectorService $collector)
+    public function __construct(HeatmapCollectorService $collector, TenantContextService $tenantContext)
     {
         $this->collector = $collector;
+        $this->tenantContext = $tenantContext;
     }
 
     /**
@@ -48,7 +57,8 @@ class HeatmapCollectorController extends ControllerBase
     public static function create(ContainerInterface $container)
     {
         return new static(
-            $container->get('jaraba_heatmap.collector')
+            $container->get('jaraba_heatmap.collector'),
+            $container->get('ecosistema_jaraba_core.tenant_context')
         );
     }
 
@@ -79,12 +89,20 @@ class HeatmapCollectorController extends ControllerBase
         }
 
         // Validar campos requeridos del payload.
-        $required = ['tenant_id', 'session_id', 'page'];
+        $required = ['session_id', 'page'];
         foreach ($required as $field) {
             if (empty($payload[$field])) {
                 return new Response('', 400);
             }
         }
+
+        // AUDIT-SEC-N06: Resolver tenant_id desde el contexto del servidor,
+        // NO confiar en el valor enviado por el cliente.
+        $tenantId = $this->tenantContext->getCurrentTenantId();
+        if (!$tenantId) {
+            return new Response('', 403);
+        }
+        $payload['tenant_id'] = $tenantId;
 
         // Procesar eventos via servicio (patrón Thin Controller).
         try {

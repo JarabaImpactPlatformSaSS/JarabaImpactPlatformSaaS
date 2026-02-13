@@ -90,6 +90,7 @@
          */
         setViewport(viewport) {
             const width = VIEWPORTS[viewport] || VIEWPORTS.desktop;
+            if (!this.canvasWrapper) return;
             this.canvasWrapper.style.maxWidth = width;
             this.canvasWrapper.classList.toggle('canvas-editor__canvas-wrapper--mobile', viewport === 'mobile');
             this.canvasWrapper.classList.toggle('canvas-editor__canvas-wrapper--tablet', viewport === 'tablet');

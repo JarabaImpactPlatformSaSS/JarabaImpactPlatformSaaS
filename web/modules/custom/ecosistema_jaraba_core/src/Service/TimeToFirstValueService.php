@@ -275,30 +275,49 @@ class TimeToFirstValueService
 
     /**
      * Obtiene métricas agregadas de TTFV para el dashboard.
+     *
+     * @param int|null $tenantId
+     *   AUDIT-SEC-N13: ID del tenant para filtrar métricas.
+     *   NULL retorna solo métricas del tenant actual.
      */
-    public function getAggregateTTFVMetrics(): array
+    public function getAggregateTTFVMetrics(?int $tenantId = NULL): array
     {
+        // AUDIT-SEC-N13: Resolver tenant desde contexto si no se proporciona.
+        if ($tenantId === NULL) {
+            $tenantId = $this->currentUser->id() > 0
+                ? (int) (\Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId() ?? 0)
+                : 0;
+        }
+
         // Promedios de TTFV por evento (últimos 30 días).
         $thirtyDaysAgo = time() - (30 * 24 * 60 * 60);
 
+        $args = [':since' => $thirtyDaysAgo];
+        $tenantFilter = '';
+        if ($tenantId > 0) {
+            $tenantFilter = 'AND e.tenant_id = :tenant_id';
+            $args[':tenant_id'] = $tenantId;
+        }
+
         $results = $this->database->query("
-      SELECT 
+      SELECT
         event,
         AVG(minutes_to_event) as avg_minutes,
         COUNT(*) as count
       FROM (
-        SELECT 
+        SELECT
           e.event,
           (e.created - s.created) / 60 as minutes_to_event
         FROM {ttfv_events} e
-        INNER JOIN {ttfv_events} s 
-          ON e.tenant_id = s.tenant_id 
+        INNER JOIN {ttfv_events} s
+          ON e.tenant_id = s.tenant_id
           AND s.event = 'signup'
         WHERE e.created > :since
           AND e.event != 'signup'
+          {$tenantFilter}
       ) subquery
       GROUP BY event
-    ", [':since' => $thirtyDaysAgo])->fetchAll();
+    ", $args)->fetchAll();
 
         $metrics = [];
         foreach ($results as $row) {

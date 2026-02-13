@@ -10,19 +10,28 @@ use Drupal\group\GroupMembershipLoaderInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Servicio de contexto multi-tenant para la Knowledge Base.
+ * Servicio de filtrado multi-tenant para búsquedas RAG en Qdrant.
  *
- * Este servicio extrae el contexto del tenant actual basándose en
- * la membresía de grupo del usuario, y genera los filtros necesarios
- * para aislar las búsquedas en Qdrant.
+ * AUDIT-CONS-002: Renombrado de TenantContextService a RagTenantFilterService
+ * para eliminar la colisión de nombres con el TenantContextService canónico
+ * de ecosistema_jaraba_core. Este servicio es específico de RAG/Qdrant y NO
+ * duplica la funcionalidad del servicio core.
+ *
+ * Responsabilidades:
+ * - Extraer contexto del tenant basándose en membresía de grupo (Group Module)
+ * - Generar filtros de aislamiento para búsquedas vectoriales en Qdrant
+ * - Implementar cascada de visibilidad: tenant > plan > vertical > plataforma
+ *
+ * Para resolución de Tenant entity y métricas de uso, usar:
+ * @see \Drupal\ecosistema_jaraba_core\Service\TenantContextService
  *
  * @see docs/tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md (Sección 6)
  */
-class TenantContextService
+class RagTenantFilterService
 {
 
     /**
-     * Constructs a TenantContextService object.
+     * Constructs a RagTenantFilterService object.
      */
     public function __construct(
         protected GroupMembershipLoaderInterface $membershipLoader,

@@ -127,20 +127,12 @@ function jaraba_analytics_cron() {
     return;
   }
 
-  // Ejecutar agregación.
-  try {
-    /** @var \Drupal\jaraba_analytics\Service\AnalyticsAggregatorService $aggregator */
-    $aggregator = \Drupal::service('jaraba_analytics.analytics_aggregator');
-    $aggregator->aggregateDailyMetrics();
+  // AUDIT-PERF-N11: Queue aggregation instead of processing synchronously.
+  $queue = \Drupal::queue('jaraba_analytics_daily_aggregation');
+  $queue->createItem(['date' => date('Y-m-d', strtotime('-1 day'))]);
 
-    // Marcar como ejecutado.
-    $state->set('jaraba_analytics.last_aggregation', time());
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_analytics')->error('Cron aggregation failed: @message', [
-      '@message' => $e->getMessage(),
-    ]);
-  }
+  // Marcar como ejecutado para evitar duplicados.
+  $state->set('jaraba_analytics.last_aggregation', time());
 }
 
 /**

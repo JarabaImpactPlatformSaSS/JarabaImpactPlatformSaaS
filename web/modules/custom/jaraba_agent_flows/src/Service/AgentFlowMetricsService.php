@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agent_flows\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_agent_flows\Entity\AgentFlowExecution;
 use Psr\Log\LoggerInterface;
@@ -35,6 +36,7 @@ class AgentFlowMetricsService {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected CacheBackendInterface $cache,
   ) {
   }
 
@@ -158,6 +160,13 @@ class AgentFlowMetricsService {
    *   avg_duration, success_rate, executions_today, top_flows.
    */
   public function getDashboardMetrics(?int $tenantId = NULL): array {
+    // AUDIT-PERF-N08: Cache 5 min — evita 6+ entity queries.
+    $cacheKey = 'jaraba_agent_flows:dashboard:' . ($tenantId ?? 'global');
+    $cached = $this->cache->get($cacheKey);
+    if ($cached) {
+      return $cached->data;
+    }
+
     try {
       $flowStorage = $this->entityTypeManager->getStorage('agent_flow');
       $executionStorage = $this->entityTypeManager->getStorage('agent_flow_execution');
@@ -215,7 +224,7 @@ class AgentFlowMetricsService {
         ? round(($successfulExecutions / $totalExecutions) * 100, 2)
         : 0.0;
 
-      return [
+      $metrics = [
         'total_flows' => $totalFlows,
         'active_flows' => $activeFlows,
         'total_executions' => $totalExecutions,
@@ -223,6 +232,10 @@ class AgentFlowMetricsService {
         'success_rate' => $successRate,
         'executions_today' => $executionsToday,
       ];
+
+      $this->cache->set($cacheKey, $metrics, time() + 300);
+
+      return $metrics;
     }
     catch (\Exception $e) {
       $this->logger->error('Error al obtener metricas del dashboard: @message', [

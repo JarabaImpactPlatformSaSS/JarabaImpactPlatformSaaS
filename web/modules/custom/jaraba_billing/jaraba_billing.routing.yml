@@ -75,7 +75,7 @@ jaraba_billing.api.subscription.change_plan:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::changePlan'
   requirements:
     _permission: 'manage subscriptions'
-  methods: [PUT]
+  methods: [PATCH]
 
 jaraba_billing.api.subscription.cancel:
   path: '/api/v1/billing/subscription'
@@ -157,7 +157,7 @@ jaraba_billing.api.customer.update:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::updateCustomer'
   requirements:
     _permission: 'manage billing customers'
-  methods: [PUT]
+  methods: [PATCH]
 
 # =============================================
 # REST API — Usage Billing (spec 111 §5)

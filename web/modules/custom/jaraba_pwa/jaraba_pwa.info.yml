@@ -2,7 +2,7 @@ name: 'Jaraba PWA'
 type: module
 description: 'Progressive Web App capabilities: push notifications, offline support, background sync, and dynamic manifest generation.'
 package: Jaraba
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 php: 8.4
 
 dependencies:

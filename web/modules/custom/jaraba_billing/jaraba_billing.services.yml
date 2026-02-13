@@ -37,6 +37,7 @@ services:
     class: Drupal\jaraba_billing\Service\TenantMeteringService
     arguments:
       - '@database'
+      - '@cache.default'
 
   # Motor de cálculo de precios basado en PricingRule
   jaraba_billing.pricing_engine:
@@ -83,14 +84,17 @@ services:
   # ===========================================
 
   # Gestión de clientes Stripe
+  # AUDIT-PERF-002: Inyección de @lock para prevenir race conditions.
   jaraba_billing.stripe_customer:
     class: Drupal\jaraba_billing\Service\StripeCustomerService
     arguments:
       - '@jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+      - '@lock'
 
   # Gestión de suscripciones Stripe
+  # AUDIT-PERF-002: Inyección de @lock para prevenir race conditions.
   jaraba_billing.stripe_subscription:
     class: Drupal\jaraba_billing\Service\StripeSubscriptionService
     arguments:
@@ -98,14 +102,17 @@ services:
       - '@jaraba_billing.tenant_subscription'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+      - '@lock'
 
   # Sincronización de facturas Stripe
+  # AUDIT-PERF-002: Inyección de @lock para prevenir race conditions.
   jaraba_billing.stripe_invoice:
     class: Drupal\jaraba_billing\Service\StripeInvoiceService
     arguments:
       - '@jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+      - '@lock'
 
   # ===========================================
   # DUNNING + FEATURE ACCESS — Servicios de clase mundial

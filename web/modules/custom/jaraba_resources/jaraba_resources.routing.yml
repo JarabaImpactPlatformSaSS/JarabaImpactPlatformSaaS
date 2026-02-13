@@ -70,7 +70,7 @@ jaraba_resources.api.subscription.get:
     _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::getSubscription'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view membership plans'
   options:
     _format: json
 
@@ -90,7 +90,7 @@ jaraba_resources.api.subscription.cancel:
     _controller: '\Drupal\jaraba_resources\Controller\ResourceApiController::cancelSubscription'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'subscribe to plans'
   options:
     _format: json
 

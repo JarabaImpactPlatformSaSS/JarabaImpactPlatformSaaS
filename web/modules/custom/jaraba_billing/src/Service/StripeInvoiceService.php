@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\jaraba_foc\Service\StripeConnectService;
 use Psr\Log\LoggerInterface;
 
 /**
  * Sincroniza facturas Stripe con entidades BillingInvoice locales.
+ *
+ * AUDIT-PERF-002: Usa LockBackendInterface para prevenir race conditions
+ * en operaciones financieras concurrentes contra la API de Stripe.
  */
 class StripeInvoiceService {
 
@@ -17,6 +21,7 @@ class StripeInvoiceService {
     protected StripeConnectService $stripeConnect,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected LockBackendInterface $lock,
   ) {}
 
   /**
@@ -32,60 +37,73 @@ class StripeInvoiceService {
    */
   public function syncInvoice(array $stripeInvoice, ?int $tenantId = NULL): int {
     $stripeInvoiceId = $stripeInvoice['id'] ?? '';
-    $storage = $this->entityTypeManager->getStorage('billing_invoice');
 
-    // Resolver tenant_id desde metadata si no se proporciona.
-    if ($tenantId === NULL) {
-      $tenantId = (int) ($stripeInvoice['metadata']['tenant_id'] ?? 0);
+    // AUDIT-PERF-002: Lock por factura para prevenir creación duplicada de
+    // BillingInvoice cuando múltiples webhooks de Stripe llegan simultáneamente.
+    $lockId = 'jaraba_billing:invoice_sync:' . $stripeInvoiceId;
+    if (!$this->lock->acquire($lockId, 15)) {
+      throw new \RuntimeException('Invoice sync already in progress: ' . $stripeInvoiceId);
     }
 
-    // Buscar factura existente.
-    $existing = $storage->loadByProperties([
-      'stripe_invoice_id' => $stripeInvoiceId,
-    ]);
+    try {
+      $storage = $this->entityTypeManager->getStorage('billing_invoice');
 
-    $values = [
-      'tenant_id' => $tenantId ?: NULL,
-      'invoice_number' => $stripeInvoice['number'] ?? $stripeInvoiceId,
-      'stripe_invoice_id' => $stripeInvoiceId,
-      'status' => $this->mapStripeStatus($stripeInvoice['status'] ?? 'draft'),
-      'amount_due' => ($stripeInvoice['amount_due'] ?? 0) / 100,
-      'amount_paid' => ($stripeInvoice['amount_paid'] ?? 0) / 100,
-      'stripe_customer_id' => $stripeInvoice['customer'] ?? NULL,
-      'subtotal' => ($stripeInvoice['subtotal'] ?? 0) / 100,
-      'tax' => ($stripeInvoice['tax'] ?? 0) / 100,
-      'total' => ($stripeInvoice['total'] ?? 0) / 100,
-      'billing_reason' => $stripeInvoice['billing_reason'] ?? 'manual',
-      'lines' => json_encode($stripeInvoice['lines']['data'] ?? []),
-      'currency' => strtoupper($stripeInvoice['currency'] ?? 'EUR'),
-      'period_start' => $stripeInvoice['period_start'] ?? NULL,
-      'period_end' => $stripeInvoice['period_end'] ?? NULL,
-      'paid_at' => $stripeInvoice['status_transitions']['paid_at'] ?? NULL,
-      'pdf_url' => $stripeInvoice['invoice_pdf'] ?? NULL,
-      'hosted_invoice_url' => $stripeInvoice['hosted_invoice_url'] ?? NULL,
-      'metadata' => json_encode($stripeInvoice['metadata'] ?? []),
-    ];
-
-    // Handle due_date: Stripe sends as timestamp, entity expects datetime.
-    if (!empty($stripeInvoice['due_date'])) {
-      $values['due_date'] = date('Y-m-d\TH:i:s', (int) $stripeInvoice['due_date']);
-    }
-
-    if (!empty($existing)) {
-      $entity = reset($existing);
-      foreach ($values as $field => $value) {
-        $entity->set($field, $value);
+      // Resolver tenant_id desde metadata si no se proporciona.
+      if ($tenantId === NULL) {
+        $tenantId = (int) ($stripeInvoice['metadata']['tenant_id'] ?? 0);
       }
-      $entity->save();
-      $this->logger->info('Factura @id sincronizada (actualizada)', ['@id' => $stripeInvoiceId]);
-    }
-    else {
-      $entity = $storage->create($values);
-      $entity->save();
-      $this->logger->info('Factura @id sincronizada (creada)', ['@id' => $stripeInvoiceId]);
-    }
 
-    return (int) $entity->id();
+      // Buscar factura existente.
+      $existing = $storage->loadByProperties([
+        'stripe_invoice_id' => $stripeInvoiceId,
+      ]);
+
+      $values = [
+        'tenant_id' => $tenantId ?: NULL,
+        'invoice_number' => $stripeInvoice['number'] ?? $stripeInvoiceId,
+        'stripe_invoice_id' => $stripeInvoiceId,
+        'status' => $this->mapStripeStatus($stripeInvoice['status'] ?? 'draft'),
+        'amount_due' => ($stripeInvoice['amount_due'] ?? 0) / 100,
+        'amount_paid' => ($stripeInvoice['amount_paid'] ?? 0) / 100,
+        'stripe_customer_id' => $stripeInvoice['customer'] ?? NULL,
+        'subtotal' => ($stripeInvoice['subtotal'] ?? 0) / 100,
+        'tax' => ($stripeInvoice['tax'] ?? 0) / 100,
+        'total' => ($stripeInvoice['total'] ?? 0) / 100,
+        'billing_reason' => $stripeInvoice['billing_reason'] ?? 'manual',
+        'lines' => json_encode($stripeInvoice['lines']['data'] ?? []),
+        'currency' => strtoupper($stripeInvoice['currency'] ?? 'EUR'),
+        'period_start' => $stripeInvoice['period_start'] ?? NULL,
+        'period_end' => $stripeInvoice['period_end'] ?? NULL,
+        'paid_at' => $stripeInvoice['status_transitions']['paid_at'] ?? NULL,
+        'pdf_url' => $stripeInvoice['invoice_pdf'] ?? NULL,
+        'hosted_invoice_url' => $stripeInvoice['hosted_invoice_url'] ?? NULL,
+        'metadata' => json_encode($stripeInvoice['metadata'] ?? []),
+      ];
+
+      // Handle due_date: Stripe sends as timestamp, entity expects datetime.
+      if (!empty($stripeInvoice['due_date'])) {
+        $values['due_date'] = date('Y-m-d\TH:i:s', (int) $stripeInvoice['due_date']);
+      }
+
+      if (!empty($existing)) {
+        $entity = reset($existing);
+        foreach ($values as $field => $value) {
+          $entity->set($field, $value);
+        }
+        $entity->save();
+        $this->logger->info('Factura @id sincronizada (actualizada)', ['@id' => $stripeInvoiceId]);
+      }
+      else {
+        $entity = $storage->create($values);
+        $entity->save();
+        $this->logger->info('Factura @id sincronizada (creada)', ['@id' => $stripeInvoiceId]);
+      }
+
+      return (int) $entity->id();
+    }
+    finally {
+      $this->lock->release($lockId);
+    }
   }
 
   /**
@@ -132,7 +150,8 @@ class StripeInvoiceService {
    *   Factura anulada.
    */
   public function voidInvoice(string $invoiceId): array {
-    $result = $this->stripeConnect->stripeRequest('POST', '/invoices/' . $invoiceId . '/void');
+    $result = $this->stripeConnect->stripeRequest('POST', '/invoices/' . $invoiceId . '/void',
+      [], "void-invoice-{$invoiceId}");
 
     $this->logger->info('Factura @id anulada en Stripe', ['@id' => $invoiceId]);
 
@@ -176,7 +195,8 @@ class StripeInvoiceService {
     $result = $this->stripeConnect->stripeRequest(
       'POST',
       '/subscription_items/' . $subscriptionItemId . '/usage_records',
-      $params
+      $params,
+      "usage-{$subscriptionItemId}-{$quantity}-" . bin2hex(random_bytes(8))
     );
 
     $this->logger->info('Uso reportado: @qty para item @item', [
@@ -197,60 +217,73 @@ class StripeInvoiceService {
    *   Número de registros procesados.
    */
   public function flushUsageToStripe(): int {
-    $storage = $this->entityTypeManager->getStorage('billing_usage_record');
-
-    // Load unreported records (reported_at is NULL).
-    $query = $storage->getQuery()
-      ->accessCheck(FALSE)
-      ->notExists('reported_at')
-      ->exists('subscription_item_id')
-      ->sort('created', 'ASC');
-    $ids = $query->execute();
-
-    if (empty($ids)) {
+    // AUDIT-PERF-002: Lock global para prevenir que ejecuciones concurrentes
+    // de cron o flush manual reporten el mismo uso dos veces a Stripe.
+    $lockId = 'jaraba_billing:flush_usage';
+    if (!$this->lock->acquire($lockId, 60)) {
+      $this->logger->info('flushUsageToStripe omitido: otro proceso ya está reportando uso.');
       return 0;
     }
 
-    $records = $storage->loadMultiple($ids);
+    try {
+      $storage = $this->entityTypeManager->getStorage('billing_usage_record');
 
-    // Group by subscription_item_id.
-    $grouped = [];
-    foreach ($records as $record) {
-      $itemId = $record->get('subscription_item_id')->value;
-      if ($itemId) {
-        $grouped[$itemId][] = $record;
-      }
-    }
+      // Load unreported records (reported_at is NULL).
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->notExists('reported_at')
+        ->exists('subscription_item_id')
+        ->sort('created', 'ASC');
+      $ids = $query->execute();
 
-    $processed = 0;
-    foreach ($grouped as $subscriptionItemId => $itemRecords) {
-      $totalQuantity = 0;
-      foreach ($itemRecords as $record) {
-        $totalQuantity += (int) $record->get('quantity')->value;
+      if (empty($ids)) {
+        return 0;
       }
 
-      try {
-        $this->reportUsage($subscriptionItemId, $totalQuantity);
+      $records = $storage->loadMultiple($ids);
 
-        // Mark all records as reported.
-        $now = time();
+      // Group by subscription_item_id.
+      $grouped = [];
+      foreach ($records as $record) {
+        $itemId = $record->get('subscription_item_id')->value;
+        if ($itemId) {
+          $grouped[$itemId][] = $record;
+        }
+      }
+
+      $processed = 0;
+      foreach ($grouped as $subscriptionItemId => $itemRecords) {
+        $totalQuantity = 0;
         foreach ($itemRecords as $record) {
-          $record->set('reported_at', $now);
-          $record->save();
+          $totalQuantity += (int) $record->get('quantity')->value;
         }
 
-        $processed += count($itemRecords);
-      }
-      catch (\Exception $e) {
-        $this->logger->error('Error flushing usage to Stripe for item @item: @error', [
-          '@item' => $subscriptionItemId,
-          '@error' => $e->getMessage(),
-        ]);
-      }
-    }
+        try {
+          $this->reportUsage($subscriptionItemId, $totalQuantity);
 
-    $this->logger->info('Flushed @count usage records to Stripe', ['@count' => $processed]);
-    return $processed;
+          // Mark all records as reported.
+          $now = time();
+          foreach ($itemRecords as $record) {
+            $record->set('reported_at', $now);
+            $record->save();
+          }
+
+          $processed += count($itemRecords);
+        }
+        catch (\Exception $e) {
+          $this->logger->error('Error flushing usage to Stripe for item @item: @error', [
+            '@item' => $subscriptionItemId,
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
+
+      $this->logger->info('Flushed @count usage records to Stripe', ['@count' => $processed]);
+      return $processed;
+    }
+    finally {
+      $this->lock->release($lockId);
+    }
   }
 
   /**

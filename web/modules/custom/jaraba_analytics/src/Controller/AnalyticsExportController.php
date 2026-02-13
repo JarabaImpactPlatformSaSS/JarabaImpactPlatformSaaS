@@ -267,32 +267,32 @@ class AnalyticsExportController extends ControllerBase {
       $query->condition('ae.event_type', $params['metric_type']);
     }
 
-    // Limitar a 50.000 filas para evitar problemas de memoria.
+    // AUDIT-PERF-N06: Limitar filas y usar generator para no cargar todo en memoria.
     $query->range(0, 50000);
 
     $result = $query->execute();
-    $rows = [];
 
-    foreach ($result as $row) {
-      $rows[] = [
-        'id' => $row->id,
-        'created' => date('Y-m-d H:i:s', (int) $row->created),
-        'event_type' => $row->event_type ?? '',
-        'page_url' => $row->page_url ?? '',
-        'device_type' => $row->device_type ?? '',
-        'browser' => $row->browser ?? '',
-        'os' => $row->os ?? '',
-        'country' => $row->country ?? '',
-        'region' => $row->region ?? '',
-        'utm_source' => $row->utm_source ?? '',
-        'utm_medium' => $row->utm_medium ?? '',
-        'utm_campaign' => $row->utm_campaign ?? '',
-        'referrer' => $row->referrer ?? '',
-        'session_id' => $row->session_id ?? '',
-      ];
-    }
-
-    return $rows;
+    // Yield fila por fila desde el cursor DB (memoria O(1) en lugar de O(N)).
+    return (function () use ($result) {
+      foreach ($result as $row) {
+        yield [
+          'id' => $row->id,
+          'created' => date('Y-m-d H:i:s', (int) $row->created),
+          'event_type' => $row->event_type ?? '',
+          'page_url' => $row->page_url ?? '',
+          'device_type' => $row->device_type ?? '',
+          'browser' => $row->browser ?? '',
+          'os' => $row->os ?? '',
+          'country' => $row->country ?? '',
+          'region' => $row->region ?? '',
+          'utm_source' => $row->utm_source ?? '',
+          'utm_medium' => $row->utm_medium ?? '',
+          'utm_campaign' => $row->utm_campaign ?? '',
+          'referrer' => $row->referrer ?? '',
+          'session_id' => $row->session_id ?? '',
+        ];
+      }
+    })();
   }
 
   /**
@@ -306,7 +306,7 @@ class AnalyticsExportController extends ControllerBase {
    * @return string
    *   Contenido CSV completo como cadena.
    */
-  protected function buildCsvContent(array $rows, string $separator): string {
+  protected function buildCsvContent(iterable $rows, string $separator): string {
     $output = fopen('php://temp', 'r+');
 
     // Escribir cabeceras.

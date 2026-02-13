@@ -119,18 +119,23 @@ class SocialPostService
     }
 
     /**
-     * Publica un post inmediatamente.
+     * Encola un post para publicación asíncrona.
+     *
+     * AUDIT-PERF-003: Las publicaciones se procesan vía QueueWorker, una
+     * plataforma por item. Esto evita bloquear la petición HTTP del usuario
+     * mientras se llaman APIs externas (Instagram requiere 2 llamadas, etc.).
      *
      * @param \Drupal\jaraba_social\Entity\SocialPost $post
      *   El post a publicar.
      *
      * @return array
-     *   Resultados por plataforma.
+     *   Plataformas encoladas.
      */
     public function publish(SocialPost $post): array
     {
-        $results = [];
+        $queued = [];
         $accounts = $post->get('accounts')->referencedEntities();
+        $queue = $this->queueFactory->get('social_publish');
 
         foreach ($accounts as $account) {
             /** @var \Drupal\jaraba_social\Entity\SocialAccount $account */
@@ -138,28 +143,34 @@ class SocialPostService
                 continue;
             }
 
-            $platform = $account->getPlatform();
-            $results[$platform] = $this->publishToPlatform($post, $account);
+            $queue->createItem([
+                'post_id' => (int) $post->id(),
+                'account_id' => (int) $account->id(),
+                'platform' => $account->getPlatform(),
+            ]);
+
+            $queued[] = $account->getPlatform();
         }
 
-        // Actualizar estado global.
-        $hasSuccess = array_filter($results, fn($r) => $r['success'] ?? FALSE);
-        if (!empty($hasSuccess)) {
-            $post->markPublished();
-        } else {
-            $post->markFailed();
-        }
-
-        $post->set('external_ids', $results);
+        // Marcar como "en cola" (scheduled → queued).
+        $post->set('status', SocialPost::STATUS_SCHEDULED);
         $post->save();
 
-        return $results;
+        $this->logger->info('Post @id enqueued for @count platforms: @platforms', [
+            '@id' => $post->id(),
+            '@count' => count($queued),
+            '@platforms' => implode(', ', $queued),
+        ]);
+
+        return $queued;
     }
 
     /**
      * Publica a una plataforma específica.
+     *
+     * Public para permitir invocación desde SocialPublishQueueWorker.
      */
-    protected function publishToPlatform(SocialPost $post, SocialAccount $account): array
+    public function publishToPlatform(SocialPost $post, SocialAccount $account): array
     {
         $platform = $account->getPlatform();
         $content = $post->getContent();
@@ -283,10 +294,13 @@ class SocialPostService
     }
 
     /**
-     * Procesa posts programados (para cron).
+     * Encola posts programados cuyo momento de publicación ha llegado.
+     *
+     * AUDIT-PERF-003: publish() ahora encola; processScheduled sigue
+     * siendo el entry point para cron.
      *
      * @return int
-     *   Número de posts procesados.
+     *   Número de posts encolados.
      */
     public function processScheduled(): int
     {

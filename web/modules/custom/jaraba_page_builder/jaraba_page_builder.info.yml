@@ -9,5 +9,7 @@ dependencies:
   - drupal:options
   - ecosistema_jaraba_core:ecosistema_jaraba_core
   - group:group
+  - jaraba_billing:jaraba_billing
+  - jaraba_site_builder:jaraba_site_builder
 
 configure: entity.page_template.collection

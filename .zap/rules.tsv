@@ -2,6 +2,10 @@
 # Format: rule_id	action	name
 # Actions: IGNORE, WARN, FAIL
 # Reference: https://www.zaproxy.org/docs/docker/baseline-scan/
-10003	WARN	Vulnerable JS Library
-10038	WARN	Content Security Policy (CSP) Header Not Set
-10098	WARN	Cross-Domain Misconfiguration
+# AUDIT-SEC-N09: Reglas críticas en FAIL, no WARN.
+10003	FAIL	Vulnerable JS Library
+10038	FAIL	Content Security Policy (CSP) Header Not Set
+10098	FAIL	Cross-Domain Misconfiguration
+10202	WARN	Absence of Anti-CSRF Tokens
+10049	WARN	Storable and Cacheable Content
+90033	WARN	Loosely Scoped Cookie

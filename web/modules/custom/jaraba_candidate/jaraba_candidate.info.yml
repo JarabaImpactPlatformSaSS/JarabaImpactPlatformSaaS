@@ -9,6 +9,8 @@ dependencies:
   - drupal:user
   - ecosistema_jaraba_core:ecosistema_jaraba_core
   - jaraba_lms:jaraba_lms
+  - jaraba_job_board:jaraba_job_board
+  - jaraba_ai_agents:jaraba_ai_agents
 
 # Entidades custom del módulo
 # - candidate_profile: Perfil profesional del candidato

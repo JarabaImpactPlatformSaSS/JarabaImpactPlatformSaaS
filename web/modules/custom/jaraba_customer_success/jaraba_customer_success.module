@@ -130,54 +130,10 @@ function jaraba_customer_success_theme(): array {
  * 3. Avanzar ejecuciones de playbooks pendientes.
  */
 function jaraba_customer_success_cron(): void {
-  // 1. Cálculo de health scores.
-  try {
-    /** @var \Drupal\jaraba_customer_success\Service\HealthScoreCalculatorService $calculator */
-    $calculator = \Drupal::service('jaraba_customer_success.health_calculator');
-    $processed = $calculator->runScheduledCalculation();
-    if ($processed > 0) {
-      \Drupal::logger('jaraba_customer_success')->info('Cron: @count health scores calculated.', [
-        '@count' => $processed,
-      ]);
-    }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_customer_success')->error('Cron health calculation error: @msg', [
-      '@msg' => $e->getMessage(),
-    ]);
-  }
+  // AUDIT-PERF-N11: Queue operations instead of processing synchronously.
+  $queue = \Drupal::queue('jaraba_customer_success_cron_worker');
 
-  // 2. Evaluar triggers de playbooks.
-  try {
-    /** @var \Drupal\jaraba_customer_success\Service\PlaybookExecutorService $executor */
-    $executor = \Drupal::service('jaraba_customer_success.playbook_executor');
-    $started = $executor->evaluateTriggers();
-    if ($started > 0) {
-      \Drupal::logger('jaraba_customer_success')->info('Cron: @count playbook executions started.', [
-        '@count' => $started,
-      ]);
-    }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_customer_success')->error('Cron playbook trigger error: @msg', [
-      '@msg' => $e->getMessage(),
-    ]);
-  }
-
-  // 3. Avanzar ejecuciones pendientes.
-  try {
-    /** @var \Drupal\jaraba_customer_success\Service\PlaybookExecutorService $executor */
-    $executor = \Drupal::service('jaraba_customer_success.playbook_executor');
-    $advanced = $executor->advancePendingExecutions();
-    if ($advanced > 0) {
-      \Drupal::logger('jaraba_customer_success')->info('Cron: @count playbook steps advanced.', [
-        '@count' => $advanced,
-      ]);
-    }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_customer_success')->error('Cron playbook advance error: @msg', [
-      '@msg' => $e->getMessage(),
-    ]);
-  }
+  $queue->createItem(['operation' => 'health_scores']);
+  $queue->createItem(['operation' => 'evaluate_triggers']);
+  $queue->createItem(['operation' => 'advance_executions']);
 }

@@ -567,7 +567,7 @@ jaraba_page_builder.api.sections.update:
   path: '/api/v1/pages/{page_content}/sections/{uuid}'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::update'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit page builder content'
     page_content: \d+
@@ -593,7 +593,7 @@ jaraba_page_builder.api.sections.reorder:
   path: '/api/v1/pages/{page_content}/sections/reorder'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\SectionApiController::reorder'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit page builder content'
     page_content: \d+

@@ -44,11 +44,11 @@ class AnalyticsEvent extends ContentEntityBase implements ContentEntityInterface
     {
         $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Tenant ID (multi-tenant isolation).
-        // Usamos integer simple para compatibilidad sin depender del módulo Group.
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('ID del tenant al que pertenece este evento.'))
+        // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant al que pertenece este evento.'))
+            ->setSetting('target_type', 'tenant')
             ->setRequired(FALSE);
 
         // Tipo de evento.

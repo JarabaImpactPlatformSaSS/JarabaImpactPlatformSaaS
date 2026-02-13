@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_foc\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -51,16 +52,23 @@ class SaasMetricsService
     protected LoggerInterface $logger;
 
     /**
+     * Cache backend.
+     */
+    protected CacheBackendInterface $cache;
+
+    /**
      * Constructor.
      */
     public function __construct(
         Connection $database,
         EntityTypeManagerInterface $entityTypeManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        CacheBackendInterface $cache
     ) {
         $this->database = $database;
         $this->entityTypeManager = $entityTypeManager;
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     /**
@@ -376,6 +384,12 @@ class SaasMetricsService
      */
     public function getMetricsSnapshot(): array
     {
+        $cacheKey = 'jaraba_foc:saas_metrics_snapshot';
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $mrr = $this->calculateMRR();
         $arr = $this->calculateARR();
         $nrr = $this->calculateNRR();
@@ -387,7 +401,7 @@ class SaasMetricsService
         $grossMargin = $this->calculateGrossMargin();
         $logoChurn = $this->calculateLogoChurn('month');
 
-        return [
+        $snapshot = [
             'timestamp' => date('c'),
             'mrr' => round($mrr, 2),
             'arr' => round($arr, 2),
@@ -402,6 +416,19 @@ class SaasMetricsService
             'active_customers' => $this->countActiveTenantsAtDate(date('Y-m-d')),
             'health_indicators' => $this->getHealthIndicators($mrr, $nrr, $ltvCacRatio, $grossMargin),
         ];
+
+        // AUDIT-PERF-N08: Cache 5 minutos para dashboard financiero.
+        $this->cache->set($cacheKey, $snapshot, $this->time() + 300);
+
+        return $snapshot;
+    }
+
+    /**
+     * Returns current timestamp for cache expiry calculation.
+     */
+    protected function time(): int
+    {
+        return \Drupal::time()->getRequestTime();
     }
 
     /**
