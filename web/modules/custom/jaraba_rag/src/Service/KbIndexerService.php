@@ -32,7 +32,7 @@ class KbIndexerService
     public function __construct(
         protected AiProviderPluginManager $aiProvider,
         protected QdrantDirectClient $qdrantClient,
-        protected TenantContextService $tenantContext,
+        protected RagTenantFilterService $tenantContext,
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerChannelFactoryInterface $loggerFactory,
         protected ConfigFactoryInterface $configFactory,

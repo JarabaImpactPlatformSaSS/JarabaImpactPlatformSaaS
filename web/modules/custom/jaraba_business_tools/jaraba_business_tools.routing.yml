@@ -396,6 +396,6 @@ jaraba_business_tools.api.agent_rating:
     _controller: '\Drupal\jaraba_business_tools\Controller\CanvasApiController::submitAgentRating'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 

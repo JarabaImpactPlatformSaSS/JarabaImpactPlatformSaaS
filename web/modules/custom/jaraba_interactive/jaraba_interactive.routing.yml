@@ -192,7 +192,7 @@ jaraba_interactive.api.content.update:
   path: '/api/v1/interactive/content/{interactive_content}'
   defaults:
     _controller: '\Drupal\jaraba_interactive\Controller\ApiController::update'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit any interactive content'
   options:
@@ -242,7 +242,7 @@ jaraba_interactive.api.xapi:
     _controller: '\Drupal\jaraba_interactive\Controller\ApiController::receiveXapi'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own interactive results'
 
 jaraba_interactive.api.generate:
   path: '/api/v1/interactive/generate'

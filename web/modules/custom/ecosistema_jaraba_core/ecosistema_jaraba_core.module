@@ -505,9 +505,31 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'admin-structure-overview',
       'path' => $path . '/templates',
     ],
+
+    // Página /admin/content con secciones categorizadas y búsqueda
+    'admin_content_overview' => [
+      'variables' => [
+        'categories' => [],
+        'total_items' => 0,
+      ],
+      'template' => 'admin-content-overview',
+      'path' => $path . '/templates',
+    ],
   ];
 
 
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adjunta la librería "back-to-top" en todas las páginas de administración.
+ */
+function ecosistema_jaraba_core_page_attachments(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteObject();
+  if ($route && \Drupal::service('router.admin_context')->isAdminRoute($route)) {
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/back-to-top';
+  }
 }
 
 /**
@@ -2305,6 +2327,75 @@ function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterfac
         '@error' => $e->getMessage(),
       ]
     );
+  }
+}
+
+// ===========================================================================
+// AUDIT-PERF-001 + AUDIT-CONS-001: ENTITY TYPE ALTER
+// ===========================================================================
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * Applies two global handlers to ALL content entities in the platform:
+ *
+ * 1. AUDIT-PERF-001 — TenantEntityStorageSchema: Adds DB indexes on
+ *    tenant_id + composite indexes (tenant+status, tenant+created,
+ *    tenant+user_id) for every entity with a tenant_id base field.
+ *
+ * 2. AUDIT-CONS-001 — TenantAccessControlHandler: Applies a generic
+ *    access handler to the 88 entities that don't define one, preventing
+ *    unauthorized CRUD operations.
+ *
+ * Both are applied via hook_entity_type_alter() so zero individual
+ * entity annotations need to change. Future entities are automatically
+ * covered.
+ */
+function ecosistema_jaraba_core_entity_type_alter(array &$entity_types): void {
+  $storageSchemaClass = 'Drupal\ecosistema_jaraba_core\Storage\TenantEntityStorageSchema';
+  $accessHandlerClass = 'Drupal\ecosistema_jaraba_core\Access\TenantAccessControlHandler';
+
+  // Our custom modules all live under this namespace prefix.
+  $customNamespaces = [
+    'Drupal\\ecosistema_jaraba_core\\',
+    'Drupal\\jaraba_',
+  ];
+
+  foreach ($entity_types as $entityTypeId => $entityType) {
+    // Only process content entity types from our custom modules.
+    if (!$entityType instanceof \Drupal\Core\Entity\ContentEntityTypeInterface) {
+      continue;
+    }
+
+    $entityClass = $entityType->getClass();
+    $isCustomModule = FALSE;
+    foreach ($customNamespaces as $ns) {
+      if (str_starts_with($entityClass, $ns)) {
+        $isCustomModule = TRUE;
+        break;
+      }
+    }
+
+    if (!$isCustomModule) {
+      continue;
+    }
+
+    // AUDIT-PERF-001: Override storage_schema for entities that use the
+    // default SqlContentEntityStorageSchema (don't override custom ones).
+    $currentSchema = $entityType->getHandlerClass('storage_schema');
+    if (
+      !$currentSchema
+      || $currentSchema === 'Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema'
+    ) {
+      $entityType->setHandlerClass('storage_schema', $storageSchemaClass);
+    }
+
+    // AUDIT-CONS-001: Add AccessControlHandler for entities that don't have
+    // one. Entities with explicit access handlers are left untouched.
+    $currentAccess = $entityType->getHandlerClass('access');
+    if (!$currentAccess) {
+      $entityType->setHandlerClass('access', $accessHandlerClass);
+    }
   }
 }
 

@@ -172,14 +172,14 @@ jaraba_customer_success.api.expansion_signals:
   options:
     _format: json
 
-# PUT /api/v1/expansion-signals/{expansion_signal}
+# PATCH /api/v1/expansion-signals/{expansion_signal}
 jaraba_customer_success.api.expansion_signal_update:
   path: '/api/v1/expansion-signals/{expansion_signal}'
   defaults:
     _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::updateExpansionSignal'
   requirements:
     _permission: 'manage expansion signals'
-  methods: [PUT]
+  methods: [PATCH]
   options:
     _format: json
     parameters:

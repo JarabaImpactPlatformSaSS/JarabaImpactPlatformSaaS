@@ -234,7 +234,7 @@ jaraba_mentoring.api.packages.purchase:
     _controller: 'Drupal\jaraba_mentoring\Controller\PackageApiController::purchase'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'book mentoring session'
     package_id: '\d+'
   options:
     _format: json
@@ -249,7 +249,7 @@ jaraba_mentoring.api.engagements.list:
     _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::list'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own engagements'
   options:
     _format: json
 
@@ -259,7 +259,7 @@ jaraba_mentoring.api.engagements.get:
     _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::get'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own engagements'
     engagement_id: '\d+'
   options:
     _format: json
@@ -270,7 +270,7 @@ jaraba_mentoring.api.engagements.terminate:
     _controller: 'Drupal\jaraba_mentoring\Controller\EngagementApiController::terminate'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage engagements'
     engagement_id: '\d+'
   options:
     _format: json

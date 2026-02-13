@@ -1353,3 +1353,93 @@ function ecosistema_jaraba_core_update_9013() {
     '@messages' => implode('. ', $messages),
   ]);
 }
+
+/**
+ * AUDIT-PERF-001: Add DB indexes on tenant_id and composite fields.
+ *
+ * Scans all database tables for a tenant_id column and adds:
+ *   - idx_tenant_id (tenant_id)
+ *   - idx_tenant_created (tenant_id, created) — if 'created' exists
+ *   - idx_tenant_status (tenant_id, status) — if 'status' exists
+ *   - idx_tenant_user (tenant_id, user_id) — if 'user_id' exists
+ *
+ * Skips indexes that already exist. Safe to re-run.
+ */
+function ecosistema_jaraba_core_update_9014(): string {
+  $connection = \Drupal::database();
+  $schema = $connection->schema();
+
+  // Discover all tables with a tenant_id column.
+  $allTables = $connection->query(
+    "SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND COLUMN_NAME = 'tenant_id'"
+  )->fetchCol();
+
+  $indexesAdded = 0;
+  $tablesProcessed = 0;
+  $errors = [];
+
+  // Define which composite columns to check.
+  $compositeColumns = [
+    'created' => 'idx_tenant_created',
+    'status' => 'idx_tenant_status',
+    'user_id' => 'idx_tenant_user',
+  ];
+
+  foreach ($allTables as $tableName) {
+    $tablesProcessed++;
+
+    // 1. Single index on tenant_id.
+    try {
+      if (!$schema->indexExists($tableName, 'idx_tenant_id')) {
+        $schema->addIndex($tableName, 'idx_tenant_id', ['tenant_id'], [
+          'fields' => [
+            'tenant_id' => [
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+            ],
+          ],
+        ]);
+        $indexesAdded++;
+      }
+    }
+    catch (\Exception $e) {
+      $errors[] = "$tableName:idx_tenant_id - " . $e->getMessage();
+    }
+
+    // 2. Composite indexes.
+    foreach ($compositeColumns as $column => $indexName) {
+      try {
+        if ($schema->fieldExists($tableName, $column) && !$schema->indexExists($tableName, $indexName)) {
+          $fieldSpec = [
+            'fields' => [
+              'tenant_id' => [
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+              ],
+              $column => [
+                'type' => $column === 'status' ? 'varchar' : 'int',
+                'not null' => FALSE,
+              ],
+            ],
+          ];
+          $schema->addIndex($tableName, $indexName, ['tenant_id', $column], $fieldSpec);
+          $indexesAdded++;
+        }
+      }
+      catch (\Exception $e) {
+        $errors[] = "$tableName:$indexName - " . $e->getMessage();
+      }
+    }
+  }
+
+  $summary = "AUDIT-PERF-001: $tablesProcessed tables scanned, $indexesAdded indexes added.";
+  if (!empty($errors)) {
+    $summary .= ' Errors (' . count($errors) . '): ' . implode('; ', array_slice($errors, 0, 5));
+  }
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice($summary);
+
+  return $summary;
+}

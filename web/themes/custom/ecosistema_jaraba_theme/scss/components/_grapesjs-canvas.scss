@@ -78,8 +78,8 @@
 .jaraba-grapesjs-layout {
     display: grid;
     grid-template-columns: 280px 1fr 350px;
-    // Ajustado para dejar espacio al header completo (~110px de altura)
-    height: calc(100vh - 110px);
+    // Altura dinámica basada en variable CSS inyectada por JS
+    height: calc(100vh - var(--jaraba-editor-toolbar-height, 110px));
     width: 100%;
     gap: 0;
     // Layout con fondo azul corporativo premium
@@ -87,7 +87,7 @@
 
     // Asegurar que ocupe todo el viewport sin cubrir el header
     position: absolute;
-    top: 110px; // Ajustado basado en análisis DOM: header termina en ~110px
+    top: var(--jaraba-editor-toolbar-height, 110px);
     left: 0;
     right: 0;
     bottom: 0;
@@ -110,6 +110,8 @@
     border-right: 1px solid color.change($ej-color-innovation, $alpha: 0.2);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 // Fondo de partículas animadas para panel izquierdo
@@ -266,6 +268,49 @@
     padding: $ej-spacing-md;
     position: relative;
     z-index: 1;
+
+    // Scrollbar premium delgado
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+    }
+}
+
+// Search input en paneles laterales
+.jaraba-grapesjs-panel__search-input {
+    width: 100%;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.8125rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--ej-color-impulse, $ej-color-impulse);
+    }
 }
 
 .jaraba-grapesjs-panel__tabs {
@@ -296,6 +341,112 @@
         color: var(--ej-color-primary, $ej-color-impulse);
         border-bottom: 2px solid var(--ej-color-primary, $ej-color-impulse);
     }
+}
+
+// Tabs del panel izquierdo (Bloques / Plantillas)
+.jaraba-grapesjs-panel__tab {
+    flex: 1;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    &.is-active {
+        color: #F8FAFC;
+        border-bottom-color: $ej-color-impulse;
+    }
+}
+
+// Sección togglable dentro del panel izquierdo
+.jaraba-grapesjs-panel__section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+// Template cards en panel izquierdo
+.jaraba-grapesjs-template-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-sm;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $ej-btn-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba($ej-color-impulse, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &__thumb {
+        aspect-ratio: 16 / 9;
+        border-radius: 4px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__placeholder-icon {
+        font-size: 1.5rem;
+        opacity: 0.4;
+    }
+
+    &__label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+// Placeholder text en paneles
+.jaraba-grapesjs-panel__placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: $ej-spacing-lg $ej-spacing-md;
+    position: relative;
+    z-index: 1;
 }
 
 // ===========================================================================
@@ -1012,10 +1163,18 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    min-height: 400px;
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    background: var(--ej-bg-dark, $ej-bg-dark);
     color: var(--ej-color-muted, $ej-color-muted);
     gap: $ej-spacing-lg;
+    transition: opacity 0.4s ease;
+
+    &.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
 
     p {
         font-size: 0.875rem;

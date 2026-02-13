@@ -34,7 +34,7 @@ class JarabaRagService
      * Constructs a JarabaRagService object.
      */
     public function __construct(
-        protected TenantContextService $tenantContext,
+        protected RagTenantFilterService $tenantContext,
         protected GroundingValidator $groundingValidator,
         protected QueryAnalyticsService $queryAnalytics,
         protected AiProviderPluginManager $aiProvider,

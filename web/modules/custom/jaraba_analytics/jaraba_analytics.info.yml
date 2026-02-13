@@ -6,4 +6,5 @@ core_version_requirement: ^10.3 || ^11
 dependencies:
   - drupal:system
   - jaraba_pixels:jaraba_pixels
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
 configure: jaraba_analytics.settings

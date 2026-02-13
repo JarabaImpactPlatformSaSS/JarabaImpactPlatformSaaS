@@ -1,0 +1,32 @@
+# AUDIT-CONS-N16: Config schema for jaraba_analytics.
+jaraba_analytics.settings:
+  type: config_object
+  label: 'Analytics settings'
+  mapping:
+    enable_tracking:
+      type: boolean
+      label: 'Enable analytics tracking'
+    track_page_views:
+      type: boolean
+      label: 'Track page views'
+    track_ecommerce:
+      type: boolean
+      label: 'Track e-commerce events'
+    event_retention_days:
+      type: integer
+      label: 'Event retention days'
+    daily_retention_days:
+      type: integer
+      label: 'Daily aggregation retention days'
+    anonymize_ip:
+      type: boolean
+      label: 'Anonymize IP addresses'
+    respect_dnt:
+      type: boolean
+      label: 'Respect Do Not Track header'
+    cookie_consent_required:
+      type: boolean
+      label: 'Require cookie consent before tracking'
+    cache_ttl:
+      type: integer
+      label: 'Cache TTL in seconds'

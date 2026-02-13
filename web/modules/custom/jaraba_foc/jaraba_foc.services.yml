@@ -11,6 +11,7 @@ services:
       - '@database'
       - '@datetime.time'
       - '@logger.channel.jaraba_foc'
+      - '@cache.default'
 
   # Métricas SaaS 2.0 (MRR, ARR, NRR, GRR, LTV, CAC, ARPU)
   jaraba_foc.saas_metrics:
@@ -19,6 +20,7 @@ services:
       - '@database'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_foc'
+      - '@cache.default'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # SERVICIOS DE INTEGRACIÓN STRIPE CONNECT

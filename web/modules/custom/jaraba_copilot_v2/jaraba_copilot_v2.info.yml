@@ -7,4 +7,6 @@ dependencies:
   - drupal:user
   - jaraba_business_tools:jaraba_business_tools
   - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_rag:jaraba_rag
+  - jaraba_self_discovery:jaraba_self_discovery
 configure: jaraba_copilot_v2.settings

@@ -6,7 +6,7 @@ namespace Drupal\jaraba_rag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_rag\Service\QueryAnalyticsService;
-use Drupal\jaraba_rag\Service\TenantContextService;
+use Drupal\jaraba_rag\Service\RagTenantFilterService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,7 +22,7 @@ class RagAdminController extends ControllerBase
      */
     public function __construct(
         protected QueryAnalyticsService $queryAnalytics,
-        protected TenantContextService $tenantContext,
+        protected RagTenantFilterService $tenantContext,
     ) {
     }
 
@@ -33,7 +33,7 @@ class RagAdminController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_rag.query_analytics'),
-            $container->get('jaraba_rag.tenant_context'),
+            $container->get('jaraba_rag.tenant_filter'),
         );
     }
 

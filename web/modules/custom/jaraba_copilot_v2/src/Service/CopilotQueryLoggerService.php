@@ -138,15 +138,19 @@ class CopilotQueryLoggerService
     /**
      * Obtiene estadísticas de queries.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id.
+     *
      * @param string $source
      *   Fuente del copiloto o 'all'.
      * @param int $days
      *   Número de días a consultar.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Estadísticas con totales, feedback, etc.
      */
-    public function getStats(string $source = 'all', int $days = 30): array
+    public function getStats(string $source = 'all', int $days = 30, ?int $tenantId = NULL): array
     {
         if (!$this->isTableReady()) {
             return [
@@ -169,6 +173,10 @@ class CopilotQueryLoggerService
 
             if ($source !== 'all') {
                 $query->condition('cql.source', $source);
+            }
+
+            if ($tenantId !== NULL) {
+                $query->condition('cql.tenant_id', $tenantId);
             }
 
             // Total de queries
@@ -220,26 +228,34 @@ class CopilotQueryLoggerService
     /**
      * Obtiene las preguntas más frecuentes sin respuesta satisfactoria.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id.
+     *
      * @param int $limit
      *   Máximo de resultados.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Lista de queries problemáticas.
      */
-    public function getProblematicQueries(int $limit = 20): array
+    public function getProblematicQueries(int $limit = 20, ?int $tenantId = NULL): array
     {
         if (!$this->isTableReady()) {
             return [];
         }
 
         try {
-            return $this->database->select('copilot_query_log', 'cql')
+            $query = $this->database->select('copilot_query_log', 'cql')
                 ->fields('cql', ['id', 'query', 'response', 'created', 'source', 'mode'])
                 ->condition('cql.was_helpful', 0)
                 ->orderBy('cql.created', 'DESC')
-                ->range(0, $limit)
-                ->execute()
-                ->fetchAll();
+                ->range(0, $limit);
+
+            if ($tenantId !== NULL) {
+                $query->condition('cql.tenant_id', $tenantId);
+            }
+
+            return $query->execute()->fetchAll();
         } catch (\Exception $e) {
             return [];
         }
@@ -248,15 +264,19 @@ class CopilotQueryLoggerService
     /**
      * Obtiene las queries más recientes.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id.
+     *
      * @param string $source
      *   Fuente del copiloto o 'all'.
      * @param int $limit
      *   Máximo de resultados.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Lista de queries recientes.
      */
-    public function getRecentQueries(string $source = 'all', int $limit = 50): array
+    public function getRecentQueries(string $source = 'all', int $limit = 50, ?int $tenantId = NULL): array
     {
         if (!$this->isTableReady()) {
             return [];
@@ -272,6 +292,10 @@ class CopilotQueryLoggerService
                 $query->condition('cql.source', $source);
             }
 
+            if ($tenantId !== NULL) {
+                $query->condition('cql.tenant_id', $tenantId);
+            }
+
             return $query->execute()->fetchAll();
         } catch (\Exception $e) {
             return [];
@@ -281,17 +305,21 @@ class CopilotQueryLoggerService
     /**
      * Obtiene preguntas frecuentes agrupadas.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id.
+     *
      * @param int $days
      *   Días a considerar.
      * @param int $limit
      *   Máximo de grupos.
      * @param string $source
      *   Fuente del copiloto (all, public, empleabilidad, emprendimiento, comercio).
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Preguntas agrupadas por similitud.
      */
-    public function getFrequentQuestions(int $days = 30, int $limit = 20, string $source = 'all'): array
+    public function getFrequentQuestions(int $days = 30, int $limit = 20, string $source = 'all', ?int $tenantId = NULL): array
     {
         if (!$this->isTableReady()) {
             return [];
@@ -300,8 +328,9 @@ class CopilotQueryLoggerService
         $since = time() - ($days * 86400);
 
         try {
-            // Construir condición de source
+            // Construir condiciones dinámicas
             $sourceCondition = '';
+            $tenantCondition = '';
             $params = [
                 ':since' => $since,
                 ':limit' => $limit,
@@ -312,17 +341,20 @@ class CopilotQueryLoggerService
                 $params[':source'] = $source;
             }
 
-            // Obtener queries recientes y agrupar por similitud básica
-            // (en una versión avanzada usaríamos embeddings)
+            if ($tenantId !== NULL) {
+                $tenantCondition = 'AND tenant_id = :tenant_id';
+                $params[':tenant_id'] = $tenantId;
+            }
+
             return $this->database->query("
-                SELECT 
+                SELECT
                     LEFT(query, 100) as query_prefix,
                     source,
                     COUNT(*) as count,
                     SUM(CASE WHEN was_helpful = 1 THEN 1 ELSE 0 END) as helpful_count,
                     SUM(CASE WHEN was_helpful = 0 THEN 1 ELSE 0 END) as not_helpful_count
                 FROM {copilot_query_log}
-                WHERE created >= :since $sourceCondition
+                WHERE created >= :since $sourceCondition $tenantCondition
                 GROUP BY LEFT(query, 100), source
                 HAVING COUNT(*) > 1
                 ORDER BY count DESC
@@ -336,13 +368,18 @@ class CopilotQueryLoggerService
     /**
      * Obtiene el historial de una sesion con user_id y role.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id para evitar
+     * acceso cross-tenant a historiales de sesión.
+     *
      * @param string $sessionId
      *   ID de la sesion.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Mensajes de la sesion ordenados cronologicamente.
      */
-    public function getSessionHistory(string $sessionId): array {
+    public function getSessionHistory(string $sessionId, ?int $tenantId = NULL): array {
         if (!$this->isTableReady()) {
             return [];
         }
@@ -361,9 +398,15 @@ class CopilotQueryLoggerService
                 $fields[] = 'tokens_used';
             }
 
-            $result = $this->database->select('copilot_query_log', 'q')
+            $selectQuery = $this->database->select('copilot_query_log', 'q')
                 ->fields('q', $fields)
-                ->condition('session_id', $sessionId)
+                ->condition('session_id', $sessionId);
+
+            if ($tenantId !== NULL) {
+                $selectQuery->condition('q.tenant_id', $tenantId);
+            }
+
+            $result = $selectQuery
                 ->orderBy('created', 'ASC')
                 ->orderBy('id', 'ASC')
                 ->execute()

@@ -224,7 +224,7 @@ jaraba_candidate.copilot.chat:
   defaults:
     _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::chat'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own copilot history'
   methods: [POST]
   options:
     _format: json
@@ -235,7 +235,7 @@ jaraba_candidate.copilot.suggestions:
   defaults:
     _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::suggestions'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own copilot history'
   methods: [GET]
   options:
     _format: json

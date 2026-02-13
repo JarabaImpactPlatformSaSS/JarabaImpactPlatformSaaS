@@ -52,7 +52,7 @@ jaraba_addons.api.addons:
     _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::listAddons'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view addon catalog'
 
 jaraba_addons.api.addons.subscribe:
   path: '/api/v1/addons/{addon_id}/subscribe'
@@ -78,4 +78,4 @@ jaraba_addons.api.addons.subscriptions:
     _controller: '\Drupal\jaraba_addons\Controller\AddonApiController::listSubscriptions'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'purchase addons'

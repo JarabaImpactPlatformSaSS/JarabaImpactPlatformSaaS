@@ -2,7 +2,7 @@ name: 'Jaraba Interactive AI-Powered'
 type: module
 description: 'Sistema de contenido interactivo world-class con IA generativa para formación y certificaciones.'
 package: Jaraba
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 php: 8.2
 
 dependencies:

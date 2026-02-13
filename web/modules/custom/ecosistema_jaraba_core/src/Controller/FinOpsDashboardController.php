@@ -230,15 +230,16 @@ class FinOpsDashboardController extends ControllerBase
                         $enabled_features = $vertical->getEnabledFeatures();
                         $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
 
-                        foreach ($enabled_features as $feature_id) {
-                            $feature = $feature_storage->load($feature_id);
-                            if ($feature && $feature->status()) {
+                        // AUDIT-PERF-N04: Batch load en lugar de N+1 queries.
+                        $features = $feature_storage->loadMultiple($enabled_features);
+                        foreach ($features as $feature) {
+                            if ($feature->status()) {
                                 $base_cost = $feature->getBaseCostMonthly();
                                 if ($base_cost > 0) {
                                     $feature_cost += $base_cost;
                                     $feature_count++;
                                     $feature_details[] = [
-                                        'id' => $feature_id,
+                                        'id' => $feature->id(),
                                         'label' => $feature->label(),
                                         'cost' => $base_cost,
                                     ];

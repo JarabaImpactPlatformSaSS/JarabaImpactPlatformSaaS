@@ -53,7 +53,7 @@ $config['jaraba_rag.settings']['vector_db']['host'] = 'http://qdrant:6333';
 | `jaraba_rag.kb_indexer` | Indexación de contenido |
 | `jaraba_rag.qdrant_client` | Cliente HTTP para Qdrant |
 | `jaraba_rag.embedding_service` | Generación de embeddings |
-| `jaraba_rag.tenant_context` | Filtros multi-tenant |
+| `jaraba_rag.tenant_filter` | Filtros multi-tenant para Qdrant (RagTenantFilterService) |
 
 ## Hooks
 

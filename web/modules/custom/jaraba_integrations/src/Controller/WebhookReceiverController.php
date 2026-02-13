@@ -53,6 +53,9 @@ class WebhookReceiverController extends ControllerBase
     /**
      * Recibe un webhook entrante y lo despacha internamente.
      *
+     * AUDIT-SEC-N01: Verificación HMAC obligatoria antes de procesar.
+     * Sigue el patrón de WebhookDispatcherService (X-Jaraba-Signature: sha256=<hex>).
+     *
      * POST /api/v1/integrations/webhooks/{webhook_id}/receive
      *
      * @param string $webhook_id
@@ -69,6 +72,12 @@ class WebhookReceiverController extends ControllerBase
 
         if (empty($body)) {
             return new JsonResponse(['error' => 'Empty payload'], 400);
+        }
+
+        // AUDIT-SEC-N01: Verificar firma HMAC antes de procesar el payload.
+        $signatureVerification = $this->verifyHmacSignature($webhook_id, $body, $request);
+        if ($signatureVerification !== TRUE) {
+            return $signatureVerification;
         }
 
         $payload = json_decode($body, TRUE);
@@ -105,6 +114,81 @@ class WebhookReceiverController extends ControllerBase
             'status' => 'received',
             'webhook_id' => $webhook_id,
         ]);
+    }
+
+    /**
+     * Verifica la firma HMAC del payload del webhook.
+     *
+     * AUDIT-SEC-001: Implementación obligatoria de HMAC en todos los webhooks.
+     *
+     * Acepta dos formatos de firma:
+     * - X-Jaraba-Signature: sha256=<hex> (formato propio de la plataforma)
+     * - X-Webhook-Signature: <hex> (formato genérico)
+     *
+     * @param string $webhookId
+     *   ID del webhook para cargar el secret.
+     * @param string $body
+     *   Payload raw del request.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La petición HTTP para extraer headers.
+     *
+     * @return true|\Symfony\Component\HttpFoundation\JsonResponse
+     *   TRUE si la firma es válida, o JsonResponse con error.
+     */
+    protected function verifyHmacSignature(string $webhookId, string $body, Request $request): true|JsonResponse
+    {
+        // Cargar la suscripción de webhook para obtener el secret.
+        $storage = $this->entityTypeManager()->getStorage('webhook_subscription');
+        $subscriptions = $storage->loadByProperties(['webhook_id' => $webhookId]);
+
+        if (empty($subscriptions)) {
+            $this->logger->warning('Webhook rechazado: endpoint @id no encontrado', [
+                '@id' => $webhookId,
+            ]);
+            return new JsonResponse(['error' => 'Webhook endpoint not found'], 404);
+        }
+
+        $subscription = reset($subscriptions);
+        $secret = $subscription->getSecret();
+
+        if (empty($secret)) {
+            $this->logger->error('Webhook rechazado: endpoint @id sin secret configurado', [
+                '@id' => $webhookId,
+            ]);
+            return new JsonResponse(['error' => 'Webhook secret not configured'], 500);
+        }
+
+        // Intentar extraer la firma de los headers soportados.
+        $signature = $request->headers->get('X-Jaraba-Signature')
+            ?? $request->headers->get('X-Webhook-Signature');
+
+        if (empty($signature)) {
+            $this->logger->warning('Webhook rechazado: firma ausente para endpoint @id (IP: @ip)', [
+                '@id' => $webhookId,
+                '@ip' => $request->getClientIp(),
+            ]);
+            return new JsonResponse(['error' => 'Missing signature'], 403);
+        }
+
+        // Extraer el hash de la firma (soportar formato "sha256=<hex>" o "<hex>").
+        $receivedHash = $signature;
+        if (str_starts_with($signature, 'sha256=')) {
+            $receivedHash = substr($signature, 7);
+        }
+
+        // Calcular la firma esperada.
+        $expectedHash = hash_hmac('sha256', $body, $secret);
+
+        // Comparación timing-safe para prevenir timing attacks.
+        if (!hash_equals($expectedHash, $receivedHash)) {
+            $this->logger->warning('Webhook rechazado: firma inválida para endpoint @id (IP: @ip)', [
+                '@id' => $webhookId,
+                '@ip' => $request->getClientIp(),
+            ]);
+            return new JsonResponse(['error' => 'Invalid signature'], 403);
+        }
+
+        return TRUE;
     }
 
     /**

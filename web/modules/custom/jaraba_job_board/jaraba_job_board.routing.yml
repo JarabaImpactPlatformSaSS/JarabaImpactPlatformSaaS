@@ -299,7 +299,7 @@ jaraba_job_board.api.push_subscribe:
     _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::subscribe'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 jaraba_job_board.api.push_unsubscribe:
   path: '/api/v1/push/unsubscribe'
@@ -307,7 +307,7 @@ jaraba_job_board.api.push_unsubscribe:
     _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::unsubscribe'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 jaraba_job_board.api.push_vapid:
   path: '/api/v1/push/vapid-key'
@@ -323,7 +323,7 @@ jaraba_job_board.api.push_test:
     _controller: '\Drupal\jaraba_job_board\Controller\PushApiController::testPush'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 # --- API Agent Rating ---
 jaraba_job_board.api.agent_rating:
@@ -332,6 +332,6 @@ jaraba_job_board.api.agent_rating:
     _controller: '\Drupal\jaraba_job_board\Controller\JobBoardApiController::submitAgentRating'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 

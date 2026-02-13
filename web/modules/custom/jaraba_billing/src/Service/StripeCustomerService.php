@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\jaraba_foc\Service\StripeConnectService;
 use Psr\Log\LoggerInterface;
 
@@ -12,6 +13,9 @@ use Psr\Log\LoggerInterface;
  * Gestiona clientes Stripe para billing.
  *
  * Usa StripeConnectService::stripeRequest() de jaraba_foc como transporte HTTP.
+ *
+ * AUDIT-PERF-002: Usa LockBackendInterface para prevenir race conditions
+ * en operaciones financieras concurrentes contra la API de Stripe.
  */
 class StripeCustomerService {
 
@@ -19,6 +23,7 @@ class StripeCustomerService {
     protected StripeConnectService $stripeConnect,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected LockBackendInterface $lock,
   ) {}
 
   /**
@@ -35,45 +40,57 @@ class StripeCustomerService {
    *   Datos del customer de Stripe.
    */
   public function createOrGetCustomer(int $tenantId, string $email, string $name = ''): array {
-    // Buscar customer existente por metadata.
+    // AUDIT-PERF-002: Lock por tenant para prevenir creación duplicada de
+    // customers en Stripe cuando llegan peticiones concurrentes.
+    $lockId = 'jaraba_billing:customer_create:' . $tenantId;
+    if (!$this->lock->acquire($lockId, 30)) {
+      throw new \RuntimeException('Customer creation already in progress for tenant ' . $tenantId);
+    }
+
     try {
-      $searchResult = $this->stripeConnect->stripeRequest('GET', '/customers', [
+      // Buscar customer existente por metadata.
+      try {
+        $searchResult = $this->stripeConnect->stripeRequest('GET', '/customers', [
+          'email' => $email,
+          'limit' => 1,
+        ]);
+
+        if (!empty($searchResult['data'])) {
+          $customer = $searchResult['data'][0];
+          $this->logger->info('Customer Stripe existente encontrado: @id para tenant @tenant', [
+            '@id' => $customer['id'],
+            '@tenant' => $tenantId,
+          ]);
+          return $customer;
+        }
+      }
+      catch (\Exception $e) {
+        $this->logger->warning('Error buscando customer: @error', ['@error' => $e->getMessage()]);
+      }
+
+      // Crear nuevo customer. AUDIT-PERF-N07: Idempotency key.
+      $customer = $this->stripeConnect->stripeRequest('POST', '/customers', [
         'email' => $email,
-        'limit' => 1,
+        'name' => $name,
+        'metadata' => [
+          'tenant_id' => (string) $tenantId,
+          'platform' => 'jaraba_impact',
+        ],
+      ], "create-customer-{$tenantId}-" . bin2hex(random_bytes(8)));
+
+      $this->logger->info('Customer Stripe creado: @id para tenant @tenant', [
+        '@id' => $customer['id'],
+        '@tenant' => $tenantId,
       ]);
 
-      if (!empty($searchResult['data'])) {
-        $customer = $searchResult['data'][0];
-        $this->logger->info('Customer Stripe existente encontrado: @id para tenant @tenant', [
-          '@id' => $customer['id'],
-          '@tenant' => $tenantId,
-        ]);
-        return $customer;
-      }
+      // Sync with local BillingCustomer entity.
+      $this->syncBillingCustomer($tenantId, $customer['id'], $email, $name);
+
+      return $customer;
     }
-    catch (\Exception $e) {
-      $this->logger->warning('Error buscando customer: @error', ['@error' => $e->getMessage()]);
+    finally {
+      $this->lock->release($lockId);
     }
-
-    // Crear nuevo customer.
-    $customer = $this->stripeConnect->stripeRequest('POST', '/customers', [
-      'email' => $email,
-      'name' => $name,
-      'metadata' => [
-        'tenant_id' => (string) $tenantId,
-        'platform' => 'jaraba_impact',
-      ],
-    ]);
-
-    $this->logger->info('Customer Stripe creado: @id para tenant @tenant', [
-      '@id' => $customer['id'],
-      '@tenant' => $tenantId,
-    ]);
-
-    // Sync with local BillingCustomer entity.
-    $this->syncBillingCustomer($tenantId, $customer['id'], $email, $name);
-
-    return $customer;
   }
 
   /**
@@ -154,7 +171,8 @@ class StripeCustomerService {
    *   Customer actualizado.
    */
   public function updateCustomer(string $customerId, array $data): array {
-    $customer = $this->stripeConnect->stripeRequest('POST', '/customers/' . $customerId, $data);
+    $customer = $this->stripeConnect->stripeRequest('POST', '/customers/' . $customerId, $data,
+      "update-customer-{$customerId}-" . bin2hex(random_bytes(8)));
 
     $this->logger->info('Customer Stripe actualizado: @id', ['@id' => $customerId]);
     return $customer;
@@ -174,7 +192,7 @@ class StripeCustomerService {
   public function attachPaymentMethod(string $paymentMethodId, string $customerId): array {
     $result = $this->stripeConnect->stripeRequest('POST', '/payment_methods/' . $paymentMethodId . '/attach', [
       'customer' => $customerId,
-    ]);
+    ], "attach-pm-{$paymentMethodId}-{$customerId}");
 
     $this->logger->info('PaymentMethod @pm vinculado a customer @cus', [
       '@pm' => $paymentMethodId,
@@ -194,7 +212,8 @@ class StripeCustomerService {
    *   Payment method desvinculado.
    */
   public function detachPaymentMethod(string $paymentMethodId): array {
-    $result = $this->stripeConnect->stripeRequest('POST', '/payment_methods/' . $paymentMethodId . '/detach');
+    $result = $this->stripeConnect->stripeRequest('POST', '/payment_methods/' . $paymentMethodId . '/detach',
+      [], "detach-pm-{$paymentMethodId}-" . bin2hex(random_bytes(8)));
 
     $this->logger->info('PaymentMethod @pm desvinculado', ['@pm' => $paymentMethodId]);
     return $result;

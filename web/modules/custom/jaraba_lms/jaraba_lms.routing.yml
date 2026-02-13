@@ -31,7 +31,7 @@ jaraba_lms.my_learning:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
     _title: 'Mis cursos'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
 
 # Alias para /my-courses (users may expect this route)
 jaraba_lms.my_courses:
@@ -40,7 +40,7 @@ jaraba_lms.my_courses:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
     _title: 'Mis cursos'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
 
 jaraba_lms.course_player:
   path: '/learn/{lms_enrollment}'
@@ -48,7 +48,7 @@ jaraba_lms.course_player:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::player'
     _title_callback: '\Drupal\jaraba_lms\Controller\LearnerController::playerTitle'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
   options:
     parameters:
       lms_enrollment:
@@ -60,7 +60,7 @@ jaraba_lms.my_certificates:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::certificates'
     _title: 'Mis certificados'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own certificates'
 
 # --- Rutas de API REST ---
 jaraba_lms.api.courses:
@@ -85,7 +85,7 @@ jaraba_lms.api.enroll:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::enroll'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'enroll in free courses'
     course_id: '\d+'
   methods: [POST]
 
@@ -94,7 +94,7 @@ jaraba_lms.api.user_enrollments:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getUserEnrollments'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
   methods: [GET]
 
 jaraba_lms.api.progress:
@@ -102,7 +102,7 @@ jaraba_lms.api.progress:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getProgress'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'track own progress'
     enrollment_id: '\d+'
   methods: [GET]
 
@@ -111,7 +111,7 @@ jaraba_lms.api.record_progress:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::recordProgress'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'track own progress'
     enrollment_id: '\d+'
   methods: [POST]
 
@@ -128,7 +128,7 @@ jaraba_lms.api.recommend_paths:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\LmsApiController::getRecommendedPaths'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view learning paths'
   methods: [GET]
 
 # --- Rutas de Administración ---
@@ -319,7 +319,7 @@ jaraba_lms.my_badges:
     _controller: '\Drupal\jaraba_lms\Controller\BadgeController::myBadges'
     _title: 'Mis Badges'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own certificates'
 
 # ================================================================================
 # RUTAS DE GAMIFICACIÓN (Q1 2026)
@@ -331,7 +331,7 @@ jaraba_lms.gamification.profile:
     _controller: '\Drupal\jaraba_lms\Controller\GamificationController::profile'
     _title: 'Mi Progreso y Nivel'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
 
 jaraba_lms.gamification.leaderboard:
   path: '/leaderboard'
@@ -346,5 +346,5 @@ jaraba_lms.api.gamification.stats:
   defaults:
     _controller: '\Drupal\jaraba_lms\Controller\GamificationController::apiStats'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view own enrollments'
   methods: [GET]

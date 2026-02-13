@@ -92,7 +92,7 @@ body.canvas-editor-page {
         visibility: hidden !important;
         opacity: 0 !important;
         height: 0 !important;
-        overflow: hidden !important;
+        overflow: visible !important;
     }
 
     // Override: Restaurar visibilidad del toolbar propio del canvas editor
@@ -106,12 +106,20 @@ body.canvas-editor-page {
         position: relative !important;
         z-index: 10002 !important;
         flex-shrink: 0 !important;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        padding: $_fb-spacing-sm $_fb-spacing-lg;
+        padding: $_fb-spacing-xs $_fb-spacing-sm;
         background: var(--ej-bg-surface, #{$_fb-bg-surface});
         border-bottom: 1px solid var(--ej-border-color, #{$_fb-border-color});
-        min-height: $canvas-header-height;
+        min-height: 0;
+        gap: $_fb-spacing-xs;
+
+        @media (min-width: 1280px) {
+            padding: $_fb-spacing-sm $_fb-spacing-lg;
+            flex-wrap: nowrap;
+            min-height: $canvas-header-height;
+        }
     }
 
     .canvas-editor__toolbar-left,
@@ -123,7 +131,25 @@ body.canvas-editor-page {
         height: auto !important;
         overflow: visible !important;
         align-items: center;
-        gap: $_fb-spacing-sm;
+        gap: $_fb-spacing-xs;
+        flex-shrink: 0;
+
+        @media (min-width: 1280px) {
+            gap: $_fb-spacing-sm;
+        }
+    }
+
+    // En pantallas < 1280px, centrar toolbar-center en segunda línea
+    .canvas-editor__toolbar-center {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: center;
+
+        @media (min-width: 1280px) {
+            order: 0;
+            flex-basis: auto;
+            justify-content: flex-start;
+        }
     }
 
     // NOTE: El header/footer del tenant NO se oculta
@@ -182,6 +208,8 @@ body.canvas-editor-page {
         width: 100vw !important;
         border-radius: 0 !important;
         margin: 0 !important;
+        padding: 0 !important; // Override ecosistema-jaraba-core padding
+        gap: 0 !important; // Override ecosistema-jaraba-core gap
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -208,22 +236,9 @@ body.canvas-editor-page {
 // HEADER SAAS (Barra de branding del tenant)
 // ═══════════════════════════════════════════════════════════════════════════
 
+// saas-header oculto en modo canvas: la toolbar-left ya incluye el branding
 .canvas-editor__saas-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: $_fb-spacing-sm $_fb-spacing-lg;
-    // Gradiente premium azul corporativo
-    background: linear-gradient(135deg,
-        var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
-        #1a2d4a 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    min-height: 40px;
-    // Evitar que el header se encoja o solape
-    flex-shrink: 0;
-    position: relative;
-    z-index: 100;
-    width: 100%;
+    display: none;
 }
 
 .canvas-editor__saas-branding {
@@ -297,8 +312,13 @@ body.canvas-editor-page {
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--ej-color-headings, #{$_fb-color-headings});
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     svg {
+        flex-shrink: 0;
         color: var(--ej-color-corporate, #{$_fb-color-corporate});
     }
 }
@@ -511,10 +531,37 @@ body.canvas-editor-page {
             transform: translateY(0) scale(0.98);
         }
     }
+
+    // Icon-only Button — sin texto, solo icono con tooltip
+    &--icon {
+        padding: 8px;
+        color: var(--ej-text-muted, #{$_fb-color-muted});
+        background: transparent;
+        border: 1px solid transparent;
+        box-shadow: none;
+
+        &:hover {
+            color: var(--ej-color-corporate, #{$_fb-color-corporate});
+            background: rgba($_fb-color-corporate, 0.06);
+            border-color: rgba($_fb-color-corporate, 0.12);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+}
+
+// Separador vertical en toolbar
+.canvas-editor__toolbar-separator {
+    width: 1px;
+    height: 24px;
+    background: var(--ej-border-color, #{$_fb-border-color});
+    flex-shrink: 0;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEO Toggle Button
+// SEO Toggle Button (legacy — kept for backwards compat)
 // ─────────────────────────────────────────────────────────────────────────────
 
 .canvas-editor__seo-toggle {
@@ -567,42 +614,170 @@ body.canvas-editor-page {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Viewport Toggle Buttons (Desktop, Tablet, Mobile)
+// Viewport Dropdown (compacto con panel desplegable)
 // ─────────────────────────────────────────────────────────────────────────────
 
-.canvas-editor__viewport-toggle {
+.canvas-editor__viewport-dropdown {
+    position: relative;
+}
+
+.canvas-editor__viewport-trigger {
     display: flex;
     align-items: center;
-    gap: 2px;
-    padding: 2px;
+    gap: 6px;
+    padding: 4px 10px;
     background: var(--ej-bg-body, #{$_fb-bg-body});
     border-radius: $_fb-btn-radius;
     border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    cursor: pointer;
+    color: var(--ej-color-corporate, #{$_fb-color-corporate});
+    font-size: 0.75rem;
+    font-weight: 600;
+    height: 34px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        background: rgba($_fb-color-corporate, 0.04);
+    }
+
+    &[aria-expanded="true"] {
+        border-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+        box-shadow: 0 2px 8px rgba($_fb-color-corporate, 0.15);
+
+        .canvas-editor__viewport-trigger-chevron {
+            transform: rotate(180deg);
+        }
+    }
 }
 
+.canvas-editor__viewport-trigger-icon {
+    display: flex;
+    align-items: center;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.canvas-editor__viewport-trigger-label {
+    min-width: 42px;
+    text-align: center;
+}
+
+.canvas-editor__viewport-trigger-chevron {
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+}
+
+// Panel desplegable
+// Panel fixed para escapar de overflow:hidden de los contenedores padre
+.canvas-editor__viewport-panel {
+    display: none;
+    position: fixed;
+    min-width: 260px;
+    background: var(--ej-bg-surface, #{$_fb-bg-surface});
+    border: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    padding: $_fb-spacing-sm;
+    z-index: 20000;
+
+    &.is-open {
+        display: block;
+        animation: viewport-panel-in 0.15s ease-out;
+    }
+}
+
+@keyframes viewport-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.canvas-editor__viewport-panel-group {
+    padding: $_fb-spacing-xs 0;
+
+    & + & {
+        border-top: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    }
+}
+
+.canvas-editor__viewport-panel-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-color-muted, #{$_fb-color-muted});
+    padding: 2px $_fb-spacing-xs;
+    margin-bottom: 4px;
+}
+
+.canvas-editor__viewport-panel-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.canvas-editor__viewport-panel-custom {
+    border-top: 1px solid var(--ej-border-color, #{$_fb-border-color});
+    padding-top: $_fb-spacing-xs;
+}
+
+.canvas-editor__viewport-panel-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.canvas-editor__viewport-slider {
+    flex: 1;
+    height: 4px;
+    accent-color: var(--ej-color-corporate, #{$_fb-color-corporate});
+}
+
+.canvas-editor__viewport-value {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #{$_fb-color-corporate});
+    min-width: 44px;
+    text-align: right;
+}
+
+// Botones de viewport dentro del panel dropdown
 .canvas-editor__viewport-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
     height: 32px;
-    padding: 0;
+    padding: 0 8px;
     border: none;
     background: transparent;
     border-radius: 6px;
     cursor: pointer;
     color: var(--ej-color-muted, #{$_fb-color-muted});
+    font-size: 0.6875rem;
+    font-weight: 500;
     transition: all 0.2s ease;
 
     svg {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
     }
 
-    // Soporte para iconos IMG
     img {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         transition: all 0.2s ease;
     }
 
@@ -620,7 +795,6 @@ body.canvas-editor-page {
             color: #fff !important;
         }
 
-        // Iconos IMG se vuelven blancos con filtro de inversión
         img {
             filter: brightness(0) invert(1);
         }
@@ -719,6 +893,28 @@ body.canvas-editor-page {
         var(--ej-border-color, #{$_fb-border-color}) 50%,
         transparent 100%);
     margin: 0 $_fb-spacing-sm;
+
+    @media (max-width: 899px) {
+        display: none;
+    }
+}
+
+// En pantallas < 900px, ocultar contexto tenant (logo, badge, nombre) para ganar espacio
+@media (max-width: 899px) {
+    .canvas-editor__saas-context,
+    .canvas-editor__tenant-logo,
+    .canvas-editor__tenant-name {
+        display: none !important;
+    }
+
+    .canvas-editor__title {
+        max-width: 160px;
+        font-size: 0.9375rem;
+    }
+
+    .canvas-editor__back span {
+        display: none; // Solo icono flecha, sin texto "Volver"
+    }
 }
 
 .canvas-editor__tenant-name {

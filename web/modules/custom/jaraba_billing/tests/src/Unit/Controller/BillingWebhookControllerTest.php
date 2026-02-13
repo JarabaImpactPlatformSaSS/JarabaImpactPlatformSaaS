@@ -6,6 +6,7 @@ namespace Drupal\Tests\jaraba_billing\Unit\Controller;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\jaraba_billing\Controller\BillingWebhookController;
 use Drupal\jaraba_billing\Service\DunningService;
@@ -28,6 +29,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
   protected $invoiceService;
   protected $tenantSubscription;
   protected $logger;
+  protected $lock;
   protected $dunningService;
   protected $mailManager;
   protected BillingWebhookController $controller;
@@ -42,6 +44,8 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $this->invoiceService = $this->createMock(StripeInvoiceService::class);
     $this->tenantSubscription = $this->createMock(TenantSubscriptionService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->lock = $this->createMock(LockBackendInterface::class);
+    $this->lock->method('acquire')->willReturn(TRUE);
     $this->dunningService = $this->createMock(DunningService::class);
     $this->mailManager = $this->createMock(MailManagerInterface::class);
 
@@ -50,6 +54,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       $this->invoiceService,
       $this->tenantSubscription,
       $this->logger,
+      $this->lock,
       $this->dunningService,
       $this->mailManager,
     );
@@ -254,6 +259,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $params = $constructor->getParameters();
 
     $paramNames = array_map(fn($p) => $p->getName(), $params);
+    $this->assertContains('lock', $paramNames);
     $this->assertContains('dunningService', $paramNames);
     $this->assertContains('mailManager', $paramNames);
   }

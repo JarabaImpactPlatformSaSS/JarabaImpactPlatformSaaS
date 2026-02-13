@@ -94,7 +94,7 @@ jaraba_blog.api.posts.list:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listPosts'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
 
 jaraba_blog.api.posts.store:
   path: '/api/v1/blog/posts'
@@ -110,7 +110,7 @@ jaraba_blog.api.posts.show:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::show'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
     id: '\d+'
 
 jaraba_blog.api.posts.update:
@@ -155,7 +155,7 @@ jaraba_blog.api.posts.related:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::related'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
     id: '\d+'
 
 jaraba_blog.api.posts.view:
@@ -164,7 +164,7 @@ jaraba_blog.api.posts.view:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::trackView'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
     id: '\d+'
 
 # --- Categories API ---
@@ -175,7 +175,7 @@ jaraba_blog.api.categories.list:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listCategories'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
 
 jaraba_blog.api.categories.store:
   path: '/api/v1/blog/categories'
@@ -211,7 +211,7 @@ jaraba_blog.api.authors.list:
     _controller: '\Drupal\jaraba_blog\Controller\BlogApiController::listAuthors'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view blog content'
 
 jaraba_blog.api.authors.store:
   path: '/api/v1/blog/authors'

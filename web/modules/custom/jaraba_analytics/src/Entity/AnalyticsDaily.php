@@ -44,10 +44,11 @@ class AnalyticsDaily extends ContentEntityBase implements ContentEntityInterface
     {
         $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Tenant ID (multi-tenant isolation).
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('ID del tenant al que pertenecen estas métricas.'))
+        // AUDIT-CONS-005: tenant_id como entity_reference al entity type 'tenant'.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant al que pertenecen estas métricas.'))
+            ->setSetting('target_type', 'tenant')
             ->setRequired(FALSE);
 
         // Fecha del agregado.

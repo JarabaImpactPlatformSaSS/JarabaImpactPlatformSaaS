@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_tenant_knowledge\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Flood\FloodInterface;
 use Drupal\jaraba_tenant_knowledge\Service\FaqBotService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,7 +35,10 @@ class FaqBotApiController extends ControllerBase {
   public function __construct(
     protected FloodInterface $flood,
     protected FaqBotService $faqBotService,
-  ) {}
+    EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}
@@ -43,6 +47,7 @@ class FaqBotApiController extends ControllerBase {
     return new static(
       $container->get('flood'),
       $container->get('jaraba_tenant_knowledge.faq_bot'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -91,12 +96,21 @@ class FaqBotApiController extends ControllerBase {
       $message = mb_substr($message, 0, 500);
     }
 
-    // Validar tenant_id.
+    // AUDIT-SEC-N07: Validar que el tenant_id existe realmente en el sistema.
+    // Un atacante podría enviar cualquier tenant_id para acceder a la KB de otro tenant.
     if ($tenantId <= 0) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => (string) $this->t('Identificador de tenant no válido.'),
       ], 400);
+    }
+
+    $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+    if (!$tenant || !$tenant->isPublished()) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Tenant no encontrado.'),
+      ], 404);
     }
 
     // Llamar al servicio.

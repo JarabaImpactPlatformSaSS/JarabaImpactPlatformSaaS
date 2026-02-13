@@ -33,5 +33,5 @@ jaraba_social_commerce.api.sync:
   defaults:
     _controller: '\Drupal\jaraba_social_commerce\Controller\SocialWebhookController::triggerSync'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
   methods: [POST]

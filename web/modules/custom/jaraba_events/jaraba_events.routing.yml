@@ -101,7 +101,7 @@ jaraba_events.api.events.update:
   path: '/api/v1/events/{id}'
   defaults:
     _controller: '\Drupal\jaraba_events\Controller\EventApiController::updateEvent'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit events'
 

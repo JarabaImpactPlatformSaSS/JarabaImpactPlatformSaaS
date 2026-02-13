@@ -206,7 +206,7 @@ ecosistema_jaraba_core.autofirma.get_documento:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getDocumento'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use digital signature' # AUDIT-SEC-002
 
 # Endpoint para recibir el documento firmado desde AutoFirma
 ecosistema_jaraba_core.autofirma.recibir_firma:
@@ -215,7 +215,7 @@ ecosistema_jaraba_core.autofirma.recibir_firma:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::recibirFirma'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use digital signature' # AUDIT-SEC-002
   options:
     _auth: ['basic_auth', 'cookie']
 
@@ -226,7 +226,7 @@ ecosistema_jaraba_core.autofirma.get_estado:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::getEstado'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use digital signature' # AUDIT-SEC-002
 
 # Verificar disponibilidad de AutoFirma (endpoint público)
 ecosistema_jaraba_core.autofirma.check:
@@ -244,7 +244,7 @@ ecosistema_jaraba_core.autofirma.generar:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\AutoFirmaController::generarDocumento'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use digital signature' # AUDIT-SEC-002
 
 # ---------------------------------------------------------------------------
 # ONBOARDING DE TENANTS - FLUJO DE REGISTRO
@@ -279,7 +279,7 @@ ecosistema_jaraba_core.onboarding.select_plan:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::selectPlan'
     _title: 'Selecciona tu Plan'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Paso 3: Configurar método de pago con Stripe
 ecosistema_jaraba_core.onboarding.setup_payment:
@@ -288,7 +288,7 @@ ecosistema_jaraba_core.onboarding.setup_payment:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::setupPayment'
     _title: 'Configurar Método de Pago'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Paso 4: Página de bienvenida post-onboarding
 ecosistema_jaraba_core.onboarding.welcome:
@@ -297,7 +297,7 @@ ecosistema_jaraba_core.onboarding.welcome:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\OnboardingController::welcome'
     _title: '¡Bienvenido!'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # ---------------------------------------------------------------------------
 # WEBHOOKS PARA INTEGRACIONES EXTERNAS
@@ -348,7 +348,7 @@ ecosistema_jaraba_core.api.stripe.create_subscription:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createSubscription'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage subscriptions' # AUDIT-SEC-002
   methods: [POST]
 
 # Confirmar suscripción después de 3D Secure
@@ -357,7 +357,7 @@ ecosistema_jaraba_core.api.stripe.confirm_subscription:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::confirmSubscription'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage subscriptions' # AUDIT-SEC-002
   methods: [POST]
 
 # Crear sesión del portal de clientes de Stripe
@@ -366,7 +366,7 @@ ecosistema_jaraba_core.api.stripe.portal:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::createPortalSession'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage subscriptions' # AUDIT-SEC-002
   methods: [POST]
 
 # ---------------------------------------------------------------------------
@@ -379,7 +379,7 @@ ecosistema_jaraba_core.api.stripe.connect.onboard:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::startConnectOnboarding'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   methods: [POST]
 
 # Callback tras completar onboarding de Stripe Connect
@@ -389,7 +389,7 @@ ecosistema_jaraba_core.stripe.connect.return:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::connectOnboardingReturn'
     _title: 'Configuración de Pagos Completada'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
 
 # Página para reintentar onboarding si expira el link
 ecosistema_jaraba_core.stripe.connect.refresh:
@@ -398,7 +398,7 @@ ecosistema_jaraba_core.stripe.connect.refresh:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::connectOnboardingRefresh'
     _title: 'Reintentar Configuración de Pagos'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
 
 # Obtener estado de cuenta Connect del tenant actual
 ecosistema_jaraba_core.api.stripe.connect.status:
@@ -406,7 +406,7 @@ ecosistema_jaraba_core.api.stripe.connect.status:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectStatus'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   methods: [GET]
 
 # Acceder al dashboard de Stripe Express del tenant
@@ -415,7 +415,7 @@ ecosistema_jaraba_core.api.stripe.connect.dashboard:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\StripeController::getConnectDashboard'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   methods: [GET]
 
 # ---------------------------------------------------------------------------
@@ -504,7 +504,7 @@ ecosistema_jaraba_core.tenant_self_service.dashboard:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::dashboard'
     _title: 'Mi Dashboard'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   options:
     _admin_route: FALSE
 
@@ -515,7 +515,7 @@ ecosistema_jaraba_core.tenant_self_service.settings:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::settings'
     _title: 'Configuración'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   options:
     _admin_route: FALSE
 
@@ -529,7 +529,7 @@ ecosistema_jaraba_core.api.tenant_analytics.sales:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::salesTrend'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view tenant analytics' # AUDIT-SEC-002
   methods: [GET]
 
 # API para datos de MRR
@@ -538,7 +538,7 @@ ecosistema_jaraba_core.api.tenant_analytics.mrr:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::mrrTrend'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view tenant analytics' # AUDIT-SEC-002
   methods: [GET]
 
 # API para datos de clientes
@@ -547,7 +547,7 @@ ecosistema_jaraba_core.api.tenant_analytics.customers:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::customersTrend'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view tenant analytics' # AUDIT-SEC-002
   methods: [GET]
 
 # API para productos top
@@ -556,7 +556,7 @@ ecosistema_jaraba_core.api.tenant_analytics.products:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::topProducts'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view tenant analytics' # AUDIT-SEC-002
   methods: [GET]
 
 # ---------------------------------------------------------------------------
@@ -570,7 +570,7 @@ ecosistema_jaraba_core.tenant_self_service.domain:
     _form: '\Drupal\ecosistema_jaraba_core\Form\TenantDomainSettingsForm'
     _title: 'Dominio Personalizado'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   options:
     _admin_route: FALSE
 
@@ -581,7 +581,7 @@ ecosistema_jaraba_core.tenant_self_service.api_keys:
     _form: '\Drupal\ecosistema_jaraba_core\Form\TenantApiKeysForm'
     _title: 'API Keys'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'edit own tenant' # AUDIT-SEC-002
   options:
     _admin_route: FALSE
 
@@ -592,7 +592,7 @@ ecosistema_jaraba_core.tenant_self_service.webhooks:
     _form: '\Drupal\ecosistema_jaraba_core\Form\TenantWebhooksForm'
     _title: 'Webhooks'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'manage webhooks' # AUDIT-SEC-002
   options:
     _admin_route: FALSE
 
@@ -775,7 +775,7 @@ ecosistema_jaraba_core.api.v1.tenants:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::listTenants'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'administer tenants' # AUDIT-SEC-002
   methods: [GET]
 
 # Obtener tenant específico (requiere autenticación)
@@ -784,7 +784,7 @@ ecosistema_jaraba_core.api.v1.tenant:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::getTenant'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view any tenant' # AUDIT-SEC-002
     tenantId: \d+
   methods: [GET]
 
@@ -794,7 +794,7 @@ ecosistema_jaraba_core.api.v1.tenant.usage:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\ApiController::getTenantUsage'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access usage api' # AUDIT-SEC-002
     tenantId: \d+
   methods: [GET]
 
@@ -843,7 +843,7 @@ ecosistema_jaraba_core.api.copilot.context:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::getContext'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use ai features' # AUDIT-SEC-002
   methods: [GET]
 
 # Generar contenido con IA
@@ -852,7 +852,7 @@ ecosistema_jaraba_core.api.copilot.generate:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::generateContent'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use ai features' # AUDIT-SEC-002
   methods: [POST]
 
 # Autocompletado inteligente
@@ -861,7 +861,7 @@ ecosistema_jaraba_core.api.copilot.autocomplete:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\CopilotController::autocomplete'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'use ai features' # AUDIT-SEC-002
   methods: [GET]
 
 # ===========================================================================
@@ -937,7 +937,7 @@ ecosistema_jaraba_core.dashboard.auto:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectByAvatar'
     _title: 'Mi Dashboard'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Dashboard Job Seeker - Alias → /jobseeker
 ecosistema_jaraba_core.dashboard.career:
@@ -946,7 +946,7 @@ ecosistema_jaraba_core.dashboard.career:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToCareer'
     _title: 'Mi Carrera'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Dashboard Recruiter - Alias → /employer
 ecosistema_jaraba_core.dashboard.recruiter:
@@ -955,7 +955,7 @@ ecosistema_jaraba_core.dashboard.recruiter:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToRecruiter'
     _title: 'Panel del Reclutador'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Dashboard Emprendedor - Alias → /entrepreneur/dashboard
 ecosistema_jaraba_core.dashboard.entrepreneur:
@@ -964,7 +964,7 @@ ecosistema_jaraba_core.dashboard.entrepreneur:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToEntrepreneur'
     _title: 'Mi Emprendimiento'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Dashboard Productor/Comercio - Alias → /my-company
 ecosistema_jaraba_core.dashboard.producer:
@@ -973,7 +973,7 @@ ecosistema_jaraba_core.dashboard.producer:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToProducer'
     _title: 'Mi Negocio'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # Dashboard Mentor - Alias → /mentor/dashboard
 ecosistema_jaraba_core.dashboard.mentor:
@@ -982,7 +982,7 @@ ecosistema_jaraba_core.dashboard.mentor:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DashboardRedirectController::redirectToMentor'
     _title: 'Panel del Mentor'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
 
 # ---------------------------------------------------------------------------
 # LANDING PAGES PÚBLICAS - VERTICALES
@@ -1258,7 +1258,7 @@ ecosistema_jaraba_core.api.push.subscribe:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\PushApiController::subscribe'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
   methods: [POST]
 
 # API: Cancelar suscripción push
@@ -1267,7 +1267,7 @@ ecosistema_jaraba_core.api.push.unsubscribe:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\PushApiController::unsubscribe'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content' # AUDIT-SEC-002
   methods: [DELETE]
 
 # API: Enviar notificación push de prueba (solo admin)

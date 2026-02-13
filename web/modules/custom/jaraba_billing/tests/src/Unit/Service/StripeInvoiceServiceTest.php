@@ -7,6 +7,7 @@ namespace Drupal\Tests\jaraba_billing\Unit\Service;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\jaraba_billing\Service\StripeInvoiceService;
 use Drupal\jaraba_foc\Service\StripeConnectService;
 use Drupal\Tests\UnitTestCase;
@@ -23,6 +24,7 @@ class StripeInvoiceServiceTest extends UnitTestCase {
   protected $stripeConnect;
   protected $entityTypeManager;
   protected $logger;
+  protected $lock;
   protected StripeInvoiceService $service;
 
   /**
@@ -34,11 +36,14 @@ class StripeInvoiceServiceTest extends UnitTestCase {
     $this->stripeConnect = $this->createMock(StripeConnectService::class);
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->lock = $this->createMock(LockBackendInterface::class);
+    $this->lock->method('acquire')->willReturn(TRUE);
 
     $this->service = new StripeInvoiceService(
       $this->stripeConnect,
       $this->entityTypeManager,
       $this->logger,
+      $this->lock,
     );
   }
 

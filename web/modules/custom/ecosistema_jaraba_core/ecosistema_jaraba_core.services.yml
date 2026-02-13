@@ -348,6 +348,7 @@ services:
     class: Drupal\ecosistema_jaraba_core\Service\AIValueDashboardService
     arguments:
       - '@database'
+      - '@cache.default'
 
   # Sprint 15-16: Level 5.0 Certification
 

@@ -6,6 +6,7 @@ namespace Drupal\jaraba_billing\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\jaraba_billing\Service\DunningService;
 use Drupal\jaraba_billing\Service\StripeInvoiceService;
@@ -34,6 +35,9 @@ use Symfony\Component\HttpFoundation\Response;
  * - payment_method.detached: Método de pago eliminado
  *
  * SEGURIDAD: HMAC-SHA256 via StripeConnectService::verifyWebhookSignature().
+ *
+ * AUDIT-PERF-002: Usa LockBackendInterface para prevenir lost-updates
+ * cuando webhooks concurrentes modifican el estado del mismo tenant.
  */
 class BillingWebhookController extends ControllerBase implements ContainerInjectionInterface {
 
@@ -42,6 +46,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     protected StripeInvoiceService $invoiceService,
     protected TenantSubscriptionService $tenantSubscription,
     protected LoggerInterface $billingLogger,
+    protected LockBackendInterface $lock,
     protected ?DunningService $dunningService = NULL,
     protected ?MailManagerInterface $mailManager = NULL,
   ) {}
@@ -55,6 +60,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       $container->get('jaraba_billing.stripe_invoice'),
       $container->get('jaraba_billing.tenant_subscription'),
       $container->get('logger.channel.jaraba_billing'),
+      $container->get('lock'),
       $container->get('jaraba_billing.dunning'),
       $container->get('plugin.manager.mail'),
     );
@@ -127,11 +133,18 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
   /**
    * Fallo de pago: marcar tenant como past_due.
+   *
+   * AUDIT-PERF-002: Lock por tenant para prevenir lost-updates.
    */
   protected function handleInvoicePaymentFailed(array $data): JsonResponse {
     $tenantId = (int) ($data['metadata']['tenant_id'] ?? 0);
 
     if ($tenantId) {
+      $lockId = 'jaraba_billing:webhook_tenant:' . $tenantId;
+      if (!$this->lock->acquire($lockId, 30)) {
+        return new JsonResponse(['status' => 'retry', 'reason' => 'tenant locked'], 503);
+      }
+
       try {
         $tenantStorage = $this->entityTypeManager()->getStorage('group');
         $tenant = $tenantStorage->load($tenantId);
@@ -144,6 +157,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           '@id' => $tenantId,
           '@error' => $e->getMessage(),
         ]);
+      }
+      finally {
+        $this->lock->release($lockId);
       }
     }
 
@@ -173,6 +189,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
   /**
    * Suscripción actualizada: sincroniza estado del tenant local.
+   *
+   * AUDIT-PERF-002: Lock por tenant para prevenir lost-updates cuando
+   * múltiples webhooks de Stripe modifican el estado del mismo tenant.
    */
   protected function handleSubscriptionUpdated(array $data): JsonResponse {
     $subscriptionId = $data['id'] ?? '';
@@ -180,6 +199,11 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     $tenantId = (int) ($data['metadata']['tenant_id'] ?? 0);
 
     if ($tenantId) {
+      $lockId = 'jaraba_billing:webhook_tenant:' . $tenantId;
+      if (!$this->lock->acquire($lockId, 30)) {
+        return new JsonResponse(['status' => 'retry', 'reason' => 'tenant locked'], 503);
+      }
+
       try {
         $tenantStorage = $this->entityTypeManager()->getStorage('group');
         $tenant = $tenantStorage->load($tenantId);
@@ -225,6 +249,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           '@error' => $e->getMessage(),
         ]);
       }
+      finally {
+        $this->lock->release($lockId);
+      }
     }
 
     $this->billingLogger->info('Suscripción actualizada: @id, estado: @status, tenant: @tenant', [
@@ -238,12 +265,19 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
   /**
    * Suscripción eliminada/cancelada.
+   *
+   * AUDIT-PERF-002: Lock por tenant para prevenir lost-updates.
    */
   protected function handleSubscriptionDeleted(array $data): JsonResponse {
     $subscriptionId = $data['id'] ?? '';
     $tenantId = (int) ($data['metadata']['tenant_id'] ?? 0);
 
     if ($tenantId) {
+      $lockId = 'jaraba_billing:webhook_tenant:' . $tenantId;
+      if (!$this->lock->acquire($lockId, 30)) {
+        return new JsonResponse(['status' => 'retry', 'reason' => 'tenant locked'], 503);
+      }
+
       try {
         $tenantStorage = $this->entityTypeManager()->getStorage('group');
         $tenant = $tenantStorage->load($tenantId);
@@ -256,6 +290,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           '@id' => $tenantId,
           '@error' => $e->getMessage(),
         ]);
+      }
+      finally {
+        $this->lock->release($lockId);
       }
     }
 

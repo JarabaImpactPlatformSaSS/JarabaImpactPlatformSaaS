@@ -52,7 +52,7 @@ jaraba_referral.api.referrals:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listReferrals'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view referral dashboard'
 
 jaraba_referral.api.referrals.generate:
   path: '/api/v1/referrals/generate'
@@ -68,7 +68,7 @@ jaraba_referral.api.referrals.process:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::processReferral'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'create referral codes'
 
 jaraba_referral.api.referrals.stats:
   path: '/api/v1/referrals/stats'
@@ -112,7 +112,7 @@ jaraba_referral.api.programs:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listPrograms'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view referral dashboard'
 
 jaraba_referral.api.codes:
   path: '/api/v1/referral/codes'
@@ -120,7 +120,7 @@ jaraba_referral.api.codes:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listCodes'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'create referral codes'
 
 jaraba_referral.api.codes.generate:
   path: '/api/v1/referral/codes'
@@ -136,7 +136,7 @@ jaraba_referral.api.leaderboard:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::getLeaderboard'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view referral dashboard'
 
 jaraba_referral.api.rewards:
   path: '/api/v1/referral/rewards'
@@ -144,7 +144,7 @@ jaraba_referral.api.rewards:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::listRewards'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'view referral dashboard'
 
 jaraba_referral.api.track.click:
   path: '/api/v1/referral/track/click'
@@ -168,4 +168,4 @@ jaraba_referral.api.track.conversion:
     _controller: '\Drupal\jaraba_referral\Controller\ReferralApiController::trackConversion'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'create referral codes'

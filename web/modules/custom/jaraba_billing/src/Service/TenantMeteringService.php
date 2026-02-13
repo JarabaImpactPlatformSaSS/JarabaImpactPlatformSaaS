@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_billing\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
 
 /**
@@ -49,6 +50,7 @@ class TenantMeteringService
      */
     public function __construct(
         protected Connection $database,
+        protected CacheBackendInterface $cache,
     ) {
     }
 
@@ -84,6 +86,13 @@ class TenantMeteringService
     {
         $period = $period ?? date('Y-m');
 
+        // AUDIT-PERF-N08: Cache 5 min por tenant/período.
+        $cacheKey = "jaraba_billing:metering:{$tenantId}:{$period}";
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $query = $this->database->select('tenant_metering', 'tm')
             ->fields('tm', ['metric'])
             ->condition('tenant_id', $tenantId)
@@ -102,12 +111,16 @@ class TenantMeteringService
             ];
         }
 
-        return [
+        $result = [
             'tenant_id' => $tenantId,
             'period' => $period,
             'metrics' => $usage,
             'total_cost' => array_sum(array_column($usage, 'cost')),
         ];
+
+        $this->cache->set($cacheKey, $result, time() + 300);
+
+        return $result;
     }
 
     /**
@@ -115,6 +128,13 @@ class TenantMeteringService
      */
     public function getHistoricalUsage(string $tenantId, int $months = 6): array
     {
+        // AUDIT-PERF-N08: Cache 10 min para datos históricos.
+        $cacheKey = "jaraba_billing:metering_history:{$tenantId}:{$months}";
+        $cached = $this->cache->get($cacheKey);
+        if ($cached) {
+            return $cached->data;
+        }
+
         $results = $this->database->select('tenant_metering', 'tm')
             ->fields('tm', ['period', 'metric'])
             ->condition('tenant_id', $tenantId)
@@ -130,7 +150,11 @@ class TenantMeteringService
             $history[$row->period][$row->metric] = (float) $row->total;
         }
 
-        return array_slice($history, -$months, $months, TRUE);
+        $result = array_slice($history, -$months, $months, TRUE);
+
+        $this->cache->set($cacheKey, $result, time() + 600);
+
+        return $result;
     }
 
     /**

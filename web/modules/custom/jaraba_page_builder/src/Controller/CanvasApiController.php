@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Controller;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\jaraba_page_builder\Entity\PageTemplate;
@@ -109,11 +110,12 @@ class CanvasApiController extends ControllerBase
             }
 
             // Validar estructura mínima.
+            // AUDIT-SEC-003: Sanitizar HTML y CSS ANTES de almacenar.
             $canvasData = [
                 'components' => $data['components'] ?? [],
                 'styles' => $data['styles'] ?? [],
-                'html' => $data['html'] ?? '',
-                'css' => $data['css'] ?? '',
+                'html' => Xss::filterAdmin($data['html'] ?? ''),
+                'css' => $this->sanitizeCss($data['css'] ?? ''),
                 'updated_at' => date('c'),
             ];
 
@@ -451,6 +453,11 @@ class CanvasApiController extends ControllerBase
     /**
      * Sanitiza HTML para almacenamiento público.
      *
+     * AUDIT-SEC-003: Usa Xss::filterAdmin() de Drupal que elimina script,
+     * iframe, object, embed, event handlers (onclick, onerror, etc.) y
+     * otros vectores XSS, pero permite tags HTML legítimos del page builder.
+     * Además limpia atributos residuales del editor GrapesJS.
+     *
      * @param string $html
      *   HTML a sanitizar.
      *
@@ -459,16 +466,36 @@ class CanvasApiController extends ControllerBase
      */
     protected function sanitizeHtml(string $html): string
     {
-        // Eliminar scripts inline de GrapesJS.
-        $html = preg_replace('/<script[^>]*>.*?<\/script>/is', '', $html);
+        // Paso 1: Sanitización XSS robusta via Drupal core.
+        $html = Xss::filterAdmin($html);
 
-        // Eliminar atributos de GrapesJS.
+        // Paso 2: Limpiar atributos residuales de GrapesJS editor.
         $html = preg_replace('/\s+data-gjs-[^=]+="[^"]*"/i', '', $html);
-
-        // Eliminar clases de GrapesJS editor.
         $html = preg_replace('/\s+class="[^"]*gjs-[^"]*"/i', '', $html);
 
         return trim($html);
+    }
+
+    /**
+     * Sanitiza CSS para prevenir inyección de código.
+     *
+     * AUDIT-SEC-003: CSS del canvas puede contener vectores XSS.
+     *
+     * @param string $css
+     *   CSS a sanitizar.
+     *
+     * @return string
+     *   CSS sanitizado.
+     */
+    protected function sanitizeCss(string $css): string
+    {
+        $css = preg_replace('/javascript\s*:/i', '', $css);
+        $css = preg_replace('/expression\s*\(/i', '', $css);
+        $css = preg_replace('/@import\b/i', '', $css);
+        $css = preg_replace('/behavior\s*:/i', '', $css);
+        $css = preg_replace('/-moz-binding\s*:/i', '', $css);
+
+        return $css;
     }
 
 }

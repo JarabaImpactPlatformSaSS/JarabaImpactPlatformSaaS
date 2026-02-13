@@ -141,7 +141,7 @@ jaraba_crm.api.companies.update:
   path: '/api/v1/crm/companies/{id}'
   defaults:
     _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateCompany'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit crm entities'
     id: '\d+'
@@ -186,7 +186,7 @@ jaraba_crm.api.contacts.update:
   path: '/api/v1/crm/contacts/{id}'
   defaults:
     _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateContact'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit crm entities'
     id: '\d+'
@@ -231,7 +231,7 @@ jaraba_crm.api.opportunities.update:
   path: '/api/v1/crm/opportunities/{id}'
   defaults:
     _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateOpportunity'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit crm entities'
     id: '\d+'
@@ -287,7 +287,7 @@ jaraba_crm.api.opportunities.bant:
   path: '/api/v1/crm/opportunities/{id}/bant'
   defaults:
     _controller: '\Drupal\jaraba_crm\Controller\CrmApiController::updateBant'
-  methods: [PUT]
+  methods: [PATCH]
   requirements:
     _permission: 'edit crm entities'
     id: '\d+'

@@ -300,40 +300,25 @@ function jaraba_agroconecta_core_cron(): void
     if (($time - $lastForecast) > 86400 && $hour >= 4 && $hour <= 6) {
         $state->set('jaraba_agroconecta.last_forecast_update', $time);
 
-        try {
-            /** @var \Drupal\jaraba_agroconecta_core\Service\DemandForecasterService $forecaster */
-            $forecaster = \Drupal::service('jaraba_agroconecta.demand_forecaster');
+        // AUDIT-PERF-N11: Queue per-producer forecast instead of synchronous loop.
+        $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
+        $producerIds = $storage->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('status', 1)
+            ->execute();
 
-            // Obtener productores activos.
-            $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
-            $producerIds = $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('status', 1)
-                ->range(0, 100)
-                ->execute();
-
-            $updated = 0;
-            foreach ($producerIds as $producerId) {
-                try {
-                    $forecaster->getDemandTrends((int) $producerId, 3);
-                    $updated++;
-                }
-                catch (\Exception $e) {
-                    // Continuar con siguiente productor.
-                }
-            }
-
-            \Drupal::logger('jaraba_agroconecta_core')->info(
-                'Cron: forecasts de demanda actualizados para @count productores.',
-                ['@count' => $updated]
-            );
+        $queue = \Drupal::queue('jaraba_agroconecta_producer_forecast');
+        foreach ($producerIds as $producerId) {
+            $queue->createItem([
+                'producer_id' => (int) $producerId,
+                'operation' => 'forecast',
+            ]);
         }
-        catch (\Exception $e) {
-            \Drupal::logger('jaraba_agroconecta_core')->error(
-                'Cron: error actualizando forecasts: @error',
-                ['@error' => $e->getMessage()]
-            );
-        }
+
+        \Drupal::logger('jaraba_agroconecta_core')->info(
+            'Cron: @count productores encolados para forecast.',
+            ['@count' => count($producerIds)]
+        );
     }
 
     // === Alertas de precios fuera de rango (cada 12h) ===
@@ -342,41 +327,25 @@ function jaraba_agroconecta_core_cron(): void
     if (($time - $lastPriceCheck) > 43200) {
         $state->set('jaraba_agroconecta.last_price_check', $time);
 
-        try {
-            /** @var \Drupal\jaraba_agroconecta_core\Service\MarketSpyService $marketSpy */
-            $marketSpy = \Drupal::service('jaraba_agroconecta.market_spy');
+        // AUDIT-PERF-N11: Queue per-producer price alerts instead of synchronous loop.
+        $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
+        $producerIds = $storage->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('status', 1)
+            ->execute();
 
-            $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
-            $producerIds = $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('status', 1)
-                ->range(0, 100)
-                ->execute();
-
-            $alertCount = 0;
-            foreach ($producerIds as $producerId) {
-                try {
-                    $alerts = $marketSpy->getPriceAlerts((int) $producerId);
-                    $alertCount += count($alerts);
-                }
-                catch (\Exception $e) {
-                    // Continuar con siguiente productor.
-                }
-            }
-
-            if ($alertCount > 0) {
-                \Drupal::logger('jaraba_agroconecta_core')->info(
-                    'Cron: @count alertas de precio detectadas.',
-                    ['@count' => $alertCount]
-                );
-            }
+        $queue = \Drupal::queue('jaraba_agroconecta_producer_forecast');
+        foreach ($producerIds as $producerId) {
+            $queue->createItem([
+                'producer_id' => (int) $producerId,
+                'operation' => 'price_alerts',
+            ]);
         }
-        catch (\Exception $e) {
-            \Drupal::logger('jaraba_agroconecta_core')->error(
-                'Cron: error en chequeo de precios: @error',
-                ['@error' => $e->getMessage()]
-            );
-        }
+
+        \Drupal::logger('jaraba_agroconecta_core')->info(
+            'Cron: @count productores encolados para alertas de precio.',
+            ['@count' => count($producerIds)]
+        );
     }
 
     // === Detección de carritos abandonados (cada 1h) ===

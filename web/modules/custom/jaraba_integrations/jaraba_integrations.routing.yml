@@ -179,7 +179,7 @@ jaraba_integrations.oauth.callback:
     _controller: '\Drupal\jaraba_integrations\Controller\OauthController::callback'
     _title: 'OAuth Callback'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 # Webhook Receiver
 jaraba_integrations.webhook.receive:

@@ -265,8 +265,16 @@
          */
         constructor(container, options = {}) {
             this.container = container;
-            this.options = { ...DEFAULT_CONFIG, ...options };
+            // CRITICAL FIX: Always use CSS selector string for container.
+            // Passing a DOM element can cause GrapesJS to fail silently
+            // when Drupal's behavior lifecycle re-processes the context.
+            this.options = {
+                ...DEFAULT_CONFIG,
+                ...options,
+                container: '#gjs-editor',
+            };
             this.editor = null;
+            this.isInitialized = false;
             this.pageId = drupalSettings.jarabaCanvas?.pageId || null;
             this.tenantId = drupalSettings.jarabaCanvas?.tenantId || null;
             this.vertical = drupalSettings.jarabaCanvas?.vertical || 'generic';
@@ -283,87 +291,45 @@
         init() {
             // Verificar que GrapesJS está disponible
             if (typeof grapesjs === 'undefined') {
-                console.error('GrapesJS no está cargado. Verifica las dependencias.');
+                console.error('[Jaraba Canvas] GrapesJS no está cargado. Verifica las dependencias.');
+                return;
+            }
+
+            // Prevenir doble inicialización
+            if (this.isInitialized) {
+                console.warn('[Jaraba Canvas] Editor ya inicializado, omitiendo.');
                 return;
             }
 
             // Inyectar Design Tokens del tenant en el canvas
             this.injectDesignTokens();
 
-            // Inicializar GrapesJS
+            // Actualizar indicador de carga
+            this.updateLoadingStep('Inicializando GrapesJS...');
+
+            // Inicializar GrapesJS con selector CSS string (más robusto que DOM element)
+            console.log('[Jaraba Canvas] Llamando grapesjs.init() con container:', this.options.container);
             this.editor = grapesjs.init(this.options);
 
-
-            // CRÍTICO: Cargar bloques dinámicos ANTES de los plugins
-            // Esto garantiza que los 70 bloques del servidor estén disponibles
-            // aunque algún plugin secundario falle
-            try {
-                this.loadBlocks();
-            } catch (e) {
-                console.error('Error cargando bloques:', e);
+            // Verificar que el editor se inicializó correctamente
+            if (!this.editor || !this.editor.BlockManager) {
+                console.error('[Jaraba Canvas] GrapesJS init falló. BlockManager no disponible.');
+                return;
             }
 
-            // Ejecutar plugin de bloques básicos (H1-H6, párrafo, botones, etc.)
-            // El plugin se registra en grapesjs-jaraba-blocks.js
-            try {
-                const blocksPlugin = grapesjs.plugins.get('jaraba-blocks');
-                if (blocksPlugin) {
-                    blocksPlugin(this.editor);
-                    console.log('Plugin jaraba-blocks ejecutado correctamente.');
-                } else {
-                    console.warn('Plugin jaraba-blocks no encontrado.');
-                }
-            } catch (e) {
-                console.error('Error ejecutando plugin jaraba-blocks:', e);
-            }
+            console.log('[Jaraba Canvas] GrapesJS inicializado. Módulos:', {
+                BlockManager: !!this.editor.BlockManager,
+                DomComponents: !!this.editor.DomComponents,
+                Canvas: !!this.editor.Canvas,
+                Commands: !!this.editor.Commands,
+            });
 
-            // Ejecutar plugin SEO Auditor (auditoría SEO en tiempo real)
-            // El plugin se registra en grapesjs-jaraba-seo.js
-            try {
-                const seoPlugin = grapesjs.plugins.get('jaraba-seo');
-                if (seoPlugin) {
-                    seoPlugin(this.editor);
-                    console.log('Plugin jaraba-seo ejecutado correctamente.');
-                } else {
-                    console.warn('Plugin jaraba-seo no encontrado.');
-                }
-            } catch (e) {
-                console.error('Error ejecutando plugin jaraba-seo:', e);
-            }
+            this.isInitialized = true;
 
-            // Ejecutar plugin de parciales (header/footer editables)
-            // El plugin se registra en grapesjs-jaraba-partials.js
-            try {
-                const partialsPlugin = grapesjs.plugins.get('jaraba-partials');
-                if (partialsPlugin) {
-                    partialsPlugin(this.editor);
-                    console.log('Plugin jaraba-partials ejecutado correctamente.');
-                } else {
-                    console.warn('Plugin jaraba-partials no encontrado.');
-                }
-            } catch (e) {
-                console.error('Error ejecutando plugin jaraba-partials:', e);
-            }
+            // Medir altura real del toolbar y configurar CSS variable
+            this.updateToolbarHeight();
 
-            // Registrar componentes Jaraba custom
-            try {
-                this.registerJarabaComponents();
-            } catch (e) {
-                console.error('Error registrando componentes Jaraba:', e);
-            }
-
-            // Ejecutar plugin Command Palette (búsqueda rápida de bloques/comandos)
-            try {
-                const cmdPalettePlugin = grapesjs.plugins.get('jaraba-command-palette');
-                if (cmdPalettePlugin) {
-                    cmdPalettePlugin(this.editor);
-                    console.log('Plugin jaraba-command-palette ejecutado correctamente.');
-                } else {
-                    console.warn('Plugin jaraba-command-palette no encontrado.');
-                }
-            } catch (e) {
-                console.error('Error ejecutando plugin jaraba-command-palette:', e);
-            }
+            // ─── Configuración inmediata (no necesita 'load' event) ───
 
             // Configurar Storage Manager custom (REST)
             this.setupStorageManager();
@@ -371,24 +337,27 @@
             // Configurar auto-save
             this.setupAutoSave();
 
-            // Registrar comando jaraba:save (referenciado por Command Palette)
+            // Registrar comando jaraba:save
             const self = this;
             this.editor.Commands.add('jaraba:save', {
                 async run(editor) {
                     try {
                         await editor.store();
-                        console.log('Canvas guardado via comando jaraba:save');
+                        console.log('[Jaraba Canvas] Guardado via jaraba:save');
                     } catch (error) {
-                        console.error('Error en jaraba:save:', error);
+                        console.error('[Jaraba Canvas] Error en jaraba:save:', error);
                     }
                 },
             });
 
-            // Configurar eventos
+            // Configurar eventos del canvas (inyección de estilos, etc.)
             this.setupEventListeners();
 
             // Configurar tabs del panel derecho (Estilos, Propiedades, Capas)
             this.setupPanelTabs();
+
+            // Configurar tabs del panel izquierdo (Bloques/Plantillas)
+            this.setupLeftPanelTabs();
 
             // Configurar toggle de viewport (Desktop, Tablet, Mobile)
             this.setupViewportToggle();
@@ -399,16 +368,107 @@
             // Sprint A3: Configurar mejoras visuales de drag & drop
             this.setupDragDropPolish();
 
+            // ─── Carga diferida (cuando el editor esté listo) ───
+
+            this.updateLoadingStep('Cargando bloques y plugins...');
+
+            // Cargar bloques dinámicos desde el servidor
+            try {
+                this.loadBlocks();
+            } catch (e) {
+                console.error('[Jaraba Canvas] Error cargando bloques:', e);
+            }
+
+            // Ejecutar plugins registrados de forma segura
+            this.loadPlugin('jaraba-blocks');
+            this.loadPlugin('jaraba-seo');
+            this.loadPlugin('jaraba-ai');
+            this.loadPlugin('jaraba-partials');
+            this.loadPlugin('jaraba-command-palette');
+
+            // Registrar componentes Jaraba custom
+            try {
+                this.registerJarabaComponents();
+            } catch (e) {
+                console.error('[Jaraba Canvas] Error registrando componentes:', e);
+            }
+
             // Cargar contenido existente
+            this.updateLoadingStep('Cargando contenido...');
             this.loadContent();
 
-            console.log('Jaraba Canvas Editor v3 inicializado correctamente.');
+            // Ocultar skeleton de carga
+            this.hideLoadingSkeleton();
 
-            // Exponer editor en window para acceso desde E2E tests (Cypress)
-            // IMPORTANTE: Se expone DESPUÉS de cargar todos los plugins, bloques,
-            // storage, eventos y contenido para que los tests accedan a un editor
-            // completamente inicializado con todos los commands y component types.
+            console.log('[Jaraba Canvas] Jaraba Canvas Editor v3 inicializado correctamente.');
+
+            // Exponer editor globalmente para E2E tests y plugins externos
             window.editor = this.editor;
+        }
+
+        /**
+         * Carga un plugin GrapesJS de forma segura con manejo de errores.
+         *
+         * @param {string} pluginName - Nombre del plugin registrado.
+         */
+        loadPlugin(pluginName) {
+            try {
+                const plugin = grapesjs.plugins.get(pluginName);
+                if (plugin) {
+                    plugin(this.editor);
+                    console.log(`[Jaraba Canvas] Plugin ${pluginName} ejecutado.`);
+                } else {
+                    console.warn(`[Jaraba Canvas] Plugin ${pluginName} no encontrado.`);
+                }
+            } catch (e) {
+                console.error(`[Jaraba Canvas] Error ejecutando plugin ${pluginName}:`, e);
+            }
+        }
+
+        /**
+         * Mide la altura real del toolbar y la establece como CSS variable
+         * para que el layout del canvas se ajuste dinámicamente.
+         */
+        updateToolbarHeight() {
+            const saasHeader = document.querySelector('.canvas-editor__saas-header');
+            const toolbar = document.querySelector('.canvas-editor__toolbar');
+            let totalHeight = 0;
+
+            if (saasHeader) totalHeight += saasHeader.offsetHeight;
+            if (toolbar) totalHeight += toolbar.offsetHeight;
+
+            if (totalHeight > 0) {
+                document.documentElement.style.setProperty(
+                    '--jaraba-editor-toolbar-height',
+                    `${totalHeight}px`
+                );
+                console.log(`[Jaraba Canvas] Altura del toolbar: ${totalHeight}px`);
+            }
+        }
+
+        /**
+         * Actualiza el texto del paso de carga en el skeleton.
+         *
+         * @param {string} stepText - Texto descriptivo del paso actual.
+         */
+        updateLoadingStep(stepText) {
+            const stepsEl = document.getElementById('gjs-loading-steps');
+            if (stepsEl) {
+                stepsEl.innerHTML = `<div class="gjs-loading-step">${stepText}</div>`;
+            }
+        }
+
+        /**
+         * Oculta el skeleton de carga con animación de fade-out.
+         */
+        hideLoadingSkeleton() {
+            const skeleton = document.getElementById('gjs-loading-skeleton');
+            if (skeleton) {
+                setTimeout(() => {
+                    skeleton.classList.add('is-hidden');
+                    setTimeout(() => skeleton.remove(), 400);
+                }, 300);
+            }
         }
 
         /**
@@ -491,7 +551,12 @@
                 if (!response.ok) throw new Error('Error al cargar bloques');
 
                 const blocks = await response.json();
-                const blockManager = this.editor.BlockManager;
+                const blockManager = this.editor.BlockManager || this.editor.Blocks;
+
+                if (!blockManager) {
+                    console.error('[Jaraba Canvas] BlockManager no disponible. Editor no inicializado correctamente.');
+                    return;
+                }
 
                 blocks.forEach((block) => {
                     blockManager.add(block.id, {
@@ -518,7 +583,12 @@
          * Carga bloques básicos de fallback si falla el servidor.
          */
         loadFallbackBlocks() {
-            const blockManager = this.editor.BlockManager;
+            const blockManager = this.editor.BlockManager || this.editor.Blocks;
+
+            if (!blockManager) {
+                console.error('[Jaraba Canvas] BlockManager no disponible para fallback blocks.');
+                return;
+            }
 
             blockManager.add('jaraba-text', {
                 label: 'Texto',
@@ -779,9 +849,21 @@
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 // Ctrl+S = Guardar
-                if (e.ctrlKey && e.key === 's') {
+                if (e.ctrlKey && !e.shiftKey && e.key === 's') {
                     e.preventDefault();
                     self.save();
+                }
+                // Ctrl+P = Vista previa
+                if (e.ctrlKey && !e.shiftKey && e.key === 'p') {
+                    e.preventDefault();
+                    const previewBtn = document.querySelector('[data-action="preview"]');
+                    if (previewBtn) previewBtn.click();
+                }
+                // Ctrl+Shift+P = Publicar
+                if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                    e.preventDefault();
+                    const publishBtn = document.querySelector('[data-action="publish"]');
+                    if (publishBtn) publishBtn.click();
                 }
             });
         }
@@ -832,14 +914,36 @@
                 if (data && data.html && data.html.trim().length > 0) {
                     console.log('HTML del template detectado, iniciando inyección...');
 
+                    // Helper para obtener componentes del canvas de forma segura
+                    const getCanvasComponents = () => {
+                        if (self.editor.DomComponents) {
+                            const wrapper = self.editor.DomComponents.getWrapper();
+                            if (wrapper) {
+                                // GrapesJS v0.21.x usa components() no getComponents()
+                                if (typeof wrapper.components === 'function') {
+                                    return wrapper.components();
+                                }
+                                if (typeof wrapper.getComponents === 'function') {
+                                    return wrapper.getComponents();
+                                }
+                            }
+                            return { length: 0 };
+                        }
+                        // Fallback: usar getComponents() si está disponible
+                        if (typeof self.editor.getComponents === 'function') {
+                            return self.editor.getComponents();
+                        }
+                        return { length: 0 };
+                    };
+
                     // Función para inyectar con verificación
                     const injectTemplate = (attempt = 1) => {
                         const maxAttempts = 5;
                         const delay = 100; // 100ms entre intentos
 
                         // Verificar que el canvas sigue vacío
-                        if (self.editor.getComponents().length === 0) {
-                            console.log(`Intento ${attempt}: Inyectando HTML del template...`);
+                        if (getCanvasComponents().length === 0) {
+                            console.log(`[Jaraba Canvas] Intento ${attempt}: Inyectando HTML del template...`);
                             self.editor.setComponents(data.html);
 
                             // También cargar CSS si existe
@@ -849,7 +953,7 @@
 
                             // Verificar que la inyección funcionó
                             setTimeout(() => {
-                                const count = self.editor.getComponents().length;
+                                const count = getCanvasComponents().length;
                                 if (count > 0) {
                                     console.log(`Template pre-cargado correctamente (${count} componentes).`);
                                     // Re-inyectar estilos después de cargar el template
@@ -878,9 +982,110 @@
         /**
          * Configura los tabs del panel derecho (Estilos, Propiedades, Capas).
          * 
+         * Configura tabs del panel izquierdo (Bloques / Plantillas).
+         */
+        setupLeftPanelTabs() {
+            const tabs = document.querySelectorAll('[data-left-panel]');
+            const blocksSection = document.getElementById('gjs-blocks-section');
+            const templatesSection = document.getElementById('gjs-templates-section');
+
+            if (!tabs.length || !blocksSection || !templatesSection) return;
+
+            let templatesLoaded = false;
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const panel = tab.dataset.leftPanel;
+
+                    // Actualizar estado activo de tabs
+                    tabs.forEach(t => t.classList.remove('is-active'));
+                    tab.classList.add('is-active');
+
+                    // Mostrar/ocultar secciones
+                    if (panel === 'blocks') {
+                        blocksSection.hidden = false;
+                        templatesSection.hidden = true;
+                    } else {
+                        blocksSection.hidden = true;
+                        templatesSection.hidden = false;
+
+                        // Cargar plantillas la primera vez
+                        if (!templatesLoaded) {
+                            templatesLoaded = true;
+                            this.loadTemplatesPanel();
+                        }
+                    }
+                });
+            });
+        }
+
+        /**
+         * Carga las plantillas desde el API en el panel izquierdo.
+         */
+        async loadTemplatesPanel() {
+            const container = document.getElementById('gjs-templates-container');
+            if (!container) return;
+
+            try {
+                const response = await fetch('/api/v1/page-builder/templates');
+                if (!response.ok) throw new Error('Error al cargar plantillas');
+
+                const templates = await response.json();
+                container.innerHTML = '';
+
+                if (!templates.length) {
+                    container.innerHTML = `<p class="jaraba-grapesjs-panel__placeholder">${Drupal.t('No hay plantillas disponibles.')}</p>`;
+                    return;
+                }
+
+                templates.forEach(tpl => {
+                    const card = document.createElement('div');
+                    card.className = 'jaraba-grapesjs-template-card';
+                    card.dataset.templateId = tpl.id;
+                    card.draggable = true;
+                    card.innerHTML = `
+                        <div class="jaraba-grapesjs-template-card__thumb">
+                            ${tpl.thumbnail ? `<img src="${tpl.thumbnail}" alt="${tpl.label}" loading="lazy" />` : '<div class="jaraba-grapesjs-template-card__placeholder-icon">📄</div>'}
+                        </div>
+                        <span class="jaraba-grapesjs-template-card__label">${tpl.label}</span>
+                    `;
+
+                    // Click para insertar la plantilla en el canvas
+                    card.addEventListener('click', () => {
+                        if (tpl.html && this.editor) {
+                            this.editor.addComponents(tpl.html);
+                            if (tpl.css) {
+                                const existing = this.editor.getCss() || '';
+                                this.editor.setStyle(existing + '\n' + tpl.css);
+                            }
+                            console.log(`[Jaraba Canvas] Plantilla "${tpl.label}" insertada.`);
+                        }
+                    });
+
+                    container.appendChild(card);
+                });
+
+                // Buscador de plantillas
+                const searchInput = document.getElementById('gjs-templates-search');
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => {
+                        const query = searchInput.value.toLowerCase();
+                        container.querySelectorAll('.jaraba-grapesjs-template-card').forEach(card => {
+                            const label = card.querySelector('.jaraba-grapesjs-template-card__label')?.textContent?.toLowerCase() || '';
+                            card.style.display = label.includes(query) ? '' : 'none';
+                        });
+                    });
+                }
+            } catch (error) {
+                console.warn('[Jaraba Canvas] Error cargando plantillas:', error);
+                container.innerHTML = `<p class="jaraba-grapesjs-panel__placeholder">${Drupal.t('Error al cargar plantillas. Intenta de nuevo.')}</p>`;
+            }
+        }
+
+        /**
          * Los tabs controlan qué contenedor se muestra:
          * - styles → #gjs-styles-container
-         * - traits → #gjs-traits-container  
+         * - traits → #gjs-traits-container
          * - layers → #gjs-layers-container
          */
         setupPanelTabs() {
@@ -937,10 +1142,12 @@
          */
         setupViewportToggle() {
             const self = this;
+            const trigger = document.getElementById('viewport-dropdown-trigger');
+            const panel = document.getElementById('viewport-dropdown-panel');
             const buttons = document.querySelectorAll('.canvas-editor__viewport-btn:not(.canvas-editor__viewport-btn--rotate)');
 
-            if (buttons.length === 0) {
-                console.warn(Drupal.t('Botones de viewport no encontrados.'));
+            if (!trigger || !panel || buttons.length === 0) {
+                console.warn(Drupal.t('Viewport dropdown no encontrado.'));
                 return;
             }
 
@@ -956,11 +1163,77 @@
                 'mobile-sm': 320,
             };
 
-            /**
-             * Helper: obtiene slider y output frescos del DOM.
-             * Los elementos pueden no existir cuando setupViewportToggle() se llama
-             * por primera vez, pero sí al momento del click.
-             */
+            // Mapa viewport → icono tipo para actualizar el trigger
+            const deviceIcons = {
+                'desktop-xl': 'monitor',
+                'desktop': 'monitor',
+                'laptop': 'laptop',
+                'tablet-landscape': 'tablet',
+                'tablet': 'tablet',
+                'mobile-lg': 'smartphone',
+                'mobile': 'smartphone',
+                'mobile-sm': 'smartphone',
+            };
+
+            // Posicionar panel fixed debajo del trigger
+            const positionPanel = () => {
+                const rect = trigger.getBoundingClientRect();
+                panel.style.top = (rect.bottom + 6) + 'px';
+                panel.style.left = Math.max(0, rect.left + rect.width / 2 - 130) + 'px';
+            };
+
+            // Toggle dropdown abierto/cerrado
+            const togglePanel = () => {
+                const isOpen = panel.classList.toggle('is-open');
+                trigger.setAttribute('aria-expanded', isOpen);
+                panel.setAttribute('aria-hidden', !isOpen);
+                if (isOpen) positionPanel();
+            };
+
+            const closePanel = () => {
+                panel.classList.remove('is-open');
+                trigger.setAttribute('aria-expanded', 'false');
+                panel.setAttribute('aria-hidden', 'true');
+            };
+
+            // Actualizar trigger con viewport activo
+            const updateTrigger = (viewport, width) => {
+                const triggerLabel = document.getElementById('viewport-trigger-label');
+                const triggerIcon = document.getElementById('viewport-trigger-icon');
+                if (triggerLabel) {
+                    triggerLabel.textContent = width + 'px';
+                }
+                if (triggerIcon && deviceIcons[viewport]) {
+                    // Actualizar icono clonando del botón activo
+                    const activeBtn = document.querySelector('.canvas-editor__viewport-btn[data-viewport="' + viewport + '"]');
+                    if (activeBtn) {
+                        const icon = activeBtn.querySelector('svg, img');
+                        if (icon) {
+                            triggerIcon.innerHTML = '';
+                            triggerIcon.appendChild(icon.cloneNode(true));
+                        }
+                    }
+                }
+            };
+
+            // Click en trigger → toggle panel
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel();
+            });
+
+            // Cerrar al hacer click fuera
+            document.addEventListener('click', (e) => {
+                if (!trigger.contains(e.target) && !panel.contains(e.target)) {
+                    closePanel();
+                }
+            });
+
+            // Cerrar con Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePanel();
+            });
+
             const getSliderElements = () => ({
                 slider: document.getElementById('viewport-custom-width'),
                 output: document.getElementById('viewport-custom-value'),
@@ -982,12 +1255,17 @@
 
                     // Sincronizar slider con el preset seleccionado.
                     const { slider, output } = getSliderElements();
-                    if (slider && deviceWidths[viewport] !== undefined) {
-                        slider.value = deviceWidths[viewport];
+                    const width = deviceWidths[viewport] || 1920;
+                    if (slider) {
+                        slider.value = width;
                         if (output) {
-                            output.textContent = deviceWidths[viewport] + 'px';
+                            output.textContent = width + 'px';
                         }
                     }
+
+                    // Actualizar trigger y cerrar panel
+                    updateTrigger(viewport, width);
+                    closePanel();
                 });
             });
 
@@ -1005,6 +1283,12 @@
 
                     // Deseleccionar presets activos.
                     buttons.forEach((b) => b.classList.remove('is-active'));
+
+                    // Actualizar trigger label
+                    const triggerLabel = document.getElementById('viewport-trigger-label');
+                    if (triggerLabel) {
+                        triggerLabel.textContent = width + 'px';
+                    }
 
                     // Aplicar ancho custom al canvas de GrapesJS.
                     if (self.editor) {
@@ -1056,7 +1340,7 @@
                 }, 500);
             }
 
-            console.log(Drupal.t('Viewport: @count presets configurados.', { '@count': buttons.length }));
+            console.log(Drupal.t('Viewport: @count presets configurados (dropdown).', { '@count': buttons.length }));
         }
 
         /**
@@ -1229,19 +1513,32 @@
             containers.forEach((container) => {
                 // Verificar que estamos en modo canvas
                 if (drupalSettings.jarabaCanvas?.editorMode !== 'canvas') {
-                    console.log('Modo canvas desactivado. Usando editor legacy.');
+                    console.log('[Jaraba Canvas] Modo canvas desactivado. Usando editor legacy.');
                     return;
                 }
 
-                // Inicializar editor
-                window.jarabaCanvasEditor = new JarabaCanvasEditor(container, {
-                    container: container,
-                });
+                // Prevenir doble inicialización si el editor ya existe y está activo
+                if (window.jarabaCanvasEditor && window.jarabaCanvasEditor.isInitialized) {
+                    console.log('[Jaraba Canvas] Editor ya activo, omitiendo re-inicialización.');
+                    return;
+                }
+
+                // Inicializar editor (el container se fuerza a '#gjs-editor' dentro del constructor)
+                window.jarabaCanvasEditor = new JarabaCanvasEditor(container);
             });
         },
         detach: function (context, settings, trigger) {
+            // CRITICAL FIX: Solo destruir el editor en unload real de la página.
+            // Drupal puede llamar detach con trigger='serialize' o sin trigger
+            // durante procesos AJAX, lo que destruiría el editor prematuramente.
             if (trigger === 'unload' && window.jarabaCanvasEditor) {
-                window.jarabaCanvasEditor.destroy();
+                // Verificar que el contexto contiene el editor (no un sub-contexto AJAX)
+                const editorEl = context.querySelector ? context.querySelector('#gjs-editor') : null;
+                if (editorEl || context === document) {
+                    console.log('[Jaraba Canvas] Destruyendo editor (unload).');
+                    window.jarabaCanvasEditor.destroy();
+                    window.jarabaCanvasEditor = null;
+                }
             }
         },
     };

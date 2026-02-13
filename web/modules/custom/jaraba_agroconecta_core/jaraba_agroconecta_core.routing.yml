@@ -768,7 +768,7 @@ jaraba_agroconecta.api.notifications.preferences.get:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::getPreferences'
   methods: [GET]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 jaraba_agroconecta.api.notifications.preferences.update:
   path: '/api/v1/agro/notifications/preferences'
@@ -776,7 +776,7 @@ jaraba_agroconecta.api.notifications.preferences.update:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::updatePreferences'
   methods: [POST]
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access content'
 
 jaraba_agroconecta.api.notifications.send:
   path: '/api/v1/agro/notifications/send'

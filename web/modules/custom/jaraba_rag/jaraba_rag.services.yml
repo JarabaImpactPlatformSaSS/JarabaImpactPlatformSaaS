@@ -24,7 +24,7 @@ services:
   jaraba_rag.rag_service:
     class: Drupal\jaraba_rag\Service\JarabaRagService
     arguments:
-      - '@jaraba_rag.tenant_context'
+      - '@jaraba_rag.tenant_filter'
       - '@jaraba_rag.grounding_validator'
       - '@jaraba_rag.query_analytics'
       - '@ai.provider'
@@ -35,10 +35,12 @@ services:
       - '@cache.default'
 
   # ---------------------------------------------------------------------------
-  # Contexto Multi-Tenant
+  # Filtrado Multi-Tenant para RAG/Qdrant
+  # AUDIT-CONS-002: Renombrado de tenant_context a tenant_filter para
+  # eliminar colisión con ecosistema_jaraba_core.tenant_context (canónico).
   # ---------------------------------------------------------------------------
-  jaraba_rag.tenant_context:
-    class: Drupal\jaraba_rag\Service\TenantContextService
+  jaraba_rag.tenant_filter:
+    class: Drupal\jaraba_rag\Service\RagTenantFilterService
     arguments:
       - '@group.membership_loader'
       - '@current_user'
@@ -72,7 +74,7 @@ services:
     arguments:
       - '@ai.provider'
       - '@jaraba_rag.qdrant_client'
-      - '@jaraba_rag.tenant_context'
+      - '@jaraba_rag.tenant_filter'
       - '@entity_type.manager'
       - '@logger.factory'
       - '@config.factory'

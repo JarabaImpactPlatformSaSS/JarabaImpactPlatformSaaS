@@ -166,7 +166,7 @@ section-editor:
 
 # Canvas Editor Visual - Editor lado a lado clase mundial
 canvas-editor:
-  version: 1.0
+  version: 1.1
   css:
     theme:
       css/canvas-editor.css: {}
@@ -257,9 +257,9 @@ block-timeline:
 
 # GrapesJS Canvas Editor - Canvas v3 Constructor Visual Clase Mundial
 # Motor de edición drag-and-drop con inline editing y undo/redo nativo
-# v5.2: Sprint A3 — Drag & Drop Polish (ghost elements, drop zones, toast)
+# v5.3: Fix GrapesJS init lifecycle, SEO guard, viewport dropdown, loading skeleton
 grapesjs-canvas:
-  version: 5.2
+  version: 5.3
   css:
     theme:
       # GrapesJS core CSS (local, descargado de unpkg.com para evitar CSP)

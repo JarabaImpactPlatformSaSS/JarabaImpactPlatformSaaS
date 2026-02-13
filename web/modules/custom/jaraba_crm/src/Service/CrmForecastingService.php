@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_crm\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -23,6 +24,7 @@ class CrmForecastingService {
     protected OpportunityService $opportunityService,
     protected PipelineStageService $pipelineStageService,
     protected LoggerInterface $logger,
+    protected CacheBackendInterface $cache,
   ) {}
 
   /**
@@ -35,6 +37,13 @@ class CrmForecastingService {
    *   Datos de forecast: total, weighted, by_stage, by_month.
    */
   public function getForecast(int $tenantId): array {
+    // AUDIT-PERF-N08: Cache 5 min — evita N+1 queries por stage.
+    $cacheKey = "jaraba_crm:forecast:{$tenantId}";
+    $cached = $this->cache->get($cacheKey);
+    if ($cached) {
+      return $cached->data;
+    }
+
     try {
       $stages = $this->pipelineStageService->getStagesForTenant($tenantId);
       $byStage = [];
@@ -75,11 +84,15 @@ class CrmForecastingService {
       $totalValue = $this->opportunityService->getPipelineValue($tenantId);
       $weightedValue = $this->opportunityService->getWeightedPipelineValue($tenantId);
 
-      return [
+      $forecast = [
         'total_pipeline' => round($totalValue, 2),
         'weighted_pipeline' => round($weightedValue, 2),
         'by_stage' => $byStage,
       ];
+
+      $this->cache->set($cacheKey, $forecast, time() + 300);
+
+      return $forecast;
     }
     catch (\Exception $e) {
       $this->logger->error('Error en forecast: @error', ['@error' => $e->getMessage()]);

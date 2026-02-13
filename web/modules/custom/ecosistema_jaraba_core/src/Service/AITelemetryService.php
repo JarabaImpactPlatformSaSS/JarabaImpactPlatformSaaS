@@ -193,15 +193,20 @@ class AITelemetryService
     /**
      * Obtiene estadísticas agregadas de un agente.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id para evitar
+     * fuga de datos cross-tenant en queries de agregación.
+     *
      * @param string $agentId
      *   ID del agente.
      * @param int $periodDays
      *   Período en días para el análisis.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Estadísticas agregadas.
      */
-    public function getAgentStats(string $agentId, int $periodDays = 7): array
+    public function getAgentStats(string $agentId, int $periodDays = 7, ?int $tenantId = NULL): array
     {
         if (!$this->database->schema()->tableExists('ai_telemetry')) {
             return $this->getDefaultStats();
@@ -210,8 +215,8 @@ class AITelemetryService
         $since = time() - ($periodDays * 86400);
 
         try {
-            $result = $this->database->query("
-        SELECT 
+            $query = "
+        SELECT
           COUNT(*) as total_invocations,
           AVG(latency_ms) as avg_latency_ms,
           MAX(latency_ms) as max_latency_ms,
@@ -220,11 +225,19 @@ class AITelemetryService
           SUM(tokens_used) as total_tokens,
           SUM(cost_estimated) as total_cost
         FROM {ai_telemetry}
-        WHERE agent_id = :agent_id AND created >= :since
-      ", [
-                    ':agent_id' => $agentId,
-                    ':since' => $since,
-                ])->fetchAssoc();
+        WHERE agent_id = :agent_id AND created >= :since";
+
+            $params = [
+                ':agent_id' => $agentId,
+                ':since' => $since,
+            ];
+
+            if ($tenantId !== NULL) {
+                $query .= " AND tenant_id = :tenant_id";
+                $params[':tenant_id'] = $tenantId;
+            }
+
+            $result = $this->database->query($query, $params)->fetchAssoc();
 
             if ($result && $result['total_invocations'] > 0) {
                 $result['success_rate'] = round(($result['success_count'] / $result['total_invocations']) * 100, 2);
@@ -259,13 +272,18 @@ class AITelemetryService
     /**
      * Obtiene estadísticas de todos los agentes.
      *
+     * AUDIT-SEC-N05: Añadido filtro obligatorio por tenant_id para evitar
+     * fuga de datos cross-tenant en queries de agregación.
+     *
      * @param int $periodDays
      *   Período en días.
+     * @param int|null $tenantId
+     *   ID del tenant para filtrar. NULL solo permitido para super-admins.
      *
      * @return array
      *   Array de estadísticas por agente.
      */
-    public function getAllAgentsStats(int $periodDays = 7): array
+    public function getAllAgentsStats(int $periodDays = 7, ?int $tenantId = NULL): array
     {
         if (!$this->database->schema()->tableExists('ai_telemetry')) {
             return [];
@@ -274,18 +292,29 @@ class AITelemetryService
         $since = time() - ($periodDays * 86400);
 
         try {
-            $results = $this->database->query("
-        SELECT 
+            $query = "
+        SELECT
           agent_id,
           COUNT(*) as total_invocations,
           AVG(latency_ms) as avg_latency_ms,
           SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as success_rate,
           SUM(cost_estimated) as total_cost
         FROM {ai_telemetry}
-        WHERE created >= :since
+        WHERE created >= :since";
+
+            $params = [':since' => $since];
+
+            if ($tenantId !== NULL) {
+                $query .= " AND tenant_id = :tenant_id";
+                $params[':tenant_id'] = $tenantId;
+            }
+
+            $query .= "
         GROUP BY agent_id
-        ORDER BY total_invocations DESC
-      ", [':since' => $since])->fetchAllAssoc('agent_id', \PDO::FETCH_ASSOC);
+        ORDER BY total_invocations DESC";
+
+            $results = $this->database->query($query, $params)
+                ->fetchAllAssoc('agent_id', \PDO::FETCH_ASSOC);
 
             return $results ?: [];
         } catch (\Exception $e) {

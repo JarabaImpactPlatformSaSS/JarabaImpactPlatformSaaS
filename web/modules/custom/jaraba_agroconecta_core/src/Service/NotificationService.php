@@ -307,22 +307,27 @@ class NotificationService
             ->condition('status', [NotificationLogAgro::STATUS_FAILED, NotificationLogAgro::STATUS_BOUNCED], 'IN')
             ->accessCheck(FALSE)->count()->execute();
 
-        // Cargar todos para calcular open/click (eficiente solo con volúmenes bajos).
-        $allLogs = $storage->loadMultiple();
+        // AUDIT-PERF-N05: Procesar en lotes de 200 en lugar de cargar TODOS en memoria.
+        $ids = $storage->getQuery()->accessCheck(FALSE)->execute();
         $opened = 0;
         $clicked = 0;
         $channelCounts = [];
 
-        foreach ($allLogs as $log) {
-            /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationLogAgro $log */
-            if ($log->wasOpened()) {
-                $opened++;
+        foreach (array_chunk($ids, 200) as $batch) {
+            $logs = $storage->loadMultiple($batch);
+            foreach ($logs as $log) {
+                /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationLogAgro $log */
+                if ($log->wasOpened()) {
+                    $opened++;
+                }
+                if ($log->wasClicked()) {
+                    $clicked++;
+                }
+                $ch = $log->get('channel')->value;
+                $channelCounts[$ch] = ($channelCounts[$ch] ?? 0) + 1;
             }
-            if ($log->wasClicked()) {
-                $clicked++;
-            }
-            $ch = $log->get('channel')->value;
-            $channelCounts[$ch] = ($channelCounts[$ch] ?? 0) + 1;
+            // Liberar memoria del lote anterior.
+            unset($logs);
         }
 
         return [
