@@ -30,6 +30,7 @@
 @use 'components/sidebar';
 @use 'components/breadcrumbs';
 @use 'components/mobile-menu';
+@use 'components/avatar-nav';
 
 // Premium Components (extensión a todas las páginas)
 @use 'components/page-premium';
@@ -73,6 +74,9 @@
 
 // Auth Pages - Login, Register, Password
 @use 'auth';
+
+// User Pages - Profile, Edit, Logout, Contact, Cancel
+@use 'user-pages';
 
 // i18n Module - Translation Dashboard & Selector
 @use '../../../../modules/custom/jaraba_i18n/scss/i18n-selector' as i18nSelector;

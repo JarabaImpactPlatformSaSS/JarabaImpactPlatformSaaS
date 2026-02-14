@@ -4,7 +4,7 @@
  * page--i18n.html.twig - Dashboard de traducciones frontend limpio.
  *
  * ARQUITECTURA LIMPIA (mismo patrón que page--site-builder.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal (excepto content)
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -50,9 +50,15 @@
 
   {# MAIN CONTENT - Full-width layout #}
   <main id="main-content" class="dashboard-main i18n-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     {# Contenedor del dashboard sin márgenes para hero full-width #}
     <div class="dashboard-wrapper dashboard-wrapper--full">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

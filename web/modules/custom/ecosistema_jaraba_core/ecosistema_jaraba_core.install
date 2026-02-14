@@ -1443,3 +1443,67 @@ function ecosistema_jaraba_core_update_9014(): string {
 
   return $summary;
 }
+
+/**
+ * Creates the tenant_metering table for usage tracking and anomaly detection.
+ */
+function ecosistema_jaraba_core_update_9015(): string {
+  $schema = \Drupal::database()->schema();
+
+  if ($schema->tableExists('tenant_metering')) {
+    return 'Table tenant_metering already exists.';
+  }
+
+  $schema->createTable('tenant_metering', [
+    'description' => 'Metering and usage tracking per tenant.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'tenant_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'metric' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'value' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'period' => [
+        'type' => 'varchar',
+        'length' => 7,
+        'not null' => FALSE,
+        'description' => 'Y-m format period.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'idx_tenant' => ['tenant_id'],
+      'idx_metric' => ['metric'],
+      'idx_created' => ['created'],
+      'idx_tenant_metric_created' => ['tenant_id', 'metric', 'created'],
+      'idx_period' => ['period'],
+    ],
+  ]);
+
+  return 'Created tenant_metering table.';
+}

@@ -17,7 +17,7 @@
  * - /my-pages
  *
  * DIRECTRICES:
- * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy — usa {{ clean_content }})
  * - Directriz: "SaaS debe tener control absoluto sobre el frontend limpio"
  *
  * @see ecosistema_jaraba_theme_theme_suggestions_page_alter()
@@ -72,8 +72,14 @@
     
     NOTA: No incluimos {{ page.breadcrumb }} ni menús para frontend limpio.
   #}
+  {% if clean_messages %}
+    <div class="highlighted container">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
+
   <div class="page-builder-content full-width">
-    {{ page.content }}
+    {{ clean_content }}
   </div>
 </main>
 

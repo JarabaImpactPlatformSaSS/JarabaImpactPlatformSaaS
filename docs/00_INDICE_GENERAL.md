@@ -2,9 +2,49 @@
 
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
-**Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-13 23:59
-**Versión:** 31.0.0 (Remediación Auditoría Integral ejecutada — FASE 1 + FASE 2 completadas, FASE 3 en progreso, madurez 4.5→4.9)
+**Fecha de creación:** 2026-01-09 15:28
+**Última actualización:** 2026-02-13
+**Versión:** 33.0.0 (Admin Center Premium f104 — 7 FASEs completadas, 8 páginas, 5 servicios, 30+ APIs, dark mode)
+
+> **🏢 ADMIN CENTER PREMIUM (Spec f104) — 7/7 FASES COMPLETADAS** (2026-02-13)
+> - **Spec:** f104 — SaaS Admin Center Premium | **Plan:** [20260213-Plan_Implementacion_Admin_Center_Premium_f104_v1.md](./implementacion/20260213-Plan_Implementacion_Admin_Center_Premium_f104_v1.md)
+> - **FASE 1:** Dashboard + Shell Layout (sidebar colapsable 260px, topbar, Command Palette Cmd+K, KPI scorecards, quick links, activity feed)
+> - **FASE 2:** Gestión de Tenants (DataTable server-side con sort/filter/pagination, slide-panel 360 detalle, impersonation, export CSV)
+> - **FASE 3:** Gestión de Usuarios (DataTable users, slide-panel 360, force logout, cross-tenant user search)
+> - **FASE 4:** Centro Financiero (SaaS metrics: MRR/ARR/Churn/NRR, tenant analytics table, health badges)
+> - **FASE 5:** Alertas y Playbooks (FocAlert dashboard, severity filters, state transitions, CsPlaybook grid, auto-execute)
+> - **FASE 6:** Analytics y Logs (Chart.js trends MRR/Tenant/Activity, AI telemetry table, combined AuditLog+watchdog viewer, source/severity/search filters)
+> - **FASE 7:** Configuración Global y Polish (Settings 4-tab: General/Planes/Integraciones/API Keys, dark mode tokens, focus indicators, prefers-reduced-motion)
+> - **5 servicios:** AdminCenterAggregatorService, AdminCenterFinanceService, AdminCenterAlertService, AdminCenterAnalyticsService, AdminCenterSettingsService
+> - **30+ API endpoints:** tenants (6), users (5), finance (2), alerts (6), analytics (3), logs (1), settings (8)
+> - **8 páginas:** dashboard, tenants, users, finance, alerts, analytics, logs, settings
+> - **10 templates Twig**, 10 JS initializers (`Drupal.behaviors` + `once()`), 10 SCSS partials (52 entries in main.scss)
+> - **Dark mode:** `_admin-center-dark-mode.scss` con token overrides body.dark-mode + prefers-color-scheme: dark
+> - **Patrón DI opcional:** `~` NULL en services.yml + `EcosistemaJarabaCoreServiceProvider::register()` inyección condicional para módulos satélite (jaraba_foc, jaraba_customer_success)
+> - **Arquitectura v23.0.0** | Directrices v23.0.0 | Aprendizaje: [2026-02-13_admin_center_premium_f104_7_fases.md](./tecnicos/aprendizajes/2026-02-13_admin_center_premium_f104_7_fases.md)
+>
+
+> **🔧 REMEDIACIÓN PAGE BUILDER FASES 0-5 — COMPLETADA** (2026-02-14)
+> - **FASE 0:** Publish endpoint 404 fix (PageContentPublishController), SEO URLs automáticas (preSave slug), Navigation behavior + SCSS (dual architecture)
+> - **FASE 1:** 4 SCSS nuevos compilados via Docker NVM, 4 libraries registradas, 4 attachments en .module
+> - **FASE 2:** 3 bloques estáticos (timeline, tabs-content, countdown) redirigidos a componentes interactivos `{ type: 'jaraba-*' }`
+> - **FASE 3:** IconRegistry SVG centralizado (`grapesjs-jaraba-icons.js`, 17 iconos, ~22 emojis reemplazados), API `Drupal.jarabaIcons.get(name, fallback)`
+> - **FASE 5:** Font-family unificado a `'Outfit'` (JS + 8 SCSS parciales)
+> - **Fix PHP 8.4:** AdminCenterApiController — ControllerBase herencia sin constructor promotion (DRUPAL11-002)
+> - **8 reglas nuevas:** PB-ROUTE-001, PB-SEO-001, PB-DUAL-001, PB-DEDUP-001, PB-ICON-001, SCSS-003, SCSS-FONT-001, DRUPAL11-002
+> - **Arquitectura v22.0.0** | Directrices v22.0.0 | Aprendizaje: [2026-02-14_page_builder_remediacion_fases_1_5.md](./tecnicos/aprendizajes/2026-02-14_page_builder_remediacion_fases_1_5.md)
+>
+
+> **🧭 NAVEGACION CONTEXTUAL POR AVATAR — IMPLEMENTADA** (2026-02-13)
+> - **AvatarNavigationService**: Servicio central que genera items de navegacion segun avatar detectado (10 avatares: jobseeker, recruiter, entrepreneur, producer, merchant, service_provider, student, mentor, tenant_admin, anonymous)
+> - **Parcial _avatar-nav.html.twig**: Integrado en _header.html.twig (DRY), se propaga automaticamente a ~33 page templates
+> - **SCSS BEM mobile-first**: Bottom nav fija en mobile (<768px) + barra horizontal en desktop. Body class `.has-avatar-nav`
+> - **Theme Setting**: `enable_avatar_nav` configurable desde Encabezado > Navegacion contextual
+> - **7 page templates `only`** actualizadas: dashboard, andalucia-ei, comercio-marketplace, emprendimiento-bmc, emprendimiento-experimentos-gestion, emprendimiento-hipotesis, heatmap-analytics
+> - **Spec f-103 Fase 1**: Capa 1 de 3 (sin AI Decision Engine). Generaliza EmployabilityMenuService (1 vertical → 10 avatares)
+> - **Plan**: [20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md](./implementacion/20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md)
+> - **Aprendizaje**: [2026-02-13_avatar_navigation_contextual.md](./tecnicos/aprendizajes/2026-02-13_avatar_navigation_contextual.md)
+>
 
 > **🔧 REMEDIACIÓN AUDITORÍA INTEGRAL — FASE 1 + FASE 2 COMPLETADAS** (2026-02-13)
 > - **23/65 hallazgos resueltos**: 7/7 Críticos + 8/8 Altos + 8/38 Medios
@@ -649,8 +689,9 @@
 | Documento | Descripción | Fecha |
 |-----------|-------------|-------|
 | [20260213-Plan_Remediacion_Auditoria_Integral_v1.md](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) | 📋 **Plan Remediación Auditoría Integral** ⭐ — 65 hallazgos, 3 fases, 8 semanas, 250-350h. TOC 16 secciones. Catálogo completo, correspondencia directrices, checklist frontend 12 sub-secciones | 2026-02-13 |
+| [20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md](./implementacion/20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md) | 🧭 **Navegacion Contextual Avatar** ⭐ — AvatarNavigationService 10 avatares, _avatar-nav.html.twig (bottom nav mobile + barra desktop), SCSS BEM, Theme Setting enable_avatar_nav, 7 templates `only` actualizadas. Spec f-103 Fase 1 | 2026-02-13 |
 
-**Total documentos implementación:** 34
+**Total documentos implementación:** 35
 
 ---
 
@@ -824,7 +865,9 @@
 
 | [2026-02-13_auditoria_integral_estado_saas.md](./tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md) | 🔍 **Auditoría Integral Estado SaaS** ⭐ — 11 lecciones aprendidas (Situación → Aprendizaje → Regla). Índices DB prerrequisito, locking financiero, HMAC webhooks, _permission vs _user_is_logged_in, sanitización \|raw, AccessControlHandler obligatorio, servicio canónico único, API envelope estándar, API versioning, tenant_id entity_reference, social publish async. 11 reglas AUDIT-* (9 P0, 2 P1). 65 hallazgos, 4 dimensiones | 2026-02-13 |
 
-**Total aprendizajes:** 73
+| [2026-02-13_avatar_navigation_contextual.md](./tecnicos/aprendizajes/2026-02-13_avatar_navigation_contextual.md) | 🧭 **Navegacion Contextual por Avatar** ⭐ — 5 lecciones aprendidas (Situación → Aprendizaje → Regla). Generalizacion de servicios de menu por vertical. Propagacion DRY via _header.html.twig. Scope leak en includes con `only`. Resolucion segura URLs modulos opcionales. Bottom nav mobile padding defensivo. 5 reglas NAV-001 a NAV-005. AvatarNavigationService 10 avatares | 2026-02-13 |
+
+**Total aprendizajes:** 74
 
 ---
 

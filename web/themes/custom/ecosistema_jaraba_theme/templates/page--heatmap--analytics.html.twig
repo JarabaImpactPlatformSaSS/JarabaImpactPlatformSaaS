@@ -6,8 +6,15 @@
  * Page template limpio para el dashboard de Heatmap Analytics.
  * Sin sidebars, layout full-width premium.
  *
+ * Zero Region Policy — this template NEVER renders page.* regions directly.
+ * Content is provided via clean_content (sanitised main content) and
+ * clean_messages (system status messages) which are injected by the
+ * preprocess layer, preventing Drupal block regions from leaking markup.
+ *
  * Ruta: /heatmap/analytics
- * Patrón: Zero Region (solo page.content)
+ * - Usa clean_content en lugar de page.content
+ * - Usa clean_messages en lugar de page.highlighted
+ * - Breadcrumb eliminado (Zero Region Policy)
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
@@ -22,26 +29,23 @@
     'site_slogan': site_slogan|default(''),
     'logo': logo,
     'logged_in': logged_in,
-    'theme_settings': theme_settings|default({})
+    'theme_settings': theme_settings|default({}),
+    'avatar_nav': avatar_nav|default(null)
   } only %}
 
   {# CONTENIDO PRINCIPAL #}
   <main class="main-content main-content--full" role="main">
-    {% if page.breadcrumb %}
-      <div class="breadcrumb-wrapper container">
-        {{ page.breadcrumb }}
-      </div>
-    {% endif %}
-
-    {% if page.highlighted %}
+    {# Mensajes del sistema (Zero Region Policy — clean_messages) #}
+    {% if clean_messages %}
       <div class="highlighted container">
-        {{ page.highlighted }}
+        {{ clean_messages }}
       </div>
     {% endif %}
 
+    {# Contenido (Zero Region Policy — clean_content) #}
     <div class="main-content__inner main-content__inner--full">
-      {% if page.content %}
-        {{ page.content }}
+      {% if clean_content %}
+        {{ clean_content }}
       {% endif %}
     </div>
   </main>

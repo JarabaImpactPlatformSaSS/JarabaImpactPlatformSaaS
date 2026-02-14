@@ -1,0 +1,196 @@
+/**
+ * @file
+ * _avatar-nav.scss — Estilos del componente de navegacion contextual por avatar.
+ *
+ * Mobile-first: estilos base para movil (bottom nav fija),
+ * breakpoint md (768px) para desktop (barra horizontal bajo header).
+ *
+ * SSOT: Solo var(--ej-*) con fallbacks hardcoded. NO se definen $ej-* locales.
+ * BEM: .avatar-nav / __badge / __list / __item / __link / --active / __icon / __label
+ */
+
+@use '../variables' as *;
+
+// =============================================
+// BASE — Mobile bottom nav
+// =============================================
+
+.avatar-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ej-color-corporate, #233D63);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-nav__badge {
+  display: none;
+}
+
+.avatar-nav__list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 500px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 0;
+}
+
+.avatar-nav__item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.avatar-nav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  color: var(--ej-text-on-dark, rgba(255, 255, 255, 0.7));
+  text-decoration: none;
+  transition: color $ej-transition-fast;
+  min-width: 48px;
+  min-height: 48px;
+  justify-content: center;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ej-text-on-dark-active, #FFFFFF);
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: $ej-focus-ring;
+    outline-offset: -2px;
+    border-radius: 4px;
+  }
+
+  &--active {
+    color: var(--ej-color-impulse, #FF8C42);
+
+    .avatar-nav__icon {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.avatar-nav__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: transform $ej-transition-fast;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.avatar-nav__label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 64px;
+}
+
+// =============================================
+// DESKTOP — Barra horizontal bajo el header
+// =============================================
+
+@include respond-to(md) {
+  .avatar-nav {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
+    justify-content: center;
+    gap: $ej-spacing-md;
+    padding: 0 $ej-spacing-lg;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .avatar-nav__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--ej-text-on-dark-active, #FFFFFF);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .avatar-nav__list {
+    justify-content: center;
+    width: auto;
+    max-width: 1200px;
+    gap: $ej-spacing-xs;
+  }
+
+  .avatar-nav__item {
+    flex: none;
+  }
+
+  .avatar-nav__link {
+    flex-direction: row;
+    gap: $ej-spacing-xs;
+    padding: 10px $ej-spacing-md;
+    border-radius: $ej-btn-radius;
+    min-width: auto;
+    min-height: auto;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &--active {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .avatar-nav__icon {
+    width: 20px;
+    height: 20px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .avatar-nav__label {
+    font-size: 13px;
+    max-width: none;
+  }
+}
+
+// =============================================
+// BODY CLASS — Padding para bottom nav mobile
+// =============================================
+
+body.has-avatar-nav {
+  @media (max-width: #{$ej-breakpoint-md - 1}) {
+    padding-bottom: 60px;
+  }
+}

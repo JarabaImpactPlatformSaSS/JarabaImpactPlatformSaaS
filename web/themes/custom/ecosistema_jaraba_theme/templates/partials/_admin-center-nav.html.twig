@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * _admin-center-nav.html.twig — Sidebar de navegacion Admin Center.
+ *
+ * Sidebar colapsable con:
+ * - Logo + nombre de plataforma
+ * - Links rapidos con iconos SVG (jaraba_icon)
+ * - Shortcuts de teclado
+ * - Toggle colapsar/expandir
+ *
+ * Variables:
+ * - quick_links: array de links con label, url, icon_category, icon_name, shortcut
+ * - site_name: nombre del sitio
+ * - logo: URL del logo
+ *
+ * i18n: {% trans %} para textos estaticos.
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ *
+ * @see docs/tecnicos/20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md
+ */
+#}
+
+<aside class="admin-center-sidebar" id="admin-center-sidebar"
+       role="navigation" aria-label="{% trans %}Admin navigation{% endtrans %}">
+
+  {# Header del sidebar — Logo + toggle #}
+  <div class="admin-center-sidebar__header">
+    <a href="/admin/jaraba/center" class="admin-center-sidebar__brand">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}" class="admin-center-sidebar__logo" width="32" height="32" />
+      {% else %}
+        <span class="admin-center-sidebar__logo-placeholder">
+          {{ jaraba_icon('analytics', 'dashboard', { color: 'corporate', size: '28px' }) }}
+        </span>
+      {% endif %}
+      <span class="admin-center-sidebar__brand-text">{{ site_name }}</span>
+    </a>
+    <button type="button"
+            class="admin-center-sidebar__toggle"
+            aria-label="{% trans %}Toggle sidebar{% endtrans %}"
+            data-admin-center-toggle>
+      {{ jaraba_icon('ui', 'chevron-left', { size: '18px', color: 'neutral' }) }}
+    </button>
+  </div>
+
+  {# Navegacion principal #}
+  <nav class="admin-center-sidebar__nav">
+    <ul class="admin-center-sidebar__list" role="list">
+      {% for link in quick_links %}
+        <li class="admin-center-sidebar__item">
+          <a href="{{ link.url }}"
+             class="admin-center-sidebar__link"
+             {% if link.shortcut %}title="{{ link.label }} ({{ link.shortcut }})"{% endif %}>
+            <span class="admin-center-sidebar__link-icon">
+              {{ jaraba_icon(link.icon_category, link.icon_name, { size: '20px', color: 'neutral' }) }}
+            </span>
+            <span class="admin-center-sidebar__link-label">{{ link.label }}</span>
+            {% if link.shortcut %}
+              <kbd class="admin-center-sidebar__shortcut">{{ link.shortcut }}</kbd>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  {# Footer del sidebar — Command Palette hint #}
+  <div class="admin-center-sidebar__footer">
+    <button type="button" class="admin-center-sidebar__search-hint" data-admin-center-search>
+      {{ jaraba_icon('ui', 'search', { size: '16px', color: 'neutral' }) }}
+      <span class="admin-center-sidebar__search-text">{% trans %}Search{% endtrans %}</span>
+      <kbd class="admin-center-sidebar__shortcut">
+        <span class="admin-center-sidebar__shortcut-meta">&#8984;</span>K
+      </kbd>
+    </button>
+  </div>
+</aside>

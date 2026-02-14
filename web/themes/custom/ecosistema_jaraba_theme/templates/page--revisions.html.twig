@@ -4,7 +4,7 @@
  * page--revisions.html.twig - Páginas de revisiones frontend limpio.
  *
  * ARQUITECTURA LIMPIA (mismo patrón que page--pixels.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal (excepto content)
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -47,8 +47,14 @@
 
   {# MAIN CONTENT - Full-width layout (mismo patrón que /pixels) #}
   <main id="main-content" class="dashboard-main revisions-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper revisions-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

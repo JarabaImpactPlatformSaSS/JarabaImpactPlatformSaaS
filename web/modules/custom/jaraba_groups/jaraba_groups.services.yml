@@ -1,4 +1,8 @@
 services:
+  logger.channel.jaraba_groups:
+    parent: logger.channel_base
+    arguments: ['jaraba_groups']
+
   jaraba_groups.group_service:
     class: Drupal\jaraba_groups\Service\GroupService
     arguments:

@@ -22,6 +22,8 @@ description: Lecciones aprendidas en implementación de módulos custom Drupal c
 | **Redis Cache** | ecosistema_jaraba_core | ✅ Disponible | Arquitectura base SaaS |
 | **H5P** | Contrib | ✅ Disponible | Para contenido interactivo/video |
 | **xAPI** | jaraba_lms | ✅ Especificado | Progress tracking |
+| **Avatar Detection** | ecosistema_jaraba_core | ✅ Operativo | AvatarDetectionService cascada 4 niveles |
+| **Avatar Navigation** | ecosistema_jaraba_core | ✅ Operativo | AvatarNavigationService 10 avatares, _avatar-nav.html.twig |
 
 > **Ejemplo de error a evitar:**
 > ❌ "El Matching Engine requiere Qdrant → DESCARTAR"
@@ -614,3 +616,59 @@ $vertical-surface: #FFFFFF;     // Fondo de superficie
 | **ServiciosConecta** | `jaraba_servicios_conecta` | 5 | ✅ Fase 1 |
 | **Credentials** | `jaraba_credentials` | 8 (6 core + 2 cross-vertical) | ✅ Producción v2.0 |
 | **ComercioConecta** | `jaraba_comercio_conecta` | — | 📋 Planificado |
+
+---
+
+## ⚠️ PHP 8.4 + ControllerBase: Propiedades Heredadas (DRUPAL11-002)
+
+> Aprendizaje 2026-02-14 — Validado en AdminCenterApiController
+
+### Problema: Fatal Error por redeclaración de tipo en propiedades heredadas
+
+En PHP 8.4 con Drupal 11, `ControllerBase` declara `$entityTypeManager` y `$currentUser` como propiedades sin tipo explícito. Si un Controller hijo usa **constructor promotion** con tipo, PHP 8.4 lanza Fatal Error:
+
+```
+PHP Fatal error: AdminCenterApiController::$entityTypeManager must not have a type
+when class AdminCenterApiController extends ControllerBase which has property
+$entityTypeManager without a type
+```
+
+### Solución: Asignación manual (sin `protected` en constructor)
+
+```php
+// ❌ INCORRECTO — PHP 8.4 Fatal Error
+class MyController extends ControllerBase {
+  public function __construct(
+    protected LoggerInterface $logger,
+    protected EntityTypeManagerInterface $entityTypeManager, // ERROR
+    protected AccountProxyInterface $currentUser,             // ERROR
+    protected RendererInterface $renderer,
+  ) {}
+}
+
+// ✅ CORRECTO — Sin promotion para propiedades heredadas
+class MyController extends ControllerBase {
+  public function __construct(
+    protected LoggerInterface $logger,
+    EntityTypeManagerInterface $entityTypeManager,   // Sin protected
+    AccountProxyInterface $currentUser,              // Sin protected
+    protected RendererInterface $renderer,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;   // Asignar manualmente
+    $this->currentUser = $currentUser;               // Asignar manualmente
+  }
+}
+```
+
+### Propiedades afectadas en ControllerBase
+
+| Propiedad | Clase padre | NO usar `protected` en constructor |
+|-----------|-------------|------------------------------------|
+| `$entityTypeManager` | `ControllerBase` | ✅ Asignar en body |
+| `$currentUser` | `ControllerBase` | ✅ Asignar en body |
+| `$entityFormBuilder` | `ControllerBase` | ✅ Asignar en body (si se usa) |
+| `$formBuilder` | `ControllerBase` | ✅ Asignar en body (si se usa) |
+| `$moduleHandler` | `ControllerBase` | ✅ Asignar en body (si se usa) |
+
+> [!CAUTION]
+> **Regla DRUPAL11-002**: En Controllers que extienden `ControllerBase`, NUNCA usar constructor promotion (`protected Type $prop`) para propiedades que ya declara el padre. Usar parámetro sin `protected` y asignar en el body del constructor.

@@ -394,7 +394,7 @@ services:
   # ===========================================
 
   # ===========================================
-  # AVATAR DETECTION (Spec 20260120a Fase 3)
+  # AVATAR DETECTION & NAVIGATION (Spec 20260120a Fase 3)
   # ===========================================
 
   # Servicio de deteccion unificada de avatar con cascada de 4 niveles:
@@ -407,6 +407,16 @@ services:
       - '@current_route_match'
       - '@request_stack'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # Servicio de navegacion contextual por avatar.
+  # Genera items de navegacion segun avatar detectado. Generaliza
+  # EmployabilityMenuService para cubrir los 10 avatares del ecosistema.
+  ecosistema_jaraba_core.avatar_navigation:
+    class: Drupal\ecosistema_jaraba_core\Service\AvatarNavigationService
+    arguments:
+      - '@ecosistema_jaraba_core.avatar_detection'
+      - '@current_route_match'
+      - '@current_user'
 
   # Servicio de resolución de contexto para copilotos
   # Detecta dinámicamente avatar, vertical, plan y tenant del usuario
@@ -673,6 +683,77 @@ services:
       - '@ecosistema_jaraba_core.audit_log'
     tags:
       - { name: drush.command }
+
+  # ===========================================
+  # ADMIN CENTER AGGREGATOR (F6 Doc 181 / Spec f104)
+  # ===========================================
+
+  # Servicio centralizador de KPIs para el Admin Center Premium.
+  # Agrega metricas de FOC (MRR, ARR), Customer Success (Health Scores),
+  # tenants, MAU y alertas. Los servicios de modulos opcionales
+  # (jaraba_foc, jaraba_customer_success) se inyectan condicionalmente
+  # via EcosistemaJarabaCoreServiceProvider.
+  ecosistema_jaraba_core.admin_center_aggregator:
+    class: Drupal\ecosistema_jaraba_core\Service\AdminCenterAggregatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+      - ~
+
+  # ===========================================
+  # ADMIN CENTER FINANCE (F6 Doc 181 / Spec f104 §FASE 4)
+  # ===========================================
+
+  # Agregador financiero para el Centro Financiero del Admin Center.
+  # Envuelve jaraba_foc.saas_metrics y jaraba_foc.metrics_calculator.
+  ecosistema_jaraba_core.admin_center_finance:
+    class: Drupal\ecosistema_jaraba_core\Service\AdminCenterFinanceService
+    arguments:
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+      - ~
+
+  # ===========================================
+  # ADMIN CENTER ANALYTICS (F6 Doc 181 / Spec f104 §FASE 6)
+  # ===========================================
+
+  # Agregador de analytics y logs para el Admin Center.
+  # Envuelve TenantAnalyticsService, AITelemetryService, AuditLog y watchdog.
+  ecosistema_jaraba_core.admin_center_analytics:
+    class: Drupal\ecosistema_jaraba_core\Service\AdminCenterAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+
+  # ===========================================
+  # ADMIN CENTER ALERTS (F6 Doc 181 / Spec f104 §FASE 5)
+  # ===========================================
+
+  # Agregador de alertas y playbooks para el Admin Center.
+  # Envuelve jaraba_foc.alerts y jaraba_customer_success.playbook_executor.
+  ecosistema_jaraba_core.admin_center_alerts:
+    class: Drupal\ecosistema_jaraba_core\Service\AdminCenterAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+      - ~
+
+  # ===========================================
+  # ADMIN CENTER SETTINGS (F6 Doc 181 / Spec f104 §FASE 7)
+  # ===========================================
+
+  # Configuración global de la plataforma: General, Planes, Integraciones, API Keys.
+  ecosistema_jaraba_core.admin_center_settings:
+    class: Drupal\ecosistema_jaraba_core\Service\AdminCenterSettingsService
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
   # ADMIN STRUCTURE UX OVERRIDE

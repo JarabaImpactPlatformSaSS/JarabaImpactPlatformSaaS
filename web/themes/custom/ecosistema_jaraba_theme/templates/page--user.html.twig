@@ -3,20 +3,25 @@
  * @file
  * page--user.html.twig
  *
- * Template LIMPIO para todas las páginas del sistema de usuario.
- * Aplica a: /user/{uid}, /user/{uid}/edit, /user/logout/confirm, etc.
+ * Template LIMPIO para paginas del sistema de usuario autenticado.
+ * Aplica a: /user/{uid}, /user/{uid}/edit, /user/logout/confirm,
+ *           /user/{uid}/contact, /user/{uid}/cancel/confirm
  *
- * Directrices Aplicadas:
- * - Nuclear #14: Clean Frontend (Zero Region Policy)
- * - Branding 3.6: Portal Isolation
- * - Nuclear #3: i18n Compliance
+ * Patron: Frontend Page Pattern (Zero Region Policy)
+ * Usa header global con avatar_nav + contenido limpio + footer.
  *
- * Este template NO hereda regiones ni bloques de Drupal.
- * Solo renderiza el contenido específico del usuario.
+ * Variables inyectadas desde hook_preprocess_page__user():
+ * - user_content: Render array del formulario/vista de usuario
+ * - user_page_type: 'profile', 'edit', 'logout', 'contact', 'cancel', 'generic'
+ * - user_display_name: Nombre del usuario
+ * - clean_content: Contenido del controlador (fallback)
+ * - clean_messages: Mensajes del sistema
+ * - avatar_nav: Navegacion contextual por avatar
  */
 #}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
 
-{{ attach_library('ecosistema_jaraba_theme/auth-premium') }}
+{{ attach_library('ecosistema_jaraba_theme/global') }}
 
 <!DOCTYPE html>
 <html{{ html_attributes }}>
@@ -26,115 +31,45 @@
   <css-placeholder token="{{ placeholder_token }}">
   <js-placeholder token="{{ placeholder_token }}">
 </head>
-<body{{ attributes.addClass('user-page', 'clean-layout') }}>
-  {# Skip link para accesibilidad #}
+
+<body{{ attributes.addClass('user-page', 'page-user', 'full-width-layout') }}>
   <a href="#main-content" class="visually-hidden focusable skip-link">
     {% trans %}Ir al contenido principal{% endtrans %}
   </a>
-  
-  {# =========================================================
-     USER PAGE LAYOUT - Split Premium Design
-     ========================================================= #}
-  <div class="user-layout">
-    
-    {# =====================================================
-       COLUMNA IZQUIERDA - HERO BRANDING
-       ===================================================== #}
-    <aside class="user-hero" aria-label="{% trans %}Área de marca{% endtrans %}">
-      {# Canvas para partículas de red #}
-      <canvas id="user-particles" class="user-hero__particles" aria-hidden="true"></canvas>
-      
-      {# Contenido del hero #}
-      <div class="user-hero__content">
-        {# Logo del sitio #}
-        <a href="{{ path('<front>') }}" class="user-hero__logo" aria-label="{% trans %}Ir a inicio{% endtrans %}">
-          {% if logo_url_white %}
-            <img src="{{ logo_url_white }}" alt="{{ site_name }}" loading="eager">
-          {% elseif logo_url %}
-            <img src="{{ logo_url }}" alt="{{ site_name }}" class="user-hero__logo--invert" loading="eager">
-          {% else %}
-            <span class="user-hero__logo-text">{{ site_name }}</span>
-          {% endif %}
-        </a>
-        
-        {# Nombre y eslogan #}
-        <h1 class="user-hero__title">{{ site_name }}</h1>
-        <p class="user-hero__subtitle">{% trans %}Impact Platform{% endtrans %}</p>
-        
-        {# Cards de verticales del ecosistema #}
-        <div class="user-hero__verticals" aria-label="{% trans %}Verticales del ecosistema{% endtrans %}">
-          <div class="vertical-card vertical-card--empleo" title="{% trans %}Empleabilidad{% endtrans %}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="2" y="7" width="20" height="14" rx="2"/>
-              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-              <line x1="12" y1="12" x2="12" y2="12.01"/>
-            </svg>
-            <span>{% trans %}Empleabilidad{% endtrans %}</span>
-          </div>
-          <div class="vertical-card vertical-card--emprender" title="{% trans %}Emprendimiento{% endtrans %}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-            <span>{% trans %}Emprendimiento{% endtrans %}</span>
-          </div>
-          <div class="vertical-card vertical-card--comercio" title="{% trans %}Comercio{% endtrans %}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="9" cy="21" r="1"/>
-              <circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-            </svg>
-            <span>{% trans %}Comercio{% endtrans %}</span>
-          </div>
-          <div class="vertical-card vertical-card--instituciones" title="{% trans %}Instituciones{% endtrans %}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M3 21h18"/>
-              <path d="M5 21V7l7-4 7 4v14"/>
-              <path d="M9 21v-6h6v6"/>
-            </svg>
-            <span>{% trans %}Instituciones{% endtrans %}</span>
-          </div>
-          <div class="vertical-card vertical-card--servicios" title="{% trans %}Servicios{% endtrans %}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-            </svg>
-            <span>{% trans %}Servicios{% endtrans %}</span>
-          </div>
-        </div>
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({}),
+    avatar_nav: avatar_nav|default(null),
+  } only %}
+
+  <main id="main-content" class="user-main">
+    {# Mensajes del sistema (status, warning, error) #}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
       </div>
-      
-      {# Footer del hero #}
-      <footer class="user-hero__footer">
-        <small>© {{ "now"|date("Y") }} {{ site_name }}. {% trans %}Todos los derechos reservados.{% endtrans %}</small>
-      </footer>
-    </aside>
-    
-    {# =====================================================
-       COLUMNA DERECHA - CONTENIDO DE USUARIO
-       ===================================================== #}
-    <main id="main-content" class="user-content" role="main">
-      <div class="user-content__wrapper">
-        
-        {# Icono contextual según tipo de página #}
-        <div class="user-icon" aria-hidden="true">
+    {% endif %}
+
+    <div class="user-wrapper">
+      {# Cabecera de seccion con icono contextual #}
+      <div class="user-section-header">
+        <div class="user-section-header__icon" aria-hidden="true">
           {% if user_page_type == 'profile' %}
-            {# Icono de perfil de usuario #}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.1"/>
               <circle cx="24" cy="18" r="7" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.3"/>
               <path d="M10 42c0-8 6-14 14-14s14 6 14 14" stroke="var(--ej-color-secondary, #00A9A5)" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
           {% elseif user_page_type == 'edit' %}
-            {# Icono de editar perfil #}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-primary, #FF8C42)" opacity="0.1"/>
               <path d="M28 8l8 8-16 16H12v-8l16-16z" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
               <path d="M28 8l8 8M12 32l24-24" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
           {% elseif user_page_type == 'logout' %}
-            {# Icono de logout #}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-danger, #EF4444)" opacity="0.1"/>
               <rect x="8" y="8" width="20" height="32" rx="3" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
@@ -142,7 +77,6 @@
               <path d="M38 24H22" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
           {% else %}
-            {# Icono genérico de usuario #}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-corporate, #233D63)" opacity="0.1"/>
               <circle cx="24" cy="18" r="7" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
@@ -150,172 +84,70 @@
             </svg>
           {% endif %}
         </div>
-        
-        {# Título dinámico #}
-        <h2 class="user-form-title">
-          {% if user_page_type == 'profile' %}
-            {{ user_display_name|default('Usuario') }}
-          {% elseif user_page_type == 'edit' %}
-            {% trans %}Editar perfil{% endtrans %}
-          {% elseif user_page_type == 'logout' %}
-            {% trans %}Cerrar sesión{% endtrans %}
-          {% else %}
-            {% trans %}Mi cuenta{% endtrans %}
-          {% endif %}
-        </h2>
-        
-        {# Subtítulo contextual #}
-        <p class="user-form-subtitle">
-          {% if user_page_type == 'profile' %}
-            {% trans %}Panel de usuario{% endtrans %}
-          {% elseif user_page_type == 'edit' %}
-            {% trans %}Actualiza tu información{% endtrans %}
-          {% elseif user_page_type == 'logout' %}
-            {% trans %}¿Estás seguro de que deseas salir?{% endtrans %}
-          {% endif %}
-        </p>
-        
-        {# Contenido de la página - LIMPIO sin regiones #}
-        <div class="user-page-content">
-          {{ user_content }}
-        </div>
-        
-        {# Enlaces secundarios #}
-        <div class="user-links">
-          {% if user_page_type == 'profile' %}
-            <a href="{{ path('entity.user.edit_form', {'user': user.id}) }}" class="user-link">
+
+        <div class="user-section-header__text">
+          <h1 class="user-section-header__title">
+            {% if user_page_type == 'profile' %}
+              {{ user_display_name|default('Usuario') }}
+            {% elseif user_page_type == 'edit' %}
               {% trans %}Editar perfil{% endtrans %}
-            </a>
-            <span class="user-links__separator">·</span>
-            <a href="{{ path('<front>') }}" class="user-link">
-              {% trans %}Ir al inicio{% endtrans %}
-            </a>
-          {% elseif user_page_type == 'edit' %}
-            <a href="{{ path('entity.user.canonical', {'user': user.id}) }}" class="user-link">
-              {% trans %}Ver perfil{% endtrans %}
-            </a>
-          {% elseif user_page_type == 'logout' %}
-            <a href="{{ path('<front>') }}" class="user-link">
-              {% trans %}Cancelar{% endtrans %}
-            </a>
-          {% else %}
-            <a href="{{ path('<front>') }}" class="user-link">
-              {% trans %}Volver al inicio{% endtrans %}
-            </a>
-          {% endif %}
+            {% elseif user_page_type == 'logout' %}
+              {% trans %}Cerrar sesion{% endtrans %}
+            {% elseif user_page_type == 'contact' %}
+              {% trans %}Contactar usuario{% endtrans %}
+            {% elseif user_page_type == 'cancel' %}
+              {% trans %}Cancelar cuenta{% endtrans %}
+            {% else %}
+              {% trans %}Mi cuenta{% endtrans %}
+            {% endif %}
+          </h1>
+          <p class="user-section-header__subtitle">
+            {% if user_page_type == 'profile' %}
+              {% trans %}Panel de usuario{% endtrans %}
+            {% elseif user_page_type == 'edit' %}
+              {% trans %}Actualiza tu informacion{% endtrans %}
+            {% elseif user_page_type == 'logout' %}
+              {% trans %}Estas seguro de que deseas salir?{% endtrans %}
+            {% elseif user_page_type == 'contact' %}
+              {% trans %}Envia un mensaje{% endtrans %}
+            {% elseif user_page_type == 'cancel' %}
+              {% trans %}Esta accion no se puede deshacer{% endtrans %}
+            {% endif %}
+          </p>
         </div>
-        
       </div>
-    </main>
-    
-  </div>
-  
-  {# =========================================================
-     SCRIPT DE PARTÍCULAS DE RED - Inline para performance
-     ========================================================= #}
-  <script>
-  (function() {
-    const canvas = document.getElementById('user-particles');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const particles = [];
-    const particleCount = 50;
-    const connectionDistance = 120;
-    const mouseRadius = 150;
-    let mouse = { x: null, y: null };
-    
-    function resize() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-    
-    function createParticles() {
-      particles.length = 0;
-      for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 2 + 1
-        });
-      }
-    }
-    
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((p, i) => {
-        // Movimiento
-        p.x += p.vx;
-        p.y += p.vy;
-        
-        // Rebote en bordes
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        
-        // Interacción con mouse
-        if (mouse.x !== null) {
-          const dx = mouse.x - p.x;
-          const dy = mouse.y - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < mouseRadius) {
-            const force = (mouseRadius - dist) / mouseRadius;
-            p.x -= dx * force * 0.02;
-            p.y -= dy * force * 0.02;
-          }
-        }
-        
-        // Dibujar partícula
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.fill();
-        
-        // Conexiones
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < connectionDistance) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.3 * (1 - dist / connectionDistance)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      });
-      
-      requestAnimationFrame(animate);
-    }
-    
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-    });
-    
-    canvas.addEventListener('mouseleave', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
-    
-    window.addEventListener('resize', () => {
-      resize();
-      createParticles();
-    });
-    
-    resize();
-    createParticles();
-    animate();
-  })();
-  </script>
-  
+
+      {# Contenido LIMPIO - Solo la vista/formulario del usuario #}
+      <div class="user-content-area">
+        {{ user_content }}
+      </div>
+
+      {# Enlaces de navegacion secundaria #}
+      <div class="user-nav-links">
+        {% if user_page_type == 'profile' and user is defined and user.id is defined %}
+          <a href="{{ path('entity.user.edit_form', {'user': user.id}) }}" class="user-nav-links__item">
+            {% trans %}Editar perfil{% endtrans %}
+          </a>
+          <span class="user-nav-links__separator" aria-hidden="true">·</span>
+        {% elseif user_page_type == 'edit' and user is defined and user.id is defined %}
+          <a href="{{ path('entity.user.canonical', {'user': user.id}) }}" class="user-nav-links__item">
+            {% trans %}Ver perfil{% endtrans %}
+          </a>
+          <span class="user-nav-links__separator" aria-hidden="true">·</span>
+        {% endif %}
+        <a href="{{ path('<front>') }}" class="user-nav-links__item">
+          {% trans %}Ir al inicio{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({}),
+  } only %}
+
   <js-bottom-placeholder token="{{ placeholder_token }}">
 </body>
 </html>

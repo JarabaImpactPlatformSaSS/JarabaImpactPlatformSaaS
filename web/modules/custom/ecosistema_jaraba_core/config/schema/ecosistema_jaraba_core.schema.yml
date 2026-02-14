@@ -217,6 +217,66 @@ ecosistema_jaraba_core.finops:
               type: integer
               label: 'Critical threshold (EUR)'
 
+ecosistema_jaraba_core.admin_center_settings:
+  type: config_object
+  label: 'Admin Center platform settings'
+  mapping:
+    platform_name:
+      type: string
+      label: 'Platform display name'
+    primary_domain:
+      type: string
+      label: 'Primary SaaS domain'
+    support_email:
+      type: email
+      label: 'Support email address'
+    default_language:
+      type: string
+      label: 'Default language code'
+    timezone:
+      type: string
+      label: 'Default timezone'
+    logo_url:
+      type: string
+      label: 'Logo URL or path'
+    analytics_id:
+      type: string
+      label: 'Google Analytics measurement ID'
+    ai_provider:
+      type: string
+      label: 'Default AI provider'
+    api_keys:
+      type: sequence
+      label: 'API keys'
+      sequence:
+        type: mapping
+        label: 'API key record'
+        mapping:
+          id:
+            type: string
+            label: 'Key ID'
+          label:
+            type: string
+            label: 'Human-readable label'
+          scope:
+            type: string
+            label: 'Scope (read/write/admin)'
+          key_prefix:
+            type: string
+            label: 'Key prefix for display'
+          key_hash:
+            type: string
+            label: 'SHA-256 hash of key'
+          created:
+            type: string
+            label: 'Creation timestamp'
+          last_used:
+            type: string
+            label: 'Last used timestamp'
+          status:
+            type: string
+            label: 'Status (active/revoked)'
+
 ecosistema_jaraba_core.firma_settings:
   type: config_object
   label: 'Digital signature configuration'

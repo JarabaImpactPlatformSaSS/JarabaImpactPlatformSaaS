@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * Admin Center — Detalle de Alerta para Slide-Panel.
+ *
+ * Variables:
+ *   - alert: array con datos serializados de la alerta.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 5.
+ */
+#}
+
+<div class="ac-alert-detail">
+
+  {# Header with severity badge #}
+  <div class="ac-alert-detail__header ac-alert-detail__header--{{ alert.severity }}">
+    <span class="ac-alerts__severity-badge ac-alerts__severity-badge--{{ alert.severity }}">
+      {{ alert.severity_label }}
+    </span>
+    <span class="ac-alerts__type-badge">
+      {{ alert.alert_type_label }}
+    </span>
+    <span class="ac-alerts__status-badge ac-alerts__status-badge--{{ alert.status }}">
+      {{ alert.status_label }}
+    </span>
+  </div>
+
+  {# Title #}
+  <h3 class="ac-alert-detail__title">{{ alert.title }}</h3>
+
+  {# Key info grid #}
+  <div class="ac-alert-detail__grid">
+    {% if alert.tenant_label %}
+    <div class="ac-alert-detail__field">
+      <span class="ac-alert-detail__field-label">{% trans %}Tenant{% endtrans %}</span>
+      <span class="ac-alert-detail__field-value">{{ alert.tenant_label }}</span>
+    </div>
+    {% endif %}
+
+    <div class="ac-alert-detail__field">
+      <span class="ac-alert-detail__field-label">{% trans %}Valor de Metrica{% endtrans %}</span>
+      <span class="ac-alert-detail__field-value"><strong>{{ alert.metric_value|default('—') }}</strong></span>
+    </div>
+
+    <div class="ac-alert-detail__field">
+      <span class="ac-alert-detail__field-label">{% trans %}Umbral{% endtrans %}</span>
+      <span class="ac-alert-detail__field-value">{{ alert.threshold|default('—') }}</span>
+    </div>
+
+    <div class="ac-alert-detail__field">
+      <span class="ac-alert-detail__field-label">{% trans %}Creada{% endtrans %}</span>
+      <span class="ac-alert-detail__field-value">{{ alert.time_ago }}</span>
+    </div>
+  </div>
+
+  {# Message #}
+  {% if alert.message %}
+  <div class="ac-alert-detail__section">
+    <h4 class="ac-alert-detail__section-title">{% trans %}Descripcion{% endtrans %}</h4>
+    <p class="ac-alert-detail__message">{{ alert.message }}</p>
+  </div>
+  {% endif %}
+
+  {# Playbook #}
+  {% if alert.playbook %}
+  <div class="ac-alert-detail__section">
+    <h4 class="ac-alert-detail__section-title">{% trans %}Playbook Recomendado{% endtrans %}</h4>
+    <div class="ac-alert-detail__playbook">
+      {{ alert.playbook|nl2br }}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Actions #}
+  <div class="ac-alert-detail__actions">
+    {% if alert.status == 'open' %}
+    <button type="button" class="admin-center__btn admin-center__btn--secondary"
+            data-alert-action="acknowledged" data-alert-id="{{ alert.id }}">
+      {{ jaraba_icon('ui', 'eye', { size: '16px' }) }}
+      {% trans %}Reconocer{% endtrans %}
+    </button>
+    {% endif %}
+
+    {% if alert.status == 'open' or alert.status == 'acknowledged' %}
+    <button type="button" class="admin-center__btn admin-center__btn--primary"
+            data-alert-action="resolved" data-alert-id="{{ alert.id }}">
+      {{ jaraba_icon('ui', 'check-circle', { size: '16px' }) }}
+      {% trans %}Resolver{% endtrans %}
+    </button>
+    <button type="button" class="admin-center__btn admin-center__btn--ghost"
+            data-alert-action="dismissed" data-alert-id="{{ alert.id }}">
+      {{ jaraba_icon('ui', 'x-circle', { size: '16px' }) }}
+      {% trans %}Descartar{% endtrans %}
+    </button>
+    {% endif %}
+  </div>
+
+</div>

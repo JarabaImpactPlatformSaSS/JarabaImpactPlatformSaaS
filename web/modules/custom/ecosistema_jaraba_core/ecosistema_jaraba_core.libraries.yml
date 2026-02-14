@@ -404,9 +404,129 @@ admin-center:
   css:
     theme:
       css/admin-center.css: {}
+  js:
+    js/admin-center-layout.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER DATATABLE (F6 Doc 181 / Spec f104 §FASE 2)
+# ---------------------------------------------------------------------------
+# Reusable DataTable component: sort, filter, server-side pagination, skeletons.
+
+admin-center-datatable:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-datatable.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER TENANTS PAGE (F6 Doc 181 / Spec f104 §FASE 2)
+# ---------------------------------------------------------------------------
+# Initializer for the tenants DataTable: columns, filters, row actions.
+
+admin-center-tenants:
+  version: 1.x
+  js:
+    js/admin-center-tenants-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/admin-center-datatable
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER USERS PAGE (F6 Doc 181 / Spec f104 §FASE 3)
+# ---------------------------------------------------------------------------
+# Initializer for the users DataTable: columns, filters, row actions.
+
+admin-center-users:
+  version: 1.x
+  js:
+    js/admin-center-users-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/admin-center-datatable
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER ANALYTICS PAGE (F6 Doc 181 / Spec f104 §FASE 6)
+# ---------------------------------------------------------------------------
+# Analytics dashboard: scorecards, Chart.js trends, AI telemetry table.
+
+admin-center-analytics:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-analytics-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/chartjs
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER LOGS PAGE (F6 Doc 181 / Spec f104 §FASE 6)
+# ---------------------------------------------------------------------------
+# Activity log viewer: source tabs, severity filters, search, paginated table.
+
+admin-center-logs:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-logs-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER ALERTS PAGE (F6 Doc 181 / Spec f104 §FASE 5)
+# ---------------------------------------------------------------------------
+# Alerts dashboard: scorecards, alert cards, playbook grid.
+
+admin-center-alerts:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-alerts-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER FINANCE PAGE (F6 Doc 181 / Spec f104 §FASE 4)
+# ---------------------------------------------------------------------------
+# Centro Financiero: scorecards, SaaS metrics table, tenant analytics.
+
+admin-center-finance:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-finance-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 
 # ---------------------------------------------------------------------------
 # GLOBAL COMMAND PALETTE + KEYBOARD SHORTCUTS (F6 Doc 181)
@@ -439,6 +559,23 @@ admin-structure:
     js/admin-structure.js: {}
   dependencies:
     - core/drupal
+    - core/once
+
+# ---------------------------------------------------------------------------
+# ADMIN CENTER SETTINGS PAGE (F6 Doc 181 / Spec f104 §FASE 7)
+# ---------------------------------------------------------------------------
+# Configuración global: General, Planes, Integraciones, API Keys.
+
+admin-center-settings:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/admin-center-settings-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
     - core/once
 
 # Back to Top - Botón flotante "Volver arriba" para páginas admin

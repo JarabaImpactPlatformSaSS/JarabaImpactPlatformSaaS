@@ -1,0 +1,108 @@
+{#
+/**
+ * @file
+ * Admin Center — Centro Financiero (Finance Dashboard).
+ *
+ * El dashboard se hidrata via JS desde /api/v1/admin/finance/metrics.
+ * Estructura:
+ *   - Scorecards: MRR, ARR, Clientes Activos, ARPU
+ *   - Metricas SaaS tabla: GRR, NRR, Churn, LTV:CAC, etc. con benchmarks
+ *   - Tenant Analytics DataTable
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 4.
+ */
+#}
+
+<div class="admin-center-finance">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('business', 'money', { size: '24px', color: 'impulse' }) }}
+        {% trans %}Centro Financiero{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Metricas SaaS, revenue y analytics financieros de la plataforma.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+      <a href="/admin/foc" class="admin-center__btn admin-center__btn--primary" target="_blank">
+        {{ jaraba_icon('analytics', 'chart-bar', { size: '16px', color: 'corporate' }) }}
+        {% trans %}FOC Completo{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Revenue Scorecards — hydrated by JS #}
+  <div class="ac-finance__scorecards" id="finance-scorecards">
+    <div class="ac-finance__card ac-finance__card--mrr" data-metric="mrr">
+      <div class="ac-finance__card-label">{% trans %}MRR{% endtrans %}</div>
+      <div class="ac-finance__card-value" data-value>—</div>
+      <div class="ac-finance__card-trend" data-trend></div>
+    </div>
+    <div class="ac-finance__card ac-finance__card--arr" data-metric="arr">
+      <div class="ac-finance__card-label">{% trans %}ARR{% endtrans %}</div>
+      <div class="ac-finance__card-value" data-value>—</div>
+      <div class="ac-finance__card-trend" data-trend></div>
+    </div>
+    <div class="ac-finance__card ac-finance__card--customers" data-metric="active_customers">
+      <div class="ac-finance__card-label">{% trans %}Clientes Activos{% endtrans %}</div>
+      <div class="ac-finance__card-value" data-value>—</div>
+      <div class="ac-finance__card-trend" data-trend></div>
+    </div>
+    <div class="ac-finance__card ac-finance__card--arpu" data-metric="arpu">
+      <div class="ac-finance__card-label">{% trans %}ARPU{% endtrans %}</div>
+      <div class="ac-finance__card-value" data-value>—</div>
+      <div class="ac-finance__card-trend" data-trend></div>
+    </div>
+  </div>
+
+  {# SaaS Metrics Table with Benchmarks — hydrated by JS #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('analytics', 'gauge', { size: '18px', color: 'corporate' }) }}
+        {% trans %}Metricas SaaS{% endtrans %}
+      </h2>
+    </div>
+    <div class="ac-finance__metrics-table-wrap">
+      <table class="ac-finance__metrics-table" id="finance-metrics-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Metrica{% endtrans %}</th>
+            <th>{% trans %}Valor{% endtrans %}</th>
+            <th>{% trans %}Benchmark{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="finance-metrics-body">
+          <tr>
+            <td colspan="4" class="ac-datatable__empty">
+              <div class="ac-datatable__skeleton-bar" style="width: 60%; margin: 0 auto;"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# Tenant Financial Analytics DataTable #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('business', 'company', { size: '18px', color: 'innovation' }) }}
+        {% trans %}Analytics por Tenant{% endtrans %}
+      </h2>
+    </div>
+    <div id="finance-tenant-table"></div>
+  </div>
+
+</div>

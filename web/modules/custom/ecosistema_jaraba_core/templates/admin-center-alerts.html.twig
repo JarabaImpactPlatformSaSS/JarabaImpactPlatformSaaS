@@ -1,0 +1,141 @@
+{#
+/**
+ * @file
+ * Admin Center — Dashboard de Alertas y Playbooks.
+ *
+ * Se hidrata via JS desde /api/v1/admin/alerts/summary y /api/v1/admin/alerts.
+ * Estructura:
+ *   - Scorecards: Criticas, Advertencias, Abiertas, Resueltas Hoy
+ *   - Lista de alertas con filtros por severidad y estado
+ *   - Sección de playbooks activos
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 5.
+ */
+#}
+
+<div class="admin-center-alerts">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('ui', 'bell', { size: '24px', color: 'impulse' }) }}
+        {% trans %}Alertas y Playbooks{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Monitoreo de alertas financieras, operacionales y playbooks de accion automatizados.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+      <button type="button" class="admin-center__btn admin-center__btn--primary" id="alerts-evaluate-btn">
+        {{ jaraba_icon('ui', 'refresh-cw', { size: '16px', color: 'corporate' }) }}
+        {% trans %}Evaluar Alertas{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# Alert Scorecards — hydrated by JS #}
+  <div class="ac-alerts__scorecards" id="alerts-scorecards">
+    <div class="ac-alerts__card ac-alerts__card--critical" data-scorecard="critical">
+      <div class="ac-alerts__card-icon">
+        {{ jaraba_icon('ui', 'alert-triangle', { size: '20px', color: 'danger' }) }}
+      </div>
+      <div class="ac-alerts__card-body">
+        <div class="ac-alerts__card-value" data-value>0</div>
+        <div class="ac-alerts__card-label">{% trans %}Criticas{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-alerts__card ac-alerts__card--warning" data-scorecard="warning">
+      <div class="ac-alerts__card-icon">
+        {{ jaraba_icon('ui', 'alert-circle', { size: '20px', color: 'impulse' }) }}
+      </div>
+      <div class="ac-alerts__card-body">
+        <div class="ac-alerts__card-value" data-value>0</div>
+        <div class="ac-alerts__card-label">{% trans %}Advertencias{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-alerts__card ac-alerts__card--open" data-scorecard="open">
+      <div class="ac-alerts__card-icon">
+        {{ jaraba_icon('ui', 'bell', { size: '20px', color: 'corporate' }) }}
+      </div>
+      <div class="ac-alerts__card-body">
+        <div class="ac-alerts__card-value" data-value>0</div>
+        <div class="ac-alerts__card-label">{% trans %}Abiertas{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-alerts__card ac-alerts__card--resolved" data-scorecard="resolved_today">
+      <div class="ac-alerts__card-icon">
+        {{ jaraba_icon('ui', 'check-circle', { size: '20px', color: 'success' }) }}
+      </div>
+      <div class="ac-alerts__card-body">
+        <div class="ac-alerts__card-value" data-value>0</div>
+        <div class="ac-alerts__card-label">{% trans %}Resueltas Hoy{% endtrans %}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Alerts List Section #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('ui', 'list', { size: '18px', color: 'corporate' }) }}
+        {% trans %}Alertas Activas{% endtrans %}
+      </h2>
+      <div class="ac-alerts__filters" id="alerts-filters">
+        <button type="button" class="ac-alerts__filter-chip ac-alerts__filter-chip--active" data-filter="all">
+          {% trans %}Todas{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-filter="critical">
+          {% trans %}Criticas{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-filter="warning">
+          {% trans %}Advertencias{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-filter="info">
+          {% trans %}Informativas{% endtrans %}
+        </button>
+      </div>
+    </div>
+
+    <div class="ac-alerts__list" id="alerts-list">
+      {# Skeleton loader #}
+      <div class="ac-alerts__skeleton">
+        <div class="ac-datatable__skeleton-bar" style="width: 90%; height: 60px; margin-bottom: 0.75rem;"></div>
+        <div class="ac-datatable__skeleton-bar" style="width: 85%; height: 60px; margin-bottom: 0.75rem;"></div>
+        <div class="ac-datatable__skeleton-bar" style="width: 88%; height: 60px;"></div>
+      </div>
+    </div>
+
+    <div class="ac-alerts__pagination" id="alerts-pagination"></div>
+  </div>
+
+  {# Playbooks Section #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('business', 'strategy', { size: '18px', color: 'innovation' }) }}
+        {% trans %}Playbooks Automatizados{% endtrans %}
+      </h2>
+      <div class="ac-alerts__playbook-stats" id="playbook-stats">
+        <span class="ac-alerts__stat">
+          <strong data-stat="active_playbooks">0</strong> {% trans %}activos{% endtrans %}
+        </span>
+        <span class="ac-alerts__stat">
+          <strong data-stat="running_executions">0</strong> {% trans %}en ejecucion{% endtrans %}
+        </span>
+      </div>
+    </div>
+
+    <div class="ac-alerts__playbooks-grid" id="playbooks-grid">
+      <p class="ac-datatable__empty">{% trans %}Cargando playbooks...{% endtrans %}</p>
+    </div>
+  </div>
+
+</div>

@@ -230,124 +230,134 @@ function jaraba_comercio_conecta_cron(): void {
   $state->set('jaraba_comercio_conecta.cron_last_run', $now);
 
   // Detectar carritos abandonados (>1h sin modificar) y enviar recordatorio.
-  try {
-    $cart_storage = \Drupal::entityTypeManager()->getStorage('comercio_cart');
-    $one_hour_ago = $now - 3600;
-    $abandoned_ids = $cart_storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('status', 'active')
-      ->condition('changed', $one_hour_ago, '<')
-      ->execute();
+  // Guard: comercio_cart entity aún no implementada.
+  if (\Drupal::entityTypeManager()->hasDefinition('comercio_cart')) {
+    try {
+      $cart_storage = \Drupal::entityTypeManager()->getStorage('comercio_cart');
+      $one_hour_ago = $now - 3600;
+      $abandoned_ids = $cart_storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 'active')
+        ->condition('changed', $one_hour_ago, '<')
+        ->execute();
 
-    if (!empty($abandoned_ids)) {
-      $carts = $cart_storage->loadMultiple($abandoned_ids);
-      foreach ($carts as $cart) {
-        try {
-          $uid = $cart->get('uid')->target_id ?? NULL;
-          if ($uid) {
-            $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
-            if ($user && $user->getEmail()) {
-              \Drupal::service('plugin.manager.mail')->mail(
-                'jaraba_comercio_conecta',
-                'abandoned_cart_reminder',
-                $user->getEmail(),
-                $user->getPreferredLangcode(),
-                [
-                  'customer_name' => $user->getDisplayName(),
-                  'cart_id' => $cart->id(),
-                ]
-              );
-              // Marcar el carrito como notificado para no enviar duplicados.
-              $cart->set('status', 'abandoned_notified');
-              $cart->save();
+      if (!empty($abandoned_ids)) {
+        $carts = $cart_storage->loadMultiple($abandoned_ids);
+        foreach ($carts as $cart) {
+          try {
+            $uid = $cart->get('uid')->target_id ?? NULL;
+            if ($uid) {
+              $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
+              if ($user && $user->getEmail()) {
+                \Drupal::service('plugin.manager.mail')->mail(
+                  'jaraba_comercio_conecta',
+                  'abandoned_cart_reminder',
+                  $user->getEmail(),
+                  $user->getPreferredLangcode(),
+                  [
+                    'customer_name' => $user->getDisplayName(),
+                    'cart_id' => $cart->id(),
+                  ]
+                );
+                // Marcar el carrito como notificado para no enviar duplicados.
+                $cart->set('status', 'abandoned_notified');
+                $cart->save();
+              }
             }
           }
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('jaraba_comercio_conecta')->error('Error procesando carrito abandonado @id: @e', [
-            '@id' => $cart->id(),
-            '@e' => $e->getMessage(),
-          ]);
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_comercio_conecta')->error('Error procesando carrito abandonado @id: @e', [
+              '@id' => $cart->id(),
+              '@e' => $e->getMessage(),
+            ]);
+          }
         }
       }
     }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron carritos abandonados: @e', ['@e' => $e->getMessage()]);
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron carritos abandonados: @e', ['@e' => $e->getMessage()]);
+    }
   }
 
   // Verificar flash offers expiradas y desactivarlas.
-  try {
-    $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
-    $expired_ids = $product_storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('flash_offer_end', $now, '<')
-      ->condition('status', 'active')
-      ->condition('flash_offer_end', NULL, 'IS NOT NULL')
-      ->execute();
+  // Guard: flash_offer_end field aún no definido en ProductRetail.
+  $productFieldDefs = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('product_retail');
+  if (isset($productFieldDefs['flash_offer_end'])) {
+    try {
+      $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
+      $expired_ids = $product_storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('flash_offer_end', $now, '<')
+        ->condition('status', 'active')
+        ->condition('flash_offer_end', NULL, 'IS NOT NULL')
+        ->execute();
 
-    if (!empty($expired_ids)) {
-      $expired_products = $product_storage->loadMultiple($expired_ids);
-      foreach ($expired_products as $product) {
-        try {
-          $product->set('status', 'expired');
-          $product->save();
-          \Drupal::logger('jaraba_comercio_conecta')->notice('Flash offer expirada para producto @title (ID: @id)', [
-            '@title' => $product->label(),
-            '@id' => $product->id(),
-          ]);
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('jaraba_comercio_conecta')->error('Error expirando flash offer @id: @e', [
-            '@id' => $product->id(),
-            '@e' => $e->getMessage(),
-          ]);
+      if (!empty($expired_ids)) {
+        $expired_products = $product_storage->loadMultiple($expired_ids);
+        foreach ($expired_products as $product) {
+          try {
+            $product->set('status', 'expired');
+            $product->save();
+            \Drupal::logger('jaraba_comercio_conecta')->notice('Flash offer expirada para producto @title (ID: @id)', [
+              '@title' => $product->label(),
+              '@id' => $product->id(),
+            ]);
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_comercio_conecta')->error('Error expirando flash offer @id: @e', [
+              '@id' => $product->id(),
+              '@e' => $e->getMessage(),
+            ]);
+          }
         }
       }
     }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron flash offers: @e', ['@e' => $e->getMessage()]);
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron flash offers: @e', ['@e' => $e->getMessage()]);
+    }
   }
 
   // Reconciliación de stock POS: comparar stock registrado vs POS.
-  try {
-    $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
-    $pos_ids = $product_storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('pos_sync_enabled', TRUE)
-      ->condition('status', ['active', 'paused'], 'IN')
-      ->execute();
+  // Guard: pos_sync_enabled field aún no definido en ProductRetail.
+  if (isset($productFieldDefs['pos_sync_enabled'])) {
+    try {
+      $product_storage = \Drupal::entityTypeManager()->getStorage('product_retail');
+      $pos_ids = $product_storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('pos_sync_enabled', TRUE)
+        ->condition('status', ['active', 'paused'], 'IN')
+        ->execute();
 
-    if (!empty($pos_ids)) {
-      $pos_products = $product_storage->loadMultiple($pos_ids);
-      foreach ($pos_products as $product) {
-        try {
-          $platform_stock = (int) ($product->get('stock_quantity')->value ?? 0);
-          $pos_stock = (int) ($product->get('pos_stock_quantity')->value ?? 0);
-          if ($platform_stock !== $pos_stock) {
-            \Drupal::logger('jaraba_comercio_conecta')->warning(
-              'Discrepancia de stock POS para producto @title (ID: @id): plataforma=@platform, POS=@pos',
-              [
-                '@title' => $product->label(),
-                '@id' => $product->id(),
-                '@platform' => $platform_stock,
-                '@pos' => $pos_stock,
-              ]
-            );
+      if (!empty($pos_ids)) {
+        $pos_products = $product_storage->loadMultiple($pos_ids);
+        foreach ($pos_products as $product) {
+          try {
+            $platform_stock = (int) ($product->get('stock_quantity')->value ?? 0);
+            $pos_stock = (int) ($product->get('pos_stock_quantity')->value ?? 0);
+            if ($platform_stock !== $pos_stock) {
+              \Drupal::logger('jaraba_comercio_conecta')->warning(
+                'Discrepancia de stock POS para producto @title (ID: @id): plataforma=@platform, POS=@pos',
+                [
+                  '@title' => $product->label(),
+                  '@id' => $product->id(),
+                  '@platform' => $platform_stock,
+                  '@pos' => $pos_stock,
+                ]
+              );
+            }
           }
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('jaraba_comercio_conecta')->error('Error reconciliando stock POS para @id: @e', [
-            '@id' => $product->id(),
-            '@e' => $e->getMessage(),
-          ]);
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_comercio_conecta')->error('Error reconciliando stock POS para @id: @e', [
+              '@id' => $product->id(),
+              '@e' => $e->getMessage(),
+            ]);
+          }
         }
       }
     }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron reconciliación POS: @e', ['@e' => $e->getMessage()]);
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_comercio_conecta')->error('Error en cron reconciliación POS: @e', ['@e' => $e->getMessage()]);
+    }
   }
 }
 

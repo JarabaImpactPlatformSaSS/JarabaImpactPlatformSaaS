@@ -1,0 +1,157 @@
+{#
+/**
+ * @file
+ * Admin Center — Dashboard de Analytics de Plataforma.
+ *
+ * Se hidrata via JS desde /api/v1/admin/analytics/overview y /ai.
+ * Estructura:
+ *   - Scorecards: Eventos Hoy, Usuarios Activos 24h, Errores 24h, Coste AI 30d
+ *   - Graficos: MRR Trend, Tenant Growth, Activity Trend (Chart.js)
+ *   - AI Telemetry: tabla de agentes con invocaciones, coste, latencia
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 6.
+ */
+#}
+
+<div class="admin-center-analytics">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('analytics', 'chart-bar', { size: '24px', color: 'corporate' }) }}
+        {% trans %}Analytics de Plataforma{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Tendencias, telemetria AI y metricas de uso de la plataforma.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+      <a href="/admin/jaraba/center/logs" class="admin-center__btn admin-center__btn--primary">
+        {{ jaraba_icon('ui', 'list', { size: '16px', color: 'corporate' }) }}
+        {% trans %}Ver Logs{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Analytics Scorecards — hydrated by JS #}
+  <div class="ac-analytics__scorecards" id="analytics-scorecards">
+    <div class="ac-analytics__card" data-scorecard="total_events_today">
+      <div class="ac-analytics__card-icon ac-analytics__card-icon--events">
+        {{ jaraba_icon('analytics', 'activity', { size: '20px', color: 'corporate' }) }}
+      </div>
+      <div class="ac-analytics__card-body">
+        <div class="ac-analytics__card-value" data-value>0</div>
+        <div class="ac-analytics__card-label">{% trans %}Eventos Hoy{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-analytics__card" data-scorecard="active_users_24h">
+      <div class="ac-analytics__card-icon ac-analytics__card-icon--users">
+        {{ jaraba_icon('ui', 'users', { size: '20px', color: 'innovation' }) }}
+      </div>
+      <div class="ac-analytics__card-body">
+        <div class="ac-analytics__card-value" data-value>0</div>
+        <div class="ac-analytics__card-label">{% trans %}Usuarios Activos 24h{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-analytics__card" data-scorecard="error_count_24h">
+      <div class="ac-analytics__card-icon ac-analytics__card-icon--errors">
+        {{ jaraba_icon('ui', 'alert-triangle', { size: '20px', color: 'danger' }) }}
+      </div>
+      <div class="ac-analytics__card-body">
+        <div class="ac-analytics__card-value" data-value>0</div>
+        <div class="ac-analytics__card-label">{% trans %}Errores 24h{% endtrans %}</div>
+      </div>
+    </div>
+    <div class="ac-analytics__card" data-scorecard="ai_cost_30d">
+      <div class="ac-analytics__card-icon ac-analytics__card-icon--ai">
+        {{ jaraba_icon('business', 'money', { size: '20px', color: 'impulse' }) }}
+      </div>
+      <div class="ac-analytics__card-body">
+        <div class="ac-analytics__card-value" data-value>0</div>
+        <div class="ac-analytics__card-label">{% trans %}Coste AI 30d{% endtrans %}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Chart Grid #}
+  <div class="ac-analytics__charts-grid">
+    {# MRR Trend #}
+    <div class="admin-center__section ac-analytics__chart-section">
+      <div class="admin-center__section-header">
+        <h2 class="admin-center__section-title">
+          {{ jaraba_icon('analytics', 'trending-up', { size: '18px', color: 'corporate' }) }}
+          {% trans %}Tendencia MRR{% endtrans %}
+        </h2>
+      </div>
+      <div class="ac-analytics__chart-container">
+        <canvas id="chart-mrr-trend" height="250"></canvas>
+      </div>
+    </div>
+
+    {# Tenant Growth #}
+    <div class="admin-center__section ac-analytics__chart-section">
+      <div class="admin-center__section-header">
+        <h2 class="admin-center__section-title">
+          {{ jaraba_icon('business', 'company', { size: '18px', color: 'innovation' }) }}
+          {% trans %}Crecimiento de Tenants{% endtrans %}
+        </h2>
+      </div>
+      <div class="ac-analytics__chart-container">
+        <canvas id="chart-tenant-growth" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {# Activity Trend — full width #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('analytics', 'activity', { size: '18px', color: 'impulse' }) }}
+        {% trans %}Actividad de Plataforma (14 dias){% endtrans %}
+      </h2>
+    </div>
+    <div class="ac-analytics__chart-container">
+      <canvas id="chart-activity-trend" height="200"></canvas>
+    </div>
+  </div>
+
+  {# AI Telemetry Section #}
+  <div class="admin-center__section">
+    <div class="admin-center__section-header">
+      <h2 class="admin-center__section-title">
+        {{ jaraba_icon('analytics', 'gauge', { size: '18px', color: 'corporate' }) }}
+        {% trans %}Telemetria AI (30 dias){% endtrans %}
+      </h2>
+      <div class="ac-analytics__ai-totals" id="ai-totals">
+        <span class="ac-alerts__stat"><strong data-stat="ai_invocations">0</strong> {% trans %}invocaciones{% endtrans %}</span>
+        <span class="ac-alerts__stat"><strong data-stat="ai_avg_latency">0</strong>ms {% trans %}latencia media{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="ac-finance__metrics-table-wrap">
+      <table class="ac-finance__metrics-table" id="ai-agents-table">
+        <thead>
+          <tr>
+            <th>{% trans %}Agente{% endtrans %}</th>
+            <th>{% trans %}Invocaciones{% endtrans %}</th>
+            <th>{% trans %}Exito{% endtrans %}</th>
+            <th>{% trans %}Latencia Media{% endtrans %}</th>
+            <th>{% trans %}Coste{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="ai-agents-body">
+          <tr>
+            <td colspan="5" class="ac-datatable__empty">
+              <div class="ac-datatable__skeleton-bar" style="width: 60%; margin: 0 auto;"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

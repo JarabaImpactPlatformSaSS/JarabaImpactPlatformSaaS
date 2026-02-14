@@ -2,85 +2,146 @@
  * @file
  * Jaraba FAQ Accordion interactivity.
  *
- * This script handles the expand/collapse functionality for FAQ Accordions
- * created with the Page Builder. It uses event delegation for efficiency
- * and works both in the GrapesJS editor iframe and on public pages.
+ * Handles expand/collapse functionality for FAQ Accordions created with the
+ * Page Builder. Uses once() for idempotent initialization, event delegation
+ * for efficiency, keyboard navigation (Enter/Space), and ARIA attributes
+ * for WCAG 2.1 AA compliance.
+ *
+ * Works both in the GrapesJS editor iframe and on public pages.
  *
  * @see https://grapesjs.com/docs/modules/Components-js.html
  */
 
-(function (Drupal) {
+(function (Drupal, once) {
     'use strict';
 
     /**
-     * Initialize FAQ Accordion interactivity.
+     * Toggle a single FAQ item open/closed.
      *
-     * @param {Element} context - The DOM context to search within.
+     * @param {Element} item - The .jaraba-faq__item element.
      */
-    function initFaqAccordions(context) {
-        const faqContainers = context.querySelectorAll('.jaraba-faq');
+    function toggleFaqItem(item) {
+        var toggle = item.querySelector('.jaraba-faq__toggle');
+        var answer = item.querySelector('.jaraba-faq__answer');
+        var icon = toggle ? toggle.querySelector('.jaraba-faq__icon') : null;
 
-        faqContainers.forEach(function (container) {
-            // Skip if already initialized
-            if (container.dataset.jarabaFaqInit) {
+        if (!toggle || !answer) {
+            return;
+        }
+
+        var isOpen = item.classList.toggle('jaraba-faq__item--open');
+
+        // ARIA: actualizar estado expandido
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        answer.setAttribute('aria-hidden', String(!isOpen));
+
+        // Icono visual
+        if (icon) {
+            icon.textContent = isOpen ? '−' : '+';
+        }
+
+        // Animación max-height
+        if (isOpen) {
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+        } else {
+            answer.style.maxHeight = '0';
+        }
+    }
+
+    /**
+     * Initialize ARIA attributes on a FAQ container.
+     *
+     * @param {Element} container - The .jaraba-faq element.
+     */
+    function initAriaAttributes(container) {
+        var items = container.querySelectorAll('.jaraba-faq__item');
+
+        items.forEach(function (item, index) {
+            var toggle = item.querySelector('.jaraba-faq__toggle');
+            var answer = item.querySelector('.jaraba-faq__answer');
+
+            if (!toggle || !answer) {
                 return;
             }
-            container.dataset.jarabaFaqInit = 'true';
 
-            // Use event delegation on the container
-            container.addEventListener('click', function (event) {
-                const toggle = event.target.closest('.jaraba-faq__toggle');
-                if (!toggle) {
-                    return;
-                }
+            // IDs únicos para aria-controls
+            var answerId = answer.id || ('jaraba-faq-answer-' + Date.now() + '-' + index);
+            answer.id = answerId;
 
-                const item = toggle.closest('.jaraba-faq__item');
-                if (!item) {
-                    return;
-                }
+            // Button semantics y ARIA
+            toggle.setAttribute('role', 'button');
+            toggle.setAttribute('tabindex', '0');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.setAttribute('aria-controls', answerId);
 
-                const answer = item.querySelector('.jaraba-faq__answer');
-                const icon = toggle.querySelector('span');
+            // Answer region
+            answer.setAttribute('role', 'region');
+            answer.setAttribute('aria-hidden', 'true');
+            answer.setAttribute('aria-labelledby', toggle.id || '');
 
-                if (!answer) {
-                    return;
-                }
-
-                // Toggle the open state
-                const isOpen = item.classList.toggle('jaraba-faq__item--open');
-
-                // Update icon
-                if (icon) {
-                    icon.textContent = isOpen ? '−' : '+';
-                }
-
-                // Animate max-height
-                if (isOpen) {
-                    answer.style.maxHeight = answer.scrollHeight + 'px';
-                } else {
-                    answer.style.maxHeight = '0';
-                }
-            });
+            // Si ya está abierto por defecto
+            if (item.classList.contains('jaraba-faq__item--open')) {
+                toggle.setAttribute('aria-expanded', 'true');
+                answer.setAttribute('aria-hidden', 'false');
+            }
         });
     }
 
-    // Drupal behavior for public pages
+    // Drupal behavior para páginas públicas
     Drupal.behaviors.jarabaFaqAccordion = {
         attach: function (context) {
-            initFaqAccordions(context);
+            var containers = once('jaraba-faq-accordion', '.jaraba-faq', context);
+
+            containers.forEach(function (container) {
+                // Inicializar atributos ARIA
+                initAriaAttributes(container);
+
+                // Delegación de eventos: click
+                container.addEventListener('click', function (event) {
+                    var toggle = event.target.closest('.jaraba-faq__toggle');
+                    if (!toggle) {
+                        return;
+                    }
+
+                    var item = toggle.closest('.jaraba-faq__item');
+                    if (item) {
+                        toggleFaqItem(item);
+                    }
+                });
+
+                // Delegación de eventos: keyboard (Enter/Space)
+                container.addEventListener('keydown', function (event) {
+                    if (event.key !== 'Enter' && event.key !== ' ') {
+                        return;
+                    }
+
+                    var toggle = event.target.closest('.jaraba-faq__toggle');
+                    if (!toggle) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    var item = toggle.closest('.jaraba-faq__item');
+                    if (item) {
+                        toggleFaqItem(item);
+                    }
+                });
+            });
         }
     };
 
-    // Also initialize immediately for non-Drupal contexts (like GrapesJS iframe)
+    // Inicialización inmediata para contextos sin Drupal (iframe GrapesJS)
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
-            initFaqAccordions(document);
+            Drupal.behaviors.jarabaFaqAccordion.attach(document);
         });
     } else {
-        initFaqAccordions(document);
+        Drupal.behaviors.jarabaFaqAccordion.attach(document);
     }
 
-    // Expose for GrapesJS to call in iframe
-    window.jarabaInitFaqAccordions = initFaqAccordions;
+    // Exponer para que GrapesJS llame desde el iframe
+    window.jarabaInitFaqAccordions = function (context) {
+        Drupal.behaviors.jarabaFaqAccordion.attach(context || document);
+    };
 
-})(Drupal);
+})(Drupal, once);

@@ -1,0 +1,64 @@
+{#
+/**
+ * @file
+ * _admin-center-topbar.html.twig — Topbar del Admin Center.
+ *
+ * Barra superior con:
+ * - Breadcrumb (Admin Center > seccion actual)
+ * - Titulo de pagina
+ * - Boton de busqueda (trigger para Command Palette)
+ * - Indicador de usuario logueado
+ *
+ * Variables:
+ * - page_title: titulo de la pagina actual
+ * - logged_in: boolean
+ * - user_display_name: nombre del usuario
+ *
+ * @see docs/tecnicos/20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md
+ */
+#}
+
+<header class="admin-center-topbar">
+  <div class="admin-center-topbar__left">
+    {# Breadcrumb #}
+    <nav class="admin-center-topbar__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+      <ol class="admin-center-topbar__breadcrumb-list">
+        <li class="admin-center-topbar__breadcrumb-item">
+          <a href="/admin/jaraba/center" class="admin-center-topbar__breadcrumb-link">
+            {% trans %}Admin Center{% endtrans %}
+          </a>
+        </li>
+        {% if page_title and page_title != 'Admin Center'|t %}
+          <li class="admin-center-topbar__breadcrumb-item admin-center-topbar__breadcrumb-item--active"
+              aria-current="page">
+            {{ page_title }}
+          </li>
+        {% endif %}
+      </ol>
+    </nav>
+  </div>
+
+  <div class="admin-center-topbar__right">
+    {# Boton de busqueda — trigger para Command Palette (Cmd+K) #}
+    <button type="button"
+            class="admin-center-topbar__search"
+            data-admin-center-search
+            aria-label="{% trans %}Search{% endtrans %} (Ctrl+K)">
+      {{ jaraba_icon('ui', 'search', { size: '18px', color: 'neutral' }) }}
+      <span class="admin-center-topbar__search-label">{% trans %}Search...{% endtrans %}</span>
+      <kbd class="admin-center-topbar__search-kbd">
+        <span class="admin-center-topbar__kbd-meta">&#8984;</span>K
+      </kbd>
+    </button>
+
+    {# Usuario logueado #}
+    {% if logged_in %}
+      <div class="admin-center-topbar__user">
+        <span class="admin-center-topbar__user-avatar">
+          {{ jaraba_icon('ui', 'user', { size: '20px', color: 'corporate' }) }}
+        </span>
+        <span class="admin-center-topbar__user-name">{{ user_display_name }}</span>
+      </div>
+    {% endif %}
+  </div>
+</header>

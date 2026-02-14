@@ -68,4 +68,13 @@
       <a href="/user/register" class="btn-primary btn-primary--glow">{% trans %}Empezar gratis{% endtrans %}</a>
     {% endif %}
   </div>
+
+{# Avatar Navigation — Barra contextual por rol/avatar #}
+{% if avatar_nav is defined and avatar_nav and avatar_nav.items|length > 0 %}
+  {% include '@ecosistema_jaraba_theme/partials/_avatar-nav.html.twig' with {
+    items: avatar_nav.items,
+    avatar: avatar_nav.avatar,
+    avatar_label: avatar_nav.avatar_label,
+  } only %}
+{% endif %}
 </div>

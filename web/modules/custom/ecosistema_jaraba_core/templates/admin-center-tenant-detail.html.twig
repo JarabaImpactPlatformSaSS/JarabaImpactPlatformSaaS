@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * Admin Center — Tenant Detail 360 (Slide-Panel).
+ *
+ * Variables:
+ *   - tenant: Array con:
+ *     - id, label, status, plan, members, created, created_full, url
+ *     - description, vertical, domain
+ *     - recent_members: Array de {uid, name, email}
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 2.
+ */
+#}
+
+<div class="tenant-detail">
+
+  {# Header with status badge #}
+  <div class="tenant-detail__header">
+    <h3 class="tenant-detail__name">{{ tenant.label }}</h3>
+    <span class="ac-datatable__badge ac-datatable__badge--{{ tenant.status }}">
+      {{ tenant.status }}
+    </span>
+  </div>
+
+  {# Key info grid #}
+  <div class="tenant-detail__grid">
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('business', 'money', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Plan{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ tenant.plan ?: '—' }}</span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'users', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Miembros{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ tenant.members }}</span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'calendar', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Creado{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ tenant.created_full }}</span>
+    </div>
+    {% if tenant.vertical %}
+      <div class="tenant-detail__field">
+        <span class="tenant-detail__label">
+          {{ jaraba_icon('analytics', 'chart-bar', { size: '14px', color: 'neutral' }) }}
+          {% trans %}Vertical{% endtrans %}
+        </span>
+        <span class="tenant-detail__value">{{ tenant.vertical }}</span>
+      </div>
+    {% endif %}
+    {% if tenant.domain %}
+      <div class="tenant-detail__field">
+        <span class="tenant-detail__label">
+          {{ jaraba_icon('ui', 'link', { size: '14px', color: 'neutral' }) }}
+          {% trans %}Dominio{% endtrans %}
+        </span>
+        <span class="tenant-detail__value">{{ tenant.domain }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Description #}
+  {% if tenant.description %}
+    <div class="tenant-detail__section">
+      <h4 class="tenant-detail__section-title">{% trans %}Descripcion{% endtrans %}</h4>
+      <p class="tenant-detail__description">{{ tenant.description|striptags|slice(0, 300) }}</p>
+    </div>
+  {% endif %}
+
+  {# Recent Members #}
+  {% if tenant.recent_members is not empty %}
+    <div class="tenant-detail__section">
+      <h4 class="tenant-detail__section-title">
+        {{ jaraba_icon('ui', 'users', { size: '16px', color: 'corporate' }) }}
+        {% trans %}Miembros Recientes{% endtrans %}
+      </h4>
+      <ul class="tenant-detail__members">
+        {% for member in tenant.recent_members %}
+          <li class="tenant-detail__member">
+            <div class="tenant-detail__member-avatar">
+              {{ member.name|first|upper }}
+            </div>
+            <div class="tenant-detail__member-info">
+              <span class="tenant-detail__member-name">{{ member.name }}</span>
+              <span class="tenant-detail__member-email">{{ member.email }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {# Actions #}
+  <div class="tenant-detail__actions">
+    <a href="{{ tenant.url }}" class="admin-center__btn admin-center__btn--primary" target="_blank">
+      {{ jaraba_icon('ui', 'external-link', { size: '14px', color: 'corporate' }) }}
+      {% trans %}Ver Grupo Completo{% endtrans %}
+    </a>
+    <button type="button"
+            class="admin-center__btn admin-center__btn--secondary"
+            data-action="impersonate"
+            data-tenant-id="{{ tenant.id }}">
+      {{ jaraba_icon('ui', 'user', { size: '14px', color: 'neutral' }) }}
+      {% trans %}Impersonar{% endtrans %}
+    </button>
+  </div>
+
+</div>

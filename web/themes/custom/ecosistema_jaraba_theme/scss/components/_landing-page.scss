@@ -309,7 +309,7 @@ body.menu-open {
     }
 
     a {
-        font-family: var(--ej-font-body, 'Inter', sans-serif);
+        font-family: var(--ej-font-body, 'Outfit', sans-serif);
         font-size: 0.9rem;
         font-weight: 500;
         color: var(--ej-text-primary, #1A1A2E);
@@ -344,7 +344,7 @@ body.menu-open {
 // BUTTONS
 // =============================================
 .btn-ghost {
-    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--ej-text-primary, #1A1A2E);
@@ -363,7 +363,7 @@ body.menu-open {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.9rem;
     font-weight: 600;
     color: #fff;
@@ -413,7 +413,7 @@ body.menu-open {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.9rem;
     font-weight: 600;
     color: #fff;
@@ -506,7 +506,7 @@ body.menu-open {
 
     &__eyebrow {
         display: inline-block;
-        font-family: var(--ej-font-body, 'Inter', sans-serif);
+        font-family: var(--ej-font-body, 'Outfit', sans-serif);
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
@@ -529,7 +529,7 @@ body.menu-open {
     }
 
     &__subtitle {
-        font-family: var(--ej-font-body, 'Inter', sans-serif);
+        font-family: var(--ej-font-body, 'Outfit', sans-serif);
         font-size: clamp(1rem, 2.5vw, 1.25rem);
         color: rgba(255, 255, 255, 0.8);
         line-height: 1.6;
@@ -1500,7 +1500,7 @@ body.menu-open {
     bottom: 24px !important;
     right: 24px !important;
     z-index: 9999 !important;
-    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-family: var(--ej-font-body, 'Outfit', sans-serif);
 
     // FAB Trigger Button
     .agent-fab-trigger {

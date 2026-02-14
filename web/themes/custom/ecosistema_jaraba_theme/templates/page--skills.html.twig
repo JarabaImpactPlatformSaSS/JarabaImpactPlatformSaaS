@@ -4,7 +4,7 @@
  * page--skills.html.twig - Dashboard de Habilidades IA
  *
  * ARQUITECTURA LIMPIA (mismo patrón que page--crm.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal (excepto page.content)
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -43,8 +43,14 @@
 
   {# MAIN CONTENT - Full-width dashboard layout #}
   <main id="main-content" class="dashboard-main skills-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper skills-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

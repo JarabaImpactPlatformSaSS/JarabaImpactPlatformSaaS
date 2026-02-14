@@ -97,6 +97,128 @@ class PageContent extends ContentEntityBase implements PageContentInterface
         if (!$this->getOwnerId()) {
             $this->setOwnerId(\Drupal::currentUser()->id());
         }
+
+        // Auto-generar path_alias SEO-friendly si está vacío y hay título.
+        // Se ejecuta en cualquier contexto de guardado (Canvas Editor, formulario
+        // admin, imports, etc.) garantizando que toda página publicada tenga URL
+        // amigable. El usuario puede sobreescribir manualmente vía panel de config.
+        $this->autoGeneratePathAlias($storage);
+    }
+
+    /**
+     * Auto-genera un path_alias SEO-friendly desde el título.
+     *
+     * Solo genera si:
+     * - El campo path_alias está vacío.
+     * - El título no está vacío.
+     *
+     * Usa PhpTransliteration de Drupal core para soporte multi-idioma
+     * (ñ→n, á→a, ü→u, etc.). Verifica unicidad contra la BD.
+     *
+     * Ejemplos:
+     * - "Nuestros Servicios" → "/nuestros-servicios"
+     * - "Productos Agrícolas 2026" → "/productos-agricolas-2026"
+     *
+     * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+     *   El storage de la entidad.
+     */
+    protected function autoGeneratePathAlias(EntityStorageInterface $storage): void
+    {
+        $pathAlias = $this->get('path_alias')->value ?? '';
+        if (!empty(trim($pathAlias))) {
+            // El usuario ya definió un alias manualmente, respetar.
+            return;
+        }
+
+        $title = $this->get('title')->value ?? '';
+        if (empty(trim($title))) {
+            return;
+        }
+
+        $langcode = $this->get('langcode')->value ?? 'es';
+
+        /** @var \Drupal\Component\Transliteration\TransliterationInterface $transliteration */
+        $transliteration = \Drupal::service('transliteration');
+
+        // Transliterar caracteres Unicode a ASCII.
+        $slug = $transliteration->transliterate($title, $langcode, '-');
+
+        // Convertir a minúsculas.
+        $slug = mb_strtolower($slug);
+
+        // Reemplazar cualquier carácter no alfanumérico por guión.
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+
+        // Eliminar guiones al inicio y final.
+        $slug = trim($slug, '-');
+
+        // Colapsar guiones múltiples.
+        $slug = preg_replace('/-{2,}/', '-', $slug);
+
+        // Limitar longitud (SEO recomienda < 75 chars en path).
+        if (mb_strlen($slug) > 128) {
+            $slug = mb_substr($slug, 0, 128);
+            $lastDash = strrpos($slug, '-');
+            if ($lastDash !== FALSE && $lastDash > 80) {
+                $slug = substr($slug, 0, $lastDash);
+            }
+        }
+
+        // Prefijo / obligatorio (consistente con PageConfigApiController).
+        $slug = '/' . $slug;
+
+        // Verificar unicidad contra la BD.
+        $entityId = $this->id() ? (int) $this->id() : 0;
+        $slug = $this->ensureUniquePathAlias($slug, $entityId, $storage);
+
+        $this->set('path_alias', $slug);
+    }
+
+    /**
+     * Asegura unicidad del path_alias contra la base de datos.
+     *
+     * Si "/nuestros-servicios" ya existe para otra entidad, genera
+     * "/nuestros-servicios-2", "/nuestros-servicios-3", etc.
+     *
+     * @param string $slug
+     *   Slug candidato (con prefijo /).
+     * @param int $currentEntityId
+     *   ID de la entidad actual (0 si es nueva).
+     * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+     *   Storage para queries.
+     *
+     * @return string
+     *   Slug único garantizado.
+     */
+    protected function ensureUniquePathAlias(string $slug, int $currentEntityId, EntityStorageInterface $storage): string
+    {
+        $baseSlug = $slug;
+        $counter = 1;
+
+        while (TRUE) {
+            $query = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('path_alias', $slug);
+
+            // Excluir la entidad actual si ya existe (update, no insert).
+            if ($currentEntityId > 0) {
+                $query->condition('id', $currentEntityId, '<>');
+            }
+
+            $existing = $query->execute();
+
+            if (empty($existing)) {
+                return $slug;
+            }
+
+            $counter++;
+            $slug = $baseSlug . '-' . $counter;
+
+            // Safety valve: prevenir bucle infinito.
+            if ($counter > 100) {
+                return $baseSlug . '-' . ($currentEntityId ?: time());
+            }
+        }
     }
 
     /**

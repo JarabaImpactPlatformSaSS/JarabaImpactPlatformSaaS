@@ -56,6 +56,47 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
             $tenantManager->setArguments($args);
         }
 
+        // Admin Center Aggregator: inyectar servicios opcionales de FOC y CS.
+        // jaraba_foc.saas_metrics → arg[3], jaraba_customer_success.health_calculator → arg[4].
+        $aggregator = $container->getDefinition('ecosistema_jaraba_core.admin_center_aggregator');
+        $aggregatorArgs = $aggregator->getArguments();
+        if (isset($modules['jaraba_foc'])) {
+            $aggregatorArgs[3] = new Reference('jaraba_foc.saas_metrics');
+        }
+        if (isset($modules['jaraba_customer_success'])) {
+            $aggregatorArgs[4] = new Reference('jaraba_customer_success.health_calculator');
+        }
+        $aggregator->setArguments($aggregatorArgs);
+
+        // Admin Center Finance: inyectar servicios opcionales de FOC.
+        // jaraba_foc.saas_metrics → arg[1], jaraba_foc.metrics_calculator → arg[2].
+        $finance = $container->getDefinition('ecosistema_jaraba_core.admin_center_finance');
+        $financeArgs = $finance->getArguments();
+        if (isset($modules['jaraba_foc'])) {
+            $financeArgs[1] = new Reference('jaraba_foc.saas_metrics');
+            $financeArgs[2] = new Reference('jaraba_foc.metrics_calculator');
+        }
+        $finance->setArguments($financeArgs);
+
+        // Admin Center Alerts: inyectar servicios opcionales de FOC y CS.
+        // jaraba_foc.alerts → arg[2], jaraba_customer_success.playbook_executor → arg[3].
+        $alerts = $container->getDefinition('ecosistema_jaraba_core.admin_center_alerts');
+        $alertsArgs = $alerts->getArguments();
+        if (isset($modules['jaraba_foc'])) {
+            $alertsArgs[2] = new Reference('jaraba_foc.alerts');
+        }
+        if (isset($modules['jaraba_customer_success'])) {
+            $alertsArgs[3] = new Reference('jaraba_customer_success.playbook_executor');
+        }
+        $alerts->setArguments($alertsArgs);
+
+        // Admin Center Analytics: inyectar AITelemetryService.
+        // ecosistema_jaraba_core.ai_telemetry → arg[3].
+        $analytics = $container->getDefinition('ecosistema_jaraba_core.admin_center_analytics');
+        $analyticsArgs = $analytics->getArguments();
+        $analyticsArgs[3] = new Reference('ecosistema_jaraba_core.ai_telemetry');
+        $analytics->setArguments($analyticsArgs);
+
         // UnifiedPromptBuilder: Combina Skills + Knowledge + Corrections + RAG.
         // Depende de jaraba_skills y jaraba_tenant_knowledge.
         // Solo se registra cuando ambos módulos están instalados.

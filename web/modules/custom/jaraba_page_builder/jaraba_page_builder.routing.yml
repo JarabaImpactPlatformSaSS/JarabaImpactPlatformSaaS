@@ -715,6 +715,24 @@ jaraba_page_builder.api.canvas_blocks:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
 
+# Publicar página desde Canvas Editor (FASE 0 - Hotfix Publish 404)
+# Transiciona status a publicado, auto-genera path_alias SEO-friendly
+# si no existe, crea revisión y devuelve URL pública.
+jaraba_page_builder.api.publish:
+  path: '/api/v1/pages/{page_content}/publish'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\PageContentPublishController::publish'
+  methods: [POST]
+  requirements:
+    _permission: 'publish own page content,publish any page content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
 # ============================================================
 # MEDIA BROWSER API - Asset Manager Integration
 # Gestión de medios para el Canvas Editor GrapesJS.

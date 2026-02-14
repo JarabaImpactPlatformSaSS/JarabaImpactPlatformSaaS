@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-02-13
-**Versión:** 21.0.0 (Remediación Auditoría Integral — FASE 1 + FASE 2 completadas, 0 hallazgos críticos/altos)
+**Fecha:** 2026-02-14
+**Versión:** 23.0.0 (Admin Center Premium f104 — 7 FASEs: Shell + DataTable + Users + Finance + Alerts + Analytics/Logs + Settings/Dark Mode/A11y)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -608,7 +608,7 @@
 │   ├── Frontend: heatmap retención, visualización funnel, export CSV    │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
-│   📦 ecosistema_jaraba_core — Avatar Detection Service ✅               │
+│   📦 ecosistema_jaraba_core — Avatar Detection + Navigation ✅           │
 │   ├── AvatarDetectionService: Cascada 4 niveles                        │
 │   │   ├── Nivel 1: Domain (3 dominios mapeados)                        │
 │   │   ├── Nivel 2: Path/UTM (5 paths + 3 campañas)                    │
@@ -616,7 +616,16 @@
 │   │   └── Nivel 4: Rol (ROLE_TO_AVATAR del usuario autenticado)        │
 │   ├── ValueObject: AvatarDetectionResult (inmutable)                   │
 │   │   └── avatarType, vertical, detectionSource, programaOrigen, confidence │
+│   ├── AvatarNavigationService: Nav contextual 10 avatares (f-103)      │
+│   │   ├── getNavigationItems(): items con URL, icono, active state     │
+│   │   ├── getAvatar(): tipo avatar actual                              │
+│   │   ├── getAvatarLabel(): etiqueta traducible                        │
+│   │   └── Resolucion segura URLs (try/catch modulos opcionales)        │
 │   ├── DashboardRedirectController: /dashboard → redirect por avatar    │
+│   ├── Frontend: _avatar-nav.html.twig (bottom nav mobile + barra desktop)│
+│   │   ├── SCSS BEM: .avatar-nav / __badge / __list / __link / --active │
+│   │   ├── Body class: .has-avatar-nav (padding-bottom mobile)          │
+│   │   └── Theme Setting: enable_avatar_nav (toggle configurable)       │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
 │   📦 jaraba_diagnostic ✅ (Diagnóstico Express Empleabilidad)            │
@@ -947,7 +956,35 @@
 │   ├── Tests: 6 unit test files                                          │
 │   └── Estado: ✅ Producción (v1.0 - Marketing AI Stack 100%)             │
 │                                                                         │
-│   📦 ecosistema_jaraba_core Admin Center D ✅                            │
+│   📦 ecosistema_jaraba_core Admin Center Premium ✅ (Spec f104)           │
+│   ├── FASE 1 — Shell Layout:                                            │
+│   │   ├── AdminCenterController: Router principal 8 páginas              │
+│   │   ├── AdminCenterAggregatorService: Scorecards + Quick Links         │
+│   │   ├── AdminCenterLayoutService: Menu sections + breadcrumbs          │
+│   │   └── Shell: Sidebar colapsable + Topbar + Content area             │
+│   ├── FASE 2 — DataTable + Tenants:                                     │
+│   │   ├── AdminCenterDataTable: Vanilla JS reusable (sort, filter, pag) │
+│   │   ├── AdminCenterTenantService: Filtros plan/status/búsqueda        │
+│   │   └── Slide-panel detalle tenant                                    │
+│   ├── FASE 3 — Users:                                                   │
+│   │   ├── AdminCenterUserService: Avatar detection + filtros role/status │
+│   │   └── Slide-panel detalle usuario                                   │
+│   ├── FASE 4 — Finance:                                                 │
+│   │   ├── AdminCenterFinanceService: MRR, ARPU, Churn, LTV              │
+│   │   └── Scorecards + metrics table + tenant analytics                 │
+│   ├── FASE 5 — Alerts & Playbooks:                                      │
+│   │   ├── Integration FocAlert + CsPlaybook (módulos opcionales)        │
+│   │   └── Dashboard severity + playbook grid + slide-panel              │
+│   ├── FASE 6 — Analytics & Logs:                                        │
+│   │   ├── AdminCenterAnalyticsService: DAU, MAU, sessions, AI, errors   │
+│   │   ├── Chart.js trend charts + AI Telemetry table                    │
+│   │   └── Logs viewer: source tabs, severity, búsqueda, paginación     │
+│   ├── FASE 7 — Settings & Polish:                                       │
+│   │   ├── AdminCenterSettingsService: Config + Plans + Integrations     │
+│   │   ├── API Keys: SHA-256 hashed, create/revoke/copy                  │
+│   │   ├── Dark Mode: body.dark-mode + prefers-color-scheme:dark          │
+│   │   └── A11y: :focus-visible + skip nav + WCAG 2.1 AA                │
+│   ├── Infra: 5 servicios, 30+ APIs, 10 templates, 10 SCSS, 10 JS      │
 │   ├── Impersonation System: Login como usuario de tenant                │
 │   │   ├── ImpersonationAuditLog: Entity audit trail completo            │
 │   │   ├── ImpersonationService: Sesión 30min, bloqueo UID 1             │
@@ -959,13 +996,15 @@
 │   ├── Scheduled Reports: Reportes automáticos programados               │
 │   │   ├── ScheduledReport Entity: 5 tipos, 3 frecuencias                │
 │   │   └── AlertRule Entity: Métricas monitoreables + cooldown           │
-│   └── Estado: ✅ Producción (v1.0 - Feb 2026)                            │
+│   └── Estado: ✅ Producción (v2.0 - Feb 2026 — Premium 7 FASEs)         │
 │                                                                         │
 │   📦 jaraba_page_builder ✅ (Constructor Visual GrapesJS)                 │
 │   ├── 6 Entidades: PageContent, PageTemplate, PageType, etc.            │
 │   ├── GrapesJS Canvas Editor: ~202 bloques, 24 categorías               │
 │   │   ├── Template Registry SSoT v5.0 con Feature Flags                 │
-│   │   └── 12+ plugins GrapesJS propios (AI, Marketplace, Multi-Page...) │
+│   │   ├── 12+ plugins GrapesJS propios (AI, Marketplace, Multi-Page...) │
+│   │   ├── IconRegistry SVG (17 iconos inline, Drupal.jarabaIcons)       │
+│   │   └── 3 bloques redirigidos a componentes interactivos              │
 │   ├── Plan v3.1 COMPLETADO (10/10 sprints):                             │
 │   │   ├── A1: Onboarding Tour (Driver.js)                               │
 │   │   ├── A2: SVG Thumbnails (21 categorías, 682 LOC)                   │
@@ -980,9 +1019,16 @@
 │   │       ├── AiTemplateGeneratorService (landing pages con Brand Voice)│
 │   │       ├── Selectores Vertical + Tono + mode toggle                 │
 │   │       └── Prompt-to-Page (generación página completa)               │
+│   ├── Remediación FASES 0-5 (2026-02-14):                              │
+│   │   ├── F0: Publish endpoint + SEO URLs + Navigation behavior         │
+│   │   ├── F1: 4 SCSS nuevos + compilation Docker + 4 libraries         │
+│   │   ├── F2: 3 bloques estáticos → componentes interactivos           │
+│   │   ├── F3: IconRegistry SVG (17 iconos, ~22 emojis reemplazados)    │
+│   │   └── F5: Font-family unificado Outfit (JS + 10 SCSS)             │
+│   ├── SCSS Pipeline: 10+ parciales → CSS independientes (Docker NVM)    │
 │   ├── API REST: 10+ endpoints (/api/v1/page-builder/*)                  │
 │   ├── Cypress E2E: 12 suites, ~670 líneas                               │
-│   └── Estado: ✅ Producción (Plan v3.1 100%, ~1,200h total)             │
+│   └── Estado: ✅ Producción (Plan v3.1 100% + Remediación F0-F5)       │
 │                                                                         │
 │   📦 jaraba_agent_flows ✅ (Agent Flows Visual Builder)                  │
 │   ├── Entidades: AgentFlow, AgentFlowExecution, AgentFlowStepLog       │
@@ -1784,6 +1830,15 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   FASE 3: Knowledge Base CRUD (FAQs, policies, documents)              │
 │   FASE 4: Infraestructura (agent re-exec, tests, webhooks, entities)   │
 │   FASE 5: Integraciones (tokens V2.1, batch dispatch, stock, GEO)      │
+│                                                                         │
+│   Admin Center Premium (Spec f104): 7/7 FASEs completadas              │
+│   FASE 1: Shell Layout (sidebar + topbar + aggregator)                 │
+│   FASE 2: DataTable reusable + Tenants page                           │
+│   FASE 3: Users page + Avatar Detection                               │
+│   FASE 4: Finance Centro (MRR, ARPU, Churn, LTV)                      │
+│   FASE 5: Alerts & Playbooks (FocAlert + CsPlaybook)                  │
+│   FASE 6: Analytics + Logs (Chart.js, AI Telemetry)                    │
+│   FASE 7: Settings + Dark Mode + A11y WCAG 2.1 AA                     │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

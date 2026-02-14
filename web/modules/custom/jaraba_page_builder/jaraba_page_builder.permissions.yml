@@ -102,10 +102,19 @@ revert page content revisions:
   description: 'Permite restaurar una página a una revisión anterior.'
   restrict access: true
 
+# Permisos de publicación (FASE 0 - Hotfix Publish 404)
+publish own page content:
+  title: 'Publicar páginas propias'
+  description: 'Permite publicar las páginas creadas por el usuario desde el Canvas Editor.'
+  restrict access: false
+
+publish any page content:
+  title: 'Publicar cualquier página'
+  description: 'Permite publicar páginas creadas por otros usuarios del tenant.'
+  restrict access: true
+
 # Permisos de editor canvas
 edit page builder content:
   title: 'Editar contenido en el constructor'
   description: 'Permite usar el editor visual de páginas.'
   restrict access: false
-
-

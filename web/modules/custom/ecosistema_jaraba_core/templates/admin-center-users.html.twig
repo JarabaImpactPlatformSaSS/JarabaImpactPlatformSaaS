@@ -1,0 +1,47 @@
+{#
+/**
+ * @file
+ * Admin Center — Gestion de Usuarios con DataTable.
+ *
+ * El DataTable se inicializa declarativamente via admin-center-users-init.js.
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 3.
+ */
+#}
+
+<div class="admin-center-users">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('ui', 'users', { size: '24px', color: 'corporate' }) }}
+        {% trans %}Gestion de Usuarios{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Busca, filtra y gestiona los usuarios de toda la plataforma.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# DataTable container — declarative init #}
+  <div id="users-datatable"
+       data-datatable
+       data-datatable-url=""
+       data-datatable-columns="[]"
+       data-datatable-actions="[]"
+       data-datatable-page-size="20"
+       data-datatable-default-sort="name"
+       data-datatable-default-dir="ASC">
+  </div>
+
+</div>

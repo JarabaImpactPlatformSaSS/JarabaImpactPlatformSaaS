@@ -1,0 +1,313 @@
+// =============================================================================
+// Admin Center Dark Mode — Token overrides for .dark-mode body class
+// =============================================================================
+// Provides dark theme for all Admin Center Premium components.
+// Activated via body.dark-mode class (toggled by user preference or system).
+// Also respects prefers-color-scheme: dark for automatic switching.
+//
+// F6 — Doc 181 / Spec f104 §FASE 7 — Polish.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Dark Mode Token Overrides
+// ---------------------------------------------------------------------------
+
+// Mixin to avoid duplication between .dark-mode class and media query.
+@mixin dark-tokens {
+  // Base surfaces
+  --ej-bg-body: #0f1117;
+  --ej-bg-card: #1a1d27;
+  --ej-bg-input: #1a1d27;
+  --ej-bg-page: linear-gradient(135deg, #0f1117 0%, #1a1d27 100%);
+
+  // Gray scale (inverted)
+  --ej-gray-50: #1e2130;
+  --ej-gray-100: #262a3a;
+  --ej-gray-200: #2e3347;
+  --ej-gray-300: #3d4460;
+  --ej-gray-400: #5c6380;
+  --ej-gray-500: #8b92a8;
+  --ej-gray-600: #a8afc2;
+  --ej-gray-700: #c5cbdb;
+  --ej-gray-800: #e2e6f0;
+  --ej-gray-900: #f0f2f7;
+
+  // Text
+  --ej-text-primary: #f0f2f7;
+  --ej-text-secondary: #a8afc2;
+  --ej-text-muted: #8b92a8;
+  --ej-text-light: #5c6380;
+  --ej-text-tertiary: #5c6380;
+
+  // Borders
+  --ej-border-color: #2e3347;
+  --ej-border-color-light: #262a3a;
+
+  // Shadows
+  --ej-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ej-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --ej-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  // Glass
+  --ej-glass-bg: rgba(26, 29, 39, 0.8);
+  --ej-glass-bg-dark: rgba(15, 17, 23, 0.9);
+  --ej-glass-border: rgba(255, 255, 255, 0.06);
+
+  // Surfaces
+  --ej-color-surface: #1a1d27;
+  --ej-color-surface-elevated: #222636;
+  --ej-color-surface-dark: #0f1117;
+}
+
+// Apply via body class.
+body.dark-mode .admin-center-shell {
+  @include dark-tokens;
+}
+
+// Apply via system preference (only on admin center pages).
+@media (prefers-color-scheme: dark) {
+  body.page-admin-center .admin-center-shell {
+    @include dark-tokens;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component-Level Dark Overrides
+// ---------------------------------------------------------------------------
+
+@mixin dark-components {
+  // Shell & Topbar
+  .admin-center-topbar {
+    background: var(--ej-bg-card, #1a1d27);
+    border-bottom-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .admin-center-topbar__search {
+    background: var(--ej-gray-100, #262a3a);
+    border-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .admin-center-topbar__search-kbd {
+    background: var(--ej-gray-100, #262a3a);
+    border-color: var(--ej-gray-300, #3d4460);
+  }
+
+  .admin-center-topbar__user-avatar {
+    background: var(--ej-gray-200, #2e3347);
+  }
+
+  // Content area
+  .admin-center-content {
+    background: var(--ej-bg-body, #0f1117);
+  }
+
+  // Page header
+  .ac-page-header {
+    border-bottom-color: var(--ej-gray-200, #2e3347);
+  }
+
+  // Cards (Scorecards, Plan cards, Alert cards, etc.)
+  .ac-analytics__card,
+  .ac-alerts__card,
+  .ac-finance__card,
+  .ac-settings__plan-card,
+  .ac-settings__intg-card {
+    background: var(--ej-bg-card, #1a1d27);
+    border-color: var(--ej-gray-200, #2e3347);
+
+    &:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  // DataTable
+  .ac-datatable__table thead th,
+  .ac-logs__table thead th,
+  .ac-settings__apikeys-table thead th {
+    background: var(--ej-gray-100, #262a3a);
+    color: var(--ej-text-secondary, #a8afc2);
+    border-bottom-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .ac-datatable__table tbody td,
+  .ac-logs__table tbody td,
+  .ac-settings__apikeys-table tbody td {
+    border-bottom-color: var(--ej-gray-100, #262a3a);
+  }
+
+  .ac-datatable__table tbody tr:hover,
+  .ac-logs__table tbody tr:hover,
+  .ac-settings__apikeys-table tbody tr:hover {
+    background: var(--ej-gray-50, #1e2130);
+  }
+
+  // Toolbar / Filter areas
+  .ac-logs__toolbar,
+  .ac-datatable__toolbar {
+    background: var(--ej-bg-card, #1a1d27);
+    border-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .ac-logs__source-tabs {
+    border-bottom-color: var(--ej-gray-100, #262a3a);
+  }
+
+  .ac-logs__source-tab {
+    &:hover {
+      background: var(--ej-gray-100, #262a3a);
+    }
+  }
+
+  // Chart containers
+  .ac-analytics__chart-container {
+    background: var(--ej-bg-card, #1a1d27);
+  }
+
+  // Forms & Inputs
+  .ac-settings__input,
+  .ac-settings__select,
+  .ac-datatable__search {
+    background: var(--ej-bg-input, #1a1d27);
+    border-color: var(--ej-gray-200, #2e3347);
+    color: var(--ej-text-primary, #f0f2f7);
+
+    &::placeholder {
+      color: var(--ej-text-light, #5c6380);
+    }
+
+    &:focus {
+      border-color: var(--ej-color-corporate, #4a7ac7);
+      box-shadow: 0 0 0 3px rgba(74, 122, 199, 0.15);
+    }
+  }
+
+  // Settings form actions border
+  .ac-settings__actions {
+    border-top-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .ac-settings__plan-pricing {
+    border-bottom-color: var(--ej-gray-200, #2e3347);
+  }
+
+  // API Key form
+  .ac-settings__apikey-form-inner {
+    background: var(--ej-gray-50, #1e2130);
+    border-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .ac-settings__apikey-value {
+    background: var(--ej-gray-100, #262a3a);
+    border-color: var(--ej-gray-200, #2e3347);
+    color: var(--ej-text-primary, #f0f2f7);
+  }
+
+  .ac-settings__key-prefix {
+    background: var(--ej-gray-100, #262a3a);
+  }
+
+  // Tab navigation
+  .ac-settings__tabs {
+    border-bottom-color: var(--ej-gray-200, #2e3347);
+  }
+
+  .ac-settings__tab:hover {
+    background: var(--ej-gray-50, #1e2130);
+  }
+
+  // Buttons ghost variant
+  .ac-btn--ghost {
+    color: var(--ej-text-secondary, #a8afc2);
+    border-color: var(--ej-gray-200, #2e3347);
+
+    &:hover {
+      background: var(--ej-gray-100, #262a3a);
+    }
+  }
+
+  // Alert playbook grid
+  .ac-alerts__playbook-card {
+    background: var(--ej-bg-card, #1a1d27);
+    border-color: var(--ej-gray-200, #2e3347);
+  }
+
+  // Finance metrics
+  .ac-finance__metrics-table thead th {
+    background: var(--ej-gray-100, #262a3a);
+  }
+
+  // Slide panel
+  .ac-slide-panel {
+    background: var(--ej-bg-card, #1a1d27);
+    border-color: var(--ej-gray-200, #2e3347);
+  }
+
+  // Empty states
+  .ac-alerts__empty,
+  .ac-datatable__empty {
+    color: var(--ej-text-muted, #8b92a8);
+  }
+
+  // Skeleton loaders
+  .ac-skeleton {
+    background: linear-gradient(90deg, var(--ej-gray-100, #262a3a) 25%, var(--ej-gray-50, #1e2130) 50%, var(--ej-gray-100, #262a3a) 75%);
+    background-size: 200% 100%;
+  }
+}
+
+body.dark-mode .admin-center-shell {
+  @include dark-components;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.page-admin-center .admin-center-shell {
+    @include dark-components;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Focus Indicators (Accessibility — applies in all modes)
+// ---------------------------------------------------------------------------
+// Ensure all interactive Admin Center elements have visible focus indicators.
+
+.admin-center-shell {
+  // Global focus-visible for all interactive elements.
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  [role="tab"]:focus-visible,
+  [data-slide-panel-url]:focus-visible {
+    outline: 2px solid var(--ej-color-corporate, #233d63);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  // Sidebar links get contrasting focus.
+  .admin-center-sidebar__link:focus-visible {
+    outline-color: var(--ej-color-impulse, #ff8c42);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Skip Navigation Link (Accessibility)
+// ---------------------------------------------------------------------------
+
+.admin-center-skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  padding: 0.75rem 1.5rem;
+  background: var(--ej-color-corporate, #233d63);
+  color: #fff;
+  font-weight: 600;
+  z-index: 1000;
+  text-decoration: none;
+  transition: top 0.15s ease;
+
+  &:focus {
+    top: 0;
+  }
+}

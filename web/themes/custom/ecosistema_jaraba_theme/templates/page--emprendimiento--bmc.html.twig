@@ -3,11 +3,18 @@
  * @file
  * Page template limpio para BMC Dashboard (/emprendimiento/bmc).
  *
+ * Zero Region Policy — this template NEVER renders page.* regions directly.
+ * Content is provided via clean_content (sanitised main content) and
+ * clean_messages (system status messages) which are injected by the
+ * preprocess layer, preventing Drupal block regions from leaking markup.
+ *
  * DIRECTRICES:
  * - SIN regiones sidebar (sidebar_first, sidebar_second)
  * - Layout full-width para dashboard BMC
  * - Mantiene header/footer via parciales
- * - Mantiene breadcrumb y mensajes del sistema
+ * - Usa clean_content en lugar de page.content
+ * - Usa clean_messages en lugar de page.highlighted
+ * - Breadcrumb eliminado (Zero Region Policy)
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
@@ -25,31 +32,25 @@
     'site_slogan': site_slogan,
     'logo': logo,
     'logged_in': logged_in,
-    'theme_settings': theme_settings|default({})
+    'theme_settings': theme_settings|default({}),
+    'avatar_nav': avatar_nav|default(null)
   } only %}
 
   {# =============================================
      CONTENIDO PRINCIPAL - Full Width BMC Dashboard
      ============================================= #}
   <main class="main-content main-content--full" role="main">
-    {# Breadcrumbs #}
-    {% if page.breadcrumb %}
-      <div class="breadcrumb-wrapper container">
-        {{ page.breadcrumb }}
-      </div>
-    {% endif %}
-
-    {# Mensajes del sistema #}
-    {% if page.highlighted %}
+    {# Mensajes del sistema (Zero Region Policy — clean_messages) #}
+    {% if clean_messages %}
       <div class="highlighted container">
-        {{ page.highlighted }}
+        {{ clean_messages }}
       </div>
     {% endif %}
 
-    {# Contenido BMC Dashboard - Sin sidebars #}
+    {# Contenido BMC Dashboard - Sin sidebars (Zero Region Policy — clean_content) #}
     <div class="main-content__inner main-content__inner--full">
-      {% if page.content %}
-        {{ page.content }}
+      {% if clean_content %}
+        {{ clean_content }}
       {% endif %}
     </div>
   </main>

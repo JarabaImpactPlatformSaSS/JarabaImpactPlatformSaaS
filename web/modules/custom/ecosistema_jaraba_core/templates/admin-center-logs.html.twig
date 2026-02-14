@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * Admin Center — Visor de Logs de Actividad y Sistema.
+ *
+ * Se hidrata via JS desde /api/v1/admin/logs.
+ * Estructura:
+ *   - Filtros: source (audit/system/all), severity, búsqueda
+ *   - Lista de logs con timestamp, actor, tipo, mensaje, severidad
+ *   - Paginación
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 6.
+ */
+#}
+
+<div class="admin-center-logs">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('ui', 'list', { size: '24px', color: 'corporate' }) }}
+        {% trans %}Logs de Actividad{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Registro de actividad de auditoria y sistema de la plataforma.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+      <a href="/admin/jaraba/center/analytics" class="admin-center__btn admin-center__btn--primary">
+        {{ jaraba_icon('analytics', 'chart-bar', { size: '16px', color: 'corporate' }) }}
+        {% trans %}Ver Analytics{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Filters toolbar #}
+  <div class="ac-logs__toolbar" id="logs-toolbar">
+    <div class="ac-logs__source-tabs">
+      <button type="button" class="ac-logs__source-tab ac-logs__source-tab--active" data-source="all">
+        {% trans %}Todos{% endtrans %}
+      </button>
+      <button type="button" class="ac-logs__source-tab" data-source="audit">
+        {% trans %}Auditoria{% endtrans %}
+      </button>
+      <button type="button" class="ac-logs__source-tab" data-source="system">
+        {% trans %}Sistema{% endtrans %}
+      </button>
+    </div>
+
+    <div class="ac-logs__filters">
+      <div class="ac-logs__severity-filters">
+        <button type="button" class="ac-alerts__filter-chip ac-alerts__filter-chip--active" data-severity="">
+          {% trans %}Todas{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-severity="critical">
+          {% trans %}Critico{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-severity="warning">
+          {% trans %}Warning{% endtrans %}
+        </button>
+        <button type="button" class="ac-alerts__filter-chip" data-severity="info">
+          {% trans %}Info{% endtrans %}
+        </button>
+      </div>
+
+      <div class="ac-logs__search">
+        <input type="text" id="logs-search" class="ac-datatable__search-input" placeholder="{{ 'Buscar en logs...'|trans }}" />
+      </div>
+    </div>
+  </div>
+
+  {# Logs list #}
+  <div class="ac-logs__list" id="logs-list">
+    <div class="ac-alerts__skeleton">
+      <div class="ac-datatable__skeleton-bar" style="width: 100%; height: 44px; margin-bottom: 2px;"></div>
+      <div class="ac-datatable__skeleton-bar" style="width: 100%; height: 44px; margin-bottom: 2px;"></div>
+      <div class="ac-datatable__skeleton-bar" style="width: 100%; height: 44px; margin-bottom: 2px;"></div>
+      <div class="ac-datatable__skeleton-bar" style="width: 100%; height: 44px; margin-bottom: 2px;"></div>
+      <div class="ac-datatable__skeleton-bar" style="width: 100%; height: 44px;"></div>
+    </div>
+  </div>
+
+  <div class="ac-alerts__pagination" id="logs-pagination"></div>
+
+</div>

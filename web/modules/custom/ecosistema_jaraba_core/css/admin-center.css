@@ -125,7 +125,7 @@
   margin-bottom: 0.75rem;
 }
 
-.admin-center-kpi__format-icon {
+.admin-center-kpi__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,9 +133,12 @@
   height: 28px;
   border-radius: 6px;
   background: var(--ej-gray-100, #F5F5F5);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--ej-text-secondary, #757575);
+  flex-shrink: 0;
+}
+
+.admin-center-kpi__sparkline {
+  height: 32px;
+  margin-top: 0.5rem;
 }
 
 .admin-center-kpi__label {
@@ -193,17 +196,26 @@
 }
 
 /* ============================================================================
-   Body Layout: Main + Sidebar
+   Button Icon Alignment
    ============================================================================ */
 
-.admin-center__body {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2rem;
+.admin-center__btn svg,
+.admin-center__btn img {
+  margin-right: 0.375rem;
 }
 
-.admin-center__main {
-  min-width: 0;
+/* ============================================================================
+   Grid Layout: Sections
+   ============================================================================ */
+
+.admin-center__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.admin-center__section--workflow {
+  grid-column: 1 / -1;
 }
 
 /* ============================================================================
@@ -364,59 +376,73 @@
 }
 
 /* ============================================================================
-   Sidebar
+   Section Title with Icon
    ============================================================================ */
 
-.admin-center__sidebar {
-  position: sticky;
-  top: 2rem;
-  align-self: start;
-}
-
-.admin-center__quick-links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.admin-center-link {
+.admin-center__section-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+}
+
+/* ============================================================================
+   Activity Feed
+   ============================================================================ */
+
+.admin-center__activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.admin-center-activity {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
   padding: 0.625rem 0.75rem;
   border-radius: 8px;
-  text-decoration: none;
-  color: var(--ej-text-primary, #212121);
+  background: var(--ej-gray-50, #FAFAFA);
   transition: background-color 0.15s ease;
 }
 
-.admin-center-link:hover {
+.admin-center-activity:hover {
   background: var(--ej-gray-100, #F5F5F5);
 }
 
-.admin-center-link__icon {
-  font-size: 1.1rem;
+.admin-center-activity__icon {
   flex-shrink: 0;
-  width: 24px;
-  text-align: center;
+  margin-top: 0.125rem;
 }
 
-.admin-center-link__label {
+.admin-center-activity__content {
   flex: 1;
-  font-size: 0.9rem;
-  font-weight: 500;
+  min-width: 0;
 }
 
-.admin-center-link__shortcut {
-  font-family: monospace;
-  font-size: 0.7rem;
-  padding: 0.125rem 0.375rem;
-  border: 1px solid var(--ej-gray-300, #E0E0E0);
-  border-radius: 4px;
-  background: var(--ej-gray-100, #F5F5F5);
+.admin-center-activity__message {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ej-text-primary, #212121);
+  line-height: 1.4;
+}
+
+.admin-center-activity__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
   color: var(--ej-text-secondary, #757575);
-  flex-shrink: 0;
+}
+
+.admin-center-activity__type {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-center-activity__time {
+  color: var(--ej-text-secondary, #757575);
 }
 
 /* ============================================================================
@@ -449,12 +475,8 @@
    ============================================================================ */
 
 @media (max-width: 1024px) {
-  .admin-center__body {
+  .admin-center__grid {
     grid-template-columns: 1fr;
-  }
-
-  .admin-center__sidebar {
-    position: static;
   }
 }
 
