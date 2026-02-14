@@ -431,3 +431,14 @@ rm -rf ~/.nvm
     ```
     > **EXCEPCIÓN**: Los `iconOptions` de GrapesJS (labels de categoría en sidebar) SÍ pueden usar emojis — son UI del editor, no contenido renderizado.
 
+25. **Bloques Verticales: SCSS unificado con `@use` y BEM modifiers por vertical/tipo**:
+    El archivo `_pb-sections.scss` (570 LOC) usa un patrón de cascade via CSS custom properties para 5 colores de vertical y 11 layouts de tipo, todo en un solo archivo importado con `@use 'blocks/pb-sections'` desde `page-builder-blocks.scss`:
+    ```scss
+    // Base: .pb-section (container, title, subtitle, media, cta)
+    // Vertical modifier: .pb-section--agroconecta { --pb-accent: #556B2F; }
+    // Type modifier: .pb-section--hero { split layout + gradient bg }
+    // Cascade: .pb-section--hero.pb-section--agroconecta hereda ambos
+    ```
+    **Compilación:** `npx sass scss/page-builder-blocks.scss css/jaraba-page-builder.css --style=compressed`
+    **Resultado:** 47KB, 257 reglas `.pb-section`, 0 `Inter`
+

@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-14
-**Versión:** 24.0.0 (Security CI Operativo + Dependabot 42→0 vulnerabilidades)
+**Versión:** 25.0.0 (Bloques Verticales Diseñados — 55 Templates + SCSS)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1028,7 +1028,17 @@
 │   ├── SCSS Pipeline: 10+ parciales → CSS independientes (Docker NVM)    │
 │   ├── API REST: 10+ endpoints (/api/v1/page-builder/*)                  │
 │   ├── Cypress E2E: 12 suites, ~670 líneas                               │
-│   └── Estado: ✅ Producción (Plan v3.1 100% + Remediación F0-F5)       │
+│   ├── Bloques Verticales (55 templates, 5 verticales × 11 tipos):     │
+│   │   ├── _pb-sections.scss: 570 LOC, base + 5 color schemes + 11 layouts│
+│   │   ├── Color schemes: --pb-accent via CSS custom properties cascade │
+│   │   │   ├── agroconecta (#556B2F), comercioconecta (#FF8C42)        │
+│   │   │   ├── serviciosconecta (#233D63), empleabilidad (#00A9A5)     │
+│   │   │   └── emprendimiento (#8B5CF6)                                 │
+│   │   ├── 11 layouts: hero, content, features, stats, pricing,        │
+│   │   │   testimonials, faq, cta, gallery, map, social_proof          │
+│   │   ├── renderTemplatePreview(): Twig real en vez de placeholder    │
+│   │   └── CSS compilado: 47KB, 257 reglas .pb-section                 │
+│   └── Estado: ✅ Producción (Plan v3.1 100% + Remediación F0-F5 + Bloques Verticales 55 templates) │
 │                                                                         │
 │   📦 jaraba_agent_flows ✅ (Agent Flows Visual Builder)                  │
 │   ├── Entidades: AgentFlow, AgentFlowExecution, AgentFlowStepLog       │

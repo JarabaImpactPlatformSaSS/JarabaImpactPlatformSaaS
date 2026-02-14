@@ -177,6 +177,8 @@ docs/tecnicos/aprendizajes/YYYY-MM-DD_auditoria_exhaustiva_gaps_resueltos.md
 | G3 | Marketing Stack | ¿Docs 149-157 consolidados? |
 | G4 | Dependencies obsoletas | ¿ActiveCampaign → jaraba_email? |
 | G5 | Page Builder Schema.org | ¿Schemas por vertical implementados? |
+| G13 | Page Builder Bloques Verticales | ¿55 templates tienen HTML semántico único (no genérico)? |
+| G14 | Page Builder SCSS Verticales | ¿`_pb-sections.scss` importado en entrypoint y compilado en CSS? |
 | G6 | Site Builder Extensions | ¿Docs 176-179 iniciados? |
 | G7 | WCAG 2.1 AA | ¿Blockes cumplen accesibilidad? |
 | G8 | Índices DB Content Entities | ¿268 entidades tienen `->addIndex()` en `baseFieldDefinitions()`? |
