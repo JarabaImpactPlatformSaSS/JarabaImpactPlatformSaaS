@@ -3,36 +3,41 @@
  # Category: emprendimiento
  # Type: testimonials
  #
- # P2-01: Template vertical especializado para emprendedores.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
  #}
 <section class="pb-section pb-section--testimonials pb-section--emprendimiento"
-         aria-label="{{ title|default('Historias de Fundadores')|t }}">
+         aria-label="{{ title|default('Lo que dicen nuestros emprendedores')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Historias de quienes ya emprendieron')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Fundadores reales que lanzaron su startup con nuestro apoyo.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'Gracias al programa de aceleración validé mi idea en 3 meses y conseguí mi primera ronda de financiación. El acompañamiento fue clave para no cometer errores de novato.', name: 'Andrea Jiménez', role: 'Fundadora, EcoDelivery', initials: 'AJ' },
+        { quote: 'La red de mentores me ayudó a pivotar mi modelo de negocio a tiempo. Hoy facturamos 10 veces más que cuando empezamos y tenemos un equipo de 15 personas.', name: 'Pablo Rueda', role: 'CEO, DataPyme', initials: 'PR' },
+        { quote: 'Sin el coworking y la asesoría legal no habríamos podido constituir la empresa tan rápido. En 6 meses pasamos de idea a producto en el mercado.', name: 'Lucía Navarro', role: 'Co-fundadora, HealthTrack', initials: 'LN' }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial">
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Emprendedor')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Fundador/a')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

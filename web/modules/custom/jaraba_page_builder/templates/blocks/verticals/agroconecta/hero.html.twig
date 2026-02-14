@@ -3,36 +3,34 @@
  # Category: agroconecta
  # Type: hero
  #
- # P2-01: Template vertical especializado para productores agricolas.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Split layout: hero content (eyebrow + h2 + subtitle + CTAs) + media
  #}
 <section class="pb-section pb-section--hero pb-section--agroconecta"
          aria-label="{{ title|default('Escaparate del Productor')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
+    <div class="pb-section__hero-content">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('AgroConecta')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Del campo a tu mesa, sin intermediarios')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Conecta directamente con productores locales y accede a productos frescos, orgánicos y de temporada.')|t }}</p>
       <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
+        <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+          {{ cta_text|default('Ver productos')|t }}
         </a>
+        {% if cta_secondary_text is defined %}
+          <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+            {{ cta_secondary_text }}
+          </a>
+        {% else %}
+          <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Conocer productores'|t }}</a>
+        {% endif %}
       </div>
-    {% endif %}
+    </div>
+    <div class="pb-section__media">
+      {% if image %}
+        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">&#127793;</div>
+      {% endif %}
+    </div>
   </div>
 </section>

@@ -1,38 +1,35 @@
 {#
- # Template: Empleabilidad - Consejos de Busqueda
+ # Template: Empleabilidad - Preguntas Frecuentes
  # Category: empleabilidad
  # Type: faq
  #
- # P2-01: Template vertical especializado para buscadores de empleo.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + accordion con <details>/<summary>
  #}
 <section class="pb-section pb-section--faq pb-section--empleabilidad"
-         aria-label="{{ title|default('Consejos de Busqueda')|t }}">
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre formación, empleo y desarrollo profesional.')|t }}</p>
+    </div>
+    <div class="pb-section__faq-list">
+      {% set default_faqs = [
+        { question: '¿Cómo me registro en la plataforma?', answer: 'El registro es gratuito. Solo necesitas crear tu perfil con tus datos básicos, experiencia y formación. En menos de 5 minutos tendrás acceso a todas las ofertas y recursos disponibles.' },
+        { question: '¿Qué tipos de cursos están disponibles?', answer: 'Ofrecemos cursos en competencias digitales, idiomas, habilidades interpersonales, oficios técnicos y especialidades con alta demanda laboral. Todos incluyen certificación oficial al completarlos.' },
+        { question: '¿Cómo funciona el matching con empresas?', answer: 'Nuestro sistema analiza tu perfil, formación y preferencias para conectarte automáticamente con las ofertas que mejor se ajustan a tu perfil profesional. Las empresas también pueden descubrirte directamente.' },
+        { question: '¿Puedo recibir orientación personalizada?', answer: 'Sí. Contamos con asesores laborales que te ayudan a definir tu objetivo profesional, preparar entrevistas, mejorar tu CV y trazar un plan de carrera adaptado a tus necesidades.' },
+        { question: '¿Los cursos tienen algún coste?', answer: 'El plan Básico incluye acceso gratuito a ofertas de empleo y herramientas de CV. Los cursos certificados y el acompañamiento personalizado están disponibles en los planes Profesional y Premium.' }
+      ] %}
+      {% set items = faqs|default(default_faqs) %}
+      {% for faq in items %}
+        <details class="pb-section__faq-item">
+          <summary>{{ faq.question|default('Pregunta')|t }}</summary>
+          <div class="pb-section__faq-answer">
+            {{ faq.answer|default('Respuesta.')|t }}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
   </div>
 </section>

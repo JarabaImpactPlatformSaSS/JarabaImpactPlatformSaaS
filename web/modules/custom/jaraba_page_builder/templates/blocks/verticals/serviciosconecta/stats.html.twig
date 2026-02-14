@@ -3,36 +3,29 @@
  # Category: serviciosconecta
  # Type: stats
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + fila de 4 stat counters (numero grande + label)
  #}
 <section class="pb-section pb-section--stats pb-section--serviciosconecta"
-         aria-label="{{ title|default('Metricas de Experiencia')|t }}">
+         aria-label="{{ title|default('Nuestras Cifras')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <h2 class="pb-section__title">{{ title|default('Resultados que avalan nuestra plataforma')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Cifras que demuestran la confianza de clientes y profesionales en ServiciosConecta.')|t }}</p>
+    </div>
+    <div class="pb-section__stats-row">
+      {% set default_stats = [
+        { number: '+1.200', label: 'Profesionales activos' },
+        { number: '98%', label: 'Clientes satisfechos' },
+        { number: '+25K', label: 'Servicios completados' },
+        { number: '4.9★', label: 'Valoración media' }
+      ] %}
+      {% set items = stats|default(default_stats) %}
+      {% for stat in items %}
+        <div class="pb-section__stat">
+          <span class="pb-section__stat-number">{{ stat.number|default('0') }}</span>
+          <span class="pb-section__stat-label">{{ stat.label|default('Métrica')|t }}</span>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

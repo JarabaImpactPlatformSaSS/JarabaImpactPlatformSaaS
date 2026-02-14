@@ -1,38 +1,43 @@
 {#
- # Template: Empleabilidad - Historias de Exito
+ # Template: Empleabilidad - Historias de Éxito
  # Category: empleabilidad
  # Type: testimonials
  #
- # P2-01: Template vertical especializado para buscadores de empleo.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
  #}
 <section class="pb-section pb-section--testimonials pb-section--empleabilidad"
-         aria-label="{{ title|default('Historias de Exito')|t }}">
+         aria-label="{{ title|default('Historias de éxito')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Historias que inspiran')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Personas reales que transformaron su carrera profesional con nuestro acompañamiento.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'Gracias a la formación en UX y la bolsa de empleo, encontré trabajo como diseñadora en solo 3 semanas. El acompañamiento fue clave.', name: 'Sofía Delgado', role: 'Diseñadora UX, encontró empleo en 3 semanas', initials: 'SD' },
+        { quote: 'Después de 10 años en hostelería, me formé en programación y hoy trabajo como desarrollador web. Nunca pensé que fuera posible.', name: 'Javier Romero', role: 'Reconvertido de hostelería a programación', initials: 'JR' },
+        { quote: 'Tras 5 años fuera del mercado laboral, el programa de reincorporación me dio la confianza y las herramientas para volver a trabajar.', name: 'Carmen Ortiz', role: 'Reincorporada al mercado laboral tras 5 años', initials: 'CO' }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial">
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Candidato')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Profesional')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

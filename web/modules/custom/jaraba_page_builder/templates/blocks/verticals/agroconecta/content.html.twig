@@ -1,38 +1,34 @@
 {#
- # Template: AgroConecta - Certificacion y Origen
+ # Template: AgroConecta - Certificación y Origen
  # Category: agroconecta
  # Type: content
  #
- # P2-01: Template vertical especializado para productores agricolas.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Grid 2 columnas: texto + media
  #}
 <section class="pb-section pb-section--content pb-section--agroconecta"
-         aria-label="{{ title|default('Certificacion y Origen')|t }}">
+         aria-label="{{ title|default('Nuestro Origen')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
+    <div class="pb-section__text">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Origen')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Trazabilidad completa desde la semilla')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Cada producto cuenta una historia: del campo donde creció al momento en que llega a tu hogar.')|t }}</p>
+      {% if description %}
+        <div class="pb-section__description">{{ description|safe_html }}</div>
+      {% else %}
+        <div class="pb-section__description">{{ 'Nuestros productores siguen prácticas agrícolas sostenibles, garantizando productos frescos con certificación de origen y calidad.'|t }}</div>
+      {% endif %}
+      {% if cta_text and cta_url %}
+        <div class="pb-section__actions">
+          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">{{ cta_text }}</a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="pb-section__media">
+      {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">&#127806;</div>
+      {% endif %}
+    </div>
   </div>
 </section>

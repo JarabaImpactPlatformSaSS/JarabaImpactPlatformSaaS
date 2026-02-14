@@ -1,38 +1,40 @@
 {#
- # Template: Empleabilidad - Timeline de Carrera
+ # Template: Empleabilidad - Galería de Formación
  # Category: empleabilidad
  # Type: gallery
  #
- # P2-01: Template vertical especializado para buscadores de empleo.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid responsive de imágenes con hover overlay
  #}
 <section class="pb-section pb-section--gallery pb-section--empleabilidad"
-         aria-label="{{ title|default('Timeline de Carrera')|t }}">
+         aria-label="{{ title|default('Galería de Formación')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Galería')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Nuestras actividades formativas')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Talleres, jornadas y eventos que conectan talento con oportunidades.')|t }}</p>
+    </div>
+    <div class="pb-section__gallery-grid">
+      {% set default_gallery = [
+        { alt: 'Taller de competencias digitales', caption: 'Taller de competencias digitales' },
+        { alt: 'Jornada de networking empresarial', caption: 'Networking empresarial' },
+        { alt: 'Curso de preparación de entrevistas', caption: 'Preparación de entrevistas' },
+        { alt: 'Sesión de orientación laboral', caption: 'Orientación laboral' },
+        { alt: 'Feria de empleo y formación', caption: 'Feria de empleo' },
+        { alt: 'Taller de desarrollo profesional', caption: 'Desarrollo profesional' }
+      ] %}
+      {% set items = gallery|default(default_gallery) %}
+      {% for item in items %}
+        <figure class="pb-section__gallery-item">
+          {% if item.src|default('') %}
+            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__img-placeholder" aria-hidden="true">&#127891;</div>
+          {% endif %}
+          {% if item.caption|default('') %}
+            <figcaption>{{ item.caption|t }}</figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
   </div>
 </section>

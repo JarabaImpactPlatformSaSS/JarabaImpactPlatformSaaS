@@ -1,38 +1,26 @@
 {#
- # Template: Emprendimiento - Validar Idea
+ # Template: Emprendimiento - Llamada a la Acción
  # Category: emprendimiento
  # Type: cta
  #
- # P2-01: Template vertical especializado para emprendedores.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Banner con gradient, título, subtitle y 2 CTAs (primary + secondary)
  #}
 <section class="pb-section pb-section--cta pb-section--emprendimiento"
-         aria-label="{{ title|default('Validar Idea')|t }}">
+         aria-label="{{ title|default('Presenta tu idea')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
+    <h2 class="pb-section__title">{{ title|default('¿Tienes una idea? Nosotros la hacemos crecer')|t }}</h2>
+    <p class="pb-section__subtitle">{{ subtitle|default('Únete a nuestro ecosistema emprendedor y transforma tu visión en una startup de éxito. Sin compromiso, sin letra pequeña.')|t }}</p>
+    <div class="pb-section__actions">
+      <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+        {{ cta_text|default('Presentar mi idea')|t }}
+      </a>
+      {% if cta_secondary_text is defined %}
+        <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+          {{ cta_secondary_text }}
         </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Conocer el programa'|t }}</a>
+      {% endif %}
+    </div>
   </div>
 </section>
