@@ -187,6 +187,13 @@ jobs:
       - name: Prepare workspace for ZAP
         run: chmod 777 ${{ github.workspace }}
 
+      - name: Validate STAGING_URL secret
+        run: |
+          if [ -z "${{ secrets.STAGING_URL }}" ]; then
+            echo "::error::STAGING_URL secret is not configured. Set it in Settings → Secrets → Actions."
+            exit 1
+          fi
+
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
