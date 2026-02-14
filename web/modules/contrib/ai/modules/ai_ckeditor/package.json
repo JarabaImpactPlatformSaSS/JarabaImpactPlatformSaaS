@@ -8,6 +8,9 @@
     "watch": "webpack --mode development --watch",
     "build": "webpack"
   },
+  "overrides": {
+    "diff": "^8.0.3"
+  },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-utils": "^49.0.2",
     "ckeditor5": "^47.5.0",
