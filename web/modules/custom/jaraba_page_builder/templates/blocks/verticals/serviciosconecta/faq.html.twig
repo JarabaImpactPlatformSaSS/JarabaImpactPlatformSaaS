@@ -1,38 +1,35 @@
 {#
- # Template: ServiciosConecta - Proceso del Servicio
+ # Template: ServiciosConecta - Preguntas Frecuentes
  # Category: serviciosconecta
  # Type: faq
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + accordion con <details>/<summary>
  #}
 <section class="pb-section pb-section--faq pb-section--serviciosconecta"
-         aria-label="{{ title|default('Proceso del Servicio')|t }}">
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre nuestra plataforma de servicios profesionales.')|t }}</p>
+    </div>
+    <div class="pb-section__faq-list">
+      {% set default_faqs = [
+        { question: '¿Cómo se verifican los profesionales?', answer: 'Cada profesional pasa por un proceso de verificación que incluye comprobación de titulaciones, colegiación activa, experiencia laboral y referencias de clientes anteriores.' },
+        { question: '¿Qué garantías tengo al contratar?', answer: 'Todos los servicios contratados a través de la plataforma están cubiertos por nuestra garantía de satisfacción. Si no estás conforme, mediamos para encontrar una solución o te devolvemos el importe.' },
+        { question: '¿Cómo funciona el sistema de pago?', answer: 'El pago se realiza a través de la plataforma de forma segura. El importe se retiene hasta que confirmas que el servicio ha sido completado satisfactoriamente.' },
+        { question: '¿Puedo solicitar presupuesto sin compromiso?', answer: 'Por supuesto. Puedes solicitar presupuestos a varios profesionales de forma gratuita y sin compromiso. Cada presupuesto incluye un desglose detallado del servicio.' },
+        { question: '¿Qué tipo de profesionales puedo encontrar?', answer: 'Contamos con consultores, abogados, contables, asesores fiscales, arquitectos, ingenieros, coaches empresariales y muchos más profesionales de servicios verificados.' }
+      ] %}
+      {% set items = faqs|default(default_faqs) %}
+      {% for faq in items %}
+        <details class="pb-section__faq-item">
+          <summary>{{ faq.question|default('Pregunta')|t }}</summary>
+          <div class="pb-section__faq-answer">
+            {{ faq.answer|default('Respuesta.')|t }}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
   </div>
 </section>

@@ -1,38 +1,36 @@
 {#
- # Template: Emprendimiento - Red de Mentores
+ # Template: Emprendimiento - Partners y Aceleradoras
  # Category: emprendimiento
  # Type: social_proof
  #
- # P2-01: Template vertical especializado para emprendedores.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header "Confían en nosotros" + grid de logos con hover
  #}
-<section class="pb-section pb-section--social_proof pb-section--emprendimiento"
-         aria-label="{{ title|default('Red de Mentores')|t }}">
+<section class="pb-section pb-section--social-proof pb-section--emprendimiento"
+         aria-label="{{ title|default('Confían en nosotros')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <h2 class="pb-section__title">{{ title|default('Partners y aceleradoras que nos acompañan')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Organizaciones e inversores que forman parte de nuestro ecosistema emprendedor.')|t }}</p>
+    </div>
+    <div class="pb-section__logos-grid">
+      {% set default_logos = [
+        { alt: 'Aceleradora 1' },
+        { alt: 'Fondo inversión 2' },
+        { alt: 'Universidad partner 3' },
+        { alt: 'Incubadora 4' },
+        { alt: 'Corporate partner 5' },
+        { alt: 'Aceleradora 6' }
+      ] %}
+      {% set items = logos|default(default_logos) %}
+      {% for logo in items %}
+        <div class="pb-section__logo">
+          {% if logo.src|default('') %}
+            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__logo-placeholder">{{ logo.alt|default('Logo')|t }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

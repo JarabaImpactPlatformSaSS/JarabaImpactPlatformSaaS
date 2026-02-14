@@ -1,38 +1,26 @@
 {#
- # Template: ServiciosConecta - Reservar Consulta
+ # Template: ServiciosConecta - Llamada a la Accion
  # Category: serviciosconecta
  # Type: cta
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Banner con gradient, titulo, subtitle y 2 CTAs (primary + secondary)
  #}
 <section class="pb-section pb-section--cta pb-section--serviciosconecta"
-         aria-label="{{ title|default('Reservar Consulta')|t }}">
+         aria-label="{{ title|default('Solicitar Presupuesto')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
+    <h2 class="pb-section__title">{{ title|default('¿Necesitas un profesional de confianza?')|t }}</h2>
+    <p class="pb-section__subtitle">{{ subtitle|default('Conecta con expertos verificados en consultoría, asesoría legal, contabilidad y más. Solicita presupuesto sin compromiso.')|t }}</p>
+    <div class="pb-section__actions">
+      <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+        {{ cta_text|default('Solicitar presupuesto')|t }}
+      </a>
+      {% if cta_secondary_text is defined %}
+        <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+          {{ cta_secondary_text }}
         </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Ver categorías'|t }}</a>
+      {% endif %}
+    </div>
   </div>
 </section>

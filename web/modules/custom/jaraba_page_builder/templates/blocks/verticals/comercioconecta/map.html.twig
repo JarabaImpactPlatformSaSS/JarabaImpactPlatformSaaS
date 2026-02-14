@@ -3,36 +3,46 @@
  # Category: comercioconecta
  # Type: map
  #
- # P2-01: Template vertical especializado para comercios y tiendas.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Grid 2 cols: mapa embed + info de contacto lateral
  #}
 <section class="pb-section pb-section--map pb-section--comercioconecta"
-         aria-label="{{ title|default('Ubicaciones de Tienda')|t }}">
+         aria-label="{{ title|default('Encuéntranos')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+    <div class="pb-section__map-embed">
+      {% if map_embed|default('') %}
+        {{ map_embed|raw }}
+      {% else %}
+        <span>{{ 'Mapa de ubicación — inserta tu código de mapa aquí'|t }}</span>
+      {% endif %}
+    </div>
+    <div class="pb-section__contact-info">
+      <h2 class="pb-section__title">{{ title|default('Visítanos')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Estamos aquí para atenderte.')|t }}</p>
+      <div class="pb-section__contact-item">
+        <div class="pb-section__contact-icon" aria-hidden="true">&#128205;</div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'Dirección'|t }}</div>
+          <div class="pb-section__contact-value">{{ address|default('Calle Principal 123, Tu Ciudad')|t }}</div>
+        </div>
       </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
+      <div class="pb-section__contact-item">
+        <div class="pb-section__contact-icon" aria-hidden="true">&#128222;</div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'Teléfono'|t }}</div>
+          <div class="pb-section__contact-value">
+            <a href="tel:{{ phone|default('+34 600 000 000') }}">{{ phone|default('+34 600 000 000') }}</a>
+          </div>
+        </div>
       </div>
-    {% endif %}
+      <div class="pb-section__contact-item">
+        <div class="pb-section__contact-icon" aria-hidden="true">&#9993;</div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'Email'|t }}</div>
+          <div class="pb-section__contact-value">
+            <a href="mailto:{{ email|default('info@tutienda.com') }}">{{ email|default('info@tutienda.com') }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

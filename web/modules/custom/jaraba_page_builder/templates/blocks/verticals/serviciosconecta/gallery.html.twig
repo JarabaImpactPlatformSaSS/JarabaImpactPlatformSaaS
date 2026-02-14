@@ -3,36 +3,38 @@
  # Category: serviciosconecta
  # Type: gallery
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid responsive de imagenes con hover overlay
  #}
 <section class="pb-section pb-section--gallery pb-section--serviciosconecta"
          aria-label="{{ title|default('Portafolio de Proyectos')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Portafolio')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Proyectos destacados de nuestros profesionales')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Conoce el trabajo y los resultados de los expertos en nuestra plataforma.')|t }}</p>
+    </div>
+    <div class="pb-section__gallery-grid">
+      {% set default_gallery = [
+        { alt: 'Consultoría estratégica', caption: 'Consultoría estratégica' },
+        { alt: 'Asesoría legal', caption: 'Asesoría legal' },
+        { alt: 'Gestión contable', caption: 'Gestión contable' },
+        { alt: 'Planificación fiscal', caption: 'Planificación fiscal' },
+        { alt: 'Auditoría empresarial', caption: 'Auditoría empresarial' },
+        { alt: 'Coaching ejecutivo', caption: 'Coaching ejecutivo' }
+      ] %}
+      {% set items = gallery|default(default_gallery) %}
+      {% for item in items %}
+        <figure class="pb-section__gallery-item">
+          {% if item.src|default('') %}
+            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__img-placeholder" aria-hidden="true">&#128188;</div>
+          {% endif %}
+          {% if item.caption|default('') %}
+            <figcaption>{{ item.caption|t }}</figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
   </div>
 </section>

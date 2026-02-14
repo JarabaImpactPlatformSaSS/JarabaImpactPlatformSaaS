@@ -3,36 +3,32 @@
  # Category: serviciosconecta
  # Type: content
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Grid 2 columnas: texto + media
  #}
 <section class="pb-section pb-section--content pb-section--serviciosconecta"
-         aria-label="{{ title|default('Expertise y Trayectoria')|t }}">
+         aria-label="{{ title|default('Servicios de Confianza')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
+    <div class="pb-section__text">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Servicios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Servicios profesionales de confianza')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Accede a una red de profesionales verificados en consultoría, asesoría legal, contabilidad y más.')|t }}</p>
+      {% if description %}
+        <div class="pb-section__description">{{ description|safe_html }}</div>
+      {% else %}
+        <div class="pb-section__description">{{ 'Garantizamos la calidad de cada profesional. Todos pasan por un riguroso proceso de verificación de credenciales, experiencia y referencias antes de formar parte de nuestra plataforma.'|t }}</div>
+      {% endif %}
+      {% if cta_text and cta_url %}
+        <div class="pb-section__actions">
+          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">{{ cta_text }}</a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="pb-section__media">
+      {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">&#128188;</div>
+      {% endif %}
+    </div>
   </div>
 </section>

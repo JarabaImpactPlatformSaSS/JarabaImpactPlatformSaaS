@@ -3,36 +3,41 @@
  # Category: serviciosconecta
  # Type: testimonials
  #
- # P2-01: Template vertical especializado para profesionales de servicios.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
  #}
 <section class="pb-section pb-section--testimonials pb-section--serviciosconecta"
          aria-label="{{ title|default('Casos de Exito')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Lo que dicen nuestros clientes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Empresas y particulares que han encontrado al profesional ideal en ServiciosConecta.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'Encontré un asesor fiscal excelente en menos de 48 horas. El proceso de verificación me dio total confianza para contratar sus servicios.', name: 'Elena Vázquez', role: 'Directora, Startup TechVida', initials: 'EV' },
+        { quote: 'Los presupuestos claros y las valoraciones de otros clientes me ayudaron a elegir al consultor perfecto para reestructurar mi negocio.', name: 'Roberto Sánchez', role: 'Propietario, Distribuciones RS', initials: 'RS' },
+        { quote: 'Gracias a ServiciosConecta contamos con un equipo legal de primer nivel. La plataforma simplifica todo el proceso de contratación.', name: 'Laura Fernández', role: 'CEO, Grupo Innova', initials: 'LF' }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial">
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Cliente')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Profesional')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

@@ -1,38 +1,43 @@
 {#
- # Template: Empleabilidad - Funciones Premium
+ # Template: Empleabilidad - Planes de Formación
  # Category: empleabilidad
  # Type: pricing
  #
- # P2-01: Template vertical especializado para buscadores de empleo.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + 3 pricing cards con precio, features list y CTA
  #}
 <section class="pb-section pb-section--pricing pb-section--empleabilidad"
-         aria-label="{{ title|default('Funciones Premium')|t }}">
+         aria-label="{{ title|default('Nuestros Planes')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Planes')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Elige el plan que impulse tu carrera')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Opciones flexibles para cada etapa de tu desarrollo profesional.')|t }}</p>
+    </div>
+    <div class="pb-section__pricing-grid">
+      {% set default_plans = [
+        { name: 'Básico', price: 'Gratuito', period: '', featured: false, cta: 'Empezar gratis', features: ['Constructor de CV', 'Alertas de empleo', 'Perfil de candidato', 'Acceso a ofertas públicas'] },
+        { name: 'Profesional', price: '29€', period: '/mes', featured: true, badge: 'Popular', cta: 'Probar 14 días', features: ['Todo en Básico', 'Acceso prioritario a ofertas', 'Preparación de entrevistas', 'Mentor asignado', 'Cursos destacados'] },
+        { name: 'Premium', price: '59€', period: '/mes', featured: false, cta: 'Contactar', features: ['Todo en Profesional', 'Coaching 1 a 1', 'Referencia directa a empresas', 'Cursos premium ilimitados', 'Revisión de CV personalizada'] }
+      ] %}
+      {% set items = plans|default(default_plans) %}
+      {% for plan in items %}
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}">
+          {% if plan.badge|default('') %}
+            <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
+          {% endif %}
+          <h3 class="pb-section__pricing-name">{{ plan.name|default('Plan')|t }}</h3>
+          <div class="pb-section__pricing-price">{{ plan.price|default('0€') }}</div>
+          <div class="pb-section__pricing-period">{{ plan.period|default('/mes')|t }}</div>
+          <ul class="pb-section__pricing-features">
+            {% for feature in plan.features|default([]) %}
+              <li>{{ feature|t }}</li>
+            {% endfor %}
+          </ul>
+          <a href="{{ plan.url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+            {{ plan.cta|default('Elegir plan')|t }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

@@ -1,38 +1,43 @@
 {#
- # Template: AgroConecta - Cajas de Suscripcion
+ # Template: AgroConecta - Cajas de Suscripción
  # Category: agroconecta
  # Type: pricing
  #
- # P2-01: Template vertical especializado para productores agricolas.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + 3 pricing cards
  #}
 <section class="pb-section pb-section--pricing pb-section--agroconecta"
-         aria-label="{{ title|default('Cajas de Suscripcion')|t }}">
+         aria-label="{{ title|default('Nuestras Cajas')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Suscripciones')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Elige tu caja de productos frescos')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Recibe productos de temporada directamente del productor cada semana.')|t }}</p>
+    </div>
+    <div class="pb-section__pricing-grid">
+      {% set default_plans = [
+        { name: 'Caja Huerta', price: '19€', period: '/semana', featured: false, cta: 'Suscribirse', features: ['5 kg de verduras', 'Productos de temporada', 'Entrega semanal'] },
+        { name: 'Caja Familiar', price: '35€', period: '/semana', featured: true, badge: 'Más popular', cta: 'Probar ahora', features: ['10 kg verduras y fruta', 'Recetas incluidas', 'Entrega flexible', 'Productos orgánicos'] },
+        { name: 'Caja Gourmet', price: '55€', period: '/semana', featured: false, cta: 'Contactar', features: ['Todo en Familiar', 'Quesos artesanales', 'Aceite de oliva', 'Productos premium'] }
+      ] %}
+      {% set items = plans|default(default_plans) %}
+      {% for plan in items %}
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}">
+          {% if plan.badge|default('') %}
+            <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
+          {% endif %}
+          <h3 class="pb-section__pricing-name">{{ plan.name|default('Plan')|t }}</h3>
+          <div class="pb-section__pricing-price">{{ plan.price|default('0€') }}</div>
+          <div class="pb-section__pricing-period">{{ plan.period|default('/semana')|t }}</div>
+          <ul class="pb-section__pricing-features">
+            {% for feature in plan.features|default([]) %}
+              <li>{{ feature|t }}</li>
+            {% endfor %}
+          </ul>
+          <a href="{{ plan.url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+            {{ plan.cta|default('Elegir plan')|t }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

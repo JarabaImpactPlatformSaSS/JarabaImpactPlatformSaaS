@@ -1,38 +1,34 @@
 {#
- # Template: Emprendimiento - Modelo de Negocio
+ # Template: Emprendimiento - Del Concepto al Mercado
  # Category: emprendimiento
  # Type: content
  #
- # P2-01: Template vertical especializado para emprendedores.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Grid 2 columnas: texto + media
  #}
 <section class="pb-section pb-section--content pb-section--emprendimiento"
-         aria-label="{{ title|default('Modelo de Negocio')|t }}">
+         aria-label="{{ title|default('Tu Proyecto')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
+    <div class="pb-section__text">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Tu Proyecto')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Del concepto al mercado')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Te acompañamos en cada fase de tu startup: desde la validación de la idea hasta la entrada al mercado y el crecimiento sostenible.')|t }}</p>
+      {% if description %}
+        <div class="pb-section__description">{{ description|safe_html }}</div>
+      {% else %}
+        <div class="pb-section__description">{{ 'Nuestro programa de aceleración combina formación intensiva, mentoría personalizada y acceso a una red de inversores para que tu proyecto emprendedor despegue con bases sólidas.'|t }}</div>
+      {% endif %}
+      {% if cta_text and cta_url %}
+        <div class="pb-section__actions">
+          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">{{ cta_text }}</a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="pb-section__media">
+      {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">&#128161;</div>
+      {% endif %}
+    </div>
   </div>
 </section>

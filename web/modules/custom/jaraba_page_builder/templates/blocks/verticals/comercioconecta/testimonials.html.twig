@@ -1,38 +1,43 @@
 {#
- # Template: ComercioConecta - Resenas de Clientes
+ # Template: ComercioConecta - Reseñas de Clientes
  # Category: comercioconecta
  # Type: testimonials
  #
- # P2-01: Template vertical especializado para comercios y tiendas.
- # Usa CSS variables del tema (var(--ej-*)) para mantener coherencia visual.
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
  #}
 <section class="pb-section pb-section--testimonials pb-section--comercioconecta"
-         aria-label="{{ title|default('Resenas de Clientes')|t }}">
+         aria-label="{{ title|default('Lo que dicen nuestros clientes')|t }}">
   <div class="pb-section__container">
-    {% if title %}
-      <h2 class="pb-section__title">{{ title }}</h2>
-    {% endif %}
-
-    {% if subtitle %}
-      <p class="pb-section__subtitle">{{ subtitle }}</p>
-    {% endif %}
-
-    {% if description %}
-      <div class="pb-section__description">{{ description|safe_html }}</div>
-    {% endif %}
-
-    {% if image %}
-      <div class="pb-section__media">
-        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
-      </div>
-    {% endif %}
-
-    {% if cta_text and cta_url %}
-      <div class="pb-section__actions">
-        <a href="{{ cta_url }}" class="pb-section__cta ej-btn ej-btn--primary">
-          {{ cta_text }}
-        </a>
-      </div>
-    {% endif %}
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Lo que dicen nuestros comerciantes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Comercios reales que han transformado su negocio con ComercioConecta.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'Desde que uso ComercioConecta, mis ventas online han crecido un 60%. La plataforma es intuitiva y mis clientes la adoran.', name: 'María López', role: 'Propietaria, Tienda Moda Sol', initials: 'ML' },
+        { quote: 'El catálogo digital me permite mostrar todos mis productos con fotos profesionales. Ha sido un cambio total para mi negocio.', name: 'Carlos Ruiz', role: 'Gerente, Electrónica CR', initials: 'CR' },
+        { quote: 'La gestión de pedidos es fantástica. Ya no pierdo ventas por desorganización y mis clientes reciben sus productos a tiempo.', name: 'Ana Martín', role: 'Dueña, Delicias Ana', initials: 'AM' }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial">
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Cliente')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Comerciante')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>

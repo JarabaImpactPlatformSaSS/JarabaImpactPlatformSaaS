@@ -544,7 +544,27 @@ class TemplateRegistryService
      */
     protected function renderTemplatePreview(array $template): string
     {
-        // Generar HTML básico con marcadores para los campos.
+        $twigPath = $template['twig_template'] ?? '';
+
+        if (!empty($twigPath)) {
+            try {
+                /** @var \Twig\Environment $twig */
+                $twig = \Drupal::service('twig');
+                $loader = $twig->getLoader();
+
+                if ($loader->exists($twigPath)) {
+                    $previewData = $template['preview_data'] ?? [];
+                    return $twig->render($twigPath, $previewData);
+                }
+            } catch (\Exception $e) {
+                $this->logger->warning(
+                    'Error rendering template preview @id: @error',
+                    ['@id' => $template['id'] ?? 'unknown', '@error' => $e->getMessage()]
+                );
+            }
+        }
+
+        // Fallback: placeholder genérico.
         $id = $template['id'] ?? 'unknown';
         $label = $template['label'] ?? $id;
 
