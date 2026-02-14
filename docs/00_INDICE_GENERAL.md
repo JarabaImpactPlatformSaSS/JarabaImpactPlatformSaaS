@@ -3,8 +3,17 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-02-13
-**Versión:** 33.0.0 (Admin Center Premium f104 — 7 FASEs completadas, 8 páginas, 5 servicios, 30+ APIs, dark mode)
+**Última actualización:** 2026-02-14
+**Versión:** 34.0.0 (Security CI Operativo + Dependabot 42→0 vulnerabilidades)
+
+> **🔒 SECURITY CI OPERATIVO + DEPENDABOT 42→0** (2026-02-14)
+> - **OWASP ZAP Baseline:** Secret `STAGING_URL` configurado, paso de validación pre-scan añadido (AUDIT-SEC-N17)
+> - **Dependabot 42→0:** 2 critical (webpack CVE-2023-28154, @babel/traverse CVE-2023-45133), 4 high (preact, 3× tar), 2 medium (lodash), 1 low (diff) resueltas. 1 low dismissed (webpack web/core — Drupal upstream)
+> - **Técnicas:** npm overrides para deps transitivas (mocha→diff), `--force` major bumps devDependencies contrib, dismiss documentado upstream
+> - **2 reglas nuevas:** AUDIT-SEC-N17 (validación secrets CI), AUDIT-SEC-N18 (Dependabot proactivo)
+> - **CI verde:** Security Scan (4 jobs pass) + Deploy to IONOS (tests + deploy + smoke tests pass)
+> - **Arquitectura v24.0.0** | Directrices v24.0.0 | Aprendizaje: [2026-02-14_security_ci_dependabot_remediation.md](./tecnicos/aprendizajes/2026-02-14_security_ci_dependabot_remediation.md)
+>
 
 > **🏢 ADMIN CENTER PREMIUM (Spec f104) — 7/7 FASES COMPLETADAS** (2026-02-13)
 > - **Spec:** f104 — SaaS Admin Center Premium | **Plan:** [20260213-Plan_Implementacion_Admin_Center_Premium_f104_v1.md](./implementacion/20260213-Plan_Implementacion_Admin_Center_Premium_f104_v1.md)
@@ -867,7 +876,11 @@
 
 | [2026-02-13_avatar_navigation_contextual.md](./tecnicos/aprendizajes/2026-02-13_avatar_navigation_contextual.md) | 🧭 **Navegacion Contextual por Avatar** ⭐ — 5 lecciones aprendidas (Situación → Aprendizaje → Regla). Generalizacion de servicios de menu por vertical. Propagacion DRY via _header.html.twig. Scope leak en includes con `only`. Resolucion segura URLs modulos opcionales. Bottom nav mobile padding defensivo. 5 reglas NAV-001 a NAV-005. AvatarNavigationService 10 avatares | 2026-02-13 |
 
-**Total aprendizajes:** 74
+| [2026-02-14_page_builder_remediacion_fases_1_5.md](./tecnicos/aprendizajes/2026-02-14_page_builder_remediacion_fases_1_5.md) | 🔧 **Remediación Page Builder FASES 0-5** ⭐ — Publish endpoint 404 fix, SEO URLs, Navigation behavior, 4 SCSS compilados Docker NVM, IconRegistry SVG 17 iconos, Font Outfit unificado, PHP 8.4 fix. 8 reglas nuevas | 2026-02-14 |
+
+| [2026-02-14_security_ci_dependabot_remediation.md](./tecnicos/aprendizajes/2026-02-14_security_ci_dependabot_remediation.md) | 🔒 **Security CI + Dependabot Remediation** ⭐ — 6 lecciones aprendidas (Situación → Aprendizaje → Regla). OWASP ZAP requiere STAGING_URL secret. DNS resolution pre-check. Dependabot 42→0 (npm audit fix, --force major bumps, overrides transitivas, dismiss upstream). Contrib devDependencies no afectan producción. 2 reglas AUDIT-SEC-N17/N18 | 2026-02-14 |
+
+**Total aprendizajes:** 77
 
 ---
 

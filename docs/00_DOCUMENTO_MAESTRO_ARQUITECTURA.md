@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-14
-**Versión:** 23.0.0 (Admin Center Premium f104 — 7 FASEs: Shell + DataTable + Users + Finance + Alerts + Analytics/Logs + Settings/Dark Mode/A11y)
+**Versión:** 24.0.0 (Security CI Operativo + Dependabot 42→0 vulnerabilidades)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1653,6 +1653,14 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   docs/tecnicos/SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md                 │
 │   SEV1-SEV4 matrix, AEPD 72h (GDPR Art. 33), templates comunicación   │
 │                                                                         │
+│   DEPENDABOT REMEDIATION (2026-02-14):                                 │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  42 alertas → 0 abiertas (2 critical + 14 high + 15 med + 11 low)│
+│   │  Validación STAGING_URL pre-ZAP scan (AUDIT-SEC-N17)           │  │
+│   │  npm overrides para deps transitivas bloqueadas por upstream   │  │
+│   │  web/core/yarn.lock → dismiss documentado (Drupal upstream)    │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1905,13 +1913,30 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | IA/ML | 5.0 | **5.0** | Agentes, RAG, guardrails implementados |
 | **Promedio** | **4.5** | **4.9** | **23/65 hallazgos resueltos (7 Críticos + 8 Altos + 8 Medios)** |
 
-### 12.3 Referencias
+### 12.3 Dependabot Security Posture (2026-02-14)
+
+| Métrica | Antes | Después |
+|---------|-------|---------|
+| **Critical** | 2 | **0** |
+| **High** | 14 | **0** |
+| **Medium** | 15 | **0** |
+| **Low** | 11 | **0** (1 dismissed — Drupal upstream) |
+| **Total abiertas** | 42 | **0** |
+
+**Técnicas aplicadas:**
+- `npm audit fix` para dependencias directas en lockfiles contrib
+- `npm audit fix --force` para major bumps en devDependencies (ckeditor5-dev-utils 30→49)
+- `overrides` en package.json para transitivas bloqueadas por upstream (mocha→diff ^7→^8.0.3)
+- Dismiss documentado para `web/core/yarn.lock` (webpack — mantenido por Drupal upstream)
+
+### 12.4 Referencias
 
 | Documento | Ubicación |
 |-----------|-----------|
 | Auditoría Integral Estado SaaS v1 | `docs/tecnicos/auditorias/20260213-Auditoria_Integral_Estado_SaaS_v1_Claude.md` |
 | Plan de Remediación v1 | `docs/implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md` |
 | Aprendizajes Auditoría Integral | `docs/tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md` |
+| Aprendizajes Security CI + Dependabot | `docs/tecnicos/aprendizajes/2026-02-14_security_ci_dependabot_remediation.md` |
 | Directrices v21.0.0 (11 reglas AUDIT-*) | `docs/00_DIRECTRICES_PROYECTO.md` |
 
 ---
