@@ -4,7 +4,18 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-14
-**Versión:** 34.0.0 (Security CI Operativo + Dependabot 42→0 vulnerabilidades)
+**Versión:** 35.0.0 (Bloques Verticales Diseñados — 55 Templates + SCSS)
+
+> **🎨 BLOQUES VERTICALES DISEÑADOS — 55 TEMPLATES + SCSS** (2026-02-14)
+> - **55 templates Twig reescritos** (5 verticales × 11 tipos) con HTML semántico único por tipo
+> - **Verticales:** agroconecta, comercioconecta, serviciosconecta, empleabilidad, emprendimiento
+> - **Tipos:** hero, content, features, stats, pricing, testimonials, faq, cta, gallery, map, social_proof
+> - **`_pb-sections.scss`** (570 LOC): base `.pb-section` + 5 esquemas color via `--pb-accent` + `color-mix()` + 11 layouts responsive (768px/576px) + `prefers-reduced-motion`
+> - **`renderTemplatePreview()`** mejorado: renderiza Twig real con datos de ejemplo (fallback a placeholder si falla)
+> - **CSS compilado:** 47KB, 257 reglas `.pb-section`, 0 referencias `Inter`
+> - **2 reglas nuevas:** PB-VERTICAL-001 (HTML semántico único por tipo), PB-VERTICAL-002 (esquemas color via --pb-accent)
+> - **Arquitectura v25.0.0** | Directrices v25.0.0 | Aprendizaje: [2026-02-14_bloques_verticales_diseno_55_templates.md](./tecnicos/aprendizajes/2026-02-14_bloques_verticales_diseno_55_templates.md)
+>
 
 > **🔒 SECURITY CI OPERATIVO + DEPENDABOT 42→0** (2026-02-14)
 > - **OWASP ZAP Baseline:** Secret `STAGING_URL` configurado, paso de validación pre-scan añadido (AUDIT-SEC-N17)
@@ -1004,6 +1015,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-14 | **35.0.0** | 🎨 **Bloques Verticales Diseñados — 55 Templates + SCSS:** 55 templates Twig reescritos (5 verticales × 11 tipos: hero, content, features, stats, pricing, testimonials, faq, cta, gallery, map, social_proof) con HTML semántico único por tipo. SCSS `_pb-sections.scss` (570 LOC): base `.pb-section` + 5 esquemas color via `--pb-accent` + `color-mix()` + 11 layouts responsive + `prefers-reduced-motion`. `renderTemplatePreview()` mejorado (Twig real + fallback). CSS compilado 47KB (257 reglas `.pb-section`). 2 reglas nuevas (PB-VERTICAL-001, PB-VERTICAL-002). Aprendizaje #78. Directrices v25.0.0, Arquitectura v25.0.0. 78 aprendizajes |
 | 2026-02-13 | **30.0.0** | 📋 **Actualización Documental Post-Auditoría Integral:** Plan Remediación v1 creado (906 líneas, 16 secciones TOC, catálogo 65 hallazgos, 3 fases 8 semanas 250-350h, correspondencia directrices, checklist frontend 12 sub-secciones). Aprendizaje #73 (11 lecciones Situación→Aprendizaje→Regla). Directrices actualizadas a v20.0.0 (sección 4.7 con 3 sub-secciones seguridad/rendimiento/consistencia + sección 5.8.3 tabla 11 reglas AUDIT-*). Arquitectura actualizada a v19.0.0 (madurez 5.0→4.5, nueva sección 12 Estado Auditoría con métricas + evaluación por área). Workflow auditoría actualizado (8→15 disciplinas, 7 verificaciones obligatorias CAUTION, 5 gaps G8-G12). 73 aprendizajes |
 | 2026-02-13 | **29.0.0** | 🏁 **Sprint Diferido 22/22 TODOs — 5 Fases Completadas:** Backlog diferido del Catálogo v1.2.0 resuelto al 100%. FASE 1 Quick Wins (pricing table, course ratings, canvas save/publish, player review). FASE 2 UX Sprint 5 (header SaaS, i18n selector, dynamic fields Alpine.js, a11y slide-panel). FASE 3 Knowledge Base CRUD (FAQs accordion, policies cards, documents file-type). FASE 4 Infraestructura (agent re-exec, BrowserTestBase migration, webhook EventDispatcher, Course field_category). FASE 5 Integraciones (token verification V2.1 4 plataformas, batch dispatch sin entidad, commerce stock dinámico, sameAs configurable). ~25 archivos editados, ~8 creados. 6 directrices aplicadas. Plan v2.0.0 completado. Aprendizaje #72. Directrices v21.0.0, Maestro v20.0.0. 72 aprendizajes |
 | 2026-02-13 | **28.0.0** | 🔍 **Auditoría Integral Estado SaaS — 15 Disciplinas, 65 Hallazgos:** Auditoría profunda desde 15 roles senior (Negocio, Carreras, Finanzas, Marketing, Publicidad, Arquitectura SaaS, Ingeniería SW, UX, Drupal, Web Dev, Theming, GrapesJS, SEO/GEO, IA, Seguridad). 4 dimensiones auditadas: Seguridad (19 hallazgos: webhook sin auth, XSS |raw 100+ templates, cross-tenant data leaks, 100+ rutas solo login check), Rendimiento (17: zero DB indexes 268 entidades, sin locking, social publish síncrono, N+1 queries, 50K row export), Consistencia (20: 34 entidades sin access control, TenantContextService duplicado, servicios duplicados con drift, 303 CSS vars violan --ej-*, 76 rutas sin /api/v1/), Specs vs Implementación (9: analytics subdocumentadas, 32 TODOs en código). 62/62 módulos verificados existentes. Evolución: 19/87 hallazgos previos resueltos (22%). Nivel riesgo: MEDIO-ALTO. Plan remediación 3 sprints. Matriz de referencias cruzadas. |
