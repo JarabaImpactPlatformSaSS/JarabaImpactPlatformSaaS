@@ -4,7 +4,7 @@
  * page--vertical-landing.html.twig - Template para landing pages de verticales.
  *
  * ARQUITECTURA:
- * - Layout full-width sin regiones de Drupal
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Reutiliza partials de header y footer
  * - Usa variables CSS var(--ej-*)
  * - i18n con {% trans %}
@@ -46,8 +46,14 @@
   {# MAIN CONTENT - Full width #}
   <main id="main-content" class="landing-main">
     
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     {# CONTENIDO DE LA PÁGINA (render del controlador) #}
-    {{ page.content }}
+    {{ clean_content }}
 
   </main>
 

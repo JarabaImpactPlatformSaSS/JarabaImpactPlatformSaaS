@@ -9,7 +9,7 @@
  * Directrices aplicadas:
  * - Nuclear #3: i18n completa ({% trans %})
  * - Nuclear #11: Full-width layout
- * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #14: Zero Region Policy — usa {{ clean_content }}
  * - Branding 3.4: Premium Visual Hierarchy
  *
  * @see .agent/workflows/frontend-page-pattern.md
@@ -190,9 +190,15 @@
       </div>
     </section>
     
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     {# Contenido de credenciales - renderizado desde controller #}
     <div class="certifications-content">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

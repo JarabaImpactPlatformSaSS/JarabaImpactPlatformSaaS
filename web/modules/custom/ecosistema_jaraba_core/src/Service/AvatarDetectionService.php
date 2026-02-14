@@ -297,7 +297,7 @@ class AvatarDetectionService {
     try {
       $tenants = $this->entityTypeManager
         ->getStorage('tenant')
-        ->loadByProperties(['admin_user_id' => $userId]);
+        ->loadByProperties(['admin_user' => $userId]);
 
       if (!empty($tenants)) {
         $tenant = reset($tenants);

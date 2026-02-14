@@ -92,7 +92,7 @@ services:
         QDRANT__SERVICE__API_KEY: ${QDRANT_DEV_API_KEY:-jaraba-dev-qdrant-key-2026}
       # Healthcheck añadido tras Game Day #1 (2026-01-11)
       healthcheck:
-        test: ["CMD", "wget", "-q", "--spider", "http://localhost:6333/"]
+        test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/6333'"]
         interval: 30s
         timeout: 10s
         retries: 3
@@ -108,7 +108,7 @@ services:
     type: compose
     services:
       image: apache/tika
-      command: java -jar /tika-server-standard.jar -h 0.0.0.0
+      command: /bin/sh -c 'exec java -jar /tika-server-standard-*.jar -h 0.0.0.0'
       ports:
         - '9998:9998'
 

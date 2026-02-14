@@ -1,0 +1,150 @@
+// =============================================================================
+// User Pages - Perfil, editar, logout, contacto, cancelar
+// =============================================================================
+//
+// Template: page--user.html.twig
+// Patron: Frontend Page Pattern (header + contenido limpio + footer)
+//
+// @since 2026-02-13
+// =============================================================================
+
+@use 'variables' as *;
+
+// =============================================================================
+// BODY - Neutralizar herencia admin
+// =============================================================================
+.page-user {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  &.hero--split {
+    display: block !important;
+    grid-template-columns: unset !important;
+  }
+}
+
+// =============================================================================
+// MAIN LAYOUT
+// =============================================================================
+.user-main {
+  width: 100%;
+  min-height: calc(100vh - 160px);
+}
+
+.user-wrapper {
+  max-width: 900px;
+  margin-inline: auto;
+  padding: $ej-spacing-xl $ej-spacing-lg;
+
+  @include respond-to(xs) {
+    padding: $ej-spacing-lg $ej-spacing-md;
+  }
+}
+
+// =============================================================================
+// SECTION HEADER - Icono + titulo + subtitulo
+// =============================================================================
+.user-section-header {
+  display: flex;
+  align-items: center;
+  gap: $ej-spacing-lg;
+  margin-bottom: $ej-spacing-xl;
+  padding-bottom: $ej-spacing-lg;
+  border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+  @include respond-to(xs) {
+    flex-direction: column;
+    text-align: center;
+    gap: $ej-spacing-md;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @include respond-to(xs) {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, #{$ej-font-headings});
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #{$ej-color-headings});
+    margin: 0 0 $ej-spacing-xs;
+    line-height: 1.2;
+
+    @include respond-to(xs) {
+      font-size: 1.375rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 0.9375rem;
+    color: var(--ej-color-muted, #{$ej-color-muted});
+    margin: 0;
+  }
+}
+
+// =============================================================================
+// CONTENT AREA - Formulario/vista del usuario
+// =============================================================================
+.user-content-area {
+  margin-bottom: $ej-spacing-xl;
+
+  // Formularios dentro de la zona de contenido
+  form {
+    max-width: 100%;
+  }
+
+  // Campos de formulario
+  .form-item {
+    margin-bottom: $ej-spacing-md;
+  }
+}
+
+// =============================================================================
+// NAV LINKS - Enlaces secundarios (editar perfil, volver)
+// =============================================================================
+.user-nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $ej-spacing-sm;
+  padding-top: $ej-spacing-lg;
+  border-top: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+  &__item {
+    color: var(--ej-color-corporate, #{$ej-color-corporate});
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color $ej-transition-fast;
+
+    &:hover {
+      color: var(--ej-color-primary, #{$ej-color-primary});
+      text-decoration: underline;
+    }
+  }
+
+  &__separator {
+    color: var(--ej-color-muted, #{$ej-color-muted});
+    font-size: 0.75rem;
+  }
+}

@@ -473,32 +473,11 @@ $_ej-transition-normal: 250ms ease;
 
 // ============================================================================
 // TESTIMONIALS 3D
-// Grid de testimonios con efecto de profundidad 3D al hacer hover.
+// NOTA: Estilos movidos a ecosistema_jaraba_theme/scss/components/_page-builder.scss
+// como SSoT (§5.4 de la especificación GrapesJS SaaS).
+// La sección anterior con .jaraba-testimonials-3d fue eliminada para evitar
+// conflictos de especificidad CSS con los estilos del tema.
 // ============================================================================
-
-.jaraba-testimonials-3d {
-  perspective: 1000px;
-  padding: 4rem 1rem;
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  &__card {
-    background: var(--ej-bg-surface, #{$_ej-bg-surface});
-    border-radius: var(--ej-card-radius, #{$_ej-border-radius});
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transform-style: preserve-3d;
-    transition: transform $_ej-transition-normal;
-
-    &:hover { transform: translateZ(20px); }
-  }
-}
 
 // ============================================================================
 // CARD STACK 3D

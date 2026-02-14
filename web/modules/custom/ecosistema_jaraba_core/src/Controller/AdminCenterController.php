@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Service\AdminCenterAggregatorService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,19 +15,16 @@ use Psr\Log\LoggerInterface;
 /**
  * Admin Center Dashboard — Vista unificada para Super Admin.
  *
- * Agrega KPIs de todos los modulos:
- * - SaaS Metrics (MRR, ARR) via jaraba_foc
- * - Health Scores via jaraba_customer_success
- * - Churn Prediction via jaraba_customer_success
- * - Subscriptions via jaraba_billing
- * - Alert Rules via ecosistema_jaraba_core
+ * Delega la recoleccion de KPIs al AdminCenterAggregatorService,
+ * que maneja la inyeccion opcional de servicios de modulos satelite.
  *
- * Fase 6 — Doc 181.
+ * F6 — Doc 181 / Spec f104.
  */
 class AdminCenterController extends ControllerBase {
 
   public function __construct(
     protected LoggerInterface $logger,
+    protected AdminCenterAggregatorService $aggregator,
   ) {}
 
   /**
@@ -35,6 +33,7 @@ class AdminCenterController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('logger.channel.ecosistema_jaraba_core'),
+      $container->get('ecosistema_jaraba_core.admin_center_aggregator'),
     );
   }
 
@@ -44,17 +43,15 @@ class AdminCenterController extends ControllerBase {
    * Dashboard principal del Admin Center.
    */
   public function dashboard(): array {
-    $kpis = $this->getKpis();
-    $alerts = $this->getActiveAlerts();
-    $tenantStats = $this->getTenantStats();
-    $quickLinks = $this->getQuickLinks();
+    $data = $this->aggregator->getDashboardData();
 
     return [
       '#theme' => 'admin_center_dashboard',
-      '#kpis' => $kpis,
-      '#alerts' => $alerts,
-      '#tenant_stats' => $tenantStats,
-      '#quick_links' => $quickLinks,
+      '#kpis' => $data['kpis'],
+      '#alerts' => $data['alerts'],
+      '#tenant_stats' => $data['tenant_stats'],
+      '#quick_links' => $data['quick_links'],
+      '#activity' => $data['activity'],
       '#attached' => [
         'library' => [
           'ecosistema_jaraba_core/admin-center',
@@ -62,13 +59,219 @@ class AdminCenterController extends ControllerBase {
         ],
         'drupalSettings' => [
           'adminCenter' => [
-            'kpis' => $kpis,
+            'kpis' => $data['kpis'],
             'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
           ],
         ],
       ],
       '#cache' => [
         'max-age' => 300,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/tenants
+   *
+   * Pagina de gestion de tenants con DataTable.
+   */
+  public function tenants(): array {
+    return [
+      '#theme' => 'admin_center_tenants',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-tenants',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'tenantsApiUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.tenants.list')->toString(),
+            'tenantsExportUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.tenants.export')->toString(),
+            'tenantsDetailUrl' => '/api/v1/admin/tenants/{id}',
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/users
+   *
+   * Pagina de gestion de usuarios con DataTable.
+   */
+  public function users(): array {
+    return [
+      '#theme' => 'admin_center_users',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-users',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'usersApiUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.users.list')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/finance
+   *
+   * Centro Financiero con metricas SaaS y analytics.
+   */
+  public function finance(): array {
+    return [
+      '#theme' => 'admin_center_finance',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-finance',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'financeMetricsUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.finance.metrics')->toString(),
+            'financeTenantsUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.finance.tenants')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/analytics
+   *
+   * Dashboard de analytics de plataforma.
+   */
+  public function analytics(): array {
+    return [
+      '#theme' => 'admin_center_analytics',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-analytics',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'analyticsOverviewUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.analytics.overview')->toString(),
+            'analyticsAiUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.analytics.ai')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/logs
+   *
+   * Visor de logs de actividad y sistema.
+   */
+  public function logs(): array {
+    return [
+      '#theme' => 'admin_center_logs',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-logs',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'logsApiUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.logs.list')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/alerts
+   *
+   * Dashboard de alertas y playbooks del Admin Center.
+   */
+  public function alerts(): array {
+    return [
+      '#theme' => 'admin_center_alerts',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-alerts',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'alertsSummaryUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.alerts.summary')->toString(),
+            'alertsListUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.alerts.list')->toString(),
+            'playbooksListUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.playbooks.list')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+        'contexts' => ['user.permissions'],
+      ],
+    ];
+  }
+
+  /**
+   * GET /admin/jaraba/center/settings
+   *
+   * Configuración global de la plataforma.
+   */
+  public function settings(): array {
+    return [
+      '#theme' => 'admin_center_settings',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/admin-center',
+          'ecosistema_jaraba_core/admin-center-settings',
+          'ecosistema_jaraba_core/admin-command-palette',
+        ],
+        'drupalSettings' => [
+          'adminCenter' => [
+            'settingsOverviewUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.settings.overview')->toString(),
+            'settingsGeneralSaveUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.settings.general.save')->toString(),
+            'settingsPlansUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.settings.plans.list')->toString(),
+            'settingsIntegrationsUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.settings.integrations')->toString(),
+            'settingsApiKeysUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.settings.apikeys.list')->toString(),
+            'searchUrl' => Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
         'contexts' => ['user.permissions'],
       ],
     ];
@@ -109,171 +312,6 @@ class AdminCenterController extends ControllerBase {
         'error' => 'Error en la busqueda.',
       ], 500);
     }
-  }
-
-  /**
-   * Obtiene KPIs de todos los servicios disponibles.
-   */
-  protected function getKpis(): array {
-    $kpis = [
-      'mrr' => ['value' => 0, 'label' => $this->t('MRR'), 'format' => 'currency', 'trend' => 0],
-      'arr' => ['value' => 0, 'label' => $this->t('ARR'), 'format' => 'currency', 'trend' => 0],
-      'tenants' => ['value' => 0, 'label' => $this->t('Tenants'), 'format' => 'number', 'trend' => 0],
-      'mau' => ['value' => 0, 'label' => $this->t('MAU'), 'format' => 'number', 'trend' => 0],
-      'churn' => ['value' => 0, 'label' => $this->t('Churn'), 'format' => 'percent', 'trend' => 0],
-      'health_avg' => ['value' => 0, 'label' => $this->t('Health Avg'), 'format' => 'score', 'trend' => 0],
-    ];
-
-    try {
-      // SaaS Metrics.
-      if (\Drupal::hasService('jaraba_foc.saas_metrics')) {
-        $metrics = \Drupal::service('jaraba_foc.saas_metrics');
-        $kpis['mrr']['value'] = $metrics->calculateMRR();
-        $kpis['arr']['value'] = $metrics->calculateARR();
-      }
-
-      // Tenant count.
-      $groupStorage = $this->entityTypeManager()->getStorage('group');
-      $tenantCount = $groupStorage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('type', 'tenant')
-        ->count()
-        ->execute();
-      $kpis['tenants']['value'] = (int) $tenantCount;
-
-      // Active users (last 30 days).
-      $db = \Drupal::database();
-      $thirtyDaysAgo = strtotime('-30 days');
-      $mauCount = $db->select('users_field_data', 'u')
-        ->condition('u.access', $thirtyDaysAgo, '>=')
-        ->condition('u.status', 1)
-        ->condition('u.uid', 0, '>')
-        ->countQuery()
-        ->execute()
-        ->fetchField();
-      $kpis['mau']['value'] = (int) $mauCount;
-    }
-    catch (\Exception $e) {
-      $this->logger->warning('Error obteniendo KPIs: @error', ['@error' => $e->getMessage()]);
-    }
-
-    return $kpis;
-  }
-
-  /**
-   * Obtiene alertas activas.
-   */
-  protected function getActiveAlerts(): array {
-    $alerts = [];
-
-    try {
-      $storage = $this->entityTypeManager()->getStorage('alert_rule');
-      $ids = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('status', TRUE)
-        ->sort('created', 'DESC')
-        ->range(0, 10)
-        ->execute();
-
-      foreach ($storage->loadMultiple($ids) as $alert) {
-        $alerts[] = [
-          'id' => $alert->id(),
-          'label' => $alert->label(),
-          'metric' => $alert->get('metric')->value ?? '',
-          'channel' => $alert->get('notification_channel')->value ?? '',
-        ];
-      }
-    }
-    catch (\Exception $e) {
-      $this->logger->warning('Error obteniendo alertas: @error', ['@error' => $e->getMessage()]);
-    }
-
-    return $alerts;
-  }
-
-  /**
-   * Estadisticas de tenants por estado.
-   */
-  protected function getTenantStats(): array {
-    $stats = [
-      'active' => 0,
-      'trial' => 0,
-      'suspended' => 0,
-      'total' => 0,
-    ];
-
-    try {
-      $groupStorage = $this->entityTypeManager()->getStorage('group');
-
-      $stats['total'] = (int) $groupStorage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('type', 'tenant')
-        ->count()
-        ->execute();
-
-      $stats['active'] = $stats['total'];
-    }
-    catch (\Exception $e) {
-      $this->logger->warning('Error obteniendo stats de tenants: @error', ['@error' => $e->getMessage()]);
-    }
-
-    return $stats;
-  }
-
-  /**
-   * Quick links para el sidebar.
-   */
-  protected function getQuickLinks(): array {
-    return [
-      [
-        'label' => $this->t('Tenants'),
-        'url' => '/admin/structure/group',
-        'icon' => 'building',
-        'shortcut' => 'G+T',
-      ],
-      [
-        'label' => $this->t('Usuarios'),
-        'url' => '/admin/people',
-        'icon' => 'users',
-        'shortcut' => 'G+U',
-      ],
-      [
-        'label' => $this->t('Finanzas'),
-        'url' => '/admin/finops',
-        'icon' => 'dollar-sign',
-        'shortcut' => 'G+F',
-      ],
-      [
-        'label' => $this->t('Health Monitor'),
-        'url' => '/admin/health',
-        'icon' => 'activity',
-        'shortcut' => '',
-      ],
-      [
-        'label' => $this->t('Analytics'),
-        'url' => '/admin/jaraba/analytics',
-        'icon' => 'bar-chart',
-        'shortcut' => '',
-      ],
-      [
-        'label' => $this->t('Alertas'),
-        'url' => '/admin/config/system/alert-rules',
-        'icon' => 'bell',
-        'shortcut' => 'A',
-      ],
-      [
-        'label' => $this->t('Compliance'),
-        'url' => '/admin/seguridad',
-        'icon' => 'shield',
-        'shortcut' => '',
-      ],
-      [
-        'label' => $this->t('Email'),
-        'url' => '/admin/jaraba/email',
-        'icon' => 'mail',
-        'shortcut' => '',
-      ],
-    ];
   }
 
   /**

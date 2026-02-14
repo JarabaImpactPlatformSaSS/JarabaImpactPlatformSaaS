@@ -1464,7 +1464,17 @@ ecosistema_jaraba_core.admin.center:
   requirements:
     _permission: 'administer site configuration'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.center.tenants:
+  path: '/admin/jaraba/center/tenants'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::tenants'
+    _title: 'Gestión de Tenants'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
 
 ecosistema_jaraba_core.admin.search_api:
   path: '/api/v1/admin/search'
@@ -1473,3 +1483,314 @@ ecosistema_jaraba_core.admin.search_api:
   requirements:
     _permission: 'administer site configuration'
   methods: [GET]
+
+# ---------------------------------------------------------------------------
+# F6 — Admin Center: Tenant Management APIs (Spec f104 §FASE 2)
+# ---------------------------------------------------------------------------
+
+# NOTA: export DEBE ir antes del parámetro {group} para evitar colisión.
+ecosistema_jaraba_core.admin.tenants.export:
+  path: '/api/v1/admin/tenants/export'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::exportTenants'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.tenants.list:
+  path: '/api/v1/admin/tenants'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listTenants'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.tenants.detail:
+  path: '/api/v1/admin/tenants/{group}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::tenantDetail'
+  requirements:
+    _permission: 'administer site configuration'
+    group: '\d+'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.tenants.detail_panel:
+  path: '/admin/jaraba/center/tenants/{group}/panel'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::tenantDetailPanel'
+  requirements:
+    _permission: 'administer site configuration'
+    group: '\d+'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.tenants.impersonate:
+  path: '/api/v1/admin/tenants/{group}/impersonate'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::impersonate'
+  requirements:
+    _permission: 'administer site configuration'
+    group: '\d+'
+  methods: [POST]
+
+# ---------------------------------------------------------------------------
+# F6 — Admin Center: User Management APIs (Spec f104 §FASE 3)
+# ---------------------------------------------------------------------------
+
+ecosistema_jaraba_core.admin.center.users:
+  path: '/admin/jaraba/center/users'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::users'
+    _title: 'Gestión de Usuarios'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.users.list:
+  path: '/api/v1/admin/users'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listUsers'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.users.detail:
+  path: '/api/v1/admin/users/{uid}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::userDetail'
+  requirements:
+    _permission: 'administer site configuration'
+    uid: '\d+'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.users.detail_panel:
+  path: '/admin/jaraba/center/users/{uid}/panel'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::userDetailPanel'
+  requirements:
+    _permission: 'administer site configuration'
+    uid: '\d+'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.users.force_logout:
+  path: '/api/v1/admin/users/{uid}/sessions'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::forceLogout'
+  requirements:
+    _permission: 'administer site configuration'
+    uid: '\d+'
+  methods: [DELETE]
+
+# ---------------------------------------------------------------------------
+# F6 — Admin Center: Finance Dashboard (Spec f104 §FASE 4)
+# ---------------------------------------------------------------------------
+
+ecosistema_jaraba_core.admin.center.finance:
+  path: '/admin/jaraba/center/finance'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::finance'
+    _title: 'Centro Financiero'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.finance.metrics:
+  path: '/api/v1/admin/finance/metrics'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::financeMetrics'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.finance.tenants:
+  path: '/api/v1/admin/finance/tenants'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::financeTenantAnalytics'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+# ===========================================================================
+# ADMIN CENTER — ALERTS & PLAYBOOKS (F6 Doc 181 / Spec f104 §FASE 5)
+# ===========================================================================
+
+ecosistema_jaraba_core.admin.center.alerts:
+  path: '/admin/jaraba/center/alerts'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::alerts'
+    _title: 'Alertas'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.alerts.summary:
+  path: '/api/v1/admin/alerts/summary'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::alertsSummary'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.alerts.list:
+  path: '/api/v1/admin/alerts'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listAlerts'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.alerts.state:
+  path: '/api/v1/admin/alerts/{foc_alert}/state'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::updateAlertState'
+  requirements:
+    _permission: 'administer site configuration'
+    foc_alert: '\d+'
+  methods: [POST]
+
+ecosistema_jaraba_core.admin.alerts.detail_panel:
+  path: '/admin/jaraba/center/alerts/{foc_alert}/panel'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::alertDetailPanel'
+  requirements:
+    _permission: 'administer site configuration'
+    foc_alert: '\d+'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.playbooks.list:
+  path: '/api/v1/admin/playbooks'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listPlaybooks'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.playbooks.execute:
+  path: '/api/v1/admin/playbooks/{cs_playbook}/execute'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::executePlaybook'
+  requirements:
+    _permission: 'administer site configuration'
+    cs_playbook: '\d+'
+  methods: [POST]
+
+# ===========================================================================
+# ADMIN CENTER — ANALYTICS & LOGS (F6 Doc 181 / Spec f104 §FASE 6)
+# ===========================================================================
+
+ecosistema_jaraba_core.admin.center.analytics:
+  path: '/admin/jaraba/center/analytics'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::analytics'
+    _title: 'Analytics'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.center.logs:
+  path: '/admin/jaraba/center/logs'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::logs'
+    _title: 'Logs'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.analytics.overview:
+  path: '/api/v1/admin/analytics/overview'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::analyticsOverview'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.analytics.ai:
+  path: '/api/v1/admin/analytics/ai'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::analyticsAi'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.logs.list:
+  path: '/api/v1/admin/logs'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listLogs'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+# ===========================================================================
+# ADMIN CENTER — SETTINGS (F6 Doc 181 / Spec f104 §FASE 7)
+# ===========================================================================
+
+ecosistema_jaraba_core.admin.center.settings:
+  path: '/admin/jaraba/center/settings'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterController::settings'
+    _title: 'Configuración'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.admin.settings.overview:
+  path: '/api/v1/admin/settings'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::settingsOverview'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.settings.general.save:
+  path: '/api/v1/admin/settings/general'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::saveGeneralSettings'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [POST]
+
+ecosistema_jaraba_core.admin.settings.plans.list:
+  path: '/api/v1/admin/settings/plans'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listPlans'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.settings.integrations:
+  path: '/api/v1/admin/settings/integrations'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listIntegrations'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.settings.apikeys.list:
+  path: '/api/v1/admin/settings/api-keys'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::listApiKeys'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [GET]
+
+ecosistema_jaraba_core.admin.settings.apikeys.create:
+  path: '/api/v1/admin/settings/api-keys'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::createApiKey'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [POST]
+
+ecosistema_jaraba_core.admin.settings.apikeys.revoke:
+  path: '/api/v1/admin/settings/api-keys/{key_id}/revoke'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AdminCenterApiController::revokeApiKey'
+  requirements:
+    _permission: 'administer site configuration'
+  methods: [POST]

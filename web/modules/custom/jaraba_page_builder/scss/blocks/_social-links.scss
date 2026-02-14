@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Social Links - Estilos para bloques de redes sociales del Page Builder.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * Reemplaza los inline styles del componente jaraba-social-links.
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/blocks/_social-links.scss css/social-links.css --style=compressed"
+ */
+
+// ============================================================================
+// SOCIAL LINKS COMPONENT
+// Iconos circulares de redes sociales con colores de marca
+// ============================================================================
+
+.jaraba-social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+}
+
+// Link individual de red social
+.jaraba-social__link {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    // SVG icon dentro del link
+    svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
+    }
+}
+
+// Colores de marca por red social — Design Tokens con fallback a colores oficiales
+.jaraba-social__link--facebook {
+    background: var(--ej-color-social-facebook, #1877f2);
+}
+
+.jaraba-social__link--twitter {
+    background: var(--ej-color-social-twitter, #000000);
+}
+
+.jaraba-social__link--instagram {
+    background: var(--ej-color-social-instagram, linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888));
+}
+
+.jaraba-social__link--linkedin {
+    background: var(--ej-color-social-linkedin, #0077b5);
+}
+
+.jaraba-social__link--youtube {
+    background: var(--ej-color-social-youtube, #ff0000);
+}
+
+// Variante con texto (fallback sin SVG)
+.jaraba-social__text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1;
+}

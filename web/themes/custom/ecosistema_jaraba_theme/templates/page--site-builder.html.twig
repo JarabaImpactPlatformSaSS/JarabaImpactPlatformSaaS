@@ -4,7 +4,7 @@
  * page--site-builder.html.twig - Site Builder frontend sin regiones admin.
  *
  * ARQUITECTURA LIMPIA (mismo patrón que page--content-hub.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -41,9 +41,15 @@
 
   {# MAIN CONTENT - Full-width igual que landing page #}
   <main id="main-content" class="dashboard-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     {# Contenedor del dashboard con márgenes propios #}
     <div class="dashboard-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

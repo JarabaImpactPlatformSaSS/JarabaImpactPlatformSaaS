@@ -479,7 +479,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // Admin Center Dashboard (F6 Doc 181)
+    // Admin Center Dashboard (F6 Doc 181 / Spec f104)
     // Ruta: /admin/jaraba/center
     'admin_center_dashboard' => [
       'variables' => [
@@ -487,8 +487,87 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'alerts' => [],
         'tenant_stats' => [],
         'quick_links' => [],
+        'activity' => [],
       ],
       'template' => 'admin-center-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // Admin Center Tenants (F6 Doc 181 / Spec f104 §FASE 2)
+    // Ruta: /admin/jaraba/center/tenants
+    'admin_center_tenants' => [
+      'variables' => [],
+      'template' => 'admin-center-tenants',
+      'path' => $path . '/templates',
+    ],
+
+    // Admin Center Tenant Detail — Slide-Panel 360 (Spec f104 §FASE 2)
+    'admin_center_tenant_detail' => [
+      'variables' => [
+        'tenant' => [],
+      ],
+      'template' => 'admin-center-tenant-detail',
+      'path' => $path . '/templates',
+    ],
+
+    // Admin Center Users (F6 Doc 181 / Spec f104 §FASE 3)
+    // Ruta: /admin/jaraba/center/users
+    'admin_center_users' => [
+      'variables' => [],
+      'template' => 'admin-center-users',
+      'path' => $path . '/templates',
+    ],
+
+    // Admin Center User Detail — Slide-Panel 360 (Spec f104 §FASE 3)
+    'admin_center_user_detail' => [
+      'variables' => [
+        'user_data' => [],
+      ],
+      'template' => 'admin-center-user-detail',
+      'path' => $path . '/templates',
+    ],
+
+    // Centro Financiero — Finance Dashboard (F6 Doc 181 / Spec f104 §FASE 4).
+    'admin_center_finance' => [
+      'variables' => [],
+      'template' => 'admin-center-finance',
+      'path' => $path . '/templates',
+    ],
+
+    // Alertas y Playbooks — Alerts Dashboard (F6 Doc 181 / Spec f104 §FASE 5).
+    'admin_center_alerts' => [
+      'variables' => [],
+      'template' => 'admin-center-alerts',
+      'path' => $path . '/templates',
+    ],
+
+    // Alert Detail — Slide-Panel de detalle de alerta (Spec f104 §FASE 5).
+    'admin_center_alert_detail' => [
+      'variables' => [
+        'alert' => [],
+      ],
+      'template' => 'admin-center-alert-detail',
+      'path' => $path . '/templates',
+    ],
+
+    // Analytics Dashboard — Charts + AI Telemetry (F6 Doc 181 / Spec f104 §FASE 6).
+    'admin_center_analytics' => [
+      'variables' => [],
+      'template' => 'admin-center-analytics',
+      'path' => $path . '/templates',
+    ],
+
+    // Activity Logs — Visor de Audit + System logs (F6 Doc 181 / Spec f104 §FASE 6).
+    'admin_center_logs' => [
+      'variables' => [],
+      'template' => 'admin-center-logs',
+      'path' => $path . '/templates',
+    ],
+
+    // Configuración Global — Settings page (F6 Doc 181 / Spec f104 §FASE 7).
+    'admin_center_settings' => [
+      'variables' => [],
+      'template' => 'admin-center-settings',
       'path' => $path . '/templates',
     ],
 
@@ -1057,8 +1136,13 @@ function _ecosistema_jaraba_core_check_ai_costs() {
   try {
     /** @var \Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService $aiCostService */
     $aiCostService = \Drupal::service('ecosistema_jaraba_core.ai_cost_optimization');
-    $metrics = $aiCostService->getDailyMetrics();
-  } catch (\Exception $e) {
+    $stats = $aiCostService->getOptimizationStats(0);
+    $metrics = [
+      'daily_cost' => $stats['usage'] ?? 0,
+      'total_calls' => $stats['total_calls'] ?? 0,
+      'by_model' => $stats['by_model'] ?? [],
+    ];
+  } catch (\Throwable $e) {
     // Servicio no disponible, usar State API directamente
     $metrics = _ecosistema_jaraba_core_get_ai_metrics_from_state();
   }

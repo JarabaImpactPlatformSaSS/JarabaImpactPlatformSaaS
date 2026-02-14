@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * _avatar-nav.html.twig — Barra de navegacion contextual por avatar.
+ *
+ * Muestra items de navegacion personalizados segun el avatar/rol del usuario.
+ * Se incluye dentro de _header.html.twig y se propaga automaticamente
+ * a todas las page templates.
+ *
+ * Variables:
+ * - items: array de items con id, label, url, icon_category, icon_name, weight, active
+ * - avatar: string del tipo de avatar (jobseeker, recruiter, etc.)
+ * - avatar_label: string traducido del avatar (Candidato, Empleador, etc.)
+ *
+ * Responsive:
+ * - Desktop (>=768px): barra horizontal bajo el header
+ * - Mobile (<768px): bottom navigation fija, solo iconos
+ *
+ * i18n: {% trans %} para textos estaticos.
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ *
+ * @see Drupal\ecosistema_jaraba_core\Service\AvatarNavigationService
+ */
+#}
+
+<nav class="avatar-nav" role="navigation" aria-label="{% trans %}Contextual navigation{% endtrans %}" data-avatar="{{ avatar }}">
+
+  {# Badge del avatar — visible solo en desktop #}
+  <span class="avatar-nav__badge">
+    {{ avatar_label }}
+  </span>
+
+  {# Lista de items de navegacion #}
+  <ul class="avatar-nav__list" role="list">
+    {% for item in items %}
+      <li class="avatar-nav__item">
+        <a href="{{ item.url }}"
+           class="avatar-nav__link{{ item.active ? ' avatar-nav__link--active' : '' }}"
+           {% if item.active %}aria-current="page"{% endif %}>
+          <span class="avatar-nav__icon">
+            {{ jaraba_icon(item.icon_category, item.icon_name, { size: '20px' }) }}
+          </span>
+          <span class="avatar-nav__label">{{ item.label }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+</nav>

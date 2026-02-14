@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Admin Center — Gestion de Tenants con DataTable.
+ *
+ * El DataTable se inicializa declarativamente via data attributes.
+ * La configuracion de columnas, acciones y filtros se define en JS
+ * (admin-center-tenants-init.js) usando drupalSettings.
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 2.
+ */
+#}
+
+<div class="admin-center-tenants">
+
+  {# Page header #}
+  <div class="admin-center-tenants__header">
+    <div class="admin-center-tenants__header-content">
+      <h1 class="admin-center-tenants__title">
+        {{ jaraba_icon('business', 'company', { size: '24px', color: 'corporate' }) }}
+        {% trans %}Gestion de Tenants{% endtrans %}
+      </h1>
+      <p class="admin-center-tenants__subtitle">
+        {% trans %}Visualiza, filtra y gestiona todos los tenants de la plataforma.{% endtrans %}
+      </p>
+    </div>
+    <div class="admin-center-tenants__header-actions">
+      <a href="/admin/jaraba/center" class="admin-center__btn admin-center__btn--secondary">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'neutral' }) }}
+        {% trans %}Volver al Dashboard{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# DataTable container — declarative init #}
+  <div id="tenants-datatable"
+       data-datatable
+       data-datatable-url=""
+       data-datatable-export=""
+       data-datatable-columns="[]"
+       data-datatable-actions="[]"
+       data-datatable-page-size="20"
+       data-datatable-default-sort="label"
+       data-datatable-default-dir="ASC">
+  </div>
+
+</div>

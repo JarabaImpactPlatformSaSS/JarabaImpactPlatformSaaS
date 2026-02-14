@@ -4,7 +4,7 @@
  * page--mi-cuenta.html.twig — Template para páginas de self-service del tenant.
  *
  * ARQUITECTURA (IGUAL QUE page--content-hub.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -42,8 +42,14 @@
 
   {# MAIN CONTENT - Full-width #}
   <main id="main-content" class="dashboard-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

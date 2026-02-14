@@ -30,7 +30,7 @@
   }
 
   &__subtitle {
-    font-family: var(--ej-font-body, "Inter", sans-serif);
+    font-family: var(--ej-font-body, "Outfit", sans-serif);
     font-size: 1.125rem;
     color: var(--ej-color-muted, #64748B);
     margin: 0 0 var(--ej-spacing-xl, 2rem);
@@ -137,7 +137,7 @@
   }
 
   &__description {
-    font-family: var(--ej-font-body, "Inter", sans-serif);
+    font-family: var(--ej-font-body, "Outfit", sans-serif);
     font-size: 0.875rem;
     color: var(--ej-color-muted, #64748B);
     line-height: 1.4;
@@ -146,7 +146,7 @@
   }
 
   &__cta {
-    font-family: var(--ej-font-body, "Inter", sans-serif);
+    font-family: var(--ej-font-body, "Outfit", sans-serif);
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--ej-color-body, #334155);

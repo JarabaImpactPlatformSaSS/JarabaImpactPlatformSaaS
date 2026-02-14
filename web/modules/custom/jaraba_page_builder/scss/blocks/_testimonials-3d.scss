@@ -1,0 +1,285 @@
+/**
+ * @file
+ * Estilos para el bloque Testimonials 3D Carousel.
+ *
+ * Coverflow 3D con navegación interactiva.
+ * Dual Architecture: CSS para visual + JS para interactividad (§4.2).
+ * Usa tokens de diseño inyectables (--ej-*).
+ *
+ * @ingroup jaraba_page_builder
+ */
+
+// ============================================================================
+// Testimonials 3D — Section wrapper
+// ============================================================================
+.jaraba-testimonials-3d {
+    padding: var(--ej-spacing-section, 5rem) 0;
+    // clip impide scroll horizontal sin romper stacking context 3D
+    overflow: clip;
+    position: relative;
+
+    // --- Variantes de fondo ---
+    &--light {
+        background: var(--ej-bg-body, #F8FAFC);
+        color: var(--ej-text-primary, #334155);
+    }
+
+    &--dark {
+        background: var(--ej-bg-dark, #1A1A2E);
+        color: #fff;
+
+        .jaraba-block__title {
+            color: #fff;
+        }
+    }
+
+    &--gradient {
+        background: linear-gradient(135deg,
+            var(--ej-gradient-start, #0f172a) 0%,
+            var(--ej-gradient-mid, #1e293b) 50%,
+            var(--ej-gradient-end, #334155) 100%);
+        color: #fff;
+
+        .jaraba-block__title {
+            color: #fff;
+        }
+    }
+
+    // --- Container ---
+    .jaraba-block__container {
+        max-width: var(--ej-max-width, 1200px);
+        margin: 0 auto;
+        padding: 0 var(--ej-spacing-md, 1.5rem);
+    }
+
+    .jaraba-block__title {
+        text-align: center;
+        margin-bottom: var(--ej-spacing-xl, 3rem);
+        font-size: clamp(1.75rem, 3vw, 2.5rem);
+        font-weight: 700;
+        font-family: var(--ej-font-family, inherit);
+    }
+
+    // --- Carousel 3D Coverflow ---
+    &__carousel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+        perspective: 1200px;
+        padding: var(--ej-spacing-lg, 2rem) 0;
+        position: relative;
+        overflow: visible;
+        min-height: 320px;
+    }
+
+    // --- Nav buttons ---
+    &__nav {
+        display: flex;
+        justify-content: center;
+        gap: var(--ej-spacing-sm, 1rem);
+        margin-top: var(--ej-spacing-lg, 2rem);
+    }
+
+    &__prev,
+    &__next {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+        transition: background-color 0.3s ease,
+                    color 0.3s ease,
+                    border-color 0.3s ease,
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+        backdrop-filter: blur(4px);
+
+        &:hover {
+            background: var(--ej-color-primary, #FF8C42);
+            color: #fff;
+            border-color: transparent;
+            transform: scale(1.1);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-impulse, #FF8C42);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.25);
+        }
+
+        svg {
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+        }
+    }
+
+    // Variante light — botones con borde visible
+    &--light &__prev,
+    &--light &__next {
+        border-color: var(--ej-border-color, #E5E7EB);
+        background: var(--ej-bg-surface, #FFFFFF);
+        color: var(--ej-text-primary, #334155);
+    }
+
+    // --- Responsive: Mobile first ---
+    @media (max-width: 768px) {
+        padding: var(--ej-spacing-lg, 3rem) 0;
+
+        .jaraba-block__title {
+            margin-bottom: var(--ej-spacing-md, 1.5rem);
+        }
+
+        &__carousel {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: var(--ej-spacing-sm, 1rem);
+            padding: var(--ej-spacing-sm, 1rem);
+            perspective: none;
+            min-height: auto;
+
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Testimonial 3D Card — Individual card con efecto coverflow
+// ============================================================================
+.jaraba-testimonial-3d {
+    background: var(--ej-bg-surface, #FFFFFF);
+    border-radius: var(--ej-radius-lg, 16px);
+    padding: var(--ej-spacing-lg, 2rem);
+    width: 380px;
+    min-width: 320px;
+    max-width: 420px;
+    box-shadow: var(--ej-shadow-md, 0 4px 24px rgba(0, 0, 0, 0.08));
+    flex-shrink: 0;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.5s ease,
+                box-shadow 0.5s ease;
+    transform-style: preserve-3d;
+    position: relative;
+
+    // CSS-only coverflow: initial state before JS kicks in.
+    // Card 1 (izquierda)
+    &:first-child {
+        transform: translateX(40px) rotateY(25deg) scale(0.85);
+        opacity: 0.6;
+        z-index: 1;
+    }
+
+    // Card 2 (centro) — prominente
+    &:nth-child(2) {
+        transform: translateZ(40px) scale(1.05);
+        opacity: 1;
+        z-index: 3;
+        box-shadow: var(--ej-shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.15));
+    }
+
+    // Card 3 (derecha)
+    &:last-child {
+        transform: translateX(-40px) rotateY(-25deg) scale(0.85);
+        opacity: 0.6;
+        z-index: 1;
+    }
+
+    // Si solo hay 1 o 2 cards, centrar sin transform
+    &:only-child,
+    &:first-child:nth-last-child(2),
+    &:first-child:nth-last-child(2) ~ & {
+        transform: none;
+        opacity: 1;
+    }
+
+    // --- Card internals ---
+    &__rating {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: var(--ej-spacing-sm, 1rem);
+    }
+
+    &__quote {
+        font-size: 1.125rem;
+        font-style: italic;
+        line-height: 1.7;
+        margin: 0 0 var(--ej-spacing-md, 1.5rem);
+        color: inherit;
+        font-family: var(--ej-font-family, inherit);
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, 1rem);
+    }
+
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    &__author {
+        display: block;
+        font-weight: 600;
+        font-family: var(--ej-font-family, inherit);
+    }
+
+    &__role {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, #64748B);
+    }
+
+    // --- Cards sobre fondo oscuro/gradient: glassmorphism ---
+    .jaraba-testimonials-3d--dark &,
+    .jaraba-testimonials-3d--gradient & {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .jaraba-testimonials-3d--dark &:nth-child(2),
+    .jaraba-testimonials-3d--gradient &:nth-child(2) {
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+    }
+
+    .jaraba-testimonials-3d--dark &__role,
+    .jaraba-testimonials-3d--gradient &__role {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    // --- Responsive: Mobile cards ---
+    @media (max-width: 768px) {
+        width: 85vw;
+        min-width: 280px;
+        max-width: 360px;
+        scroll-snap-align: center;
+
+        // Override 3D transforms on mobile (scroll-based instead)
+        &:first-child,
+        &:nth-child(2),
+        &:last-child {
+            transform: none;
+            opacity: 1;
+            z-index: auto;
+        }
+    }
+}

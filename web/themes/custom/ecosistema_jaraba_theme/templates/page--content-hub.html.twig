@@ -3,15 +3,16 @@
  * @file
  * page--content-hub.html.twig - Dashboard editor sin regiones.
  *
- * ARQUITECTURA REFACTORIZADA (IGUAL QUE page--front.html.twig):
+ * Zero Region Policy:
  * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Usa {{ clean_content }} extraído por preprocess_page()
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
  * - Full-width igual que landing page
  *
  * PROPÓSITO: Página frontend limpia para editores de tenant.
- * Ver: docs/00_DIRECTRICES_PROYECTO.md sección 2.2.2
+ * Ver: .agent/workflows/frontend-page-pattern.md
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
@@ -41,11 +42,16 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# MAIN CONTENT - Full-width igual que landing page #}
+  {# MAIN CONTENT - Full-width, Zero Regions #}
   <main id="main-content" class="dashboard-main">
-    {# Contenedor del dashboard con márgenes propios #}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

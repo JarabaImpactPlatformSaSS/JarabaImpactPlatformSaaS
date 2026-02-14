@@ -1,0 +1,198 @@
+// =============================================================================
+// Admin Center Finance — Centro Financiero Styles
+// =============================================================================
+// Scorecards, SaaS metrics table with benchmarks, health indicators.
+// Uses var(--ej-*) design tokens for tenant theming.
+// F6 — Doc 181 / Spec f104 §FASE 4.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Revenue Scorecards
+// ---------------------------------------------------------------------------
+
+.ac-finance__scorecards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.ac-finance__card {
+  background: #fff;
+  border: 1px solid var(--ej-gray-200, #eeeeee);
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+.ac-finance__card--mrr {
+  border-top: 3px solid var(--ej-color-impulse, #ff8c42);
+}
+
+.ac-finance__card--arr {
+  border-top: 3px solid var(--ej-color-corporate, #233d63);
+}
+
+.ac-finance__card--customers {
+  border-top: 3px solid var(--ej-color-innovation, #00a9a5);
+}
+
+.ac-finance__card--arpu {
+  border-top: 3px solid var(--ej-color-success, #22c55e);
+}
+
+.ac-finance__card-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-text-secondary, #757575);
+  margin-bottom: 0.5rem;
+}
+
+.ac-finance__card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #212121);
+  line-height: 1.2;
+}
+
+.ac-finance__card-trend {
+  margin-top: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+// ---------------------------------------------------------------------------
+// SaaS Metrics Table
+// ---------------------------------------------------------------------------
+
+.ac-finance__metrics-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ac-finance__metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ej-text-secondary, #757575);
+    background: var(--ej-gray-50, #fafafa);
+    border-bottom: 1px solid var(--ej-gray-200, #eeeeee);
+  }
+
+  tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ej-gray-100, #f5f5f5);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: var(--ej-gray-50, #fafafa);
+  }
+}
+
+.ac-finance__metric-name {
+  font-weight: 500;
+  color: var(--ej-text-primary, #212121);
+}
+
+.ac-finance__metric-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.ac-finance__metric-benchmark {
+  color: var(--ej-text-secondary, #757575);
+  font-size: 0.8rem;
+}
+
+// ---------------------------------------------------------------------------
+// Health Indicators
+// ---------------------------------------------------------------------------
+
+.ac-finance__health {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--good {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--ej-color-success, #22c55e);
+  }
+
+  &--warning {
+    background: rgba(255, 140, 66, 0.12);
+    color: var(--ej-color-impulse, #ff8c42);
+  }
+
+  &--danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--ej-color-danger, #ef4444);
+  }
+
+  &--neutral {
+    background: var(--ej-gray-100, #f5f5f5);
+    color: var(--ej-text-secondary, #757575);
+  }
+}
+
+// Additional tenant health badges.
+.ac-datatable__badge--vip {
+  background: rgba(35, 61, 99, 0.12);
+  color: var(--ej-color-corporate, #233d63);
+}
+
+.ac-datatable__badge--healthy {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--ej-color-success, #22c55e);
+}
+
+.ac-datatable__badge--at_risk {
+  background: rgba(255, 140, 66, 0.12);
+  color: var(--ej-color-impulse, #ff8c42);
+}
+
+.ac-datatable__badge--in_loss {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--ej-color-danger, #ef4444);
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .ac-finance__scorecards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .ac-finance__scorecards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-finance__card {
+    transition: none;
+  }
+}

@@ -46,18 +46,24 @@
       overflow: hidden !important;
     }
     
-    /* Ocultar CUALQUIER elemento de admin o navegación del tema */
+    /* Ocultar elementos de admin toolbar y navegación del tema.
+     * IMPORTANTE: NO usar [class*="toolbar-"] porque matchea el <body>
+     * que tiene clase "toolbar-loading" inyectada por Drupal Admin Toolbar.
+     * Se usan selectores específicos por ID y clase exacta. */
     .admin-toolbar,
     .admin-toolbar-control-bar,
-    [class*="toolbar-"],
-    [class*="gin-"],
+    .toolbar-bar,
+    .toolbar-tray,
+    .toolbar-oriented,
+    .toolbar-menu-administration,
+    [id^="toolbar-"],
+    .gin-secondary-toolbar,
+    .gin-toolbar,
     .landing-header,
-    [class*="landing-header"],
     .landing-footer,
-    [class*="landing-footer"],
-    header,
-    footer,
-    nav,
+    body > header:not(.canvas-editor__toolbar),
+    body > footer,
+    body > nav,
     .breadcrumb,
     .messages,
     .dialog-off-canvas-main-canvas > .layout-wrapper,

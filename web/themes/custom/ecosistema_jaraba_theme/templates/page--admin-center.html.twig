@@ -1,0 +1,86 @@
+{#
+/**
+ * @file
+ * page--admin-center.html.twig — Admin Center Premium layout.
+ *
+ * Zero Region Policy:
+ * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Usa {{ clean_content }} extraido por preprocess_page()
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - SVG icons via jaraba_icon()
+ *
+ * Layout: Shell con sidebar colapsable + topbar + area principal.
+ * Ruta: /admin/jaraba/center
+ *
+ * @see .agent/workflows/frontend-page-pattern.md
+ * @see docs/tecnicos/20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('ecosistema_jaraba_core/admin-center') }}
+{{ attach_library('ecosistema_jaraba_core/admin-command-palette') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  <div class="admin-center-shell">
+
+    {# =============================================
+       SIDEBAR — Navegacion colapsable
+       ============================================= #}
+    {% include '@ecosistema_jaraba_theme/partials/_admin-center-nav.html.twig' with {
+      'quick_links': admin_center_links|default([]),
+      'site_name': site_name,
+      'logo': logo|default(''),
+    } only %}
+
+    {# =============================================
+       AREA PRINCIPAL — Topbar + Contenido
+       ============================================= #}
+    <div class="admin-center-main">
+
+      {# TOPBAR — Breadcrumb, busqueda, usuario #}
+      {% include '@ecosistema_jaraba_theme/partials/_admin-center-topbar.html.twig' with {
+        'page_title': admin_center_title|default('Admin Center'|t),
+        'logged_in': logged_in,
+        'user_display_name': user_display_name|default('Admin'),
+      } only %}
+
+      {# CONTENIDO — Zero Region Policy #}
+      <main id="main-content" class="admin-center-content" role="main">
+        {# Mensajes del sistema (status, warning, error) #}
+        {% if clean_messages %}
+          <div class="admin-center-messages">
+            {{ clean_messages }}
+          </div>
+        {% endif %}
+
+        {# Contenido del controlador — SIN bloques heredados #}
+        <div class="admin-center-content__inner">
+          {{ clean_content }}
+        </div>
+      </main>
+    </div>
+
+  </div>
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

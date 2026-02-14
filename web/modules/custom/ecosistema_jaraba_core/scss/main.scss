@@ -146,3 +146,24 @@
 
 // 45. Back to Top - Botón flotante "Volver arriba" para páginas admin
 @use 'back-to-top';
+
+// 46. Admin Center Layout - Shell sidebar + topbar (F6 Doc 181 / Spec f104)
+@use 'admin-center-layout';
+
+// 47. Admin Center DataTable - Reusable table component (F6 Doc 181 / Spec f104 §FASE 2)
+@use 'admin-center-datatable';
+
+// 48. Admin Center Finance - Centro Financiero SaaS metrics (F6 Doc 181 / Spec f104 §FASE 4)
+@use 'admin-center-finance';
+
+// 49. Admin Center Alerts - Alertas y Playbooks dashboard (F6 Doc 181 / Spec f104 §FASE 5)
+@use 'admin-center-alerts';
+
+// 50. Admin Center Analytics & Logs - Dashboard y visor (F6 Doc 181 / Spec f104 §FASE 6)
+@use 'admin-center-analytics';
+
+// 51. Admin Center Settings - Configuración global (F6 Doc 181 / Spec f104 §FASE 7)
+@use 'admin-center-settings';
+
+// 52. Admin Center Dark Mode + Accessibility - Polish (F6 Doc 181 / Spec f104 §FASE 7)
+@use 'admin-center-dark-mode';

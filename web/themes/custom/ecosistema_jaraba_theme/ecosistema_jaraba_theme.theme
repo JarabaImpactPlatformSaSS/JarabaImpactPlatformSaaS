@@ -287,6 +287,19 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#states' => ['visible' => [':input[name="enable_header_cta"]' => ['checked' => TRUE]]],
   ];
 
+  // Navegacion Contextual por Avatar
+  $form['header_options']['avatar_nav_wrapper'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Navegacion contextual'),
+    '#description' => t('Barra de navegacion que muestra items segun el rol/avatar del usuario autenticado.'),
+  ];
+  $form['header_options']['avatar_nav_wrapper']['enable_avatar_nav'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar navegacion contextual por avatar'),
+    '#default_value' => $config->get('enable_avatar_nav') ?? TRUE,
+    '#description' => t('Muestra una barra de navegacion bajo el header con enlaces contextuales segun el avatar del usuario (Candidato, Empleador, Emprendedor, etc.).'),
+  ];
+
   // =========================================================================
   // TAB 4: HERO (Visual Picker)
   // =========================================================================
@@ -911,6 +924,38 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
   }
 
+  // F6 Doc 181 / Spec f104 — Admin Center Premium body classes.
+  $admin_center_body_routes = [
+    'ecosistema_jaraba_core.admin.center',
+    'ecosistema_jaraba_core.admin.center.tenants',
+    'ecosistema_jaraba_core.admin.center.users',
+    'ecosistema_jaraba_core.admin.center.finance',
+    'ecosistema_jaraba_core.admin.center.alerts',
+    'ecosistema_jaraba_core.admin.center.analytics',
+    'ecosistema_jaraba_core.admin.center.logs',
+    'ecosistema_jaraba_core.admin.center.settings',
+  ];
+  if (in_array($route, $admin_center_body_routes, TRUE)) {
+    $variables['attributes']['class'][] = 'page-admin-center';
+    $variables['attributes']['class'][] = 'admin-center-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+
+  // Avatar Navigation body class — permite CSS defensivo para bottom nav mobile.
+  $enable_avatar_nav = theme_get_setting('enable_avatar_nav', 'ecosistema_jaraba_theme');
+  $admin_context = \Drupal::service('router.admin_context');
+  if ($enable_avatar_nav !== FALSE && !$admin_context->isAdminRoute()) {
+    try {
+      $nav_service = \Drupal::service('ecosistema_jaraba_core.avatar_navigation');
+      if (!empty($nav_service->getNavigationItems())) {
+        $variables['attributes']['class'][] = 'has-avatar-nav';
+      }
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible.
+    }
+  }
+
   // F4 Doc 180 — Meta SEO tags para landing pages verticales.
   $landing_meta = [
     'ecosistema_jaraba_core.landing.agroconecta' => [
@@ -990,6 +1035,17 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   if (in_array($route, $employability_diagnostic_routes)) {
     $variables['attributes']['class'][] = 'page-employability-diagnostic';
     $variables['attributes']['class'][] = 'landing-page';
+  }
+
+  // Tenant Dashboard - clean full-width layout
+  $tenant_dashboard_routes = [
+    'ecosistema_jaraba_core.tenant.dashboard',
+    'ecosistema_jaraba_core.tenant.change_plan',
+  ];
+  if (in_array($route, $tenant_dashboard_routes)) {
+    $variables['attributes']['class'][] = 'page-tenant-dashboard';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
   }
 
   // Dashboard frontend routes - clase para anular grid hero--split
@@ -1156,8 +1212,23 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     'user.reset.login',
   ];
   if (in_array($route, $auth_routes)) {
-    $variables['attributes']['class'][] = 'dashboard-page';
     $variables['attributes']['class'][] = 'page-auth';
+    $variables['attributes']['class'][] = 'clean-layout';
+  }
+
+  // =========================================================================
+  // USER PAGES - Paginas de usuario autenticado con header/footer
+  // =========================================================================
+  $user_account_routes = [
+    'entity.user.canonical',
+    'entity.user.edit_form',
+    'user.logout.confirm',
+    'entity.user.contact_form',
+    'user.cancel_confirm',
+  ];
+  if (in_array($route, $user_account_routes)) {
+    $variables['attributes']['class'][] = 'page-user';
+    $variables['attributes']['class'][] = 'full-width-layout';
   }
 
   // =========================================================================
@@ -1269,6 +1340,86 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'full-width-layout';
     if ($route === 'jaraba_blog.detail') {
       $variables['attributes']['class'][] = 'page-blog-detail';
+    }
+  }
+
+  // =========================================================================
+  // ZERO REGION CATCH-ALL — Body classes para módulos custom sin cobertura
+  //
+  // Añade dashboard-page + full-width-layout + clase por módulo a todas
+  // las rutas frontend de módulos custom que no tienen clases específicas
+  // en las secciones anteriores. Solo se aplica si no se asignó ya
+  // dashboard-page, landing-page, canvas-editor-page o page-auth.
+  //
+  // @see .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+  $existing_classes = $variables['attributes']['class'] ?? [];
+  $has_layout_class = in_array('dashboard-page', $existing_classes)
+    || in_array('landing-page', $existing_classes)
+    || in_array('canvas-editor-page', $existing_classes)
+    || in_array('page-auth', $existing_classes)
+    || in_array('page-employability-diagnostic', $existing_classes);
+
+  if (!$has_layout_class) {
+    $module_body_classes = [
+      'jaraba_agroconecta.' => 'page-agroconecta',
+      'jaraba_lms.' => 'page-lms',
+      'jaraba_mentoring.' => 'page-mentoring',
+      'jaraba_onboarding.' => 'page-onboarding',
+      'jaraba_self_discovery.' => 'page-self-discovery',
+      'jaraba_tenant_knowledge.' => 'page-knowledge',
+      'jaraba_legal_knowledge.' => 'page-legal',
+      'jaraba_whitelabel.' => 'page-whitelabel',
+      'jaraba_security_compliance.' => 'page-security',
+      'jaraba_training.' => 'page-training',
+      'jaraba_usage_billing.' => 'page-usage-billing',
+      'jaraba_addons.' => 'page-addons',
+      'jaraba_agent_flows.' => 'page-agent-flows',
+      'jaraba_theming.' => 'page-theming',
+      'jaraba_social.' => 'page-social',
+      'jaraba_insights_hub.' => 'page-insights',
+      'jaraba_geo.' => 'page-geo',
+      'jaraba_analytics.' => 'page-analytics',
+      'jaraba_funding.' => 'page-funding',
+      'jaraba_job_board.' => 'page-job-board',
+      'jaraba_candidate.' => 'page-candidate',
+      'jaraba_paths.' => 'page-paths',
+      'jaraba_business_tools.' => 'page-business-tools',
+      'jaraba_diagnostic.' => 'page-diagnostic',
+      'jaraba_copilot_v2.' => 'page-copilot',
+      'jaraba_events.' => 'page-eventos',
+      'jaraba_referral.' => 'page-referidos',
+      'jaraba_skills.' => 'page-skills',
+      'jaraba_servicios_conecta.' => 'page-servicios',
+      'jaraba_comercio_conecta.' => 'page-comercio',
+      'jaraba_customer_success.' => 'page-customer-success',
+      'jaraba_integrations.' => 'page-integrations',
+      'jaraba_crm.' => 'page-crm',
+      'jaraba_i18n.' => 'page-i18n',
+      'jaraba_heatmap.' => 'page-heatmap',
+      'jaraba_pixels.' => 'page-pixels',
+      'jaraba_credentials.' => 'page-credentials',
+      'jaraba_interactive.' => 'page-interactive',
+      'jaraba_content_hub.' => 'page-content-hub',
+      'ecosistema_jaraba_core.dashboard.' => 'page-dashboard-auto',
+      'ecosistema_jaraba_core.demo_' => 'page-demo',
+      'ecosistema_jaraba_core.lead_magnet.' => 'page-lead-magnet',
+      'ecosistema_jaraba_core.marketplace.' => 'page-marketplace',
+      'ecosistema_jaraba_core.onboarding.' => 'page-onboarding-core',
+      'ecosistema_jaraba_core.tenant_self_service.' => 'page-self-service',
+      'ecosistema_jaraba_core.reseller_portal' => 'page-reseller-portal',
+      'entity.saas_plan.' => 'page-saas-plan',
+      'entity.content_article.' => 'page-blog-article',
+      'entity.content_category.' => 'page-blog-category',
+    ];
+
+    foreach ($module_body_classes as $prefix => $css_class) {
+      if (str_starts_with($route, $prefix)) {
+        $variables['attributes']['class'][] = 'dashboard-page';
+        $variables['attributes']['class'][] = 'full-width-layout';
+        $variables['attributes']['class'][] = $css_class;
+        break;
+      }
     }
   }
 
@@ -1687,6 +1838,70 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       \Drupal::logger('ecosistema_jaraba_theme')->warning('CopilotContextService no disponible: @msg', ['@msg' => $e->getMessage()]);
     }
   }
+
+  // =========================================================================
+  // AVATAR NAVIGATION — Navegacion contextual por avatar/rol
+  // Servicio AvatarNavigationService genera items segun avatar detectado
+  // =========================================================================
+  $variables['avatar_nav'] = NULL;
+
+  $enable_avatar_nav = theme_get_setting('enable_avatar_nav', 'ecosistema_jaraba_theme');
+  if ($enable_avatar_nav !== FALSE && !$admin_context->isAdminRoute()) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\AvatarNavigationService $nav_service */
+      $nav_service = \Drupal::service('ecosistema_jaraba_core.avatar_navigation');
+      $nav_items = $nav_service->getNavigationItems();
+      if (!empty($nav_items)) {
+        $variables['avatar_nav'] = [
+          'items' => $nav_items,
+          'avatar' => $nav_service->getAvatar(),
+          'avatar_label' => $nav_service->getAvatarLabel(),
+        ];
+      }
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible, no mostrar navegacion contextual.
+    }
+  }
+
+  // =========================================================================
+  // ZERO REGION POLICY — Variables limpias para templates custom
+  //
+  // Extrae system_main_block y system_messages_block de las regiones de Drupal
+  // en variables independientes. Las page--*.html.twig custom DEBEN usar
+  // {{ clean_content }} en lugar de {{ page.content }} para evitar filtrar
+  // bloques heredados (FABs, menús contextuales, tabs, etc).
+  //
+  // Backward compatible: si una template sigue usando {{ page.content }},
+  // funciona como antes. La migración es incremental.
+  //
+  // @see .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+  $variables['clean_content'] = NULL;
+  if (isset($variables['page']['content'])) {
+    foreach ($variables['page']['content'] as $key => $element) {
+      if (is_string($key) && $key[0] === '#') {
+        continue;
+      }
+      if (is_array($element) && ($element['#plugin_id'] ?? '') === 'system_main_block') {
+        $variables['clean_content'] = $element;
+        break;
+      }
+    }
+  }
+
+  $variables['clean_messages'] = NULL;
+  if (isset($variables['page']['highlighted'])) {
+    foreach ($variables['page']['highlighted'] as $key => $element) {
+      if (is_string($key) && $key[0] === '#') {
+        continue;
+      }
+      if (is_array($element) && ($element['#plugin_id'] ?? '') === 'system_messages_block') {
+        $variables['clean_messages'] = $element;
+        break;
+      }
+    }
+  }
 }
 
 /**
@@ -1726,61 +1941,11 @@ function ecosistema_jaraba_theme_preprocess_page__auth(&$variables) {
       $form_type = 'password';
       break;
       
-    case 'user.logout.confirm':
-      // Logout: Extraer solo el formulario de confirmación de la página.
-      // Buscar el bloque system_main que contiene solo el formulario.
-      $form = NULL;
-      if (isset($variables['page']['content']['system_main'])) {
-        $form = $variables['page']['content']['system_main'];
-      }
-      elseif (isset($variables['page']['content'])) {
-        // Fallback: buscar el formulario dentro del contenido.
-        foreach ($variables['page']['content'] as $key => $block) {
-          if (is_array($block) && isset($block['#form_id']) && strpos($block['#form_id'], 'logout') !== FALSE) {
-            $form = $block;
-            break;
-          }
-        }
-        // Si no encontramos el formulario específico, usar system_main o el primero.
-        if (!$form) {
-          $form = $variables['page']['content']['system_main'] ?? $variables['page']['content'];
-        }
-      }
-      $form_type = 'logout';
-      break;
-      
-    case 'entity.user.canonical':
-      // Perfil: renderizar solo la vista de la entidad usuario.
-      $user = \Drupal::routeMatch()->getParameter('user');
-      if ($user && is_object($user) && method_exists($user, 'id')) {
-        $view_builder = \Drupal::entityTypeManager()->getViewBuilder('user');
-        $form = $view_builder->view($user, 'full');
-        $variables['user_entity'] = $user;
-        $variables['user_display_name'] = $user->getDisplayName();
-      }
-      $form_type = 'profile';
-      break;
-      
-    case 'entity.user.edit_form':
-      // Edición: renderizar solo el formulario de edición del usuario.
-      $user = \Drupal::routeMatch()->getParameter('user');
-      if ($user && is_object($user) && method_exists($user, 'id')) {
-        try {
-          $form_object = \Drupal::entityTypeManager()
-            ->getFormObject('user', 'default')
-            ->setEntity($user);
-          $form = $form_builder->getForm($form_object);
-          $variables['user_entity'] = $user;
-          $variables['user_display_name'] = $user->getDisplayName();
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('ecosistema_jaraba_theme')->error('Error loading user edit form: @error', ['@error' => $e->getMessage()]);
-          $form = NULL;
-        }
-      }
-      $form_type = 'edit';
-      break;
-      
+    // Nota: Las rutas user.logout.confirm, entity.user.canonical,
+    // entity.user.edit_form, entity.user.contact_form y user.cancel_confirm
+    // ahora usan page--user.html.twig via page__user suggestion.
+    // Su preprocess esta en preprocess_page__user().
+
     default:
       // Para otras rutas, no renderizar contenido extra.
       $form = NULL;
@@ -1826,6 +1991,24 @@ function ecosistema_jaraba_theme_preprocess_page__auth(&$variables) {
     // Fallback: usar el logo normal con filtro CSS.
     $variables['logo_url_white'] = $variables['logo_url'];
   }
+}
+
+/**
+ * Implements hook_preprocess_page__dashboard().
+ *
+ * Alias de variables genéricas para page--dashboard.html.twig.
+ * La extracción real ocurre en preprocess_page() (clean_content/clean_messages).
+ *
+ * Aplica a todas las rutas que usan page--dashboard.html.twig:
+ * - /employer, /jobseeker, /entrepreneur/dashboard, /my-company
+ * - /tenant/dashboard, /tenant/change-plan
+ * - /business-tools/canvas/*
+ */
+function ecosistema_jaraba_theme_preprocess_page__dashboard(&$variables) {
+  // Alias: la template usa dashboard_content/dashboard_messages
+  // que son los mismos clean_content/clean_messages del preprocess genérico.
+  $variables['dashboard_content'] = $variables['clean_content'];
+  $variables['dashboard_messages'] = $variables['clean_messages'];
 }
 
 /**
@@ -2021,7 +2204,56 @@ function ecosistema_jaraba_theme_preprocess_breadcrumb(&$variables) {
  */
 function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
   $route = \Drupal::routeMatch()->getRouteName();
-  
+  $route_str = (string) $route;
+
+  // =========================================================================
+  // ZERO REGION CATCH-ALL — Base template limpio para módulos custom
+  //
+  // Asigna page__dashboard como fallback de BAJA PRIORIDAD para todas las
+  // rutas frontend de módulos custom del ecosistema. Las secciones
+  // específicas posteriores SOBREESCRIBEN con templates más específicos.
+  //
+  // Drupal evalúa sugerencias de última a primera: la última añadida gana.
+  // Al ser la primera sección, tiene la prioridad más baja.
+  //
+  // @see .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+  $ecosistema_prefixes = [
+    'ecosistema_jaraba_core.', 'jaraba_addons.', 'jaraba_agent_flows.',
+    'jaraba_agroconecta.', 'jaraba_analytics.', 'jaraba_blog.',
+    'jaraba_business_tools.', 'jaraba_candidate.', 'jaraba_comercio_conecta.',
+    'jaraba_content_hub.', 'jaraba_copilot_v2.', 'jaraba_credentials.',
+    'jaraba_crm.', 'jaraba_customer_success.', 'jaraba_diagnostic.',
+    'jaraba_ads.', 'jaraba_email.', 'jaraba_events.', 'jaraba_funding.', 'jaraba_geo.',
+    'jaraba_heatmap.', 'jaraba_i18n.', 'jaraba_insights_hub.',
+    'jaraba_integrations.', 'jaraba_interactive.', 'jaraba_job_board.',
+    'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
+    'jaraba_onboarding.', 'jaraba_page_builder.', 'jaraba_paths.',
+    'jaraba_pixels.', 'jaraba_producer.', 'jaraba_referral.',
+    'jaraba_security_compliance.', 'jaraba_self_discovery.',
+    'jaraba_sepe_teleformacion.', 'jaraba_servicios_conecta.',
+    'jaraba_site_builder.', 'jaraba_skills.', 'jaraba_social.',
+    'jaraba_tenant_knowledge.', 'jaraba_theming.', 'jaraba_training.',
+    'jaraba_usage_billing.', 'jaraba_whitelabel.',
+    'entity.saas_plan.', 'entity.content_article.',
+    'entity.content_category.', 'entity.page_content.',
+  ];
+
+  foreach ($ecosistema_prefixes as $prefix) {
+    if (str_starts_with($route_str, $prefix)) {
+      // Excluir rutas admin — no necesitan template limpio frontend
+      $route_object = \Drupal::routeMatch()->getRouteObject();
+      if ($route_object) {
+        $admin_context = \Drupal::service('router.admin_context');
+        if ($admin_context->isAdminRoute($route_object)) {
+          break;
+        }
+      }
+      $suggestions[] = 'page__dashboard';
+      break;
+    }
+  }
+
   // Rutas que usan template limpio de dashboard
   $dashboard_routes = [
     'jaraba_job_board.employer_dashboard',
@@ -2031,12 +2263,34 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_business_tools.canvas_list',
     'jaraba_business_tools.canvas_create',
     'jaraba_business_tools.canvas_edit',
+    // Tenant Admin Dashboard
+    'ecosistema_jaraba_core.tenant.dashboard',
+    'ecosistema_jaraba_core.tenant.change_plan',
   ];
   
   if (in_array($route, $dashboard_routes)) {
     $suggestions[] = 'page__dashboard';
   }
   
+  // =========================================================================
+  // ADMIN CENTER PREMIUM — F6 Doc 181 / Spec f104
+  // Layout shell con sidebar colapsable, topbar y area principal.
+  // Template: page--admin-center.html.twig (Zero Region Policy)
+  // =========================================================================
+  $admin_center_routes = [
+    'ecosistema_jaraba_core.admin.center',
+    'ecosistema_jaraba_core.admin.center.tenants',
+    'ecosistema_jaraba_core.admin.center.users',
+    'ecosistema_jaraba_core.admin.center.finance',
+    'ecosistema_jaraba_core.admin.center.alerts',
+    'ecosistema_jaraba_core.admin.center.analytics',
+    'ecosistema_jaraba_core.admin.center.logs',
+    'ecosistema_jaraba_core.admin.center.settings',
+  ];
+  if (in_array($route, $admin_center_routes, TRUE)) {
+    $suggestions[] = 'page__admin_center';
+  }
+
   // =========================================================================
   // CONTENT HUB FRONTEND - Template limpio sin regiones ni tema de admin
   // El tenant NO debe tener acceso al tema de administración de Drupal.
@@ -2289,8 +2543,8 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
 
   // =========================================================================
-  // USER PAGES - También usan page--auth para diseño consistente
-  // Todas las páginas del sistema de usuario comparten el mismo layout
+  // USER PAGES - Template propio con header/footer/avatar-nav
+  // Paginas de usuario autenticado: perfil, editar, logout, contacto, cancelar
   // =========================================================================
   $user_routes = [
     'entity.user.canonical',       // /user/{uid}
@@ -2301,7 +2555,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   ];
 
   if (in_array($route, $user_routes)) {
-    $suggestions[] = 'page__auth';
+    $suggestions[] = 'page__user';
   }
 
   // =========================================================================
@@ -2318,6 +2572,142 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // =========================================================================
   if ($route === 'jaraba_credentials.my_credentials') {
     $suggestions[] = 'page__my_certifications';
+  }
+
+  // =========================================================================
+  // TEMPLATES ESPECÍFICOS — Rutas con template propio sin sugerencia previa
+  //
+  // Estas rutas tienen templates page--*.html.twig existentes pero no
+  // tenían sugerencia en las secciones anteriores. Al ir DESPUÉS del
+  // catch-all, su prioridad es mayor y sobreescriben page__dashboard.
+  //
+  // @see .agent/workflows/frontend-page-pattern.md
+  // =========================================================================
+
+  // Copilot v2 → templates de emprendimiento existentes
+  $copilot_v2_templates = [
+    'jaraba_copilot_v2.bmc_dashboard' => 'page__emprendimiento__bmc',
+    'jaraba_copilot_v2.hypothesis_manager' => 'page__emprendimiento__hipotesis',
+    'jaraba_copilot_v2.experiment_lifecycle' => 'page__emprendimiento__experimentos_gestion',
+    'jaraba_copilot_v2.experiments' => 'page__experimentos',
+    'jaraba_copilot_v2.experiment_detail' => 'page__experimentos',
+  ];
+  if (isset($copilot_v2_templates[$route])) {
+    $suggestions[] = $copilot_v2_templates[$route];
+  }
+
+  // Eventos → page--eventos.html.twig
+  if (str_starts_with($route_str, 'jaraba_events.')) {
+    $suggestions[] = 'page__eventos';
+  }
+
+  // Referidos → page--referidos.html.twig
+  if (str_starts_with($route_str, 'jaraba_referral.')) {
+    $suggestions[] = 'page__referidos';
+  }
+
+  // Skills → page--skills.html.twig
+  if (str_starts_with($route_str, 'jaraba_skills.')) {
+    $suggestions[] = 'page__skills';
+  }
+
+  // Pixels stats → page--pixels--stats.html.twig
+  if ($route === 'jaraba_pixels.stats') {
+    $suggestions[] = 'page__pixels__stats';
+  }
+
+  // CRM kanban → page--crm.html.twig
+  if ($route === 'jaraba_crm.kanban') {
+    $suggestions[] = 'page__crm';
+  }
+
+  // i18n → page--i18n.html.twig
+  if ($route === 'jaraba_i18n.dashboard') {
+    $suggestions[] = 'page__i18n';
+  }
+
+  // Diagnóstico empleabilidad → page--empleabilidad--diagnostico.html.twig
+  if (str_starts_with($route_str, 'jaraba_diagnostic.employability.')) {
+    $suggestions[] = 'page__empleabilidad__diagnostico';
+  }
+
+  // LMS badge verify → page--verify.html.twig
+  if ($route === 'jaraba_lms.badge.verify') {
+    $suggestions[] = 'page__verify';
+  }
+
+  // Page Builder revisiones → page--revisions.html.twig
+  if (str_starts_with($route_str, 'jaraba_page_builder.revision_')) {
+    $suggestions[] = 'page__revisions';
+  }
+
+  // Page Builder experiments create → page--page-builder-experiments.html.twig
+  if ($route === 'jaraba_page_builder.experiments_create') {
+    $suggestions[] = 'page__page_builder_experiments';
+  }
+
+  // Landing pages de verticales → page--vertical-landing.html.twig
+  // Complementa la sección existente que solo cubre vertical.* pero no landing.*
+  $landing_routes = [
+    'ecosistema_jaraba_core.landing.agroconecta',
+    'ecosistema_jaraba_core.landing.comercioconecta',
+    'ecosistema_jaraba_core.landing.serviciosconecta',
+    'ecosistema_jaraba_core.landing.empleabilidad',
+    'ecosistema_jaraba_core.landing.emprendimiento',
+  ];
+  if (in_array($route, $landing_routes)) {
+    $suggestions[] = 'page__vertical_landing';
+  }
+
+  // Lead magnets → page--vertical-landing.html.twig (páginas marketing)
+  if (str_starts_with($route_str, 'ecosistema_jaraba_core.lead_magnet.')) {
+    $suggestions[] = 'page__vertical_landing';
+  }
+
+  // Tenant self-service → page--mi-cuenta.html.twig
+  if (str_starts_with($route_str, 'ecosistema_jaraba_core.tenant_self_service.')) {
+    $suggestions[] = 'page__mi_cuenta';
+  }
+
+  // Knowledge Base público → page--ayuda.html.twig
+  if (str_starts_with($route_str, 'jaraba_tenant_knowledge.kb.')) {
+    $suggestions[] = 'page__ayuda';
+  }
+
+  // Content Hub blog + entities → page--content-hub.html.twig
+  $content_hub_blog_routes = [
+    'jaraba_content_hub.blog',
+    'entity.content_article.canonical',
+    'entity.content_category.canonical',
+  ];
+  if (in_array($route, $content_hub_blog_routes)) {
+    $suggestions[] = 'page__content_hub';
+  }
+
+  // SaaS Plan → page--vertical-landing.html.twig (página pública de precios)
+  if ($route === 'entity.saas_plan.canonical') {
+    $suggestions[] = 'page__vertical_landing';
+  }
+
+  // Onboarding wizard → page--auth.html.twig (flujo de registro)
+  if (str_starts_with($route_str, 'jaraba_onboarding.') ||
+      str_starts_with($route_str, 'ecosistema_jaraba_core.onboarding.')) {
+    $suggestions[] = 'page__auth';
+  }
+
+  // Comercio Conecta (rutas adicionales) → page--comercio-marketplace.html.twig
+  if (str_starts_with($route_str, 'jaraba_comercio_conecta.')) {
+    $suggestions[] = 'page__comercio_marketplace';
+  }
+
+  // Customer Success (rutas adicionales) → page--customer-success.html.twig
+  if (str_starts_with($route_str, 'jaraba_customer_success.')) {
+    $suggestions[] = 'page__customer_success';
+  }
+
+  // Integrations (rutas adicionales) → page--integrations.html.twig
+  if (str_starts_with($route_str, 'jaraba_integrations.')) {
+    $suggestions[] = 'page__integrations';
   }
 }
 
@@ -2342,4 +2732,36 @@ function ecosistema_jaraba_theme_theme_suggestions_html_alter(array &$suggestion
   if (in_array($route, $canvas_editor_routes)) {
     $suggestions[] = 'html__canvas_editor';
   }
+}
+
+/**
+ * Implements hook_preprocess_page__admin_center().
+ *
+ * Inyecta variables para el layout del Admin Center Premium:
+ * - admin_center_links: Quick links con iconos SVG para el sidebar
+ * - admin_center_title: Titulo de la pagina
+ * - user_display_name: Nombre del usuario logueado
+ *
+ * F6 Doc 181 / Spec f104 — Admin Center Premium.
+ *
+ * @see page--admin-center.html.twig
+ * @see _admin-center-nav.html.twig
+ * @see _admin-center-topbar.html.twig
+ */
+function ecosistema_jaraba_theme_preprocess_page__admin_center(&$variables) {
+  // Quick links del sidebar — inyectados desde el servicio aggregator.
+  try {
+    $aggregator = \Drupal::service('ecosistema_jaraba_core.admin_center_aggregator');
+    $variables['admin_center_links'] = $aggregator->getQuickLinks();
+  }
+  catch (\Exception $e) {
+    $variables['admin_center_links'] = [];
+  }
+
+  // Titulo de la pagina.
+  $variables['admin_center_title'] = $variables['page']['#title'] ?? t('Admin Center');
+
+  // Nombre del usuario logueado.
+  $current_user = \Drupal::currentUser();
+  $variables['user_display_name'] = $current_user->getDisplayName();
 }

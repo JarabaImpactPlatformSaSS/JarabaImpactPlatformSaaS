@@ -375,3 +375,59 @@ rm -rf ~/.nvm
     background: lighten($my-color, 85%);
     ```
 
+## Lecciones Aprendidas (2026-02-14)
+
+20. **Page Builder tiene pipeline SCSS independiente (NO va en `main.scss` del core)**:
+    El módulo `jaraba_page_builder` tiene su propia carpeta `scss/blocks/` con parciales independientes. Cada parcial se compila a su propio CSS dentro de `css/`. **NO añadir imports a `ecosistema_jaraba_core/scss/main.scss`**.
+    ```
+    jaraba_page_builder/
+    ├── scss/blocks/
+    │   ├── _product-card.scss   → css/product-card.css
+    │   ├── _social-links.scss   → css/social-links.css
+    │   ├── _contact-form.scss   → css/contact-form.css
+    │   ├── _page-builder-core.scss → css/page-builder-core.css
+    │   └── ...
+    └── jaraba_page_builder.libraries.yml  → Una library por CSS
+    ```
+
+21. **Compilación SCSS en Docker (Page Builder) — NVM Path obligatorio**:
+    El contenedor Docker `jarabasaas_appserver_1` tiene Node.js via NVM, pero el PATH no está configurado por defecto. Se debe exportar manualmente:
+    ```bash
+    docker exec jarabasaas_appserver_1 bash -c \
+      "export PATH=/user/.nvm/versions/node/v20.20.0/bin:\$PATH && \
+       cd /app/web/modules/custom/jaraba_page_builder && \
+       npx sass scss/blocks/_nombre.scss css/nombre.css --style=compressed"
+    ```
+    > **⚠️ Ruta NVM en Docker**: `/user/.nvm/` (no `/home/user/.nvm/`)
+
+22. **Pre-computed values como alternativa a `color.scale()`**:
+    En archivos SCSS sin `@use 'variables'` (como los parciales standalone del Page Builder), es válido usar valores hexadecimales pre-computados como alternativa a `darken()`/`lighten()`:
+    ```scss
+    // ✅ OK en parciales standalone sin @use 'sass:color'
+    background: #eb7a30; // darken(#FF8C42, 8%) pre-computed
+
+    // ✅ Preferido si el archivo ya tiene @use 'sass:color'
+    background: color.scale(#FF8C42, $lightness: -8%);
+    ```
+
+23. **Font-family unificado: SIEMPRE `'Outfit'` como fallback**:
+    Todos los archivos SCSS y JS del ecosistema deben usar `'Outfit'` como font-family fallback. NO mezclar con `'Inter'`:
+    ```scss
+    // ✅ CORRECTO
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+
+    // ❌ INCORRECTO (creaba inconsistencia con el tema)
+    font-family: var(--ej-font-family, 'Inter', sans-serif);
+    ```
+
+24. **IconRegistry SVG inline para GrapesJS blocks (NO emojis)**:
+    Los bloques GrapesJS que necesitan iconos en su HTML de contenido deben usar `Drupal.jarabaIcons.get('nombre', 'fallback')` en vez de emojis. Los iconos SVG inline escalan con `font-size` via `width="1em" height="1em"`:
+    ```javascript
+    // ✅ CORRECTO — SVG escalable
+    content: `<span>${Drupal.jarabaIcons.get('star', '⭐')}</span> Valoración`
+
+    // ❌ INCORRECTO — emojis varían entre SO/navegadores
+    content: '<span>⭐</span> Valoración'
+    ```
+    > **EXCEPCIÓN**: Los `iconOptions` de GrapesJS (labels de categoría en sidebar) SÍ pueden usar emojis — son UI del editor, no contenido renderizado.
+

@@ -321,7 +321,7 @@ function _jaraba_servicios_conecta_cancel_stale_bookings(int $now): void {
       try {
         \Drupal::service('jaraba_servicios_conecta.availability')->releaseSlot(
           (int) ($booking->get('provider_id')->target_id ?? 0),
-          $booking->get('datetime')->value ?? '',
+          $booking->get('booking_date')->value ?? '',
           (int) ($booking->get('duration_minutes')->value ?? 60)
         );
       }
@@ -363,8 +363,8 @@ function _jaraba_servicios_conecta_send_reminders(int $now): void {
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
         ->condition('status', 'confirmed')
-        ->condition('datetime', $from, '>=')
-        ->condition('datetime', $to, '<=')
+        ->condition('booking_date', $from, '>=')
+        ->condition('booking_date', $to, '<=')
         ->execute();
 
       foreach ($storage->loadMultiple($ids) as $booking) {
@@ -378,7 +378,7 @@ function _jaraba_servicios_conecta_send_reminders(int $now): void {
               $mailManager->mail('jaraba_servicios_conecta', 'booking_reminder', $user->getEmail(), $user->getPreferredLangcode(), [
                 'user_name' => $user->getDisplayName(),
                 'booking_id' => $booking->id(),
-                'datetime' => $booking->get('datetime')->value ?? '',
+                'datetime' => $booking->get('booking_date')->value ?? '',
               ]);
             }
           }
@@ -404,7 +404,7 @@ function _jaraba_servicios_conecta_detect_no_shows(int $now): void {
     $ids = $storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('status', 'confirmed')
-      ->condition('datetime', $pastThreshold, '<')
+      ->condition('booking_date', $pastThreshold, '<')
       ->range(0, 50)
       ->execute();
 
@@ -429,17 +429,18 @@ function _jaraba_servicios_conecta_detect_no_shows(int $now): void {
 function _jaraba_servicios_conecta_cleanup_expired_slots(int $now): void {
   try {
     $storage = \Drupal::entityTypeManager()->getStorage('availability_slot');
-    $pastThreshold = date('Y-m-d\TH:i:s', $now);
+    $pastThreshold = date('Y-m-d', $now);
 
     $ids = $storage->getQuery()
       ->accessCheck(FALSE)
-      ->condition('status', 'booked')
-      ->condition('end_datetime', $pastThreshold, '<')
+      ->condition('is_active', TRUE)
+      ->condition('valid_until', $pastThreshold, '<')
+      ->condition('valid_until', NULL, 'IS NOT NULL')
       ->range(0, 100)
       ->execute();
 
     foreach ($storage->loadMultiple($ids) as $slot) {
-      $slot->set('status', 'expired');
+      $slot->set('is_active', FALSE);
       $slot->save();
     }
   }

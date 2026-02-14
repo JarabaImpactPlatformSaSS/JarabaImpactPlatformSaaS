@@ -1,0 +1,757 @@
+// =============================================================================
+// Admin Center DataTable — Premium Table Styles
+// =============================================================================
+// Reusable table component: sorting, pagination, filters, skeletons.
+// Uses var(--ej-*) design tokens for tenant theming.
+// F6 — Doc 181 / Spec f104 §FASE 2.
+// =============================================================================
+
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Container
+// ---------------------------------------------------------------------------
+
+.ac-datatable {
+  background: #fff;
+  border: 1px solid var(--ej-gray-200, #eeeeee);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Toolbar: search + filters + export
+// ---------------------------------------------------------------------------
+
+.ac-datatable__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--ej-gray-200, #eeeeee);
+  flex-wrap: wrap;
+}
+
+.ac-datatable__search {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+}
+
+.ac-datatable__search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ej-gray-300, #e0e0e0);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--ej-text-primary, #212121);
+  background: var(--ej-gray-50, #fafafa);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: var(--ej-text-secondary, #757575);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--ej-color-corporate, #233d63);
+    box-shadow: 0 0 0 3px rgba(35, 61, 99, 0.12);
+    background: #fff;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Filter chips
+// ---------------------------------------------------------------------------
+
+.ac-datatable__filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ac-datatable__filter-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.ac-datatable__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--ej-gray-300, #e0e0e0);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--ej-text-secondary, #757575);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--ej-gray-100, #f5f5f5);
+    color: var(--ej-text-primary, #212121);
+  }
+
+  &--active {
+    background: var(--ej-color-corporate, #233d63);
+    color: #fff;
+    border-color: var(--ej-color-corporate, #233d63);
+
+    &:hover {
+      background: var(--ej-color-corporate, #233d63);
+      color: #fff;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Export button
+// ---------------------------------------------------------------------------
+
+.ac-datatable__export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ej-gray-300, #e0e0e0);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ej-text-primary, #212121);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  margin-left: auto;
+
+  &:hover {
+    background: var(--ej-gray-100, #f5f5f5);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Table
+// ---------------------------------------------------------------------------
+
+.ac-datatable__table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ac-datatable__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+// Header
+.ac-datatable__th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ej-text-secondary, #757575);
+  background: var(--ej-gray-50, #fafafa);
+  border-bottom: 1px solid var(--ej-gray-200, #eeeeee);
+  white-space: nowrap;
+  user-select: none;
+
+  &--sortable {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--ej-color-corporate, #233d63);
+    }
+  }
+
+  &--actions {
+    text-align: right;
+    width: 1%;
+  }
+}
+
+// Sort indicator
+.ac-datatable__sort-icon {
+  display: inline-block;
+  margin-left: 0.25rem;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+
+  .ac-datatable__th--sortable & {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--ej-gray-300, #e0e0e0);
+  }
+
+  .ac-datatable__th--sorted-asc & {
+    border-top: none;
+    border-bottom: 5px solid var(--ej-color-corporate, #233d63);
+  }
+
+  .ac-datatable__th--sorted-desc & {
+    border-bottom: none;
+    border-top: 5px solid var(--ej-color-corporate, #233d63);
+  }
+}
+
+// Cells
+.ac-datatable__td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ej-gray-100, #f5f5f5);
+  color: var(--ej-text-primary, #212121);
+  vertical-align: middle;
+
+  &--actions {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+// Row hover
+.ac-datatable__row {
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background: var(--ej-gray-50, #fafafa);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Status badges
+// ---------------------------------------------------------------------------
+
+.ac-datatable__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &--active {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--ej-color-success, #22c55e);
+  }
+
+  &--trial {
+    background: rgba(255, 140, 66, 0.12);
+    color: var(--ej-color-impulse, #ff8c42);
+  }
+
+  &--suspended {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--ej-color-danger, #ef4444);
+  }
+
+  &--unknown {
+    background: var(--ej-gray-100, #f5f5f5);
+    color: var(--ej-text-secondary, #757575);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Links inside table
+// ---------------------------------------------------------------------------
+
+.ac-datatable__link {
+  color: var(--ej-color-corporate, #233d63);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Action buttons
+// ---------------------------------------------------------------------------
+
+.ac-datatable__action-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--ej-gray-200, #eeeeee);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ej-text-primary, #212121);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 0.375rem;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:hover {
+    background: var(--ej-gray-100, #f5f5f5);
+    border-color: var(--ej-gray-300, #e0e0e0);
+  }
+
+  &--view {
+    color: var(--ej-color-corporate, #233d63);
+  }
+
+  &--impersonate {
+    color: var(--ej-color-impulse, #ff8c42);
+
+    &:hover {
+      background: rgba(255, 140, 66, 0.08);
+    }
+  }
+
+  &--edit {
+    color: var(--ej-color-innovation, #00a9a5);
+
+    &:hover {
+      background: rgba(0, 169, 165, 0.08);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Empty state
+// ---------------------------------------------------------------------------
+
+.ac-datatable__empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ej-text-secondary, #757575);
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton loading
+// ---------------------------------------------------------------------------
+
+.ac-datatable__row--skeleton {
+  .ac-datatable__td {
+    padding: 0.875rem 1rem;
+  }
+}
+
+.ac-datatable__skeleton-bar {
+  display: block;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--ej-gray-100, #f5f5f5) 25%,
+    var(--ej-gray-200, #eeeeee) 50%,
+    var(--ej-gray-100, #f5f5f5) 75%
+  );
+  background-size: 200% 100%;
+  animation: ac-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ac-skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ---------------------------------------------------------------------------
+// Pagination
+// ---------------------------------------------------------------------------
+
+.ac-datatable__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--ej-gray-200, #eeeeee);
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.ac-datatable__pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ac-datatable__page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--ej-gray-200, #eeeeee);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ej-text-primary, #212121);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--ej-gray-100, #f5f5f5);
+    border-color: var(--ej-gray-300, #e0e0e0);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--active {
+    background: var(--ej-color-corporate, #233d63);
+    color: #fff;
+    border-color: var(--ej-color-corporate, #233d63);
+
+    &:hover {
+      background: var(--ej-color-corporate, #233d63);
+      color: #fff;
+    }
+  }
+}
+
+// ===========================================================================
+// Tenant Detail 360 — Slide-Panel Content
+// ===========================================================================
+
+.tenant-detail {
+  padding: 0.5rem 0;
+}
+
+.tenant-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ej-gray-200, #eeeeee);
+}
+
+.tenant-detail__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ej-color-corporate, #233d63);
+  margin: 0;
+}
+
+.tenant-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tenant-detail__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tenant-detail__label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.tenant-detail__value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ej-text-primary, #212121);
+}
+
+.tenant-detail__section {
+  margin-bottom: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ej-gray-100, #f5f5f5);
+}
+
+.tenant-detail__section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #212121);
+  margin: 0 0 0.75rem 0;
+}
+
+.tenant-detail__description {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ej-text-secondary, #757575);
+  margin: 0;
+}
+
+// Members list
+.tenant-detail__members {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tenant-detail__member {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: var(--ej-gray-50, #fafafa);
+}
+
+.tenant-detail__member-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ej-color-corporate, #233d63);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tenant-detail__member-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tenant-detail__member-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ej-text-primary, #212121);
+}
+
+.tenant-detail__member-email {
+  font-size: 0.75rem;
+  color: var(--ej-text-secondary, #757575);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Actions footer
+.tenant-detail__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ej-gray-200, #eeeeee);
+}
+
+// Tenants page header
+.admin-center-tenants__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ej-gray-200, #eeeeee);
+}
+
+.admin-center-tenants__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-color-corporate, #233d63);
+}
+
+.admin-center-tenants__subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+// ===========================================================================
+// User Detail 360 — Slide-Panel Content (FASE 3)
+// ===========================================================================
+
+.user-detail__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ej-color-corporate, #233d63);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-detail__email {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.user-detail__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+// Additional badge variants for roles
+.ac-datatable__badge--administrator {
+  background: rgba(35, 61, 99, 0.12);
+  color: var(--ej-color-corporate, #233d63);
+}
+
+.ac-datatable__badge--tenant_admin {
+  background: rgba(0, 169, 165, 0.12);
+  color: var(--ej-color-innovation, #00a9a5);
+}
+
+.ac-datatable__badge--authenticated {
+  background: var(--ej-gray-100, #f5f5f5);
+  color: var(--ej-text-secondary, #757575);
+}
+
+.ac-datatable__badge--blocked {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--ej-color-danger, #ef4444);
+}
+
+// Activity Timeline
+.user-detail__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0.5rem;
+}
+
+.user-detail__timeline-entry {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1.5rem;
+    bottom: 0;
+    width: 1px;
+    background: var(--ej-gray-200, #eeeeee);
+  }
+
+  &:last-child::before {
+    display: none;
+  }
+}
+
+.user-detail__timeline-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 0.375rem;
+  flex-shrink: 0;
+  background: var(--ej-gray-300, #e0e0e0);
+  position: relative;
+  z-index: 1;
+
+  &--severity-3,
+  &--severity-2,
+  &--severity-1,
+  &--severity-0 {
+    background: var(--ej-color-danger, #ef4444);
+  }
+
+  &--severity-4,
+  &--severity-5 {
+    background: var(--ej-color-impulse, #ff8c42);
+  }
+
+  &--severity-6,
+  &--severity-7 {
+    background: var(--ej-color-success, #22c55e);
+  }
+}
+
+.user-detail__timeline-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-detail__timeline-message {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ej-text-primary, #212121);
+  line-height: 1.4;
+}
+
+.user-detail__timeline-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.125rem;
+  font-size: 0.7rem;
+  color: var(--ej-text-secondary, #757575);
+}
+
+.user-detail__timeline-type {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .ac-datatable__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .ac-datatable__search {
+    max-width: none;
+  }
+
+  .ac-datatable__export-btn {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .ac-datatable__pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-datatable__skeleton-bar {
+    animation: none;
+  }
+
+  .ac-datatable__row,
+  .ac-datatable__chip,
+  .ac-datatable__action-btn,
+  .ac-datatable__page-btn {
+    transition: none;
+  }
+}

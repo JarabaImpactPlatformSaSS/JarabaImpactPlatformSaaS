@@ -255,6 +255,55 @@ block-timeline:
     - core/drupal
     - core/once
 
+# Behavior: Navegación premium con submenús desplegables (FASE 0)
+# Hover/click submenús, keyboard (Escape), click-outside, responsive mobile.
+block-navigation:
+  version: 1.0
+  css:
+    component:
+      css/navigation.css: {}
+  js:
+    js/behaviors/jaraba-navigation.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Block: Product Card - Tarjeta de producto con hover, badge, precio (FASE 1)
+block-product-card:
+  version: 1.0
+  css:
+    component:
+      css/product-card.css: {}
+  dependencies:
+    - core/drupal
+
+# Block: Social Links - Iconos circulares de redes sociales (FASE 1)
+block-social-links:
+  version: 1.0
+  css:
+    component:
+      css/social-links.css: {}
+  dependencies:
+    - core/drupal
+
+# Block: Contact Form - Formulario de contacto con validación visual (FASE 1)
+block-contact-form:
+  version: 1.0
+  css:
+    component:
+      css/contact-form.css: {}
+  dependencies:
+    - core/drupal
+
+# Page Builder Core - Estilos base para todos los bloques (hero, cta, grid, etc.) (FASE 1)
+page-builder-core:
+  version: 1.0
+  css:
+    component:
+      css/page-builder-core.css: {}
+  dependencies:
+    - core/drupal
+
 # GrapesJS Canvas Editor - Canvas v3 Constructor Visual Clase Mundial
 # Motor de edición drag-and-drop con inline editing y undo/redo nativo
 # v5.3: Fix GrapesJS init lifecycle, SEO guard, viewport dropdown, loading skeleton
@@ -275,6 +324,7 @@ grapesjs-canvas:
     # Archivos Jaraba custom
     js/grapesjs-jaraba-canvas.js: {}
     js/grapesjs-jaraba-thumbnails.js: {}
+    js/grapesjs-jaraba-icons.js: {}
     js/grapesjs-jaraba-blocks.js: {}
     js/grapesjs-jaraba-command-palette.js: {}
     js/grapesjs-jaraba-partials.js: {}
@@ -438,4 +488,16 @@ contrast-checker:
   dependencies:
     - core/drupal
     - core/once
+
+# Testimonials 3D Carousel - Coverflow con navegación interactiva (Dual Architecture)
+# §4.2 de la especificación: Drupal behavior para páginas públicas
+# El lado editor usa CSS 3D transforms inyectados via canvas.styles
+testimonials-3d:
+  version: 1.0
+  js:
+    js/jaraba-testimonials-3d.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_page_builder/page-builder
 

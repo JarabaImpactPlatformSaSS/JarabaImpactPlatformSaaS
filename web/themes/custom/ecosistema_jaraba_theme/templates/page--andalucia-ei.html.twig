@@ -3,9 +3,9 @@
  * @file
  * Template para la página del dashboard Andalucía +ei.
  *
- * Página full-width sin regiones Drupal, siguiendo frontend-page-pattern.
+ * Zero Region Policy — usa {{ clean_content }}.
  * El contenido del dashboard viene ya renderizado desde el controlador
- * a través de page.content que usa el theme 'andalucia_ei_dashboard'.
+ * a través de clean_content que usa el theme 'andalucia_ei_dashboard'.
  *
  * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
  */
@@ -17,14 +17,21 @@
   site_slogan: site_slogan,
   logo: logo,
   logged_in: logged_in,
-  theme_settings: theme_settings
+  theme_settings: theme_settings,
+  avatar_nav: avatar_nav|default(null)
 } only %}
 
 <main id="main-content" class="andalucia-ei-main">
   <div class="andalucia-ei-wrapper">
 
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     {# El contenido viene del controlador via theme 'andalucia_ei_dashboard' #}
-    {{ page.content }}
+    {{ clean_content }}
 
   </div>
 </main>

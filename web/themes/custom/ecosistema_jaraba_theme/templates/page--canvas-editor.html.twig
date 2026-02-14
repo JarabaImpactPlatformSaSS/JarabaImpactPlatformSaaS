@@ -5,7 +5,7 @@
  *
  * ARQUITECTURA LIMPIA:
  * - Template que REEMPLAZA completamente html.html.twig y page.html.twig
- * - Sin {{ page.* }} = Sin bloques de Drupal
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Layout full-viewport para edición visual
  * - Estilos inline con máxima prioridad
  *
@@ -131,7 +131,13 @@
 
   {# MAIN CONTENT - Full-viewport, solo el Canvas Editor #}
   <main id="main-content" class="canvas-editor-main">
-    {{ page.content }}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {{ clean_content }}
   </main>
 
   {# Drupal Required Placeholders #}

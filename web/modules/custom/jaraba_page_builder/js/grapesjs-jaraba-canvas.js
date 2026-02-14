@@ -42,10 +42,20 @@
             styles: [
                 // FE-07: CSS compilado del tema (main.css era un duplicado eliminado en PERF-02).
                 '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css',
-                // CSS específico de bloques del Page Builder (navegación, botones, etc.)
+                // CSS compilado de bloques del Page Builder (features, faq, stats, tabs, countdown, timeline, testimonials-3d, pricing).
                 '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css',
-                // Google Fonts para tipografías premium
-                'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
+                // CSS base para bloques (hero, cta, grid, buttons, media, etc.) — FASE 1.
+                '/modules/custom/jaraba_page_builder/css/page-builder-core.css',
+                // CSS independientes de bloques con SCSS propio — FASE 1.
+                '/modules/custom/jaraba_page_builder/css/navigation.css',
+                '/modules/custom/jaraba_page_builder/css/product-card.css',
+                '/modules/custom/jaraba_page_builder/css/social-links.css',
+                '/modules/custom/jaraba_page_builder/css/contact-form.css',
+                // CSS premium: Aceternity UI + Magic UI — efectos especiales (3D, parallax, glassmorphism, orbits, beams, etc.).
+                '/modules/custom/jaraba_page_builder/css/premium/aceternity.css',
+                '/modules/custom/jaraba_page_builder/css/premium/magic-ui.css',
+                // Google Fonts — Outfit (principal del SaaS) + Inter + Plus Jakarta Sans (premium).
+                'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
             ],
             scripts: [],
         },
@@ -518,11 +528,30 @@
             themeLink.href = '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css';
             doc.head.appendChild(themeLink);
 
-            // 3. Inyectar Google Fonts
+            // 3. Inyectar CSS de bloques del Page Builder
+            const pbCssFiles = [
+                '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css',
+                '/modules/custom/jaraba_page_builder/css/page-builder-core.css',
+                '/modules/custom/jaraba_page_builder/css/navigation.css',
+                '/modules/custom/jaraba_page_builder/css/product-card.css',
+                '/modules/custom/jaraba_page_builder/css/social-links.css',
+                '/modules/custom/jaraba_page_builder/css/contact-form.css',
+                '/modules/custom/jaraba_page_builder/css/premium/aceternity.css',
+                '/modules/custom/jaraba_page_builder/css/premium/magic-ui.css',
+            ];
+            pbCssFiles.forEach((cssHref, idx) => {
+                const link = doc.createElement('link');
+                link.rel = 'stylesheet';
+                link.setAttribute('data-jaraba-injected', 'pb-css-' + idx);
+                link.href = cssHref;
+                doc.head.appendChild(link);
+            });
+
+            // 4. Inyectar Google Fonts — Outfit (principal) + Inter + Plus Jakarta Sans
             const fontLink = doc.createElement('link');
             fontLink.rel = 'stylesheet';
             fontLink.setAttribute('data-jaraba-injected', 'fonts');
-            fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+            fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
             doc.head.appendChild(fontLink);
 
             console.log('Estilos del tema inyectados en el canvas de GrapesJS.');
@@ -736,20 +765,28 @@
                 themeLink.href = '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css';
                 doc.head.appendChild(themeLink);
 
-                // 3. Inyectar CSS específico de page-builder si existe
-                const pageBuilderLink = doc.createElement('link');
-                pageBuilderLink.rel = 'stylesheet';
-                pageBuilderLink.href = '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css';
-                pageBuilderLink.onerror = () => {
-                    // El archivo puede no existir, ignorar silenciosamente
-                    console.log('jaraba-page-builder.css no encontrado, usando solo main.css');
-                };
-                doc.head.appendChild(pageBuilderLink);
+                // 3. Inyectar CSS de bloques del Page Builder
+                const pbCssFiles = [
+                    '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css',
+                    '/modules/custom/jaraba_page_builder/css/page-builder-core.css',
+                    '/modules/custom/jaraba_page_builder/css/navigation.css',
+                    '/modules/custom/jaraba_page_builder/css/product-card.css',
+                    '/modules/custom/jaraba_page_builder/css/social-links.css',
+                    '/modules/custom/jaraba_page_builder/css/contact-form.css',
+                    '/modules/custom/jaraba_page_builder/css/premium/aceternity.css',
+                    '/modules/custom/jaraba_page_builder/css/premium/magic-ui.css',
+                ];
+                pbCssFiles.forEach(cssHref => {
+                    const link = doc.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = cssHref;
+                    doc.head.appendChild(link);
+                });
 
-                // 4. Inyectar Google Fonts para tipografías premium
+                // 4. Inyectar Google Fonts — Outfit (principal) + Inter + Plus Jakarta Sans
                 const fontLink = doc.createElement('link');
                 fontLink.rel = 'stylesheet';
-                fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+                fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
                 doc.head.appendChild(fontLink);
 
                 // 5. Inyectar mocks de Drupal y once() para scripts premium

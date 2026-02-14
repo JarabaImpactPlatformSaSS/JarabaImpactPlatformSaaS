@@ -157,7 +157,7 @@ class CopilotContextService
         try {
             // Buscar tenant donde el usuario es admin
             $tenants = $this->entityTypeManager->getStorage('tenant')->loadByProperties([
-                'admin_user_id' => $user->id(),
+                'admin_user' => $user->id(),
             ]);
 
             if (!empty($tenants)) {

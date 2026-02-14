@@ -1,0 +1,202 @@
+{#
+ # Admin Center Settings — Configuración Global de Plataforma.
+ #
+ # Tabbed layout with 4 sections:
+ #   1. General — Platform name, domain, email, language, timezone.
+ #   2. Planes — SaaS plan listing (read-only overview).
+ #   3. Integraciones — External service connection status.
+ #   4. API Keys — Create, list, revoke programmatic keys.
+ #
+ # Zero Region Policy: uses {{ clean_content }} not {{ page.content }}.
+ # F6 — Doc 181 / Spec f104 §FASE 7.
+ #}
+
+<div class="admin-center-settings">
+
+  {# ===== PAGE HEADER ===== #}
+  <div class="ac-page-header">
+    <div class="ac-page-header__left">
+      <h1 class="ac-page-header__title">{% trans %}Configuración{% endtrans %}</h1>
+      <p class="ac-page-header__subtitle">{% trans %}Ajustes globales de la plataforma{% endtrans %}</p>
+    </div>
+  </div>
+
+  {# ===== TAB NAVIGATION ===== #}
+  <div class="ac-settings__tabs" role="tablist">
+    <button type="button" class="ac-settings__tab ac-settings__tab--active"
+            role="tab" aria-selected="true" data-tab="general"
+            id="tab-general" aria-controls="panel-general">
+      {{ jaraba_icon('ui', 'settings', {size: 16}) }}
+      {% trans %}General{% endtrans %}
+    </button>
+    <button type="button" class="ac-settings__tab"
+            role="tab" aria-selected="false" data-tab="plans"
+            id="tab-plans" aria-controls="panel-plans">
+      {{ jaraba_icon('business', 'money', {size: 16}) }}
+      {% trans %}Planes{% endtrans %}
+    </button>
+    <button type="button" class="ac-settings__tab"
+            role="tab" aria-selected="false" data-tab="integrations"
+            id="tab-integrations" aria-controls="panel-integrations">
+      {{ jaraba_icon('ui', 'link', {size: 16}) }}
+      {% trans %}Integraciones{% endtrans %}
+    </button>
+    <button type="button" class="ac-settings__tab"
+            role="tab" aria-selected="false" data-tab="apikeys"
+            id="tab-apikeys" aria-controls="panel-apikeys">
+      {{ jaraba_icon('ui', 'lock', {size: 16}) }}
+      {% trans %}API Keys{% endtrans %}
+    </button>
+  </div>
+
+  {# ===== TAB PANELS ===== #}
+
+  {# --- GENERAL SETTINGS --- #}
+  <div class="ac-settings__panel ac-settings__panel--active"
+       role="tabpanel" id="panel-general" aria-labelledby="tab-general">
+    <form class="ac-settings__form" id="settings-general-form" novalidate>
+      <div class="ac-settings__form-grid">
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="setting-platform-name">{% trans %}Nombre de la plataforma{% endtrans %}</label>
+          <input type="text" class="ac-settings__input" id="setting-platform-name" name="platform_name"
+                 placeholder="Jaraba Impact Platform">
+        </div>
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="setting-primary-domain">{% trans %}Dominio principal{% endtrans %}</label>
+          <input type="url" class="ac-settings__input" id="setting-primary-domain" name="primary_domain"
+                 placeholder="https://jaraba.io">
+        </div>
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="setting-support-email">{% trans %}Email de soporte{% endtrans %}</label>
+          <input type="email" class="ac-settings__input" id="setting-support-email" name="support_email"
+                 placeholder="support@jaraba.io">
+        </div>
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="setting-default-language">{% trans %}Idioma por defecto{% endtrans %}</label>
+          <select class="ac-settings__select" id="setting-default-language" name="default_language">
+            <option value="es">Espa&ntilde;ol</option>
+            <option value="en">English</option>
+            <option value="ca">Catal&agrave;</option>
+            <option value="eu">Euskara</option>
+            <option value="gl">Galego</option>
+          </select>
+        </div>
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="setting-timezone">{% trans %}Zona horaria{% endtrans %}</label>
+          <select class="ac-settings__select" id="setting-timezone" name="timezone">
+            <option value="Europe/Madrid">Europe/Madrid (CET)</option>
+            <option value="Europe/London">Europe/London (GMT)</option>
+            <option value="America/New_York">America/New_York (EST)</option>
+            <option value="America/Mexico_City">America/Mexico_City (CST)</option>
+            <option value="America/Bogota">America/Bogota (COT)</option>
+            <option value="America/Buenos_Aires">America/Buenos_Aires (ART)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ac-settings__actions">
+        <button type="submit" class="ac-btn ac-btn--primary" id="btn-save-general">
+          {% trans %}Guardar cambios{% endtrans %}
+        </button>
+        <span class="ac-settings__save-status" id="save-status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+
+  {# --- BILLING PLANS --- #}
+  <div class="ac-settings__panel" role="tabpanel" id="panel-plans" aria-labelledby="tab-plans" hidden>
+    <div class="ac-settings__section-header">
+      <h2 class="ac-settings__section-title">{% trans %}Planes de suscripción{% endtrans %}</h2>
+      <p class="ac-settings__section-desc">{% trans %}Planes SaaS disponibles para los tenants.{% endtrans %}</p>
+    </div>
+    <div id="plans-list" class="ac-settings__plans-grid">
+      {# JS renders plan cards here #}
+      <div class="ac-settings__skeleton-grid">
+        <div class="ac-skeleton ac-skeleton--card"></div>
+        <div class="ac-skeleton ac-skeleton--card"></div>
+        <div class="ac-skeleton ac-skeleton--card"></div>
+      </div>
+    </div>
+  </div>
+
+  {# --- INTEGRATIONS --- #}
+  <div class="ac-settings__panel" role="tabpanel" id="panel-integrations" aria-labelledby="tab-integrations" hidden>
+    <div class="ac-settings__section-header">
+      <h2 class="ac-settings__section-title">{% trans %}Integraciones{% endtrans %}</h2>
+      <p class="ac-settings__section-desc">{% trans %}Servicios externos conectados a la plataforma.{% endtrans %}</p>
+    </div>
+    <div id="integrations-list" class="ac-settings__integrations-grid">
+      {# JS renders integration cards here #}
+      <div class="ac-settings__skeleton-grid">
+        <div class="ac-skeleton ac-skeleton--card"></div>
+        <div class="ac-skeleton ac-skeleton--card"></div>
+        <div class="ac-skeleton ac-skeleton--card"></div>
+      </div>
+    </div>
+  </div>
+
+  {# --- API KEYS --- #}
+  <div class="ac-settings__panel" role="tabpanel" id="panel-apikeys" aria-labelledby="tab-apikeys" hidden>
+    <div class="ac-settings__section-header">
+      <div class="ac-settings__section-header-left">
+        <h2 class="ac-settings__section-title">{% trans %}API Keys{% endtrans %}</h2>
+        <p class="ac-settings__section-desc">{% trans %}Claves de acceso programático a la API.{% endtrans %}</p>
+      </div>
+      <button type="button" class="ac-btn ac-btn--primary ac-btn--sm" id="btn-create-apikey">
+        {% trans %}Crear API Key{% endtrans %}
+      </button>
+    </div>
+
+    {# Create API Key inline form (hidden by default) #}
+    <div class="ac-settings__apikey-form" id="apikey-form" hidden>
+      <div class="ac-settings__apikey-form-inner">
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="apikey-label">{% trans %}Nombre{% endtrans %}</label>
+          <input type="text" class="ac-settings__input" id="apikey-label" placeholder="Mi integración">
+        </div>
+        <div class="ac-settings__field">
+          <label class="ac-settings__label" for="apikey-scope">{% trans %}Alcance{% endtrans %}</label>
+          <select class="ac-settings__select" id="apikey-scope">
+            <option value="read">{% trans %}Lectura{% endtrans %}</option>
+            <option value="write">{% trans %}Lectura + Escritura{% endtrans %}</option>
+            <option value="admin">{% trans %}Administrador{% endtrans %}</option>
+          </select>
+        </div>
+        <div class="ac-settings__apikey-form-actions">
+          <button type="button" class="ac-btn ac-btn--primary ac-btn--sm" id="btn-confirm-apikey">
+            {% trans %}Generar{% endtrans %}
+          </button>
+          <button type="button" class="ac-btn ac-btn--ghost ac-btn--sm" id="btn-cancel-apikey">
+            {% trans %}Cancelar{% endtrans %}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {# Created key display (shown once) #}
+    <div class="ac-settings__apikey-created" id="apikey-created" hidden>
+      <div class="ac-settings__apikey-created-inner">
+        <p class="ac-settings__apikey-warning">{% trans %}Copia esta clave ahora. No se mostrará de nuevo.{% endtrans %}</p>
+        <div class="ac-settings__apikey-value-wrap">
+          <code class="ac-settings__apikey-value" id="apikey-value"></code>
+          <button type="button" class="ac-btn ac-btn--ghost ac-btn--sm" id="btn-copy-apikey"
+                  aria-label="{% trans %}Copiar API Key{% endtrans %}">
+            {{ jaraba_icon('ui', 'copy', {size: 16}) }}
+          </button>
+        </div>
+        <button type="button" class="ac-btn ac-btn--ghost ac-btn--sm" id="btn-dismiss-apikey">
+          {% trans %}Entendido{% endtrans %}
+        </button>
+      </div>
+    </div>
+
+    {# API Keys table #}
+    <div id="apikeys-list">
+      <div class="ac-settings__skeleton-grid">
+        <div class="ac-skeleton ac-skeleton--row"></div>
+        <div class="ac-skeleton ac-skeleton--row"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

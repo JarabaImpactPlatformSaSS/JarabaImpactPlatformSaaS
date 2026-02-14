@@ -5,7 +5,7 @@
  *
  * ARQUITECTURA LIMPIA (patrón page--site-builder.html.twig):
  * - Full-HTML document con placeholders de Drupal
- * - Sin {{ page.* }} excepto page.content = Sin bloques heredados
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables (_header, _footer)
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -43,8 +43,14 @@
 
   {# MAIN CONTENT - Full-width dashboard layout #}
   <main id="main-content" class="dashboard-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

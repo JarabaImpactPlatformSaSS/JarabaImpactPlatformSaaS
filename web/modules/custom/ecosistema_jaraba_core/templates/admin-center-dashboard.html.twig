@@ -5,32 +5,26 @@
  *
  * Variables:
  *   - kpis: Array of KPI objects (mrr, arr, tenants, mau, churn, health_avg)
- *     Each with: value, label, format (currency|number|percent|score), trend
+ *     Each with: value, label, format (currency|number|percent|score), trend, sparkline
  *   - alerts: Array of active AlertRule entities
  *     Each with: id, label, metric, channel
  *   - tenant_stats: Aggregates (active, trial, suspended, total)
- *   - quick_links: Array of sidebar links
- *     Each with: label, url, icon, shortcut
+ *   - quick_links: Array of sidebar links (legacy — sidebar now in page template)
+ *   - activity: Array of recent activity log entries
+ *     Each with: id, type, message, severity, timestamp
  *
  * BEM structure:
  *   .admin-center
  *     .admin-center__header
  *     .admin-center__kpis
- *     .admin-center__body (.admin-center__main + .admin-center__sidebar)
- *     .admin-center__alerts
- *     .admin-center__tenants
+ *     .admin-center__grid (.admin-center__section)
  *
- * F6 — Doc 181.
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104.
  */
 #}
-
-{# Format helpers #}
-{% set format_icons = {
-  'currency': '€',
-  'number': '#',
-  'percent': '%',
-  'score': '★',
-} %}
 
 <div class="admin-center">
 
@@ -42,15 +36,20 @@
       </h1>
       <p class="admin-center__subtitle">
         {% trans %}Vista unificada de la plataforma. Pulsa{% endtrans %}
-        <kbd class="admin-center__kbd">⌘K</kbd>
+        <kbd class="admin-center__kbd">&#8984;K</kbd>
         {% trans %}para el Command Palette.{% endtrans %}
       </p>
     </div>
     <div class="admin-center__header-actions">
-      <a href="/admin/config/system/alert-rules" class="admin-center__btn admin-center__btn--secondary">
+      <a href="/admin/config/system/alert-rules"
+         class="admin-center__btn admin-center__btn--secondary"
+         data-slide-panel="alert-rules"
+         data-slide-panel-title="{% trans %}Configurar Alertas{% endtrans %}">
+        {{ jaraba_icon('ui', 'bell', { size: '16px', color: 'neutral' }) }}
         {% trans %}Configurar Alertas{% endtrans %}
       </a>
       <a href="/admin/structure/group" class="admin-center__btn admin-center__btn--primary">
+        {{ jaraba_icon('business', 'company', { size: '16px', color: 'corporate' }) }}
         {% trans %}Gestionar Tenants{% endtrans %}
       </a>
     </div>
@@ -61,12 +60,24 @@
     {% for key, kpi in kpis %}
       <div class="admin-center-kpi admin-center-kpi--{{ key }}">
         <div class="admin-center-kpi__header">
-          <span class="admin-center-kpi__format-icon">{{ format_icons[kpi.format]|default('#') }}</span>
+          <span class="admin-center-kpi__icon">
+            {% if key == 'mrr' or key == 'arr' %}
+              {{ jaraba_icon('business', 'money', { size: '18px', color: 'impulse' }) }}
+            {% elseif key == 'tenants' %}
+              {{ jaraba_icon('business', 'company', { size: '18px', color: 'innovation' }) }}
+            {% elseif key == 'mau' %}
+              {{ jaraba_icon('ui', 'users', { size: '18px', color: 'corporate' }) }}
+            {% elseif key == 'churn' %}
+              {{ jaraba_icon('analytics', 'trend-down', { size: '18px', color: 'danger' }) }}
+            {% elseif key == 'health_avg' %}
+              {{ jaraba_icon('analytics', 'gauge', { size: '18px', color: 'success' }) }}
+            {% endif %}
+          </span>
           <span class="admin-center-kpi__label">{{ kpi.label }}</span>
         </div>
         <div class="admin-center-kpi__value">
           {% if kpi.format == 'currency' %}
-            {{ kpi.value|number_format(0, ',', '.') }} €
+            {{ kpi.value|number_format(0, ',', '.') }} &euro;
           {% elseif kpi.format == 'percent' %}
             {{ kpi.value }}%
           {% elseif kpi.format == 'score' %}
@@ -77,127 +88,154 @@
         </div>
         {% if kpi.trend != 0 %}
           <div class="admin-center-kpi__trend admin-center-kpi__trend--{{ kpi.trend > 0 ? 'up' : 'down' }}">
-            {{ kpi.trend > 0 ? '↑' : '↓' }} {{ kpi.trend|abs }}%
+            {% if kpi.trend > 0 %}
+              {{ jaraba_icon('analytics', 'trend-up', { size: '14px', color: 'success' }) }}
+            {% else %}
+              {{ jaraba_icon('analytics', 'trend-down', { size: '14px', color: 'danger' }) }}
+            {% endif %}
+            {{ kpi.trend|abs }}%
           </div>
+        {% endif %}
+        {# Sparkline placeholder for chart injection (Task F1.5) #}
+        {% if kpi.sparkline is not empty %}
+          <div class="admin-center-kpi__sparkline" data-sparkline="{{ kpi.sparkline|json_encode }}"></div>
         {% endif %}
       </div>
     {% endfor %}
   </div>
 
-  {# ===== BODY: MAIN + SIDEBAR ===== #}
-  <div class="admin-center__body">
+  {# ===== GRID: TENANT STATS + ALERTS + ACTIVITY ===== #}
+  <div class="admin-center__grid">
 
-    {# --- Main Column --- #}
-    <div class="admin-center__main">
-
-      {# Tenant Stats Overview #}
-      <div class="admin-center__section">
+    {# Tenant Stats Overview #}
+    <div class="admin-center__section admin-center__section--tenants">
+      <div class="admin-center__section-header">
         <h2 class="admin-center__section-title">
+          {{ jaraba_icon('business', 'company', { size: '18px', color: 'corporate' }) }}
           {% trans %}Tenants{% endtrans %}
         </h2>
-        <div class="admin-center__tenant-stats">
-          <div class="admin-center-stat admin-center-stat--total">
-            <span class="admin-center-stat__value">{{ tenant_stats.total }}</span>
-            <span class="admin-center-stat__label">{% trans %}Total{% endtrans %}</span>
-          </div>
-          <div class="admin-center-stat admin-center-stat--active">
-            <span class="admin-center-stat__value">{{ tenant_stats.active }}</span>
-            <span class="admin-center-stat__label">{% trans %}Activos{% endtrans %}</span>
-          </div>
-          <div class="admin-center-stat admin-center-stat--trial">
-            <span class="admin-center-stat__value">{{ tenant_stats.trial }}</span>
-            <span class="admin-center-stat__label">{% trans %}En Trial{% endtrans %}</span>
-          </div>
-          <div class="admin-center-stat admin-center-stat--suspended">
-            <span class="admin-center-stat__value">{{ tenant_stats.suspended }}</span>
-            <span class="admin-center-stat__label">{% trans %}Suspendidos{% endtrans %}</span>
-          </div>
+        <a href="/admin/structure/group" class="admin-center__section-link">
+          {% trans %}Ver todos{% endtrans %} &rarr;
+        </a>
+      </div>
+      <div class="admin-center__tenant-stats">
+        <div class="admin-center-stat admin-center-stat--total">
+          <span class="admin-center-stat__value">{{ tenant_stats.total }}</span>
+          <span class="admin-center-stat__label">{% trans %}Total{% endtrans %}</span>
+        </div>
+        <div class="admin-center-stat admin-center-stat--active">
+          <span class="admin-center-stat__value">{{ tenant_stats.active }}</span>
+          <span class="admin-center-stat__label">{% trans %}Activos{% endtrans %}</span>
+        </div>
+        <div class="admin-center-stat admin-center-stat--trial">
+          <span class="admin-center-stat__value">{{ tenant_stats.trial }}</span>
+          <span class="admin-center-stat__label">{% trans %}En Trial{% endtrans %}</span>
+        </div>
+        <div class="admin-center-stat admin-center-stat--suspended">
+          <span class="admin-center-stat__value">{{ tenant_stats.suspended }}</span>
+          <span class="admin-center-stat__label">{% trans %}Suspendidos{% endtrans %}</span>
         </div>
       </div>
-
-      {# Active Alerts #}
-      <div class="admin-center__section">
-        <div class="admin-center__section-header">
-          <h2 class="admin-center__section-title">
-            {% trans %}Alertas Activas{% endtrans %}
-          </h2>
-          <a href="/admin/config/system/alert-rules" class="admin-center__section-link">
-            {% trans %}Ver todas{% endtrans %} →
-          </a>
-        </div>
-        {% if alerts is empty %}
-          <div class="admin-center__empty">
-            <p>{% trans %}No hay alertas activas. Todo funciona correctamente.{% endtrans %}</p>
-          </div>
-        {% else %}
-          <div class="admin-center__alerts-list">
-            {% for alert in alerts %}
-              <div class="admin-center-alert">
-                <div class="admin-center-alert__icon">
-                  {% if alert.channel == 'slack' %}
-                    <span title="Slack">💬</span>
-                  {% elseif alert.channel == 'email' %}
-                    <span title="Email">📧</span>
-                  {% else %}
-                    <span title="Webhook">🔔</span>
-                  {% endif %}
-                </div>
-                <div class="admin-center-alert__content">
-                  <span class="admin-center-alert__label">{{ alert.label }}</span>
-                  <span class="admin-center-alert__metric">{{ alert.metric }}</span>
-                </div>
-                <div class="admin-center-alert__channel">
-                  {{ alert.channel }}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-
     </div>
 
-    {# --- Sidebar --- #}
-    <div class="admin-center__sidebar">
-      <h2 class="admin-center__section-title">
-        {% trans %}Accesos Rapidos{% endtrans %}
-      </h2>
-      <nav class="admin-center__quick-links" aria-label="{% trans %}Accesos rapidos{% endtrans %}">
-        {% for link in quick_links %}
-          <a href="{{ link.url }}" class="admin-center-link">
-            <span class="admin-center-link__icon admin-center-link__icon--{{ link.icon }}">
-              {% if link.icon == 'building' %}🏢
-              {% elseif link.icon == 'users' %}👥
-              {% elseif link.icon == 'dollar-sign' %}💰
-              {% elseif link.icon == 'activity' %}📊
-              {% elseif link.icon == 'bar-chart' %}📈
-              {% elseif link.icon == 'bell' %}🔔
-              {% elseif link.icon == 'shield' %}🛡️
-              {% elseif link.icon == 'mail' %}📧
-              {% else %}📌
-              {% endif %}
-            </span>
-            <span class="admin-center-link__label">{{ link.label }}</span>
-            {% if link.shortcut %}
-              <kbd class="admin-center-link__shortcut">{{ link.shortcut }}</kbd>
-            {% endif %}
-          </a>
-        {% endfor %}
-      </nav>
-
-      {# Day-in-the-life workflow hints #}
-      <div class="admin-center__workflow">
-        <h3 class="admin-center__workflow-title">
-          {% trans %}Flujo Diario{% endtrans %}
-        </h3>
-        <ol class="admin-center__workflow-steps">
-          <li>{% trans %}Revisar KPIs y alertas{% endtrans %}</li>
-          <li>{% trans %}Triage de tenants en riesgo{% endtrans %}</li>
-          <li>{% trans %}Aprobar solicitudes pendientes{% endtrans %}</li>
-          <li>{% trans %}Revision financiera{% endtrans %}</li>
-          <li>{% trans %}Escalaciones de soporte{% endtrans %}</li>
-        </ol>
+    {# Active Alerts #}
+    <div class="admin-center__section admin-center__section--alerts">
+      <div class="admin-center__section-header">
+        <h2 class="admin-center__section-title">
+          {{ jaraba_icon('ui', 'bell', { size: '18px', color: 'warning' }) }}
+          {% trans %}Alertas Activas{% endtrans %}
+        </h2>
+        <a href="/admin/config/system/alert-rules" class="admin-center__section-link">
+          {% trans %}Ver todas{% endtrans %} &rarr;
+        </a>
       </div>
+      {% if alerts is empty %}
+        <div class="admin-center__empty">
+          {{ jaraba_icon('ui', 'check-circle', { size: '24px', color: 'success' }) }}
+          <p>{% trans %}No hay alertas activas. Todo funciona correctamente.{% endtrans %}</p>
+        </div>
+      {% else %}
+        <div class="admin-center__alerts-list">
+          {% for alert in alerts %}
+            <div class="admin-center-alert">
+              <div class="admin-center-alert__icon">
+                {% if alert.channel == 'slack' %}
+                  {{ jaraba_icon('ui', 'message', { size: '18px', color: 'corporate' }) }}
+                {% elseif alert.channel == 'email' %}
+                  {{ jaraba_icon('ui', 'mail', { size: '18px', color: 'impulse' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'bell', { size: '18px', color: 'warning' }) }}
+                {% endif %}
+              </div>
+              <div class="admin-center-alert__content">
+                <span class="admin-center-alert__label">{{ alert.label }}</span>
+                <span class="admin-center-alert__metric">{{ alert.metric }}</span>
+              </div>
+              <div class="admin-center-alert__channel">
+                {{ alert.channel }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Recent Activity #}
+    <div class="admin-center__section admin-center__section--activity">
+      <div class="admin-center__section-header">
+        <h2 class="admin-center__section-title">
+          {{ jaraba_icon('analytics', 'chart-bar', { size: '18px', color: 'innovation' }) }}
+          {% trans %}Actividad Reciente{% endtrans %}
+        </h2>
+      </div>
+      {% if activity is empty %}
+        <div class="admin-center__empty">
+          {{ jaraba_icon('ui', 'clock', { size: '24px', color: 'neutral' }) }}
+          <p>{% trans %}Sin actividad reciente registrada.{% endtrans %}</p>
+        </div>
+      {% else %}
+        <div class="admin-center__activity-list">
+          {% for entry in activity %}
+            <div class="admin-center-activity admin-center-activity--severity-{{ entry.severity }}">
+              <div class="admin-center-activity__icon">
+                {% if entry.severity <= 3 %}
+                  {{ jaraba_icon('ui', 'alert-triangle', { size: '16px', color: 'danger' }) }}
+                {% elseif entry.severity <= 5 %}
+                  {{ jaraba_icon('ui', 'info', { size: '16px', color: 'warning' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'check-circle', { size: '16px', color: 'success' }) }}
+                {% endif %}
+              </div>
+              <div class="admin-center-activity__content">
+                <span class="admin-center-activity__message">{{ entry.message|striptags|slice(0, 120) }}</span>
+                <span class="admin-center-activity__meta">
+                  <span class="admin-center-activity__type">{{ entry.type }}</span>
+                  <time class="admin-center-activity__time" datetime="{{ entry.timestamp|date('c') }}">
+                    {{ entry.timestamp|date('d/m H:i') }}
+                  </time>
+                </span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Day-in-the-life workflow hints #}
+    <div class="admin-center__section admin-center__section--workflow">
+      <div class="admin-center__section-header">
+        <h2 class="admin-center__section-title">
+          {{ jaraba_icon('ui', 'clipboard', { size: '18px', color: 'corporate' }) }}
+          {% trans %}Flujo Diario{% endtrans %}
+        </h2>
+      </div>
+      <ol class="admin-center__workflow-steps">
+        <li>{% trans %}Revisar KPIs y alertas{% endtrans %}</li>
+        <li>{% trans %}Triage de tenants en riesgo{% endtrans %}</li>
+        <li>{% trans %}Aprobar solicitudes pendientes{% endtrans %}</li>
+        <li>{% trans %}Revision financiera{% endtrans %}</li>
+        <li>{% trans %}Escalaciones de soporte{% endtrans %}</li>
+      </ol>
     </div>
 
   </div>

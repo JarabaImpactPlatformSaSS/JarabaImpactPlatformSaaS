@@ -1,0 +1,123 @@
+/**
+ * @file
+ * Product Card - Estilos para tarjetas de producto del Page Builder.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * Reemplaza los inline styles del componente jaraba-product-card.
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/blocks/_product-card.scss css/product-card.css --style=compressed"
+ */
+
+// ============================================================================
+// PRODUCT CARD COMPONENT
+// Tarjeta de producto con imagen, badge, precio y botón de compra
+// ============================================================================
+
+.jaraba-product {
+    background: var(--ej-surface-primary, #ffffff);
+    border-radius: var(--ej-radius-xl, 16px);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    max-width: 320px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+}
+
+// Imagen / placeholder del producto
+.jaraba-product__image {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(
+        135deg,
+        var(--ej-bg-secondary, #f1f5f9) 0%,
+        var(--ej-border-color, #e2e8f0) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// Cuerpo de la tarjeta
+.jaraba-product__body {
+    padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+// Badge / etiqueta (NUEVO, OFERTA, etc.)
+.jaraba-product__badge {
+    display: inline-block;
+    background: var(--ej-color-innovation, #00A9A5);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// Nombre del producto
+.jaraba-product__name {
+    color: var(--ej-text-primary, #1e293b);
+    margin: 0.75rem 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+// Descripción breve
+.jaraba-product__desc {
+    color: var(--ej-text-muted, #64748b);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+// Footer con precio y botón
+.jaraba-product__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+// Precio
+.jaraba-product__price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ej-color-corporate, #233D63);
+}
+
+// Botón de compra
+.jaraba-product__buy {
+    display: inline-block;
+    background: var(--ej-color-impulse, #FF8C42);
+    color: #ffffff;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--ej-radius-md, 8px);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    &:hover {
+        background: #eb7a30; // darken(#FF8C42, 8%) pre-computed
+        transform: scale(1.02);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}

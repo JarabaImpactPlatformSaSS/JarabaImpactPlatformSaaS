@@ -305,6 +305,14 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   // - Counters animados
   $attachments['#attached']['library'][] = 'jaraba_page_builder/premium-blocks';
 
+  // Aceternity UI: Glassmorphism, Card Flip 3D, Hover Glow, Video Background Hero.
+  // Usa once() y solo actúa si encuentra su selector en el DOM (zero overhead).
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/aceternity';
+
+  // Magic UI: Marquee Logos, Bento Grid, Particle Hero, Orbit Animation, Animated Background.
+  // Usa once() y solo actúa si encuentra su selector en el DOM (zero overhead).
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/magic-ui';
+
   // Sprint PB-1: Behaviors para bloques interactivos del Canvas Editor.
   // Cada behavior usa once() y solo actúa si encuentra su selector en el DOM,
   // por lo que no generan overhead en páginas sin esos bloques.
@@ -313,6 +321,19 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'jaraba_page_builder/block-tabs';
   $attachments['#attached']['library'][] = 'jaraba_page_builder/block-countdown';
   $attachments['#attached']['library'][] = 'jaraba_page_builder/block-timeline';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-navigation';
+
+  // FASE 1: SCSS components — estilos base para bloques del Page Builder.
+  // page-builder-core cubre hero, cta, grid, buttons, stats, media, etc.
+  // Los CSS-only no requieren JS, solo design tokens con CSS Custom Properties.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/page-builder-core';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-product-card';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-social-links';
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/block-contact-form';
+
+  // Testimonials 3D Carousel: navegación coverflow con Drupal behavior.
+  // Complementa los CSS 3D transforms con JS para prev/next, autoplay y swipe.
+  $attachments['#attached']['library'][] = 'jaraba_page_builder/testimonials-3d';
 
   // ============================================================
   // A/B TESTING CLIENT - Gap #2 (Doc 168)

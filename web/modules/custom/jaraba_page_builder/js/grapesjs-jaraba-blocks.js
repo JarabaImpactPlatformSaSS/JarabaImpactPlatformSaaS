@@ -87,6 +87,7 @@
                     const trait = {
                         name: key,
                         label: config.label || key,
+                        changeProp: true,
                     };
 
                     switch (config.type) {
@@ -98,7 +99,6 @@
 
                         case 'textarea':
                             trait.type = 'text';
-                            trait.changeProp = 1;
                             break;
 
                         case 'select':
@@ -329,7 +329,7 @@
                         display: flex;
                         gap: 1.5rem;
                         padding: 1rem;
-                        font-family: var(--ej-font-family, 'Inter', sans-serif);
+                        font-family: var(--ej-font-family, 'Outfit', sans-serif);
                         align-items: center;
                     `,
                 },
@@ -582,7 +582,7 @@
 
                 updateButtonStyle() {
                     const style = this.get('buttonStyle');
-                    let css = 'display: inline-block; padding: 12px 24px; font-family: var(--ej-font-family, Inter, sans-serif); font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer;';
+                    let css = 'display: inline-block; padding: 12px 24px; font-family: var(--ej-font-family, Outfit, sans-serif); font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer;';
 
                     switch (style) {
                         case 'primary':
@@ -618,21 +618,43 @@
          */
         const faqScript = function () {
             // Script que se ejecuta en el canvas y en el HTML exportado
-            const items = this.querySelectorAll('.jaraba-faq__item');
-            items.forEach(function (item) {
-                const button = item.querySelector('.jaraba-faq__toggle');
-                const answer = item.querySelector('.jaraba-faq__answer');
-                const icon = button ? button.querySelector('span') : null;
+            var el = this;
+            var items = el.querySelectorAll('.jaraba-faq__item');
 
-                if (button && answer) {
-                    button.addEventListener('click', function () {
-                        const isOpen = item.classList.toggle('jaraba-faq__item--open');
-                        if (icon) {
-                            icon.textContent = isOpen ? '−' : '+';
-                        }
-                        answer.style.maxHeight = isOpen ? answer.scrollHeight + 'px' : '0';
-                    });
+            items.forEach(function (item, index) {
+                var button = item.querySelector('.jaraba-faq__toggle');
+                var answer = item.querySelector('.jaraba-faq__answer');
+                var icon = button ? button.querySelector('.jaraba-faq__icon') || button.querySelector('span') : null;
+
+                if (!button || !answer) return;
+
+                // ARIA: atributos de accesibilidad
+                var answerId = answer.id || ('faq-answer-' + Date.now() + '-' + index);
+                answer.id = answerId;
+                button.setAttribute('role', 'button');
+                button.setAttribute('tabindex', '0');
+                button.setAttribute('aria-expanded', item.classList.contains('jaraba-faq__item--open') ? 'true' : 'false');
+                button.setAttribute('aria-controls', answerId);
+                answer.setAttribute('role', 'region');
+                answer.setAttribute('aria-hidden', item.classList.contains('jaraba-faq__item--open') ? 'false' : 'true');
+
+                function toggleItem() {
+                    var isOpen = item.classList.toggle('jaraba-faq__item--open');
+                    button.setAttribute('aria-expanded', String(isOpen));
+                    answer.setAttribute('aria-hidden', String(!isOpen));
+                    if (icon) {
+                        icon.textContent = isOpen ? '−' : '+';
+                    }
+                    answer.style.maxHeight = isOpen ? answer.scrollHeight + 'px' : '0';
                 }
+
+                button.addEventListener('click', toggleItem);
+                button.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleItem();
+                    }
+                });
             });
         };
 
@@ -753,14 +775,15 @@
 
                     let html = `<h2 style="text-align: center; color: var(--ej-text-primary, #1e293b); margin-bottom: 2rem;">${title}</h2>`;
 
-                    items.forEach((item) => {
+                    items.forEach((item, index) => {
+                        var answerId = 'faq-a-' + Date.now() + '-' + index;
                         html += `
                             <div class="jaraba-faq__item" style="border-bottom: 1px solid var(--ej-border-color, #e2e8f0); padding: 1.25rem 0;">
-                                <button class="jaraba-faq__toggle" style="display: flex; justify-content: space-between; width: 100%; background: none; border: none; cursor: pointer; font-size: 1.125rem; font-weight: 600; color: var(--ej-text-primary, #1e293b); text-align: left; padding: 0;">
+                                <button class="jaraba-faq__toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="${answerId}" style="display: flex; justify-content: space-between; width: 100%; background: none; border: none; cursor: pointer; font-size: 1.125rem; font-weight: 600; color: var(--ej-text-primary, #1e293b); text-align: left; padding: 0;">
                                     ${item.question}
-                                    <span style="font-size: 1.5rem; line-height: 1; transition: transform 0.2s;">+</span>
+                                    <span class="jaraba-faq__icon" style="font-size: 1.5rem; line-height: 1; transition: transform 0.2s;" aria-hidden="true">+</span>
                                 </button>
-                                <div class="jaraba-faq__answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;">
+                                <div class="jaraba-faq__answer" id="${answerId}" role="region" aria-hidden="true" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;">
                                     <p style="color: var(--ej-text-muted, #64748b); margin: 0; padding-top: 1rem; line-height: 1.6;">${item.answer}</p>
                                 </div>
                             </div>`;
@@ -1179,29 +1202,59 @@
          * Alterna la visualización de precios entre mensual y anual.
          */
         const pricingToggleScript = function () {
-            const el = this;
-            const options = el.querySelectorAll('.jaraba-pricing-toggle__option');
-            const indicator = el.querySelector('.jaraba-pricing-toggle__indicator');
+            var el = this;
+            var options = el.querySelectorAll('.jaraba-pricing-toggle__option');
 
-            options.forEach(function (option, index) {
-                option.addEventListener('click', function () {
-                    // Actualizar estados activos
-                    options.forEach(function (opt) {
-                        opt.classList.remove('jaraba-pricing-toggle__option--active');
-                        opt.style.color = 'var(--ej-text-muted, #64748b)';
-                        opt.style.background = 'transparent';
-                    });
-                    option.classList.add('jaraba-pricing-toggle__option--active');
-                    option.style.color = 'white';
-                    option.style.background = 'var(--ej-color-corporate, #233D63)';
-
-                    // Emitir evento custom para que otros componentes reaccionen
-                    const period = option.getAttribute('data-period');
-                    el.dispatchEvent(new CustomEvent('jaraba:pricing-change', {
-                        bubbles: true,
-                        detail: { period: period },
-                    }));
+            function activateOpt(activeOption) {
+                options.forEach(function (opt) {
+                    opt.classList.remove('jaraba-pricing-toggle__option--active');
+                    opt.style.color = 'var(--ej-text-muted, #64748b)';
+                    opt.style.background = 'transparent';
+                    opt.setAttribute('aria-checked', 'false');
+                    opt.setAttribute('tabindex', '-1');
                 });
+                activeOption.classList.add('jaraba-pricing-toggle__option--active');
+                activeOption.style.color = 'white';
+                activeOption.style.background = 'var(--ej-color-corporate, #233D63)';
+                activeOption.setAttribute('aria-checked', 'true');
+                activeOption.setAttribute('tabindex', '0');
+
+                var period = activeOption.getAttribute('data-period');
+                el.dispatchEvent(new CustomEvent('jaraba:pricing-change', {
+                    bubbles: true,
+                    detail: { period: period },
+                }));
+            }
+
+            // ARIA: inicializar roles
+            options.forEach(function (option) {
+                option.setAttribute('role', 'radio');
+                var isActive = option.classList.contains('jaraba-pricing-toggle__option--active');
+                option.setAttribute('aria-checked', String(isActive));
+                option.setAttribute('tabindex', isActive ? '0' : '-1');
+
+                option.addEventListener('click', function () {
+                    activateOpt(option);
+                });
+            });
+
+            // Keyboard: Enter, Space, Arrow keys
+            el.addEventListener('keydown', function (e) {
+                var target = e.target.closest('.jaraba-pricing-toggle__option');
+                if (!target) return;
+                var arr = Array.from(options);
+                var idx = arr.indexOf(target);
+
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activateOpt(target);
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activateOpt(arr[(idx + 1) % arr.length]);
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activateOpt(arr[(idx - 1 + arr.length) % arr.length]);
+                }
             });
         };
 
@@ -1484,7 +1537,23 @@
             }
 
             updateCountdown();
-            setInterval(updateCountdown, 1000);
+            // Almacenar ID del intervalo para poder limpiarlo al destruir el componente
+            var intervalId = setInterval(updateCountdown, 1000);
+            // Limpiar intervalo si el elemento se elimina del DOM (MutationObserver)
+            if (typeof MutationObserver !== 'undefined' && el.parentNode) {
+                var mo = new MutationObserver(function (mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                        for (var j = 0; j < mutations[i].removedNodes.length; j++) {
+                            if (mutations[i].removedNodes[j] === el || mutations[i].removedNodes[j].contains(el)) {
+                                clearInterval(intervalId);
+                                mo.disconnect();
+                                return;
+                            }
+                        }
+                    }
+                });
+                mo.observe(el.parentNode, { childList: true, subtree: true });
+            }
         };
 
         /**
@@ -1761,12 +1830,12 @@
                     productBuyUrl: '#',
                     productCurrency: '€',
                     traits: [
-                        { type: 'text', name: 'productName', label: Drupal.t('Nombre') },
-                        { type: 'text', name: 'productPrice', label: Drupal.t('Precio') },
-                        { type: 'text', name: 'productCurrency', label: Drupal.t('Moneda') },
-                        { type: 'text', name: 'productBadge', label: Drupal.t('Etiqueta') },
-                        { type: 'text', name: 'productDesc', label: Drupal.t('Descripción') },
-                        { type: 'text', name: 'productBuyUrl', label: Drupal.t('URL Compra') },
+                        { type: 'text', name: 'productName', label: Drupal.t('Nombre'), changeProp: true },
+                        { type: 'text', name: 'productPrice', label: Drupal.t('Precio'), changeProp: true },
+                        { type: 'text', name: 'productCurrency', label: Drupal.t('Moneda'), changeProp: true },
+                        { type: 'text', name: 'productBadge', label: Drupal.t('Etiqueta'), changeProp: true },
+                        { type: 'text', name: 'productDesc', label: Drupal.t('Descripción'), changeProp: true },
+                        { type: 'text', name: 'productBuyUrl', label: Drupal.t('URL Compra'), changeProp: true },
                     ],
                 },
                 getProductHtml() {
@@ -1776,7 +1845,7 @@
                     const badge = this.get('productBadge');
                     const desc = this.get('productDesc');
                     const buyUrl = this.get('productBuyUrl');
-                    return '<div style="aspect-ratio: 4/3; background: linear-gradient(135deg, var(--ej-bg-secondary, #f1f5f9) 0%, var(--ej-border-color, #e2e8f0) 100%); display: flex; align-items: center; justify-content: center;"><span style="font-size: 3rem; opacity: 0.5;">📦</span></div>' +
+                    return '<div style="aspect-ratio: 4/3; background: linear-gradient(135deg, var(--ej-bg-secondary, #f1f5f9) 0%, var(--ej-border-color, #e2e8f0) 100%); display: flex; align-items: center; justify-content: center;"><span style="font-size: 3rem; opacity: 0.5;">' + Drupal.jarabaIcons.get('package', '📦') + '</span></div>' +
                         '<div style="padding: 1.5rem;">' +
                         '<span style="background: var(--ej-color-innovation, #00A9A5); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600;">' + badge + '</span>' +
                         '<h4 style="color: var(--ej-text-primary, #1e293b); margin: 0.75rem 0 0.5rem; font-size: 1.125rem;">' + name + '</h4>' +
@@ -1825,11 +1894,11 @@
                     linkedinUrl: 'https://linkedin.com',
                     youtubeUrl: 'https://youtube.com',
                     traits: [
-                        { type: 'text', name: 'facebookUrl', label: Drupal.t('Facebook URL') },
-                        { type: 'text', name: 'twitterUrl', label: Drupal.t('X / Twitter URL') },
-                        { type: 'text', name: 'instagramUrl', label: Drupal.t('Instagram URL') },
-                        { type: 'text', name: 'linkedinUrl', label: Drupal.t('LinkedIn URL') },
-                        { type: 'text', name: 'youtubeUrl', label: Drupal.t('YouTube URL') },
+                        { type: 'text', name: 'facebookUrl', label: Drupal.t('Facebook URL'), changeProp: true },
+                        { type: 'text', name: 'twitterUrl', label: Drupal.t('X / Twitter URL'), changeProp: true },
+                        { type: 'text', name: 'instagramUrl', label: Drupal.t('Instagram URL'), changeProp: true },
+                        { type: 'text', name: 'linkedinUrl', label: Drupal.t('LinkedIn URL'), changeProp: true },
+                        { type: 'text', name: 'youtubeUrl', label: Drupal.t('YouTube URL'), changeProp: true },
                     ],
                 },
                 getSocialHtml() {
@@ -1880,12 +1949,12 @@
                     showPhone: false,
                     buttonText: Drupal.t('Enviar Mensaje'),
                     traits: [
-                        { type: 'text', name: 'contactTitle', label: Drupal.t('Título') },
-                        { type: 'text', name: 'contactSubtitle', label: Drupal.t('Subtítulo') },
-                        { type: 'text', name: 'contactEmail', label: Drupal.t('Email destino') },
-                        { type: 'checkbox', name: 'showName', label: Drupal.t('Campo Nombre') },
-                        { type: 'checkbox', name: 'showPhone', label: Drupal.t('Campo Teléfono') },
-                        { type: 'text', name: 'buttonText', label: Drupal.t('Texto botón') },
+                        { type: 'text', name: 'contactTitle', label: Drupal.t('Título'), changeProp: true },
+                        { type: 'text', name: 'contactSubtitle', label: Drupal.t('Subtítulo'), changeProp: true },
+                        { type: 'text', name: 'contactEmail', label: Drupal.t('Email destino'), changeProp: true },
+                        { type: 'checkbox', name: 'showName', label: Drupal.t('Campo Nombre'), changeProp: true },
+                        { type: 'checkbox', name: 'showPhone', label: Drupal.t('Campo Teléfono'), changeProp: true },
+                        { type: 'text', name: 'buttonText', label: Drupal.t('Texto botón'), changeProp: true },
                     ],
                 },
                 getFormHtml() {
@@ -1951,18 +2020,18 @@
                     pricingCurrency: '€',
                     pricingPeriod: Drupal.t('/mes'),
                     traits: [
-                        { type: 'text', name: 'pricingCurrency', label: Drupal.t('Moneda') },
-                        { type: 'text', name: 'pricingPeriod', label: Drupal.t('Período') },
-                        { type: 'text', name: 'plan1Name', label: Drupal.t('Plan 1 - Nombre') },
-                        { type: 'text', name: 'plan1Price', label: Drupal.t('Plan 1 - Precio') },
-                        { type: 'text', name: 'plan1Features', label: Drupal.t('Plan 1 - Features (coma)') },
-                        { type: 'text', name: 'plan2Name', label: Drupal.t('Plan 2 - Nombre') },
-                        { type: 'text', name: 'plan2Price', label: Drupal.t('Plan 2 - Precio') },
-                        { type: 'text', name: 'plan2Features', label: Drupal.t('Plan 2 - Features (coma)') },
-                        { type: 'checkbox', name: 'plan2Featured', label: Drupal.t('Plan 2 - Destacado') },
-                        { type: 'text', name: 'plan3Name', label: Drupal.t('Plan 3 - Nombre') },
-                        { type: 'text', name: 'plan3Price', label: Drupal.t('Plan 3 - Precio') },
-                        { type: 'text', name: 'plan3Features', label: Drupal.t('Plan 3 - Features (coma)') },
+                        { type: 'text', name: 'pricingCurrency', label: Drupal.t('Moneda'), changeProp: true },
+                        { type: 'text', name: 'pricingPeriod', label: Drupal.t('Período'), changeProp: true },
+                        { type: 'text', name: 'plan1Name', label: Drupal.t('Plan 1 - Nombre'), changeProp: true },
+                        { type: 'text', name: 'plan1Price', label: Drupal.t('Plan 1 - Precio'), changeProp: true },
+                        { type: 'text', name: 'plan1Features', label: Drupal.t('Plan 1 - Features (coma)'), changeProp: true },
+                        { type: 'text', name: 'plan2Name', label: Drupal.t('Plan 2 - Nombre'), changeProp: true },
+                        { type: 'text', name: 'plan2Price', label: Drupal.t('Plan 2 - Precio'), changeProp: true },
+                        { type: 'text', name: 'plan2Features', label: Drupal.t('Plan 2 - Features (coma)'), changeProp: true },
+                        { type: 'checkbox', name: 'plan2Featured', label: Drupal.t('Plan 2 - Destacado'), changeProp: true },
+                        { type: 'text', name: 'plan3Name', label: Drupal.t('Plan 3 - Nombre'), changeProp: true },
+                        { type: 'text', name: 'plan3Price', label: Drupal.t('Plan 3 - Precio'), changeProp: true },
+                        { type: 'text', name: 'plan3Features', label: Drupal.t('Plan 3 - Features (coma)'), changeProp: true },
                     ],
                 },
                 getPlanCardHtml(name, price, features, isFeatured) {
@@ -2095,7 +2164,7 @@
                 id: 'paragraph',
                 label: Drupal.t('Párrafo'),
                 category: 'basic',
-                content: `<p style="font-family: var(--ej-font-family, 'Inter', sans-serif); font-size: 1rem; line-height: 1.6; color: var(--ej-text-muted, #475569); margin-bottom: 1rem;">${Drupal.t('Este es un párrafo de texto. Haz doble clic para editarlo.')}</p>`,
+                content: `<p style="font-family: var(--ej-font-family, 'Outfit', sans-serif); font-size: 1rem; line-height: 1.6; color: var(--ej-text-muted, #475569); margin-bottom: 1rem;">${Drupal.t('Este es un párrafo de texto. Haz doble clic para editarlo.')}</p>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 6h16M4 10h16M4 14h10"/>
                 </svg>`,
@@ -2104,7 +2173,7 @@
                 id: 'text-block',
                 label: Drupal.t('Bloque de Texto'),
                 category: 'basic',
-                content: `<div style="font-family: var(--ej-font-family, 'Inter', sans-serif); color: var(--ej-text-muted, #475569); padding: 1rem;">
+                content: `<div style="font-family: var(--ej-font-family, 'Outfit', sans-serif); color: var(--ej-text-muted, #475569); padding: 1rem;">
                     <p style="margin-bottom: 0.75rem;">${Drupal.t('Primer párrafo del bloque de texto.')}</p>
                     <p>${Drupal.t('Segundo párrafo. Edita este contenido.')}</p>
                 </div>`,
@@ -2138,7 +2207,7 @@
                 id: 'link',
                 label: Drupal.t('Enlace'),
                 category: 'basic',
-                content: `<a href="#" style="color: var(--ej-color-innovation, #00A9A5); font-family: var(--ej-font-family, 'Inter', sans-serif); text-decoration: underline; transition: opacity 0.2s;">${Drupal.t('Enlace de texto')}</a>`,
+                content: `<a href="#" style="color: var(--ej-color-innovation, #00A9A5); font-family: var(--ej-font-family, 'Outfit', sans-serif); text-decoration: underline; transition: opacity 0.2s;">${Drupal.t('Enlace de texto')}</a>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
                     <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
@@ -2214,15 +2283,15 @@
                 category: 'layout',
                 content: `<div class="jaraba-grid jaraba-grid--3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 2rem;">
                     <div class="jaraba-grid__col" style="background: var(--ej-bg-secondary, #f8fafc); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">🚀</span>
+                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">${Drupal.jarabaIcons.get('rocket', '🚀')}</span>
                         <h4 style="color: var(--ej-text-primary, #1e293b);">${Drupal.t('Característica 1')}</h4>
                     </div>
                     <div class="jaraba-grid__col" style="background: var(--ej-bg-secondary, #f8fafc); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">💡</span>
+                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">${Drupal.jarabaIcons.get('sparkles', '💡')}</span>
                         <h4 style="color: var(--ej-text-primary, #1e293b);">${Drupal.t('Característica 2')}</h4>
                     </div>
                     <div class="jaraba-grid__col" style="background: var(--ej-bg-secondary, #f8fafc); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">⭐</span>
+                        <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">${Drupal.jarabaIcons.get('star', '⭐')}</span>
                         <h4 style="color: var(--ej-text-primary, #1e293b);">${Drupal.t('Característica 3')}</h4>
                     </div>
                 </div>`,
@@ -2394,7 +2463,7 @@
                 category: 'team',
                 content: `<div class="jaraba-team-member" style="text-align: center; max-width: 280px;">
                     <div style="width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, var(--ej-color-innovation, #00A9A5) 100%); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 4rem; color: white; opacity: 0.8;">👤</span>
+                        <span style="font-size: 4rem; color: white; opacity: 0.8;">${Drupal.jarabaIcons.get('user', '👤')}</span>
                     </div>
                     <h3 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.25rem; font-size: 1.25rem;">${Drupal.t('Ana García')}</h3>
                     <p style="color: var(--ej-color-innovation, #00A9A5); font-weight: 500; margin-bottom: 1rem;">${Drupal.t('Directora de Innovación')}</p>
@@ -2425,14 +2494,14 @@
                         </div>
                         <div style="background: white; border: 1px solid var(--ej-border-color, #e2e8f0); border-radius: 12px; padding: 2rem; text-align: center;">
                             <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5) 0%, var(--ej-color-corporate, #233D63) 100%); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 1.75rem; color: white;">🔒</span>
+                                <span style="font-size: 1.75rem; color: white;">${Drupal.jarabaIcons.get('lock', '🔒')}</span>
                             </div>
                             <h3 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.75rem;">${Drupal.t('Seguro')}</h3>
                             <p style="color: var(--ej-text-muted, #64748b); font-size: 0.9rem;">${Drupal.t('Protección de datos de nivel empresarial.')}</p>
                         </div>
                         <div style="background: white; border: 1px solid var(--ej-border-color, #e2e8f0); border-radius: 12px; padding: 2rem; text-align: center;">
                             <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5) 0%, var(--ej-color-corporate, #233D63) 100%); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 1.75rem; color: white;">🎯</span>
+                                <span style="font-size: 1.75rem; color: white;">${Drupal.jarabaIcons.get('target', '🎯')}</span>
                             </div>
                             <h3 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.75rem;">${Drupal.t('Preciso')}</h3>
                             <p style="color: var(--ej-text-muted, #64748b); font-size: 0.9rem;">${Drupal.t('Resultados exactos gracias a IA avanzada.')}</p>
@@ -2478,7 +2547,7 @@
                         <a href="#" style="background: var(--ej-color-impulse, #FF8C42); color: white; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; width: fit-content;">${Drupal.t('Reclamar Oferta')}</a>
                     </div>
                     <div style="background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5) 0%, var(--ej-color-corporate, #233D63) 100%); display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 8rem; opacity: 0.3;">🎁</span>
+                        <span style="font-size: 8rem; opacity: 0.3;">${Drupal.jarabaIcons.get('gift', '🎁')}</span>
                     </div>
                 </section>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2741,7 +2810,7 @@
                     </div>
                     <div style="text-align: center;">
                         <div style="width: 64px; height: 64px; background: var(--ej-color-innovation, #00A9A5); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                            <span style="font-size: 1.5rem; color: white;">✉️</span>
+                            <span style="font-size: 1.5rem; color: white;">${Drupal.jarabaIcons.get('mail', '✉️')}</span>
                         </div>
                         <h4 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Email')}</h4>
                         <p style="color: var(--ej-text-muted, #64748b); font-size: 0.9rem; margin: 0;">hola@ejemplo.com</p>
@@ -2767,7 +2836,7 @@
                         </ul>
                     </div>
                     <div style="background: white; padding: 3rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">${Drupal.jarabaIcons.get('calendar', '📅')}</div>
                         <a href="#" style="background: var(--ej-color-impulse, #FF8C42); color: white; padding: 1rem 2rem; border-radius: 10px; text-decoration: none; font-weight: 600;">${Drupal.t('Ver Disponibilidad')}</a>
                     </div>
                 </section>`,
@@ -2788,16 +2857,16 @@
                 category: 'media',
                 content: `<section class="jaraba-media jaraba-media--gallery" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 200px); gap: 1rem; padding: 2rem;">
                     <div style="background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, var(--ej-color-innovation, #00A9A5) 100%); border-radius: 12px; grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 3rem; opacity: 0.5;">🖼️</span>
+                        <span style="font-size: 3rem; opacity: 0.5;">${Drupal.jarabaIcons.get('image', '🖼️')}</span>
                     </div>
                     <div style="background: var(--ej-bg-secondary, #f1f5f9); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 2rem; opacity: 0.5;">🖼️</span>
+                        <span style="font-size: 2rem; opacity: 0.5;">${Drupal.jarabaIcons.get('image', '🖼️')}</span>
                     </div>
                     <div style="background: var(--ej-bg-secondary, #f1f5f9); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 2rem; opacity: 0.5;">🖼️</span>
+                        <span style="font-size: 2rem; opacity: 0.5;">${Drupal.jarabaIcons.get('image', '🖼️')}</span>
                     </div>
                     <div style="background: var(--ej-bg-secondary, #f1f5f9); border-radius: 12px; grid-column: span 2; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 2rem; opacity: 0.5;">🖼️</span>
+                        <span style="font-size: 2rem; opacity: 0.5;">${Drupal.jarabaIcons.get('image', '🖼️')}</span>
                     </div>
                 </section>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2863,17 +2932,17 @@
                     <h2 style="text-align: center; color: var(--ej-text-primary, #1e293b); margin-bottom: 2rem;">${Drupal.t('Productos Destacados')}</h2>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1000px; margin: 0 auto;">
                         <div style="background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;">
-                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">📦</span></div>
+                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">${Drupal.jarabaIcons.get('package', '📦')}</span></div>
                             <h4 style="margin: 0 0 0.5rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Producto 1')}</h4>
                             <span style="font-weight: 700; color: var(--ej-color-corporate, #233D63);">€29</span>
                         </div>
                         <div style="background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;">
-                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">📦</span></div>
+                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">${Drupal.jarabaIcons.get('package', '📦')}</span></div>
                             <h4 style="margin: 0 0 0.5rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Producto 2')}</h4>
                             <span style="font-weight: 700; color: var(--ej-color-corporate, #233D63);">€49</span>
                         </div>
                         <div style="background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;">
-                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">📦</span></div>
+                            <div style="aspect-ratio: 1; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;"><span style="font-size: 2rem;">${Drupal.jarabaIcons.get('package', '📦')}</span></div>
                             <h4 style="margin: 0 0 0.5rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Producto 3')}</h4>
                             <span style="font-weight: 700; color: var(--ej-color-corporate, #233D63);">€39</span>
                         </div>
@@ -2979,15 +3048,15 @@
                         <span style="font-size: 0.75rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('SSL Seguro')}</span>
                     </div>
                     <div style="text-align: center;">
-                        <div style="width: 64px; height: 64px; background: var(--ej-color-corporate, #233D63); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">🔒</span></div>
+                        <div style="width: 64px; height: 64px; background: var(--ej-color-corporate, #233D63); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">${Drupal.jarabaIcons.get('lock', '🔒')}</span></div>
                         <span style="font-size: 0.75rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Pago Seguro')}</span>
                     </div>
                     <div style="text-align: center;">
-                        <div style="width: 64px; height: 64px; background: var(--ej-color-impulse, #FF8C42); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">⭐</span></div>
+                        <div style="width: 64px; height: 64px; background: var(--ej-color-impulse, #FF8C42); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">${Drupal.jarabaIcons.get('star', '⭐')}</span></div>
                         <span style="font-size: 0.75rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('4.9/5 Rating')}</span>
                     </div>
                     <div style="text-align: center;">
-                        <div style="width: 64px; height: 64px; background: var(--ej-color-passion, #E63946); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">🎁</span></div>
+                        <div style="width: 64px; height: 64px; background: var(--ej-color-passion, #E63946); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;"><span style="color: white; font-size: 1.5rem;">${Drupal.jarabaIcons.get('gift', '🎁')}</span></div>
                         <span style="font-size: 0.75rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Garantía 30 días')}</span>
                     </div>
                 </div>`,
@@ -2999,53 +3068,20 @@
          * Bloques Advanced - Contenido Avanzado
          */
         const advancedBlocks = [
+            // FASE 2: Redirigido al componente interactivo jaraba-timeline (con scroll animation).
             {
                 id: 'timeline',
                 label: Drupal.t('Timeline'),
                 category: 'advanced',
-                content: `<div class="jaraba-timeline" style="padding: 2rem; max-width: 600px;">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                        <div style="width: 12px; height: 12px; background: var(--ej-color-innovation, #00A9A5); border-radius: 50%; margin-top: 5px; flex-shrink: 0;"></div>
-                        <div style="border-left: 2px solid var(--ej-border-color, #e2e8f0); padding-left: 1.5rem; padding-bottom: 2rem;">
-                            <span style="color: var(--ej-color-innovation, #00A9A5); font-size: 0.75rem; font-weight: 600;">2024</span>
-                            <h4 style="margin: 0.5rem 0; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Hito 1')}</h4>
-                            <p style="color: var(--ej-text-muted, #64748b); margin: 0; font-size: 0.9rem;">${Drupal.t('Descripción del primer hito.')}</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                        <div style="width: 12px; height: 12px; background: var(--ej-color-corporate, #233D63); border-radius: 50%; margin-top: 5px; flex-shrink: 0;"></div>
-                        <div style="border-left: 2px solid var(--ej-border-color, #e2e8f0); padding-left: 1.5rem; padding-bottom: 2rem;">
-                            <span style="color: var(--ej-color-corporate, #233D63); font-size: 0.75rem; font-weight: 600;">2025</span>
-                            <h4 style="margin: 0.5rem 0; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Hito 2')}</h4>
-                            <p style="color: var(--ej-text-muted, #64748b); margin: 0; font-size: 0.9rem;">${Drupal.t('Descripción del segundo hito.')}</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 1rem;">
-                        <div style="width: 12px; height: 12px; background: var(--ej-color-impulse, #FF8C42); border-radius: 50%; margin-top: 5px; flex-shrink: 0;"></div>
-                        <div style="padding-left: 1.5rem;">
-                            <span style="color: var(--ej-color-impulse, #FF8C42); font-size: 0.75rem; font-weight: 600;">2026</span>
-                            <h4 style="margin: 0.5rem 0; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Hito 3')}</h4>
-                            <p style="color: var(--ej-text-muted, #64748b); margin: 0; font-size: 0.9rem;">${Drupal.t('Descripción del tercer hito.')}</p>
-                        </div>
-                    </div>
-                </div>`,
+                content: { type: 'jaraba-timeline' },
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><path d="M12 7v3M12 14v3"/></svg>`,
             },
+            // FASE 2: Redirigido al componente interactivo jaraba-tabs (con ARIA + keyboard).
             {
                 id: 'tabs-content',
                 label: Drupal.t('Tabs Contenido'),
                 category: 'advanced',
-                content: `<div class="jaraba-tabs" style="max-width: 700px;">
-                    <div style="display: flex; border-bottom: 2px solid var(--ej-border-color, #e2e8f0);">
-                        <button style="padding: 1rem 2rem; background: none; border: none; border-bottom: 2px solid var(--ej-color-corporate, #233D63); margin-bottom: -2px; color: var(--ej-color-corporate, #233D63); font-weight: 600; cursor: pointer;">${Drupal.t('Tab 1')}</button>
-                        <button style="padding: 1rem 2rem; background: none; border: none; color: var(--ej-text-muted, #64748b); cursor: pointer;">${Drupal.t('Tab 2')}</button>
-                        <button style="padding: 1rem 2rem; background: none; border: none; color: var(--ej-text-muted, #64748b); cursor: pointer;">${Drupal.t('Tab 3')}</button>
-                    </div>
-                    <div style="padding: 2rem; background: var(--ej-bg-secondary, #f8fafc);">
-                        <h4 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Contenido Tab 1')}</h4>
-                        <p style="color: var(--ej-text-muted, #64748b); margin: 0;">${Drupal.t('Este es el contenido del primer tab. Haz clic para cambiar.')}</p>
-                    </div>
-                </div>`,
+                content: { type: 'jaraba-tabs' },
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h4M12 6h8M4 12h8M14 12h6M4 18h6M12 18h8"/></svg>`,
             },
             {
@@ -3122,29 +3158,19 @@ const example = () => {
                 category: 'utilities',
                 content: `<div class="jaraba-alert" style="background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42) 0%, var(--ej-color-passion, #E63946) 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="font-size: 1.25rem;">🎉</span>
+                        <span style="font-size: 1.25rem;">${Drupal.jarabaIcons.get('celebration', '🎉')}</span>
                         <span style="font-weight: 600;">${Drupal.t('¡Oferta especial! 20% de descuento este fin de semana')}</span>
                     </div>
                     <button style="background: white; color: var(--ej-color-impulse, #FF8C42); border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer;">${Drupal.t('Ver Oferta')}</button>
                 </div>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>`,
             },
+            // FASE 2: Redirigido al componente interactivo jaraba-countdown (timer en tiempo real).
             {
                 id: 'countdown',
                 label: Drupal.t('Countdown'),
                 category: 'utilities',
-                content: `<div class="jaraba-countdown" style="text-align: center; padding: 3rem 2rem; background: var(--ej-color-corporate, #233D63); color: white; border-radius: 16px;">
-                    <p style="margin-bottom: 1.5rem; opacity: 0.9;">${Drupal.t('La oferta termina en:')}</p>
-                    <div style="display: flex; justify-content: center; gap: 1.5rem;">
-                        <div><span style="font-size: 3rem; font-weight: 800; display: block;">02</span><span style="font-size: 0.75rem; opacity: 0.7;">${Drupal.t('DÍAS')}</span></div>
-                        <span style="font-size: 3rem; font-weight: 300; opacity: 0.5;">:</span>
-                        <div><span style="font-size: 3rem; font-weight: 800; display: block;">14</span><span style="font-size: 0.75rem; opacity: 0.7;">${Drupal.t('HORAS')}</span></div>
-                        <span style="font-size: 3rem; font-weight: 300; opacity: 0.5;">:</span>
-                        <div><span style="font-size: 3rem; font-weight: 800; display: block;">32</span><span style="font-size: 0.75rem; opacity: 0.7;">${Drupal.t('MIN')}</span></div>
-                        <span style="font-size: 3rem; font-weight: 300; opacity: 0.5;">:</span>
-                        <div><span style="font-size: 3rem; font-weight: 800; display: block;">15</span><span style="font-size: 0.75rem; opacity: 0.7;">${Drupal.t('SEG')}</span></div>
-                    </div>
-                </div>`,
+                content: { type: 'jaraba-countdown' },
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>`,
             },
             {
@@ -3214,7 +3240,7 @@ const example = () => {
                 category: 'premium',
                 content: `<div class="jaraba-glass" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 2.5rem; max-width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
                     <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-corporate, #233D63)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
-                        <span style="color: white; font-size: 1.5rem;">✨</span>
+                        <span style="color: white; font-size: 1.5rem;">${Drupal.jarabaIcons.get('sparkles', '✨')}</span>
                     </div>
                     <h3 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 1rem; font-size: 1.5rem;">${Drupal.t('Diseño Premium')}</h3>
                     <p style="color: var(--ej-text-muted, #64748b); margin-bottom: 1.5rem; line-height: 1.6;">${Drupal.t('Efecto glassmorphism con desenfoque de fondo para interfaces modernas y elegantes.')}</p>
@@ -3247,7 +3273,7 @@ const example = () => {
                 content: `<div class="jaraba-flip" style="perspective: 1000px; width: 300px; height: 400px;">
                     <div style="position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d;">
                         <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), var(--ej-color-innovation, #00A9A5)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
-                            <span style="font-size: 4rem; margin-bottom: 1rem;">🎯</span>
+                            <span style="font-size: 4rem; margin-bottom: 1rem;">${Drupal.jarabaIcons.get('target', '🎯')}</span>
                             <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${Drupal.t('Frente')}</h3>
                             <p style="opacity: 0.8; text-align: center;">${Drupal.t('Pasa el cursor para ver el reverso')}</p>
                         </div>
@@ -3291,10 +3317,10 @@ const example = () => {
                         </div>
                     </div>
                     <div style="flex: 1; min-width: 280px;">
-                        <div style="display: flex; gap: 0.25rem; margin-bottom: 1rem; color: #fbbf24;">⭐⭐⭐⭐⭐</div>
+                        <div style="display: flex; gap: 0.25rem; margin-bottom: 1rem; color: #fbbf24;">${Drupal.jarabaIcons.stars(5)}</div>
                         <p style="color: var(--ej-text-primary, #1e293b); font-size: 1.125rem; line-height: 1.7; margin-bottom: 1.5rem; font-style: italic;">"${Drupal.t('Esta plataforma ha transformado completamente la forma en que gestionamos nuestro negocio. Increíble.')}"</p>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 50px; height: 50px; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 50%; display: flex; align-items: center; justify-content: center;">👤</div>
+                            <div style="width: 50px; height: 50px; background: var(--ej-bg-secondary, #f1f5f9); border-radius: 50%; display: flex; align-items: center; justify-content: center;">${Drupal.jarabaIcons.get('user', '👤')}</div>
                             <div>
                                 <strong style="color: var(--ej-text-primary, #1e293b); display: block;">${Drupal.t('María García')}</strong>
                                 <span style="color: var(--ej-text-muted, #64748b); font-size: 0.875rem;">${Drupal.t('CEO, TechStartup')}</span>
@@ -3330,6 +3356,77 @@ const example = () => {
                     </div>
                 </div>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`,
+            },
+            // =================================================================
+            // TESTIMONIALS 3D CAROUSEL - Premium Coverflow Effect
+            // Bloque interactivo con Arquitectura Dual (§4.2 de la especificación):
+            // - Editor: CSS 3D transforms + script del carousel
+            // - Páginas públicas: Drupal.behaviors en jaraba-testimonials-3d.js
+            // =================================================================
+            {
+                id: 'jaraba-testimonials-3d',
+                label: Drupal.t('Testimonios 3D'),
+                category: 'premium',
+                content: `<section class="jaraba-testimonials-3d jaraba-testimonials-3d--gradient jaraba-block jaraba-block--premium"
+                         data-effect="coverflow"
+                         data-autoplay="true"
+                         data-autoplay-speed="5000"
+                         role="region"
+                         aria-label="${Drupal.t('Testimonios de clientes')}">
+                    <div class="jaraba-block__container">
+                        <h2 class="jaraba-block__title">${Drupal.t('Lo que dicen nuestros clientes')}</h2>
+                        <div class="jaraba-testimonials-3d__carousel" role="region" aria-roledescription="carousel" aria-label="${Drupal.t('Carrusel de testimonios')}">
+                            <article class="jaraba-testimonial-3d" role="group" aria-roledescription="slide" aria-label="${Drupal.t('Testimonio 1 de 3')}">
+                                <div class="jaraba-testimonial-3d__rating" aria-label="${Drupal.t('5 de 5 estrellas')}">
+                                    <span style="color: #fbbf24; font-size: 18px;">★★★★★</span>
+                                </div>
+                                <blockquote class="jaraba-testimonial-3d__quote">"${Drupal.t('Esta plataforma ha revolucionado nuestra forma de trabajar. Hemos visto un aumento del 300% en productividad.')}"</blockquote>
+                                <footer class="jaraba-testimonial-3d__footer">
+                                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), var(--ej-color-innovation, #00A9A5)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">SJ</div>
+                                    <div class="jaraba-testimonial-3d__author-info">
+                                        <strong class="jaraba-testimonial-3d__author">${Drupal.t('Sara Jiménez')}</strong>
+                                        <span class="jaraba-testimonial-3d__role">${Drupal.t('CEO, TechVentures')}</span>
+                                    </div>
+                                </footer>
+                            </article>
+                            <article class="jaraba-testimonial-3d" role="group" aria-roledescription="slide" aria-label="${Drupal.t('Testimonio 2 de 3')}">
+                                <div class="jaraba-testimonial-3d__rating" aria-label="${Drupal.t('5 de 5 estrellas')}">
+                                    <span style="color: #fbbf24; font-size: 18px;">★★★★★</span>
+                                </div>
+                                <blockquote class="jaraba-testimonial-3d__quote">"${Drupal.t('La mejor inversión que hemos hecho para nuestro equipo. El soporte al cliente es excepcional.')}"</blockquote>
+                                <footer class="jaraba-testimonial-3d__footer">
+                                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-impulse, #FF8C42)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">MC</div>
+                                    <div class="jaraba-testimonial-3d__author-info">
+                                        <strong class="jaraba-testimonial-3d__author">${Drupal.t('Miguel Chen')}</strong>
+                                        <span class="jaraba-testimonial-3d__role">${Drupal.t('CTO, InnovateCo')}</span>
+                                    </div>
+                                </footer>
+                            </article>
+                            <article class="jaraba-testimonial-3d" role="group" aria-roledescription="slide" aria-label="${Drupal.t('Testimonio 3 de 3')}">
+                                <div class="jaraba-testimonial-3d__rating" aria-label="${Drupal.t('5 de 5 estrellas')}">
+                                    <span style="color: #fbbf24; font-size: 18px;">★★★★★</span>
+                                </div>
+                                <blockquote class="jaraba-testimonial-3d__quote">"${Drupal.t('Por fin, una herramienta que cumple lo que promete. Totalmente recomendada para cualquier negocio.')}"</blockquote>
+                                <footer class="jaraba-testimonial-3d__footer">
+                                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), var(--ej-color-passion, #E63946)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">ER</div>
+                                    <div class="jaraba-testimonial-3d__author-info">
+                                        <strong class="jaraba-testimonial-3d__author">${Drupal.t('Elena Rodríguez')}</strong>
+                                        <span class="jaraba-testimonial-3d__role">${Drupal.t('VP Operaciones, GrowthFirst')}</span>
+                                    </div>
+                                </footer>
+                            </article>
+                        </div>
+                        <div class="jaraba-testimonials-3d__nav">
+                            <button type="button" class="jaraba-testimonials-3d__prev" aria-label="${Drupal.t('Testimonio anterior')}">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                            </button>
+                            <button type="button" class="jaraba-testimonials-3d__next" aria-label="${Drupal.t('Siguiente testimonio')}">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </section>`,
+                media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/><circle cx="12" cy="3" r="1" fill="currentColor" opacity="0.5"/></svg>`,
             },
         ];
 
@@ -3526,9 +3623,17 @@ const example = () => {
                 let lockedBlocksCount = 0;
 
                 apiBlocks.forEach((block) => {
-                    // Solo añadir si no existe ya (evitar duplicados con bloques estáticos)
+                    // Solo añadir si no existe ya (evitar duplicados con bloques estáticos).
+                    // Comprobar tanto el ID exacto como variantes con prefijo jaraba-
+                    // y normalizar guiones/guiones bajos para evitar falsos negativos.
                     const existingBlock = blockManager.get(block.id);
-                    if (!existingBlock) {
+                    const baseId = block.id.replace('template-', '');
+                    const baseIdNorm = baseId.replace(/_/g, '-');
+                    const existingJaraba = blockManager.get('jaraba-' + baseId);
+                    const existingJarabaNorm = blockManager.get('jaraba-' + baseIdNorm);
+                    const existingUnprefixed = blockManager.get(baseId);
+
+                    if (!existingBlock && !existingJaraba && !existingJarabaNorm && !existingUnprefixed) {
                         const isLocked = block.isLocked || false;
                         if (isLocked) lockedBlocksCount++;
 

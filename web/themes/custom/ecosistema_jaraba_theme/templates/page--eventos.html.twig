@@ -4,7 +4,7 @@
  * page--eventos.html.twig - Listado y detalle de Eventos de Marketing
  *
  * ARQUITECTURA LIMPIA (mismo patrón que page--crm.html.twig):
- * - Sin {{ page.* }} = Sin bloques de Drupal (excepto page.content)
+ * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
@@ -42,8 +42,14 @@
 
   {# MAIN CONTENT - Full-width events layout #}
   <main id="main-content" class="dashboard-main events-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
     <div class="dashboard-wrapper events-wrapper">
-      {{ page.content }}
+      {{ clean_content }}
     </div>
   </main>
 

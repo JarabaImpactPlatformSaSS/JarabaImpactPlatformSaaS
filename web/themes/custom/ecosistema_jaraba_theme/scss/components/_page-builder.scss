@@ -1467,6 +1467,10 @@
     &--dark {
         background: var(--ej-bg-dark, $ej-bg-dark);
         color: #fff;
+
+        .jaraba-block__title {
+            color: #fff !important;
+        }
     }
 
     &__header {
@@ -5252,103 +5256,11 @@
 }
 
 // =============================================
-// PREMIUM: TESTIMONIALS 3D
+// PREMIUM: TESTIMONIALS 3D CAROUSEL
+// SSoT: jaraba_page_builder/scss/blocks/_testimonials-3d.scss
+// Los bloques del Page Builder se estilan en su propio módulo,
+// no en el tema. Ver page-builder-blocks.scss.
 // =============================================
-
-.jaraba-testimonials-3d {
-    padding: var(--ej-spacing-section, 5rem) 0;
-    overflow: hidden;
-
-    &--light {
-        background: var(--ej-bg-body, $ej-bg-body);
-    }
-
-    &--dark {
-        background: var(--ej-bg-dark, $ej-bg-dark);
-        color: #fff;
-    }
-
-    .jaraba-block__title {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    &__carousel {
-        display: flex;
-        gap: 2rem;
-        perspective: 1000px;
-    }
-
-    &__nav {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    &__prev,
-    &__next {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 1px solid var(--ej-border-color, $ej-border-color);
-        background: var(--ej-bg-surface, $ej-bg-surface);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-            background: var(--ej-color-primary, $ej-color-primary);
-            color: #fff;
-        }
-    }
-}
-
-.jaraba-testimonial-3d {
-    background: var(--ej-bg-surface, $ej-bg-surface);
-    border-radius: var(--ej-border-radius, $ej-border-radius);
-    padding: 2rem;
-    min-width: 350px;
-    box-shadow: $ej-shadow-md;
-    flex-shrink: 0;
-
-    &__rating {
-        display: flex;
-        gap: 0.25rem;
-        margin-bottom: 1rem;
-    }
-
-    &__quote {
-        font-size: 1.125rem;
-        font-style: italic;
-        line-height: 1.7;
-        margin: 0 0 1.5rem;
-    }
-
-    &__footer {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    &__avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    &__author {
-        display: block;
-        font-weight: 600;
-    }
-
-    &__role {
-        font-size: 0.875rem;
-        color: var(--ej-text-muted, $ej-color-muted);
-    }
-}
 
 // =============================================
 // PREMIUM: FLOATING CARDS (3D Tilt)

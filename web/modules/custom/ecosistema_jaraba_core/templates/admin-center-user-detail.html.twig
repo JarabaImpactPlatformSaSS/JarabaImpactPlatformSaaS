@@ -1,0 +1,133 @@
+{#
+/**
+ * @file
+ * Admin Center — User Detail 360 (Slide-Panel).
+ *
+ * Variables:
+ *   - user_data: Array con:
+ *     - id, name, email, status, roles, role_label, all_roles
+ *     - tenant, tenant_id, last_access, created, url
+ *     - activity: Array of {id, type, message, severity, timestamp, time_ago}
+ *     - sessions: int
+ *
+ * Iconos: jaraba_icon(category, name, options) — NUNCA emojis.
+ * i18n: {% trans %} para todos los textos visibles.
+ *
+ * F6 — Doc 181 / Spec f104 §FASE 3.
+ */
+#}
+
+<div class="user-detail">
+
+  {# Header #}
+  <div class="tenant-detail__header">
+    <div class="user-detail__avatar">
+      {{ user_data.name|first|upper }}
+    </div>
+    <div>
+      <h3 class="tenant-detail__name">{{ user_data.name }}</h3>
+      <span class="user-detail__email">{{ user_data.email }}</span>
+    </div>
+    <span class="ac-datatable__badge ac-datatable__badge--{{ user_data.status }}">
+      {{ user_data.status }}
+    </span>
+  </div>
+
+  {# Key info grid #}
+  <div class="tenant-detail__grid">
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'user', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Rol Principal{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">
+        <span class="ac-datatable__badge ac-datatable__badge--{{ user_data.role_label }}">
+          {{ user_data.role_label }}
+        </span>
+      </span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('business', 'company', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Tenant{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ user_data.tenant ?: '—' }}</span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'clock', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Ultimo Acceso{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ user_data.last_access }}</span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'calendar', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Registrado{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ user_data.created }}</span>
+    </div>
+    <div class="tenant-detail__field">
+      <span class="tenant-detail__label">
+        {{ jaraba_icon('ui', 'monitor', { size: '14px', color: 'neutral' }) }}
+        {% trans %}Sesiones Activas{% endtrans %}
+      </span>
+      <span class="tenant-detail__value">{{ user_data.sessions }}</span>
+    </div>
+  </div>
+
+  {# All Roles #}
+  {% if user_data.all_roles is not empty %}
+    <div class="tenant-detail__section">
+      <h4 class="tenant-detail__section-title">
+        {{ jaraba_icon('ui', 'shield', { size: '16px', color: 'corporate' }) }}
+        {% trans %}Roles{% endtrans %}
+      </h4>
+      <div class="user-detail__roles">
+        {% for role in user_data.all_roles %}
+          <span class="ac-datatable__badge ac-datatable__badge--{{ role }}">{{ role }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Activity Timeline #}
+  {% if user_data.activity is not empty %}
+    <div class="tenant-detail__section">
+      <h4 class="tenant-detail__section-title">
+        {{ jaraba_icon('analytics', 'chart-bar', { size: '16px', color: 'innovation' }) }}
+        {% trans %}Actividad Reciente{% endtrans %}
+      </h4>
+      <div class="user-detail__timeline">
+        {% for entry in user_data.activity %}
+          <div class="user-detail__timeline-entry">
+            <div class="user-detail__timeline-dot user-detail__timeline-dot--severity-{{ entry.severity }}"></div>
+            <div class="user-detail__timeline-content">
+              <span class="user-detail__timeline-message">{{ entry.message|striptags|slice(0, 100) }}</span>
+              <span class="user-detail__timeline-meta">
+                <span class="user-detail__timeline-type">{{ entry.type }}</span>
+                <span class="user-detail__timeline-time">{{ entry.time_ago }}</span>
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Actions #}
+  <div class="tenant-detail__actions">
+    <a href="{{ user_data.url }}" class="admin-center__btn admin-center__btn--primary" target="_blank">
+      {{ jaraba_icon('ui', 'external-link', { size: '14px', color: 'corporate' }) }}
+      {% trans %}Ver Perfil Completo{% endtrans %}
+    </a>
+    <button type="button"
+            class="admin-center__btn admin-center__btn--secondary"
+            data-action="force-logout"
+            data-user-id="{{ user_data.id }}">
+      {{ jaraba_icon('ui', 'x-circle', { size: '14px', color: 'neutral' }) }}
+      {% trans %}Cerrar Sesiones{% endtrans %}
+    </button>
+  </div>
+
+</div>

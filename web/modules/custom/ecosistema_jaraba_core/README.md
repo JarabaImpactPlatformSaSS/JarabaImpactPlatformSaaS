@@ -15,6 +15,9 @@ Módulo core de la plataforma Ecosistema Jaraba que proporciona:
 - **Integración Stripe**: Pagos, suscripciones y webhooks
 - **Firma Digital**: Integración con AutoFirma
 - **Onboarding**: Flujo completo de registro de nuevos tenants
+- **Detección de Avatar**: Cascada de 4 niveles (Dominio → Path/UTM → Grupo → Rol) para identificar tipo de usuario
+- **Navegación Contextual**: Items de navegación dinámicos según avatar detectado (10 avatares, bottom nav mobile)
+- **Admin Center**: Panel de administración multi-tenant con métricas agregadas
 
 ## Requisitos
 
@@ -108,6 +111,10 @@ ecosistema_jaraba_core/
 | TenantManager | `ecosistema_jaraba_core.tenant_manager` | Ciclo de vida de tenants |
 | PlanValidator | `ecosistema_jaraba_core.plan_validator` | Validación de límites |
 | TenantOnboardingService | `ecosistema_jaraba_core.tenant_onboarding` | Flujo de registro |
+| AvatarDetectionService | `ecosistema_jaraba_core.avatar_detection` | Detección de avatar (Dominio → Path/UTM → Grupo → Rol) |
+| AvatarNavigationService | `ecosistema_jaraba_core.avatar_navigation` | Navegación contextual por avatar (10 avatares, items con iconos) |
+| CopilotContextService | `ecosistema_jaraba_core.copilot_context` | Contexto enriquecido para copiloto IA |
+| AdminCenterAggregatorService | `ecosistema_jaraba_core.admin_center_aggregator` | Agregación de datos para Admin Center |
 
 ## Rutas Principales
 
