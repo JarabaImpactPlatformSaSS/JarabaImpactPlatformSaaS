@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-15
-**Versión:** 27.0.0 (Empleabilidad Clase Mundial — 10/10 Fases Elevación)
+**Versión:** 28.0.0 (Emprendimiento v2 Paridad Empleabilidad — 7 Gaps Cerrados)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -795,8 +795,14 @@
 │   ├── Patrón: Desbloqueo Progresivo UX (12 semanas)                     │
 │   ├── Multi-proveedor optimizado: Gemini Flash (consultor/landing)       │
 │   │   └── claude-sonnet-4-5, gpt-4o, gemini-2.5-flash, claude-haiku-4-5│
+│   ├── EmprendimientoCopilotAgent (v2 Paridad): 6 modos especializados   │
+│   │   └── business_strategist, financial_advisor,                       │
+│   │       customer_discovery_coach, pitch_trainer,                      │
+│   │       ecosystem_connector, faq                                      │
+│   ├── CRM Sync Pipeline emprendedor: 7 estados CRM                     │
+│   │   └── idea_registered→lead, bmc→sql, mvp→demo, scaling→closed_won  │
 │   ├── 7 Unit Test Suites (PHPUnit 11): 64 tests, 184 assertions         │
-│   └── Estado: ✅ Producción (v2.1 - Clase Mundial, Gaps cerrados)        │
+│   └── Estado: ✅ Producción (v2.1 - Clase Mundial, Paridad Empleabilidad)│
 │                                                                         │
 │   📦 jaraba_journey ✅ (Block C Journey Engine)                           │
 │   ├── Motor de navegación inteligente: 7 verticales, 19 avatares         │
@@ -808,6 +814,17 @@
 │   ├── JourneyDefinitionLoader: 7 definiciones por vertical                │
 │   ├── EmprendimientoCrossSellService: Ejecución 4 reglas cross-sell      │
 │   │   └── diagnostic_completed → Curso BMC, before_mvp → Kit validación  │
+│   ├── EmprendimientoJourneyProgressionService: 7 reglas proactivas      │
+│   │   └── inactivity_discovery, canvas_incomplete, hypothesis_stalled,  │
+│   │       all_killed_no_pivot, mvp_validated_no_mentor,                  │
+│   │       funding_eligible, post_scaling_expansion                       │
+│   ├── EmprendimientoHealthScoreService: 5 dimensiones + 8 KPIs          │
+│   │   └── canvas_completeness 25%, hypothesis_validation 30%,           │
+│   │       experiment_velocity 15%, copilot_engagement 15%,              │
+│   │       funding_readiness 15%                                          │
+│   ├── EmprendimientoCrossVerticalBridgeService: 3 bridges salientes     │
+│   │   └── formacion (scaling_needs_team_skills), servicios              │
+│   │       (needs_outsource_mvp), comercio (has_product_post_mvp)        │
 │   ├── Cross-vertical: empleabilidad ↔ emprendimiento bidireccional       │
 │   │   └── RIASEC E≥7 → emprendimiento | at_risk → empleabilidad          │
 │   ├── API REST: 6 endpoints (/api/v1/journey/*)                           │
@@ -937,13 +954,15 @@
 │   ├── EmailWebhookController: POST /api/v1/webhooks/sendgrid (HMAC)    │
 │   ├── SendGridClientService: sendEmail, sendBatch, processWebhook       │
 │   ├── SequenceManagerService: enrollSubscriber, executeNextStep         │
-│   ├── MJML Templates: 35 transaccionales + base.mjml                    │
+│   ├── MJML Templates: 40 transaccionales + base.mjml                    │
 │   │   ├── auth/ (5): verify, welcome, password_reset/changed, new_login  │
 │   │   ├── billing/ (7): invoice, payment_failed, subscription...         │
 │   │   ├── marketplace/ (6): order_confirmed, shipped, delivered...       │
 │   │   ├── empleabilidad/ (5): job_match, application, shortlisted...    │
-│   │   └── emprendimiento/ (6): welcome, diagnostic, canvas_milestone,   │
-│   │       experiment_result, mentor_matched, weekly_progress             │
+│   │   └── emprendimiento/ (11): welcome, diagnostic, canvas_milestone,  │
+│   │       experiment_result, mentor_matched, weekly_progress +           │
+│   │       seq_onboarding_founder, seq_canvas_abandonment,               │
+│   │       seq_upsell_starter, seq_mvp_celebration, seq_post_funding     │
 │   ├── TemplateLoaderService: template_id → MJML → compilación           │
 │   ├── MjmlCompilerService: MJML → HTML responsive                       │
 │   ├── Tests: 12 unit test files (Newsletter, MJML, Subscriber, etc.)    │
@@ -1981,7 +2000,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | Vertical | Fases | Estado | Servicios Nuevos | Archivos |
 |----------|-------|--------|-----------------|----------|
 | **Empleabilidad** | 10/10 | ✅ Clase Mundial | EmployabilityFeatureGateService, EmployabilityEmailSequenceService, EmployabilityCrossVerticalBridgeService, EmployabilityJourneyProgressionService, EmployabilityHealthScoreService, EmployabilityCopilotAgent, CopilotApiController, TemplateLoaderService | 34+ archivos |
-| **Emprendimiento** | 6/6 | ✅ Clase Mundial | EmprendimientoFeatureGateService, EmprendimientoExperimentService | 15 archivos |
+| **Emprendimiento** | 6/6 + v2 (7 gaps) | ✅ Clase Mundial (Paridad) | EmprendimientoFeatureGateService, EmprendimientoExperimentService, EmprendimientoHealthScoreService, EmprendimientoJourneyProgressionService, EmprendimientoEmailSequenceService, EmprendimientoCopilotAgent, EmprendimientoCrossVerticalBridgeService | 25+ archivos |
 
 **Empleabilidad (10 Fases):**
 1. Clean Page Templates (Zero Region + FAB)
@@ -1994,6 +2013,15 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 8. Cross-Vertical Bridges (4 bridges)
 9. AI Journey Progression Proactiva (7 reglas)
 10. Health Scores + KPIs (5 dimensiones + 8 KPIs)
+
+**Emprendimiento v2 — Paridad con Empleabilidad (7 Gaps):**
+1. Health Score (5 dimensiones: canvas_completeness 25%, hypothesis_validation 30%, experiment_velocity 15%, copilot_engagement 15%, funding_readiness 15% + 8 KPIs)
+2. Journey Progression Proactiva (7 reglas: inactivity_discovery, canvas_incomplete, hypothesis_stalled, all_killed_no_pivot, mvp_validated_no_mentor, funding_eligible, post_scaling_expansion)
+3. Email Sequences (5 secuencias MJML: SEQ_ENT_001-005 onboarding, canvas abandonment, upsell starter, MVP celebration, post-funding)
+4. Copilot Agent (6 modos: business_strategist, financial_advisor, customer_discovery_coach, pitch_trainer, ecosystem_connector, faq)
+5. Cross-Vertical Bridges (3 salientes: formacion, servicios, comercio)
+6. CRM Sync Pipeline (7 estados: idea_registered→lead, diagnostic→mql, bmc→sql, mvp→demo, funding→proposal, scaling→closed_won, abandoned→closed_lost)
+7. Upgrade Triggers (5 nuevos: canvas_completed 0.38, first_hypothesis_validated 0.42, mentor_matched 0.35, experiment_success 0.40, funding_eligible 0.45)
 
 ### 12.4 Dependabot Security Posture (2026-02-14)
 
@@ -2065,6 +2093,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Plan Elevación Empleabilidad v1** ⭐ | `docs/implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md` |
 | **Aprendizajes Elevación Empleabilidad 10 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md` |
 | **Aprendizajes Elevación Emprendimiento 6 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md` |
+| **Plan Emprendimiento v2 Paridad 7 Gaps** ⭐ | `docs/implementacion/20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md` |
+| **Aprendizajes Emprendimiento Paridad 7 Gaps** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md` |
 
 ---
 
