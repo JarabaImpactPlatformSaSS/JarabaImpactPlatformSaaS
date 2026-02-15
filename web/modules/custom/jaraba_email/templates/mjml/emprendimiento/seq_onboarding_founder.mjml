@@ -1,0 +1,65 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#f59e0b" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .step-number { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background-color: #f59e0b; color: #ffffff; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#f59e0b" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          &iexcl;Bienvenido, fundador!
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has registrado tu idea de negocio <strong>{{ idea_title }}</strong> en el sector <strong>{{ sector }}</strong>. &iexcl;Es un gran primer paso hacia la validaci&oacute;n!</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#92400e" padding-top="16px">
+          Tus pr&oacute;ximos pasos:
+        </mj-text>
+        <mj-text>
+          <p><span class="step-number">1</span> <strong>Completa tu Business Model Canvas</strong> &mdash; Define los 9 bloques de tu modelo de negocio.</p>
+          <p><span class="step-number">2</span> <strong>Formula tu primera hip&oacute;tesis</strong> &mdash; Identifica la asunci&oacute;n m&aacute;s arriesgada de tu modelo.</p>
+          <p><span class="step-number">3</span> <strong>Dise&ntilde;a un experimento</strong> &mdash; Valida tu hip&oacute;tesis con datos reales.</p>
+        </mj-text>
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          Ir a mi dashboard
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Tu copilot de emprendimiento est&aacute; listo para ayudarte. Escr&iacute;bele &ldquo;c&oacute;mo empiezo&rdquo; y te guiar&aacute; paso a paso.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

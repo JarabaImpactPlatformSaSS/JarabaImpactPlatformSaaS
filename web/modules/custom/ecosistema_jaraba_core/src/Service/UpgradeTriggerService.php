@@ -47,6 +47,12 @@ class UpgradeTriggerService
         'first_milestone' => 0.42,
         'external_validation' => 0.45,
         'status_change' => 0.50,
+        // Plan Elevación Emprendimiento v2 — Fase 7 (G7).
+        'canvas_completed' => 0.38,
+        'first_hypothesis_validated' => 0.42,
+        'mentor_matched' => 0.35,
+        'experiment_success' => 0.40,
+        'funding_eligible' => 0.45,
     ];
 
     /**
@@ -645,8 +651,10 @@ class UpgradeTriggerService
             'fiscal' => 'Con %s tendras acceso ilimitado al experto tributario para resolver todas tus dudas fiscales.',
             'laboral' => 'El plan %s incluye consultas ilimitadas sobre Seguridad Social y obligaciones laborales.',
             'devil' => 'Con %s podras usar el Abogado del Diablo sin restricciones para fortalecer tu propuesta.',
-            'vpc_designer' => 'El plan %s desbloquea diseno ilimitado de Value Proposition Canvas.',
-            'customer_discovery' => 'Con %s tendras acceso completo al Customer Discovery Coach.',
+            'vpc_designer' => 'Con %s desbloqueas VPC Designer avanzado con Fit Score detallado.',
+            'customer_discovery' => 'Con %s accedes a guiones de entrevista avanzados y analisis Mom Test.',
+            'pattern_expert' => 'Con %s obtienes deteccion de patrones BMG y senales de pivot.',
+            'pivot_advisor' => 'Con %s recibes asesoramiento personalizado de pivot con data historica.',
         ];
 
         $template = $benefits[$mode] ?? 'El plan %s desbloquea funcionalidades avanzadas.';

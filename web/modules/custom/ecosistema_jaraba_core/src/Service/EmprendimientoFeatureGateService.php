@@ -105,13 +105,35 @@ class EmprendimientoFeatureGateService {
     $remaining = max(0, $limitValue - $used);
 
     if ($remaining <= 0) {
+      // Fire upgrade trigger on denial.
+      // Plan Elevación Emprendimiento v2 — Fase 7 (G7).
+      try {
+        $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+        if ($tenant) {
+          $this->upgradeTriggerService->fire('limit_reached', $tenant, [
+            'feature_key' => $featureKey,
+            'vertical' => 'emprendimiento',
+          ]);
+        }
+      }
+      catch (\Exception $e) {
+        // Silently fail - trigger is non-critical.
+      }
+
       $upgradePlan = self::PLAN_UPGRADE[$plan] ?? 'starter';
+      $message = 'Has alcanzado el limite de tu plan.';
+      if ($limitEntity) {
+        $entityMessage = $limitEntity->get('upgrade_message');
+        if ($entityMessage) {
+          $message = $entityMessage;
+        }
+      }
       return FeatureGateResult::denied(
         $featureKey,
         $plan,
         $limitValue,
         $used,
-        $limitEntity->get('upgrade_message') ?: 'Has alcanzado el limite de tu plan.',
+        $message,
         $upgradePlan,
       );
     }

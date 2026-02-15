@@ -1,0 +1,65 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#16a34a" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .celebration-badge { display: inline-block; background-color: #dcfce7; color: #16a34a; padding: 4px 12px; border-radius: 12px; font-weight: bold; font-size: 13px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#16a34a" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          &iexcl;MVP Validado!
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>&iexcl;Enhorabuena! Tu experimento <strong>{{ experiment_name }}</strong> ha sido <span class="celebration-badge">{{ decision }}</span>.</p>
+        </mj-text>
+        <mj-text padding-top="16px">
+          <p>La hip&oacute;tesis <strong>{{ hypothesis_name }}</strong> ha sido validada con datos reales. Este es un hito fundamental en tu camino emprendedor.</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#166534" padding-top="16px">
+          &iquest;Qu&eacute; sigue?
+        </mj-text>
+        <mj-text>
+          <p>1. <strong>Comparte tu logro</strong> con tu red &mdash; inspira a otros emprendedores.</p>
+          <p>2. <strong>Conecta con un mentor</strong> para acelerar tu siguiente fase.</p>
+          <p>3. <strong>Explora financiaci&oacute;n</strong> &mdash; tu validaci&oacute;n te hace elegible para convocatorias.</p>
+        </mj-text>
+        <mj-button href="{{ share_url }}" align="center" padding="24px 0">
+          Compartir logro
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

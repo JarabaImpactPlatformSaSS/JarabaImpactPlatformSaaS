@@ -1,0 +1,67 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#f59e0b" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .benefit-item { padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+      .check-icon { color: #16a34a; font-weight: bold; margin-right: 8px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#f59e0b" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          Tu negocio est&aacute; creciendo
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Ya has creado <strong>{{ total_hypotheses }} hip&oacute;tesis</strong> y tu perfil est&aacute; al <strong>{{ profile_completion }}%</strong>. Est&aacute;s avanzando r&aacute;pido en la validaci&oacute;n de tu modelo de negocio.</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#92400e" padding-top="16px">
+          Con el plan Starter desbloqueas:
+        </mj-text>
+        <mj-text>
+          <p><span class="check-icon">&check;</span> <strong>10 hip&oacute;tesis activas</strong> en vez de 3</p>
+          <p><span class="check-icon">&check;</span> <strong>Sesiones de mentoring b&aacute;sico</strong></p>
+          <p><span class="check-icon">&check;</span> <strong>20 sesiones de copilot al d&iacute;a</strong></p>
+          <p><span class="check-icon">&check;</span> <strong>An&aacute;lisis financiero con CFO Sint&eacute;tico</strong></p>
+        </mj-text>
+        <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
+          Ver plan Starter
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Sin compromiso. Puedes cancelar en cualquier momento desde tu panel de control.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
