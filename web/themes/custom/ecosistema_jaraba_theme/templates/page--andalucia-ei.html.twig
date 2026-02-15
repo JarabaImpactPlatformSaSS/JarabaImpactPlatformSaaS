@@ -1,42 +1,85 @@
 {#
 /**
  * @file
- * Template para la página del dashboard Andalucía +ei.
+ * Page template para rutas del vertical Andalucía +ei.
+ * SIN regiones ni bloques de Drupal — Zero Region Policy.
  *
- * Zero Region Policy — usa {{ clean_content }}.
- * El contenido del dashboard viene ya renderizado desde el controlador
- * a través de clean_content que usa el theme 'andalucia_ei_dashboard'.
+ * Aplicado a todas las rutas de:
+ * - jaraba_andalucia_ei.* (/andalucia-ei, /admin/content/andalucia-ei/*)
+ *
+ * Variables inyectadas desde hook_preprocess_page__andalucia_ei():
+ * - clean_content: Render array del controlador (system_main)
+ * - clean_messages: Render array de mensajes del sistema
+ * - copilot_context: Contexto del CopilotContextService
+ * - theme_settings: Configuración del tema
+ * - site_name, site_slogan, logo, footer_copyright
+ *
+ * Directrices aplicadas:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #11: Full-width layout
+ * - P4-AI-001: Copilot FAB en toda ruta autenticada del vertical
+ * - Plan Elevación Andalucía +ei v1 — Fase 1
  *
  * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
  */
 #}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
 
-{# LOW-09: Use 'only' keyword to prevent variable scope leakage #}
-{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
-  site_name: site_name,
-  site_slogan: site_slogan,
-  logo: logo,
-  logged_in: logged_in,
-  theme_settings: theme_settings,
-  avatar_nav: avatar_nav|default(null)
-} only %}
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
 
-<main id="main-content" class="andalucia-ei-main">
-  <div class="andalucia-ei-wrapper">
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--andalucia-ei">
 
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({}),
+    'avatar_nav': avatar_nav|default(null)
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Full Width, Zero Regions
+     ============================================= #}
+  <main class="main-content main-content--full main-content--andalucia-ei" role="main">
+    {# Mensajes del sistema (status, warning, error) #}
     {% if clean_messages %}
       <div class="highlighted container">
         {{ clean_messages }}
       </div>
     {% endif %}
 
-    {# El contenido viene del controlador via theme 'andalucia_ei_dashboard' #}
-    {{ clean_content }}
+    {# Contenido del controlador — sin bloques heredados #}
+    <div class="main-content__inner main-content__inner--full">
+      {% if clean_content %}
+        {{ clean_content }}
+      {% endif %}
+    </div>
+  </main>
 
-  </div>
-</main>
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
 
-{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
-  site_name: site_name,
-  logged_in: logged_in
-} only %}
+  {# =============================================
+     COPILOT FAB - Asistente IA contextual
+     Directriz P4-AI-001: Disponible en todas las
+     rutas autenticadas del vertical Andalucía +ei.
+     ============================================= #}
+  {% if logged_in %}
+    {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+      'context': copilot_context|default({})
+    } only %}
+  {% endif %}
+
+</div>

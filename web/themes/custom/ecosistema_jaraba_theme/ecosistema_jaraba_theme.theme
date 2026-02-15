@@ -1271,15 +1271,14 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
-  // ANDALUCÍA +ei - Dashboard frontend del programa
-  // Ver: docs/tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md
+  // ANDALUCÍA +ei - Todas las rutas del vertical
+  // Plan Elevación Andalucía +ei v1 — Fase 1
+  // Ver: docs/implementacion/20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md
   // =========================================================================
-  $andalucia_ei_routes = [
-    'jaraba_andalucia_ei.dashboard',  // /andalucia-ei
-  ];
-  if (in_array($route, $andalucia_ei_routes)) {
+  if (str_starts_with((string) $route, 'jaraba_andalucia_ei.') || str_starts_with((string) $route, 'entity.programa_participante_ei.')) {
     $variables['attributes']['class'][] = 'dashboard-page';
     $variables['attributes']['class'][] = 'page-andalucia-ei';
+    $variables['attributes']['class'][] = 'vertical-andalucia-ei';
     $variables['attributes']['class'][] = 'full-width-page';
   }
 
@@ -2135,6 +2134,44 @@ function ecosistema_jaraba_theme_preprocess_page__emprendimiento(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_page__andalucia_ei().
+ *
+ * Preprocesa las páginas del vertical Andalucía +ei para inyectar contexto
+ * del Copilot y variables específicas del vertical.
+ *
+ * Plan Elevación Andalucía +ei v1 — Fase 1
+ * Template: page--andalucia-ei.html.twig (Zero Region Policy + Copilot FAB)
+ *
+ * Aplica a todas las rutas de:
+ * - jaraba_andalucia_ei.* (/andalucia-ei, /admin/content/andalucia-ei/*)
+ */
+function ecosistema_jaraba_theme_preprocess_page__andalucia_ei(&$variables) {
+  // Inyectar contexto del Copilot para el FAB.
+  try {
+    $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
+    $variables['copilot_context'] = $copilot_service->getContext();
+  }
+  catch (\Exception $e) {
+    // Servicio no disponible — FAB se renderiza con defaults.
+    $variables['copilot_context'] = [];
+  }
+
+  // Configuración del tema para parciales (header/footer).
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+  ];
+
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+}
+
+/**
  * Implements hook_preprocess_page__user().
  *
  * Preprocesa todas las páginas del sistema de usuario para inyectar
@@ -2619,14 +2656,11 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
 
   // =========================================================================
-  // ANDALUCÍA +ei - Dashboard frontend del programa
-  // Ver: docs/tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md
+  // ANDALUCÍA +ei - Todas las rutas del vertical
+  // Plan Elevación Andalucía +ei v1 — Fase 1
+  // Ver: docs/implementacion/20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md
   // =========================================================================
-  $andalucia_ei_routes = [
-    'jaraba_andalucia_ei.dashboard',  // /andalucia-ei
-  ];
-
-  if (in_array($route, $andalucia_ei_routes)) {
+  if (str_starts_with((string) $route, 'jaraba_andalucia_ei.') || str_starts_with((string) $route, 'entity.programa_participante_ei.')) {
     $suggestions[] = 'page__andalucia_ei';
   }
 

@@ -1,0 +1,11 @@
+id: andalucia_ei_profesional_diagnostic_access
+label: 'Andalucía +ei Profesional: Acceso Diagnóstico DIME'
+vertical: andalucia_ei
+plan: profesional
+feature_key: diagnostic_access
+limit_value: -1
+description: 'Acceso ilimitado al diagnostico DIME en plan Profesional.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 548
+status: true

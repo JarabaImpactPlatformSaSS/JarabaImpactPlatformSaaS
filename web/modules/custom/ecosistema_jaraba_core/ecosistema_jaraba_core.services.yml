@@ -663,6 +663,22 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # ANDALUCÍA +EI FEATURE GATE (Plan Elevación Andalucía +ei v1 — Fase 4)
+  # ===========================================
+
+  # Feature gating por plan para el vertical Andalucía +ei.
+  # Verifica limites de uso diario (copilot_sessions_daily, mentoring_hours_monthly,
+  # sto_exports, training_modules, diagnostic_access, report_downloads)
+  # consultando FreemiumVerticalLimit y tabla andalucia_ei_feature_usage.
+  ecosistema_jaraba_core.andalucia_ei_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # EMPRENDIMIENTO EXPERIMENT SERVICE (Plan Elevación Emprendimiento v1 — Fase 6)
   # ===========================================
 
@@ -921,6 +937,21 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # ANDALUCÍA +EI EMAIL SEQUENCES (Plan Elevación Andalucía +ei v1 — Fase 5)
+  # ===========================================
+
+  # Servicio de email sequences automatizadas para el vertical Andalucía +ei.
+  # Gestiona 6 secuencias del ciclo de vida del participante:
+  # SEQ_AEI_001 (Welcome Participant), SEQ_AEI_002 (Phase Transition),
+  # SEQ_AEI_003 (Hours Milestone), SEQ_AEI_004 (Training Completion),
+  # SEQ_AEI_005 (Inactivity Reengagement), SEQ_AEI_006 (Upsell Free→Starter).
+  ecosistema_jaraba_core.andalucia_ei_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # EMPRENDIMIENTO CROSS-VERTICAL BRIDGES (Plan Elevación Emprendimiento v2 — Fase 5 G5)
   # ===========================================
 
@@ -933,4 +964,65 @@ services:
     class: Drupal\ecosistema_jaraba_core\Service\EmprendimientoCrossVerticalBridgeService
     arguments:
       - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # ANDALUCÍA +EI EXPERIMENT SERVICE (Plan Elevación Andalucía +ei v1 — Fase 11)
+  # ===========================================
+
+  # Servicio de experimentacion A/B para el vertical Andalucía +ei.
+  # Integra con jaraba_ab_testing para gestionar experimentos especificos
+  # del vertical (onboarding, copilot engagement, transition funnel, upgrade).
+  # 8 eventos de conversion: participant_enrolled, first_ia_session,
+  # diagnostic_completed, training_10h, training_50h, orientation_10h,
+  # phase_insertion, plan_upgraded.
+  ecosistema_jaraba_core.andalucia_ei_experiment:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiExperimentService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # ANDALUCÍA +EI CROSS-VERTICAL BRIDGES (Plan Elevación Andalucía +ei v1 — Fase 6)
+  # ===========================================
+
+  # Servicio de bridges de valor cross-vertical para Andalucía +ei.
+  # Evalúa y presenta bridges hacia Emprendimiento, Empleabilidad, Servicios y Formación
+  # basados en el estado del participante EI.
+  # Condiciones: insertion_plus_entrepreneur_interest, no_insertion_90_days,
+  # digital_skills_track, recently_inserted.
+  ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiCrossVerticalBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # ANDALUCÍA +EI JOURNEY PROGRESSION (Plan Elevación Andalucía +ei v1 — Fase 7)
+  # ===========================================
+
+  # Servicio de progresión proactiva del journey para Andalucía +ei.
+  # Evalúa 8 reglas proactivas del copilot FAB basadas en la fase y
+  # estado del participante: inactividad IA, horas formación bajas,
+  # hitos de orientación/formación, preparación inserción, etc.
+  ecosistema_jaraba_core.andalucia_ei_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiJourneyProgressionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # ANDALUCÍA +EI HEALTH SCORES & KPIS (Plan Elevación Andalucía +ei v1 — Fase 8)
+  # ===========================================
+
+  # Servicio de puntuación de salud y KPIs verticales para Andalucía +ei.
+  # Calcula health score por usuario (5 dimensiones ponderadas) y
+  # 8 KPIs agregados del vertical (insertion_rate, time_to_insertion,
+  # training_completion_rate, ia_engagement_rate, sto_sync_success_rate,
+  # participant_nps, conversion_free_paid, churn_rate).
+  ecosistema_jaraba_core.andalucia_ei_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\AndaluciaEiHealthScoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
       - '@logger.channel.ecosistema_jaraba_core'

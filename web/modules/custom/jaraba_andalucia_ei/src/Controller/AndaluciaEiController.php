@@ -49,19 +49,69 @@ class AndaluciaEiController extends ControllerBase
         $isAdmin = $user->hasPermission('create programa participante ei')
             || $user->hasPermission('administer andalucia ei');
 
+        // Plan Elevación Andalucía +ei v1 — Fase 12: Enriquecer dashboard.
+        $healthScore = NULL;
+        $bridges = [];
+        $proactiveAction = NULL;
+        $userId = (int) $user->id();
+
+        if ($participante) {
+            // Health score del participante.
+            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_health_score')) {
+                try {
+                    $healthScore = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_health_score')
+                        ->calculateUserHealth($userId);
+                }
+                catch (\Exception $e) {
+                    // Non-critical.
+                }
+            }
+
+            // Cross-vertical bridges disponibles.
+            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge')) {
+                try {
+                    $bridges = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge')
+                        ->evaluateBridges($userId);
+                }
+                catch (\Exception $e) {
+                    // Non-critical.
+                }
+            }
+
+            // Proactive AI action (FAB dot/expand).
+            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_journey_progression')) {
+                try {
+                    $proactiveAction = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_journey_progression')
+                        ->getPendingAction($userId);
+                }
+                catch (\Exception $e) {
+                    // Non-critical.
+                }
+            }
+        }
+
         return [
             '#theme' => 'andalucia_ei_dashboard',
             '#participante' => $participante,
             '#is_admin' => $isAdmin,
+            '#health_score' => $healthScore,
+            '#bridges' => $bridges,
+            '#proactive_action' => $proactiveAction,
             '#attached' => [
                 'library' => [
                     'jaraba_andalucia_ei/dashboard',
                     'ecosistema_jaraba_theme/slide-panel',
                 ],
+                'drupalSettings' => [
+                    'andaluciaEi' => [
+                        'proactiveAction' => $proactiveAction,
+                    ],
+                ],
             ],
             '#cache' => [
                 'contexts' => ['user'],
                 'tags' => ['programa_participante_ei_list'],
+                'max-age' => 300,
             ],
         ];
     }

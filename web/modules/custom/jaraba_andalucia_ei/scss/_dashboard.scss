@@ -1,0 +1,496 @@
+/**
+ * @file
+ * Estilos del dashboard Andalucía +ei.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * - P4-COLOR-001: Paleta Jaraba exclusivamente
+ * - P4-COLOR-002: color-mix() en lugar de rgba() para transparencias
+ * - SCSS-DART-001: Compilación con Dart Sass moderno
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_andalucia_ei && npx sass scss/main.scss css/andalucia-ei.css --style=compressed"
+ */
+
+// =============================================================================
+// Variables locales basadas en tokens globales
+// Scope: .andalucia-ei-dashboard
+// =============================================================================
+
+.andalucia-ei-dashboard {
+  --aei-color-primary: var(--ej-color-impulse, #FF8C42);
+  --aei-color-secondary: var(--ej-color-innovation, #00A9A5);
+  --aei-color-corporate: var(--ej-color-corporate, #233D63);
+  --aei-bg-surface: var(--ej-bg-surface, #ffffff);
+  --aei-color-text: var(--ej-text-primary, #334155);
+  --aei-color-muted: var(--ej-text-secondary, #64748b);
+  --aei-radius: var(--ej-radius-base, 12px);
+  --aei-border-color: var(--ej-border-color, #e5e7eb);
+  --aei-bg-hover: var(--ej-bg-hover, #f8fafc);
+  --aei-bg-subtle: var(--ej-bg-subtle, #f1f5f9);
+}
+
+// =============================================================================
+// Hero Section
+// =============================================================================
+
+.andalucia-ei-hero {
+  background: linear-gradient(
+    135deg,
+    var(--ej-color-corporate, #233D63) 0%,
+    color-mix(in srgb, var(--ej-color-corporate, #233D63) 75%, black) 100%
+  );
+  color: #fff;
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    opacity: 0.9;
+    margin: 0;
+    max-width: 600px;
+    margin-inline: auto;
+  }
+
+  .hero-decoration {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 80% 20%,
+      color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent) 0%,
+      transparent 50%
+    );
+    pointer-events: none;
+  }
+}
+
+// =============================================================================
+// Dashboard Grid
+// =============================================================================
+
+.participant-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+// =============================================================================
+// Dashboard Cards
+// =============================================================================
+
+.dashboard-card {
+  background: var(--aei-bg-surface);
+  border-radius: var(--aei-radius);
+  box-shadow: 0 4px 20px color-mix(in srgb, black 8%, transparent);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px color-mix(in srgb, black 12%, transparent);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, black 6%, transparent);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, black 2%, transparent),
+      transparent
+    );
+
+    h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--aei-color-corporate);
+    }
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+// =============================================================================
+// Progress Stats
+// =============================================================================
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--aei-color-muted);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+
+  &.fase-atencion {
+    color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &.fase-insercion {
+    color: var(--ej-color-success, #10B981);
+  }
+
+  &.fase-baja {
+    color: var(--ej-color-danger, #EF4444);
+  }
+}
+
+// =============================================================================
+// Hours Grid
+// =============================================================================
+
+.hours-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.hour-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hour-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--aei-color-primary);
+}
+
+.hour-label {
+  font-size: 0.75rem;
+  color: var(--aei-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// =============================================================================
+// Training Progress
+// =============================================================================
+
+.training-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--aei-border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--aei-color-primary), var(--aei-color-secondary));
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  color: var(--aei-color-muted);
+}
+
+// =============================================================================
+// Quick Actions
+// =============================================================================
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &.action-primary {
+    background: linear-gradient(
+      135deg,
+      var(--aei-color-primary) 0%,
+      color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black) 100%
+    );
+    color: #fff;
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateX(4px);
+    }
+  }
+
+  &.action-secondary {
+    background: var(--aei-bg-surface);
+    border: 1px solid var(--aei-border-color);
+    color: var(--aei-color-text);
+
+    &:hover {
+      background: var(--aei-bg-hover);
+      border-color: var(--aei-color-primary);
+      transform: translateX(4px);
+    }
+  }
+}
+
+// =============================================================================
+// Empty State (usuario no inscrito)
+// =============================================================================
+
+.not-enrolled {
+  padding: 4rem 2rem;
+}
+
+.empty-state {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--aei-bg-surface);
+  border-radius: var(--aei-radius);
+  box-shadow: 0 4px 20px color-mix(in srgb, black 8%, transparent);
+
+  .empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    color: var(--aei-color-corporate);
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    color: var(--aei-color-muted);
+    margin: 0 0 1.5rem;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--aei-color-primary);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}
+
+// =============================================================================
+// Admin Section (gestión de participantes)
+// =============================================================================
+
+.andalucia-ei-admin {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--aei-color-corporate);
+    }
+  }
+
+  .admin-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+
+    select {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--aei-border-color);
+      border-radius: 6px;
+      background: var(--aei-bg-surface);
+      color: var(--aei-color-text);
+      font-size: 0.875rem;
+    }
+  }
+
+  .participants-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--aei-border-color);
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--aei-color-muted);
+      background: var(--aei-bg-hover);
+    }
+
+    td {
+      font-size: 0.875rem;
+      color: var(--aei-color-text);
+    }
+
+    tbody tr:hover {
+      background: var(--aei-bg-hover);
+    }
+  }
+
+  .participants-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+}
+
+// =============================================================================
+// Cross-Vertical Bridges (Fase 6 — placeholder)
+// =============================================================================
+
+.cross-vertical-bridges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bridge-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--aei-bg-surface);
+  border-radius: var(--aei-radius);
+  border-left: 4px solid var(--ej-color-impulse, #FF8C42);
+  box-shadow: 0 2px 8px color-mix(in srgb, black 6%, transparent);
+
+  .bridge-icon {
+    flex-shrink: 0;
+    display: flex;
+  }
+
+  .bridge-message {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--aei-color-text);
+    margin: 0;
+  }
+
+  .bridge-dismiss {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--aei-color-muted);
+    padding: 0.25rem;
+
+    &:hover {
+      color: var(--aei-color-text);
+    }
+  }
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
+
+@media (max-width: 768px) {
+  .andalucia-ei-hero {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .participant-dashboard {
+    padding: 1.5rem 1rem;
+  }
+
+  .hours-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .hour-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--aei-bg-subtle);
+  }
+
+  .hour-value {
+    font-size: 1.25rem;
+  }
+
+  .andalucia-ei-admin {
+    padding: 1.5rem 1rem;
+
+    .admin-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .participants-table-wrapper {
+      overflow-x: auto;
+    }
+  }
+}

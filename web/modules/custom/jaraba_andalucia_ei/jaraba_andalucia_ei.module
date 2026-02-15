@@ -31,6 +31,9 @@ function jaraba_andalucia_ei_theme(): array {
       'variables' => [
         'participante' => NULL,
         'is_admin' => FALSE,
+        'health_score' => NULL,
+        'bridges' => [],
+        'proactive_action' => NULL,
       ],
       'template' => 'andalucia-ei-dashboard',
     ],
@@ -106,6 +109,24 @@ function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface
       // Registrar en auditoría.
       $tracker->recordSession($participante, $horasARegistrar, $session->id());
 
+      // Feature Gate: registrar uso diario de copilot.
+      // Plan Elevación Andalucía +ei v1 — Fase 10.
+      if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_feature_gate')) {
+        \Drupal::service('ecosistema_jaraba_core.andalucia_ei_feature_gate')
+          ->recordUsage($userId, 'copilot_sessions_daily');
+      }
+
+      // Fase 12: Track first_ia_session conversion si es la primera sesión.
+      if ($horasActuales <= 0 && \Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_experiment')) {
+        try {
+          \Drupal::service('ecosistema_jaraba_core.andalucia_ei_experiment')
+            ->trackConversion($userId, 'first_ia_session');
+        }
+        catch (\Exception $e) {
+          // Non-critical.
+        }
+      }
+
       \Drupal::logger('jaraba_andalucia_ei')->info(
         'Registradas @horas horas IA para participante @dni (sesión @session)',
         [
@@ -115,6 +136,14 @@ function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface
         ]
       );
     }
+    else {
+      // Límite diario alcanzado — disparar upgrade trigger.
+      // Plan Elevación Andalucía +ei v1 — Fase 10.
+      _jaraba_andalucia_ei_fire_upgrade_trigger('limit_reached', $participante, [
+        'feature' => 'copilot_sessions_daily',
+        'vertical' => 'andalucia_ei',
+      ]);
+    }
   }
   catch (\Exception $e) {
     \Drupal::logger('jaraba_andalucia_ei')->error(
@@ -122,6 +151,48 @@ function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface
       ['@message' => $e->getMessage()]
     );
   }
+}
+
+// =============================================================================
+// FASE 12: EMBUDO PÚBLICO → REGISTRO → VENTAS
+// Onboarding enrollment + conversion tracking on participant creation.
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for programa_participante_ei.
+ *
+ * On participant creation:
+ * 1. Enrolls in SEQ_AEI_001 (Welcome Participant) email sequence.
+ * 2. Tracks 'participant_enrolled' conversion event for A/B testing.
+ * 3. Syncs initial CRM lead stage.
+ */
+function jaraba_andalucia_ei_programa_participante_ei_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $userId = (int) ($entity->getOwnerId() ?? 0);
+  if (!$userId) {
+    return;
+  }
+
+  // 1. Welcome email sequence.
+  _jaraba_andalucia_ei_enroll_email_sequence($userId, 'SEQ_AEI_001');
+
+  // 2. A/B conversion tracking.
+  if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_experiment')) {
+    try {
+      \Drupal::service('ecosistema_jaraba_core.andalucia_ei_experiment')
+        ->trackConversion($userId, 'participant_enrolled');
+    }
+    catch (\Exception $e) {
+      // Non-critical.
+    }
+  }
+
+  // 3. Initial CRM sync (lead stage).
+  _jaraba_andalucia_ei_sync_to_crm($entity, 'atencion');
+
+  \Drupal::logger('jaraba_andalucia_ei')->info(
+    'New participant @id enrolled: welcome email + CRM lead created',
+    ['@id' => $entity->id()]
+  );
 }
 
 // =============================================================================
@@ -146,6 +217,33 @@ function jaraba_andalucia_ei_programa_participante_ei_update(\Drupal\Core\Entity
     $original = $entity->original;
     if (!$original || !$original->canTransitToInsercion()) {
       _jaraba_andalucia_ei_notify_eligibility($entity);
+    }
+  }
+
+  // Plan Elevación Andalucía +ei v1 — Fase 10: Upgrade Triggers en hitos.
+  _jaraba_andalucia_ei_check_hour_milestones($entity);
+
+  // Plan Elevación Andalucía +ei v1 — Fase 10: CRM sync en transición de fase.
+  $originalFase = $entity->original ? ($entity->original->getFaseActual() ?? 'atencion') : 'atencion';
+  $newFase = $entity->getFaseActual() ?? 'atencion';
+  if ($originalFase !== $newFase) {
+    _jaraba_andalucia_ei_sync_to_crm($entity, $newFase);
+
+    // Disparar email sequence en transición a inserción.
+    if ($newFase === 'insercion') {
+      $ownerIdForSeq = (int) $entity->getOwnerId();
+      _jaraba_andalucia_ei_enroll_email_sequence($ownerIdForSeq, 'SEQ_AEI_002');
+
+      // Fase 12: Track phase_insertion conversion.
+      if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_experiment')) {
+        try {
+          \Drupal::service('ecosistema_jaraba_core.andalucia_ei_experiment')
+            ->trackConversion($ownerIdForSeq, 'phase_insertion');
+        }
+        catch (\Exception $e) {
+          // Non-critical.
+        }
+      }
     }
   }
 }
@@ -255,6 +353,10 @@ function jaraba_andalucia_ei_cron(): void {
       ['@message' => $e->getMessage()]
     );
   }
+
+  // Plan Elevación Andalucía +ei v1 — Fase 10/12:
+  // Proactive AI evaluation + re-engagement (runs on its own 24h timer).
+  _jaraba_andalucia_ei_cron_proactive_evaluation();
 }
 
 /**
@@ -297,4 +399,295 @@ function _jaraba_andalucia_ei_process_sto_sync(): void {
     'Sincronización STO: @count participantes procesados',
     ['@count' => count($participantes)]
   );
+}
+
+// =============================================================================
+// FASE 10: UPGRADE TRIGGERS + CRM INTEGRATION
+// Plan Elevación Andalucía +ei v1
+// =============================================================================
+
+/**
+ * Dispara un upgrade trigger para el vertical andalucia_ei.
+ *
+ * Wrapper seguro que verifica la disponibilidad del servicio
+ * antes de disparar. Falla silenciosamente si no está disponible.
+ *
+ * @param string $triggerType
+ *   Tipo de trigger (limit_reached, first_milestone, etc.).
+ * @param \Drupal\Core\Entity\EntityInterface $participante
+ *   Entidad ProgramaParticipanteEi.
+ * @param array $context
+ *   Datos adicionales del trigger.
+ */
+function _jaraba_andalucia_ei_fire_upgrade_trigger(string $triggerType, $participante, array $context = []): void {
+  if (!\Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+    return;
+  }
+
+  try {
+    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    $tenant = $tenantContext->getCurrentTenant();
+
+    if (!$tenant) {
+      return;
+    }
+
+    $context['vertical'] = 'andalucia_ei';
+    \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
+      ->fire($triggerType, $tenant, $context);
+
+    \Drupal::logger('jaraba_andalucia_ei')->info(
+      'Upgrade trigger @type fired for participant @id',
+      ['@type' => $triggerType, '@id' => $participante->id()]
+    );
+  }
+  catch (\Exception $e) {
+    // Non-critical — silently fail.
+  }
+}
+
+/**
+ * Verifica hitos de horas y dispara upgrade triggers.
+ *
+ * Compara horas totales antes y después de la actualización.
+ * Dispara trigger en hitos: 25h, 50h, 75h, 100h.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   Participante actualizado (con ->original disponible).
+ */
+function _jaraba_andalucia_ei_check_hour_milestones($entity): void {
+  if (!$entity->original) {
+    return;
+  }
+
+  $totalNow = (float) ($entity->get('horas_mentoria_ia')->value ?? 0)
+    + (float) ($entity->get('horas_mentoria_humana')->value ?? 0)
+    + (float) ($entity->get('horas_orientacion_ind')->value ?? 0)
+    + (float) ($entity->get('horas_orientacion_grup')->value ?? 0)
+    + (float) ($entity->get('horas_formacion')->value ?? 0);
+
+  $totalBefore = (float) ($entity->original->get('horas_mentoria_ia')->value ?? 0)
+    + (float) ($entity->original->get('horas_mentoria_humana')->value ?? 0)
+    + (float) ($entity->original->get('horas_orientacion_ind')->value ?? 0)
+    + (float) ($entity->original->get('horas_orientacion_grup')->value ?? 0)
+    + (float) ($entity->original->get('horas_formacion')->value ?? 0);
+
+  $milestones = [25, 50, 75, 100];
+  foreach ($milestones as $milestone) {
+    if ($totalNow >= $milestone && $totalBefore < $milestone) {
+      _jaraba_andalucia_ei_fire_upgrade_trigger('first_milestone', $entity, [
+        'milestone' => "{$milestone}h",
+      ]);
+
+      // Disparar secuencia de email en hito de horas.
+      $milestoneOwnerId = (int) $entity->getOwnerId();
+      _jaraba_andalucia_ei_enroll_email_sequence($milestoneOwnerId, 'SEQ_AEI_003');
+
+      // Fase 12: Track training milestone conversions.
+      if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_experiment')) {
+        try {
+          $eventMap = [10 => 'orientation_10h', 50 => 'training_50h'];
+          $convEvent = $eventMap[$milestone] ?? NULL;
+          if ($convEvent) {
+            \Drupal::service('ecosistema_jaraba_core.andalucia_ei_experiment')
+              ->trackConversion($milestoneOwnerId, $convEvent);
+          }
+        }
+        catch (\Exception $e) {
+          // Non-critical.
+        }
+      }
+
+      \Drupal::logger('jaraba_andalucia_ei')->notice(
+        'Hour milestone @milestone reached for participant @id',
+        ['@milestone' => "{$milestone}h", '@id' => $entity->id()]
+      );
+    }
+  }
+}
+
+/**
+ * Sincroniza la transición de fase con el CRM pipeline.
+ *
+ * Crea una actividad CRM cuando un participante cambia de fase.
+ * Mapea fases Andalucía +ei a stages CRM estándar.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $participante
+ *   Participante con fase actualizada.
+ * @param string $newFase
+ *   Nueva fase del participante.
+ */
+function _jaraba_andalucia_ei_sync_to_crm($participante, string $newFase): void {
+  if (!\Drupal::hasService('jaraba_crm.activity')) {
+    return;
+  }
+
+  $crmMapping = [
+    'atencion' => 'lead',
+    'insercion' => 'sql',
+    'baja' => 'closed_lost',
+  ];
+
+  try {
+    $activity = \Drupal::service('jaraba_crm.activity');
+    $stage = $crmMapping[$newFase] ?? 'lead';
+    $owner = $participante->getOwner();
+
+    if (!$owner) {
+      return;
+    }
+
+    $totalHoras = (float) ($participante->get('horas_mentoria_ia')->value ?? 0)
+      + (float) ($participante->get('horas_mentoria_humana')->value ?? 0)
+      + (float) ($participante->get('horas_orientacion_ind')->value ?? 0)
+      + (float) ($participante->get('horas_orientacion_grup')->value ?? 0);
+
+    $activity->logActivity([
+      'type' => 'phase_transition',
+      'contact_email' => $owner->getEmail(),
+      'stage' => $stage,
+      'data' => [
+        'fase' => $newFase,
+        'programa' => 'andalucia_ei',
+        'horas_orientacion' => $totalHoras,
+        'horas_formacion' => (float) ($participante->get('horas_formacion')->value ?? 0),
+      ],
+    ]);
+
+    \Drupal::logger('jaraba_andalucia_ei')->info(
+      'CRM sync: participant @id transitioned to @fase (stage: @stage)',
+      ['@id' => $participante->id(), '@fase' => $newFase, '@stage' => $stage]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'CRM sync error for participant @id: @message',
+      ['@id' => $participante->id(), '@message' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Inscribe un usuario en una secuencia de email Andalucía +ei.
+ *
+ * Wrapper seguro para AndaluciaEiEmailSequenceService::enroll().
+ *
+ * @param int $userId
+ *   ID del usuario.
+ * @param string $sequenceKey
+ *   Clave de la secuencia (SEQ_AEI_001..SEQ_AEI_006).
+ */
+function _jaraba_andalucia_ei_enroll_email_sequence(int $userId, string $sequenceKey): void {
+  if (!\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_email_sequence')) {
+    return;
+  }
+
+  try {
+    \Drupal::service('ecosistema_jaraba_core.andalucia_ei_email_sequence')
+      ->enroll($userId, $sequenceKey);
+  }
+  catch (\Exception $e) {
+    // Non-critical — silently fail.
+  }
+}
+
+// =============================================================================
+// FASE 12: CRON ENHANCEMENTS — PROACTIVE EVALUATION + REENGAGEMENT
+// Plan Elevación Andalucía +ei v1
+// =============================================================================
+
+/**
+ * Implements hook_cron() — extended for Phase 12.
+ *
+ * Added to the existing hook_cron via separate execution block.
+ * Runs proactive evaluation batch and re-engagement checks every 24h.
+ */
+function _jaraba_andalucia_ei_cron_proactive_evaluation(): void {
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_andalucia_ei.proactive_last_run', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Run every 24 hours.
+  if ($now - $lastRun < 24 * 3600) {
+    return;
+  }
+
+  $state->set('jaraba_andalucia_ei.proactive_last_run', $now);
+
+  // Batch evaluate proactive journey rules.
+  if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_journey_progression')) {
+    try {
+      $processed = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_journey_progression')
+        ->evaluateBatch();
+      \Drupal::logger('jaraba_andalucia_ei')->info(
+        'Proactive evaluation: @count participants processed',
+        ['@count' => $processed]
+      );
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_andalucia_ei')->error(
+        'Proactive evaluation error: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  // Re-engagement: detect inactive participants (14+ days).
+  _jaraba_andalucia_ei_check_reengagement();
+}
+
+/**
+ * Detects inactive participants and enrolls them in reengagement sequence.
+ *
+ * Checks for participants with no activity in 14+ days and enrolls
+ * them in SEQ_AEI_005 (Inactivity Reengagement).
+ */
+function _jaraba_andalucia_ei_check_reengagement(): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('programa_participante_ei');
+    $fourteenDaysAgo = \Drupal::time()->getRequestTime() - (14 * 86400);
+
+    $inactiveIds = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('fase_actual', 'baja', '<>')
+      ->condition('changed', $fourteenDaysAgo, '<')
+      ->range(0, 100)
+      ->execute();
+
+    if (empty($inactiveIds)) {
+      return;
+    }
+
+    $participants = $storage->loadMultiple($inactiveIds);
+    $enrolled = 0;
+
+    foreach ($participants as $participant) {
+      $userId = (int) ($participant->getOwnerId() ?? 0);
+      if ($userId) {
+        // Check if already enrolled (avoid duplicates via state).
+        $stateKey = "andalucia_ei_reengagement_sent_{$userId}";
+        $lastSent = \Drupal::state()->get($stateKey, 0);
+        if ($lastSent && (\Drupal::time()->getRequestTime() - $lastSent) < (30 * 86400)) {
+          continue;
+        }
+
+        _jaraba_andalucia_ei_enroll_email_sequence($userId, 'SEQ_AEI_005');
+        \Drupal::state()->set($stateKey, \Drupal::time()->getRequestTime());
+        $enrolled++;
+      }
+    }
+
+    if ($enrolled > 0) {
+      \Drupal::logger('jaraba_andalucia_ei')->info(
+        'Re-engagement: @count inactive participants enrolled in SEQ_AEI_005',
+        ['@count' => $enrolled]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Re-engagement check error: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
 }

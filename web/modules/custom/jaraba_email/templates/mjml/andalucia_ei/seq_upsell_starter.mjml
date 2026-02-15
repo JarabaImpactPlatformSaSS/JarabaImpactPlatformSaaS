@@ -1,0 +1,76 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .plan-feature { padding: 4px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#233D63" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} Andaluc&iacute;a +ei
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          {{ t('Desbloquea todo tu potencial') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Has alcanzado los límites de tu plan gratuito en @feature. Tu progreso demuestra que estás listo para dar el siguiente paso.', {'@feature': feature_label}) }}</p>
+        </mj-text>
+
+        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px" padding-bottom="8px">
+          {{ t('Plan Starter incluye') }}
+        </mj-text>
+
+        <mj-section background-color="#FFF7ED" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#78350F">
+              <div class="plan-feature">&#10003; {{ t('15 sesiones diarias con Tutor IA (vs 3 en gratuito)') }}</div>
+              <div class="plan-feature">&#10003; {{ t('5 horas mensuales de mentoría humana') }}</div>
+              <div class="plan-feature">&#10003; {{ t('10 exportaciones STO mensuales') }}</div>
+              <div class="plan-feature">&#10003; {{ t('10 módulos formativos') }}</div>
+              <div class="plan-feature">&#10003; {{ t('3 diagnósticos DIME') }}</div>
+              <div class="plan-feature">&#10003; {{ t('5 descargas de informes mensuales') }}</div>
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
+          {{ t('Actualizar a Starter') }}
+        </mj-button>
+
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          <p>{{ t('Sin compromiso de permanencia. Cancela cuando quieras.') }}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

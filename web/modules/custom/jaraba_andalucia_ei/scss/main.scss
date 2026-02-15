@@ -1,0 +1,13 @@
+/**
+ * @file
+ * Entry point SCSS para jaraba_andalucia_ei.
+ *
+ * DIRECTRIZ: Federated Design Tokens — Consume solo var(--ej-*) del core.
+ * No define variables $ej-* propias (SSOT en ecosistema_jaraba_core).
+ *
+ * COMPILACIÓN:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_andalucia_ei && npx sass scss/main.scss css/andalucia-ei.css --style=compressed"
+ */
+
+@use 'dashboard';
