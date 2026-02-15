@@ -25,3 +25,10 @@ skills_manager:
     - core/drupalSettings
     - core/drupal.ajax
 
+# Modal CRUD actions — Plan Elevación Empleabilidad Fase 2
+modal-actions:
+  version: 1.x
+  dependencies:
+    - core/drupal.dialog.ajax
+    - ecosistema_jaraba_core/modal-system
+

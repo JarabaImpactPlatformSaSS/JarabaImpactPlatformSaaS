@@ -4,7 +4,14 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 37.0.0 (Emprendimiento Clase Mundial — 9 Gaps Cerrados)
+**Versión:** 38.0.0 (Elevación Empleabilidad — Fases 1-4 Implementadas)
+
+> **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 2 + 4 IMPLEMENTADAS** (2026-02-15)
+> - **Fase 2 (Modal CRUD System):** `modal-actions` library añadida a `jaraba_candidate` y `jaraba_self_discovery`, `hook_page_attachments_alter()` en ambos `.module`, atributos `data-dialog-type="modal"` en CRUD links de `jobseeker-dashboard.html.twig` (Edit profile, Create profile) y `candidate-profile-view.html.twig` (Editar perfil, Completar perfil)
+> - **Fase 4 (Feature Gating):** `EmployabilityFeatureGateService` + `FeatureGateResult` value object creados, servicio registrado en services.yml, 3 nuevos seed configs FreemiumVerticalLimit (`job_applications_per_day` limit:3, `copilot_messages_per_day` limit:5, `job_alerts` limit:1), gating integrado en `CvBuilderService::generateCv()` y `ApplicationService::apply()` con fail-open y `recordUsage()`
+> - **12 seed configs empleabilidad** totales (9 existentes + 3 nuevos): cv_builder, diagnostics, offers_visible_per_day, job_applications_per_day, copilot_messages_per_day, job_alerts × free plan
+> - **17 archivos** (7 nuevos + 10 modificados) | **4 módulos** tocados
+>
 
 > **🚀 EMPRENDIMIENTO CLASE MUNDIAL — 9/10 GAPS CERRADOS** (2026-02-15)
 > - **Auditoria senior multi-disciplina** del vertical Emprendimiento: 10 gaps identificados, 9 implementados (G10 diferido)

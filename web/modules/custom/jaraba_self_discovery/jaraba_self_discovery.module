@@ -6,6 +6,19 @@
  */
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adjunta la librería modal-system a las rutas del módulo self-discovery
+ * para que los enlaces CRUD abran en modal (Fase 2 Empleabilidad).
+ */
+function jaraba_self_discovery_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?: '';
+  if (str_starts_with($route, 'jaraba_self_discovery.')) {
+    $attachments['#attached']['library'][] = 'jaraba_self_discovery/modal-actions';
+  }
+}
+
+/**
  * Implements hook_theme().
  *
  * Define los templates Twig para el módulo.

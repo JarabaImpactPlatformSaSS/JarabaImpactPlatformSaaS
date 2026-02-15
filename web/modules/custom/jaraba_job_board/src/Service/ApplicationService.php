@@ -77,6 +77,23 @@ class ApplicationService
      */
     public function apply(int $job_id, int $candidate_id, array $data = []): ?JobApplicationInterface
     {
+        // Feature gate: job_applications_per_day (Plan Elevación Empleabilidad v1 — Fase 4).
+        try {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
+            $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
+            $gateResult = $featureGate->check($candidate_id, 'job_applications_per_day');
+            if (!$gateResult->isAllowed()) {
+                $this->logger->notice('Feature gate denied job application for user @user: @msg', [
+                    '@user' => $candidate_id,
+                    '@msg' => $gateResult->getUpgradeMessage(),
+                ]);
+                return NULL;
+            }
+        }
+        catch (\Exception $e) {
+            // Service not available — allow application (fail-open).
+        }
+
         // Check if already applied
         if ($this->hasApplied($candidate_id, $job_id)) {
             $this->logger->notice('User @user already applied to job @job', [
@@ -108,6 +125,16 @@ class ApplicationService
             ]);
 
         $application->save();
+
+        // Record feature usage (Plan Elevación Empleabilidad v1 — Fase 4).
+        try {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
+            $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
+            $featureGate->recordUsage($candidate_id, 'job_applications_per_day');
+        }
+        catch (\Exception $e) {
+            // Service not available — skip recording.
+        }
 
         // Increment job applications count
         $job->incrementApplicationsCount();

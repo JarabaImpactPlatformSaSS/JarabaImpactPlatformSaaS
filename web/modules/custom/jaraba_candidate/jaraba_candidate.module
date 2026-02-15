@@ -81,6 +81,19 @@ function jaraba_candidate_theme(): array {
 
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adjunta la librería modal-system a las rutas del módulo candidato
+ * para que los enlaces CRUD abran en modal (Fase 2 Empleabilidad).
+ */
+function jaraba_candidate_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?: '';
+  if (str_starts_with($route, 'jaraba_candidate.')) {
+    $attachments['#attached']['library'][] = 'jaraba_candidate/modal-actions';
+  }
+}
+
+/**
  * Implements hook_entity_presave().
  *
  * Geocodes the candidate's location using OpenStreetMap/Nominatim.

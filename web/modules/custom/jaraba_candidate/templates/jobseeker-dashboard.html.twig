@@ -48,7 +48,7 @@
     <section class="dashboard-card dashboard-card--profile">
       <div class="card-header">
         <h2>{{ 'Your Profile'|t }}</h2>
-        <a href="/my-profile/edit" class="card-action">{{ 'Edit'|t }}</a>
+        <a href="/my-profile/edit" class="card-action" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>{{ 'Edit'|t }}</a>
       </div>
       
       {% if profile %}
@@ -93,7 +93,7 @@
       {% else %}
         <div class="empty-state">
           <p>{{ 'Create your professional profile to start applying for jobs.'|t }}</p>
-          <a href="/my-profile/edit" class="btn btn--primary">{{ 'Create Profile'|t }}</a>
+          <a href="/my-profile/edit" class="btn btn--primary" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>{{ 'Create Profile'|t }}</a>
         </div>
       {% endif %}
     </section>

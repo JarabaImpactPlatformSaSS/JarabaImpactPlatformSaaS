@@ -11,8 +11,8 @@
 // Variables locales (layout only - no colors)
 $dashboard-gap: 1.5rem;
 $card-radius: var(--ej-border-radius-lg, 12px);
-$card-shadow: var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.08));
-$card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
+$card-shadow: var(--ej-shadow-sm, 0 2px 8px color-mix(in srgb, var(--ej-color-text-primary, #000) 8%, transparent));
+$card-shadow-hover: var(--ej-shadow-md, 0 4px 16px color-mix(in srgb, var(--ej-color-text-primary, #000) 12%, transparent));
 
 // -----------------------------------------------------------------------------
 // LAYOUT PRINCIPAL
@@ -57,8 +57,8 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
             text-transform: uppercase;
 
             &--active {
-                background: rgba(16, 185, 129, 0.15);
-                color: #059669;
+                background: color-mix(in srgb, var(--ej-color-success, #10b981) 15%, transparent);
+                color: var(--ej-color-success-dark, #059669);
             }
         }
     }
@@ -89,21 +89,21 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
     }
 
     &--high {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: linear-gradient(135deg, var(--ej-color-primary, #6366f1), var(--ej-color-primary-light, #8b5cf6));
         color: white;
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-primary, #6366f1) 40%, transparent);
         }
     }
 
     &--medium {
-        background: rgba(99, 102, 241, 0.1);
-        color: #6366f1;
+        background: color-mix(in srgb, var(--ej-color-primary, #6366f1) 10%, transparent);
+        color: var(--ej-color-primary, #6366f1);
 
         &:hover {
-            background: rgba(99, 102, 241, 0.2);
+            background: color-mix(in srgb, var(--ej-color-primary, #6366f1) 20%, transparent);
         }
     }
 
@@ -217,7 +217,7 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--ej-color-primary, #6366f1), var(--ej-color-primary-light, #8b5cf6));
             color: white;
             display: flex;
             align-items: center;
@@ -274,13 +274,13 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
 
     &__bg {
         fill: none;
-        stroke: #e5e7eb;
+        stroke: var(--ej-color-border, #e5e7eb);
         stroke-width: 3;
     }
 
     &__progress {
         fill: none;
-        stroke: #10b981;
+        stroke: var(--ej-color-success, #10b981);
         stroke-width: 3;
         stroke-linecap: round;
         transition: stroke-dasharray 0.5s ease;
@@ -384,7 +384,7 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
     }
 
     .match-badge {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, var(--ej-color-success, #10b981), var(--ej-color-success-dark, #059669));
         color: white;
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
@@ -394,27 +394,27 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
 
     // Status-specific colors
     &--applied .status {
-        color: #6b7280;
+        color: var(--ej-color-text-secondary, #6b7280);
     }
 
     &--screening .status {
-        color: #f59e0b;
+        color: var(--ej-color-warning, #f59e0b);
     }
 
     &--shortlisted .status {
-        color: #6366f1;
+        color: var(--ej-color-primary, #6366f1);
     }
 
     &--interviewed .status {
-        color: #8b5cf6;
+        color: var(--ej-color-primary-light, #8b5cf6);
     }
 
     &--offered .status {
-        color: #10b981;
+        color: var(--ej-color-success, #10b981);
     }
 
     &--rejected .status {
-        color: #ef4444;
+        color: var(--ej-color-danger, #ef4444);
     }
 }
 
@@ -497,7 +497,7 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
 
     &__fill {
         height: 100%;
-        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        background: linear-gradient(90deg, var(--ej-color-primary, #6366f1), var(--ej-color-primary-light, #8b5cf6));
         border-radius: 3px;
         transition: width 0.3s ease;
     }
@@ -553,7 +553,7 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
     .match-score {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #10b981;
+        color: var(--ej-color-success, #10b981);
     }
 }
 
@@ -581,11 +581,11 @@ $card-shadow-hover: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.12));
         transition: all 0.2s;
 
         &--primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--ej-color-primary, #6366f1), var(--ej-color-primary-light, #8b5cf6));
             color: white;
 
             &:hover {
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+                box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-primary, #6366f1) 40%, transparent);
             }
         }
 
