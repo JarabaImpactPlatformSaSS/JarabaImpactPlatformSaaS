@@ -153,14 +153,14 @@
 
 .status {
   &--pending { background: var(--ej-bg-muted, #F1F5F9); color: var(--ej-text-muted, #94A3B8); }
-  &--progress { background: rgba(59, 130, 246, 0.1); color: var(--ej-color-primary, #3B82F6); }
+  &--progress { background: color-mix(in srgb, var(--ej-color-primary, #3B82F6) 10%, transparent); color: var(--ej-color-primary, #3B82F6); }
   &--validated { background: var(--ej-color-success-bg, #DCFCE7); color: var(--ej-color-success, #16A34A); }
   &--invalidated { background: var(--ej-color-error-bg, #FEE2E2); color: var(--ej-color-error, #DC2626); }
   &--inconclusive { background: var(--ej-color-warning-bg, #FEF9C3); color: var(--ej-color-warning, #CA8A04); }
 }
 
 .badge {
-  &--desirability { background: rgba(59, 130, 246, 0.1); color: var(--ej-color-primary, #3B82F6); }
+  &--desirability { background: color-mix(in srgb, var(--ej-color-primary, #3B82F6) 10%, transparent); color: var(--ej-color-primary, #3B82F6); }
   &--feasibility { background: var(--ej-color-warning-bg, #FEF9C3); color: var(--ej-color-warning, #CA8A04); }
   &--viability { background: var(--ej-color-success-bg, #DCFCE7); color: var(--ej-color-success, #16A34A); }
 }

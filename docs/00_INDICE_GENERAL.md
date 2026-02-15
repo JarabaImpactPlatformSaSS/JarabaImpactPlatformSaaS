@@ -4,7 +4,31 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 38.0.0 (Elevación Empleabilidad — Fases 1-4 Implementadas)
+**Versión:** 41.0.0 (Elevación Emprendimiento — 6 Fases Implementadas + Empleabilidad Fases 1-8)
+
+> **🎯 ELEVACIÓN EMPRENDIMIENTO — 6 FASES IMPLEMENTADAS** (2026-02-15)
+> - **Fase 1 (Parent Template + FAB):** `page--emprendimiento.html.twig` zero-region + Copilot FAB, `preprocess_page__emprendimiento()`, template suggestion `page__emprendimiento` para copilot_v2 y mentoring, eliminados 3 templates hijos redundantes
+> - **Fase 2 (Body Classes):** `page-emprendimiento` + `vertical-emprendimiento` en copilot_v2 routes y mentoring routes via `hook_preprocess_html()`
+> - **Fase 3 (SCSS + package.json):** 3 violaciones rgba() corregidas con `color-mix()` en `_copilot-chat-widget.scss` y `_hypothesis-manager.scss`, `package.json` creado para jaraba_copilot_v2 (Dart Sass)
+> - **Fase 4 (Feature Gate):** `EmprendimientoFeatureGateService` creado (6 features: hypotheses_active, experiments_monthly, copilot_sessions_daily, mentoring_sessions_monthly, bmc_drafts, calculadora_uses), servicio registrado, `update_9016` para tabla emprendimiento_feature_usage
+> - **Fase 5 (i18n):** 30+ strings en `EmprendimientoJourneyDefinition.php` envueltos en `TranslatableMarkup`, constantes convertidas a metodos estaticos, `EmprendimientoCrossSellService` actualizado
+> - **Fase 6 (A/B Testing G10):** `EmprendimientoExperimentService` integrado con jaraba_ab_testing (10 eventos conversion, scope filtering, metricas por variante)
+> - **15 archivos** (5 nuevos + 10 modificados, 3 eliminados) | **5 modulos** tocados
+> - **Plan:** [20260215-Plan_Elevacion_Clase_Mundial_Vertical_Emprendimiento_v1.md](./implementacion/20260215-Plan_Elevacion_Clase_Mundial_Vertical_Emprendimiento_v1.md)
+> - **Aprendizaje:** [2026-02-15_emprendimiento_elevacion_6_fases.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md)
+>
+
+> **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 7 + 8 IMPLEMENTADAS** (2026-02-15)
+> - **Fase 7 (CRM Integration):** `_jaraba_job_board_sync_to_crm()` sincroniza candidaturas con CRM pipeline (applied→lead, screening→mql, shortlisted→sql, interviewed→demo, offered→proposal, hired→closed_won, rejected→closed_lost), `_jaraba_job_board_ensure_crm_contact()` crea/vincula contactos CRM por email, keyValue store `jaraba_job_board.crm_sync` para mapping application→opportunity y user→contact, `ActivityService::create()` para log de transiciones, integrado en `_jaraba_job_board_handle_application_update()` (step 4) y `jaraba_job_board_entity_insert()` (initial applied)
+> - **Fase 8 (Cross-Vertical Bridges):** `EmployabilityCrossVerticalBridgeService` con 4 bridges (emprendimiento: time_in_state_90_days, servicios: has_freelance_skills, formación: recently_hired, comercio: verified_employer), `evaluateBridges()` con max 2 bridges + dismiss tracking via State API, `presentBridge()` con impression tracking, `trackBridgeResponse()`, integrado en `DashboardController::index()` con fail-open, `cross_vertical_bridges` variable en hook_theme, bridge cards en `jobseeker-dashboard.html.twig` con `jaraba_icon()` y `btn--outline`
+> - **8 archivos** (1 nuevo + 7 modificados) | **3 módulos** tocados
+>
+
+> **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 5 + 6 IMPLEMENTADAS** (2026-02-15)
+> - **Fase 5 (Upgrade Triggers + Upsell IA):** 4 nuevos trigger types en `UpgradeTriggerService` (`engagement_high`, `first_milestone`, `external_validation`, `status_change`), `fire('limit_reached')` en `ApplicationService::apply()` y `CvBuilderService::generateCv()` al denegar feature gate, milestone 5-aplicaciones con `engagement_high`, `getSoftSuggestion()` contextual en `EmployabilityCopilotAgent` con resolución de fase via JourneyState, triggers `status_change`/`first_milestone` en `jaraba_job_board.module` para shortlisted/hired
+> - **Fase 6 (Email Sequences):** `EmployabilityEmailSequenceService` con 5 secuencias (SEQ_EMP_001-005: Onboarding, Re-engagement, Upsell, Post-Entrevista, Post-Empleo), 5 MJML templates nuevos, registrados en `TemplateLoaderService` con sample data, enrollment triggers en `jaraba_diagnostic.module` (SEQ_EMP_001 post-diagnóstico), `ApplicationService` (SEQ_EMP_003 3ª aplicación free), `jaraba_job_board.module` (SEQ_EMP_004 interview + SEQ_EMP_005 hired)
+> - **14 archivos** (6 nuevos + 8 modificados) | **6 módulos** tocados
+>
 
 > **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 2 + 4 IMPLEMENTADAS** (2026-02-15)
 > - **Fase 2 (Modal CRUD System):** `modal-actions` library añadida a `jaraba_candidate` y `jaraba_self_discovery`, `hook_page_attachments_alter()` en ambos `.module`, atributos `data-dialog-type="modal"` en CRUD links de `jobseeker-dashboard.html.twig` (Edit profile, Create profile) y `candidate-profile-view.html.twig` (Editar perfil, Completar perfil)

@@ -1,0 +1,84 @@
+{#
+/**
+ * @file
+ * Page template para rutas del vertical Emprendimiento.
+ * SIN regiones ni bloques de Drupal — Zero Region Policy.
+ *
+ * Aplicado a todas las rutas de:
+ * - jaraba_copilot_v2.* (/emprendimiento/bmc, /emprendimiento/hipotesis, /emprendimiento/experimentos/gestion)
+ * - jaraba_mentoring.* (/mentors, /mentor/{id}, /become-mentor, /mentor/dashboard)
+ *
+ * Variables inyectadas desde hook_preprocess_page__emprendimiento():
+ * - clean_content: Render array del controlador (system_main)
+ * - clean_messages: Render array de mensajes del sistema
+ * - copilot_context: Contexto del CopilotContextService
+ * - theme_settings: Configuración del tema
+ * - site_name, site_slogan, logo, footer_copyright
+ *
+ * Directrices aplicadas:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #11: Full-width layout
+ * - P4-AI-001: Copilot FAB en toda ruta autenticada del vertical
+ * - Plan Elevación Emprendimiento v1 — Fase 1
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--emprendimiento">
+
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({}),
+    'avatar_nav': avatar_nav|default(null)
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Full Width, Zero Regions
+     ============================================= #}
+  <main class="main-content main-content--full main-content--emprendimiento" role="main">
+    {# Mensajes del sistema (status, warning, error) #}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {# Contenido del controlador — sin bloques heredados #}
+    <div class="main-content__inner main-content__inner--full">
+      {% if clean_content %}
+        {{ clean_content }}
+      {% endif %}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     COPILOT FAB - Asistente IA contextual
+     Directriz P4-AI-001: Disponible en todas las
+     rutas autenticadas del vertical emprendimiento.
+     ============================================= #}
+  {% if logged_in %}
+    {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+      'context': copilot_context|default({})
+    } only %}
+  {% endif %}
+
+</div>

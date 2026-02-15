@@ -1507,3 +1507,64 @@ function ecosistema_jaraba_core_update_9015(): string {
 
   return 'Created tenant_metering table.';
 }
+
+/**
+ * Crea la tabla emprendimiento_feature_usage para tracking de features.
+ *
+ * Plan Elevacion Emprendimiento v1 — Fase 4
+ * Tabla identica en estructura a empleabilidad_feature_usage pero para
+ * el vertical emprendimiento (hypotheses_active, experiments_monthly,
+ * copilot_sessions_daily, mentoring_sessions_monthly, bmc_drafts, calculadora_uses).
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Service\EmprendimientoFeatureGateService
+ */
+function ecosistema_jaraba_core_update_9016(): string {
+  $database = \Drupal::database();
+
+  if ($database->schema()->tableExists('emprendimiento_feature_usage')) {
+    return 'Table emprendimiento_feature_usage already exists.';
+  }
+
+  $database->schema()->createTable('emprendimiento_feature_usage', [
+    'description' => 'Tracking de uso diario de features del vertical emprendimiento.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'feature_key' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ],
+      'usage_date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+      ],
+      'usage_count' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+      'feature_date' => ['feature_key', 'usage_date'],
+    ],
+  ]);
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'Tabla emprendimiento_feature_usage creada para feature gating del vertical emprendimiento.'
+  );
+
+  return 'Created emprendimiento_feature_usage table.';
+}

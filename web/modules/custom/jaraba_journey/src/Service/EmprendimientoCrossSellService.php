@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
  * Servicio de ejecucion de ofertas cross-sell para emprendimiento.
  *
  * Escucha transiciones de estado del journey y ejecuta las reglas
- * de cross-sell definidas en EmprendimientoJourneyDefinition::EMPRENDEDOR_JOURNEY.
+ * de cross-sell definidas en EmprendimientoJourneyDefinition::getEmprendedorJourney().
  *
  * ARQUITECTURA:
  * - Se invoca desde JourneyEngineService tras cada transicion de estado.
@@ -74,7 +74,8 @@ class EmprendimientoCrossSellService {
       return [];
     }
 
-    $crossSellRules = EmprendimientoJourneyDefinition::EMPRENDEDOR_JOURNEY['cross_sell'] ?? [];
+    $journey = EmprendimientoJourneyDefinition::getEmprendedorJourney();
+    $crossSellRules = $journey['cross_sell'] ?? [];
     $offersToPresent = [];
 
     foreach ($crossSellRules as $rule) {

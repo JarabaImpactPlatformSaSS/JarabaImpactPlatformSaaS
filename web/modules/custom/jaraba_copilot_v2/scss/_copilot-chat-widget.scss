@@ -382,7 +382,7 @@
 
   &:focus {
     border-color: var(--cc-primary);
-    box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.15);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ej-color-accent, #FF8C42) 15%, transparent);
   }
 
   &::placeholder {
