@@ -787,8 +787,9 @@
 | [20260213-Plan_Remediacion_Auditoria_Integral_v1.md](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) | 📋 **Plan Remediación Auditoría Integral** ⭐ — 65 hallazgos, 3 fases, 8 semanas, 250-350h. TOC 16 secciones. Catálogo completo, correspondencia directrices, checklist frontend 12 sub-secciones | 2026-02-13 |
 | [20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md](./implementacion/20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md) | 🧭 **Navegacion Contextual Avatar** ⭐ — AvatarNavigationService 10 avatares, _avatar-nav.html.twig (bottom nav mobile + barra desktop), SCSS BEM, Theme Setting enable_avatar_nav, 7 templates `only` actualizadas. Spec f-103 Fase 1 | 2026-02-13 |
 | [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | 🎯 **Elevación Clase Mundial Empleabilidad** ⭐ — 10 fases, 25 hallazgos críticos, 115+ clases PHP, 80+ rutas, 19 entidades. Correspondencia 25+ specs técnicos. Fase 1 (Templates) + Fase 3 (SCSS) implementadas | 2026-02-15 |
+| [20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md](./implementacion/20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md) | 🎯 **Emprendimiento v2 Paridad Empleabilidad** ⭐ — 7 gaps cerrados: HealthScore (5 dimensiones + 8 KPIs), JourneyProgression (7 reglas), EmailSequences (5 MJML), CopilotAgent (6 modos), CrossVerticalBridges (3 salientes), CRM Sync (7 estados), UpgradeTriggers (5 nuevos). 10 archivos nuevos + 6 modificados | 2026-02-15 |
 
-**Total documentos implementación:** 36
+**Total documentos implementación:** 37
 
 ---
 
@@ -967,8 +968,9 @@
 | [2026-02-14_page_builder_remediacion_fases_1_5.md](./tecnicos/aprendizajes/2026-02-14_page_builder_remediacion_fases_1_5.md) | 🔧 **Remediación Page Builder FASES 0-5** ⭐ — Publish endpoint 404 fix, SEO URLs, Navigation behavior, 4 SCSS compilados Docker NVM, IconRegistry SVG 17 iconos, Font Outfit unificado, PHP 8.4 fix. 8 reglas nuevas | 2026-02-14 |
 
 | [2026-02-14_security_ci_dependabot_remediation.md](./tecnicos/aprendizajes/2026-02-14_security_ci_dependabot_remediation.md) | 🔒 **Security CI + Dependabot Remediation** ⭐ — 6 lecciones aprendidas (Situación → Aprendizaje → Regla). OWASP ZAP requiere STAGING_URL secret. DNS resolution pre-check. Dependabot 42→0 (npm audit fix, --force major bumps, overrides transitivas, dismiss upstream). Contrib devDependencies no afectan producción. 2 reglas AUDIT-SEC-N17/N18 | 2026-02-14 |
+| [2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md) | 🎯 **Emprendimiento Paridad Empleabilidad 7 Gaps** ⭐ — 7 aprendizajes clave: dimensiones HealthScore difieren por vertical, reglas JourneyProgression mapean 1:1 con condiciones vertical-specific, email sequences patron identico solo cambian constantes, CopilotAgent extiende BaseAgent con modes/keywords/prompts vertical-specific, puentes cross-vertical son salientes (direccion importa), CRM sync replica limpiamente a jaraba_copilot_v2, upgrade triggers necesitan tipos + fire() en FeatureGateService. 10 archivos nuevos, 6 modificados, 5 modulos | 2026-02-15 |
 
-**Total aprendizajes:** 77
+**Total aprendizajes:** 78
 
 ---
 
@@ -1025,12 +1027,12 @@
 | Métrica | Valor |
 |---------|-------|
 | **Total documentos técnicos** | 296+ (37 con prefijo 20260118 mapeados + GO_LIVE_RUNBOOK + SECURITY_PLAYBOOK + learning #70 + 4 impl F9-F12 + scaling guide) |
-| **Documentos de implementación** | 33 (29 base + 4 Clase Mundial F9-F12) |
+| **Documentos de implementación** | 37 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar) |
 | **Bloques Plan Maestro v3** | 7 (A-G) |
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 71 |
+| **Aprendizajes documentados** | 78 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
@@ -1045,7 +1047,7 @@
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
 | **Skills AI verticales** | 30 (7+7+6+5+5 por vertical) |
 | **Monitoring alertas** | 24 reglas Prometheus (14 base + 10 scaling F10) + 5 recording rules |
-| **Email templates MJML** | 24 transaccionales (auth, billing, marketplace, empleabilidad) |
+| **Email templates MJML** | 40 transaccionales (auth 5, billing 7, marketplace 6, empleabilidad 10, emprendimiento 11 + base) |
 | **Stripe precios** | 40 (5 productos × 4 tiers × 2 intervalos) |
 | **Go-live scripts** | 4 (preflight, validation, rollback + restore_tenant F10) |
 | **Security CI scans** | Daily (Trivy + ZAP + composer/npm audit) |
