@@ -1026,6 +1026,32 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     }
   }
 
+  // =========================================================================
+  // VERTICAL EMPLEABILIDAD — Body classes unificadas
+  // Plan Elevación Empleabilidad v1 — Fase 1
+  //
+  // Aplica a TODAS las rutas de los 4 módulos del vertical empleabilidad.
+  // Las clases específicas (page-employability-diagnostic, etc.) se suman.
+  // =========================================================================
+  $empleabilidad_prefixes = [
+    'jaraba_candidate.',
+    'jaraba_job_board.',
+    'jaraba_diagnostic.',
+    'jaraba_self_discovery.',
+  ];
+  $is_empleabilidad = FALSE;
+  foreach ($empleabilidad_prefixes as $prefix) {
+    if (str_starts_with($route, $prefix)) {
+      $is_empleabilidad = TRUE;
+      break;
+    }
+  }
+  if ($is_empleabilidad) {
+    $variables['attributes']['class'][] = 'page-empleabilidad';
+    $variables['attributes']['class'][] = 'vertical-empleabilidad';
+    $variables['attributes']['class'][] = 'dashboard-page';
+  }
+
   // Diagnostico de Empleabilidad - zero-region full-width (Spec 20260120b S3)
   $employability_diagnostic_routes = [
     'jaraba_diagnostic.employability.landing',
@@ -1358,7 +1384,8 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     || in_array('landing-page', $existing_classes)
     || in_array('canvas-editor-page', $existing_classes)
     || in_array('page-auth', $existing_classes)
-    || in_array('page-employability-diagnostic', $existing_classes);
+    || in_array('page-employability-diagnostic', $existing_classes)
+    || in_array('page-empleabilidad', $existing_classes);
 
   if (!$has_layout_class) {
     $module_body_classes = [
@@ -2012,6 +2039,47 @@ function ecosistema_jaraba_theme_preprocess_page__dashboard(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_page__empleabilidad().
+ *
+ * Preprocesa las páginas del vertical Empleabilidad para inyectar contexto
+ * del Copilot y variables específicas del vertical.
+ *
+ * Plan Elevación Empleabilidad v1 — Fase 1
+ * Template: page--empleabilidad.html.twig (Zero Region Policy + Copilot FAB)
+ *
+ * Aplica a todas las rutas de:
+ * - jaraba_candidate.* (/jobseeker, /my-profile, /my-applications)
+ * - jaraba_job_board.* (/employer, /jobs, /job/*)
+ * - jaraba_diagnostic.* (/empleabilidad/diagnostico)
+ * - jaraba_self_discovery.* (/self-discovery/*)
+ */
+function ecosistema_jaraba_theme_preprocess_page__empleabilidad(&$variables) {
+  // Inyectar contexto del Copilot para el FAB.
+  try {
+    $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
+    $variables['copilot_context'] = $copilot_service->getContext();
+  }
+  catch (\Exception $e) {
+    // Servicio no disponible — FAB se renderiza con defaults.
+    $variables['copilot_context'] = [];
+  }
+
+  // Configuración del tema para parciales (header/footer).
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+  ];
+
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+}
+
+/**
  * Implements hook_preprocess_page__user().
  *
  * Preprocesa todas las páginas del sistema de usuario para inyectar
@@ -2254,10 +2322,30 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     }
   }
 
-  // Rutas que usan template limpio de dashboard
+  // =========================================================================
+  // VERTICAL EMPLEABILIDAD — Template específico con Copilot FAB
+  // Plan Elevación Empleabilidad v1 — Fase 1
+  //
+  // Sobreescribe page__dashboard para rutas de empleabilidad con template
+  // que incluye Copilot FAB y clases CSS específicas del vertical.
+  // Template: page--empleabilidad.html.twig (Zero Region Policy)
+  // =========================================================================
+  $empleabilidad_suggestion_prefixes = [
+    'jaraba_candidate.',
+    'jaraba_job_board.',
+    'jaraba_diagnostic.',
+    'jaraba_self_discovery.',
+  ];
+  foreach ($empleabilidad_suggestion_prefixes as $prefix) {
+    if (str_starts_with($route_str, $prefix)) {
+      $suggestions[] = 'page__empleabilidad';
+      break;
+    }
+  }
+
+  // Rutas que usan template limpio de dashboard (excluye empleabilidad —
+  // esas rutas usan page__empleabilidad que ya las cubre arriba).
   $dashboard_routes = [
-    'jaraba_job_board.employer_dashboard',
-    'jaraba_candidate.dashboard',  // /jobseeker - Fixed: was jaraba_job_board.jobseeker_dashboard
     'jaraba_paths.entrepreneur_dashboard',
     'jaraba_producer.my_company',
     'jaraba_business_tools.canvas_list',
@@ -2267,7 +2355,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'ecosistema_jaraba_core.tenant.dashboard',
     'ecosistema_jaraba_core.tenant.change_plan',
   ];
-  
+
   if (in_array($route, $dashboard_routes)) {
     $suggestions[] = 'page__dashboard';
   }

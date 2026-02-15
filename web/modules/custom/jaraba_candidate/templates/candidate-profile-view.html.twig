@@ -45,7 +45,7 @@
     </div>
     
     <div class="profile-actions">
-      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-primary">
+      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-primary" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
         <span class="btn-icon">{{ jaraba_icon('actions', 'edit', { size: '16px' }) }}</span>
         {{ 'Editar perfil'|t }}
       </a>
@@ -65,7 +65,7 @@
     <div class="cta-content">
       <h3>{{ '¿Quieres completar tu perfil?'|t }}</h3>
       <p>{{ 'Un perfil completo aumenta tus posibilidades de encontrar oportunidades.'|t }}</p>
-      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-secondary">
+      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-secondary" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
         {{ 'Completar perfil'|t }}
       </a>
     </div>

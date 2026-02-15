@@ -631,6 +631,22 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # EMPLOYABILITY FEATURE GATE (Plan Elevación Empleabilidad v1 — Fase 4)
+  # ===========================================
+
+  # Feature gating por plan para el vertical Empleabilidad.
+  # Verifica limites de uso diario (cv_builder, job_applications_per_day,
+  # copilot_messages_per_day, job_alerts, offers_visible_per_day, diagnostics)
+  # consultando FreemiumVerticalLimit y tabla empleabilidad_feature_usage.
+  ecosistema_jaraba_core.employability_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # LEAD MAGNET EMAIL SERVICE (F3 Doc 178)
   # ===========================================
 

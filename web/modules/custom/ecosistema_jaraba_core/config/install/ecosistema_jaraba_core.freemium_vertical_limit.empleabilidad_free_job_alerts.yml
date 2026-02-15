@@ -1,0 +1,11 @@
+id: empleabilidad_free_job_alerts
+label: 'Empleabilidad Free: Alertas de empleo'
+vertical: empleabilidad
+plan: free
+feature_key: job_alerts
+limit_value: 1
+description: '1 alerta de empleo activa en plan gratuito Empleabilidad.'
+upgrade_message: 'Solo puedes tener 1 alerta de empleo activa en el plan gratuito. Actualiza a Starter para hasta 5 alertas simultáneas.'
+expected_conversion: 0.22
+weight: 360
+status: true

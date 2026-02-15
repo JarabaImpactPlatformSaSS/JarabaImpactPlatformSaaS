@@ -87,6 +87,24 @@ class CvBuilderService
      */
     public function generateCv(CandidateProfileInterface $profile, string $template = 'modern', string $format = 'html'): array
     {
+        // Feature gate: cv_builder (Plan Elevación Empleabilidad v1 — Fase 4).
+        try {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
+            $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
+            $gateResult = $featureGate->check($profile->getOwnerId(), 'cv_builder');
+            if (!$gateResult->isAllowed()) {
+                return [
+                    'content' => '',
+                    'mime_type' => 'text/html',
+                    'denied' => TRUE,
+                    'gate_result' => $gateResult->toArray(),
+                ];
+            }
+        }
+        catch (\Exception $e) {
+            // Service not available — allow generation (fail-open).
+        }
+
         $data = $this->collectCvData($profile);
 
         // Generate HTML
@@ -94,6 +112,16 @@ class CvBuilderService
 
         if ($format === 'pdf') {
             return $this->convertHtmlToPdf($html, $profile);
+        }
+
+        // Record feature usage (Plan Elevación Empleabilidad v1 — Fase 4).
+        try {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
+            $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
+            $featureGate->recordUsage($profile->getOwnerId(), 'cv_builder');
+        }
+        catch (\Exception $e) {
+            // Service not available — skip recording.
         }
 
         // Cache HTML in profile
