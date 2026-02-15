@@ -314,3 +314,233 @@ function jaraba_copilot_v2_get_locked_feature_info(string $feature): array {
   return \Drupal::service('jaraba_copilot_v2.feature_unlock')
     ->getLockedFeatureInfo($feature);
 }
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Syncs entrepreneur_profile creation with CRM pipeline as 'lead'.
+ * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
+ */
+function jaraba_copilot_v2_entity_insert(\Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'entrepreneur_profile') {
+    _jaraba_copilot_v2_sync_to_crm($entity, 'lead');
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Syncs emprendimiento entity updates with CRM pipeline.
+ * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
+ */
+function jaraba_copilot_v2_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+  $entityType = $entity->getEntityTypeId();
+
+  // Experiment with decision VALIDATED → CRM stage 'demo'.
+  if ($entityType === 'experiment') {
+    $decision = $entity->get('decision')->value ?? '';
+    if ($decision === 'VALIDATED') {
+      _jaraba_copilot_v2_sync_to_crm($entity, 'demo');
+    }
+  }
+
+  // Canvas completeness >= 80% → CRM stage 'sql'.
+  if ($entityType === 'business_model_canvas') {
+    if (\Drupal::hasService('jaraba_copilot_v2.bmc_validation')) {
+      try {
+        $validation = \Drupal::service('jaraba_copilot_v2.bmc_validation')
+          ->validateCanvas($entity);
+        if (($validation['overall_percentage'] ?? 0) >= 80) {
+          _jaraba_copilot_v2_sync_to_crm($entity, 'sql');
+        }
+      }
+      catch (\Exception $e) {
+        // Validation service error — non-critical.
+      }
+    }
+  }
+}
+
+/**
+ * Sincroniza estado de emprendimiento con el CRM pipeline.
+ *
+ * Crea o actualiza oportunidades CRM y registra actividades
+ * cuando el estado de un emprendedor cambia.
+ * Usa keyValue store para el mapping entity→opportunity.
+ *
+ * Pipeline emprendedor:
+ * - idea_registered → lead
+ * - diagnostic_completed → mql
+ * - bmc_completed → sql
+ * - mvp_validated → demo
+ * - funding_applied → proposal
+ * - scaling → closed_won
+ * - abandoned → closed_lost
+ *
+ * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
+ */
+function _jaraba_copilot_v2_sync_to_crm(\Drupal\Core\Entity\EntityInterface $entity, string $stage): void {
+  if (!\Drupal::hasService('jaraba_crm.opportunity') || !\Drupal::hasService('jaraba_crm.contact')) {
+    return;
+  }
+
+  try {
+    // Resolve user ID from entity.
+    $userId = 0;
+    if ($entity->hasField('user_id')) {
+      $userId = (int) ($entity->get('user_id')->target_id ?? 0);
+    }
+    elseif ($entity->hasField('uid')) {
+      $userId = (int) ($entity->get('uid')->target_id ?? 0);
+    }
+    elseif (method_exists($entity, 'getOwnerId')) {
+      $userId = (int) $entity->getOwnerId();
+    }
+
+    if (!$userId) {
+      return;
+    }
+
+    $kvStore = \Drupal::keyValue('jaraba_copilot_v2.crm_sync');
+    $oppKey = 'ent_opp_' . $userId;
+    $existingOppId = $kvStore->get($oppKey);
+
+    /** @var \Drupal\jaraba_crm\Service\OpportunityService $crmOpportunity */
+    $crmOpportunity = \Drupal::service('jaraba_crm.opportunity');
+
+    if ($existingOppId) {
+      // Move existing opportunity to new stage.
+      $crmOpportunity->moveToStage((int) $existingOppId, $stage);
+    }
+    else {
+      // Create new opportunity.
+      $contactId = _jaraba_copilot_v2_ensure_crm_contact($userId);
+
+      $userName = '';
+      try {
+        $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+        $userName = $user ? $user->getDisplayName() : "Emprendedor #$userId";
+      }
+      catch (\Exception $e) {
+        $userName = "Emprendedor #$userId";
+      }
+
+      $values = [
+        'title' => 'Emprendimiento - ' . $userName,
+        'stage' => $stage,
+        'value' => 0,
+        'probability' => 50,
+        'notes' => t('Auto-created from emprendimiento pipeline. Entity: @type #@id', [
+          '@type' => $entity->getEntityTypeId(),
+          '@id' => $entity->id(),
+        ]),
+      ];
+      if ($contactId) {
+        $values['contact_id'] = $contactId;
+      }
+
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        try {
+          $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+          if ($tenant) {
+            $values['tenant_id'] = $tenant->id();
+          }
+        }
+        catch (\Exception $e) {
+          // No tenant context available.
+        }
+      }
+
+      $opportunity = $crmOpportunity->create($values);
+      $kvStore->set($oppKey, $opportunity->id());
+    }
+
+    // Log activity for stage transitions on existing opportunities.
+    if (\Drupal::hasService('jaraba_crm.activity') && $existingOppId) {
+      $contactId = $kvStore->get('user_contact_' . $userId);
+      if ($contactId) {
+        \Drupal::service('jaraba_crm.activity')->create([
+          'contact_id' => $contactId,
+          'opportunity_id' => $existingOppId,
+          'subject' => t('Emprendimiento pipeline stage changed to: @stage', ['@stage' => $stage]),
+          'type' => 'note',
+          'activity_date' => date('Y-m-d\TH:i:s'),
+          'notes' => t('Automated CRM sync. Entity @type #@id moved to @stage.', [
+            '@type' => $entity->getEntityTypeId(),
+            '@id' => $entity->id(),
+            '@stage' => $stage,
+          ]),
+        ]);
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_copilot_v2')->warning(
+      'CRM sync error for @type #@id: @error',
+      [
+        '@type' => $entity->getEntityTypeId(),
+        '@id' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
+/**
+ * Ensures a CRM contact exists for an entrepreneur user.
+ *
+ * Uses keyValue store for user→contact ID mapping. Creates a new
+ * CRM contact if none exists, or links to existing by email search.
+ *
+ * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
+ *
+ * @return int|null
+ *   CRM contact ID or NULL if creation failed.
+ */
+function _jaraba_copilot_v2_ensure_crm_contact(int $userId): ?int {
+  $kvStore = \Drupal::keyValue('jaraba_copilot_v2.crm_sync');
+  $contactKey = 'user_contact_' . $userId;
+  $existingContactId = $kvStore->get($contactKey);
+
+  if ($existingContactId) {
+    return (int) $existingContactId;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_crm\Service\ContactService $contactService */
+    $contactService = \Drupal::service('jaraba_crm.contact');
+    $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+    if (!$user) {
+      return NULL;
+    }
+
+    $email = $user->getEmail();
+    if ($email) {
+      $existing = $contactService->search($email, 1);
+      if (!empty($existing)) {
+        $contact = reset($existing);
+        $kvStore->set($contactKey, $contact->id());
+        return (int) $contact->id();
+      }
+    }
+
+    $displayName = $user->getDisplayName() ?? '';
+    $nameParts = explode(' ', $displayName, 2);
+    $contact = $contactService->create([
+      'first_name' => $nameParts[0] ?? $displayName,
+      'last_name' => $nameParts[1] ?? '',
+      'email' => $email,
+      'source' => 'emprendimiento',
+    ]);
+
+    $kvStore->set($contactKey, $contact->id());
+    return (int) $contact->id();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_copilot_v2')->warning(
+      'Failed to ensure CRM contact for user @uid: @error',
+      ['@uid' => $userId, '@error' => $e->getMessage()]
+    );
+    return NULL;
+  }
+}

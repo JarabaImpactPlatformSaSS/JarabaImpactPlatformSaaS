@@ -192,6 +192,29 @@ class TemplateLoaderService {
       'file' => 'emprendimiento/weekly_progress.mjml',
       'description' => 'Resumen semanal de progreso del emprendedor',
     ],
+
+    // Emprendimiento sequence templates (ENTR_SEQ_001 - ENTR_SEQ_005).
+    // Plan Elevación Emprendimiento v2 — Fase 3 (G3).
+    'ENTR_SEQ_001' => [
+      'file' => 'emprendimiento/seq_onboarding_founder.mjml',
+      'description' => 'Onboarding: Bienvenida fundador',
+    ],
+    'ENTR_SEQ_002' => [
+      'file' => 'emprendimiento/seq_canvas_abandonment.mjml',
+      'description' => 'Re-engagement: Canvas abandonado',
+    ],
+    'ENTR_SEQ_003' => [
+      'file' => 'emprendimiento/seq_upsell_starter.mjml',
+      'description' => 'Upsell: Promoción plan Starter',
+    ],
+    'ENTR_SEQ_004' => [
+      'file' => 'emprendimiento/seq_mvp_celebration.mjml',
+      'description' => 'Celebración: MVP validado',
+    ],
+    'ENTR_SEQ_005' => [
+      'file' => 'emprendimiento/seq_post_funding.mjml',
+      'description' => 'Post-funding: Retención y próximos pasos',
+    ],
   ];
 
   /**
@@ -440,6 +463,39 @@ class TemplateLoaderService {
       'completed_experiments' => '2',
       'copilot_suggestion' => 'Esta semana, enfócate en completar tu Value Proposition Canvas. El modo VPC Designer te guiará paso a paso.',
       'dashboard_url' => 'https://jaraba.es/emprendimiento/copilot/dashboard',
+    ],
+    // Emprendimiento sequence sample data (ENTR_SEQ_001 - ENTR_SEQ_005).
+    'ENTR_SEQ_001' => [
+      'user_name' => 'Pablo Emprendedor',
+      'idea_title' => 'App de delivery rural',
+      'sector' => 'AgriTech / Logística',
+      'dashboard_url' => 'https://jaraba.es/emprendimiento/copilot/dashboard',
+    ],
+    'ENTR_SEQ_002' => [
+      'user_name' => 'Pablo Emprendedor',
+      'canvas_completion' => '35',
+      'blocks_pending' => 'Propuesta de Valor, Segmentos de Cliente, Canales, Flujos de Ingreso',
+      'bmc_url' => 'https://jaraba.es/emprendimiento/bmc',
+    ],
+    'ENTR_SEQ_003' => [
+      'user_name' => 'Pablo Emprendedor',
+      'total_hypotheses' => '3',
+      'profile_completion' => '68',
+      'upgrade_url' => 'https://jaraba.es/upgrade?vertical=emprendimiento&source=email',
+    ],
+    'ENTR_SEQ_004' => [
+      'user_name' => 'Pablo Emprendedor',
+      'experiment_name' => 'Landing Page Smoke Test',
+      'decision' => 'VALIDATED',
+      'hypothesis_name' => 'Los agricultores rurales pagarían por delivery express',
+      'share_url' => 'https://jaraba.es/credentials/share/mvp-789',
+    ],
+    'ENTR_SEQ_005' => [
+      'user_name' => 'Pablo Emprendedor',
+      'funding_name' => 'ENISA Jóvenes Emprendedores 2026',
+      'amount' => '25.000 €',
+      'next_steps_url' => 'https://jaraba.es/funding/application/FA-001/next-steps',
+      'referral_url' => 'https://jaraba.es/referral?source=post_funding',
     ],
   ];
 
