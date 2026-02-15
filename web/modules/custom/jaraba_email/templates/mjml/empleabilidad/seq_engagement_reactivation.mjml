@@ -1,0 +1,70 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .job-card { background-color: #eff6ff; border-radius: 6px; padding: 12px 16px; margin-bottom: 8px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          No te rindas, hay ofertas para ti
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Hemos notado que llevas unos d&iacute;as sin aplicar a ofertas. &iexcl;No pasa nada! El mercado laboral tiene oportunidades nuevas cada d&iacute;a.</p>
+          <p>Hemos encontrado <strong>{{ matching_jobs_count }} ofertas</strong> compatibles con tu perfil:</p>
+        </mj-text>
+        <mj-section background-color="#eff6ff" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#1e40af">
+              <strong>{{ job_1_title }}</strong><br />
+              {{ job_1_company }} &mdash; {{ job_1_match }}% compatible<br /><br />
+              <strong>{{ job_2_title }}</strong><br />
+              {{ job_2_company }} &mdash; {{ job_2_match }}% compatible<br /><br />
+              <strong>{{ job_3_title }}</strong><br />
+              {{ job_3_company }} &mdash; {{ job_3_match }}% compatible
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-button href="{{ jobs_url }}" align="center" padding="24px 0">
+          Ver ofertas recomendadas
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Consejo: Los candidatos que aplican al menos 3 veces por semana tienen un 40% m&aacute;s de &eacute;xito.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

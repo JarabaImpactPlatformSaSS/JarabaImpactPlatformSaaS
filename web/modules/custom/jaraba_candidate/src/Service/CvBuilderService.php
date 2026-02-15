@@ -93,6 +93,24 @@ class CvBuilderService
             $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
             $gateResult = $featureGate->check($profile->getOwnerId(), 'cv_builder');
             if (!$gateResult->isAllowed()) {
+                // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
+                try {
+                    /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $tenant = $tenantContext->getCurrentTenant();
+                    if ($tenant) {
+                        \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
+                            ->fire('limit_reached', $tenant, [
+                                'feature_key' => 'cv_builder',
+                                'current_usage' => $gateResult->used,
+                                'vertical' => 'empleabilidad',
+                            ]);
+                    }
+                }
+                catch (\Exception $e) {
+                    // Non-critical — fail silently.
+                }
+
                 return [
                     'content' => '',
                     'mime_type' => 'text/html',

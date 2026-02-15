@@ -144,6 +144,29 @@ class TemplateLoaderService {
       'description' => 'Aviso de expiración de oferta de empleo',
     ],
 
+    // Empleabilidad sequence templates (EMPL_SEQ_001 - EMPL_SEQ_005).
+    // Plan Elevación Empleabilidad v1 — Fase 6.
+    'EMPL_SEQ_001' => [
+      'file' => 'empleabilidad/seq_onboarding_welcome.mjml',
+      'description' => 'Onboarding: Bienvenida post-diagnóstico de empleabilidad',
+    ],
+    'EMPL_SEQ_002' => [
+      'file' => 'empleabilidad/seq_engagement_reactivation.mjml',
+      'description' => 'Re-engagement: Reactivación candidato inactivo',
+    ],
+    'EMPL_SEQ_003' => [
+      'file' => 'empleabilidad/seq_upsell_starter.mjml',
+      'description' => 'Upsell: Promoción plan Starter tras actividad alta',
+    ],
+    'EMPL_SEQ_004' => [
+      'file' => 'empleabilidad/seq_interview_prep.mjml',
+      'description' => 'Post-entrevista: Preparación y tips para la entrevista',
+    ],
+    'EMPL_SEQ_005' => [
+      'file' => 'empleabilidad/seq_post_hire.mjml',
+      'description' => 'Post-empleo: Felicitación y retención tras contratación',
+    ],
+
     // Emprendimiento templates (EMPR_001 - EMPR_006).
     'EMPR_001' => [
       'file' => 'emprendimiento/welcome_entrepreneur.mjml',
@@ -326,6 +349,51 @@ class TemplateLoaderService {
       'job_title' => 'Desarrolladora Full-Stack',
       'applications_count' => '24',
       'renew_url' => 'https://jaraba.es/recruiter/listings/dev-fullstack-123/renew',
+    ],
+    // Empleabilidad sequence sample data (EMPL_SEQ_001 - EMPL_SEQ_005).
+    'EMPL_SEQ_001' => [
+      'user_name' => 'Laura Fernández',
+      'profile_type' => 'En Progreso',
+      'score' => '68',
+      'primary_gap' => 'Presencia digital y LinkedIn',
+      'dashboard_url' => 'https://jaraba.es/empleabilidad/dashboard',
+    ],
+    'EMPL_SEQ_002' => [
+      'user_name' => 'Laura Fernández',
+      'matching_jobs_count' => '12',
+      'job_1_title' => 'Desarrolladora Full-Stack',
+      'job_1_company' => 'TechImpacto S.L.',
+      'job_1_match' => '92',
+      'job_2_title' => 'Frontend Developer',
+      'job_2_company' => 'Digital Solutions',
+      'job_2_match' => '87',
+      'job_3_title' => 'Software Engineer',
+      'job_3_company' => 'InnovaCode',
+      'job_3_match' => '84',
+      'jobs_url' => 'https://jaraba.es/empleabilidad/jobs',
+    ],
+    'EMPL_SEQ_003' => [
+      'user_name' => 'Laura Fernández',
+      'total_applications' => '3',
+      'profile_completion' => '72',
+      'upgrade_url' => 'https://jaraba.es/upgrade?vertical=empleabilidad&source=email',
+    ],
+    'EMPL_SEQ_004' => [
+      'user_name' => 'Laura Fernández',
+      'job_title' => 'Desarrolladora Full-Stack',
+      'company_name' => 'TechImpacto S.L.',
+      'copilot_url' => 'https://jaraba.es/empleabilidad/copilot?mode=interview_prep',
+    ],
+    'EMPL_SEQ_005' => [
+      'user_name' => 'Laura Fernández',
+      'job_title' => 'Desarrolladora Full-Stack',
+      'company_name' => 'TechImpacto S.L.',
+      'credential_name' => 'Job Application Expert',
+      'total_applications' => '18',
+      'days_on_platform' => '45',
+      'total_credits' => '1.250',
+      'share_url' => 'https://jaraba.es/credentials/share/cert-789',
+      'referral_url' => 'https://jaraba.es/referral?source=post_hire',
     ],
     'EMPR_001' => [
       'user_name' => 'Pablo Emprendedor',

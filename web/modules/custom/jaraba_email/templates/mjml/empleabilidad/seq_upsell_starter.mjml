@@ -1,0 +1,70 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .plan-feature { padding: 4px 0; }
+      .check-icon { color: #16a34a; font-weight: bold; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          Tu actividad demuestra que vas en serio
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Ya has enviado <strong>{{ total_applications }} candidaturas</strong> y tu perfil tiene una completitud del <strong>{{ profile_completion }}%</strong>. &iexcl;Est&aacute;s siendo muy activo!</p>
+          <p>Con el plan <strong>Starter</strong> podr&iacute;as multiplicar tus resultados:</p>
+        </mj-text>
+        <mj-section background-color="#eff6ff" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#1e40af">
+              <p class="plan-feature"><span class="check-icon">&check;</span> <strong>15 candidaturas</strong> al d&iacute;a (vs 3 en Free)</p>
+              <p class="plan-feature"><span class="check-icon">&check;</span> <strong>5 CVs</strong> generados con IA (vs 1 en Free)</p>
+              <p class="plan-feature"><span class="check-icon">&check;</span> <strong>25 mensajes</strong> al copilot diarios (vs 5 en Free)</p>
+              <p class="plan-feature"><span class="check-icon">&check;</span> <strong>5 alertas</strong> de empleo activas (vs 1 en Free)</p>
+              <p class="plan-feature"><span class="check-icon">&check;</span> <strong>Prioridad</strong> en el matching con ofertas</p>
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
+          Ver plan Starter
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          <p>Los candidatos Starter aplican 10x m&aacute;s r&aacute;pido y reciben un 3x m&aacute;s de respuestas.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
