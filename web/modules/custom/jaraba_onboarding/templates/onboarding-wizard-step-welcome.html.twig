@@ -63,6 +63,37 @@
     </div>
   </div>
 
+  {% if vertical == 'emprendimiento' %}
+    <div class="wizard-step__idea-preview">
+      <h3 class="wizard-step__section-title">
+        {% trans %}Describe tu idea de negocio{% endtrans %}
+      </h3>
+      <p class="wizard-step__hint">
+        {% trans %}Una frase breve sobre lo que quieres crear. Podras desarrollarla despues con el Copiloto.{% endtrans %}
+      </p>
+      <div class="wizard-step__field">
+        <textarea id="wizard-idea-description" class="wizard-step__textarea" data-field="idea_description" rows="2"
+          placeholder="{{ 'Ej: Una app que conecta productores locales con restaurantes...'|t }}"
+        >{{ step_data.idea_description|default('') }}</textarea>
+      </div>
+      <div class="wizard-step__field">
+        <label class="wizard-step__label" for="wizard-idea-sector">{% trans %}Sector{% endtrans %}</label>
+        <select id="wizard-idea-sector" class="wizard-step__select" data-field="idea_sector">
+          <option value="">{% trans %}Seleccionar...{% endtrans %}</option>
+          <option value="tecnologia"{% if step_data.idea_sector|default('') == 'tecnologia' %} selected{% endif %}>{% trans %}Tecnologia{% endtrans %}</option>
+          <option value="alimentacion"{% if step_data.idea_sector|default('') == 'alimentacion' %} selected{% endif %}>{% trans %}Alimentacion{% endtrans %}</option>
+          <option value="turismo"{% if step_data.idea_sector|default('') == 'turismo' %} selected{% endif %}>{% trans %}Turismo{% endtrans %}</option>
+          <option value="educacion"{% if step_data.idea_sector|default('') == 'educacion' %} selected{% endif %}>{% trans %}Educacion{% endtrans %}</option>
+          <option value="salud"{% if step_data.idea_sector|default('') == 'salud' %} selected{% endif %}>{% trans %}Salud{% endtrans %}</option>
+          <option value="comercio"{% if step_data.idea_sector|default('') == 'comercio' %} selected{% endif %}>{% trans %}Comercio{% endtrans %}</option>
+          <option value="servicios"{% if step_data.idea_sector|default('') == 'servicios' %} selected{% endif %}>{% trans %}Servicios{% endtrans %}</option>
+          <option value="industria"{% if step_data.idea_sector|default('') == 'industria' %} selected{% endif %}>{% trans %}Industria{% endtrans %}</option>
+          <option value="otro"{% if step_data.idea_sector|default('') == 'otro' %} selected{% endif %}>{% trans %}Otro{% endtrans %}</option>
+        </select>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="wizard-step__timeline">
     <h3 class="wizard-step__section-title">
       {% trans %}Lo que haremos{% endtrans %}
@@ -70,7 +101,11 @@
     <ol class="wizard-step__timeline-list">
       <li>{% trans %}Personalizaremos tu marca{% endtrans %} <span class="wizard-step__time">2 min</span></li>
       <li>{% trans %}Configuraremos tu perfil{% endtrans %} <span class="wizard-step__time">2 min</span></li>
-      <li>{% trans %}Crearemos tu primer contenido{% endtrans %} <span class="wizard-step__time">3 min</span></li>
+      {% if vertical == 'emprendimiento' %}
+        <li>{% trans %}Crearemos tu primer Business Model Canvas{% endtrans %} <span class="wizard-step__time">3 min</span></li>
+      {% else %}
+        <li>{% trans %}Crearemos tu primer contenido{% endtrans %} <span class="wizard-step__time">3 min</span></li>
+      {% endif %}
       <li>{% trans %}Lanzaremos tu espacio{% endtrans %} <span class="wizard-step__time">30s</span></li>
     </ol>
     <p class="wizard-step__total-time">

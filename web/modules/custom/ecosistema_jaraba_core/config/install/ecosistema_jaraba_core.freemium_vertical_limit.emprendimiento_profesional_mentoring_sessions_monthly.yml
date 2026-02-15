@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_mentoring_sessions_monthly
+label: 'Emprendimiento Profesional: Sesiones Mentoria Mensuales'
+vertical: emprendimiento
+plan: profesional
+feature_key: mentoring_sessions_monthly
+limit_value: -1
+description: 'Sesiones de mentoria ilimitadas en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 421
+status: true

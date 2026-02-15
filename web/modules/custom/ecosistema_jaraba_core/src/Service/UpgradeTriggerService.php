@@ -470,6 +470,185 @@ class UpgradeTriggerService
     }
 
     /**
+     * Obtiene contexto de upgrade para inyeccion en el Copiloto IA.
+     *
+     * Devuelve informacion sobre el plan actual, features cerca del limite
+     * (>80% de uso) y el plan recomendado con beneficios especificos.
+     * Se invoca desde CopilotOrchestratorService para enriquecer el
+     * system prompt con nudges de upgrade contextuales.
+     *
+     * @param \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $tenant
+     *   El tenant actual.
+     * @param string $copilotMode
+     *   Modo activo del copiloto (para beneficios contextuales).
+     *
+     * @return array
+     *   Array con:
+     *   - has_upgrade_context: (bool) Si hay contexto relevante.
+     *   - current_plan: (string) Nombre del plan actual.
+     *   - recommended_plan: (string) Nombre del plan recomendado.
+     *   - features_near_limit: (array) Features con uso >80%.
+     *   - upgrade_benefit: (string) Beneficio contextualizado al modo.
+     *   - prompt_snippet: (string) Texto listo para inyectar en system prompt.
+     */
+    public function getUpgradeContext(TenantInterface $tenant, string $copilotMode = ''): array
+    {
+        $result = ['has_upgrade_context' => FALSE];
+
+        $vertical = $tenant->getVertical();
+        $plan = $tenant->getSubscriptionPlan();
+
+        if (!$vertical || !$plan) {
+            return $result;
+        }
+
+        $verticalId = $vertical->id();
+        $planId = $plan->id();
+
+        // Enterprise no necesita upgrade context.
+        if ($planId === 'enterprise') {
+            return $result;
+        }
+
+        $recommendedPlanId = self::PLAN_UPGRADE_PATH[$planId] ?? NULL;
+        if (!$recommendedPlanId) {
+            return $result;
+        }
+
+        // Buscar features cerca del limite (>80% uso).
+        $featuresNearLimit = $this->findFeaturesNearLimit($verticalId, $planId);
+
+        if (empty($featuresNearLimit)) {
+            return $result;
+        }
+
+        // Cargar nombres de planes.
+        $currentPlanLabel = $plan->label() ?: $planId;
+        $recommendedPlan = $this->entityTypeManager->getStorage('saas_plan')->load($recommendedPlanId);
+        $recommendedPlanLabel = $recommendedPlan ? $recommendedPlan->label() : $recommendedPlanId;
+
+        // Beneficio contextual por modo de copiloto.
+        $upgradeBenefit = $this->getUpgradeBenefitForMode($copilotMode, $recommendedPlanLabel);
+
+        // Construir snippet para system prompt.
+        $featureNames = array_map(fn($f) => $f['label'], $featuresNearLimit);
+        $promptSnippet = sprintf(
+            "CONTEXTO DE PLAN: El usuario esta en el plan %s. Estas funcionalidades estan cerca del limite: %s. "
+            . "Si es relevante en la conversacion, menciona de forma natural que el plan %s ofrece mas capacidad. "
+            . "%s No seas insistente; solo menciona el upgrade si encaja con lo que el usuario esta pidiendo.",
+            $currentPlanLabel,
+            implode(', ', $featureNames),
+            $recommendedPlanLabel,
+            $upgradeBenefit
+        );
+
+        return [
+            'has_upgrade_context' => TRUE,
+            'current_plan' => $currentPlanLabel,
+            'recommended_plan' => $recommendedPlanLabel,
+            'features_near_limit' => $featuresNearLimit,
+            'upgrade_benefit' => $upgradeBenefit,
+            'prompt_snippet' => $promptSnippet,
+        ];
+    }
+
+    /**
+     * Busca features con uso superior al 80% del limite.
+     *
+     * @param string $verticalId
+     *   ID de la vertical.
+     * @param string $planId
+     *   ID del plan.
+     *
+     * @return array
+     *   Array de features cerca del limite con 'feature_key', 'label',
+     *   'limit', 'usage', 'percentage'.
+     */
+    protected function findFeaturesNearLimit(string $verticalId, string $planId): array
+    {
+        $nearLimit = [];
+
+        try {
+            $storage = $this->entityTypeManager->getStorage('freemium_vertical_limit');
+            $ids = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vertical', $verticalId)
+                ->condition('plan', $planId)
+                ->condition('status', TRUE)
+                ->execute();
+
+            if (empty($ids)) {
+                return [];
+            }
+
+            $limits = $storage->loadMultiple($ids);
+
+            foreach ($limits as $limit) {
+                $limitValue = $limit->getLimitValue();
+                // Skip unlimited features.
+                if ($limitValue <= 0) {
+                    continue;
+                }
+
+                $featureKey = $limit->get('feature_key');
+                $label = $limit->label() ?: $featureKey;
+
+                // Obtener uso actual via state (simplificado).
+                $usageKey = "freemium_usage_{$verticalId}_{$featureKey}";
+                $currentUsage = (int) \Drupal::state()->get($usageKey, 0);
+
+                $percentage = ($currentUsage / $limitValue) * 100;
+
+                if ($percentage >= 80) {
+                    $nearLimit[] = [
+                        'feature_key' => $featureKey,
+                        'label' => (string) $label,
+                        'limit' => $limitValue,
+                        'usage' => $currentUsage,
+                        'percentage' => round($percentage, 1),
+                    ];
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('Error buscando features near limit: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        return $nearLimit;
+    }
+
+    /**
+     * Devuelve un beneficio de upgrade contextualizado al modo del copiloto.
+     *
+     * @param string $mode
+     *   Modo activo del copiloto.
+     * @param string $planName
+     *   Nombre del plan recomendado.
+     *
+     * @return string
+     *   Frase de beneficio contextual.
+     */
+    protected function getUpgradeBenefitForMode(string $mode, string $planName): string
+    {
+        $benefits = [
+            'coach' => 'Con %s tendras sesiones ilimitadas con el Coach Emocional para acompanarte en todo momento.',
+            'consultor' => 'El plan %s incluye consultas ilimitadas con el Consultor Tactico para guiarte paso a paso.',
+            'sparring' => 'Con %s podras practicar tu pitch ilimitadamente con el Sparring Partner.',
+            'cfo' => 'El plan %s desbloquea analisis financieros ilimitados con el CFO Sintetico.',
+            'fiscal' => 'Con %s tendras acceso ilimitado al experto tributario para resolver todas tus dudas fiscales.',
+            'laboral' => 'El plan %s incluye consultas ilimitadas sobre Seguridad Social y obligaciones laborales.',
+            'devil' => 'Con %s podras usar el Abogado del Diablo sin restricciones para fortalecer tu propuesta.',
+            'vpc_designer' => 'El plan %s desbloquea diseno ilimitado de Value Proposition Canvas.',
+            'customer_discovery' => 'Con %s tendras acceso completo al Customer Discovery Coach.',
+        ];
+
+        $template = $benefits[$mode] ?? 'El plan %s desbloquea funcionalidades avanzadas.';
+        return sprintf($template, $planName);
+    }
+
+    /**
      * Obtiene estadisticas de conversion por tipo de trigger.
      *
      * @param string $verticalId

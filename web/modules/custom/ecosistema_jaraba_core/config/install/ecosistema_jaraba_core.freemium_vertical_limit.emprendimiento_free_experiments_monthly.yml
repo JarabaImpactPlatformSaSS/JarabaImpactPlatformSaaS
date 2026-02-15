@@ -1,0 +1,11 @@
+id: emprendimiento_free_experiments_monthly
+label: 'Emprendimiento Free: Experimentos Mensuales'
+vertical: emprendimiento
+plan: free
+feature_key: experiments_monthly
+limit_value: 2
+description: '2 experimentos mensuales en plan gratuito Emprendimiento.'
+upgrade_message: 'Has alcanzado el limite de experimentos este mes. Actualiza a Starter para realizar hasta 10 experimentos mensuales.'
+expected_conversion: 0.30
+weight: 411
+status: true

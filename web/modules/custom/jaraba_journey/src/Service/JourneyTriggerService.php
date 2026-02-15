@@ -291,4 +291,66 @@ class JourneyTriggerService
         return self::TRIGGER_TYPES;
     }
 
+    /**
+     * Evalua triggers especificos para emprendedores.
+     *
+     * Extiende la evaluacion generica con logica especifica del vertical
+     * de emprendimiento: inactividad en el programa, hitos pendientes,
+     * sesiones de mentoria sin agendar.
+     *
+     * @param int $userId
+     *   ID del usuario emprendedor.
+     * @param array $profileContext
+     *   Contexto del perfil de emprendedor con:
+     *   - program_week: (int) Semana actual del programa.
+     *   - impact_points: (int) Puntos de impacto acumulados.
+     *   - pending_hypotheses: (int) Hipotesis pendientes de validar.
+     *   - last_copilot_use: (int) Timestamp del ultimo uso del copiloto.
+     *
+     * @return array
+     *   Triggers especificos de emprendimiento a disparar.
+     */
+    public function evaluateEntrepreneurTriggers(int $userId, array $profileContext = []): array
+    {
+        $triggersToFire = [];
+
+        // Evaluar triggers genericos primero.
+        $genericTriggers = $this->evaluateTriggers($userId);
+        $triggersToFire = array_merge($triggersToFire, $genericTriggers);
+
+        // Trigger: emprendedor no usa el copiloto en 3+ dias.
+        $lastCopilotUse = $profileContext['last_copilot_use'] ?? 0;
+        if ($lastCopilotUse > 0 && (time() - $lastCopilotUse) > (3 * 86400)) {
+            $triggersToFire[] = [
+                'id' => 'copilot_inactive_3d',
+                'trigger' => [
+                    'type' => 'behavioral',
+                    'name' => 'Copiloto sin uso 3 dias',
+                    'action' => 'send_copilot_nudge',
+                    'channel' => 'in_app',
+                ],
+                'priority' => 70,
+            ];
+        }
+
+        // Trigger: hipotesis pendientes sin avance en semana actual.
+        $pendingHypotheses = $profileContext['pending_hypotheses'] ?? 0;
+        $programWeek = $profileContext['program_week'] ?? 0;
+        if ($pendingHypotheses > 0 && $programWeek >= 4) {
+            $triggersToFire[] = [
+                'id' => 'stalled_hypotheses',
+                'trigger' => [
+                    'type' => 'behavioral',
+                    'name' => 'Hipotesis estancadas',
+                    'action' => 'suggest_experiment',
+                    'channel' => 'in_app',
+                ],
+                'priority' => 65,
+            ];
+        }
+
+        // Aplicar reglas de no-intrusion.
+        return $this->applyNoIntrusionRules($userId, $triggersToFire);
+    }
+
 }
