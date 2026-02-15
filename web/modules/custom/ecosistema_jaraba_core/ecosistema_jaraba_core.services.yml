@@ -692,6 +692,37 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # EMPLOYABILITY JOURNEY PROGRESSION (Plan Elevación Empleabilidad v1 — Fase 9)
+  # ===========================================
+
+  # Servicio de progresión proactiva del journey de Empleabilidad.
+  # Evalúa 7 triggers proactivos basados en estado del journey, actividad
+  # y perfil del candidato. Dispara acciones en FAB, email y push.
+  # Reglas: inactivity_discovery, incomplete_profile, ready_but_inactive,
+  # application_frustration, interview_prep, offer_negotiation, post_employment.
+  ecosistema_jaraba_core.employability_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\EmployabilityJourneyProgressionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # EMPLOYABILITY HEALTH SCORE (Plan Elevación Empleabilidad v1 — Fase 10)
+  # ===========================================
+
+  # Servicio de health score específico del vertical Empleabilidad.
+  # 5 dimensiones: profile_completeness (25%), application_activity (30%),
+  # copilot_engagement (15%), training_progress (15%), credential_advancement (15%).
+  # 8 KPIs verticales: insertion_rate, time_to_employment, activation_rate,
+  # engagement_rate, nps, arpu, conversion_free_paid, churn_rate.
+  ecosistema_jaraba_core.employability_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\EmployabilityHealthScoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # EMPLOYABILITY CROSS-VERTICAL BRIDGES (Plan Elevación Empleabilidad v1 — Fase 8)
   # ===========================================
 
