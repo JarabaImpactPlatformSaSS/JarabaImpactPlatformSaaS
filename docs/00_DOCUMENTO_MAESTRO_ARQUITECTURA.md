@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-15
-**Versión:** 28.0.0 (Emprendimiento v2 Paridad Empleabilidad — 7 Gaps Cerrados)
+**Versión:** 29.0.0 (Andalucía +ei Elevación Clase Mundial — 12 Fases, 18 Gaps Cerrados)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -652,6 +652,34 @@
 │   │   └── 8 KPIs: insertion_rate, time_to_employment, NPS, ARPU, etc.  │
 │   └── Estado: ✅ Clase Mundial (Feb 2026 — Elevación 10/10 Fases)       │
 │                                                                         │
+│   📦 ecosistema_jaraba_core — Andalucía +ei Services ✅ (Elevación 12F) │
+│   ├── AndaluciaEiFeatureGateService (Fase 4): Escalera de valor         │
+│   │   ├── 6 features: copilot_sessions (3/15/∞), mentoring_hours        │
+│   │   │   (0/5/∞), sto_exports (1/10/∞), training_modules (3/10/∞),    │
+│   │   │   diagnostic_access (1/3/∞), report_downloads (1/5/∞)          │
+│   │   └── 18 FreemiumVerticalLimit configs (6 features × 3 planes)      │
+│   ├── AndaluciaEiEmailSequenceService (Fase 5): 6 secuencias           │
+│   │   ├── SEQ_AEI_001 Welcome, SEQ_AEI_002 Phase Transition            │
+│   │   ├── SEQ_AEI_003 Hours Milestone, SEQ_AEI_004 Training            │
+│   │   └── SEQ_AEI_005 Reengagement, SEQ_AEI_006 Upsell + 6 MJML      │
+│   ├── AndaluciaEiCrossVerticalBridgeService (Fase 6): 4 bridges        │
+│   │   ├── emprendimiento (inserción + interés emprendedor)              │
+│   │   ├── empleabilidad (sin inserción 90d), servicios (digital skills) │
+│   │   └── formación (recently_inserted) + dismiss tracking State API    │
+│   ├── AndaluciaEiJourneyProgressionService (Fase 7): 8 reglas          │
+│   │   ├── inactivity_atencion, low_training, orientation_milestone      │
+│   │   ├── training_milestone, ready_for_insertion, insertion_prep       │
+│   │   └── insertion_stalled, post_insertion_expansion + FAB dot/expand  │
+│   ├── AndaluciaEiHealthScoreService (Fase 8): 5 dimensiones            │
+│   │   ├── orientation_hours 25%, training_hours 30%                     │
+│   │   ├── copilot_engagement 20%, sto_completeness 10%                 │
+│   │   ├── progression_speed 15% → score 0-100 + categoría              │
+│   │   └── 8 KPIs: insertion_rate, time_to_insertion, NPS, ARPU, etc.   │
+│   ├── AndaluciaEiExperimentService (Fase 11): A/B Testing              │
+│   │   ├── 8 eventos: participant_enrolled, first_ia_session, etc.       │
+│   │   └── 4 scopes: onboarding, copilot, transition, upgrade           │
+│   └── Estado: ✅ Clase Mundial (Feb 2026 — Elevación 12/12 Fases)      │
+│                                                                         │
 │   📦 jaraba_diagnostic ✅ (Diagnóstico Express Empleabilidad)            │
 │   ├── EmployabilityDiagnostic Entity: 14 campos                       │
 │   │   ├── q_linkedin, q_cv_ats, q_estrategia, score, profile_type     │
@@ -945,7 +973,7 @@
 │   ├── Tests: 10 unit test files (Company, Contact, Opportunity, etc.)    │
 │   └── Estado: ✅ Producción (v4.0 - B2B Sales Flow F9)                  │
 │                                                                         │
-│   📦 jaraba_email ✅ (Email Marketing + AI + 30 MJML Templates)            │
+│   📦 jaraba_email ✅ (Email Marketing + AI + 46 MJML Templates)            │
 │   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate, │
 │   │   EmailSequenceStep                                                  │
 │   ├── EmailAIService: Generación de subjects y copy con IA               │
@@ -954,15 +982,18 @@
 │   ├── EmailWebhookController: POST /api/v1/webhooks/sendgrid (HMAC)    │
 │   ├── SendGridClientService: sendEmail, sendBatch, processWebhook       │
 │   ├── SequenceManagerService: enrollSubscriber, executeNextStep         │
-│   ├── MJML Templates: 40 transaccionales + base.mjml                    │
+│   ├── MJML Templates: 46 transaccionales + base.mjml                    │
 │   │   ├── auth/ (5): verify, welcome, password_reset/changed, new_login  │
 │   │   ├── billing/ (7): invoice, payment_failed, subscription...         │
 │   │   ├── marketplace/ (6): order_confirmed, shipped, delivered...       │
 │   │   ├── empleabilidad/ (5): job_match, application, shortlisted...    │
-│   │   └── emprendimiento/ (11): welcome, diagnostic, canvas_milestone,  │
-│   │       experiment_result, mentor_matched, weekly_progress +           │
-│   │       seq_onboarding_founder, seq_canvas_abandonment,               │
-│   │       seq_upsell_starter, seq_mvp_celebration, seq_post_funding     │
+│   │   ├── emprendimiento/ (11): welcome, diagnostic, canvas_milestone,  │
+│   │   │   experiment_result, mentor_matched, weekly_progress +           │
+│   │   │   seq_onboarding_founder, seq_canvas_abandonment,               │
+│   │   │   seq_upsell_starter, seq_mvp_celebration, seq_post_funding     │
+│   │   └── andalucia_ei/ (6): welcome_participant, phase_transition,     │
+│   │       hours_milestone, training_completion,                          │
+│   │       inactivity_reengagement, seq_upsell_starter                   │
 │   ├── TemplateLoaderService: template_id → MJML → compilación           │
 │   ├── MjmlCompilerService: MJML → HTML responsive                       │
 │   ├── Tests: 12 unit test files (Newsletter, MJML, Subscriber, etc.)    │
@@ -2001,6 +2032,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 |----------|-------|--------|-----------------|----------|
 | **Empleabilidad** | 10/10 | ✅ Clase Mundial | EmployabilityFeatureGateService, EmployabilityEmailSequenceService, EmployabilityCrossVerticalBridgeService, EmployabilityJourneyProgressionService, EmployabilityHealthScoreService, EmployabilityCopilotAgent, CopilotApiController, TemplateLoaderService | 34+ archivos |
 | **Emprendimiento** | 6/6 + v2 (7 gaps) | ✅ Clase Mundial (Paridad) | EmprendimientoFeatureGateService, EmprendimientoExperimentService, EmprendimientoHealthScoreService, EmprendimientoJourneyProgressionService, EmprendimientoEmailSequenceService, EmprendimientoCopilotAgent, EmprendimientoCrossVerticalBridgeService | 25+ archivos |
+| **Andalucía +ei** | 12/12 | ✅ Clase Mundial | AndaluciaEiFeatureGateService, AndaluciaEiEmailSequenceService, AndaluciaEiCrossVerticalBridgeService, AndaluciaEiJourneyProgressionService, AndaluciaEiHealthScoreService, AndaluciaEiExperimentService | 43 archivos |
 
 **Empleabilidad (10 Fases):**
 1. Clean Page Templates (Zero Region + FAB)
@@ -2022,6 +2054,20 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 5. Cross-Vertical Bridges (3 salientes: formacion, servicios, comercio)
 6. CRM Sync Pipeline (7 estados: idea_registered→lead, diagnostic→mql, bmc→sql, mvp→demo, funding→proposal, scaling→closed_won, abandoned→closed_lost)
 7. Upgrade Triggers (5 nuevos: canvas_completed 0.38, first_hypothesis_validated 0.42, mentor_matched 0.35, experiment_success 0.40, funding_eligible 0.45)
+
+**Andalucía +ei (12 Fases):**
+1. Clean Page Templates (Zero Region + FAB + preprocess hooks)
+2. SCSS Compliance (zero rgba, color-mix, var(--ej-*), package.json)
+3. Design Token Config Vertical (paleta #FF8C42/#00A9A5/#233D63)
+4. Feature Gating (6 features × 3 planes = 18 FreemiumVerticalLimit)
+5. Email Lifecycle (6 secuencias SEQ_AEI_001-006 + 6 MJML templates)
+6. Cross-Vertical Bridges (4 bridges salientes: emprendimiento, empleabilidad, servicios, formación)
+7. Proactive AI Journey Progression (8 reglas: inactividad, milestones, inserción, re-engagement)
+8. Health Scores + KPIs (5 dimensiones + 8 KPIs verticales)
+9. i18n Compliance (JourneyDefinition const→static methods + TranslatableMarkup)
+10. Upgrade Triggers + CRM (milestones 25h/50h/75h/100h, pipeline atencion→insercion→baja)
+11. A/B Testing Framework (8 eventos conversión, 4 scopes)
+12. Embudo Público → Registro → Ventas (insert hook, conversion tracking, dashboard enriquecido)
 
 ### 12.4 Dependabot Security Posture (2026-02-14)
 
@@ -2095,6 +2141,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Aprendizajes Elevación Emprendimiento 6 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md` |
 | **Plan Emprendimiento v2 Paridad 7 Gaps** ⭐ | `docs/implementacion/20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md` |
 | **Aprendizajes Emprendimiento Paridad 7 Gaps** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md` |
+| **Plan Elevación Andalucía +ei 12 Fases** ⭐ | `docs/implementacion/20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md` |
+| **Aprendizajes Andalucía +ei Elevación 12 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_andalucia_ei_elevacion_12_fases.md` |
 
 ---
 
