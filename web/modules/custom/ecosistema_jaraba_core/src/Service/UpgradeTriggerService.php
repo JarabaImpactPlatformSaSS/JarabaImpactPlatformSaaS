@@ -42,6 +42,11 @@ class UpgradeTriggerService
         'first_sale' => 0.42,
         'competition_visible' => 0.22,
         'time_on_platform' => 0.18,
+        // Plan Elevación Empleabilidad v1 — Fase 5.
+        'engagement_high' => 0.40,
+        'first_milestone' => 0.42,
+        'external_validation' => 0.45,
+        'status_change' => 0.50,
     ];
 
     /**

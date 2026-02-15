@@ -73,6 +73,7 @@ function jaraba_candidate_theme(): array {
         'recommendations' => [],
         'stats' => [],
         'quick_actions' => [],
+        'cross_vertical_bridges' => [],
       ],
       'template' => 'jobseeker-dashboard',
     ],

@@ -1,0 +1,71 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .celebration { font-size: 48px; text-align: center; padding: 16px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#16a34a" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text align="center" css-class="celebration">
+          &#127881;
+        </mj-text>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px" align="center">
+          &iexcl;Felicidades por tu nuevo empleo!
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>&iexcl;Enhorabuena! Has sido contratado como <strong>{{ job_title }}</strong> en <strong>{{ company_name }}</strong>. Este es un hito incre&iacute;ble en tu carrera profesional.</p>
+          <p>Has obtenido la credencial <strong>{{ credential_name }}</strong> y <strong>+500 cr&eacute;ditos de impacto</strong> por este logro.</p>
+        </mj-text>
+        <mj-section background-color="#f0fdf4" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#166534">
+              <p><strong>Tu recorrido en n&uacute;meros:</strong></p>
+              <p>Candidaturas enviadas: {{ total_applications }}<br />
+              D&iacute;as en la plataforma: {{ days_on_platform }}<br />
+              Cr&eacute;ditos totales: {{ total_credits }}</p>
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-button href="{{ share_url }}" align="center" padding="24px 0" background-color="#16a34a">
+          Compartir mi logro
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          <p>&iquest;Conoces a alguien que busca empleo? <a href="{{ referral_url }}" style="color: #2563eb;">Inv&iacute;talo y gana 1 mes gratis.</a></p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

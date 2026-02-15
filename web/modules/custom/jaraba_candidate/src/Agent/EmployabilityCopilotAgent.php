@@ -266,6 +266,112 @@ class EmployabilityCopilotAgent extends BaseAgent {
   }
 
   /**
+   * Genera sugerencia contextual de upgrade para usuarios free.
+   *
+   * Solo sugiere upgrade si el usuario esta en plan free y su fase
+   * de carrera es >= 3 (engagement). Las sugerencias son contextuales
+   * al momento del journey del candidato.
+   *
+   * Plan Elevación Empleabilidad v1 — Fase 5
+   *
+   * @param array $context
+   *   Contexto opcional con 'user_id', 'current_route', etc.
+   *
+   * @return array|null
+   *   Array con type, message, cta, trigger o NULL si no aplica.
+   */
+  public function getSoftSuggestion(array $context = []): ?array {
+    try {
+      $userId = $context['user_id'] ?? (int) \Drupal::currentUser()->id();
+
+      if (!$userId) {
+        return NULL;
+      }
+
+      // Solo sugerir para plan free.
+      /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
+      $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
+      $plan = $featureGate->getUserPlan($userId);
+
+      if ($plan !== 'free') {
+        return NULL;
+      }
+
+      // Determinar fase de carrera del usuario.
+      $phase = $this->getCareerPhase($userId);
+
+      // Fase < 3 = demasiado temprano para upsell.
+      if ($phase < 3) {
+        return NULL;
+      }
+
+      $suggestions = [
+        3 => [
+          'type' => 'upgrade',
+          'message' => 'Tu perfil esta listo para competir. Con el plan Starter podrias aplicar a 15 ofertas al dia y recibir alertas prioritarias.',
+          'cta' => [
+            'label' => 'Ver plan Starter',
+            'url' => '/upgrade?vertical=empleabilidad&source=copilot',
+          ],
+          'trigger' => 'copilot_soft_upsell',
+        ],
+        4 => [
+          'type' => 'upgrade',
+          'message' => 'Estas compitiendo a alto nivel. El plan Professional te daria simulacion de entrevistas con IA y prioridad en el matching.',
+          'cta' => [
+            'label' => 'Ver plan Professional',
+            'url' => '/upgrade?vertical=empleabilidad&source=copilot',
+          ],
+          'trigger' => 'copilot_premium_upsell',
+        ],
+      ];
+
+      return $suggestions[$phase] ?? $suggestions[3];
+    }
+    catch (\Exception $e) {
+      return NULL;
+    }
+  }
+
+  /**
+   * Obtiene la fase de carrera del usuario desde JourneyState.
+   *
+   * @param int $userId
+   *   ID del usuario.
+   *
+   * @return int
+   *   Fase numerica (1-5).
+   */
+  protected function getCareerPhase(int $userId): int {
+    try {
+      $journeyStates = \Drupal::entityTypeManager()
+        ->getStorage('journey_state')
+        ->loadByProperties(['user_id' => $userId]);
+
+      if (!empty($journeyStates)) {
+        $state = reset($journeyStates);
+        $currentState = $state->get('state')->value ?? 'discovery';
+        $statePhaseMap = [
+          'discovery' => 1,
+          'activation' => 2,
+          'engagement' => 3,
+          'conversion' => 4,
+          'retention' => 5,
+          'expansion' => 5,
+          'advocacy' => 5,
+          'at_risk' => 2,
+        ];
+        return $statePhaseMap[$currentState] ?? 1;
+      }
+    }
+    catch (\Exception $e) {
+      // Journey module not installed or entity not found.
+    }
+
+    return 1;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function getDefaultBrandVoice(): string {

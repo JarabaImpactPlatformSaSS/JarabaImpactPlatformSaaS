@@ -87,6 +87,26 @@ class ApplicationService
                     '@user' => $candidate_id,
                     '@msg' => $gateResult->getUpgradeMessage(),
                 ]);
+
+                // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
+                try {
+                    /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $tenant = $tenantContext->getCurrentTenant();
+                    if ($tenant) {
+                        /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTrigger */
+                        $upgradeTrigger = \Drupal::service('ecosistema_jaraba_core.upgrade_trigger');
+                        $upgradeTrigger->fire('limit_reached', $tenant, [
+                            'feature_key' => 'job_applications_per_day',
+                            'current_usage' => $gateResult->used,
+                            'vertical' => 'empleabilidad',
+                        ]);
+                    }
+                }
+                catch (\Exception $e) {
+                    // Non-critical — fail silently.
+                }
+
                 return NULL;
             }
         }
@@ -134,6 +154,39 @@ class ApplicationService
         }
         catch (\Exception $e) {
             // Service not available — skip recording.
+        }
+
+        // Milestone triggers + email sequences (Plan Elevación Empleabilidad v1 — Fase 5/6).
+        try {
+            $totalApps = count($this->getCandidateApplications($candidate_id));
+
+            // 5-application engagement milestone → upgrade trigger.
+            if ($totalApps === 5) {
+                /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+                $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                $tenant = $tenantContext->getCurrentTenant();
+                if ($tenant) {
+                    \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
+                        ->fire('engagement_high', $tenant, [
+                            'feature_key' => 'job_applications',
+                            'milestone' => '5_applications',
+                            'vertical' => 'empleabilidad',
+                        ]);
+                }
+            }
+
+            // 3rd application on free plan → upsell email sequence.
+            if ($totalApps === 3 && \Drupal::hasService('ecosistema_jaraba_core.employability_feature_gate')) {
+                $plan = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate')
+                    ->getUserPlan($candidate_id);
+                if ($plan === 'free' && \Drupal::hasService('ecosistema_jaraba_core.employability_email_sequence')) {
+                    \Drupal::service('ecosistema_jaraba_core.employability_email_sequence')
+                        ->enroll($candidate_id, 'SEQ_EMP_003');
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Non-critical milestone tracking — fail silently.
         }
 
         // Increment job applications count

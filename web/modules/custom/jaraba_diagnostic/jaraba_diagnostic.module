@@ -134,6 +134,17 @@ function jaraba_diagnostic_on_employability_completed(EntityInterface $diagnosti
     }
   }
 
+  // 5. Inscribir en secuencia de onboarding (Plan Elevación Empleabilidad v1 — Fase 6).
+  if (\Drupal::hasService('ecosistema_jaraba_core.employability_email_sequence')) {
+    try {
+      \Drupal::service('ecosistema_jaraba_core.employability_email_sequence')
+        ->enroll($ownerId, 'SEQ_EMP_001');
+    }
+    catch (\Exception $e) {
+      // Non-critical — email sequence enrollment failure.
+    }
+  }
+
   $logger->info('USR-002: Diagnostico empleabilidad completado. User: @uid, Score: @score, Perfil: @profile, Gap: @gap', [
     '@uid' => $ownerId,
     '@score' => $diagnostic->getScore(),

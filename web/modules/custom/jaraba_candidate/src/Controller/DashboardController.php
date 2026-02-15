@@ -98,6 +98,18 @@ class DashboardController extends ControllerBase
         // Calculate overall stats
         $stats = $this->calculateStats($user_id, $applications, $enrollments);
 
+        // Cross-vertical bridges (Plan Elevación Empleabilidad v1 — Fase 8).
+        $cross_vertical_bridges = [];
+        if (\Drupal::hasService('ecosistema_jaraba_core.employability_cross_vertical_bridge')) {
+            try {
+                $cross_vertical_bridges = \Drupal::service('ecosistema_jaraba_core.employability_cross_vertical_bridge')
+                    ->evaluateBridges($user_id);
+            }
+            catch (\Exception $e) {
+                // Non-critical — bridges are optional.
+            }
+        }
+
         return [
             '#theme' => 'jobseeker_dashboard',
             '#profile' => $profile_data,
@@ -107,6 +119,7 @@ class DashboardController extends ControllerBase
             '#recommendations' => $recommendations,
             '#stats' => $stats,
             '#quick_actions' => $this->getQuickActions($profile),
+            '#cross_vertical_bridges' => $cross_vertical_bridges,
             '#attached' => [
                 'library' => ['jaraba_candidate/dashboard'],
             ],

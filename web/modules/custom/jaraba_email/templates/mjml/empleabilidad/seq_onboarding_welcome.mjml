@@ -1,0 +1,65 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .step-number { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background-color: #2563eb; color: #ffffff; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          &iexcl;Bienvenido a tu camino profesional!
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has completado tu diagn&oacute;stico de empleabilidad y tu perfil es <strong>{{ profile_type }}</strong> con una puntuaci&oacute;n de <strong>{{ score }}/100</strong>. &iexcl;Es un gran primer paso!</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#1e40af" padding-top="16px">
+          Tus pr&oacute;ximos pasos:
+        </mj-text>
+        <mj-text>
+          <p><span class="step-number">1</span> <strong>Completa tu perfil profesional</strong> &mdash; A&ntilde;ade tu experiencia, formaci&oacute;n y habilidades.</p>
+          <p><span class="step-number">2</span> <strong>Genera tu CV con IA</strong> &mdash; Crea un CV optimizado para sistemas ATS.</p>
+          <p><span class="step-number">3</span> <strong>Explora ofertas</strong> &mdash; Encuentra oportunidades que encajan con tu perfil.</p>
+        </mj-text>
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          Ir a mi dashboard
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Tu gap principal detectado: <strong>{{ primary_gap }}</strong>. Te hemos inscrito en formaci&oacute;n personalizada para reforzar esta &aacute;rea.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .tip-number { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background-color: #dbeafe; color: #1e40af; text-align: center; line-height: 24px; font-weight: bold; font-size: 12px; margin-right: 6px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#2563eb" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          Prep&aacute;rate para tu entrevista
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>&iexcl;Enhorabuena! Has sido seleccionado para una entrevista para el puesto de <strong>{{ job_title }}</strong> en <strong>{{ company_name }}</strong>.</p>
+          <p>Te compartimos algunos consejos para que des lo mejor de ti:</p>
+        </mj-text>
+        <mj-section background-color="#fefce8" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#854d0e">
+              <p><span class="tip-number">1</span> <strong>Investiga la empresa</strong> &mdash; Revisa su web, cultura y valores.</p>
+              <p><span class="tip-number">2</span> <strong>Prepara tu elevator pitch</strong> &mdash; 60 segundos sobre ti.</p>
+              <p><span class="tip-number">3</span> <strong>Practica con nuestro copilot</strong> &mdash; Simula preguntas reales.</p>
+              <p><span class="tip-number">4</span> <strong>Ten ejemplos concretos</strong> &mdash; Logros cuantificados y situaciones STAR.</p>
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-button href="{{ copilot_url }}" align="center" padding="24px 0">
+          Practicar con el Copilot
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Usa el modo &laquo;Preparaci&oacute;n de Entrevistas&raquo; del copilot para simular preguntas espec&iacute;ficas del puesto.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

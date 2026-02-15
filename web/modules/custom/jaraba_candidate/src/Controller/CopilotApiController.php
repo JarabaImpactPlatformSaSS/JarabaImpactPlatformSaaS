@@ -123,4 +123,56 @@ class CopilotApiController extends ControllerBase {
     ]);
   }
 
+  /**
+   * GET|POST /api/v1/copilot/employability/proactive
+   *
+   * GET: Checks for pending proactive actions for the current user.
+   * POST: Dismisses a proactive action.
+   *
+   * Plan Elevación Empleabilidad v1 — Fase 9.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   GET: { has_action: bool, action?: array }
+   *   POST: { success: bool }
+   */
+  public function proactive(Request $request): JsonResponse {
+    $userId = (int) $this->currentUser()->id();
+    if (!$userId) {
+      return new JsonResponse(['has_action' => FALSE]);
+    }
+
+    // POST: Dismiss a proactive action.
+    if ($request->isMethod('POST')) {
+      $data = json_decode($request->getContent(), TRUE);
+      $ruleId = $data['rule_id'] ?? '';
+      if ($ruleId && \Drupal::hasService('ecosistema_jaraba_core.employability_journey_progression')) {
+        \Drupal::service('ecosistema_jaraba_core.employability_journey_progression')
+          ->dismissAction($userId, $ruleId);
+      }
+      return new JsonResponse(['success' => TRUE]);
+    }
+
+    // GET: Check for pending proactive action.
+    if (!\Drupal::hasService('ecosistema_jaraba_core.employability_journey_progression')) {
+      return new JsonResponse(['has_action' => FALSE]);
+    }
+
+    try {
+      $action = \Drupal::service('ecosistema_jaraba_core.employability_journey_progression')
+        ->getPendingAction($userId);
+
+      if ($action) {
+        return new JsonResponse([
+          'has_action' => TRUE,
+          'action' => $action,
+        ]);
+      }
+    }
+    catch (\Exception $e) {
+      // Non-critical — proactive actions are optional.
+    }
+
+    return new JsonResponse(['has_action' => FALSE]);
+  }
+
 }

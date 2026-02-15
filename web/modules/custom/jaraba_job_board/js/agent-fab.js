@@ -48,6 +48,13 @@
                             sessionStorage.setItem('fab_welcomed', 'true');
                             showOnboardingMessage(chatMessages, agentChat, onboardingData);
                         }
+
+                        // Show pending proactive action (Fase 9).
+                        if (window._pendingProactiveAction) {
+                            showProactiveMessage(chatMessages, agentChat, window._pendingProactiveAction);
+                            trigger.classList.remove('has-proactive');
+                            window._pendingProactiveAction = null;
+                        }
                     }
                 });
 
@@ -145,6 +152,12 @@
                         panel.setAttribute('aria-hidden', 'false');
                     }, 500);
                 }
+
+                // Proactive actions polling (Plan Elevación Empleabilidad v1 — Fase 9).
+                checkProactiveActions(trigger, panel, chatMessages, agentChat, input);
+                setInterval(() => {
+                    checkProactiveActions(trigger, panel, chatMessages, agentChat, input);
+                }, 300000); // Every 5 minutes
             });
 
             // =================================================================
@@ -593,6 +606,90 @@
                 return responses[agentId]?.[actionId] || {
                     message: Drupal.t('Acción completada. ¿En qué más puedo ayudarte?')
                 };
+            }
+
+            /**
+             * Checks for proactive AI actions and shows notification dot on FAB.
+             * Plan Elevación Empleabilidad v1 — Fase 9.
+             */
+            function checkProactiveActions(trigger, panel, chatContainer, scrollContainer, input) {
+                fetch('/api/v1/copilot/employability/proactive', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (!data.has_action || !data.action) {
+                        trigger.classList.remove('has-proactive');
+                        return;
+                    }
+
+                    var action = data.action;
+                    trigger.classList.add('has-proactive');
+                    window._pendingProactiveAction = action;
+
+                    // Auto-expand if channel requires it.
+                    if (action.channel === 'fab_expand' && !panel.classList.contains('is-open')) {
+                        panel.classList.add('is-open');
+                        trigger.setAttribute('aria-expanded', 'true');
+                        panel.setAttribute('aria-hidden', 'false');
+                        setTimeout(function () { if (input) input.focus(); }, 300);
+                        showProactiveMessage(chatContainer, scrollContainer, action);
+                        trigger.classList.remove('has-proactive');
+                        window._pendingProactiveAction = null;
+                    }
+                })
+                .catch(function () {
+                    // Silent fail — proactive is non-critical.
+                });
+            }
+
+            /**
+             * Shows a proactive action message in the chat panel.
+             * Plan Elevación Empleabilidad v1 — Fase 9.
+             */
+            function showProactiveMessage(container, scrollContainer, action) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'agent-response-wrapper proactive-message';
+
+                var msg = document.createElement('div');
+                msg.className = 'chat-message from-agent proactive';
+                msg.innerHTML = '<span class="proactive-badge">' + Drupal.t('Sugerencia') + '</span><br>' + action.message;
+                wrapper.appendChild(msg);
+
+                if (action.cta_label && action.cta_url) {
+                    var actionsContainer = document.createElement('div');
+                    actionsContainer.className = 'response-actions';
+
+                    var cta = document.createElement('a');
+                    cta.href = action.cta_url;
+                    cta.className = 'response-cta proactive-cta';
+                    cta.innerHTML = '<span class="cta-icon">\u2192</span> ' + action.cta_label;
+                    actionsContainer.appendChild(cta);
+
+                    var dismiss = document.createElement('button');
+                    dismiss.className = 'response-cta proactive-dismiss';
+                    dismiss.textContent = Drupal.t('Ahora no');
+                    dismiss.addEventListener('click', function () {
+                        fetch('/api/v1/copilot/employability/proactive', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ rule_id: action.rule_id, action: 'dismiss' })
+                        }).catch(function () {});
+                        wrapper.classList.add('fade-out');
+                        setTimeout(function () { wrapper.remove(); }, 300);
+                    });
+                    actionsContainer.appendChild(dismiss);
+
+                    wrapper.appendChild(actionsContainer);
+                }
+
+                container.appendChild(wrapper);
+                setTimeout(function () {
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
             }
         }
     };

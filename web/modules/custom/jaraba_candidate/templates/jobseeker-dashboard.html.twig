@@ -210,6 +210,30 @@
         </div>
       {% endif %}
     </section>
-    
+
+    {# Card: Cross-Vertical Bridges (Fase 8) #}
+    {% if cross_vertical_bridges is not empty %}
+      <section class="dashboard-card dashboard-card--bridges dashboard-card--wide">
+        <div class="card-header">
+          <h2>{{ 'Explore more opportunities'|t }}</h2>
+        </div>
+        <div class="bridges-grid">
+          {% for bridge in cross_vertical_bridges %}
+            <div class="ej-bridge-card ej-bridge-card--{{ bridge.vertical }}">
+              <div class="ej-bridge-card__icon">
+                {{ jaraba_icon('verticals', bridge.icon, { size: '32px', color: bridge.color }) }}
+              </div>
+              <div class="ej-bridge-card__content">
+                <p class="ej-bridge-card__message">{{ bridge.message|t }}</p>
+                <a href="{{ bridge.cta_url }}" class="btn btn--outline btn--sm">
+                  {{ bridge.cta_label|t }}
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
   </div>
 </div>

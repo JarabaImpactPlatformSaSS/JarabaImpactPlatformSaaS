@@ -454,6 +454,9 @@ function _jaraba_job_board_handle_application_update(EntityInterface $entity): v
 
   // 3. Registrar feedback para ML si es hired/rejected
   _jaraba_job_board_record_ml_feedback($entity, $newStatus);
+
+  // 4. Sincronizar con CRM pipeline (Plan Elevación Empleabilidad v1 — Fase 7).
+  _jaraba_job_board_sync_to_crm($entity, $newStatus);
 }
 
 /**
@@ -523,6 +526,9 @@ function jaraba_job_board_entity_insert(EntityInterface $entity): void {
 
   // Notificar nueva aplicación
   _jaraba_job_board_notify_new_application($entity);
+
+  // Sincronizar con CRM (Plan Elevación Empleabilidad v1 — Fase 7).
+  _jaraba_job_board_sync_to_crm($entity, 'applied');
 }
 
 /**
@@ -564,6 +570,43 @@ function _jaraba_job_board_award_status_credits(EntityInterface $application, st
     _jaraba_job_board_award_credits($candidateId, $creditReasons[$status], [
       'application_id' => $application->id(),
     ]);
+  }
+
+  // Plan Elevación Empleabilidad v1 — Fase 5: Upgrade triggers on status change.
+  if (in_array($status, ['shortlisted', 'hired'])) {
+    try {
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context') && \Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+        $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+        if ($tenant) {
+          $triggerType = $status === 'hired' ? 'first_milestone' : 'status_change';
+          \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
+            ->fire($triggerType, $tenant, [
+              'feature_key' => 'job_application_' . $status,
+              'vertical' => 'empleabilidad',
+              'application_id' => $application->id(),
+            ]);
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // Non-critical — fail silently.
+    }
+  }
+
+  // Plan Elevación Empleabilidad v1 — Fase 6: Email sequence enrollment.
+  if (\Drupal::hasService('ecosistema_jaraba_core.employability_email_sequence')) {
+    try {
+      $emailSeq = \Drupal::service('ecosistema_jaraba_core.employability_email_sequence');
+      if ($status === 'interviewed') {
+        $emailSeq->enroll($candidateId, 'SEQ_EMP_004');
+      }
+      elseif ($status === 'hired') {
+        $emailSeq->enroll($candidateId, 'SEQ_EMP_005');
+      }
+    }
+    catch (\Exception $e) {
+      // Non-critical — fail silently.
+    }
   }
 }
 
@@ -904,6 +947,184 @@ function _jaraba_job_board_map_employment_type(string $type): string {
   ];
 
   return $map[strtolower($type)] ?? 'FULL_TIME';
+}
+
+/**
+ * Sincroniza estado de candidatura con el CRM pipeline.
+ *
+ * Crea o actualiza oportunidades CRM y registra actividades
+ * cuando el estado de una candidatura cambia.
+ * Usa keyValue store para el mapping application→opportunity.
+ *
+ * Plan Elevación Empleabilidad v1 — Fase 7.
+ */
+function _jaraba_job_board_sync_to_crm(EntityInterface $application, string $status): void {
+  if (!\Drupal::hasService('jaraba_crm.opportunity') || !\Drupal::hasService('jaraba_crm.contact')) {
+    return;
+  }
+
+  $statusToStage = [
+    'applied' => 'lead',
+    'screening' => 'mql',
+    'shortlisted' => 'sql',
+    'interviewed' => 'demo',
+    'offered' => 'proposal',
+    'hired' => 'closed_won',
+    'rejected' => 'closed_lost',
+  ];
+
+  $stage = $statusToStage[$status] ?? NULL;
+  if (!$stage) {
+    return;
+  }
+
+  try {
+    $candidateId = (int) ($application->get('candidate_id')->target_id ?? 0);
+    $jobId = (int) ($application->get('job_id')->target_id ?? 0);
+    if (!$candidateId || !$jobId) {
+      return;
+    }
+
+    $kvStore = \Drupal::keyValue('jaraba_job_board.crm_sync');
+    $oppKey = 'app_opp_' . $application->id();
+    $existingOppId = $kvStore->get($oppKey);
+
+    /** @var \Drupal\jaraba_crm\Service\OpportunityService $crmOpportunity */
+    $crmOpportunity = \Drupal::service('jaraba_crm.opportunity');
+
+    if ($existingOppId) {
+      $crmOpportunity->moveToStage((int) $existingOppId, $stage);
+    }
+    else {
+      $contactId = _jaraba_job_board_ensure_crm_contact($candidateId);
+
+      $jobTitle = '';
+      $candidateName = '';
+      try {
+        $job = \Drupal::entityTypeManager()->getStorage('job_posting')->load($jobId);
+        $jobTitle = $job ? $job->getTitle() : "Job #$jobId";
+      }
+      catch (\Exception $e) {
+        $jobTitle = "Job #$jobId";
+      }
+      try {
+        $candidate = \Drupal::entityTypeManager()->getStorage('user')->load($candidateId);
+        $candidateName = $candidate ? $candidate->getDisplayName() : "Candidate #$candidateId";
+      }
+      catch (\Exception $e) {
+        $candidateName = "Candidate #$candidateId";
+      }
+
+      $values = [
+        'title' => $jobTitle . ' - ' . $candidateName,
+        'stage' => $stage,
+        'value' => 0,
+        'probability' => 50,
+        'notes' => t('Auto-created from job application #@id', ['@id' => $application->id()]),
+      ];
+      if ($contactId) {
+        $values['contact_id'] = $contactId;
+      }
+
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        try {
+          $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+          if ($tenant) {
+            $values['tenant_id'] = $tenant->id();
+          }
+        }
+        catch (\Exception $e) {
+          // No tenant context available.
+        }
+      }
+
+      $opportunity = $crmOpportunity->create($values);
+      $kvStore->set($oppKey, $opportunity->id());
+    }
+
+    // Log activity for status transitions on existing opportunities.
+    if (\Drupal::hasService('jaraba_crm.activity') && $existingOppId) {
+      $contactId = $kvStore->get('user_contact_' . $candidateId);
+      if ($contactId) {
+        \Drupal::service('jaraba_crm.activity')->create([
+          'contact_id' => $contactId,
+          'opportunity_id' => $existingOppId,
+          'subject' => t('Application status changed to: @status', ['@status' => $status]),
+          'type' => 'note',
+          'activity_date' => date('Y-m-d\TH:i:s'),
+          'notes' => t('Automated CRM sync. Application #@id moved to @status.', [
+            '@id' => $application->id(),
+            '@status' => $status,
+          ]),
+        ]);
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'CRM sync error for application @id: @error',
+      ['@id' => $application->id(), '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Ensures a CRM contact exists for a candidate user.
+ *
+ * Uses keyValue store for user→contact ID mapping. Creates a new
+ * CRM contact if none exists, or links to existing by email search.
+ *
+ * Plan Elevación Empleabilidad v1 — Fase 7.
+ *
+ * @return int|null
+ *   CRM contact ID or NULL if creation failed.
+ */
+function _jaraba_job_board_ensure_crm_contact(int $userId): ?int {
+  $kvStore = \Drupal::keyValue('jaraba_job_board.crm_sync');
+  $contactKey = 'user_contact_' . $userId;
+  $existingContactId = $kvStore->get($contactKey);
+
+  if ($existingContactId) {
+    return (int) $existingContactId;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_crm\Service\ContactService $contactService */
+    $contactService = \Drupal::service('jaraba_crm.contact');
+    $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+    if (!$user) {
+      return NULL;
+    }
+
+    $email = $user->getEmail();
+    if ($email) {
+      $existing = $contactService->search($email, 1);
+      if (!empty($existing)) {
+        $contact = reset($existing);
+        $kvStore->set($contactKey, $contact->id());
+        return (int) $contact->id();
+      }
+    }
+
+    $displayName = $user->getDisplayName() ?? '';
+    $nameParts = explode(' ', $displayName, 2);
+    $contact = $contactService->create([
+      'first_name' => $nameParts[0] ?? $displayName,
+      'last_name' => $nameParts[1] ?? '',
+      'email' => $email,
+      'source' => 'job_board',
+    ]);
+
+    $kvStore->set($contactKey, $contact->id());
+    return (int) $contact->id();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_job_board')->warning(
+      'Failed to ensure CRM contact for user @uid: @error',
+      ['@uid' => $userId, '@error' => $e->getMessage()]
+    );
+    return NULL;
+  }
 }
 
 

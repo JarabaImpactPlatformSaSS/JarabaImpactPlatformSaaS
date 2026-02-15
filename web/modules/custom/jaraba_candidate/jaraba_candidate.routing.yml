@@ -240,6 +240,18 @@ jaraba_candidate.copilot.suggestions:
   options:
     _format: json
 
+# GET|POST: Proactive AI journey actions (Fase 9)
+# GET → check pending proactive action, POST → dismiss action
+jaraba_candidate.copilot.proactive:
+  path: '/api/v1/copilot/employability/proactive'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::proactive'
+  requirements:
+    _permission: 'view own copilot history'
+  methods: [GET, POST]
+  options:
+    _format: json
+
 # --- Rutas de Administración ---
 # Settings stay in /admin/config
 jaraba_candidate.settings:
