@@ -4,7 +4,21 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 46.0.0 (Stack Cumplimiento Fiscal VeriFactu + Facturae + E-Factura — 5 Docs Especificación)
+**Versión:** 47.0.0 (Legal Intelligence Hub — Plan Implementacion + 3 Docs Especificacion)
+
+> **🎯 LEGAL INTELLIGENCE HUB — PLAN DE IMPLEMENTACION (Docs 178/178A/178B)** (2026-02-15)
+> - **Plan de Implementacion:** 20 secciones, 10 fases (Fase 0-9), 530-685 horas / 23,850-30,825 EUR
+> - **Modulo:** `jaraba_legal_intelligence` — Busqueda juridica inteligente con IA
+> - **5 Content Entities:** LegalResolution (35+ campos incl. EU), LegalSource, LegalAlert, LegalBookmark, LegalCitation + tabla `legal_citation_graph`
+> - **9 Taxonomias juridicas:** legal_jurisdiction, legal_resolution_type, legal_issuing_body, legal_topic_fiscal/laboral/civil/mercantil/subvenciones, eu_procedure_type
+> - **7 Services:** LegalSearchService, LegalIngestionService, LegalNlpPipelineService, LegalAlertService, LegalCitationService, LegalDigestService, LegalMergeRankService
+> - **8 Spiders:** CENDOJ, BOE, DGT, TEAC (nacionales) + EUR-Lex, CURIA/TJUE, HUDOC/TEDH, EDPB (europeos)
+> - **Pipeline NLP 9 etapas:** Tika (extraccion) → spaCy (segmentacion, NER) → Gemini 2.0 Flash (clasificacion, resumen) → embeddings → Qdrant → grafos de citas
+> - **14 directrices cumplidas:** i18n, SCSS Federated Design Tokens, Dart Sass, zero-region, hook_preprocess_html, slide-panel, Field UI+Views, config desde UI, parciales, seguridad, comentarios, iconos SVG duotone, @ai.provider, hooks (no ECA)
+> - **Frontend:** 3 controllers, 6 templates, 8 parciales, 6 JS, 12 SCSS, 4 Python scripts, 7 PHPUnit tests, 12 iconos SVG duotone categoria `legal/`
+> - **Relacion jaraba_legal_knowledge:** Convivencia (normativa BOE vs jurisprudencia), migracion gradual, sin cambios destructivos
+> - **Plan:** [20260215-Plan_Implementacion_Legal_Intelligence_Hub_v1.md](./implementacion/20260215-Plan_Implementacion_Legal_Intelligence_Hub_v1.md)
+>
 
 > **🎯 STACK CUMPLIMIENTO FISCAL — VERIFACTU + FACTURAE B2G + E-FACTURA B2B (5 DOCS ESPECIFICACIÓN)** (2026-02-15)
 > - **Doc 178 (Auditoría VeriFactu):** Análisis estratégico — VeriFactu NO implementado como módulo, score 20.75/100 (Level 0 incomplete), componentes reutilizables (SHA-256 Buzón Confianza ~80%, PAdES ~60%, QR ~50%, FOC append-only ~90%, ECA ~85%), roadmap 3 fases (1,056-1,427h / 47,520-64,215 EUR)
