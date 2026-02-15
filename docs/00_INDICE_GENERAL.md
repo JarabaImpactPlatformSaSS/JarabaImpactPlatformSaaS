@@ -4,7 +4,25 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 44.0.0 (Elevación Empleabilidad 10/10 + Emprendimiento 6 Fases + Emprendimiento v2 Paridad 7 Gaps)
+**Versión:** 45.0.0 (Andalucía +ei Elevación 12/12 Fases + Empleabilidad 10/10 + Emprendimiento 6+7 Gaps)
+
+> **🎯 ELEVACIÓN ANDALUCÍA +EI — 12/12 FASES IMPLEMENTADAS (18 GAPS CERRADOS)** (2026-02-15)
+> - **Fase 1 (Page Template + FAB):** `page--andalucia-ei.html.twig` zero-region + Copilot FAB, `preprocess_page__andalucia_ei()`, body classes `page-andalucia-ei vertical-andalucia-ei`, template suggestion `page__andalucia_ei` para todas las rutas del módulo
+> - **Fase 2 (SCSS Compliance):** Migración CSS→SCSS con zero `rgba()` violations, `color-mix()` throughout, `var(--ej-*)` design tokens, `package.json` Dart Sass, emoji→`jaraba_icon()`
+> - **Fase 3 (Design Token Config):** `ecosistema_jaraba_core.design_token_config.vertical_andalucia_ei.yml` con paleta (#FF8C42 primary, #00A9A5 secondary, #233D63 accent)
+> - **Fase 4 (Feature Gating):** `AndaluciaEiFeatureGateService` + 18 FreemiumVerticalLimit configs (6 features × 3 planes: copilot_sessions_daily, mentoring_hours_monthly, sto_exports, training_modules, diagnostic_access, report_downloads)
+> - **Fase 5 (Email Lifecycle):** `AndaluciaEiEmailSequenceService` con 6 secuencias (SEQ_AEI_001-006) + 6 MJML templates (welcome, phase_transition, hours_milestone, training_completion, inactivity_reengagement, upsell_starter)
+> - **Fase 6 (Cross-Vertical Bridges):** `AndaluciaEiCrossVerticalBridgeService` con 4 bridges salientes (emprendimiento_avanzado, empleabilidad_express, servicios_freelance, formacion_continua)
+> - **Fase 7 (Journey Progression):** `AndaluciaEiJourneyProgressionService` con 8 reglas proactivas (inactivity_atencion, low_training_hours, orientation_milestone, training_milestone, ready_for_insertion, insertion_preparation, insertion_stalled, post_insertion_expansion)
+> - **Fase 8 (Health Scores):** `AndaluciaEiHealthScoreService` con 5 dimensiones (orientation_hours 25%, training_hours 30%, copilot_engagement 20%, sto_completeness 10%, progression_speed 15%) + 8 KPIs verticales
+> - **Fase 9 (i18n):** `AndaluciaEiJourneyDefinition` migrado de const arrays a static methods con `TranslatableMarkup`
+> - **Fase 10 (Upgrade Triggers + CRM):** Triggers en milestones 25h/50h/75h/100h, CRM sync (atencion→lead, insercion→sql, baja→closed_lost), email enrollment en transiciones de fase
+> - **Fase 11 (A/B Testing):** `AndaluciaEiExperimentService` con 8 eventos de conversión + 4 scopes (onboarding_flow, copilot_engagement, transition_funnel, upgrade_funnel)
+> - **Fase 12 (Embudo Ventas):** hook_insert para welcome email + CRM lead, first_ia_session tracking, phase_insertion tracking, dashboard enriquecido con health score + bridges + proactive actions
+> - **43 archivos** (30 nuevos + 13 modificados) | **5 módulos** tocados
+> - **Plan:** [20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md](./implementacion/20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md)
+> - **Aprendizaje:** [2026-02-15_andalucia_ei_elevacion_12_fases.md](./tecnicos/aprendizajes/2026-02-15_andalucia_ei_elevacion_12_fases.md)
+>
 
 > **🎯 ELEVACIÓN EMPRENDIMIENTO v2 — PARIDAD CON EMPLEABILIDAD (7 GAPS CERRADOS)** (2026-02-15)
 > - **Gap 1 (Health Score):** `EmprendimientoHealthScoreService` con 5 dimensiones ponderadas (canvas_completeness 25%, hypothesis_validation 30%, experiment_velocity 15%, copilot_engagement 15%, funding_readiness 15%), `calculateUserHealth()` retorna score 0-100 + categoría, `calculateVerticalKpis()` con 8 KPIs: startup_survival_rate, time_to_mvp, hypothesis_validation_rate, activation_rate, mentor_engagement, nps, arpu, conversion_free_paid
