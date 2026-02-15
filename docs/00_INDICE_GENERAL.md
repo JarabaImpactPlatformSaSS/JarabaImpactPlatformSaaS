@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 41.0.0 (Elevación Emprendimiento — 6 Fases Implementadas + Empleabilidad Fases 1-8)
+**Versión:** 42.0.0 (Elevación Empleabilidad — 10/10 Fases Implementadas + Emprendimiento 6 Fases)
 
 > **🎯 ELEVACIÓN EMPRENDIMIENTO — 6 FASES IMPLEMENTADAS** (2026-02-15)
 > - **Fase 1 (Parent Template + FAB):** `page--emprendimiento.html.twig` zero-region + Copilot FAB, `preprocess_page__emprendimiento()`, template suggestion `page__emprendimiento` para copilot_v2 y mentoring, eliminados 3 templates hijos redundantes
@@ -16,6 +16,12 @@
 > - **15 archivos** (5 nuevos + 10 modificados, 3 eliminados) | **5 modulos** tocados
 > - **Plan:** [20260215-Plan_Elevacion_Clase_Mundial_Vertical_Emprendimiento_v1.md](./implementacion/20260215-Plan_Elevacion_Clase_Mundial_Vertical_Emprendimiento_v1.md)
 > - **Aprendizaje:** [2026-02-15_emprendimiento_elevacion_6_fases.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md)
+>
+
+> **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 9 + 10 IMPLEMENTADAS (10/10 COMPLETADO)** (2026-02-15)
+> - **Fase 9 (AI Journey Progression Proactiva):** `EmployabilityJourneyProgressionService` con 7 reglas proactivas (inactivity_discovery, incomplete_profile, ready_but_inactive, application_frustration, interview_prep, offer_negotiation, post_employment_expansion), `evaluate()` con prioridad + dismiss tracking via State API, `getPendingAction()` con cache 1h, `evaluateBatch()` para cron, endpoint `GET|POST /api/v1/copilot/employability/proactive` en `CopilotApiController`, FAB notification dot + auto-expand via `checkProactiveActions()` polling cada 5 min, `showProactiveMessage()` con CTA + dismiss button
+> - **Fase 10 (Health Scores + KPIs):** `EmployabilityHealthScoreService` con 5 dimensiones ponderadas (profile_completeness 25%, application_activity 30%, copilot_engagement 15%, training_progress 15%, credential_advancement 15%), `calculateUserHealth()` retorna score 0-100 + categoría (healthy/neutral/at_risk/critical), `calculateVerticalKpis()` con 8 KPIs: insertion_rate (target 40%), time_to_employment (<90 días), activation_rate (60%), engagement_rate (45%), NPS (>50), ARPU (>15 EUR), conversion_free_paid (>8%), churn_rate (<5%)
+> - **10 archivos** (2 nuevos + 8 modificados) | **3 módulos** tocados
 >
 
 > **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 7 + 8 IMPLEMENTADAS** (2026-02-15)
