@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-02-14
-**Versión:** 25.0.0 (Bloques Verticales Diseñados — 55 Templates + SCSS)
+**Fecha:** 2026-02-15
+**Versión:** 26.0.0 (Emprendimiento Clase Mundial — 9 Gaps Cerrados)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -738,6 +738,7 @@
 │   │   ├── NormativeRAGService: Qdrant + fallback keyword                 │
 │   │   ├── CopilotOrchestratorService: Gemini→Anthropic→OpenAI            │
 │   │   │   ├── + SelfDiscoveryContextService (10o arg nullable)           │
+│   │   │   ├── + UpgradeContext: soft nudge en system prompt (>80% limit) │
 │   │   │   ├── + recordLatencySample() + recordFallbackEvent()            │
 │   │   │   └── + getMetricsSummary() (P50/P99, fallback rate, costes)    │
 │   │   └── PivotDetector, ContentGrounding, VPC, BusinessPattern          │
@@ -767,10 +768,15 @@
 │   ├── JourneyEngineService: Transiciones, eventos, KPIs                   │
 │   ├── JourneyContextService: Análisis contexto + risk_score               │
 │   ├── JourneyTriggerService: 11 tipos triggers IA + NO_INTRUSION_RULES   │
+│   │   └── evaluateEntrepreneurTriggers(): re-engagement 7d inactivos     │
 │   ├── JourneyDefinitionLoader: 7 definiciones por vertical                │
+│   ├── EmprendimientoCrossSellService: Ejecución 4 reglas cross-sell      │
+│   │   └── diagnostic_completed → Curso BMC, before_mvp → Kit validación  │
+│   ├── Cross-vertical: empleabilidad ↔ emprendimiento bidireccional       │
+│   │   └── RIASEC E≥7 → emprendimiento | at_risk → empleabilidad          │
 │   ├── API REST: 6 endpoints (/api/v1/journey/*)                           │
 │   ├── Dashboard Admin: /admin/config/jaraba/journey                       │
-│   └── Estado: ✅ Producción (v1.0 - 100% avatares implementados)          │
+│   └── Estado: ✅ Producción (v1.1 - Cross-sell + re-engagement activos)  │
 │                                                                         │
 │   📦 jaraba_heatmap ✅ (Native Analytics + Tracking Automation)            │
 │   ├── Tracking: Clics, movimiento mouse, scroll depth                    │
@@ -844,8 +850,9 @@
 │   │   FundingMatch, FundingAlert                                        │
 │   ├── API Clients: BdnsApiClient (BDNS) + BojaApiClient (BOJA)        │
 │   ├── Matching IA: FundingMatchingEngine (5 criterios, scoring 0-100)  │
-│   │   └── Región 20% + Beneficiario 25% + Sector 20% + Tamaño 15%    │
-│   │       + Semántico 20% (Qdrant cosine)                              │
+│   │   ├── Región 20% + Beneficiario 25% + Sector 20% + Tamaño 15%    │
+│   │   │   + Semántico 20% (Qdrant cosine)                              │
+│   │   └── Canvas Enrichment: sector, revenue, segments desde BMC       │
 │   ├── Intelligence: FundingEligibilityCalculator,                      │
 │   │   FundingCopilotService (RAG + intenciones)                        │
 │   ├── Alerts: FundingAlertService + FundingNotificationDispatcher      │
@@ -885,7 +892,7 @@
 │   ├── Tests: 10 unit test files (Company, Contact, Opportunity, etc.)    │
 │   └── Estado: ✅ Producción (v4.0 - B2B Sales Flow F9)                  │
 │                                                                         │
-│   📦 jaraba_email ✅ (Email Marketing + AI + 24 MJML Templates)            │
+│   📦 jaraba_email ✅ (Email Marketing + AI + 30 MJML Templates)            │
 │   ├── Entidades: EmailCampaign, EmailList, EmailSequence, EmailTemplate, │
 │   │   EmailSequenceStep                                                  │
 │   ├── EmailAIService: Generación de subjects y copy con IA               │
@@ -894,11 +901,13 @@
 │   ├── EmailWebhookController: POST /api/v1/webhooks/sendgrid (HMAC)    │
 │   ├── SendGridClientService: sendEmail, sendBatch, processWebhook       │
 │   ├── SequenceManagerService: enrollSubscriber, executeNextStep         │
-│   ├── MJML Templates: 24 transaccionales + base.mjml                    │
+│   ├── MJML Templates: 30 transaccionales + base.mjml                    │
 │   │   ├── auth/ (5): verify, welcome, password_reset/changed, new_login  │
 │   │   ├── billing/ (7): invoice, payment_failed, subscription...         │
 │   │   ├── marketplace/ (6): order_confirmed, shipped, delivered...       │
-│   │   └── empleabilidad/ (5): job_match, application, shortlisted...    │
+│   │   ├── empleabilidad/ (5): job_match, application, shortlisted...    │
+│   │   └── emprendimiento/ (6): welcome, diagnostic, canvas_milestone,   │
+│   │       experiment_result, mentor_matched, weekly_progress             │
 │   ├── TemplateLoaderService: template_id → MJML → compilación           │
 │   ├── MjmlCompilerService: MJML → HTML responsive                       │
 │   ├── Tests: 12 unit test files (Newsletter, MJML, Subscriber, etc.)    │
@@ -1069,9 +1078,10 @@
 │   ├── OnboardingChecklistService: Progreso por vertical                │
 │   ├── OnboardingContextualHelpService: Ayuda contextual in-app         │
 │   ├── OnboardingAnalyticsService: Métricas activación + retención      │
+│   ├── Vertical-specific: Emprendimiento (idea + sector + BMC CTA)      │
 │   ├── API REST: /api/v1/onboarding/* (dashboard + API)                 │
 │   ├── Tests: 2 unit test files                                         │
-│   └── Estado: ✅ Producción (v1.0 - 34 archivos)                       │
+│   └── Estado: ✅ Producción (v1.1 - Emprendimiento personalizado)      │
 │                                                                         │
 │   📦 jaraba_usage_billing ✅ (Usage-Based Billing Pipeline)              │
 │   ├── Entidades: UsageEvent, UsageAggregate, PricingRule               │
@@ -1789,7 +1799,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │                 jaraba_email module                                      │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   TEMPLATES MJML (24 transaccionales + 1 base):                        │
+│   TEMPLATES MJML (30 transaccionales + 1 base):                        │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │  auth/       (5) verify, welcome, password_reset/changed, login │  │
 │   │  billing/    (7) invoice, payment_failed, subscription,         │  │
@@ -1798,6 +1808,9 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   │                   delivered, payout, review                     │  │
 │   │  empleabilidad/(5) job_match, application, new_application,     │  │
 │   │                     shortlisted, expired                        │  │
+│   │  emprendimiento/(6) welcome_entrepreneur, diagnostic_completed, │  │
+│   │                      canvas_milestone, experiment_result,       │  │
+│   │                      mentor_matched, weekly_progress            │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 │   FLUJO:                                                               │
@@ -2008,5 +2021,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 21.0.0 | **Fecha:** 2026-02-13 | **Autor:** IA Asistente
+> **Versión:** 26.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
 

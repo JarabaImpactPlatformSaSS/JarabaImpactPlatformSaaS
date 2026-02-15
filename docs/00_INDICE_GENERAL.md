@@ -3,8 +3,30 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-02-14
-**Versión:** 35.0.0 (Bloques Verticales Diseñados — 55 Templates + SCSS)
+**Última actualización:** 2026-02-15
+**Versión:** 37.0.0 (Emprendimiento Clase Mundial — 9 Gaps Cerrados)
+
+> **🚀 EMPRENDIMIENTO CLASE MUNDIAL — 9/10 GAPS CERRADOS** (2026-02-15)
+> - **Auditoria senior multi-disciplina** del vertical Emprendimiento: 10 gaps identificados, 9 implementados (G10 diferido)
+> - **G1 Design Token:** `Inter` → `Outfit` en family-body (SCSS-FONT-001)
+> - **G2 Freemium:** 12 nuevos configs (4 features × 3 planes): hypotheses_active, experiments_monthly, copilot_sessions_daily, mentoring_sessions_monthly
+> - **G3 Email:** 6 MJML templates emprendimiento (welcome, diagnostic, canvas_milestone, experiment_result, mentor_matched, weekly_progress) → 24→30 templates totales
+> - **G4 Cross-Sell:** EmprendimientoCrossSellService ejecuta 4 reglas del journey definition en transiciones de estado
+> - **G5 Re-engagement:** hook_cron weekly para emprendedores inactivos 7d + evaluateEntrepreneurTriggers()
+> - **G6 AI Upgrade:** getUpgradeContext() en UpgradeTriggerService + inyeccion contextual en CopilotOrchestratorService buildSystemPrompt()
+> - **G7 Funding+Canvas:** FundingMatchingEngine enrichment con datos BMC (sector, revenue, segments, stage)
+> - **G8 Cross-Vertical:** RIASEC Enterprising ≥7 → emprendimiento | at_risk + all_hypotheses_killed → empleabilidad | AvatarNavigationService cross-vertical items
+> - **G9 Onboarding:** Wizard step-welcome con idea+sector emprendimiento | step-content con BMC CTA card
+> - **33 archivos** (12 config YAML + 6 MJML + 1 servicio PHP + 14 modificados) | **7 modulos** tocados
+> - **Arquitectura v26.0.0** | Directrices v26.0.0 | Aprendizaje: [2026-02-15_emprendimiento_gaps_9_world_class.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_gaps_9_world_class.md)
+>
+
+> **🎯 ELEVACIÓN EMPLEABILIDAD — FASE 1 + FASE 3 IMPLEMENTADAS** (2026-02-15)
+> - **Plan Completo:** 10 fases, 25 hallazgos críticos, correspondencia 25+ specs técnicos
+> - **Fase 1 (Templates):** `page--empleabilidad.html.twig` zero-region + Copilot FAB, `preprocess_page__empleabilidad()`, body classes `page-empleabilidad vertical-empleabilidad`, template suggestion `page__empleabilidad` para 4 módulos (jaraba_candidate, jaraba_job_board, jaraba_diagnostic, jaraba_self_discovery)
+> - **Fase 3 (SCSS P4-COLOR-002):** 0 violaciones rgba() en `_dashboard.scss` (14 fixes) y `self-discovery.scss` (31 fixes) → `color-mix(in srgb, var(--ej-*, fallback) N%, transparent)` + hardcoded hex → CSS custom properties
+> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md)
+>
 
 > **🎨 BLOQUES VERTICALES DISEÑADOS — 55 TEMPLATES + SCSS** (2026-02-14)
 > - **55 templates Twig reescritos** (5 verticales × 11 tipos) con HTML semántico único por tipo
@@ -710,8 +732,9 @@
 |-----------|-------------|-------|
 | [20260213-Plan_Remediacion_Auditoria_Integral_v1.md](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md) | 📋 **Plan Remediación Auditoría Integral** ⭐ — 65 hallazgos, 3 fases, 8 semanas, 250-350h. TOC 16 secciones. Catálogo completo, correspondencia directrices, checklist frontend 12 sub-secciones | 2026-02-13 |
 | [20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md](./implementacion/20260213-Plan_Implementacion_Navegacion_Contextual_Avatar_v1.md) | 🧭 **Navegacion Contextual Avatar** ⭐ — AvatarNavigationService 10 avatares, _avatar-nav.html.twig (bottom nav mobile + barra desktop), SCSS BEM, Theme Setting enable_avatar_nav, 7 templates `only` actualizadas. Spec f-103 Fase 1 | 2026-02-13 |
+| [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | 🎯 **Elevación Clase Mundial Empleabilidad** ⭐ — 10 fases, 25 hallazgos críticos, 115+ clases PHP, 80+ rutas, 19 entidades. Correspondencia 25+ specs técnicos. Fase 1 (Templates) + Fase 3 (SCSS) implementadas | 2026-02-15 |
 
-**Total documentos implementación:** 35
+**Total documentos implementación:** 36
 
 ---
 
