@@ -647,6 +647,66 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # EMPRENDIMIENTO FEATURE GATE (Plan Elevación Emprendimiento v1 — Fase 4)
+  # ===========================================
+
+  # Feature gating por plan para el vertical Emprendimiento.
+  # Verifica limites de uso diario (hypotheses_active, experiments_monthly,
+  # copilot_sessions_daily, mentoring_sessions_monthly, bmc_drafts, calculadora_uses)
+  # consultando FreemiumVerticalLimit y tabla emprendimiento_feature_usage.
+  ecosistema_jaraba_core.emprendimiento_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\EmprendimientoFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # EMPRENDIMIENTO EXPERIMENT SERVICE (Plan Elevación Emprendimiento v1 — Fase 6)
+  # ===========================================
+
+  # Servicio de experimentacion A/B para el vertical Emprendimiento.
+  # Integra con jaraba_ab_testing para gestionar experimentos especificos
+  # del vertical (onboarding, conversion, engagement).
+  ecosistema_jaraba_core.emprendimiento_experiment:
+    class: Drupal\ecosistema_jaraba_core\Service\EmprendimientoExperimentService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # EMPLOYABILITY EMAIL SEQUENCES (Plan Elevación Empleabilidad v1 — Fase 6)
+  # ===========================================
+
+  # Servicio de email sequences automatizadas para el vertical Empleabilidad.
+  # Gestiona 5 secuencias del ciclo de vida del candidato:
+  # SEQ_EMP_001 (Onboarding), SEQ_EMP_002 (Re-engagement),
+  # SEQ_EMP_003 (Upsell Free→Starter), SEQ_EMP_004 (Post-Entrevista),
+  # SEQ_EMP_005 (Retention Post-Empleo).
+  # Resuelve jaraba_email.sequence_manager en runtime (sin hard dependency).
+  ecosistema_jaraba_core.employability_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\EmployabilityEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # EMPLOYABILITY CROSS-VERTICAL BRIDGES (Plan Elevación Empleabilidad v1 — Fase 8)
+  # ===========================================
+
+  # Servicio de bridges de valor cross-vertical para Empleabilidad.
+  # Evalúa y presenta bridges hacia Emprendimiento, Servicios, Formación
+  # y Comercio basados en el estado del journey del candidato.
+  # Condiciones: time_in_state_90_days, has_freelance_skills,
+  # recently_hired, verified_employer.
+  ecosistema_jaraba_core.employability_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\EmployabilityCrossVerticalBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
   # LEAD MAGNET EMAIL SERVICE (F3 Doc 178)
   # ===========================================
 

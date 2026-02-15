@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-copilot-v2",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SCSS compilation for Jaraba Copilot v2 - Emprendimiento",
+  "scripts": {
+    "build:css": "npx sass scss/main.scss:css/main.css --style=compressed --no-source-map",
+    "watch:css": "npx sass scss/main.scss:css/main.css --watch --style=expanded --source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

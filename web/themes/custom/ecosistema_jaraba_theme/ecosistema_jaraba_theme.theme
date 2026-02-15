@@ -1346,8 +1346,24 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     'jaraba_copilot_v2.experiment_lifecycle' => 'page-experiment-lifecycle',
   ];
   if (isset($copilot_v2_routes[$route])) {
+    $variables['attributes']['class'][] = 'page-emprendimiento';
+    $variables['attributes']['class'][] = 'vertical-emprendimiento';
     $variables['attributes']['class'][] = 'dashboard-page';
     $variables['attributes']['class'][] = $copilot_v2_routes[$route];
+    $variables['attributes']['class'][] = 'full-width-page';
+  }
+
+  // Mentoring routes — body classes unificadas para emprendimiento.
+  // Plan Elevación Emprendimiento v1 — Fase 2
+  $mentoring_routes = [
+    'jaraba_mentoring.mentor_catalog',
+    'jaraba_mentoring.mentor_public_profile',
+    'jaraba_mentoring.become_mentor',
+    'jaraba_mentoring.mentor_dashboard',
+  ];
+  if (in_array($route, $mentoring_routes)) {
+    $variables['attributes']['class'][] = 'page-emprendimiento';
+    $variables['attributes']['class'][] = 'vertical-emprendimiento';
     $variables['attributes']['class'][] = 'full-width-page';
   }
 
@@ -2080,6 +2096,45 @@ function ecosistema_jaraba_theme_preprocess_page__empleabilidad(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_page__emprendimiento().
+ *
+ * Preprocesa las páginas del vertical Emprendimiento para inyectar contexto
+ * del Copilot y variables específicas del vertical.
+ *
+ * Plan Elevación Emprendimiento v1 — Fase 1
+ * Template: page--emprendimiento.html.twig (Zero Region Policy + Copilot FAB)
+ *
+ * Aplica a todas las rutas de:
+ * - jaraba_copilot_v2.* (/emprendimiento/bmc, /emprendimiento/hipotesis, /emprendimiento/experimentos/gestion)
+ * - jaraba_mentoring.* (/mentors, /mentor/{id}, /become-mentor, /mentor/dashboard)
+ */
+function ecosistema_jaraba_theme_preprocess_page__emprendimiento(&$variables) {
+  // Inyectar contexto del Copilot para el FAB.
+  try {
+    $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
+    $variables['copilot_context'] = $copilot_service->getContext();
+  }
+  catch (\Exception $e) {
+    // Servicio no disponible — FAB se renderiza con defaults.
+    $variables['copilot_context'] = [];
+  }
+
+  // Configuración del tema para parciales (header/footer).
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+  ];
+
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+}
+
+/**
  * Implements hook_preprocess_page__user().
  *
  * Preprocesa todas las páginas del sistema de usuario para inyectar
@@ -2672,16 +2727,22 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // @see .agent/workflows/frontend-page-pattern.md
   // =========================================================================
 
-  // Copilot v2 → templates de emprendimiento existentes
-  $copilot_v2_templates = [
-    'jaraba_copilot_v2.bmc_dashboard' => 'page__emprendimiento__bmc',
-    'jaraba_copilot_v2.hypothesis_manager' => 'page__emprendimiento__hipotesis',
-    'jaraba_copilot_v2.experiment_lifecycle' => 'page__emprendimiento__experimentos_gestion',
-    'jaraba_copilot_v2.experiments' => 'page__experimentos',
-    'jaraba_copilot_v2.experiment_detail' => 'page__experimentos',
+  // Copilot v2 → parent template emprendimiento (Zero Region + FAB)
+  // Las rutas principales del vertical usan page--emprendimiento.html.twig
+  // como parent template unificado (Plan Elevación Emprendimiento v1 — Fase 1).
+  $emprendimiento_routes = [
+    'jaraba_copilot_v2.bmc_dashboard',
+    'jaraba_copilot_v2.hypothesis_manager',
+    'jaraba_copilot_v2.experiment_lifecycle',
+    'jaraba_copilot_v2.experiments',
+    'jaraba_copilot_v2.experiment_detail',
+    'jaraba_mentoring.mentor_catalog',
+    'jaraba_mentoring.mentor_public_profile',
+    'jaraba_mentoring.become_mentor',
+    'jaraba_mentoring.mentor_dashboard',
   ];
-  if (isset($copilot_v2_templates[$route])) {
-    $suggestions[] = $copilot_v2_templates[$route];
+  if (in_array($route, $emprendimiento_routes)) {
+    $suggestions[] = 'page__emprendimiento';
   }
 
   // Eventos → page--eventos.html.twig
