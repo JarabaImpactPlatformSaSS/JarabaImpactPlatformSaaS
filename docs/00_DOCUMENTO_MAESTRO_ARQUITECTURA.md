@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-15
-**Versión:** 29.0.0 (Andalucía +ei Elevación Clase Mundial — 12 Fases, 18 Gaps Cerrados)
+**Versión:** 30.0.0 (Stack Cumplimiento Fiscal — VeriFactu + Facturae B2G + E-Factura B2B, 5 Docs Especificación)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1610,6 +1610,27 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 9.4 Cumplimiento Fiscal — Stack VeriFactu + Facturae + E-Factura (Especificación)
+
+> **Estado:** Documentación 100% completa (5 docs, 178-182). Implementación pendiente.
+> **Prioridad:** P0 CRÍTICO — Deadline legal 1 enero 2027 (sociedades) / 1 julio 2027 (autónomos).
+> **Sanción:** Hasta 50.000 EUR/ejercicio por software no conforme (RD 1007/2023).
+
+**Impacto dual:** Jaraba Impact S.L. como emisor de facturas SaaS a tenants + tenants como emisores a sus clientes finales.
+
+| Módulo | Normativa | Prioridad | Target | Entidades | Servicios | API Endpoints | Tests | Horas Est. |
+|--------|-----------|-----------|--------|-----------|-----------|---------------|-------|------------|
+| **`jaraba_verifactu`** | RD 1007/2023, Orden HAC/1177/2024 | **P0** | Q4 2026 | 4 (invoice_record, event_log, remision_batch, tenant_config) | 7 (Hash, Record, Qr, Xml, Remision, Pdf, EventLog) | 21 | 23 | 230-316h |
+| **`jaraba_facturae`** | Ley 25/2013, Facturae 3.2.2 | **P1** | Q3 2026 | 3 (facturae_document, tenant_config, face_log) | 6 (Xml, XAdES, FACeClient, Numbering, Validation, DIR3) | 21 | 26 | 230-304h |
+| **`jaraba_einvoice_b2b`** | Ley 18/2022 (Crea y Crece) | **P2** | Q1 2027 | 4 (einvoice_document, tenant_config, delivery_log, payment_event) | 6 (Converter, Validator, SPFEClient, DeliveryManager, PaymentStatus, NumberingService) | 24 | 23 | 260-336h |
+| **TOTAL** | | | | **11** | **19** | **66** | **72** | **720-956h** |
+
+**Componentes ecosistema reutilizables:** SHA-256 hash chains (Buzón Confianza ~80%), PAdES→XAdES firma digital (~60%), QR dinámico (~50%), append-only logs (FOC ~90%), ECA automation (~85%).
+
+**Arquitectura integrada:** Un invoice puede tener simultáneamente un VeriFactu record (obligatorio para todos) + un Facturae document (B2G) + un E-Invoice document (B2B). Los tres módulos comparten CertificateManagerService (PKCS#12) y se integran con `jaraba_billing` (BillingInvoice como fuente).
+
+**Nivel madurez actual:** Score 20.75/100 (Level 0 incomplete) — documentación ~95%, implementación ~5%.
+
 ---
 
 ## 10. Infraestructura y DevOps
@@ -2085,6 +2106,20 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 - `overrides` en package.json para transitivas bloqueadas por upstream (mocha→diff ^7→^8.0.3)
 - Dismiss documentado para `web/core/yarn.lock` (webpack — mantenido por Drupal upstream)
 
+### 12.5 Especificación Stack Cumplimiento Fiscal (2026-02-15)
+
+5 documentos técnicos especificando el stack completo de cumplimiento fiscal para el ecosistema:
+
+| Doc | Código | Módulo | Contenido |
+|-----|--------|--------|-----------|
+| **178** | Auditoría VeriFactu & World-Class Gap Analysis | — | Análisis estratégico: VeriFactu NO implementado, score 20.75/100, roadmap 3 fases (1,056-1,427h), componentes reutilizables |
+| **179** | Platform VeriFactu Implementation | `jaraba_verifactu` | 4 entidades, 7 servicios, 21 endpoints, 5 ECA flows, 23 tests, 7 permisos RBAC, 4 sprints (230-316h) |
+| **180** | Platform Facturae 3.2.2 + FACe B2G | `jaraba_facturae` | 3 entidades, 6 servicios, 21 endpoints, 5 ECA flows, 26 tests, firma XAdES-EPES (230-304h) |
+| **181** | Platform E-Factura B2B (Crea y Crece) | `jaraba_einvoice_b2b` | 4 entidades, 6 servicios, 24 endpoints, 5 ECA flows, 23 tests, UBL 2.1 + Facturae dual (260-336h) |
+| **182** | Gap Analysis Madurez Documental | — | 4 niveles (N0 100%, N1 97%, N2 85%, N3 0%), 18 docs pendientes, 1,040-1,335h gap total |
+
+**Inversión total stack fiscal:** 720-956h / 32,400-43,020 EUR (implementación 3 módulos).
+
 ### 12.4 Referencias
 
 | Documento | Ubicación |
@@ -2143,6 +2178,12 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Aprendizajes Emprendimiento Paridad 7 Gaps** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md` |
 | **Plan Elevación Andalucía +ei 12 Fases** ⭐ | `docs/implementacion/20260215c-Plan_Elevacion_Andalucia_EI_Clase_Mundial_v1_Claude.md` |
 | **Aprendizajes Andalucía +ei Elevación 12 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_andalucia_ei_elevacion_12_fases.md` |
+| **Auditoría VeriFactu & World-Class Gap Analysis** ⭐ | `docs/tecnicos/20260215b-178_Auditoria_VeriFactu_WorldClass_v1_Claude.md` |
+| **Especificación VeriFactu Implementation** ⭐ | `docs/tecnicos/20260215b-179_Platform_VeriFactu_Implementation_v1_Claude.md` |
+| **Especificación Facturae 3.2.2 + FACe B2G** ⭐ | `docs/tecnicos/20260215c-180_Platform_Facturae_FACe_B2G_v1_Claude.md` |
+| **Especificación E-Factura B2B (Crea y Crece)** ⭐ | `docs/tecnicos/20260215d-181_Platform_EFactura_B2B_v1_Claude.md` |
+| **Gap Analysis Madurez Documental Niveles 0-3** ⭐ | `docs/tecnicos/20260215e-182_Gap_Analysis_Madurez_Documental_v1_Claude.md` |
+| **Aprendizajes Stack Fiscal VeriFactu** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_verifactu_stack_fiscal_compliance.md` |
 
 ---
 
@@ -2161,5 +2202,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 26.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
+> **Versión:** 30.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
 

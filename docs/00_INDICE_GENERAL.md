@@ -4,7 +4,18 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 45.0.0 (Andalucía +ei Elevación 12/12 Fases + Empleabilidad 10/10 + Emprendimiento 6+7 Gaps)
+**Versión:** 46.0.0 (Stack Cumplimiento Fiscal VeriFactu + Facturae + E-Factura — 5 Docs Especificación)
+
+> **🎯 STACK CUMPLIMIENTO FISCAL — VERIFACTU + FACTURAE B2G + E-FACTURA B2B (5 DOCS ESPECIFICACIÓN)** (2026-02-15)
+> - **Doc 178 (Auditoría VeriFactu):** Análisis estratégico — VeriFactu NO implementado como módulo, score 20.75/100 (Level 0 incomplete), componentes reutilizables (SHA-256 Buzón Confianza ~80%, PAdES ~60%, QR ~50%, FOC append-only ~90%, ECA ~85%), roadmap 3 fases (1,056-1,427h / 47,520-64,215 EUR)
+> - **Doc 179 (`jaraba_verifactu`):** Módulo compliance RD 1007/2023 + Orden HAC/1177/2024. 4 entidades (verifactu_invoice_record APPEND-ONLY hash chain SHA-256, verifactu_event_log SIF inmutable, verifactu_remision_batch AEAT SOAP, verifactu_tenant_config certificado/NIF). 7 servicios (Hash, Record, Qr, Xml, Remision, Pdf, EventLog). 21 REST API endpoints (4 grupos: Admin, Records, Remisión, Auditoría). 5 ECA flows (auto-alta, anulación, cron remisión 60s, integridad diaria 03:00, alerta certificado). 7 permisos RBAC. 23 tests. P0 CRÍTICO. 4 sprints (230-316h)
+> - **Doc 180 (`jaraba_facturae`):** Facturae 3.2.2 + FACe B2G (Ley 25/2013). 3 entidades (facturae_document, tenant_config, face_log). 6 servicios (Xml, XAdES-EPES firma, FACeClient SOAP, Numbering, Validation, DIR3). 21 endpoints. 5 ECA. 26 tests. P1 Q3 2026. (230-304h)
+> - **Doc 181 (`jaraba_einvoice_b2b`):** E-Factura B2B Ley Crea y Crece (Ley 18/2022, reglamento PENDIENTE). UBL 2.1 (EN 16931) + Facturae 3.2.2 dual. 4 entidades (einvoice_document, tenant_config, delivery_log, payment_event). 6 servicios (SPFE stub, bidirectional converter Facturae↔UBL, payment status morosidad). 24 endpoints. 5 ECA. 23 tests. P2 Q1 2027. (260-336h)
+> - **Doc 182 (Gap Analysis Madurez Documental):** 4 niveles: N0 MVP 100%, N1 Production-Ready 97% (3 gaps: GDPR/DPA, Legal Terms, DR Plan — 105-135h), N2 Growth-Ready 85% (8 gaps: AI Agents, Mobile, Multi-Region...), N3 Enterprise-Class 0% (7 docs: SOC 2, ISO 27001, ENS, HA...). Gap total: 18 docs, 1,040-1,335h
+> - **Inversión total stack fiscal:** 720-956h / 32,400-43,020 EUR
+> - **Deadline legal:** Sociedades 1 ene 2027 | Autónomos 1 jul 2027 | Sanción hasta 50.000 EUR/ejercicio
+> - **Aprendizaje:** [2026-02-15_verifactu_stack_fiscal_compliance.md](./tecnicos/aprendizajes/2026-02-15_verifactu_stack_fiscal_compliance.md)
+>
 
 > **🎯 ELEVACIÓN ANDALUCÍA +EI — 12/12 FASES IMPLEMENTADAS (18 GAPS CERRADOS)** (2026-02-15)
 > - **Fase 1 (Page Template + FAB):** `page--andalucia-ei.html.twig` zero-region + Copilot FAB, `preprocess_page__andalucia_ei()`, body classes `page-andalucia-ei vertical-andalucia-ei`, template suggestion `page__andalucia_ei` para todas las rutas del módulo
@@ -889,6 +900,18 @@
 
 **Plan de Implementación:** [20260209-Plan_Implementacion_ServiciosConecta_v1.md](./implementacion/20260209-Plan_Implementacion_ServiciosConecta_v1.md) ⭐
 
+### 7.4d Compliance Fiscal (Docs 178-182)
+
+5 documentos especificando el stack completo de cumplimiento fiscal (VeriFactu + Facturae + E-Factura B2B).
+
+| Doc | Título | Módulo | Prioridad | Estado |
+|-----|--------|--------|-----------|--------|
+| 178 | Auditoría VeriFactu & World-Class Gap Analysis | — | — | ✅ Análisis |
+| 179 | Platform VeriFactu Implementation | `jaraba_verifactu` | P0 Q4 2026 | ⬜ Ready for Dev |
+| 180 | Platform Facturae 3.2.2 + FACe B2G | `jaraba_facturae` | P1 Q3 2026 | ⬜ Ready for Dev |
+| 181 | Platform E-Factura B2B (Crea y Crece) | `jaraba_einvoice_b2b` | P2 Q1 2027 | ⬜ Ready for Dev |
+| 182 | Gap Analysis Madurez Documental Niveles 0-3 | — | — | ✅ Análisis |
+
 ### 7.5 Platform Features (Docs 100-157)
 
 | Rango | Área |
@@ -988,7 +1011,9 @@
 | [2026-02-14_security_ci_dependabot_remediation.md](./tecnicos/aprendizajes/2026-02-14_security_ci_dependabot_remediation.md) | 🔒 **Security CI + Dependabot Remediation** ⭐ — 6 lecciones aprendidas (Situación → Aprendizaje → Regla). OWASP ZAP requiere STAGING_URL secret. DNS resolution pre-check. Dependabot 42→0 (npm audit fix, --force major bumps, overrides transitivas, dismiss upstream). Contrib devDependencies no afectan producción. 2 reglas AUDIT-SEC-N17/N18 | 2026-02-14 |
 | [2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md) | 🎯 **Emprendimiento Paridad Empleabilidad 7 Gaps** ⭐ — 7 aprendizajes clave: dimensiones HealthScore difieren por vertical, reglas JourneyProgression mapean 1:1 con condiciones vertical-specific, email sequences patron identico solo cambian constantes, CopilotAgent extiende BaseAgent con modes/keywords/prompts vertical-specific, puentes cross-vertical son salientes (direccion importa), CRM sync replica limpiamente a jaraba_copilot_v2, upgrade triggers necesitan tipos + fire() en FeatureGateService. 10 archivos nuevos, 6 modificados, 5 modulos | 2026-02-15 |
 
-**Total aprendizajes:** 78
+| [2026-02-15_verifactu_stack_fiscal_compliance.md](./tecnicos/aprendizajes/2026-02-15_verifactu_stack_fiscal_compliance.md) | 📋 **Stack Fiscal VeriFactu + Facturae + E-Factura** ⭐ — 5 docs especificación (178-182), 3 módulos (jaraba_verifactu P0, jaraba_facturae P1, jaraba_einvoice_b2b P2), 11 entidades, 19 servicios, 66 endpoints, 72 tests, inversión 720-956h. Componentes reutilizables ~70%. Deadline legal 2027. Gap Analysis 4 niveles madurez | 2026-02-15 |
+
+**Total aprendizajes:** 79
 
 ---
 
@@ -1044,7 +1069,7 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Total documentos técnicos** | 296+ (37 con prefijo 20260118 mapeados + GO_LIVE_RUNBOOK + SECURITY_PLAYBOOK + learning #70 + 4 impl F9-F12 + scaling guide) |
+| **Total documentos técnicos** | 301+ (296 base + 5 docs compliance fiscal 178-182) |
 | **Documentos de implementación** | 37 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar) |
 | **Bloques Plan Maestro v3** | 7 (A-G) |
 | **Documentos de planificación** | 15 |
@@ -1071,7 +1096,7 @@
 | **Security CI scans** | Daily (Trivy + ZAP + composer/npm audit) |
 | **PHPUnit tests ejecutados** | 789 (730 pass, 92.5%) |
 | **k6 load tests** | 4 escenarios multi-tenant (7 custom metrics, tenant isolation check) |
-| **Total horas roadmap** | ~4,500h + **775-970h** (Page Builder + Site Builder) |
+| **Total horas roadmap** | ~4,500h + **775-970h** (Page Builder + Site Builder) + **720-956h** (Stack Fiscal VeriFactu) |
 | **Timeline roadmap** | 24 meses + 14 sprints (7 meses Page Builder) |
 
 ---
