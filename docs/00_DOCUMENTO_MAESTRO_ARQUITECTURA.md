@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-15
-**Versión:** 30.0.0 (Stack Cumplimiento Fiscal — VeriFactu + Facturae B2G + E-Factura B2B, 5 Docs Especificación)
+**Versión:** 31.0.0 (Legal Intelligence Hub — Inteligencia Jurídica Avanzada, 3 Docs Especificación + Plan Implementación)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -925,6 +925,32 @@
 │   ├── QueueWorkers: LegalNormIngestionWorker, AlertNotificationWorker  │
 │   ├── Hooks: hook_cron (BOE sync diario) + hook_mail (alertas)        │
 │   └── Estado: ✅ Producción (Specs 178/178b, Feb 2026)                 │
+│                                                                         │
+│   📦 jaraba_legal_intelligence 📋 (Legal Intelligence Hub — Avanzado)   │
+│   ├── Evolución de jaraba_legal_knowledge: inteligencia jurídica 360°  │
+│   ├── 5 Content Entities: LegalResolution (35+ campos),                │
+│   │   LegalSource, LegalAlert, LegalDigest, LegalSearchLog            │
+│   ├── 9 Taxonomías: legal_jurisdiction, legal_matter_type,             │
+│   │   legal_court, legal_resolution_type, legal_proceeding_type,      │
+│   │   legal_eu_institution, legal_eu_document_type,                   │
+│   │   legal_professional_sector, legal_alert_type                     │
+│   ├── 8 Spiders (4 nacionales + 4 UE):                                │
+│   │   ├── Nacionales: CENDOJ, BOE, DGT, TEAC                         │
+│   │   └── Europeos: EUR-Lex, CURIA/TJUE, HUDOC/TEDH, EDPB            │
+│   ├── Pipeline NLP 9 etapas: Tika → spaCy → Gemini 2.0 Flash →       │
+│   │   embeddings → Qdrant → citation graph                            │
+│   ├── Qdrant: 2 collections (legal_intelligence 3072D nacional +      │
+│   │   legal_intelligence_eu 1024D multilingüe)                        │
+│   ├── 7 Services: LegalSearchService, LegalNlpPipelineService,        │
+│   │   LegalAlertService, LegalDigestService, LegalCitationService,    │
+│   │   LegalDashboardService, LegalSeoService                          │
+│   ├── Python FastAPI: NLP (spaCy + legal NER), /api/nlp/process       │
+│   ├── Merge & Rank: EU primacy boost (+0.05) + recency boost (+0.02)  │
+│   ├── Seguridad: AES-256-GCM cifrado, aislamiento tenant Qdrant      │
+│   ├── Frontend: 3 controllers, 6 templates, 8 parciales, 6 JS, 12 SCSS│
+│   ├── Tests: 7 PHPUnit suites                                         │
+│   ├── Inversión: 530-685h / 23,850-30,825 EUR (10 fases)             │
+│   └── Estado: 📋 Planificado (Docs 178/178A/178B + Plan, Feb 2026)    │
 │                                                                         │
 │   📦 jaraba_funding ✅ (Funding Intelligence — Subvenciones)             │
 │   ├── 4 Content Entities: FundingCall, FundingSubscription,            │
@@ -2120,6 +2146,19 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 **Inversión total stack fiscal:** 720-956h / 32,400-43,020 EUR (implementación 3 módulos).
 
+### 12.6 Especificación Legal Intelligence Hub (2026-02-15)
+
+3 documentos técnicos + 1 plan de implementación especificando el Legal Intelligence Hub, módulo avanzado de inteligencia jurídica para ServiciosConecta:
+
+| Doc | Código | Contenido |
+|-----|--------|-----------|
+| **178** | ServiciosConecta Legal Intelligence Hub | Especificación base: 5 Content Entities, 7 Services, 8 Spiders (4 nacionales + 4 UE), Pipeline NLP 9 etapas, Qdrant dual collection, merge & rank con EU primacy |
+| **178A** | Legal Intelligence Hub EU Sources | Fuentes europeas: EUR-Lex (CELLAR SPARQL), CURIA/TJUE, HUDOC/TEDH, EDPB, embeddings multilingües 1024D, cross-lingual search |
+| **178B** | Legal Intelligence Hub Implementation | Guía implementación: arquitectura módulo, compilación SCSS, Docker NLP (spaCy + FastAPI), 12 iconos SVG duotone, paleta legal 10 tokens |
+| **Plan** | Plan Implementación Legal Intelligence Hub v1 | 10 fases (0-9), 530-685h, 23,850-30,825 EUR, 14 directrices con ejemplos código, estrategia convivencia jaraba_legal_knowledge |
+
+**Relación con jaraba_legal_knowledge:** El nuevo módulo `jaraba_legal_intelligence` extiende las capacidades de `jaraba_legal_knowledge` (4 entidades, 10 servicios, colección Qdrant `jaraba_knowledge`). Estrategia de convivencia: jaraba_legal_knowledge se mantiene como módulo ligero para RAG normativo básico (BOE, fiscal); jaraba_legal_intelligence añade resoluciones judiciales, fuentes europeas, NLP avanzado y dashboard profesional.
+
 ### 12.4 Referencias
 
 | Documento | Ubicación |
@@ -2184,6 +2223,10 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Especificación E-Factura B2B (Crea y Crece)** ⭐ | `docs/tecnicos/20260215d-181_Platform_EFactura_B2B_v1_Claude.md` |
 | **Gap Analysis Madurez Documental Niveles 0-3** ⭐ | `docs/tecnicos/20260215e-182_Gap_Analysis_Madurez_Documental_v1_Claude.md` |
 | **Aprendizajes Stack Fiscal VeriFactu** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_verifactu_stack_fiscal_compliance.md` |
+| **Especificación Legal Intelligence Hub** ⭐ | `docs/tecnicos/20260215a-178_ServiciosConecta_Legal_Intelligence_Hub_v1_Claude.md` |
+| **Especificación Legal Intelligence Hub EU Sources** ⭐ | `docs/tecnicos/20260215a-178A_Legal_Intelligence_Hub_EU_Sources_v1_Claude.md` |
+| **Especificación Legal Intelligence Hub Implementation** ⭐ | `docs/tecnicos/20260215a-178B_Legal_Intelligence_Hub_Implementation_v1_Claude.md` |
+| **Plan Implementación Legal Intelligence Hub v1** ⭐ | `docs/implementacion/20260215-Plan_Implementacion_Legal_Intelligence_Hub_v1.md` |
 
 ---
 
@@ -2202,5 +2245,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 30.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
+> **Versión:** 31.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
 

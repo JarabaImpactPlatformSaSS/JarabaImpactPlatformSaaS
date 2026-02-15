@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 30.0.0 (Stack Cumplimiento Fiscal — VeriFactu + Facturae B2G + E-Factura B2B, 5 Docs Especificación)
+**Versión:** 31.0.0 (Legal Intelligence Hub — Inteligencia Jurídica Avanzada, 3 Docs Especificación + Plan Implementación)
 
 ---
 
