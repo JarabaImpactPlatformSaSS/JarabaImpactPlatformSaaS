@@ -244,6 +244,92 @@ class EmprendimientoJourneyDefinition
     ];
 
     /**
+     * Rutas cross-vertical hacia empleabilidad para emprendedores en riesgo.
+     *
+     * Cuando un emprendedor invalida todas sus hipotesis o su venture
+     * no es viable, se le sugiere explorar oportunidades de empleabilidad
+     * como ruta complementaria o alternativa.
+     */
+    const EMPLEABILIDAD_FALLBACK = [
+        'conditions' => [
+            'all_hypotheses_killed' => TRUE,
+            'journey_state' => 'at_risk',
+        ],
+        'message' => 'Tu experiencia emprendedora es valiosa. Mientras replanteas tu proyecto, '
+            . 'explora oportunidades laborales que complementen tu perfil.',
+        'suggested_routes' => [
+            [
+                'route' => 'jaraba_job_board.search',
+                'label' => 'Explorar ofertas de empleo',
+                'icon' => 'briefcase',
+            ],
+            [
+                'route' => 'jaraba_self_discovery.riasec_start',
+                'label' => 'Test de orientacion profesional',
+                'icon' => 'compass',
+            ],
+            [
+                'route' => 'jaraba_paths.catalog',
+                'label' => 'Itinerarios formativos',
+                'icon' => 'rocket',
+            ],
+        ],
+    ];
+
+    /**
+     * Rutas cross-vertical desde empleabilidad hacia emprendimiento.
+     *
+     * Cuando un usuario de empleabilidad muestra perfil Enterprising (E)
+     * alto en RIASEC, se le sugiere explorar emprendimiento.
+     */
+    const EMPRENDIMIENTO_ONRAMP = [
+        'conditions' => [
+            'riasec_enterprising_score_min' => 7,
+        ],
+        'message' => 'Tu perfil muestra un alto potencial emprendedor. '
+            . 'Descubre como validar tu idea de negocio con nuestro programa de emprendimiento.',
+        'suggested_routes' => [
+            [
+                'route' => 'ecosistema_jaraba_core.landing_emprender',
+                'label' => 'Conocer programa de emprendimiento',
+                'icon' => 'rocket',
+            ],
+            [
+                'route' => 'jaraba_business_tools.canvas_list',
+                'label' => 'Crear Business Model Canvas',
+                'icon' => 'canvas',
+            ],
+        ],
+    ];
+
+    /**
+     * Evalua si un emprendedor debe recibir sugerencias de empleabilidad.
+     *
+     * @param string $journeyState
+     *   Estado actual del journey.
+     * @param int $killedHypotheses
+     *   Numero de hipotesis invalidadas (KILL).
+     * @param int $totalHypotheses
+     *   Total de hipotesis.
+     *
+     * @return array|null
+     *   Datos de fallback o NULL si no aplica.
+     */
+    public static function evaluateEmpleabilidadFallback(string $journeyState, int $killedHypotheses, int $totalHypotheses): ?array
+    {
+        // Solo sugerir si esta en riesgo y todas las hipotesis fueron invalidadas.
+        if ($journeyState !== 'at_risk') {
+            return NULL;
+        }
+
+        if ($totalHypotheses <= 0 || $killedHypotheses < $totalHypotheses) {
+            return NULL;
+        }
+
+        return self::EMPLEABILIDAD_FALLBACK;
+    }
+
+    /**
      * Obtiene la definición de journey para un avatar.
      */
     public static function getJourneyDefinition(string $avatar): ?array

@@ -27,6 +27,12 @@ services:
   jaraba_journey.definition_loader:
     class: Drupal\jaraba_journey\Service\JourneyDefinitionLoader
 
+  # Cross-Sell Engine - Ofertas cross-sell por transicion de journey
+  jaraba_journey.emprendimiento_cross_sell:
+    class: Drupal\jaraba_journey\Service\EmprendimientoCrossSellService
+    arguments:
+      - '@logger.channel.jaraba_journey'
+
   # Logger channel
   logger.channel.jaraba_journey:
     parent: logger.channel_base

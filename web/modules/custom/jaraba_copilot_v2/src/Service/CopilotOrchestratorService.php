@@ -611,12 +611,65 @@ class CopilotOrchestratorService
             }
         }
 
+        // Upgrade context enrichment (soft nudge when near limits).
+        $upgradePrompt = $this->getUpgradeContextPrompt($mode);
+
         return implode("\n\n", array_filter([
             $basePrompt,
             $modePrompt,
             $contextPrompt,
             $selfDiscoveryPrompt,
+            $upgradePrompt,
         ]));
+    }
+
+    /**
+     * Obtiene el snippet de upgrade context para el system prompt.
+     *
+     * Consulta UpgradeTriggerService para detectar features cerca del
+     * limite y genera un prompt contextual para nudges suaves de upgrade.
+     *
+     * @param string $mode
+     *   Modo activo del copiloto.
+     *
+     * @return string
+     *   Snippet de upgrade context o cadena vacia.
+     */
+    protected function getUpgradeContextPrompt(string $mode): string
+    {
+        try {
+            if (!\Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+                return '';
+            }
+
+            // Obtener tenant del usuario actual.
+            if (!\Drupal::hasService('ecosistema_jaraba_core.tenant_resolver')) {
+                return '';
+            }
+
+            /** @var \Drupal\ecosistema_jaraba_core\Service\TenantResolverService $tenantResolver */
+            $tenantResolver = \Drupal::service('ecosistema_jaraba_core.tenant_resolver');
+            $tenant = $tenantResolver->getCurrentTenant();
+
+            if (!$tenant) {
+                return '';
+            }
+
+            /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTrigger */
+            $upgradeTrigger = \Drupal::service('ecosistema_jaraba_core.upgrade_trigger');
+            $upgradeContext = $upgradeTrigger->getUpgradeContext($tenant, $mode);
+
+            if ($upgradeContext['has_upgrade_context']) {
+                return $upgradeContext['prompt_snippet'];
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->debug('Upgrade context unavailable: @error', [
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        return '';
     }
 
     /**

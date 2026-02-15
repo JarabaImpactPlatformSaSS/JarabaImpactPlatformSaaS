@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_hypotheses_active
+label: 'Emprendimiento Profesional: Hipotesis Activas'
+vertical: emprendimiento
+plan: profesional
+feature_key: hypotheses_active
+limit_value: -1
+description: 'Hipotesis activas ilimitadas en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 418
+status: true

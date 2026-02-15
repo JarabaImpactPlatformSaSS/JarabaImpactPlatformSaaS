@@ -143,6 +143,32 @@ class TemplateLoaderService {
       'file' => 'empleabilidad/listing_expired.mjml',
       'description' => 'Aviso de expiración de oferta de empleo',
     ],
+
+    // Emprendimiento templates (EMPR_001 - EMPR_006).
+    'EMPR_001' => [
+      'file' => 'emprendimiento/welcome_entrepreneur.mjml',
+      'description' => 'Bienvenida al programa de emprendimiento',
+    ],
+    'EMPR_002' => [
+      'file' => 'emprendimiento/diagnostic_completed.mjml',
+      'description' => 'Resultados del diagnóstico de madurez digital',
+    ],
+    'EMPR_003' => [
+      'file' => 'emprendimiento/canvas_milestone.mjml',
+      'description' => 'Hito alcanzado en Business Model Canvas',
+    ],
+    'EMPR_004' => [
+      'file' => 'emprendimiento/experiment_result.mjml',
+      'description' => 'Resultado de experimento de validación',
+    ],
+    'EMPR_005' => [
+      'file' => 'emprendimiento/mentor_matched.mjml',
+      'description' => 'Notificación de mentor asignado',
+    ],
+    'EMPR_006' => [
+      'file' => 'emprendimiento/weekly_progress.mjml',
+      'description' => 'Resumen semanal de progreso del emprendedor',
+    ],
   ];
 
   /**
@@ -300,6 +326,52 @@ class TemplateLoaderService {
       'job_title' => 'Desarrolladora Full-Stack',
       'applications_count' => '24',
       'renew_url' => 'https://jaraba.es/recruiter/listings/dev-fullstack-123/renew',
+    ],
+    'EMPR_001' => [
+      'user_name' => 'Pablo Emprendedor',
+      'dashboard_url' => 'https://jaraba.es/emprendimiento/copilot/dashboard',
+    ],
+    'EMPR_002' => [
+      'user_name' => 'Pablo Emprendedor',
+      'maturity_score' => '62',
+      'maturity_level' => 'Intermedio',
+      'carril' => 'ACELERA',
+      'action_plan_url' => 'https://jaraba.es/emprendimiento/copilot/dashboard',
+    ],
+    'EMPR_003' => [
+      'user_name' => 'Pablo Emprendedor',
+      'milestone_name' => 'Canvas creado',
+      'canvas_name' => 'App de delivery rural',
+      'blocks_completed' => '5',
+      'validation_percentage' => '45',
+      'canvas_url' => 'https://jaraba.es/emprendimiento/bmc',
+    ],
+    'EMPR_004' => [
+      'user_name' => 'Pablo Emprendedor',
+      'experiment_title' => 'Landing Page Smoke Test',
+      'decision' => 'PERSEVERE',
+      'result' => 'VALIDATED',
+      'points_awarded' => '100',
+      'key_learning' => 'El 23% de los visitantes se registraron, validando la propuesta de valor.',
+      'current_level' => '2',
+      'experiments_url' => 'https://jaraba.es/emprendimiento/experimentos/gestion',
+    ],
+    'EMPR_005' => [
+      'user_name' => 'Pablo Emprendedor',
+      'mentor_name' => 'Ana Mentora',
+      'mentor_specialty' => 'Validación de modelos SaaS',
+      'match_score' => '88',
+      'schedule_url' => 'https://jaraba.es/mentoring/schedule',
+    ],
+    'EMPR_006' => [
+      'user_name' => 'Pablo Emprendedor',
+      'program_week' => '4',
+      'current_phase' => 'Engagement',
+      'impact_points' => '250',
+      'validated_hypotheses' => '3',
+      'completed_experiments' => '2',
+      'copilot_suggestion' => 'Esta semana, enfócate en completar tu Value Proposition Canvas. El modo VPC Designer te guiará paso a paso.',
+      'dashboard_url' => 'https://jaraba.es/emprendimiento/copilot/dashboard',
     ],
   ];
 

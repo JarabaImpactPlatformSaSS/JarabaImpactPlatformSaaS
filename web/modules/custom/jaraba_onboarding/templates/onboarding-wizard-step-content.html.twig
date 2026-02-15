@@ -108,6 +108,16 @@
         <input type="text" id="wizard-content-market" class="wizard-step__input" data-field="content_market"
           placeholder="{{ 'Ej: Jovenes rurales, Comercios locales...'|t }}" value="{{ step_data.content_market|default('') }}" />
       </div>
+
+      <div class="wizard-step__field wizard-step__field--full">
+        <div class="wizard-step__cta-card">
+          <h4 class="wizard-step__cta-title">{% trans %}Business Model Canvas{% endtrans %}</h4>
+          <p class="wizard-step__cta-desc">
+            {% trans %}Con estos datos crearemos tu primer Business Model Canvas. El Copiloto IA te ayudara a completarlo paso a paso.{% endtrans %}
+          </p>
+          <span class="wizard-step__cta-badge">{% trans %}Se creara automaticamente{% endtrans %}</span>
+        </div>
+      </div>
     {% endif %}
 
     {# --- Image Upload --- #}

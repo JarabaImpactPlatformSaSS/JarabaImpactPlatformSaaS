@@ -142,6 +142,47 @@ class RiasecService
     }
 
     /**
+     * Evalua si el perfil RIASEC sugiere potencial emprendedor.
+     *
+     * Cuando la dimension Enterprising (E) tiene puntuacion alta (>=7),
+     * el usuario tiene perfil emprendedor y se le puede sugerir el
+     * vertical de emprendimiento como ruta complementaria.
+     *
+     * @param int|null $uid
+     *   ID del usuario (NULL para el actual).
+     *
+     * @return array
+     *   Array con:
+     *   - recommend_emprendimiento: (bool) Si se recomienda el vertical.
+     *   - enterprising_score: (int) Puntuacion E del RIASEC.
+     *   - message: (string) Mensaje de recomendacion (vacio si no aplica).
+     */
+    public function evaluateEntrepreneurPotential(?int $uid = NULL): array
+    {
+        $result = [
+            'recommend_emprendimiento' => FALSE,
+            'enterprising_score' => 0,
+            'message' => '',
+        ];
+
+        $scores = $this->getScores($uid);
+        if (empty($scores)) {
+            return $result;
+        }
+
+        $eScore = $scores['E'] ?? $scores['enterprising'] ?? 0;
+        $result['enterprising_score'] = (int) $eScore;
+
+        if ($eScore >= 7) {
+            $result['recommend_emprendimiento'] = TRUE;
+            $result['message'] = 'Tu perfil muestra un alto potencial emprendedor. '
+                . 'Explora el programa de emprendimiento para validar y desarrollar tu idea de negocio.';
+        }
+
+        return $result;
+    }
+
+    /**
      * Obtiene una descripcion textual del perfil.
      */
     public function getProfileDescription(?int $uid = NULL): string

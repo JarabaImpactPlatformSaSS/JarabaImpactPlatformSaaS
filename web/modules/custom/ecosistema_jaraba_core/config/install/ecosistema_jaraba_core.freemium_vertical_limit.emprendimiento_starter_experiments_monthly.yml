@@ -1,0 +1,11 @@
+id: emprendimiento_starter_experiments_monthly
+label: 'Emprendimiento Starter: Experimentos Mensuales'
+vertical: emprendimiento
+plan: starter
+feature_key: experiments_monthly
+limit_value: 10
+description: 'Hasta 10 experimentos mensuales en plan Starter Emprendimiento.'
+upgrade_message: 'Has alcanzado el limite de experimentos en Starter. Actualiza a Profesional para experimentos ilimitados.'
+expected_conversion: 0
+weight: 415
+status: true

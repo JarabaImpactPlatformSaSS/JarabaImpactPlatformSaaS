@@ -104,6 +104,7 @@ class AvatarNavigationService {
    * - icon_name: string — nombre del icono dentro de la categoria
    * - weight: int — orden de presentacion
    * - active: bool — TRUE si la ruta actual coincide con el item
+   * - cross_vertical: bool — TRUE si es un item cross-vertical (opcional)
    *
    * @return array
    *   Array de items de navegacion. Vacio si no hay items.
@@ -131,6 +132,87 @@ class AvatarNavigationService {
         // Ruta no existe (modulo no instalado) — omitir item.
         continue;
       }
+    }
+
+    // Evaluar items cross-vertical condicionales.
+    $crossVerticalItems = $this->getCrossVerticalItems($avatar);
+    foreach ($crossVerticalItems as $def) {
+      try {
+        $url = Url::fromRoute($def['route'])->toString();
+        $items[] = [
+          'id' => $def['id'],
+          'label' => $this->t($def['label']),
+          'url' => $url,
+          'icon_category' => $def['icon_category'],
+          'icon_name' => $def['icon_name'],
+          'weight' => $def['weight'],
+          'active' => ($currentRoute === $def['route']),
+          'cross_vertical' => TRUE,
+        ];
+      }
+      catch (\Exception $e) {
+        continue;
+      }
+    }
+
+    return $items;
+  }
+
+  /**
+   * Devuelve items cross-vertical condicionales para un avatar.
+   *
+   * Evalua condiciones del perfil del usuario (RIASEC, journey state)
+   * para sugerir navegacion hacia otros verticales.
+   *
+   * @param string $avatar
+   *   Tipo de avatar actual.
+   *
+   * @return array
+   *   Array de definiciones de items cross-vertical.
+   */
+  protected function getCrossVerticalItems(string $avatar): array {
+    $items = [];
+
+    try {
+      // Jobseeker con perfil emprendedor: sugerir emprendimiento.
+      if ($avatar === 'jobseeker' && \Drupal::hasService('jaraba_self_discovery.riasec')) {
+        /** @var \Drupal\jaraba_self_discovery\Service\RiasecService $riasec */
+        $riasec = \Drupal::service('jaraba_self_discovery.riasec');
+        $potential = $riasec->evaluateEntrepreneurPotential();
+
+        if ($potential['recommend_emprendimiento']) {
+          $items[] = [
+            'id' => 'cross_emprender',
+            'label' => 'Emprender',
+            'route' => 'ecosistema_jaraba_core.landing_emprender',
+            'icon_category' => 'verticals',
+            'icon_name' => 'rocket',
+            'weight' => 100,
+          ];
+        }
+      }
+
+      // Entrepreneur en riesgo: sugerir empleabilidad.
+      if ($avatar === 'entrepreneur' && \Drupal::hasService('jaraba_journey.engine')) {
+        $uid = (int) $this->currentUser->id();
+        /** @var \Drupal\jaraba_journey\Service\JourneyEngineService $journeyEngine */
+        $journeyEngine = \Drupal::service('jaraba_journey.engine');
+        $state = $journeyEngine->getState($uid);
+
+        if ($state && $state->getJourneyState() === 'at_risk') {
+          $items[] = [
+            'id' => 'cross_empleo',
+            'label' => 'Explorar empleo',
+            'route' => 'jaraba_job_board.search',
+            'icon_category' => 'verticals',
+            'icon_name' => 'briefcase',
+            'weight' => 100,
+          ];
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // Cross-vertical evaluation is non-critical.
     }
 
     return $items;

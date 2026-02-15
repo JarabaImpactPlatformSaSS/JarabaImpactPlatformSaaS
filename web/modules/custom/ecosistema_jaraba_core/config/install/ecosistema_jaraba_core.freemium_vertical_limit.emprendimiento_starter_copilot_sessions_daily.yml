@@ -1,0 +1,11 @@
+id: emprendimiento_starter_copilot_sessions_daily
+label: 'Emprendimiento Starter: Sesiones Copiloto Diarias'
+vertical: emprendimiento
+plan: starter
+feature_key: copilot_sessions_daily
+limit_value: 50
+description: 'Hasta 50 sesiones diarias de Copiloto IA en plan Starter Emprendimiento.'
+upgrade_message: 'Has alcanzado el limite diario del Copiloto en Starter. Actualiza a Profesional para uso ilimitado.'
+expected_conversion: 0
+weight: 416
+status: true

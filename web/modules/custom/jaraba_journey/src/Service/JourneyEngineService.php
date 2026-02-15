@@ -193,7 +193,7 @@ class JourneyEngineService
         $transition = $this->evaluateTransition($state, $eventType, $eventData);
 
         if ($transition['should_transition']) {
-            $this->transitionState($state, $transition['new_state']);
+            $this->transitionState($state, $transition['new_state'], $eventType);
         }
 
         $state->save();
@@ -265,7 +265,7 @@ class JourneyEngineService
     /**
      * Transiciona el estado del journey.
      */
-    protected function transitionState(JourneyState $state, string $newState): void
+    protected function transitionState(JourneyState $state, string $newState, string $eventType = ''): void
     {
         $oldState = $state->getJourneyState();
 
@@ -288,6 +288,27 @@ class JourneyEngineService
             '@old' => $oldState,
             '@new' => $newState,
         ]);
+
+        // Evaluar cross-sell para emprendimiento tras la transicion.
+        if ($state->get('vertical')->value === 'emprendimiento' && $eventType) {
+            try {
+                if (\Drupal::hasService('jaraba_journey.emprendimiento_cross_sell')) {
+                    /** @var \Drupal\jaraba_journey\Service\EmprendimientoCrossSellService $crossSell */
+                    $crossSell = \Drupal::service('jaraba_journey.emprendimiento_cross_sell');
+                    $crossSell->evaluateOnTransition(
+                        (int) $state->getOwnerId(),
+                        $eventType,
+                        $oldState,
+                        $newState,
+                    );
+                }
+            }
+            catch (\Exception $e) {
+                $this->logger->warning('Cross-sell evaluation failed: @error', [
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
     }
 
     /**

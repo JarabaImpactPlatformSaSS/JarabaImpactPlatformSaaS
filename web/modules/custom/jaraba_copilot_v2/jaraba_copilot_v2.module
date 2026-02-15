@@ -195,6 +195,97 @@ function jaraba_copilot_v2_page_attachments(array &$attachments) {
 }
 
 /**
+ * Implements hook_cron().
+ *
+ * Detecta emprendedores inactivos (sin actividad en 7+ dias) y dispara
+ * triggers de re-engagement via JourneyTriggerService.
+ */
+function jaraba_copilot_v2_cron() {
+  // Solo ejecutar una vez al dia.
+  $state = \Drupal::state();
+  $lastRun = $state->get('jaraba_copilot_v2.reengagement_last_run', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  if (($now - $lastRun) < 86400) {
+    return;
+  }
+
+  $state->set('jaraba_copilot_v2.reengagement_last_run', $now);
+
+  try {
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $storage = $entityTypeManager->getStorage('entrepreneur_profile');
+
+    // Buscar perfiles con programa activo.
+    $profileIds = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 1)
+      ->exists('program_start_date')
+      ->execute();
+
+    if (empty($profileIds)) {
+      return;
+    }
+
+    $profiles = $storage->loadMultiple($profileIds);
+    $inactivityThreshold = $now - (7 * 86400);
+    $triggerService = NULL;
+
+    if (\Drupal::hasService('jaraba_journey.trigger')) {
+      $triggerService = \Drupal::service('jaraba_journey.trigger');
+    }
+
+    $reengagedCount = 0;
+
+    foreach ($profiles as $profile) {
+      $userId = (int) $profile->getOwnerId();
+      if (!$userId) {
+        continue;
+      }
+
+      // Verificar ultima actividad del usuario.
+      $user = $entityTypeManager->getStorage('user')->load($userId);
+      if (!$user) {
+        continue;
+      }
+
+      $lastAccess = (int) $user->getLastAccessedTime();
+
+      if ($lastAccess > 0 && $lastAccess < $inactivityThreshold) {
+        // Usuario inactivo: disparar trigger de re-engagement.
+        if ($triggerService) {
+          $triggerService->fireTrigger($userId, 'inactivity_7d');
+        }
+
+        // Registrar evento en el journey engine.
+        if (\Drupal::hasService('jaraba_journey.engine')) {
+          \Drupal::service('jaraba_journey.engine')->recordEvent(
+            $userId,
+            'inactive_7_days',
+            ['source' => 'cron_reengagement'],
+          );
+        }
+
+        $reengagedCount++;
+      }
+    }
+
+    if ($reengagedCount > 0) {
+      \Drupal::logger('jaraba_copilot_v2')->info(
+        'Re-engagement cron: @count emprendedores inactivos detectados.',
+        ['@count' => $reengagedCount]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_copilot_v2')->error(
+      'Re-engagement cron error: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
  * Verifica si una feature está desbloqueada para el usuario actual.
  *
  * Función helper para usar en otros módulos y templates.

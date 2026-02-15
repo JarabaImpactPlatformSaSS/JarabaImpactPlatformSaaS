@@ -1,0 +1,11 @@
+id: emprendimiento_free_hypotheses_active
+label: 'Emprendimiento Free: Hipotesis Activas'
+vertical: emprendimiento
+plan: free
+feature_key: hypotheses_active
+limit_value: 3
+description: '3 hipotesis activas en plan gratuito Emprendimiento.'
+upgrade_message: 'Has alcanzado el limite de hipotesis activas. Actualiza a Starter para crear hasta 20 hipotesis simultaneas.'
+expected_conversion: 0.25
+weight: 410
+status: true

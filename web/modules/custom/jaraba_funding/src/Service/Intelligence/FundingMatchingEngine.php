@@ -640,6 +640,175 @@ class FundingMatchingEngine {
   }
 
   /**
+   * Enriquece una suscripcion con datos del Business Model Canvas.
+   *
+   * Consulta jaraba_business_tools.canvas_service para obtener el ultimo
+   * canvas del usuario propietario de la suscripcion. Extrae sector,
+   * modelo de ingresos y segmento de cliente para mejorar la calidad
+   * del matching de financiacion.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $subscription
+   *   Entidad FundingSubscription.
+   *
+   * @return array
+   *   Contexto del canvas con claves:
+   *   - has_canvas: (bool) Si se encontro canvas.
+   *   - sector: (string) Sector del canvas.
+   *   - revenue_streams: (array) Modelos de ingresos.
+   *   - customer_segments: (array) Segmentos de cliente.
+   *   - business_stage: (string) Etapa del negocio.
+   */
+  public function getCanvasContext(EntityInterface $subscription): array {
+    $result = ['has_canvas' => FALSE];
+
+    try {
+      if (!\Drupal::hasService('jaraba_business_tools.canvas_service')) {
+        return $result;
+      }
+
+      // Obtener el user_id del propietario de la suscripcion.
+      $userId = (int) ($subscription->get('user_id')->value ?? 0);
+      if (!$userId) {
+        return $result;
+      }
+
+      /** @var \Drupal\jaraba_business_tools\Service\CanvasService $canvasService */
+      $canvasService = \Drupal::service('jaraba_business_tools.canvas_service');
+
+      // Buscar el ultimo canvas del usuario.
+      $canvasStorage = $this->entityTypeManager->getStorage('business_model_canvas');
+      $canvasIds = $canvasStorage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('user_id', $userId)
+        ->condition('is_template', 0)
+        ->sort('changed', 'DESC')
+        ->range(0, 1)
+        ->execute();
+
+      if (empty($canvasIds)) {
+        return $result;
+      }
+
+      $canvasId = reset($canvasIds);
+      $canvasData = $canvasService->getCanvasWithBlocks($canvasId);
+
+      if (!$canvasData || empty($canvasData['canvas'])) {
+        return $result;
+      }
+
+      $canvas = $canvasData['canvas'];
+      $blocks = $canvasData['blocks'] ?? [];
+
+      // Extraer sector del canvas.
+      $sector = '';
+      if (method_exists($canvas, 'getSector')) {
+        $sector = $canvas->getSector() ?? '';
+      }
+      elseif ($canvas->hasField('sector')) {
+        $sector = $canvas->get('sector')->value ?? '';
+      }
+
+      // Extraer revenue streams del bloque correspondiente.
+      $revenueStreams = [];
+      if (isset($blocks['revenue_streams'])) {
+        $block = $blocks['revenue_streams'];
+        if (method_exists($block, 'getItems')) {
+          $revenueStreams = $block->getItems();
+        }
+      }
+
+      // Extraer customer segments del bloque correspondiente.
+      $customerSegments = [];
+      if (isset($blocks['customer_segments'])) {
+        $block = $blocks['customer_segments'];
+        if (method_exists($block, 'getItems')) {
+          $customerSegments = $block->getItems();
+        }
+      }
+
+      // Extraer etapa del negocio.
+      $businessStage = '';
+      if ($canvas->hasField('business_stage')) {
+        $businessStage = $canvas->get('business_stage')->value ?? '';
+      }
+
+      $result = [
+        'has_canvas' => TRUE,
+        'sector' => $sector,
+        'revenue_streams' => $revenueStreams,
+        'customer_segments' => $customerSegments,
+        'business_stage' => $businessStage,
+      ];
+
+      $this->logger->debug('Canvas context para suscripcion @sub: sector=@sector, stage=@stage', [
+        '@sub' => $subscription->id(),
+        '@sector' => $sector,
+        '@stage' => $businessStage,
+      ]);
+    }
+    catch (\Exception $e) {
+      $this->logger->debug('Canvas context unavailable: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    return $result;
+  }
+
+  /**
+   * Ejecuta matching enriquecido con datos de canvas para emprendedores.
+   *
+   * Extiende runMatchingForSubscription() inyectando contexto del canvas
+   * en los criterios de sector y semantico para mejorar la precision.
+   *
+   * @param int $subscriptionId
+   *   ID de la entidad FundingSubscription.
+   *
+   * @return array
+   *   Array de entidades FundingMatch creadas.
+   */
+  public function runEnrichedMatchingForSubscription(int $subscriptionId): array {
+    try {
+      $subStorage = $this->entityTypeManager->getStorage('funding_subscription');
+      $subscription = $subStorage->load($subscriptionId);
+
+      if (!$subscription) {
+        return [];
+      }
+
+      // Obtener contexto del canvas.
+      $canvasContext = $this->getCanvasContext($subscription);
+
+      if ($canvasContext['has_canvas'] && !empty($canvasContext['sector'])) {
+        // Si el canvas tiene sector y la suscripcion no, enriquecer.
+        $subSectors = $subscription->get('sectors')->value ?? [];
+        if (!is_array($subSectors)) {
+          $subSectors = [$subSectors];
+        }
+        $subSectors = array_filter($subSectors);
+
+        if (empty($subSectors)) {
+          // Inyectar sector del canvas en la suscripcion en memoria.
+          $subscription->set('sectors', [$canvasContext['sector']]);
+
+          $this->logger->info('Enriquecida suscripcion @id con sector @sector del canvas.', [
+            '@id' => $subscriptionId,
+            '@sector' => $canvasContext['sector'],
+          ]);
+        }
+      }
+    }
+    catch (\Exception $e) {
+      $this->logger->debug('Canvas enrichment failed, using standard matching: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    // Ejecutar matching estandar (con suscripcion enriquecida si aplica).
+    return $this->runMatchingForSubscription($subscriptionId);
+  }
+
+  /**
    * Obtiene regiones relacionadas a una region dada.
    *
    * @param string $region
