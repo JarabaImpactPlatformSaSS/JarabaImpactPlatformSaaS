@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#233D63" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} Andaluc&iacute;a +ei
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#10B981" padding-bottom="8px">
+          {{ t('Has avanzado a la fase de Inserción') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Enhorabuena. Has completado con éxito la fase de Atención y ahora avanzas a la fase de Inserción. Esto significa que estás listo para dar el siguiente paso en tu camino emprendedor.') }}</p>
+        </mj-text>
+
+        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px" padding-bottom="8px">
+          {{ t('Lo que viene en la fase de Inserción') }}
+        </mj-text>
+
+        <mj-section background-color="#ECFDF5" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#065F46">
+              <strong>{{ t('Mentoría intensiva') }}:</strong> {{ t('Sesiones personalizadas con expertos del sector') }}<br /><br />
+              <strong>{{ t('Formación avanzada') }}:</strong> {{ t('Módulos especializados para tu área de emprendimiento') }}<br /><br />
+              <strong>{{ t('Red de contactos') }}:</strong> {{ t('Conexiones con otros emprendedores y recursos clave') }}
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          {{ t('Ver mi progreso') }}
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

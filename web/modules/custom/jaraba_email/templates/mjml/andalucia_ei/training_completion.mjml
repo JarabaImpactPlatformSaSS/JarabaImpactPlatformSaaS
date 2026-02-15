@@ -1,0 +1,70 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#233D63" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} Andaluc&iacute;a +ei
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#10B981" padding-bottom="8px">
+          {{ t('Módulo completado') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Has completado con éxito el módulo formativo:') }}</p>
+        </mj-text>
+
+        <mj-section background-color="#ECFDF5" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="16px" font-weight="bold" color="#065F46">
+              {{ module_name }}
+            </mj-text>
+            <mj-text font-size="14px" color="#065F46">
+              {{ t('Horas acreditadas') }}: {{ module_hours }}h<br />
+              {{ t('Total formación acumulada') }}: {{ total_training_hours }}h / 50h
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-text padding-top="16px">
+          <p>{{ t('Sigue así. Cada módulo te acerca más a completar las 50 horas mínimas de formación del programa.') }}</p>
+        </mj-text>
+
+        <mj-button href="{{ lms_url }}" align="center" padding="24px 0">
+          {{ t('Ver más cursos') }}
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

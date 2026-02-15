@@ -1,0 +1,72 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#233D63" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} Andaluc&iacute;a +ei
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#F59E0B" padding-bottom="8px">
+          {{ t('Te echamos de menos') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Hace @days días que no visitas tu dashboard de Andalucía +ei. Tu progreso es importante y queremos ayudarte a seguir avanzando.', {'@days': inactive_days}) }}</p>
+        </mj-text>
+
+        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px" padding-bottom="8px">
+          {{ t('Tu progreso actual') }}
+        </mj-text>
+
+        <mj-section background-color="#FFFBEB" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#78350F">
+              {{ t('Fase actual') }}: {{ current_phase }}<br />
+              {{ t('Horas acumuladas') }}: {{ total_hours }}h<br />
+              {{ t('Formación') }}: {{ training_hours }}h / 50h
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-text padding-top="16px">
+          <p>{{ t('Tu Tutor IA te está esperando. Solo necesitas 10 minutos para retomar tu camino.') }}</p>
+        </mj-text>
+
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          {{ t('Retomar mi progreso') }}
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,0 +1,78 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .accent-text { color: #00A9A5; font-weight: bold; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#233D63" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} Andaluc&iacute;a +ei
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#111827" padding-bottom="8px">
+          {{ t('Bienvenido al programa Andalucía +ei') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Tu inscripción en el programa Andalucía +ei está confirmada. Ahora tienes acceso a orientación personalizada, formación especializada, mentoría experta y un Tutor IA que te acompañará en tu camino emprendedor.') }}</p>
+        </mj-text>
+
+        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px" padding-bottom="8px">
+          {{ t('Tu hoja de ruta de 12 semanas') }}
+        </mj-text>
+
+        <mj-section background-color="#FFF7ED" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#78350F">
+              <strong>1.</strong> {{ t('Completa tu perfil y diagnóstico inicial') }}<br />
+              <strong>2.</strong> {{ t('Habla con el Tutor IA para definir tus objetivos') }}<br />
+              <strong>3.</strong> {{ t('Inscríbete en los módulos formativos recomendados') }}<br />
+              <strong>4.</strong> {{ t('Conecta con tu mentor asignado') }}<br />
+              <strong>5.</strong> {{ t('Avanza hacia la fase de inserción') }}
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          {{ t('Ir a mi dashboard') }}
+        </mj-button>
+
+        <mj-text font-size="13px" color="#6b7280">
+          <p>{{ t('Tu Tutor IA está disponible 24/7 para ayudarte en cualquier momento.') }}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+          Has recibido este correo porque participas en {{ site_name }} Andaluc&iacute;a +ei.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

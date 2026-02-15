@@ -1,0 +1,13 @@
+{
+  "name": "jaraba-andalucia-ei",
+  "version": "1.0.0",
+  "description": "SCSS build para el módulo Andalucía +ei",
+  "scripts": {
+    "build": "npx sass scss/main.scss css/andalucia-ei.css --style=compressed",
+    "build:all": "npm run build && echo '✅ Andalucía +ei CSS compilado'",
+    "watch": "npx sass scss/main.scss css/andalucia-ei.css --watch --style=compressed"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}
