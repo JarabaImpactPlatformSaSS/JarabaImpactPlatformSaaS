@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-15
-**Versión:** 42.0.0 (Elevación Empleabilidad — 10/10 Fases Implementadas + Emprendimiento 6 Fases)
+**Versión:** 43.0.0 (Elevación Empleabilidad — 10/10 Fases + Emprendimiento 6 Fases + Docs v27.0.0)
 
 > **🎯 ELEVACIÓN EMPRENDIMIENTO — 6 FASES IMPLEMENTADAS** (2026-02-15)
 > - **Fase 1 (Parent Template + FAB):** `page--emprendimiento.html.twig` zero-region + Copilot FAB, `preprocess_page__emprendimiento()`, template suggestion `page__emprendimiento` para copilot_v2 y mentoring, eliminados 3 templates hijos redundantes
@@ -22,18 +22,21 @@
 > - **Fase 9 (AI Journey Progression Proactiva):** `EmployabilityJourneyProgressionService` con 7 reglas proactivas (inactivity_discovery, incomplete_profile, ready_but_inactive, application_frustration, interview_prep, offer_negotiation, post_employment_expansion), `evaluate()` con prioridad + dismiss tracking via State API, `getPendingAction()` con cache 1h, `evaluateBatch()` para cron, endpoint `GET|POST /api/v1/copilot/employability/proactive` en `CopilotApiController`, FAB notification dot + auto-expand via `checkProactiveActions()` polling cada 5 min, `showProactiveMessage()` con CTA + dismiss button
 > - **Fase 10 (Health Scores + KPIs):** `EmployabilityHealthScoreService` con 5 dimensiones ponderadas (profile_completeness 25%, application_activity 30%, copilot_engagement 15%, training_progress 15%, credential_advancement 15%), `calculateUserHealth()` retorna score 0-100 + categoría (healthy/neutral/at_risk/critical), `calculateVerticalKpis()` con 8 KPIs: insertion_rate (target 40%), time_to_employment (<90 días), activation_rate (60%), engagement_rate (45%), NPS (>50), ARPU (>15 EUR), conversion_free_paid (>8%), churn_rate (<5%)
 > - **10 archivos** (2 nuevos + 8 modificados) | **3 módulos** tocados
+> - **Arquitectura v27.0.0** | Directrices v27.0.0 | Plan: [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | Aprendizaje: [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md)
 >
 
 > **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 7 + 8 IMPLEMENTADAS** (2026-02-15)
 > - **Fase 7 (CRM Integration):** `_jaraba_job_board_sync_to_crm()` sincroniza candidaturas con CRM pipeline (applied→lead, screening→mql, shortlisted→sql, interviewed→demo, offered→proposal, hired→closed_won, rejected→closed_lost), `_jaraba_job_board_ensure_crm_contact()` crea/vincula contactos CRM por email, keyValue store `jaraba_job_board.crm_sync` para mapping application→opportunity y user→contact, `ActivityService::create()` para log de transiciones, integrado en `_jaraba_job_board_handle_application_update()` (step 4) y `jaraba_job_board_entity_insert()` (initial applied)
 > - **Fase 8 (Cross-Vertical Bridges):** `EmployabilityCrossVerticalBridgeService` con 4 bridges (emprendimiento: time_in_state_90_days, servicios: has_freelance_skills, formación: recently_hired, comercio: verified_employer), `evaluateBridges()` con max 2 bridges + dismiss tracking via State API, `presentBridge()` con impression tracking, `trackBridgeResponse()`, integrado en `DashboardController::index()` con fail-open, `cross_vertical_bridges` variable en hook_theme, bridge cards en `jobseeker-dashboard.html.twig` con `jaraba_icon()` y `btn--outline`
 > - **8 archivos** (1 nuevo + 7 modificados) | **3 módulos** tocados
+> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | Aprendizaje: [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md)
 >
 
 > **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 5 + 6 IMPLEMENTADAS** (2026-02-15)
 > - **Fase 5 (Upgrade Triggers + Upsell IA):** 4 nuevos trigger types en `UpgradeTriggerService` (`engagement_high`, `first_milestone`, `external_validation`, `status_change`), `fire('limit_reached')` en `ApplicationService::apply()` y `CvBuilderService::generateCv()` al denegar feature gate, milestone 5-aplicaciones con `engagement_high`, `getSoftSuggestion()` contextual en `EmployabilityCopilotAgent` con resolución de fase via JourneyState, triggers `status_change`/`first_milestone` en `jaraba_job_board.module` para shortlisted/hired
 > - **Fase 6 (Email Sequences):** `EmployabilityEmailSequenceService` con 5 secuencias (SEQ_EMP_001-005: Onboarding, Re-engagement, Upsell, Post-Entrevista, Post-Empleo), 5 MJML templates nuevos, registrados en `TemplateLoaderService` con sample data, enrollment triggers en `jaraba_diagnostic.module` (SEQ_EMP_001 post-diagnóstico), `ApplicationService` (SEQ_EMP_003 3ª aplicación free), `jaraba_job_board.module` (SEQ_EMP_004 interview + SEQ_EMP_005 hired)
 > - **14 archivos** (6 nuevos + 8 modificados) | **6 módulos** tocados
+> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | Aprendizaje: [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md)
 >
 
 > **🎯 ELEVACIÓN EMPLEABILIDAD — FASES 2 + 4 IMPLEMENTADAS** (2026-02-15)
@@ -41,6 +44,7 @@
 > - **Fase 4 (Feature Gating):** `EmployabilityFeatureGateService` + `FeatureGateResult` value object creados, servicio registrado en services.yml, 3 nuevos seed configs FreemiumVerticalLimit (`job_applications_per_day` limit:3, `copilot_messages_per_day` limit:5, `job_alerts` limit:1), gating integrado en `CvBuilderService::generateCv()` y `ApplicationService::apply()` con fail-open y `recordUsage()`
 > - **12 seed configs empleabilidad** totales (9 existentes + 3 nuevos): cv_builder, diagnostics, offers_visible_per_day, job_applications_per_day, copilot_messages_per_day, job_alerts × free plan
 > - **17 archivos** (7 nuevos + 10 modificados) | **4 módulos** tocados
+> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | Aprendizaje: [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md)
 >
 
 > **🚀 EMPRENDIMIENTO CLASE MUNDIAL — 9/10 GAPS CERRADOS** (2026-02-15)
@@ -62,7 +66,7 @@
 > - **Plan Completo:** 10 fases, 25 hallazgos críticos, correspondencia 25+ specs técnicos
 > - **Fase 1 (Templates):** `page--empleabilidad.html.twig` zero-region + Copilot FAB, `preprocess_page__empleabilidad()`, body classes `page-empleabilidad vertical-empleabilidad`, template suggestion `page__empleabilidad` para 4 módulos (jaraba_candidate, jaraba_job_board, jaraba_diagnostic, jaraba_self_discovery)
 > - **Fase 3 (SCSS P4-COLOR-002):** 0 violaciones rgba() en `_dashboard.scss` (14 fixes) y `self-discovery.scss` (31 fixes) → `color-mix(in srgb, var(--ej-*, fallback) N%, transparent)` + hardcoded hex → CSS custom properties
-> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md)
+> - **Plan:** [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | Aprendizaje: [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md)
 >
 
 > **🎨 BLOQUES VERTICALES DISEÑADOS — 55 TEMPLATES + SCSS** (2026-02-14)

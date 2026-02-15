@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-15
-**Versión:** 26.0.0 (Emprendimiento Clase Mundial — 9 Gaps Cerrados)
+**Versión:** 27.0.0 (Empleabilidad Clase Mundial — 10/10 Fases Elevación)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -628,6 +628,30 @@
 │   │   └── Theme Setting: enable_avatar_nav (toggle configurable)       │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
+│   📦 ecosistema_jaraba_core — Empleabilidad Services ✅ (Elevación 10F) │
+│   ├── EmployabilityFeatureGateService (Fase 4): Escalera de valor       │
+│   │   ├── 3 features: job_applications (5/día), job_alerts (3),         │
+│   │   │   copilot_messages (10/día) — planes FREE/STARTER/PROFESIONAL   │
+│   │   └── FeatureGateResult ValueObject (allowed, remaining, limit)     │
+│   ├── EmployabilityEmailSequenceService (Fase 6): 5 secuencias          │
+│   │   ├── SEQ_EMP_001 Onboarding, SEQ_EMP_002 Re-engagement            │
+│   │   ├── SEQ_EMP_003 Upsell, SEQ_EMP_004 Post-Interview               │
+│   │   └── SEQ_EMP_005 Post-Hire + 5 MJML templates registrados         │
+│   ├── EmployabilityCrossVerticalBridgeService (Fase 8): 4 bridges       │
+│   │   ├── emprendimiento (90d inactivo), servicios (freelance skills)   │
+│   │   ├── formación (recently_hired), comercio (verified_employer)      │
+│   │   └── evaluateBridges() max 2 + dismiss tracking State API          │
+│   ├── EmployabilityJourneyProgressionService (Fase 9): 7 reglas         │
+│   │   ├── inactivity_discovery, incomplete_profile, ready_but_inactive  │
+│   │   ├── application_frustration, interview_prep, offer_negotiation    │
+│   │   └── post_employment_expansion + FAB dot/auto-expand + polling 5m  │
+│   ├── EmployabilityHealthScoreService (Fase 10): 5 dimensiones          │
+│   │   ├── profile_completeness 25%, application_activity 30%            │
+│   │   ├── copilot_engagement 15%, training_progress 15%                 │
+│   │   ├── credential_advancement 15% → score 0-100 + categoría          │
+│   │   └── 8 KPIs: insertion_rate, time_to_employment, NPS, ARPU, etc.  │
+│   └── Estado: ✅ Clase Mundial (Feb 2026 — Elevación 10/10 Fases)       │
+│                                                                         │
 │   📦 jaraba_diagnostic ✅ (Diagnóstico Express Empleabilidad)            │
 │   ├── EmployabilityDiagnostic Entity: 14 campos                       │
 │   │   ├── q_linkedin, q_cv_ats, q_estrategia, score, profile_type     │
@@ -644,22 +668,27 @@
 │   ├── EmployabilityCopilotAgent: 6 modos especializados               │
 │   │   ├── Profile Coach, Job Advisor, Interview Prep                   │
 │   │   ├── Learning Guide, Application Helper, FAQ                      │
-│   │   └── Detección automática modo por keywords                       │
-│   ├── CopilotApiController: POST /api/v1/copilot/employability/chat    │
-│   │   └── GET /suggestions (chips contextuales por página)             │
+│   │   ├── Detección automática modo por keywords                       │
+│   │   └── getSoftSuggestion(): upsell contextual por fase journey      │
+│   ├── CopilotApiController:                                            │
+│   │   ├── POST /api/v1/copilot/employability/chat                      │
+│   │   ├── GET /suggestions (chips contextuales por página)             │
+│   │   └── GET|POST /api/v1/copilot/employability/proactive (Fase 9)   │
 │   ├── Content Entities:                                                │
 │   │   ├── CandidateProfile: perfil profesional completo                │
 │   │   ├── CandidateSkill: skills con nivel + años experiencia          │
 │   │   └── CandidateLanguage: idiomas CEFR (A1-C2), 4 competencias     │
 │   │       (reading/writing/speaking/listening), certificaciones,       │
 │   │       is_native, source (manual/linkedin/cv_parser)                │
-│   ├── Services: CandidateProfileService (skills reales),               │
-│   │   CvBuilderService (idiomas entity queries)                        │
+│   ├── Services: CandidateProfileService, CvBuilderService (+gate),     │
+│   │   ApplicationService (+gate +CRM +email enrollment)                │
+│   ├── Frontend: modal-actions library, data-dialog-type="modal" CRUD,  │
+│   │   agent-fab.js (proactive polling 5min + FAB dot/auto-expand)      │
 │   ├── DI: @ai.provider, @config.factory, @jaraba_ai_agents.tenant_brand_voice │
 │   │   └── @jaraba_ai_agents.observability, @ecosistema_jaraba_core.unified_prompt_builder │
-│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│   └── Estado: ✅ Clase Mundial (Feb 2026 — Elevación 10/10 Fases)                                  │
 │                                                                         │
-│   📦 jaraba_job_board ✅ (Bolsa de Empleo + Matching)                    │
+│   📦 jaraba_job_board ✅ (Bolsa de Empleo + Matching + CRM Pipeline)      │
 │   ├── Content Entities:                                                │
 │   │   ├── JobPosting, JobApplication, JobAlert                         │
 │   │   └── EmployerProfile: perfil empresa (company_name, legal_name,   │
@@ -667,10 +696,17 @@
 │   │       is_verified, is_featured, tenant_id)                         │
 │   ├── Services: MatchingService (experience/education/city entity      │
 │   │   queries), ApplicationService, JobPostingService, JobAlertService │
-│   ├── Controllers: JobSearchController (employer_profile loading),     │
-│   │   JobBoardApiController (employer applications query),             │
+│   ├── CRM Integration (Fase 7): _sync_to_crm() mapea 7 estados        │
+│   │   (applied→lead, screening→mql, shortlisted→sql, interviewed→demo,│
+│   │   offered→proposal, hired→closed_won, rejected→closed_lost),       │
+│   │   _ensure_crm_contact() por email, keyValue store crm_sync         │
+│   ├── Upgrade Triggers (Fase 5): status_change + first_milestone en    │
+│   │   shortlisted/hired transitions                                     │
+│   ├── Email Enrollment (Fase 6): SEQ_EMP_004 interview + SEQ_EMP_005   │
+│   │   hired en _handle_application_update()                             │
+│   ├── Controllers: JobSearchController, JobBoardApiController,          │
 │   │   agent-fab.js (rating POST /api/v1/job-board/agent-rating)        │
-│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│   └── Estado: ✅ Clase Mundial (Feb 2026 — Elevación 10/10 Fases)                                  │
 │                                                                         │
 │   📦 jaraba_self_discovery ✅ (Self-Discovery Empleabilidad)               │
 │   ├── Herramientas autoconocimiento: Rueda de Vida, Timeline, RIASEC,  │
@@ -901,7 +937,7 @@
 │   ├── EmailWebhookController: POST /api/v1/webhooks/sendgrid (HMAC)    │
 │   ├── SendGridClientService: sendEmail, sendBatch, processWebhook       │
 │   ├── SequenceManagerService: enrollSubscriber, executeNextStep         │
-│   ├── MJML Templates: 30 transaccionales + base.mjml                    │
+│   ├── MJML Templates: 35 transaccionales + base.mjml                    │
 │   │   ├── auth/ (5): verify, welcome, password_reset/changed, new_login  │
 │   │   ├── billing/ (7): invoice, payment_failed, subscription...         │
 │   │   ├── marketplace/ (6): order_confirmed, shipped, delivered...       │
@@ -1288,6 +1324,8 @@
 │   │  📦 ecosistema_jaraba_theme                                      │  │
 │   │  ├── 45 archivos SCSS      → components, features               │  │
 │   │  ├── SDC Components (2)    → Card, Hero                         │  │
+│   │  ├── Zero-Region Templates → page--empleabilidad, --emprendimiento│ │
+│   │  ├── Preprocess hooks      → empleabilidad + emprendimiento      │  │
 │   │  └── Inyección runtime     → hook_page_attachments              │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -1799,15 +1837,17 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │                 jaraba_email module                                      │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   TEMPLATES MJML (30 transaccionales + 1 base):                        │
+│   TEMPLATES MJML (35 transaccionales + 1 base):                        │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │  auth/       (5) verify, welcome, password_reset/changed, login │  │
 │   │  billing/    (7) invoice, payment_failed, subscription,         │  │
 │   │                   upgrade, trial, cancel, dunning               │  │
 │   │  marketplace/(6) order_confirmed, new_order_seller, shipped,    │  │
 │   │                   delivered, payout, review                     │  │
-│   │  empleabilidad/(5) job_match, application, new_application,     │  │
-│   │                     shortlisted, expired                        │  │
+│   │  empleabilidad/(10) job_match, application, new_application,    │  │
+│   │                      shortlisted, expired + seq_onboarding,     │  │
+│   │                      seq_reactivation, seq_upsell,              │  │
+│   │                      seq_interview_prep, seq_post_hire           │  │
 │   │  emprendimiento/(6) welcome_entrepreneur, diagnostic_completed, │  │
 │   │                      canvas_milestone, experiment_result,       │  │
 │   │                      mentor_matched, weekly_progress            │  │
@@ -1907,7 +1947,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ---
 
-## 12. Estado de Auditoría (2026-02-13)
+## 12. Estado de Auditoría (2026-02-15)
 
 ### 12.1 Métricas de la Auditoría Integral
 
@@ -1936,7 +1976,26 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | IA/ML | 5.0 | **5.0** | Agentes, RAG, guardrails implementados |
 | **Promedio** | **4.5** | **4.9** | **23/65 hallazgos resueltos (7 Críticos + 8 Altos + 8 Medios)** |
 
-### 12.3 Dependabot Security Posture (2026-02-14)
+### 12.3 Elevación Verticales a Clase Mundial (2026-02-15)
+
+| Vertical | Fases | Estado | Servicios Nuevos | Archivos |
+|----------|-------|--------|-----------------|----------|
+| **Empleabilidad** | 10/10 | ✅ Clase Mundial | EmployabilityFeatureGateService, EmployabilityEmailSequenceService, EmployabilityCrossVerticalBridgeService, EmployabilityJourneyProgressionService, EmployabilityHealthScoreService, EmployabilityCopilotAgent, CopilotApiController, TemplateLoaderService | 34+ archivos |
+| **Emprendimiento** | 6/6 | ✅ Clase Mundial | EmprendimientoFeatureGateService, EmprendimientoExperimentService | 15 archivos |
+
+**Empleabilidad (10 Fases):**
+1. Clean Page Templates (Zero Region + FAB)
+2. Sistema Modal CRUD (data-dialog-type)
+3. SCSS Compliance (45+ rgba→color-mix)
+4. Feature Gating (3 features × 3 planes)
+5. Upgrade Triggers (4 trigger types)
+6. Email Sequences (5 secuencias MJML)
+7. CRM Integration (7 estados pipeline)
+8. Cross-Vertical Bridges (4 bridges)
+9. AI Journey Progression Proactiva (7 reglas)
+10. Health Scores + KPIs (5 dimensiones + 8 KPIs)
+
+### 12.4 Dependabot Security Posture (2026-02-14)
 
 | Métrica | Antes | Después |
 |---------|-------|---------|
@@ -2003,6 +2062,9 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Aprendizajes Auditoría Integral** ⭐ | `docs/tecnicos/aprendizajes/2026-02-13_auditoria_integral_estado_saas.md` |
 | **Plan Sprint Diferido (22 TODOs, 5 fases)** ⭐ | `docs/implementacion/20260213-Plan_Implementacion_Sprint_Diferido_v1.md` |
 | **Aprendizajes Sprint Diferido** ⭐ | `docs/tecnicos/aprendizajes/2026-02-13_sprint_diferido_22_todos_5_fases.md` |
+| **Plan Elevación Empleabilidad v1** ⭐ | `docs/implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md` |
+| **Aprendizajes Elevación Empleabilidad 10 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md` |
+| **Aprendizajes Elevación Emprendimiento 6 Fases** ⭐ | `docs/tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md` |
 
 ---
 
