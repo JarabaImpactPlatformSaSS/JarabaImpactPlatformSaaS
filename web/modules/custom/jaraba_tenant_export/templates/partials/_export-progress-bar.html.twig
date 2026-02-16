@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Progress bar for an active export.
+ */
+#}
+<div class="ej-export__progress">
+  <div class="ej-export__progress-header">
+    <span class="ej-export__progress-label">{{ 'Progreso'|t }}</span>
+    <span class="ej-export__progress-percent" id="export-progress-percent">0%</span>
+  </div>
+  <div class="ej-export__progress-bar">
+    <div class="ej-export__progress-fill" id="export-progress-fill" style="width: 0%;"></div>
+  </div>
+  <p class="ej-export__progress-phase" id="export-progress-phase">{{ 'Preparando...'|t }}</p>
+</div>

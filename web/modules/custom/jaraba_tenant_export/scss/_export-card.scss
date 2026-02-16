@@ -1,0 +1,191 @@
+// Tenant Export — Cards (request + download)
+// Directriz 17: color-mix() instead of rgba().
+
+@use 'sass:color';
+@use 'variables-export' as v;
+
+.ej-export__request-card,
+.ej-export__download-card {
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: v.$export-radius-lg;
+  padding: v.$export-spacing-lg;
+  transition: box-shadow v.$export-transition;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-text-primary, #1a1a2e) 10%, transparent);
+  }
+}
+
+.ej-export__card-header {
+  margin-bottom: v.$export-spacing-md;
+}
+
+.ej-export__card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0;
+}
+
+.ej-export__card-desc {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin: 0 0 v.$export-spacing-md;
+  line-height: 1.5;
+}
+
+// Sections checkboxes
+.ej-export__sections {
+  display: flex;
+  flex-direction: column;
+  gap: v.$export-spacing-sm;
+  margin-bottom: v.$export-spacing-md;
+}
+
+.ej-export__section-item {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$export-spacing-sm;
+  padding: v.$export-spacing-sm v.$export-spacing-md;
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: v.$export-radius-sm;
+  cursor: pointer;
+  transition: background v.$export-transition;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-color-primary, #2563eb) 5%, transparent);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.ej-export__section-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--ej-color-text-primary, #1a1a2e);
+}
+
+.ej-export__section-desc {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+}
+
+// Type selector
+.ej-export__type-selector {
+  margin-bottom: v.$export-spacing-md;
+}
+
+.ej-export__type-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin-bottom: v.$export-spacing-xs;
+}
+
+.ej-export__type-select {
+  width: 100%;
+  padding: v.$export-spacing-sm v.$export-spacing-md;
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: v.$export-radius-sm;
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+  font-size: 0.875rem;
+  background: var(--ej-color-surface, #ffffff);
+}
+
+// Rate limit warning
+.ej-export__rate-limit {
+  padding: v.$export-spacing-sm v.$export-spacing-md;
+  border-radius: v.$export-radius-sm;
+  background: color-mix(in srgb, var(--ej-color-warning, #f59e0b) 10%, transparent);
+  border: 1px solid var(--ej-color-warning, #f59e0b);
+  margin-bottom: v.$export-spacing-md;
+}
+
+.ej-export__rate-warning {
+  font-size: 0.813rem;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0;
+}
+
+// Submit button
+.ej-export__submit-btn {
+  width: 100%;
+  padding: v.$export-spacing-sm v.$export-spacing-lg;
+  border: none;
+  border-radius: v.$export-radius-md;
+  background: var(--ej-color-primary, #2563eb);
+  color: #ffffff;
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background v.$export-transition;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-color-primary, #2563eb) 85%, black);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include v.respond-to('tablet') {
+    width: auto;
+  }
+}
+
+// Download card
+.ej-export__download-card {
+  display: flex;
+  align-items: center;
+  gap: v.$export-spacing-md;
+  flex-wrap: wrap;
+}
+
+.ej-export__download-icon {
+  flex-shrink: 0;
+  color: var(--ej-color-success, #10b981);
+}
+
+.ej-export__download-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ej-export__download-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0;
+}
+
+.ej-export__download-meta {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin: v.$export-spacing-xs 0 0;
+}
+
+.ej-export__download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$export-spacing-xs;
+  padding: v.$export-spacing-sm v.$export-spacing-md;
+  background: var(--ej-color-success, #10b981);
+  color: #ffffff;
+  border-radius: v.$export-radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background v.$export-transition;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-color-success, #10b981) 85%, black);
+    color: #ffffff;
+  }
+}

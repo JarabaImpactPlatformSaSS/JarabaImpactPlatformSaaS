@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_tenant_export.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_tenant_export_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Tenant Export instalado. La tabla tenant_export_record se ha creado automáticamente.'));
+}
+
+/**
+ * Implements hook_schema().
+ *
+ * Índices adicionales para la tabla tenant_export_record.
+ * La tabla base se crea automáticamente por la entidad ContentEntity.
+ * Aquí definimos índices personalizados para rendimiento.
+ */
+function jaraba_tenant_export_schema(): array {
+  // Los índices se añaden via update hooks ya que la tabla base
+  // la crea el entity system automáticamente.
+  return [];
+}
+
+/**
+ * Add custom indexes to tenant_export_record table.
+ */
+function jaraba_tenant_export_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+  $table = 'tenant_export_record';
+
+  if ($schema->tableExists($table)) {
+    // Index: (tenant_id, status) — para búsquedas por tenant.
+    if (!$schema->indexExists($table, 'idx_tenant_status')) {
+      $schema->addIndex($table, 'idx_tenant_status', ['tenant_id', 'status'], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'status' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+
+    // Index: (expires_at, status) — para cleanup worker.
+    if (!$schema->indexExists($table, 'idx_expires_status')) {
+      $schema->addIndex($table, 'idx_expires_status', ['expires_at', 'status'], [
+        'fields' => [
+          'expires_at' => ['type' => 'int'],
+          'status' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+
+    // Index: (download_token) — para descarga por token.
+    if (!$schema->indexExists($table, 'idx_download_token')) {
+      $schema->addIndex($table, 'idx_download_token', ['download_token'], [
+        'fields' => [
+          'download_token' => ['type' => 'varchar', 'length' => 36],
+        ],
+      ]);
+    }
+
+    // Index: (requested_by, created) — para historial del usuario.
+    if (!$schema->indexExists($table, 'idx_user_created')) {
+      $schema->addIndex($table, 'idx_user_created', ['requested_by', 'created'], [
+        'fields' => [
+          'requested_by' => ['type' => 'int', 'unsigned' => TRUE],
+          'created' => ['type' => 'int'],
+        ],
+      ]);
+    }
+  }
+}

@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Tenant Export module — Exportación self-service + backups automatizados.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_tenant_export_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_tenant_export') {
+    return '<p>' . t('Provides per-tenant data export (GDPR Art. 20 portability) and automated backup management for the Ecosistema Jaraba platform.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Encola limpieza de exportaciones expiradas (cada 6h via State API guard).
+ */
+function jaraba_tenant_export_cron(): void {
+  $time = \Drupal::time()->getRequestTime();
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_tenant_export.cleanup_last_run') ?? 0);
+  $hoursSinceLastRun = ($time - $lastRun) / 3600;
+
+  if ($hoursSinceLastRun >= 6) {
+    /** @var \Drupal\Core\Queue\QueueFactory $queueFactory */
+    $queueFactory = \Drupal::service('queue');
+    $queue = $queueFactory->get('jaraba_tenant_export_cleanup');
+    $queue->createItem(['triggered_at' => $time]);
+    $state->set('jaraba_tenant_export.cleanup_last_run', $time);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_tenant_export_theme(): array {
+  return [
+    'page__tenant_export' => [
+      'template' => 'page--tenant-export',
+      'base hook' => 'page',
+    ],
+    'tenant_export_header' => [
+      'template' => 'partials/_export-header',
+      'variables' => ['tenant' => NULL],
+    ],
+    'tenant_export_request_card' => [
+      'template' => 'partials/_export-request-card',
+      'variables' => [
+        'can_request' => FALSE,
+        'sections' => [],
+        'rate_limit_info' => [],
+      ],
+    ],
+    'tenant_export_history_list' => [
+      'template' => 'partials/_export-history-list',
+      'variables' => ['exports' => []],
+    ],
+    'tenant_export_progress_bar' => [
+      'template' => 'partials/_export-progress-bar',
+      'variables' => [
+        'progress' => 0,
+        'phase' => '',
+        'status' => '',
+      ],
+    ],
+    'tenant_export_download_card' => [
+      'template' => 'partials/_export-download-card',
+      'variables' => [
+        'export' => NULL,
+        'download_url' => '',
+      ],
+    ],
+    'tenant_export_empty_state' => [
+      'template' => 'partials/_export-empty-state',
+      'variables' => [],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Directriz 3.5: Body classes para páginas frontend.
+ */
+function jaraba_tenant_export_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === 'jaraba_tenant_export.export_page') {
+    $variables['attributes']['class'][] = 'page--tenant-export';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+}

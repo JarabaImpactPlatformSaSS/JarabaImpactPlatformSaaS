@@ -53,13 +53,14 @@ jobs:
           BACKUP_LIST=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             if [ -d ~/backups ]; then
               # Listar backups ordenados por fecha (más reciente primero)
-              ls -lt ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | head -5
+              # Detect both db_pre_deploy_* and db_daily_* backups
+              ls -lt ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | head -5
               echo "---SEPARATOR---"
-              # Contar total de backups
-              TOTAL=$(ls ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | wc -l)
+              # Contar total de backups (pre-deploy + daily)
+              TOTAL=$(ls ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | wc -l)
               echo "TOTAL_BACKUPS=$TOTAL"
-              # Info del backup más reciente
-              LATEST=$(ls -t ~/backups/db_pre_deploy_*.sql.gz 2>/dev/null | head -1)
+              # Info del backup más reciente (any type)
+              LATEST=$(ls -t ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | head -1)
               if [ -n "$LATEST" ]; then
                 SIZE=$(stat -c %s "$LATEST" 2>/dev/null || echo "0")
                 MODIFIED=$(stat -c %Y "$LATEST" 2>/dev/null || echo "0")

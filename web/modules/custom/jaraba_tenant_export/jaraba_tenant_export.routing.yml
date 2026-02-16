@@ -1,0 +1,88 @@
+# Field UI settings route for TenantExportRecord entity
+jaraba_tenant_export.tenant_export_record.settings:
+  path: '/admin/structure/tenant-export-record/settings'
+  defaults:
+    _form: '\Drupal\jaraba_tenant_export\Form\TenantExportSettingsForm'
+    _title: 'Configuración de Exportaciones de Tenant'
+  requirements:
+    _permission: 'administer tenant exports'
+
+# ============================================
+# FRONTEND — Página de exportación self-service
+# ============================================
+
+jaraba_tenant_export.export_page:
+  path: '/tenant/export'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportPageController::page'
+    _title: 'Exportar Datos del Tenant'
+  requirements:
+    _permission: 'request tenant export'
+  options:
+    _admin_route: FALSE
+
+# ============================================
+# API v1 — Tenant Export
+# ============================================
+
+jaraba_tenant_export.api.request:
+  path: '/api/v1/tenant-export/request'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::requestExport'
+  requirements:
+    _permission: 'request tenant export'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+jaraba_tenant_export.api.status:
+  path: '/api/v1/tenant-export/{id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::getStatus'
+  requirements:
+    _permission: 'view own exports'
+    id: '\d+'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_tenant_export.api.download:
+  path: '/api/v1/tenant-export/{token}/download'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::download'
+  requirements:
+    _access: 'TRUE'
+    token: '[a-f0-9\-]+'
+  methods: [GET]
+
+jaraba_tenant_export.api.cancel:
+  path: '/api/v1/tenant-export/{id}/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::cancel'
+  requirements:
+    _permission: 'request tenant export'
+    id: '\d+'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_tenant_export.api.history:
+  path: '/api/v1/tenant-export/history'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::history'
+  requirements:
+    _permission: 'view own exports'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_tenant_export.api.sections:
+  path: '/api/v1/tenant-export/sections'
+  defaults:
+    _controller: '\Drupal\jaraba_tenant_export\Controller\TenantExportApiController::sections'
+  requirements:
+    _permission: 'request tenant export'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']

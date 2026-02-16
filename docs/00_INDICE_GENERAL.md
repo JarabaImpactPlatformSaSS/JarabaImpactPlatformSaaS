@@ -807,6 +807,7 @@
 | [2026-02-12_F10_Scaling_Infrastructure_Doc187_Implementacion.md](./implementacion/2026-02-12_F10_Scaling_Infrastructure_Doc187_Implementacion.md) | 🏗️ **F10 — Scaling Infrastructure (Doc 187)** ⭐ — Per-tenant backup/restore (auto-discovery 159+ tablas), k6 multi-tenant tests (4 escenarios, tenant isolation), Prometheus scaling alerts (10+5 rules), guía escalado horizontal 3 fases | 2026-02-12 |
 | [2026-02-12_F11_Elevacion_IA_Clase_Mundial_Implementacion.md](./implementacion/2026-02-12_F11_Elevacion_IA_Clase_Mundial_Implementacion.md) | 🧠 **F11 — Elevacion IA Clase Mundial** ⭐ — BrandVoiceTrainerService (Qdrant feedback loop), PromptExperimentService (A/B testing prompts), MultiModal Preparation (2 interfaces + bridge stub), 3 controllers, 8 rutas API | 2026-02-12 |
 | [2026-02-12_F12_Lenis_Integration_Premium_Implementacion.md](./implementacion/2026-02-12_F12_Lenis_Integration_Premium_Implementacion.md) | 🎨 **F12 — Lenis Integration Premium** ⭐ — Smooth scroll Lenis v1.3.17 CDN, Drupal.behaviors + once(), prefers-reduced-motion, admin exclusion, homepage + landing pages verticales | 2026-02-12 |
+| [20260216-Plan_Implementacion_Tenant_Export_v1.md](./implementacion/20260216-Plan_Implementacion_Tenant_Export_v1.md) | 📦 **Tenant Export + Daily Backup** ⭐ — TenantExportRecord entity, TenantDataCollectorService (6 grupos datos), TenantExportService + QueueWorkers, 6 API REST endpoints, página frontend self-service, SCSS BEM + JS dashboard, daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente), 3 Drush commands, 8 test suites (Unit/Kernel/Functional). GDPR Art. 20 portabilidad | 2026-02-16 |
 
 ### 6.2 Bloques de Implementación Plan Maestro v3.0 ⭐
 
@@ -832,7 +833,7 @@
 | [2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md](./implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md) | 🎯 **Elevación Clase Mundial Empleabilidad** ⭐ — 10 fases, 25 hallazgos críticos, 115+ clases PHP, 80+ rutas, 19 entidades. Correspondencia 25+ specs técnicos. Fase 1 (Templates) + Fase 3 (SCSS) implementadas | 2026-02-15 |
 | [20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md](./implementacion/20260215-Plan_Elevacion_Emprendimiento_v2_Paridad_Empleabilidad_7_Gaps.md) | 🎯 **Emprendimiento v2 Paridad Empleabilidad** ⭐ — 7 gaps cerrados: HealthScore (5 dimensiones + 8 KPIs), JourneyProgression (7 reglas), EmailSequences (5 MJML), CopilotAgent (6 modos), CrossVerticalBridges (3 salientes), CRM Sync (7 estados), UpgradeTriggers (5 nuevos). 10 archivos nuevos + 6 modificados | 2026-02-15 |
 
-**Total documentos implementación:** 37
+**Total documentos implementación:** 38
 
 ---
 

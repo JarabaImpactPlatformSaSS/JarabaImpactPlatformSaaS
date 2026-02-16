@@ -1,0 +1,26 @@
+administer tenant exports:
+  title: 'Administrar exportaciones de tenant'
+  description: 'Acceso completo a todas las exportaciones y configuración.'
+  restrict access: true
+
+request tenant export:
+  title: 'Solicitar exportación de datos'
+  description: 'Permite solicitar una exportación de los datos del tenant.'
+
+view own exports:
+  title: 'Ver exportaciones propias'
+  description: 'Ver el historial de exportaciones del propio tenant.'
+
+download tenant export:
+  title: 'Descargar exportación de tenant'
+  description: 'Descargar los paquetes ZIP de exportación generados.'
+
+view all exports:
+  title: 'Ver todas las exportaciones'
+  description: 'Ver exportaciones de todos los tenants.'
+  restrict access: true
+
+manage backup settings:
+  title: 'Gestionar configuración de backups'
+  description: 'Configurar retención y parámetros de backups automatizados.'
+  restrict access: true

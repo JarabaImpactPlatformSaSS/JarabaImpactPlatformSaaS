@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Card for a completed download.
+ */
+#}
+<div class="ej-export__download-card">
+  <div class="ej-export__download-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.3"/>
+      <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="ej-export__download-info">
+    <h3 class="ej-export__download-title">{{ 'Exportación Lista'|t }}</h3>
+    <p class="ej-export__download-meta" id="export-download-meta"></p>
+  </div>
+  <a class="ej-export__download-btn" id="export-download-link" href="#" download>
+    {{ 'Descargar ZIP'|t }}
+  </a>
+</div>

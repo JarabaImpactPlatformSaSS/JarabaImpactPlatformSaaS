@@ -1,0 +1,14 @@
+# Librerías del módulo Tenant Export
+
+# Dashboard de exportación self-service
+tenant-export-dashboard:
+  version: VERSION
+  css:
+    theme:
+      css/tenant-export.css: {}
+  js:
+    js/tenant-export-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

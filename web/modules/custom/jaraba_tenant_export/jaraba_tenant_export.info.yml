@@ -1,0 +1,10 @@
+name: 'Jaraba Tenant Export'
+type: module
+description: 'Exportación self-service de datos por tenant (GDPR Art. 20 portability) + sistema de backups automatizados'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+php: 8.4
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:views
