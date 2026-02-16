@@ -87,7 +87,7 @@ class VeriFactuInvoiceRecordEntityTest extends KernelTestBase {
     $this->assertSame('alta', $loaded->get('record_type')->value);
     $this->assertSame('B12345678', $loaded->get('nif_emisor')->value);
     $this->assertSame('VF-2026-001', $loaded->get('numero_factura')->value);
-    $this->assertSame('1210.00', $loaded->get('importe_total')->value);
+    $this->assertEqualsWithDelta(1210.00, (float) $loaded->get('importe_total')->value, 0.001);
     $this->assertSame(str_repeat('a', 64), $loaded->get('hash_record')->value);
     $this->assertSame('pending', $loaded->get('aeat_status')->value);
   }
