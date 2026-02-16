@@ -1,0 +1,11 @@
+id: jarabalex_free_max_bookmarks
+label: 'JarabaLex Free: Marcadores'
+vertical: jarabalex
+plan: free
+feature_key: max_bookmarks
+limit_value: 10
+description: 'Maximo 10 marcadores de documentos en plan gratuito JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 10 marcadores. Actualiza a Starter para guardar hasta 100.'
+expected_conversion: 0.25
+weight: 302
+status: true

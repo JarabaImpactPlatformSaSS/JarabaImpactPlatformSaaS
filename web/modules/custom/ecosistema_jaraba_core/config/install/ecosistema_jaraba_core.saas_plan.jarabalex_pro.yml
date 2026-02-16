@@ -1,0 +1,17 @@
+# Plan SaaS JarabaLex Pro - Para despachos y equipos juridicos
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'JarabaLex Pro'
+price_monthly: '99.00'
+price_yearly: '990.00'
+features:
+  - legal_search
+  - legal_alerts
+  - legal_citations
+  - soporte_email
+  - soporte_chat
+limits: '{"searches_per_month": 0, "max_alerts": 20, "max_bookmarks": 0}'
+stripe_price_id: ''
+weight: 11

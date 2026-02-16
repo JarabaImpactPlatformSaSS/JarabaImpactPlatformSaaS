@@ -1,0 +1,18 @@
+# Configuracion inicial para la vertical JarabaLex
+# Este archivo se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'JarabaLex'
+machine_name: jarabalex
+description: |
+  Hub de inteligencia juridica profesional con busqueda semantica IA
+  sobre fuentes nacionales (ES) y europeas (UE/CEDH). Alertas inteligentes,
+  citaciones cruzadas y copiloto legal contextual.
+enabled_features:
+  - legal_search
+  - legal_alerts
+  - legal_citations
+ai_agents:
+  - legal_copilot
+theme_settings: '{"color_primario": "#1E3A5F", "color_secundario": "#C8A96E", "tipografia": "Inter"}'

@@ -1,0 +1,19 @@
+# Plan SaaS JarabaLex Enterprise - Para grandes despachos y corporaciones
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'JarabaLex Enterprise'
+price_monthly: '199.00'
+price_yearly: '1990.00'
+features:
+  - legal_search
+  - legal_alerts
+  - legal_citations
+  - api_access
+  - soporte_email
+  - soporte_chat
+  - soporte_dedicado
+limits: '{"searches_per_month": 0, "max_alerts": 0, "max_bookmarks": 0}'
+stripe_price_id: ''
+weight: 12

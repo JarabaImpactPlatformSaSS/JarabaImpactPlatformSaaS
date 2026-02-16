@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 33.0.0 (Specs Madurez N1/N2/N3 — 21 Documentos Técnicos 183-203 + Backup Separation)
+**Versión:** 34.0.0 (Elevacion JarabaLex a Vertical Independiente + Specs Madurez N1/N2/N3)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -950,7 +950,7 @@
 │   ├── Frontend: 3 controllers, 6 templates, 8 parciales, 6 JS, 12 SCSS│
 │   ├── Tests: 7 PHPUnit suites                                         │
 │   ├── Inversión: 530-685h / 23,850-30,825 EUR (10 fases)             │
-│   └── Estado: 📋 Planificado (Docs 178/178A/178B + Plan, Feb 2026)    │
+│   └── Estado: ✅ Producción (Vertical JarabaLex, Docs 178/178A/178B)  │
 │                                                                         │
 │   📦 jaraba_tenant_export ✅ (Tenant Data Export + Daily Backup)          │
 │   ├── GDPR Art. 20 Portabilidad de Datos — Self-service tenant export  │
@@ -2139,6 +2139,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Empleabilidad** | 10/10 | ✅ Clase Mundial | EmployabilityFeatureGateService, EmployabilityEmailSequenceService, EmployabilityCrossVerticalBridgeService, EmployabilityJourneyProgressionService, EmployabilityHealthScoreService, EmployabilityCopilotAgent, CopilotApiController, TemplateLoaderService | 34+ archivos |
 | **Emprendimiento** | 6/6 + v2 (7 gaps) | ✅ Clase Mundial (Paridad) | EmprendimientoFeatureGateService, EmprendimientoExperimentService, EmprendimientoHealthScoreService, EmprendimientoJourneyProgressionService, EmprendimientoEmailSequenceService, EmprendimientoCopilotAgent, EmprendimientoCrossVerticalBridgeService | 25+ archivos |
 | **Andalucía +ei** | 12/12 | ✅ Clase Mundial | AndaluciaEiFeatureGateService, AndaluciaEiEmailSequenceService, AndaluciaEiCrossVerticalBridgeService, AndaluciaEiJourneyProgressionService, AndaluciaEiHealthScoreService, AndaluciaEiExperimentService | 43 archivos |
+| **JarabaLex** | Elevación | ✅ Vertical Independiente | Config entities (vertical + 3 features + 3 plans + 9 FreemiumVerticalLimit), page--legal.html.twig, CSS custom properties, FeatureAccessService billing | 18 nuevos + 11 modificados |
 
 **Empleabilidad (10 Fases):**
 1. Clean Page Templates (Zero Region + FAB)
@@ -2205,9 +2206,9 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 **Inversión total stack fiscal:** 720-956h / 32,400-43,020 EUR (implementación 3 módulos).
 
-### 12.6 Especificación Legal Intelligence Hub (2026-02-15)
+### 12.6 Vertical JarabaLex — Legal Intelligence Hub (2026-02-15)
 
-3 documentos técnicos + 1 plan de implementación especificando el Legal Intelligence Hub, módulo avanzado de inteligencia jurídica para ServiciosConecta:
+3 documentos técnicos + 1 plan de implementación especificando el Legal Intelligence Hub, elevado a vertical independiente JarabaLex (antes sub-feature ServiciosConecta):
 
 | Doc | Código | Contenido |
 |-----|--------|-----------|

@@ -69,3 +69,35 @@ $legal-card-shadow: 0 2px 8px $legal-shadow;
 
 // Sombra elevada (hover).
 $legal-card-shadow-hover: 0 4px 16px color.change($legal-primary, $alpha: 0.18);
+
+// ---------------------------------------------------------------------------
+// CSS CUSTOM PROPERTIES — INYECTABLES
+// ---------------------------------------------------------------------------
+
+:root {
+  // Colores principales Legal Intelligence Hub.
+  --ej-legal-primary: #{$legal-primary};
+  --ej-legal-accent: #{$legal-accent};
+  --ej-legal-surface: #{$legal-surface};
+
+  // Estados juridicos.
+  --ej-legal-success: #{$legal-success};
+  --ej-legal-danger: #{$legal-danger};
+  --ej-legal-warning: #{$legal-warning};
+
+  // Fuentes europeas.
+  --ej-legal-eu-blue: #{$legal-eu-blue};
+  --ej-legal-eu-gold: #{$legal-eu-gold};
+
+  // Texto.
+  --ej-legal-text: #{$legal-text};
+  --ej-legal-text-light: #{$legal-text-light};
+
+  // Derivados con color-mix (NUNCA rgba).
+  --ej-legal-primary-hover: color-mix(in srgb, var(--ej-legal-primary) 85%, black);
+  --ej-legal-accent-hover: color-mix(in srgb, var(--ej-legal-accent) 85%, black);
+  --ej-legal-primary-bg: color-mix(in srgb, var(--ej-legal-primary) 8%, white);
+  --ej-legal-success-light: color-mix(in srgb, var(--ej-legal-success) 15%, white);
+  --ej-legal-danger-light: color-mix(in srgb, var(--ej-legal-danger) 15%, white);
+  --ej-legal-warning-light: color-mix(in srgb, var(--ej-legal-warning) 15%, white);
+}

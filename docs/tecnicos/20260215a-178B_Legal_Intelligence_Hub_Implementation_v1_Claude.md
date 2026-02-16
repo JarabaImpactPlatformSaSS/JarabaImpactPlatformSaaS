@@ -3,9 +3,9 @@ GUÍA DE IMPLEMENTACIÓN
 Legal Intelligence Hub
 Código PHP + Python + YAML + SQL + Twig + Tests + Docker
 Ready for Claude Code Implementation
-Vertical ServiciosConecta — JARABA IMPACT PLATFORM
+Vertical JarabaLex (antes ServiciosConecta) — JARABA IMPACT PLATFORM
 
-Código:	178B_Legal_Intelligence_Hub_Implementation
+Código:	178B_JarabaLex_Legal_Intelligence_Hub_Implementation
 Documentos base:	178_v1 (especificación) + 178A_v1 (fuentes UE)
 Fecha:	Febrero 2026
 Estado:	Ready for Implementation

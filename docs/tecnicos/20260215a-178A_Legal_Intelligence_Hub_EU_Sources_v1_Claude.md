@@ -2,12 +2,12 @@
 ANEXO A: FUENTES EUROPEAS
 Ampliación del Legal Intelligence Hub
 TJUE + TEDH + EUR-Lex + Comisión Europea + Órganos Reguladores UE
-Vertical ServiciosConecta — JARABA IMPACT PLATFORM
+Vertical JarabaLex (antes ServiciosConecta) — JARABA IMPACT PLATFORM
 
-Versión:	1.0
+Versión:	1.1
 Fecha:	Febrero 2026
 Código:	178A_Legal_Intelligence_Hub_EU_Sources
-Documento base:	178_ServiciosConecta_Legal_Intelligence_Hub_v1
+Documento base:	178_JarabaLex_Legal_Intelligence_Hub_v1
 Prioridad:	ALTA — Completa cobertura normativa
  
  
