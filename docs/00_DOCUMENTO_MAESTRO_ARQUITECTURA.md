@@ -2358,6 +2358,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Auditoría N2 Readiness (Doc 202)** ⭐ | `docs/tecnicos/20260216b-202_Auditoria_N2_ClaudeCode_Readiness_v1_Claude.md` |
 | **Auditoría N3 Readiness (Doc 203)** ⭐ | `docs/tecnicos/20260216c-203_Auditoria_N3_ClaudeCode_Readiness_v1_Claude.md` |
 | **Aprendizajes Tenant Export + Backup** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_tenant_export_backup_automatizado.md` |
+| **Plan Elevacion JarabaLex Vertical Independiente** ⭐ | `docs/implementacion/20260216-Elevacion_JarabaLex_Vertical_Independiente_v1.md` |
+| **Aprendizajes Elevacion JarabaLex** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_jarabalex_elevacion_vertical_independiente.md` |
 
 ---
 
@@ -2376,5 +2378,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 33.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 34.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 
