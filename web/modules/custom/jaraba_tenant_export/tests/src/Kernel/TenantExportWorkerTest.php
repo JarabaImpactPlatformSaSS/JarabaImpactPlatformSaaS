@@ -20,6 +20,7 @@ class TenantExportWorkerTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'flexible_permissions',
     'group',
     'views',
     'ecosistema_jaraba_core',
