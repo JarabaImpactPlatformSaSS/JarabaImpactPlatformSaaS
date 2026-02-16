@@ -1,0 +1,31 @@
+{#
+ * _citation-graph.html.twig
+ * Mini-grafo de citas entre resoluciones.
+ *
+ * Renderiza un Canvas 2D con nodos (resoluciones) y arcos (citas).
+ * Los nodos son clicables para navegar a la resolucion citada.
+ *
+ * Variables:
+ *   - nodes: array — Nodos [{id, label, type}].
+ *   - edges: array — Arcos [{source, target, relation}].
+ *   - resolution_id: int — ID de la resolucion actual (nodo central).
+ #}
+
+{% if nodes is not empty %}
+  <div class="legal-citation-graph" aria-label="{% trans %}Citation graph{% endtrans %}">
+    <h4 class="legal-citation-graph__title">
+      {{ jaraba_icon('legal', 'citation-graph', { size: '16px' }) }}
+      {% trans %}Citation network{% endtrans %}
+    </h4>
+    <canvas
+      class="legal-citation-graph__canvas"
+      data-nodes="{{ nodes|json_encode }}"
+      data-edges="{{ edges|json_encode }}"
+      data-current="{{ resolution_id }}"
+      width="300"
+      height="200"
+      role="img"
+      aria-label="{% trans %}Graph showing citation relationships between resolutions{% endtrans %}"
+    ></canvas>
+  </div>
+{% endif %}

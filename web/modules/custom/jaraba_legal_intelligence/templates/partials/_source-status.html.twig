@@ -1,0 +1,47 @@
+{#
+ * _source-status.html.twig
+ * Estado de una fuente de datos en el dashboard admin.
+ *
+ * Variables:
+ *   - source: Array con datos de la fuente.
+ *   - show_sync_button: boolean — Mostrar boton de sincronizacion forzada.
+ #}
+
+<div class="legal-source-status {{ source.is_active ? '' : 'legal-source-status--inactive' }}">
+  <div class="legal-source-status__header">
+    <span class="legal-source-status__icon">
+      {% if source.scope|default('national') == 'eu' %}
+        {{ jaraba_icon('legal', 'eu-flag', { size: '18px' }) }}
+      {% else %}
+        {{ jaraba_icon('legal', 'es-flag', { size: '18px' }) }}
+      {% endif %}
+    </span>
+    <h4 class="legal-source-status__name">{{ source.name|default('') }}</h4>
+    <span class="legal-source-status__badge {{ source.is_active ? 'is-active' : '' }}">
+      {{ source.is_active ? 'Active'|t : 'Inactive'|t }}
+    </span>
+  </div>
+
+  <div class="legal-source-status__meta">
+    {% if source.total_documents is defined %}
+      <span>{{ '@count documents'|t({'@count': source.total_documents}) }}</span>
+    {% endif %}
+    {% if source.last_sync_at is defined and source.last_sync_at %}
+      <span>{{ 'Last sync: @date'|t({'@date': source.last_sync_at|date('d/m/Y H:i')}) }}</span>
+    {% endif %}
+    {% if source.error_count is defined and source.error_count > 0 %}
+      <span class="legal-source-status__errors">
+        {{ '@count errors'|t({'@count': source.error_count}) }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if show_sync_button and source.is_active %}
+    <div class="legal-source-status__actions">
+      <a href="/admin/config/jaraba/legal-intelligence/sync/{{ source.machine_name|default('') }}"
+         class="btn btn--sm btn--outline">
+        {% trans %}Force sync{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

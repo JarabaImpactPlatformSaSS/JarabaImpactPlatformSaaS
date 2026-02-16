@@ -1,0 +1,312 @@
+// _alerts.scss
+// Estilos para alertas inteligentes y panel de gestion del Legal Intelligence Hub.
+//
+// DIRECTRIZ: Consumir tokens via var(--ej-*, #{$legal-*}) como fallback.
+// Seguir BEM modificadores para severidad y estado.
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+
+// === Tarjeta de alerta ===
+
+.legal-alert-card {
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-radius: legal.$legal-radius;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--ej-border-color, #e2e8f0);
+  background: var(--ej-bg-surface, #{legal.$legal-surface});
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: legal.$legal-card-shadow;
+  }
+
+  // Variantes de severidad.
+  &--critical {
+    border-left-color: legal.$legal-danger;
+    background: color.change(legal.$legal-danger, $alpha: 0.05);
+  }
+
+  &--high {
+    border-left-color: color.adjust(legal.$legal-warning, $lightness: -10%);
+    background: color.change(legal.$legal-warning, $alpha: 0.05);
+  }
+
+  &--medium {
+    border-left-color: var(--ej-color-primary, #{legal.$legal-primary});
+    background: color.change(legal.$legal-primary, $alpha: 0.04);
+  }
+
+  &--low {
+    border-left-color: var(--ej-border-color, #e2e8f0);
+    background: var(--ej-bg-surface, #{legal.$legal-surface});
+  }
+
+  // Cabecera con icono, titulo y badge de estado.
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+
+  &__title {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: color.change(legal.$legal-text-light, $alpha: 0.12);
+    color: legal.$legal-text-light;
+
+    &.is-active {
+      background: color.change(legal.$legal-success, $alpha: 0.15);
+      color: legal.$legal-success;
+    }
+  }
+
+  // Metadatos: tipo, disparos, fecha.
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 0.5rem;
+  }
+
+  // Acciones: toggle, eliminar.
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+}
+
+// === Panel de creacion de alerta (slide-panel) ===
+
+.legal-alert-form {
+  padding: 1.5rem;
+
+  &__group {
+    margin-bottom: 1.25rem;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &__input,
+  &__select {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: legal.$legal-radius-sm;
+    font-size: 0.9375rem;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    background: #fff;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+      box-shadow: 0 0 0 2px legal.$legal-primary-bg;
+    }
+  }
+
+  &__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236B7280'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 1rem;
+    font-size: 0.8125rem;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover,
+    &--selected {
+      background: var(--ej-color-primary, #{legal.$legal-primary});
+      color: #fff;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+    }
+  }
+
+  &__submit {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: var(--ej-color-primary, #{legal.$legal-primary});
+    color: #fff;
+    border: none;
+    border-radius: legal.$legal-radius;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-top: 0.5rem;
+
+    &:hover {
+      background: legal.$legal-primary-hover;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error {
+    color: legal.$legal-danger;
+    font-size: 0.8125rem;
+    margin-top: 0.25rem;
+  }
+}
+
+// === Contenedor de lista de alertas ===
+
+.legal-alerts {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0;
+  }
+
+  &__count {
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    font-size: 0.9375rem;
+  }
+
+  &__create-btn {
+    padding: 0.5rem 1rem;
+    background: var(--ej-color-primary, #{legal.$legal-primary});
+    color: #fff;
+    border: none;
+    border-radius: legal.$legal-radius-sm;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: legal.$legal-primary-hover;
+    }
+  }
+}
+
+// === Badge de severidad ===
+
+.legal-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: legal.$legal-radius-sm;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &--critical {
+    background: color.change(legal.$legal-danger, $alpha: 0.15);
+    color: legal.$legal-danger;
+  }
+
+  &--high {
+    background: color.change(legal.$legal-warning, $alpha: 0.15);
+    color: color.adjust(legal.$legal-warning, $lightness: -10%);
+  }
+
+  &--medium {
+    background: color.change(legal.$legal-primary, $alpha: 0.1);
+    color: legal.$legal-primary;
+  }
+
+  &--low {
+    background: color.change(legal.$legal-text-light, $alpha: 0.1);
+    color: legal.$legal-text-light;
+  }
+}
+
+// === Responsive ===
+
+@media (max-width: 768px) {
+  .legal-alert-card {
+    padding: 0.75rem 1rem;
+
+    &__header {
+      flex-wrap: wrap;
+    }
+
+    &__meta {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    &__actions {
+      flex-direction: column;
+    }
+  }
+
+  .legal-alert-form {
+    padding: 1rem;
+  }
+}

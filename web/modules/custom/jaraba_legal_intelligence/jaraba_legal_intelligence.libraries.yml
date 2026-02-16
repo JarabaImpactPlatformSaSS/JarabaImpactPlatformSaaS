@@ -1,0 +1,98 @@
+# Librerias CSS/JS del Legal Intelligence Hub.
+# Cada libreria agrupa assets por funcionalidad para carga selectiva.
+
+# Busqueda semantica: formulario, typeahead, debounce.
+legal.search:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-search.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+
+# Resultados de busqueda: tarjetas, paginacion, acciones.
+legal.results:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-results.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Filtros facetados interactivos.
+legal.facets:
+  version: VERSION
+  js:
+    js/legal-facets.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Grafo de citas (D3.js para visualizacion).
+legal.citation-graph:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-citation-graph.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Insercion de citas en expediente (slide-panel).
+legal.citation-insert:
+  version: VERSION
+  js:
+    js/legal-citation-insert.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+
+# Gestion de alertas frontend.
+legal.alerts:
+  version: VERSION
+  js:
+    js/legal-alerts.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/slide-panel
+
+# Dashboard profesional: favoritos, alertas, busquedas recientes.
+legal.dashboard:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Dashboard admin: metricas, estado fuentes, acciones sync.
+legal.admin:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-admin.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

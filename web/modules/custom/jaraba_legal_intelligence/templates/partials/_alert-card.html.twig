@@ -1,0 +1,48 @@
+{#
+ * _alert-card.html.twig
+ * Tarjeta de alerta inteligente del Legal Intelligence Hub.
+ *
+ * Variables:
+ *   - alert: Entidad LegalAlert o array con campos.
+ *   - show_actions: boolean — Mostrar botones editar/toggle/eliminar.
+ #}
+
+{% set severity = alert.severity|default('info') %}
+
+<div class="legal-alert-card legal-alert-card--{{ severity }}" data-alert-id="{{ alert.id|default(0) }}">
+  <div class="legal-alert-card__header">
+    <span class="legal-alert-card__icon">
+      {{ jaraba_icon('legal', 'alert-bell', { size: '18px' }) }}
+    </span>
+    <h4 class="legal-alert-card__title">{{ alert.label|default('')|striptags }}</h4>
+    {% if alert.is_active is defined %}
+      <span class="legal-alert-card__status {{ alert.is_active ? 'is-active' : '' }}">
+        {{ alert.is_active ? 'Active'|t : 'Paused'|t }}
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="legal-alert-card__meta">
+    {% if alert.alert_type is defined %}
+      <span>{{ alert.alert_type }}</span>
+    {% endif %}
+    {% if alert.trigger_count is defined %}
+      <span>{{ 'Triggered @count times'|t({'@count': alert.trigger_count}) }}</span>
+    {% endif %}
+  </div>
+
+  {% if show_actions %}
+    <div class="legal-alert-card__actions">
+      <button class="btn btn--sm btn--ghost {{ alert.is_active ? 'is-active' : '' }}"
+              data-alert-toggle="{{ alert.id|default(0) }}"
+              aria-label="{{ 'Toggle alert'|t }}">
+        {{ alert.is_active ? 'Pause'|t : 'Activate'|t }}
+      </button>
+      <button class="btn btn--sm btn--ghost btn--danger"
+              data-alert-delete="{{ alert.id|default(0) }}"
+              aria-label="{{ 'Delete alert'|t }}">
+        {% trans %}Delete{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

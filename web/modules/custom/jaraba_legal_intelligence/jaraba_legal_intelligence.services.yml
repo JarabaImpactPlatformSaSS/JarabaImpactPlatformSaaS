@@ -1,0 +1,140 @@
+services:
+  # Canal de log dedicado del Legal Intelligence Hub.
+  logger.channel.jaraba_legal_intelligence:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_intelligence']
+
+  # === SEARCH: Busqueda semantica en Qdrant con facetas ===
+  jaraba_legal_intelligence.search:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalSearchService
+    arguments:
+      - '@ai.provider'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === INGESTION: Orquestacion de ingesta de resoluciones ===
+  jaraba_legal_intelligence.ingestion:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalIngestionService
+    arguments:
+      - '@entity_type.manager'
+      - '@queue'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+      - '@service_container'
+
+  # === NLP PIPELINE: Pipeline NLP de 9 etapas ===
+  jaraba_legal_intelligence.nlp_pipeline:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalNlpPipelineService
+    arguments:
+      - '@ai.provider'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+      - '@database'
+      - '@entity_type.manager'
+
+  # === ALERTS: Gestion de alertas inteligentes ===
+  jaraba_legal_intelligence.alerts:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === CITATIONS: Generacion e insercion de citas formateadas ===
+  jaraba_legal_intelligence.citations:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalCitationService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === DIGEST: Digest semanal personalizado ===
+  jaraba_legal_intelligence.digest:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalDigestService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_legal_intelligence.search'
+      - '@plugin.manager.mail'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === COPILOT BRIDGE: Puente entre Legal Intelligence Hub y Copilot ===
+  jaraba_legal_intelligence.copilot_bridge:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalCopilotBridgeService
+    arguments:
+      - '@jaraba_legal_intelligence.search'
+      - '@jaraba_legal_intelligence.citations'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === MERGE & RANK: Fusion de resultados nacionales + UE ===
+  jaraba_legal_intelligence.merge_rank:
+    class: Drupal\jaraba_legal_intelligence\Service\LegalMergeRankService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === SPIDERS: Conectores a fuentes de datos juridicos ===
+  jaraba_legal_intelligence.spider.cendoj:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\CendojSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.boe:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\BoeSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.dgt:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\DgtSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.teac:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\TeacSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # === SPIDERS UE: Fuentes europeas (Fase 4) ===
+  jaraba_legal_intelligence.spider.eurlex:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\EurLexSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.curia:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\CuriaSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.hudoc:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\HudocSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  jaraba_legal_intelligence.spider.edpb:
+    class: Drupal\jaraba_legal_intelligence\Service\Spider\EdpbSpider
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'

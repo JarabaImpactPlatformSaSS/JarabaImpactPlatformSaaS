@@ -1,0 +1,71 @@
+// _variables-legal.scss
+// Tokens de color locales del Legal Intelligence Hub.
+//
+// DIRECTRIZ FEDERATED DESIGN TOKENS:
+// - Este modulo es un modulo SATELITE: NUNCA redefine $ej-*.
+// - Las variables $legal-* son SOLO fallbacks para var(--ej-*).
+// - El consumo en parciales SCSS siempre usa:
+//     var(--ej-<token>, #{$legal-<local>})
+//
+// DIRECTRIZ DART SASS MODERNO:
+// - Usar color.adjust(), color.change(), color.scale().
+// - NUNCA usar darken(), lighten(), saturate() deprecados.
+
+@use 'sass:color';
+
+// === Paleta principal Legal Intelligence Hub ===
+
+// Azul Juridico Profundo — Cabeceras, bordes principales, enlaces.
+$legal-primary: #1E3A5F;
+
+// Oro Justicia — Acentos, iconos destacados, CTAs.
+$legal-accent: #C8A96E;
+
+// Pergamino Suave — Fondos de tarjetas, areas de lectura.
+$legal-surface: #F5F3EF;
+
+// Verde Vigente — Badge "vigente", indicadores positivos.
+$legal-success: #2D6A4F;
+
+// Rojo Derogada — Badge "derogada"/"anulada", alertas criticas.
+$legal-danger: #9B2335;
+
+// Ambar Superada — Badge "superada", alertas medias.
+$legal-warning: #D4A843;
+
+// Azul UE — Indicadores de fuentes europeas.
+$legal-eu-blue: #003399;
+
+// Oro UE — Estrella UE, badges de primacia.
+$legal-eu-gold: #FFCC00;
+
+// Texto Principal — Texto de resoluciones, titulos.
+$legal-text: #1A1A2E;
+
+// Texto Secundario — Metadata, fechas, labels.
+$legal-text-light: #6B7280;
+
+// === Derivadas de color (con Dart Sass moderno) ===
+
+// Hover del primario: 10% mas oscuro.
+$legal-primary-hover: color.adjust($legal-primary, $lightness: -10%);
+
+// Background sutil del primario: alpha 0.08.
+$legal-primary-bg: color.change($legal-primary, $alpha: 0.08);
+
+// Sombra de tarjetas: alpha 0.12.
+$legal-shadow: color.change($legal-primary, $alpha: 0.12);
+
+// === Espaciado y tipografia ===
+
+// Border radius para tarjetas.
+$legal-radius: 8px;
+
+// Border radius para badges.
+$legal-radius-sm: 4px;
+
+// Sombra base de tarjetas.
+$legal-card-shadow: 0 2px 8px $legal-shadow;
+
+// Sombra elevada (hover).
+$legal-card-shadow-hover: 0 4px 16px color.change($legal-primary, $alpha: 0.18);

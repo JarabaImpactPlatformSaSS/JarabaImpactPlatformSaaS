@@ -1,0 +1,67 @@
+{#
+ * legal-citation-insert.html.twig
+ * Panel de insercion de cita en expediente (renderizado en slide-panel).
+ *
+ * Variables:
+ *   - resolution: Entidad LegalResolution.
+ *   - format: string — Formato por defecto (formal|resumida|bibliografica|nota_al_pie).
+ *   - citation_text: string — Texto de cita pre-generado.
+ *   - expedientes: array — Expedientes activos del profesional.
+ #}
+
+<div class="legal-citation-insert" data-resolution-id="{{ resolution.id|default(0) }}">
+
+  <h3 class="legal-citation-insert__title">
+    {{ jaraba_icon('legal', 'citation', { size: '20px' }) }}
+    {% trans %}Insert citation{% endtrans %}
+  </h3>
+
+  <p class="legal-citation-insert__ref">
+    {{ resolution.external_ref|default('') }} — {{ resolution.issuing_body|default('') }}
+  </p>
+
+  {# Selector de formato #}
+  <div class="legal-citation-insert__formats" role="group" aria-label="{% trans %}Citation format{% endtrans %}">
+    <button class="btn btn--sm {{ format == 'formal' ? 'is-active' : '' }}"
+            data-citation-format="formal"
+            data-citation-text="{{ citation_text }}">
+      {% trans %}Formal{% endtrans %}
+    </button>
+    <button class="btn btn--sm {{ format == 'resumida' ? 'is-active' : '' }}"
+            data-citation-format="resumida">
+      {% trans %}Summary{% endtrans %}
+    </button>
+    <button class="btn btn--sm {{ format == 'bibliografica' ? 'is-active' : '' }}"
+            data-citation-format="bibliografica">
+      {% trans %}Bibliographic{% endtrans %}
+    </button>
+    <button class="btn btn--sm {{ format == 'nota_al_pie' ? 'is-active' : '' }}"
+            data-citation-format="nota_al_pie">
+      {% trans %}Footnote{% endtrans %}
+    </button>
+  </div>
+
+  {# Preview de la cita #}
+  <div class="legal-citation-insert__preview" aria-live="polite">
+    {{ citation_text|default('') }}
+  </div>
+
+  {# Selector de expediente #}
+  {% if expedientes is not empty %}
+    <div class="legal-citation-insert__expediente">
+      <label for="expediente-select">{% trans %}Insert into case file{% endtrans %}</label>
+      <select id="expediente-select" name="expediente_id">
+        {% for exp in expedientes %}
+          <option value="{{ exp.id }}">{{ exp.label|default('') }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  {% endif %}
+
+  {# Boton de insercion #}
+  <button class="btn btn--primary legal-citation-insert__submit">
+    {{ jaraba_icon('legal', 'citation', { size: '18px' }) }}
+    {% trans %}Insert citation{% endtrans %}
+  </button>
+
+</div>

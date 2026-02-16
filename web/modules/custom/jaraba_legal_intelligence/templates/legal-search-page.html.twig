@@ -1,0 +1,73 @@
+{#
+ * legal-search-page.html.twig
+ * Pagina principal de busqueda semantica del Legal Intelligence Hub.
+ *
+ * DIRECTRIZ: Frontend limpio sin regiones Drupal.
+ * Layout full-width con parciales reutilizables del ecosistema.
+ * NUNCA usar {{ page.content }} para contenido del modulo.
+ *
+ * Variables:
+ *   - tenant: Entidad tenant actual.
+ *   - labels: Array de strings traducidos para la UI.
+ *   - urls: Array de URLs generadas para endpoints API.
+ *   - facets: Array de facetas disponibles para filtrado.
+ #}
+
+{{ attach_library('jaraba_legal_intelligence/legal.search') }}
+{{ attach_library('jaraba_legal_intelligence/legal.facets') }}
+{{ attach_library('jaraba_legal_intelligence/legal.results') }}
+
+<div class="legal-search-page">
+
+  {# Cabecera de la pagina de busqueda #}
+  <header class="legal-search-page__header">
+    <h1 class="legal-search-page__title">
+      {{ jaraba_icon('legal', 'search-legal', { size: '32px' }) }}
+      {% trans %}Legal Intelligence Hub{% endtrans %}
+    </h1>
+    <p class="legal-search-page__subtitle">
+      {% trans %}Search legal resolutions in natural language across national and European sources.{% endtrans %}
+    </p>
+  </header>
+
+  {# Formulario de busqueda semantica #}
+  <section class="legal-search" aria-label="{% trans %}Legal search{% endtrans %}">
+    <form class="legal-search__form" role="search">
+      <label for="legal-query" class="visually-hidden">
+        {% trans %}Search query{% endtrans %}
+      </label>
+      <input
+        type="search"
+        id="legal-query"
+        class="legal-search__input"
+        placeholder="{{ 'Search resolutions, case law, regulations...'|t }}"
+        autocomplete="off"
+        aria-describedby="legal-search-help"
+      />
+      <button type="submit" class="legal-search__submit">
+        {{ jaraba_icon('legal', 'search-legal', { size: '18px' }) }}
+        {% trans %}Search{% endtrans %}
+      </button>
+    </form>
+    <p id="legal-search-help" class="visually-hidden">
+      {% trans %}Type a legal question in natural language. Results will include resolutions from CENDOJ, BOE, DGT, TEAC, TJUE, TEDH and EUR-Lex.{% endtrans %}
+    </p>
+  </section>
+
+  {# Filtros facetados #}
+  {% if facets is not empty %}
+    {% include '@jaraba_legal_intelligence/partials/_search-facets.html.twig' with {
+      'facets': facets,
+      'active_filters': []
+    } only %}
+  {% endif %}
+
+  {# Contenedor de resultados (se rellena via JS) #}
+  <section class="legal-search__results" aria-live="polite" aria-label="{% trans %}Search results{% endtrans %}">
+    <div class="legal-search__empty">
+      {{ jaraba_icon('legal', 'scale-balance', { size: '48px', variant: 'duotone' }) }}
+      <p>{% trans %}Enter a search query to find relevant legal resolutions.{% endtrans %}</p>
+    </div>
+  </section>
+
+</div>

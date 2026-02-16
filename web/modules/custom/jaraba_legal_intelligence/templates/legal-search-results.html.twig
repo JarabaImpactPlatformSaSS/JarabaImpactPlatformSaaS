@@ -1,0 +1,32 @@
+{#
+ * legal-search-results.html.twig
+ * Lista de resultados de busqueda del Legal Intelligence Hub.
+ *
+ * Variables:
+ *   - results: array — Resoluciones encontradas.
+ *   - total: int — Total de resultados.
+ *   - query: string — Query de busqueda original.
+ *   - facets: array — Facetas con conteos actualizados.
+ #}
+
+<div class="legal-search-results">
+  {% if results is not empty %}
+    <div class="legal-search__results-count">
+      {{ '@count results found for "@query"'|t({'@count': total, '@query': query}) }}
+    </div>
+
+    {% for result in results %}
+      {% include '@jaraba_legal_intelligence/partials/_resolution-card.html.twig' with {
+        'resolution': result,
+        'show_actions': true,
+        'show_graph': false,
+        'compact': false
+      } only %}
+    {% endfor %}
+  {% else %}
+    <div class="legal-search__empty">
+      {{ jaraba_icon('legal', 'search-legal', { size: '48px', variant: 'duotone' }) }}
+      <p>{% trans %}No results found. Try different search terms or broaden your filters.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

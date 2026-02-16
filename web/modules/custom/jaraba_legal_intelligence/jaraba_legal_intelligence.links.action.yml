@@ -1,0 +1,7 @@
+# Botones de accion "Agregar" en colecciones admin del Legal Intelligence Hub.
+
+jaraba_legal.add_source:
+  title: 'Add legal source'
+  route_name: entity.legal_source.add_form
+  appears_on:
+    - jaraba_legal.admin_sources

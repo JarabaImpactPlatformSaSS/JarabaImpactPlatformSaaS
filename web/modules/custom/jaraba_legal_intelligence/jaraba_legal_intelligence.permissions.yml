@@ -1,0 +1,31 @@
+# Permisos RBAC del Legal Intelligence Hub.
+# 7 permisos organizados por rol: admin, profesional, API.
+
+administer legal intelligence:
+  title: 'Administer Legal Intelligence Hub'
+  description: 'Configure sources, reindex, manage settings, view admin dashboard.'
+  restrict access: true
+
+search legal resolutions:
+  title: 'Search legal resolutions'
+  description: 'Perform semantic and faceted searches across all sources.'
+
+view legal resolutions:
+  title: 'View legal resolution detail'
+  description: 'View full text, metadata and AI summary of resolutions.'
+
+bookmark legal resolutions:
+  title: 'Bookmark resolutions'
+  description: 'Save resolutions as favorites with notes and folders.'
+
+insert legal citations:
+  title: 'Insert citations into case files'
+  description: 'One-click citation insertion in Buzon de Confianza expedientes.'
+
+manage legal alerts:
+  title: 'Manage legal alerts'
+  description: 'Create, edit and manage alert subscriptions and digest preferences.'
+
+access legal api:
+  title: 'Access Legal Intelligence REST API'
+  description: 'Programmatic access to search, citations and alerts endpoints.'

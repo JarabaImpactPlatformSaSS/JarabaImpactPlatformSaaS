@@ -1,0 +1,193 @@
+// _facets.scss
+// Estilos avanzados para filtros facetados de busqueda.
+//
+// Complementa los estilos basicos en main.scss con interacciones,
+// filtro de fechas, contadores y estados de seleccion.
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+
+// === Panel de filtros activos ===
+
+.legal-facets__active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+
+  &-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--ej-color-primary, #{legal.$legal-primary});
+    color: #fff;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    &-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1rem;
+      height: 1rem;
+      border: none;
+      background: color.change(#fff, $alpha: 0.3);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.625rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+
+      &:hover {
+        background: color.change(#fff, $alpha: 0.5);
+      }
+    }
+  }
+
+  &-clear {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background: none;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ej-bg-surface, #{legal.$legal-surface});
+    }
+  }
+}
+
+// === Faceta con contador de resultados ===
+
+.legal-facets__chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  margin-left: 0.25rem;
+  background: color.change(legal.$legal-primary, $alpha: 0.12);
+  color: var(--ej-color-primary, #{legal.$legal-primary});
+  border-radius: 0.625rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+
+  .legal-facets__chip--active & {
+    background: color.change(#fff, $alpha: 0.3);
+    color: #fff;
+  }
+}
+
+// === Filtro de rango de fechas ===
+
+.legal-facets__date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  input[type="date"] {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: legal.$legal-radius-sm;
+    font-size: 0.8125rem;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+    }
+  }
+
+  &-separator {
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+}
+
+// === Selector de scope (Nacional / UE / Todo) ===
+
+.legal-facets__scope {
+  display: flex;
+  border: 1px solid var(--ej-border-color, #e2e8f0);
+  border-radius: legal.$legal-radius;
+  overflow: hidden;
+
+  &-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--ej-border-color, #e2e8f0);
+    }
+
+    &:hover {
+      background: var(--ej-bg-surface, #{legal.$legal-surface});
+    }
+
+    &--active {
+      background: var(--ej-color-primary, #{legal.$legal-primary});
+      color: #fff;
+
+      &:hover {
+        background: legal.$legal-primary-hover;
+      }
+    }
+  }
+}
+
+// === Collapsible facet groups ===
+
+.legal-facets__group {
+  &--collapsed {
+    .legal-facets__group-body {
+      display: none;
+    }
+
+    .legal-facets__group-toggle {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 0.25rem 0;
+
+    &:hover {
+      .legal-facets__label {
+        color: var(--ej-color-primary, #{legal.$legal-primary});
+      }
+    }
+  }
+
+  &-toggle {
+    display: inline-flex;
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    transition: transform 0.2s ease;
+  }
+
+  &-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-top: 0.375rem;
+  }
+}

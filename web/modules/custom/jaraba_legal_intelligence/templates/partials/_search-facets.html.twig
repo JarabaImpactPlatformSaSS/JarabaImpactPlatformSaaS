@@ -1,0 +1,72 @@
+{#
+ * _search-facets.html.twig
+ * Filtros facetados para busqueda legal.
+ *
+ * Muestra selector de scope (Nacional/UE/Todo), chips de filtro agrupados
+ * por faceta (fuente, jurisdiccion, tipo, organo), rango de fechas y
+ * barra de filtros activos con opcion de limpiar.
+ *
+ * Variables:
+ *   - facets: array — Facetas disponibles [{name, label, values: [{value, label, count}]}].
+ *   - active_filters: array — Filtros activos {facet_name: [values]}.
+ #}
+
+<div class="legal-facets" role="group" aria-label="{% trans %}Search filters{% endtrans %}">
+
+  {# Selector de scope: Nacional / UE / Todo #}
+  <div class="legal-facets__scope">
+    <button type="button" class="legal-facets__scope-btn legal-facets__scope-btn--active" data-scope="all">
+      {% trans %}All{% endtrans %}
+    </button>
+    <button type="button" class="legal-facets__scope-btn" data-scope="national">
+      {% trans %}National{% endtrans %}
+    </button>
+    <button type="button" class="legal-facets__scope-btn" data-scope="eu">
+      {% trans %}EU{% endtrans %}
+    </button>
+  </div>
+
+  {# Barra de filtros activos (se rellena via JS) #}
+  <div class="legal-facets__active" style="display:none" aria-live="polite"></div>
+
+  {# Chips de facetas agrupados #}
+  {% for facet in facets %}
+    <div class="legal-facets__group">
+      <div class="legal-facets__group-header">
+        <span class="legal-facets__label">{{ facet.label }}</span>
+        <span class="legal-facets__group-toggle" aria-hidden="true">&#9660;</span>
+      </div>
+      <div class="legal-facets__group-body">
+        {% for value in facet.values %}
+          {% set is_active = active_filters[facet.name] is defined and value.value in active_filters[facet.name] %}
+          <button type="button"
+                  class="legal-facets__chip{% if is_active %} legal-facets__chip--active{% endif %}"
+                  data-facet="{{ facet.name }}"
+                  data-value="{{ value.value }}"
+                  aria-pressed="{{ is_active ? 'true' : 'false' }}">
+            {{ value.label }}
+            {% if value.count is defined %}
+              <span class="legal-facets__chip-count">{{ value.count }}</span>
+            {% endif %}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+
+  {# Filtro de rango de fechas #}
+  <div class="legal-facets__group">
+    <div class="legal-facets__group-header">
+      <span class="legal-facets__label">{% trans %}Date range{% endtrans %}</span>
+      <span class="legal-facets__group-toggle" aria-hidden="true">&#9660;</span>
+    </div>
+    <div class="legal-facets__group-body">
+      <div class="legal-facets__date-range">
+        <input type="date" name="date_from" aria-label="{% trans %}From date{% endtrans %}" />
+        <span class="legal-facets__date-range-separator">—</span>
+        <input type="date" name="date_to" aria-label="{% trans %}To date{% endtrans %}" />
+      </div>
+    </div>
+  </div>
+
+</div>

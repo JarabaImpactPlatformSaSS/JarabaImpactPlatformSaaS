@@ -1,0 +1,84 @@
+// _digest-email.scss
+// Estilos para la previsualizacion del digest semanal en el frontend.
+//
+// NOTA: Los estilos del EMAIL real usan CSS inline en el template Twig
+// (legal-digest-email.html.twig) porque los clientes de email no soportan
+// clases CSS externas. Este archivo solo cubre el componente de preview
+// que se muestra dentro del panel del Legal Intelligence Hub.
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+
+// === Preview del digest semanal ===
+
+.legal-digest-preview {
+  background: var(--ej-bg-surface, #{legal.$legal-surface});
+  border-radius: legal.$legal-radius;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0 0 1rem;
+  }
+
+  &__empty {
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    font-size: 0.9375rem;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: block;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid color.change(legal.$legal-text-light, $alpha: 0.12);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    strong {
+      color: var(--ej-color-primary, #{legal.$legal-primary});
+    }
+  }
+
+  &__source {
+    display: inline-block;
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+
+  &__period {
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 0.75rem;
+  }
+}
+
+// === Responsive ===
+
+@media (max-width: 768px) {
+  .legal-digest-preview {
+    padding: 1rem;
+
+    &__item {
+      padding: 0.5rem 0;
+    }
+  }
+}

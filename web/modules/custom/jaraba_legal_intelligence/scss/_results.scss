@@ -1,0 +1,144 @@
+// _results.scss
+// Estilos de la pagina de resultados de busqueda y tarjetas de resolucion.
+//
+// DIRECTRIZ: Estos estilos complementan las tarjetas base en main.scss.
+// Se centra en la paginacion, contadores y layout de resultados.
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+
+// === Contador de resultados ===
+
+.legal-search__results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ej-border-color, #e2e8f0);
+}
+
+.legal-search__results-count {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #{legal.$legal-text-light});
+}
+
+.legal-search__sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+
+  select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: legal.$legal-radius-sm;
+    font-size: 0.8125rem;
+    background: #fff;
+  }
+}
+
+// === Score de relevancia (barra visual) ===
+
+.legal-resolution-card__score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  &-label {
+    font-size: 0.6875rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--ej-border-color, #e2e8f0);
+    border-radius: 2px;
+    overflow: hidden;
+
+    &-fill {
+      height: 100%;
+      background: var(--ej-color-primary, #{legal.$legal-primary});
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  &-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    min-width: 2.5rem;
+    text-align: right;
+  }
+}
+
+// === Topics como chips ===
+
+.legal-resolution-card__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+
+  &-chip {
+    display: inline-flex;
+    padding: 0.125rem 0.375rem;
+    background: color.change(legal.$legal-primary, $alpha: 0.08);
+    color: var(--ej-color-primary, #{legal.$legal-primary});
+    border-radius: 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+}
+
+// === Paginacion ===
+
+.legal-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ej-border-color, #e2e8f0);
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: legal.$legal-radius-sm;
+    background: #fff;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: var(--ej-bg-surface, #{legal.$legal-surface});
+    }
+
+    &--active {
+      background: var(--ej-color-primary, #{legal.$legal-primary});
+      color: #fff;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+    }
+
+    &--disabled {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+}
