@@ -7,8 +7,8 @@ dr-dashboard:
     js/dr-dashboard.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
-    - core/drupal.dialog.ajax
 
 status-page:
   version: 1.x
@@ -19,4 +19,17 @@ status-page:
     js/status-page.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
+    - core/once
+
+incident-detail:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-dr.css: {}
+  js:
+    js/incident-detail.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
     - core/once
