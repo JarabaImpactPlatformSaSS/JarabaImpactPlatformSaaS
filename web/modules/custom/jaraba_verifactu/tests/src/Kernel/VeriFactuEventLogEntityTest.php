@@ -56,12 +56,24 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage('verifactu_event_log');
 
+    // Create a real invoice record so the entity_reference resolves.
+    $recordStorage = $this->container->get('entity_type.manager')
+      ->getStorage('verifactu_invoice_record');
+    $record = $recordStorage->create([
+      'tenant_id' => 1,
+      'record_type' => 'alta',
+      'nif_emisor' => 'B12345678',
+      'numero_factura' => 'VF-2026-001',
+      'hash_record' => str_repeat('e', 64),
+    ]);
+    $record->save();
+
     $event = $storage->create([
       'tenant_id' => 1,
       'event_type' => 'RECORD_CREATE',
       'severity' => 'info',
       'description' => 'Alta record created for invoice VF-2026-001',
-      'record_id' => 42,
+      'record_id' => $record->id(),
       'actor_id' => 'system',
       'details' => json_encode(['invoice_number' => 'VF-2026-001']),
       'hash_event' => str_repeat('e', 64),
@@ -72,7 +84,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
     $this->assertNotNull($loaded);
     $this->assertSame('RECORD_CREATE', $loaded->get('event_type')->value);
     $this->assertSame('info', $loaded->get('severity')->value);
-    $this->assertSame('42', (string) $loaded->get('record_id')->value);
+    $this->assertSame((string) $record->id(), (string) $loaded->get('record_id')->target_id);
   }
 
   /**
@@ -82,7 +94,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage('verifactu_event_log');
 
-    $before = time();
+    $before = time() - 1;
     $event = $storage->create([
       'tenant_id' => 1,
       'event_type' => 'CHAIN_VERIFY',
@@ -93,6 +105,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
 
     $created = (int) $event->get('created')->value;
     $this->assertGreaterThanOrEqual($before, $created);
+    $this->assertLessThanOrEqual(time() + 1, $created);
   }
 
   /**

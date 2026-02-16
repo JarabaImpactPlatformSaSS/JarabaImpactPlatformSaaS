@@ -25,6 +25,9 @@ class FiscalComplianceServiceRegistrationTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
+    'datetime',
+    'flexible_permissions',
     'group',
     'ecosistema_jaraba_core',
   ];
