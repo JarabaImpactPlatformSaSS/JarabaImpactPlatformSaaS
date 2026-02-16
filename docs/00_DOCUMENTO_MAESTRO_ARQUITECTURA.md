@@ -1310,6 +1310,83 @@
 │   ├── WCAG 2.1 AA: focus-visible, reduced-motion, keyboard nav, ARIA  │
 │   └── Estado: ✅ Producción (v2.0 — 115 archivos, 8 entities, 16 svcs)│
 │                                                                         │
+│   📦 jaraba_tenant_export ✅ (Tenant Data Export + GDPR Art. 20)        │
+│   ├── TenantExportRecord Entity: 17 campos, 4 DB indexes               │
+│   │   ├── status: queued/collecting/packaging/completed/failed/expired  │
+│   │   ├── download_token UUID, file_hash SHA-256, expires_at            │
+│   │   └── Indexes: (tenant_id, status), (expires_at), (download_token) │
+│   ├── TenantDataCollectorService: 6 grupos de datos                    │
+│   │   ├── Core (tenant, billing, whitelabel, verifactu)                │
+│   │   ├── Analytics (events 50k limit generator, dashboards)           │
+│   │   ├── Knowledge (documents, KB articles, FAQs, policies)           │
+│   │   ├── Operational (audit logs, email campaigns, CRM)               │
+│   │   ├── Vertical (products agro, producer profiles)                  │
+│   │   └── Files (via group membership UIDs)                            │
+│   ├── TenantExportService: ZIP async, rate limiting, StreamedResponse  │
+│   ├── 2 QueueWorkers: TenantExportWorker (55s) + Cleanup (30s)        │
+│   ├── API REST: /api/v1/tenant-export/* (6 endpoints)                  │
+│   ├── Frontend: /tenant/export Zero-Region + 6 partials + JS polling   │
+│   ├── Drush: tenant-export:backup, :cleanup, :status                   │
+│   ├── Tests: 3 Unit + 3 Kernel + 2 Functional                         │
+│   └── Estado: ✅ Produccion (Feb 2026 — GDPR Art. 20 Portability)     │
+│                                                                         │
+│   📦 jaraba_privacy ✅ (GDPR DPA + Cookie Consent + LOPD-GDD)          │
+│   ├── 5 Content Entities:                                               │
+│   │   ├── DpaAgreement: Data Processing Agreement, versionado          │
+│   │   ├── PrivacyPolicy: Politicas versionadas, auto-published         │
+│   │   ├── CookieConsent: Registro consentimiento granular              │
+│   │   ├── ProcessingActivity: Registro actividades tratamiento (Art.30)│
+│   │   └── DataRightsRequest: ARCO-POL (acceso, rectificacion, etc.)   │
+│   ├── 5 Services: DpaManager, CookieConsentManager,                    │
+│   │   DataRightsProcessor, BreachNotification, GdprReportGenerator     │
+│   ├── API REST: 10 endpoints /api/v1/privacy/*                         │
+│   ├── Frontend: /privacy Zero-Region + JS behaviors + 8 SCSS partials  │
+│   ├── Tests: 4 Unit tests                                              │
+│   └── Estado: ✅ Produccion (Feb 2026 — N1 Foundation)                 │
+│                                                                         │
+│   📦 jaraba_legal ✅ (Legal Terms SaaS — ToS/SLA/AUP/Offboarding)      │
+│   ├── 6 Content Entities:                                               │
+│   │   ├── LegalDocument: Documentos legales versionados (ToS, AUP)     │
+│   │   ├── SlaDefinition: Definiciones SLA con metricas                 │
+│   │   ├── SlaCredit: Creditos SLA automaticos por incumplimiento       │
+│   │   ├── OffboardingRequest: Solicitudes offboarding tenant           │
+│   │   ├── WhistleblowerReport: Canal denuncias EU 2019/1937 anonimo   │
+│   │   └── LegalAcceptance: Registro aceptacion terminos por usuario    │
+│   ├── 5 Services: TosManager, SlaCalculator, AupEnforcer,              │
+│   │   OffboardingManager, WhistleblowerChannel                          │
+│   ├── LegalApiController: 12 REST endpoints                            │
+│   │   ├── ToS (3), SLA (2), AUP (2), Offboarding (3)                  │
+│   │   └── Whistleblower (2, PUBLICOS sin auth — EU 2019/1937)          │
+│   ├── Frontend: /legal-compliance Zero-Region + JS + 8 SCSS partials   │
+│   ├── Tests: 4 Unit tests                                              │
+│   └── Estado: ✅ Produccion (Feb 2026 — N1 Foundation)                 │
+│                                                                         │
+│   📦 jaraba_dr ✅ (Disaster Recovery Plan + Testing)                    │
+│   ├── 3 Content Entities:                                               │
+│   │   ├── DrTestResult: Resultados tests DR (RTO/RPO medido)           │
+│   │   ├── BackupRecord: Registro backups con integridad verificada     │
+│   │   └── DrCommunicationLog: Log comunicaciones durante incidentes    │
+│   ├── 5 Services: BackupVerifier, FailoverOrchestrator,                │
+│   │   DrTestRunner, IncidentCommunicator, StatusPageManager             │
+│   ├── API REST: 8 endpoints /api/v1/dr/*                               │
+│   ├── Frontend: /dr-status Zero-Region + JS + 8 SCSS partials          │
+│   ├── ECA Hooks: backup_completed, dr_test_scheduled, failover_trigger │
+│   ├── Tests: 4 Unit tests                                              │
+│   └── Estado: ✅ Produccion (Feb 2026 — N1 Foundation)                 │
+│                                                                         │
+│   📦 ecosistema_jaraba_core — ComplianceAggregatorService ✅            │
+│   ├── ComplianceAggregatorService: 9 KPIs cross-module (3 por modulo)  │
+│   │   ├── Privacy: dpa_coverage, arco_pol_sla, cookie_consent_rate     │
+│   │   ├── Legal: tos_acceptance_rate, sla_compliance, aup_violations   │
+│   │   ├── DR: backup_health, dr_test_coverage, status_page_uptime      │
+│   │   ├── Score global 0-100, grade A-F                                │
+│   │   └── Alertas: critico <50%, warning <80% (por KPI individual)     │
+│   ├── CompliancePanelController: /admin/jaraba/compliance              │
+│   │   ├── HTML dashboard (render array) + AJAX auto-refresh 60s        │
+│   │   └── API: /api/v1/compliance/overview (JSON envelope)             │
+│   ├── DI: Inyeccion condicional (nullable) — modulos opcionales        │
+│   └── Estado: ✅ Produccion (Feb 2026)                                 │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -2440,5 +2517,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 36.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+| 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
+
+> **Versión:** 39.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 
