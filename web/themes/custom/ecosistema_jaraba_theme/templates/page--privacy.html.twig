@@ -1,0 +1,103 @@
+{#
+/**
+ * @file
+ * page--privacy.html.twig — Dashboard de Privacidad GDPR.
+ *
+ * Template zero-region para /privacy y rutas de privacidad.
+ * Layout full-width mobile-first con parciales reutilizables.
+ *
+ * ARQUITECTURA:
+ * - Sin {{ page.* }} = Sin bloques/regiones de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Body class 'page-privacy' via hook_preprocess_html()
+ *
+ * PARTIALS:
+ * - _header.html.twig: Header con menu movil (reutilizado)
+ * - _footer.html.twig: Footer configurable (reutilizado)
+ * - _copilot-fab.html.twig: FAB de copiloto contextual
+ *
+ * Plan Implementacion Stack Compliance Legal N1 v1 — FASE 0.
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('jaraba_privacy/privacy-dashboard') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-privacy', 'compliance-page', 'dashboard-page', 'full-width-layout') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Saltar al contenido principal{% endtrans %}
+  </a>
+
+  {# HEADER — Partial reutilizable con menu movil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# DRUPAL MESSAGES #}
+  {% if clean_messages %}
+    <div class="privacy-messages">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
+
+  {# MAIN CONTENT — Dashboard privacidad GDPR #}
+  <main id="main-content" class="privacy-main">
+
+    {# PAGE TITLE #}
+    <div class="privacy-main__header">
+      <div class="privacy-main__title-row">
+        <h1 class="privacy-main__title">
+          {{ jaraba_icon('compliance', 'shield-check', { variant: 'duotone', size: '32px' }) }}
+          {% trans %}Privacidad GDPR{% endtrans %}
+        </h1>
+      </div>
+    </div>
+
+    {# CONTROLLER CONTENT — Rendered by Drupal controller #}
+    {% if clean_content %}
+      <div class="privacy-main__content">
+        {{ clean_content }}
+      </div>
+    {% endif %}
+
+  </main>
+
+  {# FOOTER — Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO — Asesor Compliance Contextual #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'privacy_copilot',
+    avatar_type: 'dpo_assistant',
+    fab_color: 'var(--ej-color-success, #43a047)',
+    greeting: '¡Hola! Soy tu asistente de privacidad GDPR. Puedo ayudarte con DPAs, cookies, solicitudes ARCO-POL, brechas de seguridad y registro de actividades de tratamiento. ¿En qué puedo asistirte?'|t
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

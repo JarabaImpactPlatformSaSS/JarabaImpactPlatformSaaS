@@ -1,0 +1,111 @@
+/**
+ * @file
+ * Jaraba Legal — Estilos compilados.
+ *
+ * Generado desde scss/main.scss.
+ * No editar directamente; modificar los archivos SCSS.
+ */
+
+.jaraba-legal-dashboard {
+  padding: 1.5rem;
+}
+
+.legal-dashboard__header {
+  margin-bottom: 2rem;
+}
+
+.legal-dashboard__subtitle {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.legal-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.legal-dashboard__card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.tos-acceptance h3,
+.sla-status h3,
+.whistleblower-stats h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.tos-modal {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.tos-modal__content {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fafafa;
+}
+
+.tos-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.sla-status__meter {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.sla-status__meter-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.sla-status__meter-fill--met {
+  background: #4caf50;
+}
+
+.sla-status__meter-fill--breach {
+  background: #f44336;
+}
+
+.whistleblower-form {
+  max-width: 640px;
+}
+
+.whistleblower-form__anonymous-notice {
+  background: #e3f2fd;
+  border-left: 4px solid #1976d2;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: #1565c0;
+}
+
+.whistleblower-form__field {
+  margin-bottom: 1rem;
+}
+
+.whistleblower-form__tracking-code {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  text-align: center;
+  font-family: monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+}

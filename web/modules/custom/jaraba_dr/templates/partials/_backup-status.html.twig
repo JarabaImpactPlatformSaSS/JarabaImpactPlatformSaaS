@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Partial: estado de los backups.
+ */
+#}
+<div class="backup-status">
+  <h3>{{ 'Estado de backups'|t }}</h3>
+  {% if backup_status %}
+    {% for backup in backup_status %}
+      <div class="backup-status__item backup-status__item--{{ backup.status }}">
+        <span class="backup-status__type">{{ backup.type_label }}</span>
+        <span class="backup-status__path">{{ backup.path }}</span>
+        <span class="backup-status__result">{{ backup.status_label }}</span>
+        <span class="backup-status__size">{{ backup.size }}</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="backup-status__empty">{{ 'No hay verificaciones de backup disponibles.'|t }}</p>
+  {% endif %}
+</div>

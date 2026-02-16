@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Legal — Gestión legal del servicio SaaS multi-tenant.
+ *
+ * ESTRUCTURA:
+ * Módulo principal del stack legal. Proporciona 6 Content Entities
+ * (ServiceAgreement, SlaRecord, AupViolation, OffboardingRequest,
+ * WhistleblowerReport, UsageLimitRecord), servicios de gestión y hooks
+ * de automatización para cumplimiento legal.
+ *
+ * LÓGICA:
+ * - hook_user_login(): Verifica ToS vigentes del tenant.
+ * - hook_cron(): Verificación de SLA, límites de uso y plazos de offboarding.
+ * - hook_theme(): Registro de templates del módulo.
+ *
+ * Plan Implementación Stack Compliance Legal N1 v1.
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig del módulo legal.
+ */
+function jaraba_legal_theme(): array {
+  return [
+    'legal_dashboard' => [
+      'variables' => [
+        'tos_status' => NULL,
+        'sla_metrics' => NULL,
+        'aup_violations' => NULL,
+        'offboarding_requests' => NULL,
+        'whistleblower_stats' => NULL,
+        'usage_limits' => NULL,
+        'metrics' => NULL,
+      ],
+      'template' => 'legal-dashboard',
+    ],
+  ];
+}

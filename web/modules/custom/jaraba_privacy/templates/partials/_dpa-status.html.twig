@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Partial: Estado de los DPA del tenant.
+ */
+#}
+<div class="dpa-status">
+  <h3>{{ 'Estado DPA'|t }}</h3>
+  {% if dpa_status %}
+    <div class="dpa-status__info">
+      <span class="dpa-status__badge dpa-status__badge--{{ dpa_status.status|default('pending') }}">
+        {{ dpa_status.status_label|default('Pendiente'|t) }}
+      </span>
+      {% if dpa_status.version %}
+        <span class="dpa-status__version">v{{ dpa_status.version }}</span>
+      {% endif %}
+      {% if dpa_status.signed_at %}
+        <span class="dpa-status__date">{{ dpa_status.signed_at }}</span>
+      {% endif %}
+    </div>
+  {% else %}
+    <p class="dpa-status__empty">{{ 'No hay DPA activo. Se requiere firma para continuar.'|t }}</p>
+  {% endif %}
+</div>

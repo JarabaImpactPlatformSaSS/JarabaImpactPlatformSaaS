@@ -1,0 +1,10 @@
+name: Jaraba DR
+type: module
+description: 'Disaster Recovery y continuidad de negocio: verificacion automatica de backups, orquestacion de failover, status page publica, comunicacion de incidentes y framework de testing DR.'
+core_version_requirement: ^11
+php: 8.4
+package: Jaraba Compliance
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:views

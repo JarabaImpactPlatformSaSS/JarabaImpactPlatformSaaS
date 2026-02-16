@@ -1,0 +1,75 @@
+# =============================================================================
+# DASHBOARD FRONTEND — Zero region, template page--legal.html.twig
+# =============================================================================
+
+jaraba_legal.dashboard:
+  path: '/legal'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalDashboardController::dashboard'
+    _title: 'Panel Legal'
+  requirements:
+    _permission: 'view legal dashboard'
+
+# =============================================================================
+# CONFIGURACIÓN — Formulario de settings del módulo
+# =============================================================================
+
+jaraba_legal.settings:
+  path: '/admin/config/jaraba/legal'
+  defaults:
+    _form: '\Drupal\jaraba_legal\Form\LegalSettingsForm'
+    _title: 'Configuración Legal'
+  requirements:
+    _permission: 'administer legal'
+
+# =============================================================================
+# ENTITY ROUTES — Field UI base routes para configuración de campos
+# =============================================================================
+
+jaraba_legal.service_agreement.settings:
+  path: '/admin/structure/service-agreements'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Service Agreements'
+  requirements:
+    _permission: 'administer legal'
+
+jaraba_legal.sla_record.settings:
+  path: '/admin/structure/sla-records'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'SLA Records'
+  requirements:
+    _permission: 'administer legal'
+
+jaraba_legal.aup_violation.settings:
+  path: '/admin/structure/aup-violations'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'AUP Violations'
+  requirements:
+    _permission: 'administer legal'
+
+jaraba_legal.offboarding_request.settings:
+  path: '/admin/structure/offboarding-requests'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Offboarding Requests'
+  requirements:
+    _permission: 'administer legal'
+
+jaraba_legal.whistleblower_report.settings:
+  path: '/admin/structure/whistleblower-reports'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Whistleblower Reports'
+  requirements:
+    _permission: 'administer legal'
+
+jaraba_legal.usage_limit_record.settings:
+  path: '/admin/structure/usage-limit-records'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Usage Limit Records'
+  requirements:
+    _permission: 'administer legal'

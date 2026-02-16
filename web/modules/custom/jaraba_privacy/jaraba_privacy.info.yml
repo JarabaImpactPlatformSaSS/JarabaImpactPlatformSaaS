@@ -1,0 +1,10 @@
+name: Jaraba Privacy
+type: module
+description: 'Compliance RGPD/LOPD-GDD multi-tenant: DPA con firma electrónica, políticas de privacidad, banner de cookies granular, registro de actividades de tratamiento (RAT), procedimientos ARCO-POL y gestión de brechas de seguridad.'
+core_version_requirement: ^11
+php: 8.4
+package: Jaraba Compliance
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:views

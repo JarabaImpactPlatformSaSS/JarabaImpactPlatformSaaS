@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * Template del dashboard legal — Zero region layout.
+ *
+ * Variables disponibles:
+ * - tos_status: Estado de Terms of Service activos.
+ * - sla_metrics: Métricas de SLA del periodo actual.
+ * - aup_violations: Violaciones AUP recientes.
+ * - offboarding_requests: Solicitudes de offboarding pendientes.
+ * - whistleblower_stats: Estadísticas del canal de denuncias.
+ * - usage_limits: Estado de límites de uso por tenant.
+ * - metrics: Métricas agregadas del módulo.
+ */
+#}
+<div class="jaraba-legal-dashboard">
+  <div class="legal-dashboard__header">
+    <h1>{{ 'Panel Legal'|t }}</h1>
+    <p class="legal-dashboard__subtitle">{{ 'Gestión de términos de servicio, SLA, AUP, offboarding y canal de denuncias.'|t }}</p>
+  </div>
+
+  <div class="legal-dashboard__grid">
+    {# ToS Status #}
+    <div class="legal-dashboard__card legal-dashboard__card--tos">
+      {% include '@jaraba_legal/partials/_tos-acceptance.html.twig' %}
+    </div>
+
+    {# SLA Metrics #}
+    <div class="legal-dashboard__card legal-dashboard__card--sla">
+      {% include '@jaraba_legal/partials/_sla-status.html.twig' %}
+    </div>
+
+    {# Offboarding Progress #}
+    <div class="legal-dashboard__card legal-dashboard__card--offboarding">
+      {% include '@jaraba_legal/partials/_offboarding-progress.html.twig' %}
+    </div>
+
+    {# Whistleblower Stats #}
+    <div class="legal-dashboard__card legal-dashboard__card--whistleblower">
+      {% include '@jaraba_legal/partials/_whistleblower-form.html.twig' %}
+    </div>
+
+    {# Usage Limits #}
+    <div class="legal-dashboard__card legal-dashboard__card--usage">
+      {% include '@jaraba_legal/partials/_usage-limits.html.twig' %}
+    </div>
+  </div>
+</div>

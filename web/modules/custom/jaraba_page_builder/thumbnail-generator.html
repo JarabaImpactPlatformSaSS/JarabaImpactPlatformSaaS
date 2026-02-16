@@ -4,10 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroConecta Thumbnail Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AgroConecta — Generador de Thumbnails</title>
+    <!-- CSS REAL de producción del proyecto -->
     <link rel="stylesheet" href="/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css">
+    <link rel="stylesheet" href="/themes/custom/ecosistema_jaraba_theme/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --ej-color-corporate: #233D63;
+            --ej-color-impulse: #FF8C42;
+            --ej-color-innovation: #00A9A5;
+            --ej-color-earth: #556B2F;
+            --ej-color-success: #10B981;
+            --ej-color-warning: #F59E0B;
+            --ej-color-danger: #EF4444;
+            --ej-font-family: 'Outfit', sans-serif;
+            --ej-bg-surface: #ffffff;
+            --pb-accent: #556B2F;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,421 +32,701 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: #f0f0f0;
-            padding: 20px;
+            background: #f5f5f5;
+            color: #1a1a2e;
         }
 
-        .thumbnail-wrapper {
-            width: 600px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 12px;
+        /* Navegación de la herramienta */
+        .tool-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            z-index: 9999;
+            font-size: 13px;
+            align-items: center;
+        }
+
+        .tool-nav button {
+            background: #556B2F;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+
+        .tool-nav button:hover {
+            background: #6b8a3a;
+        }
+
+        .tool-nav button.active {
+            background: #FF8C42;
+        }
+
+        .tool-nav .label {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        /* Contenedor de captura — exactamente 1024x1024 */
+        .capture-viewport {
+            width: 1024px;
+            height: 1024px;
+            margin: 70px auto 40px;
+            background: #f8faf5;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Cada sección ocupa todo el viewport de captura */
+        .capture-section {
+            display: none;
+            width: 1024px;
+            min-height: 1024px;
             position: relative;
         }
 
-        .thumbnail-wrapper::after {
-            content: attr(data-label);
-            position: absolute;
-            top: -28px;
-            left: 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #556B2F;
+        .capture-section.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .thumbnail-wrapper .pb-section {
-            /* Scale down for thumbnail */
-            transform-origin: top left;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .instructions {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 14px;
+        /* Override para forzar las secciones a ajustarse al viewport */
+        .capture-section .pb-section {
+            width: 100%;
+            max-width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <h1>🌾 AgroConecta - Thumbnail Generator</h1>
-    <p class="instructions">Cada sección se renderiza con los estilos de producción. Usa la captura del navegador para
-        guardar cada una como PNG.</p>
 
-    <!-- 1. HERO -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-hero" id="agroconecta-hero">
-        <section class="pb-section pb-section--hero pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__hero-content">
-                    <span class="pb-section__eyebrow">AgroConecta</span>
-                    <h2 class="pb-section__title">Del campo a tu mesa, sin intermediarios</h2>
-                    <p class="pb-section__subtitle">Conecta directamente con productores locales y accede a productos
-                        frescos, orgánicos y de temporada.</p>
-                    <div class="pb-section__actions">
-                        <a href="#" class="pb-section__cta pb-section__cta--primary">Ver productos</a>
-                        <a href="#" class="pb-section__cta pb-section__cta--secondary">Conocer productores</a>
-                    </div>
-                </div>
-                <div class="pb-section__media">
-                    <div class="pb-section__img-placeholder" aria-hidden="true">🌱</div>
-                </div>
-            </div>
-        </section>
+    <div class="tool-nav">
+        <span class="label">AgroConecta Thumbnails:</span>
+        <button onclick="show('hero')" id="btn-hero">1. Hero</button>
+        <button onclick="show('features')" id="btn-features">2. Features</button>
+        <button onclick="show('content')" id="btn-content">3. Content</button>
+        <button onclick="show('cta')" id="btn-cta">4. CTA</button>
+        <button onclick="show('stats')" id="btn-stats">5. Stats</button>
+        <button onclick="show('testimonials')" id="btn-testimonials">6. Testimonials</button>
+        <button onclick="show('pricing')" id="btn-pricing">7. Pricing</button>
+        <button onclick="show('faq')" id="btn-faq">8. FAQ</button>
+        <button onclick="show('gallery')" id="btn-gallery">9. Gallery</button>
+        <button onclick="show('map')" id="btn-map">10. Map</button>
+        <button onclick="show('social-proof')" id="btn-social-proof">11. Social Proof</button>
     </div>
 
-    <!-- 2. FEATURES -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-features" id="agroconecta-features">
-        <section class="pb-section pb-section--features pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">Servicios</span>
-                    <h2 class="pb-section__title">Herramientas para el productor moderno</h2>
-                    <p class="pb-section__subtitle">Tecnología al servicio del campo para optimizar cosechas y conectar
-                        con compradores.</p>
-                </div>
-                <div class="pb-section__features-grid">
-                    <div class="pb-section__feature-card">
-                        <div class="pb-section__feature-icon">🌱</div>
-                        <h3 class="pb-section__feature-title">Control de cosechas</h3>
-                        <p class="pb-section__feature-desc">Monitoriza tus cultivos, planifica temporadas y registra
-                            rendimientos por parcela.</p>
-                    </div>
-                    <div class="pb-section__feature-card">
-                        <div class="pb-section__feature-icon">📦</div>
-                        <h3 class="pb-section__feature-title">Venta directa</h3>
-                        <p class="pb-section__feature-desc">Vende directamente a restaurantes, tiendas y consumidores
-                            sin intermediarios.</p>
-                    </div>
-                    <div class="pb-section__feature-card">
-                        <div class="pb-section__feature-icon">🌿</div>
-                        <h3 class="pb-section__feature-title">Certificación eco</h3>
-                        <p class="pb-section__feature-desc">Gestiona tus certificaciones orgánicas y muestra la
-                            trazabilidad de cada producto.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+    <div class="capture-viewport" id="capture-viewport">
 
-    <!-- 3. CONTENT -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-content" id="agroconecta-content">
-        <section class="pb-section pb-section--content pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__text">
-                    <span class="pb-section__eyebrow">Origen</span>
-                    <h2 class="pb-section__title">Certificación y Origen</h2>
-                    <p class="pb-section__subtitle">Cada producto cuenta su historia: desde qué parcela viene, cuándo
-                        fue cosechado y qué certificaciones cumple.</p>
-                    <p class="pb-section__description">Nuestro sistema de trazabilidad permite a los consumidores
-                        conocer el origen exacto de cada alimento, generando confianza y valor añadido para los
-                        productores.</p>
-                    <div class="pb-section__actions">
-                        <a href="#" class="pb-section__cta pb-section__cta--primary">Saber más</a>
-                    </div>
-                </div>
-                <div class="pb-section__media">
-                    <div class="pb-section__img-placeholder" aria-hidden="true">🏷️</div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 4. CTA -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-cta" id="agroconecta-cta">
-        <section class="pb-section pb-section--cta pb-section--agroconecta">
-            <div class="pb-section__container">
-                <h2 class="pb-section__title">¿Listo para comer fresco y local?</h2>
-                <p class="pb-section__subtitle">Conecta con productores de tu zona y recibe alimentos frescos
-                    directamente del campo. Sin intermediarios, sin esperas.</p>
-                <div class="pb-section__actions">
-                    <a href="#" class="pb-section__cta pb-section__cta--primary">Hacer mi pedido</a>
-                    <a href="#" class="pb-section__cta pb-section__cta--secondary">Ver productores</a>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 5. STATS -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-stats" id="agroconecta-stats">
-        <section class="pb-section pb-section--stats pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <h2 class="pb-section__title">Nuestro impacto en el campo</h2>
-                    <p class="pb-section__subtitle">Datos que reflejan el crecimiento de la comunidad AgroConecta.</p>
-                </div>
-                <div class="pb-section__stats-row">
-                    <div class="pb-section__stat">
-                        <span class="pb-section__stat-number">+320</span>
-                        <span class="pb-section__stat-label">Productores activos</span>
-                    </div>
-                    <div class="pb-section__stat">
-                        <span class="pb-section__stat-number">45 Ton</span>
-                        <span class="pb-section__stat-label">Cosecha mensual</span>
-                    </div>
-                    <div class="pb-section__stat">
-                        <span class="pb-section__stat-number">+8K</span>
-                        <span class="pb-section__stat-label">Compradores directos</span>
-                    </div>
-                    <div class="pb-section__stat">
-                        <span class="pb-section__stat-number">100%</span>
-                        <span class="pb-section__stat-label">Trazabilidad</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 6. TESTIMONIALS -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-testimonials" id="agroconecta-testimonials">
-        <section class="pb-section pb-section--testimonials pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">Testimonios</span>
-                    <h2 class="pb-section__title">Historias desde el campo</h2>
-                    <p class="pb-section__subtitle">Productores reales comparten su experiencia con AgroConecta.</p>
-                </div>
-                <div class="pb-section__testimonials-grid">
-                    <div class="pb-section__testimonial">
-                        <p class="pb-section__testimonial-quote">Gracias a AgroConecta puedo vender mis hortalizas
-                            directamente a familias de la ciudad. Mis ingresos han mejorado un 40%.</p>
-                        <div class="pb-section__testimonial-author">
-                            <div class="pb-section__testimonial-avatar">PG</div>
-                            <div>
-                                <div class="pb-section__testimonial-name">Pedro García</div>
-                                <div class="pb-section__testimonial-role">Productor hortícola, Jaén</div>
-                            </div>
+        <!-- 1. HERO — Escaparate del Productor -->
+        <div class="capture-section" id="sec-hero">
+            <section class="pb-section pb-section--hero pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background: linear-gradient(135deg, #2d3b1a 0%, #556B2F 40%, #3a5a1c 100%);">
+                <div class="pb-section__container"
+                    style="max-width:900px; margin:0 auto; padding:60px 48px; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;">
+                    <div class="pb-section__hero-content" style="color:white;">
+                        <span class="pb-section__eyebrow"
+                            style="color:#a0c468; font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">AgroConecta</span>
+                        <h2 class="pb-section__title"
+                            style="font-size:42px; line-height:1.15; margin:16px 0; font-weight:800; color:white;">Del
+                            campo a tu mesa, sin intermediarios</h2>
+                        <p class="pb-section__subtitle"
+                            style="font-size:17px; line-height:1.6; opacity:0.9; color:#dde8c4; margin-bottom:28px;">
+                            Conecta directamente con productores locales y accede a productos frescos, orgánicos y de
+                            temporada.</p>
+                        <div class="pb-section__actions" style="display:flex; gap:12px;">
+                            <a href="#"
+                                style="display:inline-block; padding:14px 32px; background:#FF8C42; color:white; border-radius:8px; font-weight:700; font-size:15px; text-decoration:none;">Ver
+                                productos</a>
+                            <a href="#"
+                                style="display:inline-block; padding:14px 32px; background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:8px; font-weight:600; font-size:15px; text-decoration:none;">Conocer
+                                productores</a>
                         </div>
                     </div>
-                    <div class="pb-section__testimonial">
-                        <p class="pb-section__testimonial-quote">La plataforma me permite mostrar el origen de mis
-                            productos y las certificaciones orgánicas. Los compradores valoran la transparencia.</p>
-                        <div class="pb-section__testimonial-author">
-                            <div class="pb-section__testimonial-avatar">IM</div>
-                            <div>
-                                <div class="pb-section__testimonial-name">Isabel Moreno</div>
-                                <div class="pb-section__testimonial-role">Productora de aceite, Córdoba</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pb-section__testimonial">
-                        <p class="pb-section__testimonial-quote">Antes dependía de intermediarios. Ahora gestiono mis
-                            pedidos directamente y mis productos llegan frescos.</p>
-                        <div class="pb-section__testimonial-author">
-                            <div class="pb-section__testimonial-avatar">MT</div>
-                            <div>
-                                <div class="pb-section__testimonial-name">Manuel Torres</div>
-                                <div class="pb-section__testimonial-role">Agricultor de frutas, Granada</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 7. PRICING -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-pricing" id="agroconecta-pricing">
-        <section class="pb-section pb-section--pricing pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">Suscripciones</span>
-                    <h2 class="pb-section__title">Elige tu caja de productos frescos</h2>
-                    <p class="pb-section__subtitle">Recibe productos de temporada directamente del productor cada
-                        semana.</p>
-                </div>
-                <div class="pb-section__pricing-grid">
-                    <div class="pb-section__pricing-card">
-                        <h3 class="pb-section__pricing-name">Caja Huerta</h3>
-                        <div class="pb-section__pricing-price">19€</div>
-                        <div class="pb-section__pricing-period">/semana</div>
-                        <ul class="pb-section__pricing-features">
-                            <li>5 kg de verduras</li>
-                            <li>Productos de temporada</li>
-                            <li>Entrega semanal</li>
-                        </ul>
-                        <a href="#" class="pb-section__cta pb-section__cta--primary">Suscribirse</a>
-                    </div>
-                    <div class="pb-section__pricing-card pb-section__pricing-card--featured">
-                        <span class="pb-section__pricing-badge">Más popular</span>
-                        <h3 class="pb-section__pricing-name">Caja Familiar</h3>
-                        <div class="pb-section__pricing-price">35€</div>
-                        <div class="pb-section__pricing-period">/semana</div>
-                        <ul class="pb-section__pricing-features">
-                            <li>10 kg verduras y fruta</li>
-                            <li>Recetas incluidas</li>
-                            <li>Entrega flexible</li>
-                            <li>Productos orgánicos</li>
-                        </ul>
-                        <a href="#" class="pb-section__cta pb-section__cta--primary">Probar ahora</a>
-                    </div>
-                    <div class="pb-section__pricing-card">
-                        <h3 class="pb-section__pricing-name">Caja Gourmet</h3>
-                        <div class="pb-section__pricing-price">55€</div>
-                        <div class="pb-section__pricing-period">/semana</div>
-                        <ul class="pb-section__pricing-features">
-                            <li>Todo en Familiar</li>
-                            <li>Quesos artesanales</li>
-                            <li>Aceite de oliva</li>
-                            <li>Productos premium</li>
-                        </ul>
-                        <a href="#" class="pb-section__cta pb-section__cta--primary">Contactar</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 8. FAQ -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-faq" id="agroconecta-faq">
-        <section class="pb-section pb-section--faq pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">FAQ</span>
-                    <h2 class="pb-section__title">Preguntas frecuentes</h2>
-                    <p class="pb-section__subtitle">Resolvemos las dudas más comunes sobre el servicio AgroConecta.</p>
-                </div>
-                <div class="pb-section__faq-list">
-                    <details class="pb-section__faq-item" open>
-                        <summary>¿Cómo funciona la entrega?</summary>
-                        <div class="pb-section__faq-answer">Los productos se entregan directamente desde la finca del
-                            productor a tu domicilio en un máximo de 24 horas desde la cosecha.</div>
-                    </details>
-                    <details class="pb-section__faq-item">
-                        <summary>¿Los productos son orgánicos?</summary>
-                        <div class="pb-section__faq-answer">Todos nuestros productores cuentan con certificaciones
-                            verificables que puedes consultar en cada ficha de producto.</div>
-                    </details>
-                    <details class="pb-section__faq-item">
-                        <summary>¿Puedo cancelar mi suscripción?</summary>
-                        <div class="pb-section__faq-answer">Sí, puedes cancelar en cualquier momento sin penalización.
-                        </div>
-                    </details>
-                    <details class="pb-section__faq-item">
-                        <summary>¿Cuál es la zona de cobertura?</summary>
-                        <div class="pb-section__faq-answer">Actualmente cubrimos toda la Península Ibérica con entregas
-                            en 24-48h.</div>
-                    </details>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 9. GALLERY -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-gallery" id="agroconecta-gallery">
-        <section class="pb-section pb-section--gallery pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">Galería</span>
-                    <h2 class="pb-section__title">Nuestros campos</h2>
-                    <p class="pb-section__subtitle">Imágenes de las parcelas y productos de nuestros productores.</p>
-                </div>
-                <div class="pb-section__gallery-grid">
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🌾</div>
-                        <figcaption>Campos de cereales</figcaption>
-                    </figure>
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🍅</div>
-                        <figcaption>Huerto de tomates</figcaption>
-                    </figure>
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🫒</div>
-                        <figcaption>Olivares</figcaption>
-                    </figure>
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🍊</div>
-                        <figcaption>Naranjos</figcaption>
-                    </figure>
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🥬</div>
-                        <figcaption>Verduras frescas</figcaption>
-                    </figure>
-                    <figure class="pb-section__gallery-item">
-                        <div class="pb-section__img-placeholder">🍇</div>
-                        <figcaption>Viñedos</figcaption>
-                    </figure>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 10. MAP -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-map" id="agroconecta-map">
-        <section class="pb-section pb-section--map pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__map-embed">
                     <div
-                        style="display:flex; align-items:center; justify-content:center; width:100%; min-height:280px; background: #e8f5e9; color: #556B2F; font-size: 2rem;">
-                        📍 Mapa de Productores</div>
-                </div>
-                <div class="pb-section__contact-info">
-                    <h2 class="pb-section__title" style="font-size:1.5rem;">Encuéntranos</h2>
-                    <div class="pb-section__contact-item">
-                        <div class="pb-section__contact-icon">📍</div>
-                        <div>
-                            <div class="pb-section__contact-label">Dirección</div>
-                            <div class="pb-section__contact-value">Calle del Campo 42, Jaén</div>
-                        </div>
-                    </div>
-                    <div class="pb-section__contact-item">
-                        <div class="pb-section__contact-icon">📞</div>
-                        <div>
-                            <div class="pb-section__contact-label">Teléfono</div>
-                            <div class="pb-section__contact-value">+34 953 XX XX XX</div>
-                        </div>
-                    </div>
-                    <div class="pb-section__contact-item">
-                        <div class="pb-section__contact-icon">✉️</div>
-                        <div>
-                            <div class="pb-section__contact-label">Email</div>
-                            <div class="pb-section__contact-value"><a href="#">info@agroconecta.es</a></div>
-                        </div>
+                        style="width:100%; height:360px; border-radius:16px; background:linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%); display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.15);">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(160,196,104,0.6)"
+                            stroke-width="1">
+                            <path d="M12 22V8M8 12l4-4 4 4" />
+                            <path d="M7 18c-2 0-4-1-4-3s2-4 5-4c.5-3 3-5 5-5s4 2 5 5c3 0 5 2 5 4s-2 3-4 3"
+                                fill="rgba(160,196,104,0.15)" />
+                        </svg>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
+
+        <!-- 2. FEATURES — Productos Orgánicos -->
+        <div class="capture-section" id="sec-features">
+            <section class="pb-section pb-section--features pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background: linear-gradient(180deg, #f8faf5 0%, #ffffff 100%); padding:60px 48px;">
+                <div class="pb-section__container" style="max-width:900px; margin:0 auto; width:100%;">
+                    <div class="pb-section__header" style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Servicios</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Herramientas para el
+                            productor moderno</h2>
+                        <p style="font-size:16px; color:#64748b; max-width:560px; margin:0 auto;">Tecnología al servicio
+                            del campo para optimizar cosechas y conectar con compradores.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <div
+                                style="width:56px; height:56px; border-radius:14px; background:linear-gradient(135deg, #e8f0d4, #d4e4b8); display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:20px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                    stroke-width="2" stroke-linecap="round">
+                                    <path d="M12 22V8" />
+                                    <path d="M17 2c0 8-5 13-13 13" />
+                                    <path d="M17 2C17 10 12 15 4 15c0-8 5-13 13-13z" fill="rgba(85,107,47,0.15)" />
+                                </svg>
+                            </div>
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:8px;">Control de
+                                cosechas</h3>
+                            <p style="font-size:14px; color:#64748b; line-height:1.6;">Monitoriza tus cultivos,
+                                planifica temporadas y registra rendimientos por parcela.</p>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <div
+                                style="width:56px; height:56px; border-radius:14px; background:linear-gradient(135deg, #e8f0d4, #d4e4b8); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                    stroke-width="2" stroke-linecap="round">
+                                    <rect x="3" y="8" width="18" height="13" rx="2" fill="rgba(85,107,47,0.15)" />
+                                    <path d="M16 8V5a4 4 0 00-8 0v3" />
+                                </svg>
+                            </div>
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:8px;">Venta directa
+                            </h3>
+                            <p style="font-size:14px; color:#64748b; line-height:1.6;">Vende directamente a
+                                restaurantes, tiendas y consumidores sin intermediarios.</p>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <div
+                                style="width:56px; height:56px; border-radius:14px; background:linear-gradient(135deg, #e8f0d4, #d4e4b8); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                    stroke-width="2" stroke-linecap="round">
+                                    <circle cx="12" cy="10" r="7" fill="rgba(85,107,47,0.15)" />
+                                    <path d="M9 12l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:8px;">Certificación
+                                eco</h3>
+                            <p style="font-size:14px; color:#64748b; line-height:1.6;">Gestiona tus certificaciones
+                                orgánicas y muestra la trazabilidad de cada producto.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 3. CONTENT — Certificación y Origen -->
+        <div class="capture-section" id="sec-content">
+            <section class="pb-section pb-section--content pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; padding:60px 48px; background:#ffffff;">
+                <div
+                    style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; width:100%;">
+                    <div>
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Origen</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0 16px;">Certificación y
+                            Origen</h2>
+                        <p style="font-size:17px; color:#475569; line-height:1.7; margin-bottom:12px;">Cada producto
+                            cuenta su historia: desde qué parcela viene, cuándo fue cosechado y qué certificaciones
+                            cumple.</p>
+                        <p style="font-size:15px; color:#64748b; line-height:1.7; margin-bottom:28px;">Nuestro sistema
+                            de trazabilidad permite a los consumidores conocer el origen exacto de cada alimento,
+                            generando confianza y valor añadido para los productores.</p>
+                        <a href="#"
+                            style="display:inline-block; padding:14px 32px; background:#556B2F; color:white; border-radius:8px; font-weight:700; font-size:15px; text-decoration:none;">Saber
+                            más</a>
+                    </div>
+                    <div
+                        style="width:100%; height:400px; border-radius:16px; background:linear-gradient(180deg, #f0f4e8, #e4ecd6); display:flex; align-items:center; justify-content:center; border:1px solid #d4dcc4;">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#556B2F" stroke-width="1.5"
+                            stroke-linecap="round">
+                            <circle cx="12" cy="10" r="7" fill="rgba(85,107,47,0.12)" />
+                            <circle cx="12" cy="10" r="4.5" stroke-dasharray="2 2" opacity="0.5" />
+                            <path
+                                d="M12 6.5l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 12.38l-2.24 1.02.43-2.5-1.81-1.76 2.5-.37z"
+                                fill="rgba(85,107,47,0.25)" />
+                            <path d="M9 17l-2 5 3-2 3 2-2-5M15 17l-2 5 3-2 3 2-2-5" />
+                        </svg>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 4. CTA — Pedido Directo -->
+        <div class="capture-section" id="sec-cta">
+            <section class="pb-section pb-section--cta pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #2d3b1a 0%, #556B2F 50%, #3a5a1c 100%); text-align:center; padding:60px 48px;">
+                <div style="max-width:700px; margin:0 auto;">
+                    <h2 style="font-size:44px; font-weight:800; color:white; margin-bottom:20px; line-height:1.2;">
+                        ¿Listo para comer fresco y local?</h2>
+                    <p style="font-size:18px; color:#dde8c4; line-height:1.65; margin-bottom:36px; opacity:0.9;">Conecta
+                        con productores de tu zona y recibe alimentos frescos directamente del campo. Sin
+                        intermediarios, sin esperas.</p>
+                    <div style="display:flex; gap:16px; justify-content:center;">
+                        <a href="#"
+                            style="display:inline-block; padding:16px 36px; background:#FF8C42; color:white; border-radius:8px; font-weight:700; font-size:16px; text-decoration:none;">Hacer
+                            mi pedido</a>
+                        <a href="#"
+                            style="display:inline-block; padding:16px 36px; background:rgba(255,255,255,0.12); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:8px; font-weight:600; font-size:16px; text-decoration:none;">Ver
+                            productores</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 5. STATS — Métricas de Impacto -->
+        <div class="capture-section" id="sec-stats">
+            <section class="pb-section pb-section--stats pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:linear-gradient(180deg, #f8faf5, #ffffff); padding:60px 48px;">
+                <div style="max-width:900px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e;">Nuestro impacto en el campo</h2>
+                        <p style="font-size:16px; color:#64748b; margin-top:12px;">Datos que reflejan el crecimiento de
+                            la comunidad AgroConecta.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:24px;">
+                        <div
+                            style="text-align:center; padding:36px 20px; background:white; border-radius:16px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <span
+                                style="font-size:48px; font-weight:800; color:#556B2F; display:block; margin-bottom:8px;">+320</span>
+                            <span style="font-size:14px; color:#64748b; font-weight:500;">Productores activos</span>
+                        </div>
+                        <div
+                            style="text-align:center; padding:36px 20px; background:white; border-radius:16px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <span
+                                style="font-size:48px; font-weight:800; color:#556B2F; display:block; margin-bottom:8px;">45
+                                Ton</span>
+                            <span style="font-size:14px; color:#64748b; font-weight:500;">Cosecha mensual</span>
+                        </div>
+                        <div
+                            style="text-align:center; padding:36px 20px; background:white; border-radius:16px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <span
+                                style="font-size:48px; font-weight:800; color:#556B2F; display:block; margin-bottom:8px;">+8K</span>
+                            <span style="font-size:14px; color:#64748b; font-weight:500;">Compradores directos</span>
+                        </div>
+                        <div
+                            style="text-align:center; padding:36px 20px; background:white; border-radius:16px; box-shadow:0 2px 16px rgba(85,107,47,0.08); border:1px solid #e8edd8;">
+                            <span
+                                style="font-size:48px; font-weight:800; color:#556B2F; display:block; margin-bottom:8px;">100%</span>
+                            <span style="font-size:14px; color:#64748b; font-weight:500;">Trazabilidad</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 6. TESTIMONIALS — Historias del Productor -->
+        <div class="capture-section" id="sec-testimonials">
+            <section class="pb-section pb-section--testimonials pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:#ffffff; padding:60px 48px;">
+                <div style="max-width:900px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Testimonios</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Historias desde el
+                            campo</h2>
+                        <p style="font-size:16px; color:#64748b;">Productores reales comparten su experiencia con
+                            AgroConecta.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+                        <div style="background:#f8faf5; border-radius:16px; padding:32px; border:1px solid #e8edd8;">
+                            <div
+                                style="font-size:36px; color:#556B2F; line-height:1; margin-bottom:12px; opacity:0.3; font-family:Georgia,serif;">
+                                &ldquo;</div>
+                            <p style="font-size:14px; color:#475569; line-height:1.7; margin-bottom:20px;">Gracias a
+                                AgroConecta puedo vender mis hortalizas directamente a familias de la ciudad. Mis
+                                ingresos han mejorado un 40%.</p>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#556B2F,#6b8a3a); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px;">
+                                    PG</div>
+                                <div>
+                                    <div style="font-weight:700; font-size:14px; color:#1a1a2e;">Pedro García</div>
+                                    <div style="font-size:12px; color:#94a3b8;">Productor hortícola, Jaén</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:#f8faf5; border-radius:16px; padding:32px; border:1px solid #e8edd8;">
+                            <div
+                                style="font-size:36px; color:#556B2F; line-height:1; margin-bottom:12px; opacity:0.3; font-family:Georgia,serif;">
+                                &ldquo;</div>
+                            <p style="font-size:14px; color:#475569; line-height:1.7; margin-bottom:20px;">La plataforma
+                                me permite mostrar el origen de mis productos y las certificaciones orgánicas. Los
+                                compradores valoran la transparencia.</p>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#556B2F,#6b8a3a); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px;">
+                                    IM</div>
+                                <div>
+                                    <div style="font-weight:700; font-size:14px; color:#1a1a2e;">Isabel Moreno</div>
+                                    <div style="font-size:12px; color:#94a3b8;">Productora de aceite, Córdoba</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:#f8faf5; border-radius:16px; padding:32px; border:1px solid #e8edd8;">
+                            <div
+                                style="font-size:36px; color:#556B2F; line-height:1; margin-bottom:12px; opacity:0.3; font-family:Georgia,serif;">
+                                &ldquo;</div>
+                            <p style="font-size:14px; color:#475569; line-height:1.7; margin-bottom:20px;">Antes
+                                dependía de intermediarios. Ahora gestiono mis pedidos directamente y mis productos
+                                llegan frescos al consumidor final.</p>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#556B2F,#6b8a3a); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px;">
+                                    MT</div>
+                                <div>
+                                    <div style="font-weight:700; font-size:14px; color:#1a1a2e;">Manuel Torres</div>
+                                    <div style="font-size:12px; color:#94a3b8;">Agricultor de frutas, Granada</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 7. PRICING — Cajas de Suscripción -->
+        <div class="capture-section" id="sec-pricing">
+            <section class="pb-section pb-section--pricing pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:linear-gradient(180deg, #f8faf5, #ffffff); padding:60px 48px;">
+                <div style="max-width:900px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Suscripciones</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Elige tu caja de
+                            productos frescos</h2>
+                        <p style="font-size:16px; color:#64748b;">Recibe productos de temporada directamente del
+                            productor cada semana.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; align-items:start;">
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 2px 16px rgba(85,107,47,0.06); border:1px solid #e8edd8; text-align:center;">
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:16px;">Caja Huerta
+                            </h3>
+                            <div style="font-size:48px; font-weight:800; color:#556B2F;">19&euro;</div>
+                            <div style="font-size:14px; color:#94a3b8; margin-bottom:24px;">/semana</div>
+                            <ul style="list-style:none; text-align:left; margin-bottom:28px; padding:0;">
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>5 kg de verduras</li>
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Productos de temporada
+                                </li>
+                                <li style="padding:8px 0; color:#475569; font-size:14px;"><span
+                                        style="color:#556B2F; margin-right:8px;">&#10003;</span>Entrega semanal</li>
+                            </ul>
+                            <a href="#"
+                                style="display:block; padding:12px; background:rgba(85,107,47,0.1); color:#556B2F; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">Suscribirse</a>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 8px 32px rgba(85,107,47,0.15); border:2px solid #556B2F; text-align:center; position:relative; transform:scale(1.05);">
+                            <span
+                                style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#556B2F,#6b8a3a); color:white; padding:4px 16px; border-radius:20px; font-size:12px; font-weight:700;">Más
+                                popular</span>
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:16px;">Caja
+                                Familiar</h3>
+                            <div style="font-size:48px; font-weight:800; color:#556B2F;">35&euro;</div>
+                            <div style="font-size:14px; color:#94a3b8; margin-bottom:24px;">/semana</div>
+                            <ul style="list-style:none; text-align:left; margin-bottom:28px; padding:0;">
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>10 kg verduras y fruta
+                                </li>
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Recetas incluidas</li>
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Entrega flexible</li>
+                                <li style="padding:8px 0; color:#475569; font-size:14px;"><span
+                                        style="color:#556B2F; margin-right:8px;">&#10003;</span>Productos orgánicos</li>
+                            </ul>
+                            <a href="#"
+                                style="display:block; padding:12px; background:#556B2F; color:white; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">Probar
+                                ahora</a>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:36px 28px; box-shadow:0 2px 16px rgba(85,107,47,0.06); border:1px solid #e8edd8; text-align:center;">
+                            <h3 style="font-size:18px; font-weight:700; color:#1a1a2e; margin-bottom:16px;">Caja Gourmet
+                            </h3>
+                            <div style="font-size:48px; font-weight:800; color:#556B2F;">55&euro;</div>
+                            <div style="font-size:14px; color:#94a3b8; margin-bottom:24px;">/semana</div>
+                            <ul style="list-style:none; text-align:left; margin-bottom:28px; padding:0;">
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Todo en Familiar</li>
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Quesos artesanales
+                                </li>
+                                <li
+                                    style="padding:8px 0; border-bottom:1px solid #f0f4e8; color:#475569; font-size:14px;">
+                                    <span style="color:#556B2F; margin-right:8px;">&#10003;</span>Aceite de oliva</li>
+                                <li style="padding:8px 0; color:#475569; font-size:14px;"><span
+                                        style="color:#556B2F; margin-right:8px;">&#10003;</span>Productos premium</li>
+                            </ul>
+                            <a href="#"
+                                style="display:block; padding:12px; background:rgba(85,107,47,0.1); color:#556B2F; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">Contactar</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 8. FAQ — Preguntas Frecuentes -->
+        <div class="capture-section" id="sec-faq">
+            <section class="pb-section pb-section--faq pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:#ffffff; padding:60px 48px;">
+                <div style="max-width:750px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">FAQ</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Preguntas frecuentes
+                        </h2>
+                        <p style="font-size:16px; color:#64748b;">Resolvemos las dudas más comunes sobre el servicio
+                            AgroConecta.</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:16px;">
+                        <div style="background:#f8faf5; border-radius:12px; border:1px solid #e8edd8; overflow:hidden;">
+                            <div
+                                style="padding:20px 24px; font-weight:700; color:#1a1a2e; display:flex; justify-content:space-between; align-items:center; font-size:16px;">
+                                ¿Cómo funciona la entrega? <span style="color:#556B2F; font-size:20px;">&#8722;</span>
+                            </div>
+                            <div style="padding:0 24px 20px; font-size:14px; color:#475569; line-height:1.7;">Los
+                                productos se entregan directamente desde la finca del productor a tu domicilio en un
+                                máximo de 24 horas desde la cosecha.</div>
+                        </div>
+                        <div style="background:white; border-radius:12px; border:1px solid #e8edd8;">
+                            <div
+                                style="padding:20px 24px; font-weight:700; color:#1a1a2e; display:flex; justify-content:space-between; align-items:center; font-size:16px;">
+                                ¿Los productos son orgánicos? <span style="color:#556B2F; font-size:20px;">+</span>
+                            </div>
+                        </div>
+                        <div style="background:white; border-radius:12px; border:1px solid #e8edd8;">
+                            <div
+                                style="padding:20px 24px; font-weight:700; color:#1a1a2e; display:flex; justify-content:space-between; align-items:center; font-size:16px;">
+                                ¿Puedo cancelar mi suscripción? <span style="color:#556B2F; font-size:20px;">+</span>
+                            </div>
+                        </div>
+                        <div style="background:white; border-radius:12px; border:1px solid #e8edd8;">
+                            <div
+                                style="padding:20px 24px; font-weight:700; color:#1a1a2e; display:flex; justify-content:space-between; align-items:center; font-size:16px;">
+                                ¿Cuál es la zona de cobertura? <span style="color:#556B2F; font-size:20px;">+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 9. GALLERY — Galería de Cosechas -->
+        <div class="capture-section" id="sec-gallery">
+            <section class="pb-section pb-section--gallery pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:linear-gradient(180deg, #f8faf5, #ffffff); padding:60px 48px;">
+                <div style="max-width:900px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Galería</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Nuestros campos</h2>
+                        <p style="font-size:16px; color:#64748b;">Imágenes de las parcelas y productos de nuestros
+                            productores.</p>
+                    </div>
+                    <div
+                        style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:16px;">
+                        <div
+                            style="background:linear-gradient(135deg, #c8d8a0, #a0b870); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Campos
+                                de cereales</span>
+                        </div>
+                        <div
+                            style="background:linear-gradient(135deg, #d4a0a0, #c08080); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Huerto
+                                de tomates</span>
+                        </div>
+                        <div
+                            style="background:linear-gradient(135deg, #8baa5c, #6b8a3c); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Olivares</span>
+                        </div>
+                        <div
+                            style="background:linear-gradient(135deg, #d4a050, #c09040); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Naranjos</span>
+                        </div>
+                        <div
+                            style="background:linear-gradient(135deg, #7aaa6a, #5a8a4a); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Verduras
+                                frescas</span>
+                        </div>
+                        <div
+                            style="background:linear-gradient(135deg, #8a6aaa, #6a4a8a); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <span
+                                style="font-size:13px; color:white; font-weight:600; background:rgba(0,0,0,0.3); padding:6px 14px; border-radius:20px;">Viñedos</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 10. MAP — Ubicación de la Finca -->
+        <div class="capture-section" id="sec-map">
+            <section class="pb-section pb-section--map pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:#ffffff; padding:60px 48px;">
+                <div
+                    style="max-width:900px; margin:0 auto; width:100%; display:grid; grid-template-columns:1.5fr 1fr; gap:32px; align-items:start;">
+                    <div
+                        style="width:100%; height:500px; border-radius:16px; background:linear-gradient(180deg, #e8f0d8, #d4dcc4); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border:1px solid #c4ccb4;">
+                        <div style="position:absolute; inset:0; opacity:0.15; background:url('data:image/svg+xml,<svg xmlns=\"
+                            http://www.w3.org/2000/svg\" width=\"100\" height=\"100\">
+                            <rect width=\"100\" height=\"100\" fill=\"none\" stroke=\"%23556B2F\"
+                                stroke-width=\"0.5\" /></svg>');">
+                        </div>
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#556B2F" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" fill="rgba(85,107,47,0.2)" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <span
+                            style="position:absolute; bottom:20px; left:20px; background:white; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; color:#556B2F; box-shadow:0 2px 8px rgba(0,0,0,0.1);">Mapa
+                            de Productores</span>
+                    </div>
+                    <div>
+                        <h2 style="font-size:28px; font-weight:800; color:#1a1a2e; margin-bottom:28px;">Encuéntranos
+                        </h2>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="display:flex; gap:16px; align-items:flex-start;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:12px; background:#f0f4e8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                        stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="font-weight:600; color:#1a1a2e; font-size:14px;">Dirección</div>
+                                    <div style="color:#64748b; font-size:13px;">Calle del Campo 42, Jaén</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:16px; align-items:flex-start;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:12px; background:#f0f4e8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                        stroke-width="2">
+                                        <path
+                                            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.81.36 1.6.68 2.35a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.75.32 1.54.55 2.35.68A2 2 0 0122 16.92z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="font-weight:600; color:#1a1a2e; font-size:14px;">Teléfono</div>
+                                    <div style="color:#64748b; font-size:13px;">+34 953 XX XX XX</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:16px; align-items:flex-start;">
+                                <div
+                                    style="width:44px; height:44px; border-radius:12px; background:#f0f4e8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B2F"
+                                        stroke-width="2">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="font-weight:600; color:#1a1a2e; font-size:14px;">Email</div>
+                                    <div style="color:#556B2F; font-size:13px;">info@agroconecta.es</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 11. SOCIAL PROOF — Nuestros Aliados -->
+        <div class="capture-section" id="sec-social-proof">
+            <section class="pb-section pb-section--social-proof pb-section--agroconecta"
+                style="min-height:1024px; display:flex; align-items:center; background:linear-gradient(180deg, #f8faf5, #ffffff); padding:60px 48px;">
+                <div style="max-width:900px; margin:0 auto; width:100%;">
+                    <div style="text-align:center; margin-bottom:48px;">
+                        <span
+                            style="color:#556B2F; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:600;">Confían
+                            en nosotros</span>
+                        <h2 style="font-size:36px; font-weight:800; color:#1a1a2e; margin:12px 0;">Nuestros aliados</h2>
+                        <p style="font-size:16px; color:#64748b;">Instituciones y empresas que apoyan la agricultura
+                            local y sostenible.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:24px;">
+                        <div
+                            style="background:white; border-radius:16px; padding:32px 20px; box-shadow:0 2px 12px rgba(85,107,47,0.06); border:1px solid #e8edd8; display:flex; align-items:center; justify-content:center; height:120px;">
+                            <span
+                                style="font-weight:800; font-size:16px; color:#556B2F; text-align:center;">Bio<br>Andalucía</span>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:32px 20px; box-shadow:0 2px 12px rgba(85,107,47,0.06); border:1px solid #e8edd8; display:flex; align-items:center; justify-content:center; height:120px;">
+                            <span style="font-weight:800; font-size:16px; color:#556B2F; text-align:center;">CAAE</span>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:32px 20px; box-shadow:0 2px 12px rgba(85,107,47,0.06); border:1px solid #e8edd8; display:flex; align-items:center; justify-content:center; height:120px;">
+                            <span
+                                style="font-weight:800; font-size:16px; color:#556B2F; text-align:center;">Junta<br>Andalucía</span>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:32px 20px; box-shadow:0 2px 12px rgba(85,107,47,0.06); border:1px solid #e8edd8; display:flex; align-items:center; justify-content:center; height:120px;">
+                            <span
+                                style="font-weight:800; font-size:16px; color:#556B2F; text-align:center;">DOP<br>Jaén</span>
+                        </div>
+                        <div
+                            style="background:white; border-radius:16px; padding:32px 20px; box-shadow:0 2px 12px rgba(85,107,47,0.06); border:1px solid #e8edd8; display:flex; align-items:center; justify-content:center; height:120px;">
+                            <span
+                                style="font-weight:800; font-size:16px; color:#556B2F; text-align:center;">Eco<br>Huerta</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
     </div>
 
-    <!-- 11. SOCIAL PROOF -->
-    <div class="thumbnail-wrapper" data-label="agroconecta-social-proof" id="agroconecta-social-proof">
-        <section class="pb-section pb-section--social-proof pb-section--agroconecta">
-            <div class="pb-section__container">
-                <div class="pb-section__header">
-                    <span class="pb-section__eyebrow">Confían en nosotros</span>
-                    <h2 class="pb-section__title">Nuestros aliados</h2>
-                    <p class="pb-section__subtitle">Instituciones y empresas que apoyan la agricultura local y
-                        sostenible.</p>
-                </div>
-                <div class="pb-section__logos-grid">
-                    <div class="pb-section__logo">
-                        <div class="pb-section__logo-placeholder">BioAndalucía</div>
-                    </div>
-                    <div class="pb-section__logo">
-                        <div class="pb-section__logo-placeholder">CAAE</div>
-                    </div>
-                    <div class="pb-section__logo">
-                        <div class="pb-section__logo-placeholder">Junta Andalucía</div>
-                    </div>
-                    <div class="pb-section__logo">
-                        <div class="pb-section__logo-placeholder">DOP Jaén</div>
-                    </div>
-                    <div class="pb-section__logo">
-                        <div class="pb-section__logo-placeholder">EcoHuerta</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+    <script>
+        function show(id) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.capture-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tool-nav button').forEach(b => b.classList.remove('active'));
 
+            // Mostrar la seleccionada
+            var sec = document.getElementById('sec-' + id);
+            if (sec) sec.classList.add('active');
+
+            var btn = document.getElementById('btn-' + id);
+            if (btn) btn.classList.add('active');
+        }
+
+        // Mostrar la primera sección por defecto
+        show('hero');
+    </script>
 </body>
 
 </html>

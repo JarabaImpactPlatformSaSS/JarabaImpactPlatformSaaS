@@ -1,0 +1,12 @@
+/**
+ * @file
+ * Jaraba Legal — Main SCSS entry point.
+ *
+ * Importa todos los parciales del módulo legal.
+ * Compilar con: sass scss/main.scss css/jaraba-legal.css
+ */
+
+@import 'legal-dashboard';
+@import 'tos-modal';
+@import 'sla-metrics';
+@import 'whistleblower';

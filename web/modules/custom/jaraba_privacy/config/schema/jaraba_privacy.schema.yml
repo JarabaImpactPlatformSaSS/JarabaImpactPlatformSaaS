@@ -1,0 +1,25 @@
+jaraba_privacy.settings:
+  type: config_object
+  label: 'Configuración de Privacidad GDPR'
+  mapping:
+    arco_pol_deadline_days:
+      type: integer
+      label: 'Plazo máximo ARCO-POL en días'
+    breach_notification_hours:
+      type: integer
+      label: 'Plazo notificación AEPD en horas'
+    dpo_email:
+      type: email
+      label: 'Email del DPO'
+    dpo_name:
+      type: string
+      label: 'Nombre del DPO'
+    cookie_banner_position:
+      type: string
+      label: 'Posición del banner de cookies'
+    cookie_expiry_days:
+      type: integer
+      label: 'Días de expiración del consentimiento de cookies'
+    enable_cookie_banner:
+      type: boolean
+      label: 'Habilitar banner de cookies'

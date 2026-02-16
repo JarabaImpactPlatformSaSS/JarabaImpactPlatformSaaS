@@ -1,0 +1,33 @@
+/**
+ * @file
+ * Estilos de las métricas SLA.
+ */
+
+.sla-status {
+  h3 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  &__meter {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+
+    &-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+
+      &--met {
+        background: #4caf50;
+      }
+
+      &--breach {
+        background: #f44336;
+      }
+    }
+  }
+}

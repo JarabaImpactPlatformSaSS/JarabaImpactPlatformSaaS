@@ -1,0 +1,57 @@
+services:
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  logger.channel.jaraba_privacy:
+    parent: logger.channel_base
+    arguments: ['jaraba_privacy']
+
+  # ===========================================
+  # CORE SERVICES (FASE 2-3)
+  # ===========================================
+
+  jaraba_privacy.dpa_manager:
+    class: Drupal\jaraba_privacy\Service\DpaManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@file_system'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_privacy'
+
+  jaraba_privacy.privacy_policy_generator:
+    class: Drupal\jaraba_privacy\Service\PrivacyPolicyGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@logger.channel.jaraba_privacy'
+
+  jaraba_privacy.cookie_consent_manager:
+    class: Drupal\jaraba_privacy\Service\CookieConsentManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@request_stack'
+      - '@logger.channel.jaraba_privacy'
+
+  jaraba_privacy.data_rights_handler:
+    class: Drupal\jaraba_privacy\Service\DataRightsHandlerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_privacy'
+
+  jaraba_privacy.breach_notification:
+    class: Drupal\jaraba_privacy\Service\BreachNotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@plugin.manager.mail'
+      - '@queue'
+      - '@logger.channel.jaraba_privacy'

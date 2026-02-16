@@ -1,0 +1,12 @@
+{
+  "name": "jaraba-dr",
+  "version": "1.0.0",
+  "description": "Jaraba DR - Disaster Recovery y continuidad de negocio",
+  "scripts": {
+    "build": "sass scss/main.scss css/jaraba-dr.css --style=compressed",
+    "watch": "sass scss/main.scss css/jaraba-dr.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.70.0"
+  }
+}

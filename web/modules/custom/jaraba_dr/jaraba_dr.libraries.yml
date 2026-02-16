@@ -1,0 +1,22 @@
+dr-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-dr.css: {}
+  js:
+    js/dr-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+status-page:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-dr.css: {}
+  js:
+    js/status-page.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

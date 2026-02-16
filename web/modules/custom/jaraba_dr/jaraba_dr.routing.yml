@@ -1,0 +1,63 @@
+# =============================================================================
+# DASHBOARD FRONTEND -- Zero region, template page--dr.html.twig
+# =============================================================================
+
+jaraba_dr.dashboard:
+  path: '/dr'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrDashboardController::dashboard'
+    _title: 'Disaster Recovery'
+  requirements:
+    _permission: 'view dr dashboard'
+
+# =============================================================================
+# STATUS PAGE PUBLICA -- Sin autenticacion
+# =============================================================================
+
+jaraba_dr.status_page:
+  path: '/status'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\StatusPageController::page'
+    _title: 'Estado de los servicios'
+  requirements:
+    _access: 'TRUE'
+
+# =============================================================================
+# CONFIGURACION -- Formulario de settings del modulo
+# =============================================================================
+
+jaraba_dr.settings:
+  path: '/admin/config/jaraba/dr'
+  defaults:
+    _form: '\Drupal\jaraba_dr\Form\DrSettingsForm'
+    _title: 'Configuracion de Disaster Recovery'
+  requirements:
+    _permission: 'administer dr'
+
+# =============================================================================
+# ENTITY ROUTES -- Field UI base routes para configuracion de campos
+# =============================================================================
+
+jaraba_dr.dr_test_result.settings:
+  path: '/admin/structure/dr-test-results'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'DR Test Results'
+  requirements:
+    _permission: 'administer dr'
+
+jaraba_dr.dr_incident.settings:
+  path: '/admin/structure/dr-incidents'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'DR Incidents'
+  requirements:
+    _permission: 'administer dr'
+
+jaraba_dr.backup_verification.settings:
+  path: '/admin/structure/backup-verifications'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Backup Verifications'
+  requirements:
+    _permission: 'administer dr'

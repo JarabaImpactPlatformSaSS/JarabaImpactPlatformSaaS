@@ -1423,6 +1423,30 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
+  // STACK COMPLIANCE LEGAL N1 — Body classes para rutas de privacidad, legal y DR.
+  // jaraba_privacy (GDPR/DPA), jaraba_legal (ToS/SLA/AUP), jaraba_dr (DR/Backups).
+  // Plan Implementacion Stack Compliance Legal N1 v1 — FASE 0.
+  // =========================================================================
+  if (str_starts_with((string) $route, 'jaraba_privacy.')) {
+    $variables['attributes']['class'][] = 'page-privacy';
+    $variables['attributes']['class'][] = 'compliance-page';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+  if (str_starts_with((string) $route, 'jaraba_legal.')) {
+    $variables['attributes']['class'][] = 'page-legal-compliance';
+    $variables['attributes']['class'][] = 'compliance-page';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+  if (str_starts_with((string) $route, 'jaraba_dr.')) {
+    $variables['attributes']['class'][] = 'page-dr-status';
+    $variables['attributes']['class'][] = 'compliance-page';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+
+  // =========================================================================
   // ZERO REGION CATCH-ALL — Body classes para módulos custom sin cobertura
   //
   // Añade dashboard-page + full-width-layout + clase por módulo a todas
@@ -2428,6 +2452,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
     'jaraba_onboarding.', 'jaraba_page_builder.', 'jaraba_paths.',
     'jaraba_pixels.', 'jaraba_producer.', 'jaraba_referral.',
+    'jaraba_privacy.', 'jaraba_legal.', 'jaraba_dr.',
     'jaraba_security_compliance.', 'jaraba_self_discovery.',
     'jaraba_sepe_teleformacion.', 'jaraba_servicios_conecta.',
     'jaraba_site_builder.', 'jaraba_skills.', 'jaraba_social.',
@@ -2929,6 +2954,24 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // Integrations (rutas adicionales) → page--integrations.html.twig
   if (str_starts_with($route_str, 'jaraba_integrations.')) {
     $suggestions[] = 'page__integrations';
+  }
+
+  // =========================================================================
+  // STACK COMPLIANCE LEGAL N1 — Templates zero-region para dashboards
+  // Plan Implementacion Stack Compliance Legal N1 v1 — FASE 0.
+  //
+  // Privacidad GDPR → page--privacy.html.twig
+  // Términos Legales → page--legal-compliance.html.twig
+  // Disaster Recovery → page--dr-status.html.twig
+  // =========================================================================
+  if (str_starts_with($route_str, 'jaraba_privacy.')) {
+    $suggestions[] = 'page__privacy';
+  }
+  if (str_starts_with($route_str, 'jaraba_legal.')) {
+    $suggestions[] = 'page__legal_compliance';
+  }
+  if (str_starts_with($route_str, 'jaraba_dr.')) {
+    $suggestions[] = 'page__dr_status';
   }
 }
 

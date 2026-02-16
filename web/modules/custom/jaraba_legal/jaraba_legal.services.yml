@@ -1,0 +1,56 @@
+services:
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  logger.channel.jaraba_legal:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal']
+
+  # ===========================================
+  # CORE SERVICES (FASE 5)
+  # ===========================================
+
+  jaraba_legal.tos_manager:
+    class: Drupal\jaraba_legal\Service\TosManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_legal'
+
+  jaraba_legal.sla_calculator:
+    class: Drupal\jaraba_legal\Service\SlaCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal'
+
+  jaraba_legal.aup_enforcer:
+    class: Drupal\jaraba_legal\Service\AupEnforcerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal'
+
+  jaraba_legal.offboarding_manager:
+    class: Drupal\jaraba_legal\Service\OffboardingManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@file_system'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_legal'
+
+  jaraba_legal.whistleblower_channel:
+    class: Drupal\jaraba_legal\Service\WhistleblowerChannelService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_legal'

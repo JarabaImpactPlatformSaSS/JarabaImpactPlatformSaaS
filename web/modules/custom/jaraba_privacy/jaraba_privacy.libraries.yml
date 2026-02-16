@@ -1,0 +1,30 @@
+privacy-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-privacy.css: {}
+  js:
+    js/privacy-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+cookie-banner:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-privacy.css: {}
+  js:
+    js/cookie-banner.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+dpa-signature:
+  version: 1.x
+  js:
+    js/dpa-signature.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.dialog.ajax

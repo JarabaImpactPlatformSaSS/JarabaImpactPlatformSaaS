@@ -1,0 +1,7 @@
+tos_re_acceptance_required: true
+sla_default_tier: '99.5'
+sla_credit_percentage: 10
+offboarding_grace_days: 30
+offboarding_export_formats: ['json', 'csv']
+whistleblower_enabled: true
+whistleblower_anonymous_tracking: true

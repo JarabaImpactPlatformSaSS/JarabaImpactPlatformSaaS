@@ -1,0 +1,23 @@
+jaraba_privacy.dpa_agreement.add:
+  title: 'Añadir DPA'
+  route_name: entity.dpa_agreement.add_form
+  appears_on:
+    - entity.dpa_agreement.collection
+
+jaraba_privacy.privacy_policy.add:
+  title: 'Añadir política de privacidad'
+  route_name: entity.privacy_policy.add_form
+  appears_on:
+    - entity.privacy_policy.collection
+
+jaraba_privacy.processing_activity.add:
+  title: 'Añadir actividad de tratamiento'
+  route_name: entity.processing_activity.add_form
+  appears_on:
+    - entity.processing_activity.collection
+
+jaraba_privacy.data_rights_request.add:
+  title: 'Crear solicitud ARCO-POL'
+  route_name: entity.data_rights_request.add_form
+  appears_on:
+    - entity.data_rights_request.collection

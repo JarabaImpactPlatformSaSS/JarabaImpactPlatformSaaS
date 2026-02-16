@@ -1,0 +1,24 @@
+administer dr:
+  title: 'Administrar configuracion de Disaster Recovery'
+  description: 'Acceso completo a DR: tests, incidentes, backups y configuracion.'
+  restrict access: true
+
+view dr dashboard:
+  title: 'Ver panel de Disaster Recovery'
+  description: 'Consultar estado de DR, backups y tests.'
+
+manage dr incidents:
+  title: 'Gestionar incidentes DR'
+  description: 'Crear, actualizar y resolver incidentes de Disaster Recovery.'
+
+execute dr tests:
+  title: 'Ejecutar tests DR'
+  description: 'Lanzar y supervisar pruebas de Disaster Recovery.'
+
+view status page:
+  title: 'Ver pagina de estado publica'
+  description: 'Acceso a la pagina de estado publica de los servicios.'
+
+access dr api:
+  title: 'Acceder a API de Disaster Recovery'
+  description: 'Acceso a los endpoints REST de DR.'

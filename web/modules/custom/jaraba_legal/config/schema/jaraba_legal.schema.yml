@@ -1,0 +1,28 @@
+jaraba_legal.settings:
+  type: config_object
+  label: 'Configuración Legal del Servicio SaaS'
+  mapping:
+    tos_re_acceptance_required:
+      type: boolean
+      label: 'Re-aceptación de ToS requerida al cambiar versión'
+    sla_default_tier:
+      type: string
+      label: 'Porcentaje SLA por defecto'
+    sla_credit_percentage:
+      type: integer
+      label: 'Porcentaje de crédito por incumplimiento SLA'
+    offboarding_grace_days:
+      type: integer
+      label: 'Días de gracia para offboarding'
+    offboarding_export_formats:
+      type: sequence
+      label: 'Formatos de exportación disponibles'
+      sequence:
+        type: string
+        label: 'Formato'
+    whistleblower_enabled:
+      type: boolean
+      label: 'Canal de denuncias habilitado'
+    whistleblower_anonymous_tracking:
+      type: boolean
+      label: 'Seguimiento anónimo de denuncias habilitado'

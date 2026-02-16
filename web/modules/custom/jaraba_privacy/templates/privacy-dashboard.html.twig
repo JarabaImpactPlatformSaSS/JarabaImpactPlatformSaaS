@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Template del dashboard de privacidad GDPR.
+ *
+ * Variables disponibles:
+ * - dpa_status: Estado de los DPA del tenant.
+ * - cookie_stats: Métricas de consentimiento de cookies.
+ * - arco_pol_requests: Solicitudes ARCO-POL activas.
+ * - breach_alerts: Alertas de brechas de seguridad.
+ * - rat_overview: Resumen del RAT (Registro de Actividades de Tratamiento).
+ * - metrics: Métricas globales del dashboard.
+ *
+ * Este template se renderiza dentro de page--privacy.html.twig (zero-region).
+ */
+#}
+<div class="jaraba-privacy-dashboard">
+  <div class="privacy-dashboard__header">
+    <h1>{{ 'Privacidad GDPR'|t }}</h1>
+    <p class="privacy-dashboard__subtitle">{{ 'Panel de cumplimiento RGPD/LOPD-GDD'|t }}</p>
+  </div>
+
+  <div class="privacy-dashboard__grid">
+    {# Sección 1: Estado DPA #}
+    <div class="privacy-dashboard__section privacy-dashboard__section--dpa">
+      {% include '@jaraba_privacy/partials/_dpa-status.html.twig' with {
+        'dpa_status': dpa_status
+      } only %}
+    </div>
+
+    {# Sección 2: Cookie Consent #}
+    <div class="privacy-dashboard__section privacy-dashboard__section--cookies">
+      {% include '@jaraba_privacy/partials/_cookie-stats.html.twig' with {
+        'cookie_stats': cookie_stats
+      } only %}
+    </div>
+
+    {# Sección 3: Solicitudes ARCO-POL #}
+    <div class="privacy-dashboard__section privacy-dashboard__section--arco-pol">
+      {% include '@jaraba_privacy/partials/_arco-pol-requests.html.twig' with {
+        'arco_pol_requests': arco_pol_requests
+      } only %}
+    </div>
+
+    {# Sección 4: Brechas de Seguridad #}
+    <div class="privacy-dashboard__section privacy-dashboard__section--breaches">
+      {% include '@jaraba_privacy/partials/_breach-alerts.html.twig' with {
+        'breach_alerts': breach_alerts
+      } only %}
+    </div>
+  </div>
+</div>

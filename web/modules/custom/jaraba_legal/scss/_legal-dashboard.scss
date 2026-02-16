@@ -1,0 +1,31 @@
+/**
+ * @file
+ * Estilos del dashboard legal.
+ */
+
+.jaraba-legal-dashboard {
+  padding: 1.5rem;
+}
+
+.legal-dashboard__header {
+  margin-bottom: 2rem;
+}
+
+.legal-dashboard__subtitle {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.legal-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.legal-dashboard__card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}

@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Partial: historial de tests DR.
+ */
+#}
+<div class="dr-test-history">
+  <h3>{{ 'Historial de tests DR'|t }}</h3>
+  {% if test_results %}
+    <table class="dr-test-history__table">
+      <thead>
+        <tr>
+          <th>{{ 'Nombre'|t }}</th>
+          <th>{{ 'Tipo'|t }}</th>
+          <th>{{ 'Estado'|t }}</th>
+          <th>{{ 'Duracion'|t }}</th>
+          <th>{{ 'Fecha'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for test in test_results %}
+          <tr class="dr-test-history__row dr-test-history__row--{{ test.status }}">
+            <td>{{ test.test_name }}</td>
+            <td>{{ test.test_type }}</td>
+            <td>{{ test.status_label }}</td>
+            <td>{{ test.duration }}</td>
+            <td>{{ test.created }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="dr-test-history__empty">{{ 'No hay resultados de tests disponibles.'|t }}</p>
+  {% endif %}
+</div>

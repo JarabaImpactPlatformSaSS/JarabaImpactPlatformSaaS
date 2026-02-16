@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Partial: Métricas de consentimiento de cookies.
+ */
+#}
+<div class="cookie-stats">
+  <h3>{{ 'Cookie Consent'|t }}</h3>
+  {% if cookie_stats %}
+    <div class="cookie-stats__grid">
+      <div class="cookie-stats__item">
+        <span class="cookie-stats__value">{{ cookie_stats.total|default(0) }}</span>
+        <span class="cookie-stats__label">{{ 'Consentimientos'|t }}</span>
+      </div>
+      <div class="cookie-stats__item">
+        <span class="cookie-stats__value">{{ cookie_stats.analytics_rate|default('0%') }}</span>
+        <span class="cookie-stats__label">{{ 'Analíticas'|t }}</span>
+      </div>
+      <div class="cookie-stats__item">
+        <span class="cookie-stats__value">{{ cookie_stats.marketing_rate|default('0%') }}</span>
+        <span class="cookie-stats__label">{{ 'Marketing'|t }}</span>
+      </div>
+    </div>
+  {% else %}
+    <p class="cookie-stats__empty">{{ 'Sin datos de consentimiento disponibles.'|t }}</p>
+  {% endif %}
+</div>

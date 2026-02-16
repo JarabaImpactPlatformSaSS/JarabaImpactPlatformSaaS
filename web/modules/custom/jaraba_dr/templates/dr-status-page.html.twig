@@ -1,0 +1,77 @@
+{#
+/**
+ * @file
+ * Template para la pagina de estado publica.
+ *
+ * Variables:
+ * - services: Lista de servicios con su estado.
+ * - active_incidents: Incidentes activos actuales.
+ * - recent_incidents: Incidentes recientes resueltos.
+ * - uptime_metrics: Metricas de uptime.
+ * - last_updated: Timestamp de ultima actualizacion.
+ * - refresh_seconds: Intervalo de auto-refresco.
+ */
+#}
+<div class="jaraba-dr-status-page" data-refresh-seconds="{{ refresh_seconds }}">
+  <div class="status-page__header">
+    <h1>{{ 'Estado de los servicios'|t }}</h1>
+    <p class="status-page__updated">
+      {{ 'Ultima actualizacion:'|t }} {{ last_updated|date('d/m/Y H:i:s') }}
+    </p>
+  </div>
+
+  {# Estado global #}
+  <div class="status-page__global">
+    {% if active_incidents|length > 0 %}
+      <div class="status-page__global-status status-page__global-status--degraded">
+        {{ 'Algunos servicios presentan incidencias'|t }}
+      </div>
+    {% else %}
+      <div class="status-page__global-status status-page__global-status--operational">
+        {{ 'Todos los sistemas operativos'|t }}
+      </div>
+    {% endif %}
+  </div>
+
+  {# Lista de servicios #}
+  <div class="status-page__services">
+    {% if services %}
+      {% for service in services %}
+        <div class="status-page__service status-page__service--{{ service.status }}">
+          <span class="status-page__service-name">{{ service.name }}</span>
+          <span class="status-page__service-status">{{ service.status_label }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="status-page__empty">{{ 'No hay informacion de servicios disponible.'|t }}</p>
+    {% endif %}
+  </div>
+
+  {# Incidentes activos #}
+  {% if active_incidents|length > 0 %}
+    <div class="status-page__active-incidents">
+      <h2>{{ 'Incidentes activos'|t }}</h2>
+      {% for incident in active_incidents %}
+        <div class="status-page__incident status-page__incident--{{ incident.severity }}">
+          <h3>{{ incident.title }}</h3>
+          <p>{{ incident.description }}</p>
+          <span class="status-page__incident-time">{{ incident.started_at }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# Incidentes recientes #}
+  {% if recent_incidents|length > 0 %}
+    <div class="status-page__recent-incidents">
+      <h2>{{ 'Incidentes recientes'|t }}</h2>
+      {% for incident in recent_incidents %}
+        <div class="status-page__incident status-page__incident--resolved">
+          <h3>{{ incident.title }}</h3>
+          <p>{{ incident.resolution }}</p>
+          <span class="status-page__incident-time">{{ incident.resolved_at }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

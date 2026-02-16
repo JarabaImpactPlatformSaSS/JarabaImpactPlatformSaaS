@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Partial: tarjeta de estado de un servicio DR.
+ */
+#}
+<div class="dr-status-card">
+  <h3>{{ 'Estado de servicios'|t }}</h3>
+  {% if service_status %}
+    {% for service in service_status %}
+      <div class="dr-status-card__item dr-status-card__item--{{ service.status }}">
+        <span class="dr-status-card__name">{{ service.name }}</span>
+        <span class="dr-status-card__status">{{ service.status_label }}</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="dr-status-card__empty">{{ 'Sin datos de estado disponibles.'|t }}</p>
+  {% endif %}
+</div>
