@@ -1,0 +1,17 @@
+jaraba_legal_calendar.deadlines_tab:
+  title: 'Plazos'
+  route_name: entity.legal_deadline.collection
+  base_route: system.admin_content
+  weight: 15
+
+jaraba_legal_calendar.hearings_tab:
+  title: 'Senalados'
+  route_name: entity.court_hearing.collection
+  base_route: system.admin_content
+  weight: 16
+
+jaraba_legal_calendar.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_legal_calendar.settings
+  base_route: jaraba_legal_calendar.settings
+  weight: 0

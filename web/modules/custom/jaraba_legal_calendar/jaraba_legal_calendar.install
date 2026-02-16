@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Install/update/uninstall hooks para jaraba_legal_calendar.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ *
+ * Crea taxonomia 'deadline_computation_rule' con reglas de computo
+ * procesales y tributarias precargadas.
+ */
+function jaraba_legal_calendar_install(): void {
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $vid = 'deadline_computation_rule';
+
+  // Crear vocabulario si no existe.
+  if (!$vocab_storage->load($vid)) {
+    $vocab_storage->create([
+      'vid' => $vid,
+      'name' => 'Reglas de Computo de Plazos',
+      'description' => 'Reglas precargadas para computo automatico de plazos procesales y tributarios.',
+    ])->save();
+  }
+
+  // Verificar si ya hay terminos.
+  $existing = $term_storage->getQuery()
+    ->condition('vid', $vid)
+    ->range(0, 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($existing)) {
+    return;
+  }
+
+  // Reglas precargadas.
+  $rules = [
+    'Contestacion a la demanda — 20 dias habiles (LEC Art. 405)',
+    'Recurso de apelacion — 20 dias habiles (LEC Art. 458)',
+    'Recurso de casacion — 20 dias habiles (LEC Art. 479)',
+    'Recurso de reposicion — 5 dias habiles (LEC Art. 452)',
+    'Modelo 303 IVA trimestral — 20 dias naturales (LGT)',
+    'Modelo 200 Impuesto Sociedades — 25 dias naturales (LIS Art. 124)',
+    'Modelo 100 IRPF anual — 30 junio (LIRPF)',
+    'Recurso economico-administrativo — 1 mes natural (LGT Art. 235)',
+    'Recurso contencioso-administrativo — 2 meses naturales (LJCA Art. 46)',
+  ];
+
+  $weight = 0;
+  foreach ($rules as $name) {
+    $term_storage->create([
+      'vid' => $vid,
+      'name' => $name,
+      'weight' => $weight++,
+    ])->save();
+  }
+
+  \Drupal::messenger()->addStatus(t('Se han creado @count reglas de computo de plazos.', ['@count' => count($rules)]));
+}

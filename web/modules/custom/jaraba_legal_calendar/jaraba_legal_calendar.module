@@ -1,0 +1,164 @@
+<?php
+
+/**
+ * @file
+ * Modulo Jaraba Legal Calendar — Agenda Juridica y Tributaria.
+ *
+ * Proporciona gestion de plazos procesales, senalados judiciales,
+ * sincronizacion con Google Calendar / Outlook, y computo automatico
+ * de plazos segun LEC Art. 130-136 y LGT Art. 48.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_legal_calendar_theme(): array {
+  return [
+    'legal_calendar_dashboard' => [
+      'variables' => [
+        'deadlines' => [],
+        'hearings' => [],
+        'connections' => [],
+      ],
+    ],
+    'legal_deadline_card' => [
+      'template' => 'partials/deadline-card',
+      'variables' => [
+        'deadline' => NULL,
+      ],
+    ],
+    'legal_hearing_card' => [
+      'template' => 'partials/hearing-card',
+      'variables' => [
+        'hearing' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Body classes para paginas del modulo calendario.
+ */
+function jaraba_legal_calendar_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $map = [
+    'jaraba_legal_calendar.dashboard' => ['page-legal-calendar', 'dashboard-page', 'full-width-layout'],
+  ];
+
+  if (isset($map[$route_name])) {
+    foreach ($map[$route_name] as $class) {
+      $variables['attributes']['class'][] = $class;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Inyecta variables para templates zero-region.
+ */
+function jaraba_legal_calendar_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if ($route_name === 'jaraba_legal_calendar.dashboard') {
+    $agenda = \Drupal::service('jaraba_legal_calendar.agenda');
+    $variables['deadlines'] = $agenda->getUpcomingDeadlines(30);
+    $variables['hearings'] = $agenda->getHearings(30);
+    $variables['#attached']['drupalSettings']['jarabaLegalCalendar'] = [
+      'apiBase' => '/api/v1/legal/calendar',
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Registra actividad en el expediente al crear plazos o senalados.
+ */
+function jaraba_legal_calendar_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'legal_deadline') {
+    $case_id = $entity->get('case_id')->target_id;
+    if ($case_id && \Drupal::moduleHandler()->moduleExists('jaraba_legal_cases')) {
+      \Drupal::service('jaraba_legal_cases.activity_logger')->log(
+        (int) $case_id,
+        'deadline_created',
+        NULL,
+        'provider',
+        (string) new TranslatableMarkup('Plazo creado: @title — Vencimiento: @date', [
+          '@title' => $entity->label(),
+          '@date' => $entity->get('due_date')->value ?? '',
+        ])
+      );
+    }
+  }
+
+  if ($entity->getEntityTypeId() === 'court_hearing') {
+    $case_id = $entity->get('case_id')->target_id;
+    if ($case_id && \Drupal::moduleHandler()->moduleExists('jaraba_legal_cases')) {
+      \Drupal::service('jaraba_legal_cases.activity_logger')->log(
+        (int) $case_id,
+        'hearing_scheduled',
+        NULL,
+        'provider',
+        (string) new TranslatableMarkup('Vista senalada: @title — @date', [
+          '@title' => $entity->label(),
+          '@date' => $entity->get('scheduled_at')->value ?? '',
+        ])
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Verifica plazos proximos y marca vencidos. Envia alertas.
+ */
+function jaraba_legal_calendar_cron(): void {
+  $lastRun = \Drupal::state()->get('jaraba_legal_calendar.cron_deadline_check', 0);
+  if (\Drupal::time()->getRequestTime() - $lastRun < 3600) {
+    return;
+  }
+
+  // Marcar plazos vencidos.
+  $storage = \Drupal::entityTypeManager()->getStorage('legal_deadline');
+  $now = date('Y-m-d\TH:i:s');
+  $ids = $storage->getQuery()
+    ->condition('status', ['pending', 'in_progress'], 'IN')
+    ->condition('due_date', $now, '<')
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($ids)) {
+    $deadlines = $storage->loadMultiple($ids);
+    foreach ($deadlines as $deadline) {
+      $deadline->set('status', 'overdue');
+      $deadline->save();
+    }
+  }
+
+  // Enviar alertas de plazos proximos.
+  \Drupal::service('jaraba_legal_calendar.alerts')->checkUpcomingDeadlines();
+  \Drupal::state()->set('jaraba_legal_calendar.cron_deadline_check', \Drupal::time()->getRequestTime());
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_legal_calendar_mail(string $key, array &$message, array $params): void {
+  if ($key === 'deadline_alert') {
+    $message['subject'] = (string) new TranslatableMarkup('Plazo proximo: @title', ['@title' => $params['deadline_title']]);
+    $message['body'][] = (string) new TranslatableMarkup('El plazo "@title" vence el @date.', [
+      '@title' => $params['deadline_title'],
+      '@date' => $params['due_date'],
+    ]);
+  }
+}

@@ -2491,7 +2491,9 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_ads.', 'jaraba_email.', 'jaraba_events.', 'jaraba_funding.', 'jaraba_geo.',
     'jaraba_heatmap.', 'jaraba_i18n.', 'jaraba_insights_hub.',
     'jaraba_integrations.', 'jaraba_interactive.', 'jaraba_job_board.',
-    'jaraba_legal_cases.', 'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
+    'jaraba_legal_cases.', 'jaraba_legal_calendar.', 'jaraba_legal_vault.',
+    'jaraba_legal_billing.', 'jaraba_legal_lexnet.', 'jaraba_legal_templates.',
+    'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
     'jaraba_onboarding.', 'jaraba_page_builder.', 'jaraba_paths.',
     'jaraba_pixels.', 'jaraba_producer.', 'jaraba_referral.',
     'jaraba_privacy.', 'jaraba_legal.', 'jaraba_dr.',
@@ -3050,6 +3052,14 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
   if ($route_str === 'jaraba_legal_cases.case_detail') {
     $suggestions[] = 'page__legal_case_detail';
+  }
+
+  // =========================================================================
+  // JARABALEX LEGAL CALENDAR — Template zero-region para agenda
+  // Plan Implementacion JarabaLex Legal Practice Platform v1 — FASE A2.
+  // =========================================================================
+  if ($route_str === 'jaraba_legal_calendar.dashboard') {
+    $suggestions[] = 'page__legal_calendar';
   }
 }
 

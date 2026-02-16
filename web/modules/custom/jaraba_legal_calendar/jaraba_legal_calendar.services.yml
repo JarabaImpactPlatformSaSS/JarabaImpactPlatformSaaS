@@ -1,0 +1,30 @@
+services:
+  logger.channel.jaraba_legal_calendar:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_calendar']
+
+  jaraba_legal_calendar.deadline_calculator:
+    class: Drupal\jaraba_legal_calendar\Service\DeadlineCalculatorService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_calendar'
+
+  jaraba_legal_calendar.calendar_sync:
+    class: Drupal\jaraba_legal_calendar\Service\CalendarSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_legal_calendar'
+
+  jaraba_legal_calendar.agenda:
+    class: Drupal\jaraba_legal_calendar\Service\LegalAgendaService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_calendar'
+
+  jaraba_legal_calendar.alerts:
+    class: Drupal\jaraba_legal_calendar\Service\DeadlineAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_legal_calendar'

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">{{ 'Saltar al contenido principal'|t }}</a>
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' %}
+
+  <main id="main-content" class="legal-calendar-dashboard" role="main">
+    <div class="legal-calendar-dashboard__header">
+      <div class="legal-calendar-dashboard__title-row">
+        <h1 class="legal-calendar-dashboard__title">
+          {{ 'Agenda Juridica'|t }}
+        </h1>
+        <div class="legal-calendar-dashboard__actions">
+          <a href="/admin/content/legal-deadlines/add" class="ej-btn ej-btn--primary" data-dialog-type="modal" data-dialog-options='{"width":700}'>
+            + {{ 'Nuevo Plazo'|t }}
+          </a>
+          <a href="/admin/content/court-hearings/add" class="ej-btn ej-btn--secondary" data-dialog-type="modal" data-dialog-options='{"width":700}'>
+            + {{ 'Nuevo Senalado'|t }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal-calendar-dashboard__content">
+      <section class="legal-calendar-dashboard__deadlines">
+        <h2 class="legal-calendar-dashboard__section-title">{{ 'Plazos Proximos'|t }}</h2>
+        {% if deadlines is not empty %}
+          <div class="legal-calendar-dashboard__deadline-list">
+            {% for deadline in deadlines %}
+              {% include '@jaraba_legal_calendar/partials/deadline-card.html.twig' with {deadline: deadline} %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="legal-calendar-dashboard__empty">
+            <p>{{ 'No hay plazos proximos.'|t }}</p>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="legal-calendar-dashboard__hearings">
+        <h2 class="legal-calendar-dashboard__section-title">{{ 'Senalados'|t }}</h2>
+        {% if hearings is not empty %}
+          <div class="legal-calendar-dashboard__hearing-list">
+            {% for hearing in hearings %}
+              {% include '@jaraba_legal_calendar/partials/hearing-card.html.twig' with {hearing: hearing} %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="legal-calendar-dashboard__empty">
+            <p>{{ 'No hay senalados proximos.'|t }}</p>
+          </div>
+        {% endif %}
+      </section>
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

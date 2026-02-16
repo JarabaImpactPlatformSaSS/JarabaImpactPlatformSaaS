@@ -1,0 +1,76 @@
+.legal-calendar-dashboard {
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-lg, 1.5rem);
+  min-height: calc(100vh - 160px);
+
+  &__header {
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ej-spacing-md, 1rem);
+    flex-wrap: wrap;
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ej-spacing-xl, 2rem);
+    align-items: start;
+  }
+
+  &__section-title {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+  }
+
+  &__deadline-list,
+  &__hearing-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: var(--ej-spacing-xl, 2rem);
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  @media (max-width: 767px) {
+    padding: var(--ej-spacing-lg, 1.5rem) var(--ej-spacing-md, 1rem);
+
+    &__title-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__content {
+      grid-template-columns: 1fr;
+    }
+  }
+}

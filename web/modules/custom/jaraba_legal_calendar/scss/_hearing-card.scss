@@ -1,0 +1,85 @@
+.ej-hearing-card {
+  background: var(--ej-bg-surface, #ffffff);
+  border-radius: var(--ej-radius-md, 0.75rem);
+  padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 3px 0 rgba(0, 0, 0, 0.1));
+  border-left: 4px solid var(--ej-color-innovation, #00A9A5);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--ej-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  }
+
+  &--completed {
+    border-left-color: var(--ej-color-success, #10B981);
+    opacity: 0.7;
+  }
+
+  &--postponed {
+    border-left-color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--cancelled {
+    border-left-color: var(--ej-color-neutral, #64748B);
+    opacity: 0.5;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__type {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__title {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    font-size: 0.85rem;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__court {
+    font-weight: 500;
+    color: var(--ej-text-primary, #1A1A2E);
+  }
+
+  &__schedule {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-top: var(--ej-spacing-xs, 0.25rem);
+    padding-top: var(--ej-spacing-xs, 0.25rem);
+    border-top: 1px solid var(--ej-border-color, #E2E8F0);
+    font-size: 0.8rem;
+    color: var(--ej-text-muted, #64748B);
+  }
+
+  &__date {
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  &__virtual {
+    background: color-mix(in srgb, var(--ej-color-info, #1976D2) 15%, transparent);
+    color: var(--ej-color-info, #1976D2);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+}

@@ -1,0 +1,18 @@
+global:
+  version: 1.0
+  css:
+    theme:
+      css/jaraba-legal-calendar.css: { minified: true }
+  dependencies:
+    - ecosistema_jaraba_core/global
+
+dashboard:
+  version: 1.0
+  js:
+    js/legal-calendar-dashboard.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.dialog.ajax
+    - jaraba_legal_calendar/global

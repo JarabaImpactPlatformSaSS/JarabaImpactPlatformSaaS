@@ -1,0 +1,24 @@
+access legal calendar:
+  title: 'Acceder a agenda juridica'
+  description: 'Ver plazos, senalados y calendario propio.'
+
+access legal calendar api:
+  title: 'Acceso API calendario'
+  description: 'Acceso programatico a endpoints REST de calendario.'
+
+manage legal deadlines:
+  title: 'Gestionar plazos legales'
+  description: 'Crear, editar y completar plazos procesales y tributarios.'
+
+manage legal hearings:
+  title: 'Gestionar senalados judiciales'
+  description: 'Crear, editar y cancelar senalados de vistas.'
+
+manage calendar connections:
+  title: 'Gestionar conexiones de calendario'
+  description: 'Conectar y desconectar Google Calendar / Outlook.'
+
+administer legal calendar:
+  title: 'Administrar modulo de calendario'
+  description: 'Configuracion avanzada del modulo.'
+  restrict access: true

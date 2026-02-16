@@ -1,0 +1,161 @@
+# Settings form (field_ui_base_route)
+jaraba_legal_calendar.settings:
+  path: '/admin/structure/legal-calendar'
+  defaults:
+    _form: '\Drupal\jaraba_legal_calendar\Form\CalendarSettingsForm'
+    _title: 'Configuracion Agenda Juridica'
+  requirements:
+    _permission: 'administer legal calendar'
+
+# Frontend zero-region
+jaraba_legal_calendar.dashboard:
+  path: '/legal/calendar'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarDashboardController::dashboard'
+    _title: 'Agenda Juridica'
+  requirements:
+    _permission: 'access legal calendar'
+
+# ===== REST API: Deadlines =====
+jaraba_legal_calendar.api.deadlines.list:
+  path: '/api/v1/legal/calendar/deadlines'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::listDeadlines'
+  requirements:
+    _permission: 'access legal calendar api'
+  methods: [GET]
+
+jaraba_legal_calendar.api.deadlines.store:
+  path: '/api/v1/legal/calendar/deadlines'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::storeDeadline'
+  requirements:
+    _permission: 'manage legal deadlines'
+  methods: [POST]
+
+jaraba_legal_calendar.api.deadlines.compute:
+  path: '/api/v1/legal/calendar/deadlines/compute'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::computeDeadline'
+  requirements:
+    _permission: 'manage legal deadlines'
+  methods: [POST]
+
+jaraba_legal_calendar.api.deadlines.update:
+  path: '/api/v1/legal/calendar/deadlines/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::updateDeadline'
+  requirements:
+    _permission: 'manage legal deadlines'
+  methods: [PATCH]
+
+jaraba_legal_calendar.api.deadlines.complete:
+  path: '/api/v1/legal/calendar/deadlines/{uuid}/complete'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::completeDeadline'
+  requirements:
+    _permission: 'manage legal deadlines'
+  methods: [POST]
+
+# ===== REST API: Hearings =====
+jaraba_legal_calendar.api.hearings.list:
+  path: '/api/v1/legal/calendar/hearings'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::listHearings'
+  requirements:
+    _permission: 'access legal calendar api'
+  methods: [GET]
+
+jaraba_legal_calendar.api.hearings.store:
+  path: '/api/v1/legal/calendar/hearings'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::storeHearing'
+  requirements:
+    _permission: 'manage legal hearings'
+  methods: [POST]
+
+jaraba_legal_calendar.api.hearings.update:
+  path: '/api/v1/legal/calendar/hearings/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::updateHearing'
+  requirements:
+    _permission: 'manage legal hearings'
+  methods: [PATCH]
+
+# ===== REST API: Agenda =====
+jaraba_legal_calendar.api.agenda:
+  path: '/api/v1/legal/calendar/agenda'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::agendaView'
+  requirements:
+    _permission: 'access legal calendar api'
+  methods: [GET]
+
+jaraba_legal_calendar.api.agenda.month:
+  path: '/api/v1/legal/calendar/agenda/{year}/{month}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::monthView'
+  requirements:
+    _permission: 'access legal calendar api'
+    year: '\d{4}'
+    month: '\d{1,2}'
+  methods: [GET]
+
+# ===== REST API: Connections =====
+jaraba_legal_calendar.api.connections.list:
+  path: '/api/v1/legal/calendar/connections'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::listConnections'
+  requirements:
+    _permission: 'manage calendar connections'
+  methods: [GET]
+
+jaraba_legal_calendar.api.google.auth:
+  path: '/api/v1/legal/calendar/google/auth'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::googleAuth'
+  requirements:
+    _permission: 'manage calendar connections'
+  methods: [GET]
+
+jaraba_legal_calendar.api.google.callback:
+  path: '/api/v1/legal/calendar/google/callback'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::googleCallback'
+  requirements:
+    _permission: 'manage calendar connections'
+  methods: [GET]
+
+jaraba_legal_calendar.api.microsoft.auth:
+  path: '/api/v1/legal/calendar/microsoft/auth'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::microsoftAuth'
+  requirements:
+    _permission: 'manage calendar connections'
+  methods: [GET]
+
+jaraba_legal_calendar.api.microsoft.callback:
+  path: '/api/v1/legal/calendar/microsoft/callback'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::microsoftCallback'
+  requirements:
+    _permission: 'manage calendar connections'
+  methods: [GET]
+
+jaraba_legal_calendar.api.connections.delete:
+  path: '/api/v1/legal/calendar/connections/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::deleteConnection'
+  requirements:
+    _permission: 'manage calendar connections'
+    id: '\d+'
+  methods: [DELETE]
+
+jaraba_legal_calendar.api.sync.refresh:
+  path: '/api/v1/legal/calendar/sync/{calendarId}/refresh'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::forceSync'
+  requirements:
+    _permission: 'manage calendar connections'
+    calendarId: '\d+'
+  methods: [POST]

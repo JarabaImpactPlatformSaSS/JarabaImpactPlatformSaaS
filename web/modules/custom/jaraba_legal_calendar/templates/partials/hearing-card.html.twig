@@ -1,0 +1,28 @@
+{#
+ # Parcial: Tarjeta de senalado judicial.
+ # Variables: hearing (CourtHearing entity).
+ #}
+{% set status = hearing.status.value %}
+{% set hearing_type = hearing.hearing_type.value %}
+<div class="ej-hearing-card ej-hearing-card--{{ status }}">
+  <div class="ej-hearing-card__header">
+    <span class="ej-hearing-card__type">{{ hearing_type|replace({'_': ' '})|capitalize }}</span>
+    <span class="ej-badge ej-badge--{{ status }}">{{ status|t }}</span>
+  </div>
+  <h3 class="ej-hearing-card__title">{{ hearing.label }}</h3>
+  <div class="ej-hearing-card__meta">
+    <span class="ej-hearing-card__court">{{ hearing.court.value }}</span>
+    {% if hearing.courtroom.value %}
+      <span class="ej-hearing-card__room">{{ 'Sala'|t }} {{ hearing.courtroom.value }}</span>
+    {% endif %}
+  </div>
+  <div class="ej-hearing-card__schedule">
+    <span class="ej-hearing-card__date">{{ hearing.scheduled_at.value|date('d/m/Y H:i') }}</span>
+    {% if hearing.estimated_duration_minutes.value %}
+      <span class="ej-hearing-card__duration">{{ hearing.estimated_duration_minutes.value }} {{ 'min'|t }}</span>
+    {% endif %}
+    {% if hearing.is_virtual.value %}
+      <span class="ej-hearing-card__virtual">{{ 'Telematico'|t }}</span>
+    {% endif %}
+  </div>
+</div>
