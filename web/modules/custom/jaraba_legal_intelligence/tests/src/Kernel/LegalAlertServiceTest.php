@@ -46,6 +46,7 @@ class LegalAlertServiceTest extends KernelTestBase {
     // without pulling in ai/ecosistema_jaraba_core module chains.
     $container->register('ai.provider')->setSynthetic(TRUE);
     $container->register('ecosistema_jaraba_core.tenant_context')->setSynthetic(TRUE);
+    $container->register('ecosistema_jaraba_core.jarabalex_feature_gate')->setSynthetic(TRUE);
   }
 
   /**
@@ -60,6 +61,12 @@ class LegalAlertServiceTest extends KernelTestBase {
     $this->container->set(
       'ecosistema_jaraba_core.tenant_context',
       $this->getMockBuilder('Drupal\ecosistema_jaraba_core\Service\TenantContextService')
+        ->disableOriginalConstructor()
+        ->getMock()
+    );
+    $this->container->set(
+      'ecosistema_jaraba_core.jarabalex_feature_gate',
+      $this->getMockBuilder('Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService')
         ->disableOriginalConstructor()
         ->getMock()
     );
