@@ -124,7 +124,7 @@ class VeriFactuInvoiceRecordEntityTest extends KernelTestBase {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage('verifactu_invoice_record');
 
-    $before = time();
+    $before = time() - 1;
     $record = $storage->create([
       'tenant_id' => 1,
       'record_type' => 'alta',
@@ -133,7 +133,7 @@ class VeriFactuInvoiceRecordEntityTest extends KernelTestBase {
       'hash_record' => str_repeat('c', 64),
     ]);
     $record->save();
-    $after = time();
+    $after = time() + 1;
 
     $created = (int) $record->get('created')->value;
     $this->assertGreaterThanOrEqual($before, $created);
