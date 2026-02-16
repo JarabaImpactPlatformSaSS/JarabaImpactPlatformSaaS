@@ -33,6 +33,7 @@ class LegalIngestionTest extends KernelTestBase {
     'text',
     'options',
     'datetime',
+    'taxonomy',
     'jaraba_legal_intelligence',
   ];
 
