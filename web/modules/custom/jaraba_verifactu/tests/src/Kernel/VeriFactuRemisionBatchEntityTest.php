@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_verifactu\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Tests VeriFactuRemisionBatch entity CRUD.
@@ -20,8 +21,21 @@ class VeriFactuRemisionBatchEntityTest extends KernelTestBase {
     'jaraba_verifactu',
   ];
 
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container): void {
+    parent::register($container);
+    $container->register('ecosistema_jaraba_core.certificate_manager')
+      ->setSynthetic(TRUE);
+  }
+
   protected function setUp(): void {
     parent::setUp();
+    $this->container->set(
+      'ecosistema_jaraba_core.certificate_manager',
+      $this->createMock(\Drupal\ecosistema_jaraba_core\Service\CertificateManagerService::class),
+    );
     $this->installEntitySchema('user');
     $this->installEntitySchema('verifactu_remision_batch');
     $this->installConfig(['jaraba_verifactu']);
