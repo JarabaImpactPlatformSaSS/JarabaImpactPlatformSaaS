@@ -1,0 +1,12 @@
+# Pestanas (tabs) de configuracion del Legal Intelligence Hub.
+
+jaraba_legal_intelligence.settings:
+  title: 'Settings'
+  route_name: jaraba_legal_intelligence.settings
+  base_route: jaraba_legal_intelligence.settings
+
+jaraba_legal.admin_dashboard:
+  title: 'Dashboard'
+  route_name: jaraba_legal.admin_dashboard
+  base_route: jaraba_legal_intelligence.settings
+  weight: 5

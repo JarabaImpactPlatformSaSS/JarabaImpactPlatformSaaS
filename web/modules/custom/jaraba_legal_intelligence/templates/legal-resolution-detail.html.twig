@@ -1,0 +1,116 @@
+{#
+ * legal-resolution-detail.html.twig
+ * Detalle completo de una resolucion legal.
+ *
+ * Variables:
+ *   - resolution: Entidad LegalResolution con todos los campos.
+ *   - similar: array — Resoluciones similares.
+ *   - citations_graph: array — Datos del grafo de citas {nodes, edges}.
+ #}
+
+{{ attach_library('jaraba_legal_intelligence/legal.citation-graph') }}
+{{ attach_library('jaraba_legal_intelligence/legal.citation-insert') }}
+
+<article class="legal-resolution-detail">
+
+  {# Cabecera #}
+  <header class="legal-resolution-detail__header">
+    <h1 class="legal-resolution-detail__title">{{ resolution.title|default('')|striptags }}</h1>
+
+    <div class="legal-resolution-detail__meta">
+      {% include '@jaraba_legal_intelligence/partials/_citation-badge.html.twig' with {
+        'status': resolution.status_legal|default('vigente'),
+        'label': resolution.status_legal|default('vigente')
+      } only %}
+
+      {% if resolution.issuing_body is defined %}
+        <span>{{ jaraba_icon('legal', 'gavel', { size: '16px' }) }} {{ resolution.issuing_body }}</span>
+      {% endif %}
+      {% if resolution.external_ref is defined %}
+        <span>{{ resolution.external_ref }}</span>
+      {% endif %}
+      {% if resolution.date_issued is defined %}
+        <span>{{ resolution.date_issued|date('d/m/Y') }}</span>
+      {% endif %}
+    </div>
+
+    {# Indicadores UE si aplica #}
+    {% if resolution.source_id|default('') in ['eurlex', 'curia', 'hudoc', 'edpb'] %}
+      {% include '@jaraba_legal_intelligence/partials/_eu-primacy-indicator.html.twig' with {
+        'primacy_type': resolution.procedure_type is defined ? 'primacy' : '',
+        'direct_effect': false,
+        'transposition_status': ''
+      } only %}
+    {% endif %}
+  </header>
+
+  {# Resumen IA #}
+  {% if resolution.abstract_ai is defined and resolution.abstract_ai %}
+    <section class="legal-resolution-detail__abstract">
+      <h2>{% trans %}AI Summary{% endtrans %}</h2>
+      <p>{{ resolution.abstract_ai|striptags }}</p>
+    </section>
+  {% endif %}
+
+  {# Ratio decidendi #}
+  {% if resolution.key_holdings is defined and resolution.key_holdings %}
+    <section class="legal-resolution-detail__holdings">
+      <h2>{% trans %}Key Holdings (Ratio Decidendi){% endtrans %}</h2>
+      <blockquote>{{ resolution.key_holdings|striptags }}</blockquote>
+    </section>
+  {% endif %}
+
+  {# Acciones #}
+  <div class="legal-resolution-detail__actions">
+    <button class="btn btn--primary"
+            data-slide-panel="cite-{{ resolution.id|default(0) }}"
+            data-slide-panel-url="/legal/cite/{{ resolution.id|default(0) }}/formal?ajax=1"
+            data-slide-panel-title="{{ 'Insert citation'|t }}"
+            data-slide-panel-size="--large">
+      {{ jaraba_icon('legal', 'citation', { size: '18px' }) }}
+      {% trans %}Insert as argument{% endtrans %}
+    </button>
+
+    <button class="btn btn--outline"
+            data-legal-bookmark="{{ resolution.id|default(0) }}"
+            aria-pressed="false">
+      {{ jaraba_icon('legal', 'law-book', { size: '18px' }) }}
+      {% trans %}Save to favorites{% endtrans %}
+    </button>
+  </div>
+
+  {# Texto completo #}
+  {% if resolution.full_text is defined and resolution.full_text %}
+    <section class="legal-resolution-detail__full-text">
+      <h2>{% trans %}Full text{% endtrans %}</h2>
+      <div class="legal-resolution-detail__text-body">
+        {{ resolution.full_text }}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Grafo de citas #}
+  {% if citations_graph is not empty %}
+    {% include '@jaraba_legal_intelligence/partials/_citation-graph.html.twig' with {
+      'nodes': citations_graph.nodes|default([]),
+      'edges': citations_graph.edges|default([]),
+      'resolution_id': resolution.id|default(0)
+    } only %}
+  {% endif %}
+
+  {# Resoluciones similares #}
+  {% if similar is not empty %}
+    <section class="legal-resolution-detail__similar">
+      <h2>{% trans %}Similar resolutions{% endtrans %}</h2>
+      {% for item in similar %}
+        {% include '@jaraba_legal_intelligence/partials/_resolution-card.html.twig' with {
+          'resolution': item,
+          'show_actions': true,
+          'show_graph': false,
+          'compact': true
+        } only %}
+      {% endfor %}
+    </section>
+  {% endif %}
+
+</article>

@@ -1,0 +1,429 @@
+// _public-summary.scss
+// Estilos para las paginas publicas SEO de resumen de resoluciones legales.
+//
+// Estas paginas son accesibles sin autenticacion y estan optimizadas
+// para lectura, accesibilidad y SEO. Layout limpio centrado con
+// tipografia legible y jerarquia visual clara.
+//
+// DIRECTRIZ: Consumir tokens via var(--ej-*, #{$legal-*}) como fallback.
+// BEM naming, mobile-first responsive.
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+
+// === Contenedor principal ===
+
+.legal-public-summary {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  color: var(--ej-text-primary, #{legal.$legal-text});
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.6;
+
+  // === Cabecera: organo emisor y fecha ===
+
+  &__header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--ej-color-primary, #{legal.$legal-primary});
+  }
+
+  // === Titulo h1 ===
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  // === Fila de metadatos: chips de fuente, fecha, referencia, estado ===
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+  }
+
+  &__meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background: color.change(legal.$legal-primary, $alpha: 0.08);
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    border: 1px solid color.change(legal.$legal-primary, $alpha: 0.12);
+  }
+
+  &__meta-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: legal.$legal-radius-sm;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--vigente {
+      background: color.change(legal.$legal-success, $alpha: 0.15);
+      color: legal.$legal-success;
+    }
+
+    &--derogada,
+    &--anulada {
+      background: color.change(legal.$legal-danger, $alpha: 0.15);
+      color: legal.$legal-danger;
+    }
+
+    &--superada {
+      background: color.change(legal.$legal-warning, $alpha: 0.15);
+      color: legal.$legal-warning;
+    }
+  }
+
+  // === Resumen / extracto principal ===
+
+  &__abstract {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin-bottom: 2rem;
+    text-align: justify;
+    hyphens: auto;
+
+    p {
+      margin: 0 0 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // === Fundamentos clave (holdings) ===
+
+  &__holdings {
+    position: relative;
+    margin: 2rem 0;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    background: color.change(legal.$legal-primary, $alpha: 0.04);
+    border-left: 4px solid var(--ej-color-primary, #{legal.$legal-primary});
+    border-radius: 0 legal.$legal-radius legal.$legal-radius 0;
+
+    &-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ej-color-primary, #{legal.$legal-primary});
+      margin: 0 0 1rem;
+    }
+
+    blockquote,
+    p {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--ej-text-primary, #{legal.$legal-text});
+      margin: 0 0 0.75rem;
+      font-style: italic;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul,
+    ol {
+      padding-left: 1.25rem;
+      margin: 0 0 0.75rem;
+      line-height: 1.75;
+
+      li {
+        margin-bottom: 0.375rem;
+      }
+    }
+  }
+
+  // === Temas / etiquetas de topicos ===
+
+  &__topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+  }
+
+  &__topics-label {
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 0.25rem;
+  }
+
+  &__topic-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-primary, #{legal.$legal-primary});
+    background: color.change(legal.$legal-accent, $alpha: 0.12);
+    border: 1px solid color.change(legal.$legal-accent, $alpha: 0.25);
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: color.change(legal.$legal-accent, $alpha: 0.22);
+      border-color: color.change(legal.$legal-accent, $alpha: 0.4);
+    }
+  }
+
+  // === Seccion CTA: login / registro ===
+
+  &__cta {
+    margin: 2.5rem 0;
+    padding: 2rem;
+    text-align: center;
+    background: var(--ej-bg-surface, #{legal.$legal-surface});
+    border-radius: legal.$legal-radius;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+  }
+
+  &__cta-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0 0 0.5rem;
+  }
+
+  &__cta-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9375rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+  }
+
+  &__cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: var(--ej-color-primary, #{legal.$legal-primary});
+    color: #fff;
+    border: none;
+    border-radius: legal.$legal-radius;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+
+    &:hover {
+      background: legal.$legal-primary-hover;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &__cta-secondary {
+    display: block;
+    margin-top: 0.75rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+
+    a {
+      color: var(--ej-color-primary, #{legal.$legal-primary});
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      &:hover {
+        color: legal.$legal-primary-hover;
+      }
+    }
+  }
+
+  // === Pie: atribucion de fuente, enlace original, disclaimer ===
+
+  &__footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  &__source-attribution {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+
+    a {
+      color: var(--ej-color-primary, #{legal.$legal-primary});
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      word-break: break-all;
+
+      &:hover {
+        color: legal.$legal-primary-hover;
+      }
+    }
+  }
+
+  &__disclaimer {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    opacity: 0.8;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: color.change(legal.$legal-text-light, $alpha: 0.06);
+    border-radius: legal.$legal-radius-sm;
+  }
+}
+
+// === Responsive: breakpoint 768px (mobile-first) ===
+
+@media (max-width: 768px) {
+  .legal-public-summary {
+    padding: 1.25rem 1rem;
+
+    &__title {
+      font-size: 1.375rem;
+      line-height: 1.35;
+    }
+
+    &__meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.375rem;
+    }
+
+    &__abstract {
+      font-size: 1rem;
+      line-height: 1.7;
+      text-align: left;
+      hyphens: none;
+    }
+
+    &__holdings {
+      padding: 1rem 1rem 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    &__topics {
+      gap: 0.375rem;
+    }
+
+    &__cta {
+      padding: 1.5rem 1rem;
+      margin: 2rem 0;
+    }
+
+    &__cta-button {
+      width: 100%;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+    }
+
+    &__footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+    }
+  }
+}
+
+// === Estilos de impresion ===
+
+@media print {
+  .legal-public-summary {
+    max-width: 100%;
+    padding: 0;
+    font-size: 11pt;
+    color: #000;
+
+    &__header {
+      border-bottom-color: #000;
+    }
+
+    &__title {
+      font-size: 16pt;
+      color: #000;
+    }
+
+    &__meta-chip,
+    &__meta-badge {
+      border: 1px solid #999;
+      background: none;
+      color: #333;
+    }
+
+    &__abstract {
+      font-size: 11pt;
+      line-height: 1.6;
+    }
+
+    &__holdings {
+      border-left-color: #333;
+      background: none;
+      page-break-inside: avoid;
+    }
+
+    &__topic-tag {
+      border: 1px solid #999;
+      background: none;
+      color: #333;
+    }
+
+    // Ocultar CTA en impresion — no relevante en papel.
+    &__cta {
+      display: none !important;
+    }
+
+    &__footer {
+      border-top-color: #999;
+    }
+
+    &__source-attribution a {
+      color: #000;
+
+      &::after {
+        content: ' (' attr(href) ')';
+        font-size: 9pt;
+        color: #555;
+      }
+    }
+
+    &__disclaimer {
+      background: none;
+      border: 1px solid #ccc;
+      color: #555;
+    }
+  }
+}

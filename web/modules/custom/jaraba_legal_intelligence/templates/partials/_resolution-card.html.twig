@@ -1,0 +1,94 @@
+{#
+ * _resolution-card.html.twig
+ * Tarjeta de resolucion legal reutilizable.
+ *
+ * Muestra titulo, organo emisor, fecha, badge de estado legal,
+ * resumen IA y acciones (favorito, citar, similares).
+ *
+ * Variables:
+ *   - resolution: Entidad LegalResolution o array con campos.
+ *   - show_actions: boolean — Mostrar botones de accion.
+ *   - show_graph: boolean — Mostrar mini-grafo de citas.
+ *   - compact: boolean — Modo compacto (sin resumen).
+ #}
+
+{% set status = resolution.status_legal|default('vigente') %}
+{% set is_eu = resolution.source_id|default('') in ['eurlex', 'curia', 'hudoc', 'edpb'] %}
+
+<article class="legal-resolution-card" data-resolution-id="{{ resolution.id|default(0) }}">
+
+  <div class="legal-resolution-card__header">
+    <h3 class="legal-resolution-card__title">
+      {% if is_eu %}
+        {{ jaraba_icon('legal', 'eu-flag', { size: '16px' }) }}
+      {% else %}
+        {{ jaraba_icon('legal', 'es-flag', { size: '16px' }) }}
+      {% endif %}
+      {{ resolution.title|default('')|striptags }}
+    </h3>
+
+    {# Badge de estado legal #}
+    {% include '@jaraba_legal_intelligence/partials/_citation-badge.html.twig' with {
+      'status': status,
+      'label': status
+    } only %}
+  </div>
+
+  <div class="legal-resolution-card__meta">
+    {% if resolution.issuing_body is defined and resolution.issuing_body %}
+      <span>{{ jaraba_icon('legal', 'gavel', { size: '14px' }) }} {{ resolution.issuing_body }}</span>
+    {% endif %}
+    {% if resolution.external_ref is defined and resolution.external_ref %}
+      <span>{{ resolution.external_ref }}</span>
+    {% endif %}
+    {% if resolution.date_issued is defined and resolution.date_issued %}
+      <span>{{ resolution.date_issued|date('d/m/Y') }}</span>
+    {% endif %}
+    {% if resolution.jurisdiction is defined and resolution.jurisdiction %}
+      <span>{{ resolution.jurisdiction }}</span>
+    {% endif %}
+  </div>
+
+  {% if not compact and resolution.abstract_ai is defined and resolution.abstract_ai %}
+    <div class="legal-resolution-card__abstract">
+      {{ resolution.abstract_ai|striptags }}
+    </div>
+  {% endif %}
+
+  {% if show_actions %}
+    <div class="legal-resolution-card__actions">
+      {# Boton ver detalle #}
+      <a href="/legal/{{ resolution.source_id|default('') }}/{{ resolution.external_ref|default('') }}"
+         class="btn btn--sm btn--outline">
+        {% trans %}View detail{% endtrans %}
+      </a>
+
+      {# Boton insertar cita (slide-panel) #}
+      <button class="btn btn--sm btn--primary"
+              data-slide-panel="cite-{{ resolution.id|default(0) }}"
+              data-slide-panel-url="/legal/cite/{{ resolution.id|default(0) }}/formal?ajax=1"
+              data-slide-panel-title="{{ 'Insert citation'|t }}"
+              data-slide-panel-size="--large">
+        {{ jaraba_icon('legal', 'citation', { size: '14px' }) }}
+        {% trans %}Cite{% endtrans %}
+      </button>
+
+      {# Boton favorito #}
+      <button class="btn btn--sm btn--ghost"
+              data-legal-bookmark="{{ resolution.id|default(0) }}"
+              aria-pressed="false"
+              aria-label="{{ 'Bookmark this resolution'|t }}">
+        {{ jaraba_icon('legal', 'law-book', { size: '14px' }) }}
+      </button>
+    </div>
+  {% endif %}
+
+  {% if show_graph and resolution.id is defined %}
+    {% include '@jaraba_legal_intelligence/partials/_citation-graph.html.twig' with {
+      'nodes': [],
+      'edges': [],
+      'resolution_id': resolution.id
+    } only %}
+  {% endif %}
+
+</article>

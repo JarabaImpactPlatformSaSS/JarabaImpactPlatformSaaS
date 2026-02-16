@@ -1,0 +1,272 @@
+// main.scss
+// Punto de entrada SCSS del Legal Intelligence Hub.
+//
+// DIRECTRIZ: Solo este archivo se compila a CSS.
+// Los parciales (_*.scss) se importan con @use.
+// NUNCA editar css/legal-intelligence.css directamente.
+//
+// Compilar: npm run build
+// Watch:    npm run watch
+
+@use 'sass:color';
+@use 'variables-legal' as legal;
+@use 'search';
+@use 'results';
+@use 'resolution-detail';
+@use 'facets';
+@use 'alerts';
+@use 'digest-email';
+@use 'admin';
+@use 'public-summary';
+
+// === Layout base para paginas del Legal Intelligence Hub ===
+
+.page--legal {
+  // Asegura que las paginas del Legal Intelligence Hub
+  // usen el layout full-width del ecosistema.
+  .main-content--legal {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+}
+
+// === Tarjeta de resolucion ===
+
+.legal-resolution-card {
+  background: var(--ej-bg-surface, #{legal.$legal-surface});
+  color: var(--ej-text-primary, #{legal.$legal-text});
+  border-left: 4px solid var(--ej-color-primary, #{legal.$legal-primary});
+  border-radius: legal.$legal-radius;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: legal.$legal-card-shadow;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: legal.$legal-card-shadow-hover;
+    transform: translateY(-1px);
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin: 0 0 0.5rem;
+    line-height: 1.4;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 0.75rem;
+  }
+
+  &__abstract {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ej-text-primary, #{legal.$legal-text});
+    margin-bottom: 0.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  // Badges de estado legal.
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: legal.$legal-radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+
+    &--vigente {
+      background: color.change(legal.$legal-success, $alpha: 0.15);
+      color: legal.$legal-success;
+    }
+
+    &--derogada {
+      background: color.change(legal.$legal-danger, $alpha: 0.15);
+      color: legal.$legal-danger;
+    }
+
+    &--anulada {
+      background: color.change(legal.$legal-danger, $alpha: 0.15);
+      color: legal.$legal-danger;
+    }
+
+    &--superada {
+      background: color.change(legal.$legal-warning, $alpha: 0.15);
+      color: legal.$legal-warning;
+    }
+
+    &--parcialmente_derogada {
+      background: color.change(legal.$legal-warning, $alpha: 0.1);
+      color: color.adjust(legal.$legal-warning, $lightness: -10%);
+    }
+
+    &--eu {
+      background: color.change(legal.$legal-eu-blue, $alpha: 0.1);
+      color: legal.$legal-eu-blue;
+      border: 1px solid legal.$legal-eu-gold;
+    }
+  }
+}
+
+// === Barra de busqueda ===
+
+.legal-search {
+  &__form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--ej-border-color, #e2e8f0);
+    border-radius: legal.$legal-radius;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+      box-shadow: 0 0 0 3px legal.$legal-primary-bg;
+    }
+  }
+
+  &__submit {
+    padding: 0.75rem 1.5rem;
+    background: var(--ej-color-primary, #{legal.$legal-primary});
+    color: #fff;
+    border: none;
+    border-radius: legal.$legal-radius;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: legal.$legal-primary-hover;
+    }
+  }
+
+  &__results-count {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+    margin-bottom: 1rem;
+  }
+}
+
+// === Filtros facetados ===
+
+.legal-facets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--ej-bg-surface, #{legal.$legal-surface});
+  border-radius: legal.$legal-radius;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ej-text-secondary, #{legal.$legal-text-light});
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 1rem;
+    font-size: 0.8125rem;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover,
+    &--active {
+      background: var(--ej-color-primary, #{legal.$legal-primary});
+      color: #fff;
+      border-color: var(--ej-color-primary, #{legal.$legal-primary});
+    }
+  }
+}
+
+// === Indicador primacia UE ===
+
+.legal-eu-primacy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: legal.$legal-radius-sm;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--direct-effect {
+    background: color.change(legal.$legal-eu-blue, $alpha: 0.12);
+    color: legal.$legal-eu-blue;
+  }
+
+  &--primacy {
+    background: color.change(legal.$legal-eu-gold, $alpha: 0.2);
+    color: color.adjust(legal.$legal-eu-blue, $lightness: -5%);
+    border: 1px solid legal.$legal-eu-gold;
+  }
+
+  &--transposed {
+    background: color.change(legal.$legal-success, $alpha: 0.12);
+    color: legal.$legal-success;
+  }
+
+  &--pending-transposition {
+    background: color.change(legal.$legal-warning, $alpha: 0.12);
+    color: color.adjust(legal.$legal-warning, $lightness: -10%);
+  }
+}
+
+// Alertas: estilos completos en _alerts.scss (FASE 5).
+
+// === Responsive mobile-first ===
+
+@media (max-width: 768px) {
+  .legal-search__form {
+    flex-direction: column;
+  }
+
+  .legal-resolution-card__meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .legal-facets {
+    flex-direction: column;
+  }
+
+  .page--legal .main-content--legal {
+    padding: 1rem 0.75rem;
+  }
+}

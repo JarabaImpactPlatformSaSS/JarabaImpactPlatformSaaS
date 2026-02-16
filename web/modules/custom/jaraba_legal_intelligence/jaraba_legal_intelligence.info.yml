@@ -1,0 +1,15 @@
+name: 'Jaraba Legal Intelligence Hub'
+type: module
+description: 'AI-powered legal research with semantic search across national (ES) and European (EU/CEDH) sources. Pipeline NLP, Qdrant vector search, citation insertion, intelligent alerts.'
+package: 'Jaraba ServiciosConecta'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - drupal:taxonomy
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: jaraba_legal_intelligence.settings

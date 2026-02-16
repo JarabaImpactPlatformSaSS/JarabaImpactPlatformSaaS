@@ -1,0 +1,48 @@
+{#
+ * legal-admin-dashboard.html.twig
+ * Dashboard admin del Legal Intelligence Hub.
+ *
+ * Muestra metricas de ingesta, estado de fuentes, volumen Qdrant,
+ * errores del pipeline y acciones de sincronizacion.
+ *
+ * Variables:
+ *   - stats: array — Metricas agregadas.
+ *   - sources: array — Estado de cada fuente de datos.
+ #}
+
+{{ attach_library('jaraba_legal_intelligence/legal.admin') }}
+
+<div class="legal-admin-dashboard">
+
+  {# KPIs principales #}
+  <section class="legal-admin-dashboard__kpis">
+    <div class="legal-admin-dashboard__kpi">
+      <span class="legal-admin-dashboard__kpi-value">{{ stats.total_resolutions|default(0)|number_format }}</span>
+      <span class="legal-admin-dashboard__kpi-label">{% trans %}Total resolutions{% endtrans %}</span>
+    </div>
+    <div class="legal-admin-dashboard__kpi">
+      <span class="legal-admin-dashboard__kpi-value">{{ stats.national_count|default(0)|number_format }}</span>
+      <span class="legal-admin-dashboard__kpi-label">{% trans %}National (ES){% endtrans %}</span>
+    </div>
+    <div class="legal-admin-dashboard__kpi">
+      <span class="legal-admin-dashboard__kpi-value">{{ stats.eu_count|default(0)|number_format }}</span>
+      <span class="legal-admin-dashboard__kpi-label">{% trans %}European (EU){% endtrans %}</span>
+    </div>
+    <div class="legal-admin-dashboard__kpi">
+      <span class="legal-admin-dashboard__kpi-value">{{ stats.pipeline_errors|default(0) }}</span>
+      <span class="legal-admin-dashboard__kpi-label">{% trans %}Pipeline errors{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# Estado de fuentes #}
+  <section class="legal-admin-dashboard__sources">
+    <h2>{% trans %}Data sources{% endtrans %}</h2>
+    {% for source in sources %}
+      {% include '@jaraba_legal_intelligence/partials/_source-status.html.twig' with {
+        'source': source,
+        'show_sync_button': true
+      } only %}
+    {% endfor %}
+  </section>
+
+</div>

@@ -1,0 +1,356 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Legal Intelligence Hub.
+ *
+ * Crea la tabla legal_citation_graph para el grafo de citas entre resoluciones
+ * e indices compuestos para optimizar las consultas mas frecuentes.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_install().
+ *
+ * Crea la tabla legal_citation_graph (relaciones de citas entre resoluciones)
+ * y los indices compuestos en las tablas de entidades para optimizar las
+ * consultas de busqueda facetada y las operaciones de ingesta.
+ */
+function jaraba_legal_intelligence_install(): void {
+  $schema = Database::getConnection()->schema();
+
+  // Crear tabla de grafo de citas entre resoluciones.
+  // Esta tabla NO es una Content Entity porque es una tabla relacional pura
+  // (source_id, target_id) con metadatos de relacion. No necesita Field UI,
+  // Views (se consulta via SQL directo) ni revision. Usar Content Entity
+  // para millones de relaciones seria ineficiente.
+  if (!$schema->tableExists('legal_citation_graph')) {
+    $schema->createTable('legal_citation_graph', [
+      'description' => 'Grafo de citas entre resoluciones legales. Cada fila representa una relacion de cita de source_resolution_id a target_resolution_id.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'description' => 'Identificador auto-incrementado.',
+        ],
+        'source_resolution_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'description' => 'ID de la resolucion que cita (origen del arco).',
+        ],
+        'target_resolution_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'description' => 'ID de la resolucion citada (destino del arco).',
+        ],
+        'citation_context' => [
+          'type' => 'text',
+          'size' => 'medium',
+          'not null' => FALSE,
+          'description' => 'Fragmento de texto donde aparece la cita (contexto).',
+        ],
+        'relation_type' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'default' => 'cites',
+          'description' => 'Tipo de relacion: cites, overrules, distinguishes, follows, applies.',
+        ],
+        'created' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+          'description' => 'Timestamp Unix de creacion.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'source_resolution' => ['source_resolution_id'],
+        'target_resolution' => ['target_resolution_id'],
+        'relation_type' => ['relation_type'],
+        'source_target' => ['source_resolution_id', 'target_resolution_id'],
+      ],
+      'unique keys' => [
+        'source_target_type' => ['source_resolution_id', 'target_resolution_id', 'relation_type'],
+      ],
+    ]);
+  }
+
+  // Indices compuestos para la tabla legal_resolution (Content Entity).
+  // Drupal crea indices simples automaticamente desde baseFieldDefinitions(),
+  // pero los indices compuestos requieren creacion manual para optimizar
+  // las consultas de busqueda facetada y la ingesta con deduplicacion.
+  //
+  // Estos indices se crean DESPUES de que Drupal haya generado la tabla
+  // desde la entidad LegalResolution. Si la tabla no existe aun (primera
+  // instalacion antes de entity:updates), se crea en un hook_update posterior.
+  if ($schema->tableExists('legal_resolution')) {
+    _jaraba_legal_intelligence_create_resolution_indexes($schema);
+  }
+
+  \Drupal::messenger()->addStatus(t('Legal Intelligence Hub installed. Configure at /admin/config/jaraba/legal-intelligence'));
+}
+
+/**
+ * Crea indices compuestos en la tabla legal_resolution.
+ *
+ * Optimiza las consultas mas frecuentes del modulo:
+ * - Busqueda facetada por fuente + fecha (paginas de resultados).
+ * - Busqueda por fuente + tipo + fecha (filtrado avanzado).
+ * - Busqueda por estado + fecha (alertas de cambio de estado).
+ * - Resolucion de SEO slugs para paginas publicas.
+ * - Busqueda por hash para deduplicacion en ingesta.
+ * - Indices EU: CELEX, ECLI, case_number, respondent_state.
+ *
+ * @param \Drupal\Core\Database\Schema $schema
+ *   Schema API de la conexion activa.
+ */
+function _jaraba_legal_intelligence_create_resolution_indexes($schema): void {
+  $table = 'legal_resolution';
+
+  // Indice compuesto source + date para listados por fuente ordenados por fecha.
+  // Uso: "Ultimas resoluciones del CENDOJ", pagina de resultados filtrados.
+  if (!$schema->indexExists($table, 'idx_source_date')) {
+    $schema->addIndex($table, 'idx_source_date', ['source_id', 'date_issued'], [
+      'fields' => [
+        'source_id' => ['type' => 'varchar', 'length' => 32],
+        'date_issued' => ['type' => 'varchar', 'length' => 20],
+      ],
+    ]);
+  }
+
+  // Indice compuesto source + type + date para filtrado avanzado.
+  // Uso: "Sentencias del TS de los ultimos 6 meses".
+  if (!$schema->indexExists($table, 'idx_source_type_date')) {
+    $schema->addIndex($table, 'idx_source_type_date', ['source_id', 'resolution_type', 'date_issued'], [
+      'fields' => [
+        'source_id' => ['type' => 'varchar', 'length' => 32],
+        'resolution_type' => ['type' => 'varchar', 'length' => 64],
+        'date_issued' => ['type' => 'varchar', 'length' => 20],
+      ],
+    ]);
+  }
+
+  // Indice status + date para deteccion de cambios de estado recientes.
+  // Uso: Alertas, "resoluciones derogadas en los ultimos 30 dias".
+  if (!$schema->indexExists($table, 'idx_status_date')) {
+    $schema->addIndex($table, 'idx_status_date', ['status_legal', 'date_issued'], [
+      'fields' => [
+        'status_legal' => ['type' => 'varchar', 'length' => 32],
+        'date_issued' => ['type' => 'varchar', 'length' => 20],
+      ],
+    ]);
+  }
+
+  // Indice SEO slug para resolucion rapida de paginas publicas.
+  // Uso: /legal/{source_slug}/{seo_slug} -> busqueda por slug.
+  if (!$schema->indexExists($table, 'idx_seo_slug')) {
+    $schema->addIndex($table, 'idx_seo_slug', ['seo_slug'], [
+      'fields' => [
+        'seo_slug' => ['type' => 'varchar', 'length' => 255],
+      ],
+    ]);
+  }
+
+  // Indice content_hash para deduplicacion rapida en ingesta.
+  // Uso: "Ya existe una resolucion con este contenido?" antes de crear.
+  if (!$schema->indexExists($table, 'idx_content_hash')) {
+    $schema->addIndex($table, 'idx_content_hash', ['content_hash'], [
+      'fields' => [
+        'content_hash' => ['type' => 'varchar', 'length' => 64],
+      ],
+    ]);
+  }
+
+  // Indice CELEX para busquedas de resoluciones EUR-Lex.
+  if (!$schema->indexExists($table, 'idx_celex')) {
+    $schema->addIndex($table, 'idx_celex', ['celex_number'], [
+      'fields' => [
+        'celex_number' => ['type' => 'varchar', 'length' => 32],
+      ],
+    ]);
+  }
+
+  // Indice ECLI para busquedas por European Case Law Identifier.
+  if (!$schema->indexExists($table, 'idx_ecli')) {
+    $schema->addIndex($table, 'idx_ecli', ['ecli'], [
+      'fields' => [
+        'ecli' => ['type' => 'varchar', 'length' => 64],
+      ],
+    ]);
+  }
+
+  // Indice respondent_state + date para busquedas UE por estado demandado.
+  // Uso: "Todas las sentencias del TJUE contra Espana".
+  if (!$schema->indexExists($table, 'idx_respondent_date')) {
+    $schema->addIndex($table, 'idx_respondent_date', ['respondent_state', 'date_issued'], [
+      'fields' => [
+        'respondent_state' => ['type' => 'varchar', 'length' => 3],
+        'date_issued' => ['type' => 'varchar', 'length' => 20],
+      ],
+    ]);
+  }
+}
+
+/**
+ * Implements hook_schema().
+ *
+ * Declara el esquema de la tabla legal_citation_graph para que Drupal
+ * pueda gestionar su ciclo de vida (install/uninstall/update).
+ */
+function jaraba_legal_intelligence_schema(): array {
+  $schema['legal_citation_graph'] = [
+    'description' => 'Grafo de citas entre resoluciones legales.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'source_resolution_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'target_resolution_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'citation_context' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+      ],
+      'relation_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'cites',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'source_resolution' => ['source_resolution_id'],
+      'target_resolution' => ['target_resolution_id'],
+      'relation_type' => ['relation_type'],
+      'source_target' => ['source_resolution_id', 'target_resolution_id'],
+    ],
+    'unique keys' => [
+      'source_target_type' => ['source_resolution_id', 'target_resolution_id', 'relation_type'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Crea indices compuestos en la tabla legal_resolution.
+ *
+ * Este hook_update se ejecuta si el modulo se instalo antes de que
+ * la tabla legal_resolution existiera (entity:updates no ejecutado).
+ * Es idempotente: solo crea indices que no existan.
+ */
+function jaraba_legal_intelligence_update_10001(): void {
+  $schema = Database::getConnection()->schema();
+  if ($schema->tableExists('legal_resolution')) {
+    _jaraba_legal_intelligence_create_resolution_indexes($schema);
+  }
+}
+
+/**
+ * Creates the AI skill entity 'legal_search' for Copilot integration (FASE 6).
+ *
+ * Seeds a vertical AI skill that instructs the Copilot to recognize legal
+ * queries and use the Legal Intelligence Hub search capabilities.
+ */
+function jaraba_legal_intelligence_update_10002(): void {
+  // Only create if the ai_skill entity type exists (jaraba_skills module enabled).
+  $entityTypeManager = \Drupal::entityTypeManager();
+  if (!$entityTypeManager->hasDefinition('ai_skill')) {
+    \Drupal::messenger()->addWarning(t('jaraba_skills module not enabled. AI skill for Legal Intelligence not created.'));
+    return;
+  }
+
+  $storage = $entityTypeManager->getStorage('ai_skill');
+
+  // Check if the skill already exists.
+  $existing = $storage->loadByProperties(['name' => 'Legal Intelligence Search']);
+  if (!empty($existing)) {
+    return;
+  }
+
+  // Create vertical skill for legal search.
+  $skill = $storage->create([
+    'name' => 'Legal Intelligence Search',
+    'skill_type' => 'vertical',
+    'vertical_id' => 'legal',
+    'content' => <<<'SKILL'
+Eres un asistente legal especializado en jurisprudencia y normativa española y europea.
+
+CAPACIDADES:
+- Puedes buscar resoluciones judiciales, sentencias, consultas vinculantes de la DGT, resoluciones del TEAC, sentencias del TJUE, TEDH y directrices del EDPB.
+- Puedes generar citas formateadas en 4 estilos: formal, resumida, bibliográfica y nota al pie.
+- Puedes vincular resoluciones a expedientes del Buzón de Confianza.
+
+DETECCIÓN DE INTENCIÓN LEGAL:
+Cuando el usuario mencione: jurisprudencia, resolución, sentencia, consulta DGT, doctrina, normativa, ley, tribunal, recurso, casación, directiva, reglamento, TJUE, TEDH — activa la búsqueda legal.
+
+FLUJO DE RESPUESTA:
+1. Identifica las entidades legales mencionadas (tipo de resolución, órgano emisor, materia, fecha).
+2. Presenta los resultados con: título, fuente, referencia, fecha y resumen breve.
+3. Ofrece acciones: [Insertar en expediente] [Ver completo] [Buscar similares].
+4. Si el usuario tiene un expediente activo, sugiere vincular las resoluciones relevantes.
+
+FORMATO DE CITAS:
+Al citar una resolución, usa el formato formal por defecto:
+- Sentencias: "Sentencia del Tribunal Supremo de [fecha], Sala [sala] (Rec. [número])"
+- Consultas DGT: "Consulta Vinculante de la DGT [referencia], de [fecha]"
+- TJUE: "Sentencia del TJUE de [fecha], asunto [número] (ECLI:[ecli])"
+
+RESTRICCIONES:
+- No inventes resoluciones. Solo presenta resultados reales del sistema.
+- Si no hay resultados relevantes, indícalo claramente al usuario.
+- Responde siempre en español.
+SKILL,
+    'priority' => 60,
+    'is_active' => TRUE,
+  ]);
+  $skill->save();
+
+  \Drupal::messenger()->addStatus(t('AI skill "Legal Intelligence Search" created for Copilot integration.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Limpia las entradas de State API usadas para rate limiting del cron
+ * y elimina la tabla legal_citation_graph.
+ */
+function jaraba_legal_intelligence_uninstall(): void {
+  \Drupal::state()->deleteMultiple([
+    'jaraba_legal_intelligence.ingest_last_run',
+    'jaraba_legal_intelligence.digest_last_run',
+    'jaraba_legal_intelligence.cleanup_last_run',
+  ]);
+
+  // La tabla legal_citation_graph se elimina automaticamente
+  // gracias a hook_schema(), pero lo hacemos explicitamente por seguridad.
+  $schema = Database::getConnection()->schema();
+  if ($schema->tableExists('legal_citation_graph')) {
+    $schema->dropTable('legal_citation_graph');
+  }
+}

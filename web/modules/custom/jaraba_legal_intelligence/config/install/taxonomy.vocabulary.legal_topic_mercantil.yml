@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Materia Mercantil'
+vid: legal_topic_mercantil
+description: 'Materias de derecho mercantil: Sociedades, Concursal, Propiedad industrial, Competencia, Bancario.'
+weight: 0

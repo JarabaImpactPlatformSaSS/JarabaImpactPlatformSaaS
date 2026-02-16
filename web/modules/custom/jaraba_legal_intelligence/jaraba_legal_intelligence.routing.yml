@@ -1,0 +1,297 @@
+# ============================================
+# RUTAS FRONTEND (NO admin) del Legal Intelligence Hub
+# ============================================
+
+# Pagina principal de busqueda semantica.
+jaraba_legal.search:
+  path: '/legal/search'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::search'
+    _title: 'Legal Intelligence Hub'
+  requirements:
+    _permission: 'search legal resolutions'
+  options:
+    _admin_route: FALSE
+
+# Detalle de resolucion (pagina autenticada con texto completo).
+jaraba_legal.resolution:
+  path: '/legal/{source_id}/{external_ref}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::view'
+    _title: 'Resolution Detail'
+  requirements:
+    _permission: 'view legal resolutions'
+    source_id: '[a-z_]+'
+    external_ref: '.+'
+  options:
+    _admin_route: FALSE
+
+# Insercion de cita en expediente (slide-panel AJAX).
+jaraba_legal.cite:
+  path: '/legal/cite/{resolution_id}/{format}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::cite'
+    _title: 'Insert Citation'
+  requirements:
+    _permission: 'insert legal citations'
+    resolution_id: '\d+'
+    format: 'formal|resumida|bibliografica|nota_al_pie'
+  options:
+    _admin_route: FALSE
+
+# Resoluciones similares.
+jaraba_legal.similar:
+  path: '/legal/{resolution_id}/similar'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::similar'
+    _title: 'Similar Resolutions'
+  requirements:
+    _permission: 'search legal resolutions'
+    resolution_id: '\d+'
+  options:
+    _admin_route: FALSE
+
+# Pagina publica SEO (abstract + metadatos, sin autenticacion).
+jaraba_legal.public_summary:
+  path: '/legal/{source_slug}/{seo_slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::publicSummary'
+    _title: 'Legal Resolution'
+  requirements:
+    _access: 'TRUE'
+    source_slug: '[a-z\-]+'
+    seo_slug: '[a-z0-9\-]+'
+  options:
+    _admin_route: FALSE
+
+# Dashboard profesional: favoritos, alertas, busquedas recientes.
+jaraba_legal.dashboard:
+  path: '/legal/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalDashboardController::dashboard'
+    _title: 'My Legal Dashboard'
+  requirements:
+    _permission: 'view legal resolutions'
+  options:
+    _admin_route: FALSE
+
+# ============================================
+# RUTAS ADMIN
+# ============================================
+
+# Configuracion general del Legal Intelligence Hub.
+jaraba_legal_intelligence.settings:
+  path: '/admin/config/jaraba/legal-intelligence'
+  defaults:
+    _form: '\Drupal\jaraba_legal_intelligence\Form\LegalSettingsForm'
+    _title: 'Legal Intelligence Hub Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+# Dashboard admin con metricas de ingesta y estado de fuentes.
+jaraba_legal.admin_dashboard:
+  path: '/admin/config/jaraba/legal-intelligence/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalAdminController::dashboard'
+    _title: 'Legal Intelligence Dashboard'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+# Forzar sincronizacion de una fuente.
+jaraba_legal.admin_sync:
+  path: '/admin/config/jaraba/legal-intelligence/sync/{source_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalAdminController::sync'
+    _title: 'Sync Source'
+  requirements:
+    _permission: 'administer legal intelligence'
+    source_id: '[a-z_]+'
+
+# Colecciones admin de entidades en /admin/content/.
+jaraba_legal.admin_resolutions:
+  path: '/admin/content/legal-resolutions'
+  defaults:
+    _entity_list: 'legal_resolution'
+    _title: 'Legal Resolutions'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.admin_sources:
+  path: '/admin/content/legal-sources'
+  defaults:
+    _entity_list: 'legal_source'
+    _title: 'Legal Sources'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.admin_alerts:
+  path: '/admin/content/legal-alerts'
+  defaults:
+    _entity_list: 'legal_alert'
+    _title: 'Legal Alerts'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.admin_bookmarks:
+  path: '/admin/content/legal-bookmarks'
+  defaults:
+    _entity_list: 'legal_bookmark'
+    _title: 'Legal Bookmarks'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.admin_citations:
+  path: '/admin/content/legal-citations'
+  defaults:
+    _entity_list: 'legal_citation'
+    _title: 'Legal Citations'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+# Settings de entidades en /admin/structure/ (Field UI base route).
+jaraba_legal.resolution.settings:
+  path: '/admin/structure/legal-resolution'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Resolution Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.source.settings:
+  path: '/admin/structure/legal-source'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Source Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.alert.settings:
+  path: '/admin/structure/legal-alert'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Alert Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.bookmark.settings:
+  path: '/admin/structure/legal-bookmark'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Bookmark Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+jaraba_legal.citation.settings:
+  path: '/admin/structure/legal-citation'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Citation Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
+# ============================================
+# API REST /api/v1/legal/*
+# ============================================
+
+# API: Busqueda semantica.
+jaraba_legal.api.search:
+  path: '/api/v1/legal/search'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiSearch'
+  requirements:
+    _permission: 'access legal api'
+  methods: [POST]
+
+# API: Detalle de resolucion.
+jaraba_legal.api.resolution:
+  path: '/api/v1/legal/resolutions/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::apiGet'
+  requirements:
+    _permission: 'access legal api'
+    id: '\d+'
+  methods: [GET]
+
+# API: Guardar/eliminar favorito.
+jaraba_legal.api.bookmark:
+  path: '/api/v1/legal/bookmark'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalResolutionController::apiBookmark'
+  requirements:
+    _permission: 'bookmark legal resolutions'
+  methods: [POST, DELETE]
+
+# API: CRUD alertas.
+jaraba_legal.api.alerts:
+  path: '/api/v1/legal/alerts'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiAlerts'
+  requirements:
+    _permission: 'manage legal alerts'
+  methods: [GET, POST, PATCH, DELETE]
+
+# API: Preview del digest semanal.
+jaraba_legal.api.digest_preview:
+  path: '/api/v1/legal/digest/preview'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiDigestPreview'
+  requirements:
+    _permission: 'manage legal alerts'
+  methods: [GET]
+
+# API: Busqueda legal desde Copilot (FASE 6).
+jaraba_legal.api.copilot_search:
+  path: '/api/v1/legal/copilot/search'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiCopilotSearch'
+  requirements:
+    _permission: 'access legal api'
+  methods: [POST]
+
+# API: Vincular resolucion a expediente desde Copilot (FASE 6).
+jaraba_legal.api.copilot_attach:
+  path: '/api/v1/legal/copilot/attach'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiCopilotAttach'
+  requirements:
+    _permission: 'insert legal citations'
+  methods: [POST]
+
+# API: Referencias de un expediente (FASE 6).
+jaraba_legal.api.expediente_references:
+  path: '/api/v1/legal/expediente/{expediente_id}/references'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSearchController::apiExpedienteReferences'
+  requirements:
+    _permission: 'view legal resolutions'
+    expediente_id: '\d+'
+  methods: [GET]
+
+# API Admin: Estadisticas de ingesta.
+jaraba_legal.api.admin_stats:
+  path: '/api/v1/admin/legal/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalAdminController::apiStats'
+  requirements:
+    _permission: 'administer legal intelligence'
+  methods: [GET]
+
+# API Admin: Estado de fuentes.
+jaraba_legal.api.admin_sources:
+  path: '/api/v1/admin/legal/sources'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalAdminController::apiSources'
+  requirements:
+    _permission: 'administer legal intelligence'
+  methods: [GET]
+
+# Sitemap XML de resoluciones legales publicas.
+jaraba_legal.sitemap:
+  path: '/legal/sitemap.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalSitemapController::sitemap'
+    _title: 'Legal Sitemap'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE

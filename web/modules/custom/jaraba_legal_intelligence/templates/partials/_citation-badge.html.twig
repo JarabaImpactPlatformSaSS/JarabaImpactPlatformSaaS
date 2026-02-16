@@ -1,0 +1,30 @@
+{#
+ * _citation-badge.html.twig
+ * Badge de estado legal de una resolucion.
+ *
+ * Muestra el estado legal con color semantico:
+ * - vigente (verde), derogada (rojo), anulada (rojo),
+ *   superada (ambar), parcialmente_derogada (ambar), eu (azul UE).
+ *
+ * Variables:
+ *   - status: string — Estado legal (vigente|derogada|anulada|superada|parcialmente_derogada).
+ *   - label: string — Texto a mostrar en el badge.
+ #}
+
+{% set status_class = status|default('vigente') %}
+
+<span class="legal-resolution-card__badge legal-resolution-card__badge--{{ status_class }}">
+  {% if status_class == 'vigente' %}
+    {% trans %}In force{% endtrans %}
+  {% elseif status_class == 'derogada' %}
+    {% trans %}Repealed{% endtrans %}
+  {% elseif status_class == 'anulada' %}
+    {% trans %}Annulled{% endtrans %}
+  {% elseif status_class == 'superada' %}
+    {% trans %}Superseded{% endtrans %}
+  {% elseif status_class == 'parcialmente_derogada' %}
+    {% trans %}Partially repealed{% endtrans %}
+  {% else %}
+    {{ label|default(status_class) }}
+  {% endif %}
+</span>

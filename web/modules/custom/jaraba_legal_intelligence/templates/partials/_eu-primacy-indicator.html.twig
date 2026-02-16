@@ -1,0 +1,43 @@
+{#
+ * _eu-primacy-indicator.html.twig
+ * Indicadores de primacia del derecho de la UE.
+ *
+ * Muestra badges para primacia, efecto directo y estado de transposicion
+ * de resoluciones europeas (TJUE, TEDH, EUR-Lex, EDPB).
+ *
+ * Variables:
+ *   - primacy_type: string — Tipo de primacia (primacy|direct_effect|preliminary_ruling).
+ *   - direct_effect: boolean — Si la norma tiene efecto directo.
+ *   - transposition_status: string — Estado de transposicion (transposed|pending|not_required).
+ #}
+
+<div class="legal-eu-primacy" role="group" aria-label="{% trans %}EU law indicators{% endtrans %}">
+  {% if primacy_type %}
+    <span class="legal-eu-primacy legal-eu-primacy--primacy">
+      {{ jaraba_icon('legal', 'eu-flag', { size: '14px' }) }}
+      {% if primacy_type == 'primacy' %}
+        {% trans %}EU Primacy{% endtrans %}
+      {% elseif primacy_type == 'preliminary_ruling' %}
+        {% trans %}Preliminary ruling{% endtrans %}
+      {% endif %}
+    </span>
+  {% endif %}
+
+  {% if direct_effect %}
+    <span class="legal-eu-primacy legal-eu-primacy--direct-effect">
+      {% trans %}Direct effect{% endtrans %}
+    </span>
+  {% endif %}
+
+  {% if transposition_status %}
+    {% if transposition_status == 'transposed' %}
+      <span class="legal-eu-primacy legal-eu-primacy--transposed">
+        {% trans %}Transposed{% endtrans %}
+      </span>
+    {% elseif transposition_status == 'pending' %}
+      <span class="legal-eu-primacy legal-eu-primacy--pending-transposition">
+        {% trans %}Pending transposition{% endtrans %}
+      </span>
+    {% endif %}
+  {% endif %}
+</div>

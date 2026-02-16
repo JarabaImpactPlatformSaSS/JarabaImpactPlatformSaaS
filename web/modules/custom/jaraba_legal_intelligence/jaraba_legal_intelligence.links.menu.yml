@@ -1,0 +1,39 @@
+# Enlaces de menu del Legal Intelligence Hub.
+# Pestanas en /admin/content y enlace en /admin/config.
+
+jaraba_legal.admin_resolutions:
+  title: 'Legal Resolutions'
+  parent: system.admin_content
+  route_name: jaraba_legal.admin_resolutions
+  weight: 20
+
+jaraba_legal.admin_sources:
+  title: 'Legal Sources'
+  parent: system.admin_content
+  route_name: jaraba_legal.admin_sources
+  weight: 21
+
+jaraba_legal.admin_alerts:
+  title: 'Legal Alerts'
+  parent: system.admin_content
+  route_name: jaraba_legal.admin_alerts
+  weight: 22
+
+jaraba_legal.admin_bookmarks:
+  title: 'Legal Bookmarks'
+  parent: system.admin_content
+  route_name: jaraba_legal.admin_bookmarks
+  weight: 23
+
+jaraba_legal.admin_citations:
+  title: 'Legal Citations'
+  parent: system.admin_content
+  route_name: jaraba_legal.admin_citations
+  weight: 24
+
+jaraba_legal_intelligence.settings:
+  title: 'Legal Intelligence Hub'
+  description: 'Configure Legal Intelligence Hub: sources, NLP pipeline, Qdrant, alerts, plan limits.'
+  parent: system.admin_config_services
+  route_name: jaraba_legal_intelligence.settings
+  weight: 15

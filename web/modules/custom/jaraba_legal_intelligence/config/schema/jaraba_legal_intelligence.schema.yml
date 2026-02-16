@@ -1,0 +1,164 @@
+# Schema de configuracion del Legal Intelligence Hub.
+# Define la estructura de datos para validacion de YAML config.
+
+jaraba_legal_intelligence.settings:
+  type: config_object
+  label: 'Legal Intelligence Hub settings'
+  mapping:
+    qdrant_url:
+      type: string
+      label: 'Qdrant server URL'
+    qdrant_api_key:
+      type: string
+      label: 'Qdrant API key'
+    nlp_service_url:
+      type: string
+      label: 'NLP FastAPI service URL'
+    tika_url:
+      type: string
+      label: 'Apache Tika URL'
+    qdrant_collection_national:
+      type: string
+      label: 'Qdrant collection for national sources'
+    qdrant_collection_eu:
+      type: string
+      label: 'Qdrant collection for EU sources'
+    score_threshold:
+      type: float
+      label: 'Minimum Qdrant score threshold'
+    max_results:
+      type: integer
+      label: 'Maximum search results'
+    limits:
+      type: mapping
+      label: 'Plan-based limits'
+      mapping:
+        starter:
+          type: mapping
+          label: 'Starter plan limits'
+          mapping:
+            searches_per_month:
+              type: integer
+              label: 'Searches per month (0 = unlimited)'
+            max_alerts:
+              type: integer
+              label: 'Maximum alerts (0 = unlimited)'
+            max_bookmarks:
+              type: integer
+              label: 'Maximum bookmarks (0 = unlimited)'
+        pro:
+          type: mapping
+          label: 'Pro plan limits'
+          mapping:
+            searches_per_month:
+              type: integer
+              label: 'Searches per month (0 = unlimited)'
+            max_alerts:
+              type: integer
+              label: 'Maximum alerts (0 = unlimited)'
+            max_bookmarks:
+              type: integer
+              label: 'Maximum bookmarks (0 = unlimited)'
+        enterprise:
+          type: mapping
+          label: 'Enterprise plan limits'
+          mapping:
+            searches_per_month:
+              type: integer
+              label: 'Searches per month (0 = unlimited)'
+            max_alerts:
+              type: integer
+              label: 'Maximum alerts (0 = unlimited)'
+            max_bookmarks:
+              type: integer
+              label: 'Maximum bookmarks (0 = unlimited)'
+    eu_primacy_boost:
+      type: float
+      label: 'Score boost for EU source results (primacy)'
+    freshness_boost:
+      type: float
+      label: 'Score boost for recent resolutions'
+    freshness_days:
+      type: integer
+      label: 'Days to consider a resolution as recent'
+    classification_prompt:
+      type: text
+      label: 'AI classification prompt (national sources)'
+    summary_prompt:
+      type: text
+      label: 'AI summary prompt (national sources)'
+    eu_classification_prompt:
+      type: text
+      label: 'AI classification prompt (EU sources)'
+    eu_summary_prompt:
+      type: text
+      label: 'AI summary prompt (EU sources with impact_spain)'
+    nlp_chunk_max_tokens:
+      type: integer
+      label: 'Max tokens per text chunk for embeddings'
+    nlp_chunk_overlap_tokens:
+      type: integer
+      label: 'Overlap tokens between consecutive chunks'
+    nlp_max_text_length:
+      type: integer
+      label: 'Max text length for NLP processing (chars)'
+    nlp_tika_timeout:
+      type: integer
+      label: 'Apache Tika HTTP timeout (seconds)'
+    nlp_python_timeout:
+      type: integer
+      label: 'Python NLP service HTTP timeout (seconds)'
+    nlp_ai_temperature:
+      type: float
+      label: 'AI model temperature for classification/summary'
+    nlp_ai_max_tokens:
+      type: integer
+      label: 'AI model max output tokens'
+    nlp_classification_max_chars:
+      type: integer
+      label: 'Max chars sent to AI for classification'
+    nlp_summary_max_chars:
+      type: integer
+      label: 'Max chars sent to AI for summarization'
+    default_sync_interval_hours:
+      type: integer
+      label: 'Default sync interval in hours'
+    rate_limit_searches_per_hour:
+      type: integer
+      label: 'Rate limit: searches per hour per user'
+
+jaraba_legal_intelligence.sources:
+  type: config_object
+  label: 'Legal Intelligence Hub sources'
+  mapping:
+    sources:
+      type: sequence
+      label: 'Data sources'
+      sequence:
+        type: mapping
+        label: 'Source'
+        mapping:
+          name:
+            type: string
+            label: 'Source name'
+          description:
+            type: string
+            label: 'Description'
+          base_url:
+            type: string
+            label: 'Base URL'
+          spider_class:
+            type: string
+            label: 'Spider PHP class'
+          frequency:
+            type: string
+            label: 'Sync frequency (daily/weekly/monthly)'
+          is_active:
+            type: boolean
+            label: 'Active'
+          priority:
+            type: integer
+            label: 'Priority (lower = higher)'
+          scope:
+            type: string
+            label: 'Scope (national/eu)'

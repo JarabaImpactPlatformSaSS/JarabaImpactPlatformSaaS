@@ -1,0 +1,83 @@
+# Docker Compose para servicios NLP del Legal Intelligence Hub.
+#
+# Servicios:
+# - tika: Apache Tika Server para extraccion de texto de PDFs.
+# - legal-nlp: FastAPI Python con spaCy para segmentacion, NER juridico, embeddings.
+#
+# Uso:
+#   docker compose -f docker-compose.legal.yml up -d
+#
+# Verificacion:
+#   curl http://localhost:9998/tika         -> Apache Tika OK
+#   curl http://localhost:8001/health       -> FastAPI NLP OK
+#
+# Las colecciones Qdrant se crean manualmente (ver seccion Qdrant abajo).
+
+version: '3.8'
+
+services:
+  # Apache Tika: Extraccion de texto de PDFs, DOCX, HTML.
+  # Etapa 1 del pipeline NLP.
+  tika:
+    image: apache/tika:2.9.2
+    container_name: legal-tika
+    ports:
+      - "9998:9998"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9998/tika"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FastAPI Python: Segmentacion (spaCy) + NER juridico + embeddings.
+  # Etapas 2-4 del pipeline NLP.
+  legal-nlp:
+    build:
+      context: ./scripts/nlp
+      dockerfile: Dockerfile
+    container_name: legal-nlp
+    ports:
+      - "8001:8001"
+    environment:
+      # Configuracion del modelo de spaCy para espanol.
+      - SPACY_MODEL=es_core_news_lg
+      # Puerto del servidor FastAPI.
+      - PORT=8001
+      # Nivel de log.
+      - LOG_LEVEL=info
+    volumes:
+      - ./scripts/nlp:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Nota: Qdrant ya esta configurado en el docker-compose principal del proyecto.
+# Las colecciones se crean con los siguientes comandos:
+#
+# Coleccion nacional (text-embedding-3-large, 3072 dims):
+# curl -X PUT http://localhost:6333/collections/legal_intelligence \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "vectors": {
+#       "size": 3072,
+#       "distance": "Cosine",
+#       "on_disk": true,
+#       "hnsw_config": { "m": 32, "ef_construct": 200 }
+#     }
+#   }'
+#
+# Coleccion UE (multilingual-e5-large, 1024 dims):
+# curl -X PUT http://localhost:6333/collections/legal_intelligence_eu \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "vectors": {
+#       "size": 1024,
+#       "distance": "Cosine",
+#       "on_disk": true,
+#       "hnsw_config": { "m": 32, "ef_construct": 200 }
+#     }
+#   }'

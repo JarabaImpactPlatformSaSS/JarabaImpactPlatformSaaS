@@ -1,0 +1,101 @@
+# Configuracion general del Legal Intelligence Hub.
+# Todas las URLs, thresholds y prompts son editables desde la UI
+# en /admin/config/jaraba/legal-intelligence.
+# DIRECTRIZ: No hardcodear configuracion (doc 00_DIRECTRICES).
+
+# URLs de servicios externos (Docker).
+qdrant_url: 'http://qdrant:6333'
+qdrant_api_key: ''
+nlp_service_url: 'http://legal-nlp:8001'
+tika_url: 'http://tika:9998'
+
+# Colecciones Qdrant.
+qdrant_collection_national: 'legal_intelligence'
+qdrant_collection_eu: 'legal_intelligence_eu'
+
+# Thresholds de busqueda.
+score_threshold: 0.65
+max_results: 20
+
+# Limites por plan SaaS.
+limits:
+  starter:
+    searches_per_month: 50
+    max_alerts: 3
+    max_bookmarks: 100
+  pro:
+    searches_per_month: 0
+    max_alerts: 20
+    max_bookmarks: 0
+  enterprise:
+    searches_per_month: 0
+    max_alerts: 0
+    max_bookmarks: 0
+
+# Merge & Rank boosts.
+eu_primacy_boost: 0.05
+freshness_boost: 0.02
+freshness_days: 365
+
+# Prompts de IA (editables sin tocar codigo).
+classification_prompt: |
+  You are a Spanish legal classification expert. Given the following legal resolution text,
+  classify it by:
+  1. jurisdiction (civil, penal, laboral, fiscal, contencioso, mercantil, social)
+  2. topics (array of specific legal topics)
+  3. resolution_type (sentencia, auto, consulta_vinculante, resolucion, informe, circular)
+  4. importance_level (1=key case, 2=medium, 3=low)
+
+  Respond ONLY with a valid JSON object. Do NOT include any explanation or markdown.
+  Base your classification strictly on the text provided. Do not infer information not present.
+
+summary_prompt: |
+  You are a Spanish legal analyst. Given the following legal resolution text,
+  generate:
+  1. abstract: A concise summary in 3-5 sentences in Spanish.
+  2. key_holdings: The ratio decidendi (main legal principle established) in 2-3 sentences in Spanish.
+  3. cited_legislation: Array of legislation cited (laws, articles, royal decrees).
+
+  Respond ONLY with a valid JSON object. Base your analysis strictly on the text provided.
+  Do not add information not present in the original text. Respond in Spanish.
+
+# Prompts de IA para fuentes europeas (UE/CEDH/EDPB).
+eu_classification_prompt: |
+  You are an EU law classification expert specializing in CJEU, ECHR and EUR-Lex sources.
+  Given the following EU legal text, classify it by:
+  1. jurisdiction (eu_general, eu_fiscal, eu_laboral, eu_privacy, eu_competition, eu_human_rights)
+  2. topics (array of specific EU legal topics in Spanish)
+  3. resolution_type (sentencia_tjue, sentencia_tedh, directiva, reglamento, decision, opinion_ag, guideline_edpb)
+  4. importance_level (1=key case, 2=medium, 3=low)
+  5. procedure_type (prejudicial, infraccion, anulacion, omision, opinion)
+
+  Respond ONLY with a valid JSON object. Do NOT include any explanation or markdown.
+  Base your classification strictly on the text provided. Do not infer information not present.
+
+eu_summary_prompt: |
+  You are an EU law analyst specializing in the impact of EU law on Spanish legal practice.
+  Given the following EU legal text, generate:
+  1. abstract: A concise summary in 3-5 sentences in Spanish.
+  2. key_holdings: The ratio decidendi or main legal principle in 2-3 sentences in Spanish.
+  3. cited_legislation: Array of EU legislation cited (directives, regulations, treaty articles).
+  4. impact_spain: How this EU ruling or legislation specifically affects Spanish law (2-4 sentences in Spanish). Consider direct effect, primacy, transposition obligations and existing Spanish implementing legislation.
+
+  Respond ONLY with a valid JSON object. Base your analysis strictly on the text provided.
+  Do not add information not present in the original text. Respond in Spanish.
+
+# Pipeline NLP.
+nlp_chunk_max_tokens: 512
+nlp_chunk_overlap_tokens: 50
+nlp_max_text_length: 50000
+nlp_tika_timeout: 60
+nlp_python_timeout: 120
+nlp_ai_temperature: 0.2
+nlp_ai_max_tokens: 2000
+nlp_classification_max_chars: 8000
+nlp_summary_max_chars: 12000
+
+# Frecuencia de sincronizacion por defecto.
+default_sync_interval_hours: 24
+
+# Rate limiting.
+rate_limit_searches_per_hour: 100

@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Materia Fiscal'
+vid: legal_topic_fiscal
+description: 'Materias de derecho fiscal y tributario: IRPF, IS, IVA, ITP, Sucesiones, Aduanas, Procedimiento tributario.'
+weight: 0

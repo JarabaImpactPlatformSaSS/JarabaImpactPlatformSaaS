@@ -1,0 +1,378 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Legal Intelligence Hub — Busqueda juridica inteligente con IA.
+ *
+ * Modulo principal del Legal Intelligence Hub para el vertical ServiciosConecta.
+ * Proporciona busqueda semantica en jurisprudencia, normativa y doctrina
+ * administrativa de fuentes nacionales (ES) y europeas (UE/CEDH).
+ *
+ * DIRECTRICES:
+ * - Body classes via hook_preprocess_html() (NUNCA attributes.addClass en Twig).
+ * - Automaciones via hooks nativos (NO ECA BPMN).
+ * - Textos siempre traducibles con $this->t() / {% trans %} / Drupal.t().
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_legal_intelligence_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_legal_intelligence') {
+    return '<p>' . t('AI-powered legal research with semantic search across national (ES) and European (EU/CEDH) sources. Pipeline NLP, Qdrant vector search, citation insertion, intelligent alerts.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Inyecta clases CSS al <body> segun la ruta activa del Legal Intelligence Hub.
+ * DIRECTRIZ: NUNCA usar attributes.addClass() en templates Twig para body.
+ * Las clases page--clean-layout y page--legal habilitan el layout full-width
+ * sin regiones Drupal, siguiendo el patron Zero-Region del ecosistema.
+ */
+function jaraba_legal_intelligence_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  // Mapa de rutas del Legal Intelligence Hub a clases CSS del body.
+  $routeClasses = [
+    'jaraba_legal.search' => 'page--legal-search',
+    'jaraba_legal.resolution' => 'page--legal-resolution',
+    'jaraba_legal.public_summary' => 'page--legal-public',
+    'jaraba_legal_intelligence.settings' => 'page--legal-admin',
+    'jaraba_legal.dashboard' => 'page--legal-dashboard',
+    'jaraba_legal.admin_dashboard' => 'page--legal-admin',
+  ];
+
+  if (isset($routeClasses[$route_name])) {
+    $variables['attributes']['class'][] = $routeClasses[$route_name];
+    $variables['attributes']['class'][] = 'page--legal';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Cuando se indexa una nueva resolucion legal, verifica si contradice doctrina
+ * citada en expedientes activos y genera alertas si es necesario.
+ * Se delega al servicio de alertas para mantener el hook ligero.
+ */
+function jaraba_legal_intelligence_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'legal_resolution') {
+    return;
+  }
+  try {
+    \Drupal::service('jaraba_legal_intelligence.alerts')->checkNewResolutionImpact($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error(
+      'Error checking resolution impact for @ref: @msg',
+      ['@ref' => $entity->get('external_ref')->value ?? 'unknown', '@msg' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Detecta cambios de estado legal en resoluciones (derogada, anulada, superada)
+ * y propaga alertas a profesionales que las tengan citadas en expedientes.
+ */
+function jaraba_legal_intelligence_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'legal_resolution') {
+    return;
+  }
+  $originalStatus = $entity->original?->get('status_legal')->value ?? '';
+  $newStatus = $entity->get('status_legal')->value ?? '';
+  if ($originalStatus === $newStatus) {
+    return;
+  }
+  try {
+    \Drupal::service('jaraba_legal_intelligence.alerts')->handleStatusChange($entity, $originalStatus, $newStatus);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error(
+      'Error handling status change for @ref: @msg',
+      ['@ref' => $entity->get('external_ref')->value ?? 'unknown', '@msg' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta 4 tareas programadas del Legal Intelligence Hub:
+ * 1. Ingesta de resoluciones por fuente (diaria/semanal/mensual).
+ * 2. Procesamiento de cola NLP de resoluciones pendientes.
+ * 3. Envio de digest semanal (lunes 07:00 UTC).
+ * 4. Limpieza de vectores huerfanos en Qdrant y logs antiguos.
+ *
+ * Cada tarea usa State API para rate limiting independiente.
+ */
+function jaraba_legal_intelligence_cron(): void {
+  $time = \Drupal::time()->getRequestTime();
+
+  _jaraba_legal_intelligence_cron_ingest($time);
+  _jaraba_legal_intelligence_cron_digest($time);
+  _jaraba_legal_intelligence_cron_cleanup($time);
+}
+
+/**
+ * Ejecuta ingesta programada de resoluciones por fuente.
+ *
+ * Cada fuente (legal_source entity) tiene su propia frecuencia (daily/weekly/monthly).
+ * Solo ejecuta si ha pasado el intervalo desde el ultimo sync de la fuente.
+ * Encola resoluciones nuevas para procesamiento NLP posterior.
+ *
+ * @param int $time
+ *   Timestamp del request actual.
+ */
+function _jaraba_legal_intelligence_cron_ingest(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_legal_intelligence.ingest_last_run') ?? 0);
+
+  // Rate limit: no ejecutar mas de una vez cada 6 horas.
+  if (($time - $lastRun) < 21600) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_legal_intelligence\Service\LegalIngestionService $ingestion */
+    $ingestion = \Drupal::service('jaraba_legal_intelligence.ingestion');
+    $ingestion->runScheduledIngestion($time);
+    $state->set('jaraba_legal_intelligence.ingest_last_run', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error('Cron ingestion failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Envia digest semanal personalizado (lunes 07:00-08:00 UTC).
+ *
+ * Genera resumen de resoluciones indexadas en los ultimos 7 dias
+ * que coinciden con las areas de practica del profesional.
+ * Maximo 10 resoluciones por digest.
+ *
+ * @param int $time
+ *   Timestamp del request actual.
+ */
+function _jaraba_legal_intelligence_cron_digest(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_legal_intelligence.digest_last_run') ?? 0);
+
+  // Solo enviar lunes entre 07:00-08:00 UTC, una vez por semana.
+  $dayOfWeek = (int) date('N', $time);
+  $currentHour = (int) date('G', $time);
+  if ($dayOfWeek !== 1 || $currentHour < 7 || $currentHour > 7) {
+    return;
+  }
+  if (($time - $lastRun) < 604800) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_legal_intelligence\Service\LegalDigestService $digest */
+    $digest = \Drupal::service('jaraba_legal_intelligence.digest');
+    $digest->sendDigests();
+    $state->set('jaraba_legal_intelligence.digest_last_run', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error('Cron digest failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Limpieza periodica: vectores huerfanos en Qdrant y logs antiguos.
+ *
+ * Ejecuta cada 7 dias. Elimina vectores en Qdrant sin resolucion correspondiente
+ * en la base de datos y purga logs de ingesta con mas de 90 dias.
+ *
+ * @param int $time
+ *   Timestamp del request actual.
+ */
+function _jaraba_legal_intelligence_cron_cleanup(int $time): void {
+  $state = \Drupal::state();
+  $lastRun = (int) ($state->get('jaraba_legal_intelligence.cleanup_last_run') ?? 0);
+
+  // Ejecutar cada 7 dias.
+  if (($time - $lastRun) < 604800) {
+    return;
+  }
+
+  try {
+    \Drupal::logger('jaraba_legal_intelligence')->info('Running weekly cleanup of orphaned vectors and old logs.');
+    $state->set('jaraba_legal_intelligence.cleanup_last_run', $time);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error('Cron cleanup failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Define templates de email para el Legal Intelligence Hub:
+ * - legal_alert: Notificacion de alerta inteligente.
+ * - legal_digest: Digest semanal personalizado.
+ */
+function jaraba_legal_intelligence_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'legal_alert':
+      $message['subject'] = $params['subject'] ?? t('Legal Alert - Jaraba Impact Platform');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
+    case 'legal_digest':
+      $message['subject'] = $params['subject'] ?? t('Weekly Legal Digest - Jaraba Impact Platform');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra templates Twig del Legal Intelligence Hub:
+ * - Paginas frontend Zero-Region (busqueda, detalle, publica).
+ * - Parciales reutilizables (_resolution-card, _citation-badge, etc.).
+ * - Templates de email (digest).
+ */
+function jaraba_legal_intelligence_theme(): array {
+  return [
+    // Pagina principal de busqueda semantica.
+    'legal_search_page' => [
+      'template' => 'legal-search-page',
+      'variables' => [
+        'tenant' => NULL,
+        'labels' => [],
+        'urls' => [],
+        'facets' => [],
+      ],
+    ],
+    // Resultados de busqueda.
+    'legal_search_results' => [
+      'template' => 'legal-search-results',
+      'variables' => [
+        'results' => [],
+        'total' => 0,
+        'query' => '',
+        'facets' => [],
+      ],
+    ],
+    // Detalle completo de resolucion.
+    'legal_resolution_detail' => [
+      'template' => 'legal-resolution-detail',
+      'variables' => [
+        'resolution' => NULL,
+        'similar' => [],
+        'citations_graph' => [],
+      ],
+    ],
+    // Panel de insercion de cita (slide-panel).
+    'legal_citation_insert' => [
+      'template' => 'legal-citation-insert',
+      'variables' => [
+        'resolution' => NULL,
+        'format' => 'formal',
+        'citation_text' => '',
+        'expedientes' => [],
+      ],
+    ],
+    // Dashboard profesional del abogado.
+    'legal_professional_dashboard' => [
+      'template' => 'legal-professional-dashboard',
+      'variables' => [
+        'bookmarks' => [],
+        'alerts' => [],
+        'searches' => [],
+      ],
+    ],
+    // Dashboard admin con metricas de ingesta.
+    'legal_admin_dashboard' => [
+      'template' => 'legal-admin-dashboard',
+      'variables' => [
+        'stats' => [],
+        'sources' => [],
+      ],
+    ],
+    // Email digest semanal.
+    'legal_digest_email' => [
+      'template' => 'legal-digest-email',
+      'variables' => [
+        'provider_name' => '',
+        'resolutions' => [],
+        'period_start' => '',
+        'period_end' => '',
+      ],
+    ],
+    // === Parciales reutilizables ===
+    'legal_resolution_card' => [
+      'template' => 'partials/_resolution-card',
+      'variables' => [
+        'resolution' => NULL,
+        'show_actions' => TRUE,
+        'show_graph' => FALSE,
+        'compact' => FALSE,
+      ],
+    ],
+    'legal_citation_badge' => [
+      'template' => 'partials/_citation-badge',
+      'variables' => [
+        'status' => 'vigente',
+        'label' => '',
+      ],
+    ],
+    'legal_search_facets' => [
+      'template' => 'partials/_search-facets',
+      'variables' => [
+        'facets' => [],
+        'active_filters' => [],
+      ],
+    ],
+    'legal_citation_graph' => [
+      'template' => 'partials/_citation-graph',
+      'variables' => [
+        'nodes' => [],
+        'edges' => [],
+        'resolution_id' => 0,
+      ],
+    ],
+    'legal_eu_primacy_indicator' => [
+      'template' => 'partials/_eu-primacy-indicator',
+      'variables' => [
+        'primacy_type' => '',
+        'direct_effect' => FALSE,
+        'transposition_status' => '',
+      ],
+    ],
+    'legal_alert_card' => [
+      'template' => 'partials/_alert-card',
+      'variables' => [
+        'alert' => NULL,
+        'show_actions' => TRUE,
+      ],
+    ],
+    'legal_digest_preview' => [
+      'template' => 'partials/_digest-preview',
+      'variables' => [
+        'resolutions' => [],
+        'provider' => NULL,
+      ],
+    ],
+    'legal_source_status' => [
+      'template' => 'partials/_source-status',
+      'variables' => [
+        'source' => NULL,
+        'show_sync_button' => FALSE,
+      ],
+    ],
+  ];
+}

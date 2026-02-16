@@ -1,0 +1,158 @@
+{#
+ * legal-professional-dashboard.html.twig
+ * Dashboard profesional del Legal Intelligence Hub.
+ *
+ * Muestra tres secciones para el profesional juridico:
+ * favoritos (bookmarks), alertas activas y busquedas recientes.
+ *
+ * Variables:
+ *   - bookmarks: array — Favoritos del usuario con resoluciones asociadas.
+ *   - alerts: array — Alertas inteligentes activas del usuario.
+ *   - searches: array — Busquedas recientes (placeholder).
+ #}
+
+{{ attach_library('jaraba_legal_intelligence/legal.dashboard') }}
+
+<div class="legal-professional-dashboard">
+
+  {# =============================================
+     SECCION 1: Resoluciones guardadas (bookmarks)
+     ============================================= #}
+  <section class="legal-professional-dashboard__section legal-professional-dashboard__bookmarks">
+    <div class="legal-professional-dashboard__section-header">
+      <h2 class="legal-professional-dashboard__section-title">
+        {{ jaraba_icon('legal', 'law-book', { size: '20px' }) }}
+        {% trans %}My Bookmarks{% endtrans %}
+      </h2>
+      {% if bookmarks|length > 0 %}
+        <span class="legal-professional-dashboard__count">
+          {{ '%count resolution'|t({'%count': bookmarks|length}) }}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if bookmarks|length > 0 %}
+      <div class="legal-professional-dashboard__grid">
+        {% for item in bookmarks %}
+          {% include '@jaraba_legal_intelligence/partials/_resolution-card.html.twig' with {
+            'resolution': item.resolution,
+            'show_actions': true,
+            'show_graph': false,
+            'compact': false
+          } only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="legal-professional-dashboard__empty">
+        {{ jaraba_icon('legal', 'law-book', { size: '48px' }) }}
+        <p>{% trans %}You have not bookmarked any resolutions yet.{% endtrans %}</p>
+        <p>{% trans %}Use the bookmark button on any resolution to save it here for quick access.{% endtrans %}</p>
+        <a href="/legal/search" class="btn btn--primary">
+          {{ jaraba_icon('legal', 'search', { size: '14px' }) }}
+          {% trans %}Search resolutions{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </section>
+
+  {# =============================================
+     SECCION 2: Alertas inteligentes activas
+     ============================================= #}
+  <section class="legal-professional-dashboard__section legal-professional-dashboard__alerts">
+    <div class="legal-professional-dashboard__section-header">
+      <h2 class="legal-professional-dashboard__section-title">
+        {{ jaraba_icon('legal', 'alert', { size: '20px' }) }}
+        {% trans %}Active Alerts{% endtrans %}
+      </h2>
+      {% if alerts|length > 0 %}
+        <span class="legal-professional-dashboard__count">
+          {{ '%count alert'|t({'%count': alerts|length}) }}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if alerts|length > 0 %}
+      <div class="legal-professional-dashboard__grid legal-professional-dashboard__grid--alerts">
+        {% for alert in alerts %}
+          <div class="legal-professional-dashboard__alert-item" data-alert-id="{{ alert.id }}">
+            <div class="legal-professional-dashboard__alert-header">
+              <span class="legal-professional-dashboard__alert-type">
+                {{ jaraba_icon('legal', 'gavel', { size: '14px' }) }}
+                {{ alert.alert_type }}
+              </span>
+              <span class="legal-professional-dashboard__alert-status is-active">
+                {% trans %}Active{% endtrans %}
+              </span>
+            </div>
+
+            {% if alert.query_text %}
+              <div class="legal-professional-dashboard__alert-query">
+                <strong>{% trans %}Query:{% endtrans %}</strong> {{ alert.query_text|striptags }}
+              </div>
+            {% endif %}
+
+            {% if alert.topics %}
+              <div class="legal-professional-dashboard__alert-topics">
+                <strong>{% trans %}Topics:{% endtrans %}</strong> {{ alert.topics|striptags }}
+              </div>
+            {% endif %}
+
+            {% if alert.last_triggered %}
+              <div class="legal-professional-dashboard__alert-triggered">
+                <strong>{% trans %}Last triggered:{% endtrans %}</strong>
+                {{ alert.last_triggered|date('d/m/Y H:i') }}
+              </div>
+            {% else %}
+              <div class="legal-professional-dashboard__alert-triggered">
+                <em>{% trans %}Not triggered yet{% endtrans %}</em>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="legal-professional-dashboard__empty">
+        {{ jaraba_icon('legal', 'alert', { size: '48px' }) }}
+        <p>{% trans %}You have no active alerts configured.{% endtrans %}</p>
+        <p>{% trans %}Create alerts to get notified when new resolutions match your criteria.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# =============================================
+     SECCION 3: Busquedas recientes
+     ============================================= #}
+  <section class="legal-professional-dashboard__section legal-professional-dashboard__searches">
+    <div class="legal-professional-dashboard__section-header">
+      <h2 class="legal-professional-dashboard__section-title">
+        {{ jaraba_icon('legal', 'search', { size: '20px' }) }}
+        {% trans %}Recent Searches{% endtrans %}
+      </h2>
+    </div>
+
+    {% if searches|length > 0 %}
+      <div class="legal-professional-dashboard__search-list">
+        {% for search in searches %}
+          <div class="legal-professional-dashboard__search-item">
+            {{ jaraba_icon('legal', 'search', { size: '14px' }) }}
+            <span>{{ search.query|default('')|striptags }}</span>
+            {% if search.date %}
+              <time>{{ search.date|date('d/m/Y H:i') }}</time>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="legal-professional-dashboard__empty">
+        {{ jaraba_icon('legal', 'search', { size: '48px' }) }}
+        <p>{% trans %}No recent searches to display.{% endtrans %}</p>
+        <p>{% trans %}Your search history will appear here as you use the Legal Intelligence Hub.{% endtrans %}</p>
+        <a href="/legal/search" class="btn btn--primary">
+          {{ jaraba_icon('legal', 'search', { size: '14px' }) }}
+          {% trans %}Start searching{% endtrans %}
+        </a>
+      </div>
+    {% endif %}
+  </section>
+
+</div>

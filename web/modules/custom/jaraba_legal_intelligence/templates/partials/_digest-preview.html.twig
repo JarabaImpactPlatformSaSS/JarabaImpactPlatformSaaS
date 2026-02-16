@@ -1,0 +1,31 @@
+{#
+ * _digest-preview.html.twig
+ * Preview del digest semanal personalizado.
+ *
+ * Variables:
+ *   - resolutions: array — Resoluciones del digest (max 10).
+ *   - provider: Entidad user del profesional.
+ #}
+
+<div class="legal-digest-preview">
+  <h4 class="legal-digest-preview__title">
+    {{ jaraba_icon('legal', 'digest-mail', { size: '18px' }) }}
+    {% trans %}Weekly digest preview{% endtrans %}
+  </h4>
+
+  {% if resolutions is empty %}
+    <p class="legal-digest-preview__empty">
+      {% trans %}No new resolutions matching your areas of practice this week.{% endtrans %}
+    </p>
+  {% else %}
+    <ul class="legal-digest-preview__list">
+      {% for resolution in resolutions %}
+        <li class="legal-digest-preview__item">
+          <strong>{{ resolution.external_ref|default('') }}</strong>
+          — {{ resolution.title|default('')|striptags|length > 80 ? resolution.title|striptags|slice(0, 80) ~ '...' : resolution.title|striptags }}
+          <span class="legal-digest-preview__source">{{ resolution.issuing_body|default('') }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
