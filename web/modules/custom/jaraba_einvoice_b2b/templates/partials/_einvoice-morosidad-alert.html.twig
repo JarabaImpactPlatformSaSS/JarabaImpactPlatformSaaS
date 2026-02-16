@@ -1,0 +1,24 @@
+{# E-Invoice Morosidad Alert partial — overdue warning banner. #}
+{% if alerts is not empty %}
+  <div class="einvoice-morosidad-alert" role="alert">
+    <div class="einvoice-morosidad-alert__icon" aria-hidden="true"></div>
+    <div class="einvoice-morosidad-alert__content">
+      <strong class="einvoice-morosidad-alert__title">
+        {{ 'Morosity Alert: @count overdue invoices'|t({ '@count': alerts|length }) }}
+      </strong>
+      <ul class="einvoice-morosidad-alert__list">
+        {% for alert in alerts[:5] %}
+          <li class="einvoice-morosidad-alert__item einvoice-morosidad-alert__item--{{ alert.severity }}">
+            {{ alert.invoice_number }}: {{ alert.overdue_days }} {{ 'days overdue'|t }}
+            <span class="einvoice-morosidad-alert__severity">{{ alert.severity }}</span>
+          </li>
+        {% endfor %}
+        {% if alerts|length > 5 %}
+          <li class="einvoice-morosidad-alert__more">
+            {{ 'and @count more...'|t({ '@count': alerts|length - 5 }) }}
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+{% endif %}

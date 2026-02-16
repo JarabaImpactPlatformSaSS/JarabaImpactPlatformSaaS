@@ -1,0 +1,94 @@
+{{ attach_library('jaraba_facturae/facturae-dashboard') }}
+{#
+/**
+ * @file
+ * Zero-region page template for Facturae dashboard.
+ *
+ * Spec: Doc 180, Seccion 7.
+ * Plan: FASE 8, entregable F8-1.
+ */
+#}
+<div class="page-wrapper page-wrapper--clean page-wrapper--fiscal">
+  {% include '@ecosistema_jaraba_core/partials/_header.html.twig' %}
+
+  <main class="facturae-dashboard" role="main">
+    <div class="facturae-dashboard__header">
+      <div class="facturae-dashboard__title-group">
+        <h1 class="facturae-dashboard__title">
+          <span class="facturae-dashboard__icon" aria-hidden="true">{{ jaraba_icon('invoice', 'fiscal') }}</span>
+          {% trans %}Facturae B2G{% endtrans %}
+        </h1>
+        <p class="facturae-dashboard__description">
+          {% trans %}Electronic invoicing for Public Administration (Ley 25/2013 + FACe){% endtrans %}
+        </p>
+      </div>
+      <div class="facturae-dashboard__tenant-selector">
+        {% include '@jaraba_verifactu/partials/_fiscal-tenant-selector.html.twig' %}
+      </div>
+    </div>
+
+    {# Statistics section #}
+    <section class="facturae-dashboard__stats" aria-label="{% trans %}Invoice statistics{% endtrans %}">
+      {% include '@jaraba_facturae/partials/_facturae-stats.html.twig' with {
+        'stats': facturae_stats
+      } only %}
+    </section>
+
+    {# Main grid: FACe status + Certificate #}
+    <div class="facturae-dashboard__grid">
+      <section class="facturae-dashboard__face-panel" aria-label="{% trans %}FACe Portal status{% endtrans %}">
+        {% include '@jaraba_facturae/partials/_facturae-face-status.html.twig' %}
+      </section>
+
+      <section class="facturae-dashboard__cert-panel" aria-label="{% trans %}Certificate status{% endtrans %}">
+        {% include '@jaraba_verifactu/partials/_certificate-status.html.twig' with {
+          'certificate': certificate,
+          'has_certificate': has_certificate,
+          'tenant_name': tenant_name
+        } %}
+      </section>
+    </div>
+
+    {# Recent documents #}
+    <section class="facturae-dashboard__recent" aria-label="{% trans %}Recent documents{% endtrans %}">
+      <h2 class="facturae-dashboard__section-title">{% trans %}Recent Facturae Documents{% endtrans %}</h2>
+      <div class="facturae-dashboard__recent-grid">
+        {% if facturae_recent is not empty %}
+          {% for doc in facturae_recent %}
+            {% include '@jaraba_facturae/partials/_facturae-document-card.html.twig' with {
+              'document': doc
+            } only %}
+          {% endfor %}
+        {% else %}
+          <p class="facturae-dashboard__empty">{% trans %}No documents yet. Create your first Facturae invoice.{% endtrans %}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {# Quick actions #}
+    <section class="facturae-dashboard__actions" aria-label="{% trans %}Quick actions{% endtrans %}">
+      <h2 class="facturae-dashboard__section-title">{% trans %}Quick Actions{% endtrans %}</h2>
+      <div class="facturae-dashboard__actions-grid">
+        <a href="{{ path('jaraba_facturae.documents') }}" class="facturae-dashboard__action-card">
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('list', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-label">{% trans %}All Documents{% endtrans %}</span>
+        </a>
+        <a href="{{ path('jaraba_facturae.face_log') }}" class="facturae-dashboard__action-card">
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('log', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-label">{% trans %}FACe Log{% endtrans %}</span>
+        </a>
+        <a href="{{ path('jaraba_facturae.config') }}" class="facturae-dashboard__action-card">
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('settings', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-label">{% trans %}Configuration{% endtrans %}</span>
+        </a>
+        <a href="{{ path('jaraba_facturae.api.dir3_search') }}" class="facturae-dashboard__action-card">
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('search', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-label">{% trans %}DIR3 Directory{% endtrans %}</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  {% include '@ecosistema_jaraba_core/partials/_footer.html.twig' %}
+  {% include '@ecosistema_jaraba_core/partials/_copilot-fab.html.twig' %}
+</div>

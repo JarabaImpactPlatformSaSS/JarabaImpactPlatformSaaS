@@ -1,0 +1,20 @@
+{# E-Invoice Document Card partial — used in dashboard grid and listings. #}
+<article class="einvoice-card einvoice-card--{{ document.direction|default('outbound') }}">
+  <header class="einvoice-card__header">
+    <span class="einvoice-card__number">{{ document.invoice_number }}</span>
+    {% include '@jaraba_einvoice_b2b/partials/_einvoice-format-badge.html.twig' with { format: document.format } only %}
+  </header>
+  <div class="einvoice-card__body">
+    <span class="einvoice-card__party">{{ document.direction == 'outbound' ? document.buyer_name : document.seller_name }}</span>
+    <span class="einvoice-card__amount">{{ document.total_amount|number_format(2, ',', '.') }} {{ document.currency_code|default('EUR') }}</span>
+  </div>
+  <footer class="einvoice-card__footer">
+    <span class="einvoice-card__status einvoice-card__status--{{ document.status }}">{{ document.status }}</span>
+    <span class="einvoice-card__payment einvoice-card__payment--{{ document.payment_status }}">{{ document.payment_status }}</span>
+    {% if document.id %}
+      <a href="{{ path('entity.einvoice_document.canonical', { einvoice_document: document.id }) }}" class="einvoice-card__link">
+        {{ 'View'|t }}
+      </a>
+    {% endif %}
+  </footer>
+</article>

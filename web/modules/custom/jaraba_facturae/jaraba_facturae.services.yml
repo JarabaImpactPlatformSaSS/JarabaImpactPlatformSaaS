@@ -1,0 +1,45 @@
+services:
+  logger.channel.jaraba_facturae:
+    parent: logger.channel_base
+    arguments: ['jaraba_facturae']
+
+  jaraba_facturae.xml_service:
+    class: Drupal\jaraba_facturae\Service\FacturaeXmlService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_facturae.validation_service'
+      - '@logger.channel.jaraba_facturae'
+
+  jaraba_facturae.numbering_service:
+    class: Drupal\jaraba_facturae\Service\FacturaeNumberingService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_facturae'
+
+  jaraba_facturae.validation_service:
+    class: Drupal\jaraba_facturae\Service\FacturaeValidationService
+    arguments:
+      - '@module_handler'
+      - '@logger.channel.jaraba_facturae'
+
+  jaraba_facturae.xades_service:
+    class: Drupal\jaraba_facturae\Service\FacturaeXAdESService
+    arguments:
+      - '@ecosistema_jaraba_core.certificate_manager'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_facturae'
+
+  jaraba_facturae.face_client:
+    class: Drupal\jaraba_facturae\Service\FACeClientService
+    arguments:
+      - '@ecosistema_jaraba_core.certificate_manager'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_facturae'
+
+  jaraba_facturae.dir3_service:
+    class: Drupal\jaraba_facturae\Service\FacturaeDIR3Service
+    arguments:
+      - '@cache.default'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_facturae'

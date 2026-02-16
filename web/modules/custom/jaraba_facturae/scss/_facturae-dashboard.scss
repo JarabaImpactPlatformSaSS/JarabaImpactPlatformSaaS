@@ -1,0 +1,137 @@
+/**
+ * @file
+ * Facturae dashboard layout and components.
+ *
+ * Uses federated design tokens from ecosistema_jaraba_core.
+ * BEM naming: .facturae-dashboard__element--modifier.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+@use 'variables-fiscal' as *;
+
+.facturae-dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+
+  &__title-group {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+  }
+
+  &__description {
+    color: var(--ej-text-secondary, #666);
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+  }
+
+  // Stats section.
+  &__stats {
+    margin-bottom: 2rem;
+  }
+
+  // Main 2-column grid.
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  &__face-panel,
+  &__cert-panel {
+    background: var(--ej-surface, #fff);
+    border: 1px solid var(--ej-border, #e0e0e0);
+    border-radius: var(--ej-radius-md, 8px);
+    padding: 1.5rem;
+  }
+
+  // Recent documents.
+  &__recent {
+    margin-bottom: 2rem;
+  }
+
+  &__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #333);
+    margin: 0 0 1rem;
+  }
+
+  &__recent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--ej-text-secondary, #999);
+    padding: 2rem;
+  }
+
+  // Quick actions.
+  &__actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  &__action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    background: var(--ej-surface, #fff);
+    border: 1px solid var(--ej-border, #e0e0e0);
+    border-radius: var(--ej-radius-md, 8px);
+    text-decoration: none;
+    color: var(--ej-text-primary, #333);
+    transition: box-shadow 0.2s, border-color 0.2s;
+
+    &:hover {
+      border-color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-face, #{$fiscal-face-fallback}) 15%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-fiscal-face, #{$fiscal-face-fallback});
+      outline-offset: 2px;
+    }
+  }
+
+  &__action-icon {
+    font-size: 1.5rem;
+    color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+  }
+
+  &__action-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}

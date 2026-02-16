@@ -1,0 +1,100 @@
+{{ attach_library('jaraba_facturae/facturae-documents') }}
+{#
+/**
+ * @file
+ * Zero-region page template for Facturae documents listing.
+ *
+ * Spec: Doc 180, Seccion 7.2.
+ * Plan: FASE 8, entregable F8-1.
+ */
+#}
+<div class="page-wrapper page-wrapper--clean page-wrapper--fiscal">
+  {% include '@ecosistema_jaraba_core/partials/_header.html.twig' %}
+
+  <main class="facturae-documents" role="main">
+    <div class="facturae-documents__header">
+      <a href="{{ path('jaraba_facturae.dashboard') }}" class="facturae-documents__back">
+        &larr; {% trans %}Back to Dashboard{% endtrans %}
+      </a>
+      <h1 class="facturae-documents__title">{% trans %}Facturae Documents{% endtrans %}</h1>
+    </div>
+
+    {# Filters bar #}
+    <div class="facturae-documents__filters" role="search" aria-label="{% trans %}Filter documents{% endtrans %}">
+      <div class="facturae-documents__filter-group">
+        <label for="filter-status" class="facturae-documents__filter-label">{% trans %}Status{% endtrans %}</label>
+        <select id="filter-status" class="facturae-documents__filter-select" data-filter="status">
+          <option value="">{% trans %}All{% endtrans %}</option>
+          <option value="draft">{% trans %}Draft{% endtrans %}</option>
+          <option value="validated">{% trans %}Validated{% endtrans %}</option>
+          <option value="signed">{% trans %}Signed{% endtrans %}</option>
+          <option value="sent">{% trans %}Sent{% endtrans %}</option>
+          <option value="error">{% trans %}Error{% endtrans %}</option>
+        </select>
+      </div>
+
+      <div class="facturae-documents__filter-group">
+        <label for="filter-face-status" class="facturae-documents__filter-label">{% trans %}FACe Status{% endtrans %}</label>
+        <select id="filter-face-status" class="facturae-documents__filter-select" data-filter="face_status">
+          <option value="">{% trans %}All{% endtrans %}</option>
+          <option value="not_sent">{% trans %}Not Sent{% endtrans %}</option>
+          <option value="sent">{% trans %}Sent{% endtrans %}</option>
+          <option value="registered">{% trans %}Registered{% endtrans %}</option>
+          <option value="accounted">{% trans %}Accounted{% endtrans %}</option>
+          <option value="paid">{% trans %}Paid{% endtrans %}</option>
+          <option value="rejected">{% trans %}Rejected{% endtrans %}</option>
+        </select>
+      </div>
+
+      <div class="facturae-documents__filter-group">
+        <label for="filter-date-from" class="facturae-documents__filter-label">{% trans %}From{% endtrans %}</label>
+        <input type="date" id="filter-date-from" class="facturae-documents__filter-input" data-filter="date_from">
+      </div>
+
+      <div class="facturae-documents__filter-group">
+        <label for="filter-date-to" class="facturae-documents__filter-label">{% trans %}To{% endtrans %}</label>
+        <input type="date" id="filter-date-to" class="facturae-documents__filter-input" data-filter="date_to">
+      </div>
+
+      <button type="button" class="facturae-documents__filter-apply" data-action="apply-filters">
+        {% trans %}Apply{% endtrans %}
+      </button>
+    </div>
+
+    {# Documents table #}
+    <div class="facturae-documents__table-wrapper">
+      <table class="facturae-documents__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Number{% endtrans %}</th>
+            <th>{% trans %}Buyer{% endtrans %}</th>
+            <th>{% trans %}Amount{% endtrans %}</th>
+            <th>{% trans %}Issue Date{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+            <th>{% trans %}FACe{% endtrans %}</th>
+            <th class="facturae-documents__col-hide-mobile">{% trans %}Signature{% endtrans %}</th>
+            <th class="facturae-documents__col-hide-mobile">{% trans %}Registry No.{% endtrans %}</th>
+            <th>{% trans %}Actions{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody id="facturae-documents-body">
+          {# Populated by JS from API #}
+        </tbody>
+      </table>
+    </div>
+
+    {# Pagination #}
+    <nav class="facturae-documents__pagination" aria-label="{% trans %}Document pagination{% endtrans %}">
+      <button type="button" class="facturae-documents__page-btn" data-action="prev-page" disabled>
+        &larr; {% trans %}Previous{% endtrans %}
+      </button>
+      <span class="facturae-documents__page-info" id="facturae-page-info"></span>
+      <button type="button" class="facturae-documents__page-btn" data-action="next-page" disabled>
+        {% trans %}Next{% endtrans %} &rarr;
+      </button>
+    </nav>
+  </main>
+
+  {% include '@ecosistema_jaraba_core/partials/_footer.html.twig' %}
+  {% include '@ecosistema_jaraba_core/partials/_copilot-fab.html.twig' %}
+</div>

@@ -1,0 +1,22 @@
+// Fiscal Design Tokens — local SCSS fallback variables.
+// SSOT lives in CSS Custom Properties var(--ej-*) from ecosistema_jaraba_core.
+// These $fiscal-* variables are fallbacks for when tokens are unavailable.
+
+$fiscal-primary: #1a73e8;
+$fiscal-primary-light: #4285f4;
+$fiscal-secondary: #34a853;
+$fiscal-danger: #ea4335;
+$fiscal-warning: #fbbc04;
+$fiscal-info: #4285f4;
+
+$fiscal-surface: #ffffff;
+$fiscal-surface-alt: #f8f9fa;
+$fiscal-text: #202124;
+$fiscal-text-secondary: #5f6368;
+$fiscal-border: #dadce0;
+
+$fiscal-font-mono: 'Roboto Mono', 'Courier New', monospace;
+$fiscal-radius: 8px;
+$fiscal-radius-sm: 4px;
+$fiscal-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+$fiscal-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.16);

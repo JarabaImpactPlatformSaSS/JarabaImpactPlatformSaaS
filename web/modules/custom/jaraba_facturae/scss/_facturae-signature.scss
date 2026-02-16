@@ -1,0 +1,87 @@
+/**
+ * @file
+ * XAdES-EPES signature info panel styles.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+@use 'variables-fiscal' as *;
+
+.facturae-signature {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+
+  &--signed {
+    border-left: 4px solid var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
+  }
+
+  &--unsigned {
+    border-left: 4px solid var(--ej-text-secondary, #999);
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ej-text-primary, #333);
+  }
+
+  &__icon {
+    font-size: 1.125rem;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+
+    &--valid {
+      color: var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
+    }
+
+    &--pending {
+      color: var(--ej-text-secondary, #999);
+    }
+  }
+
+  &__check {
+    font-size: 1.125rem;
+  }
+
+  &__dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    font-size: 0.8125rem;
+    margin: 0;
+
+    dt {
+      font-weight: 600;
+      color: var(--ej-text-secondary, #666);
+    }
+
+    dd {
+      margin: 0;
+      color: var(--ej-text-primary, #333);
+    }
+  }
+
+  &__policy {
+    font-style: italic;
+    font-size: 0.75rem;
+  }
+
+  &__hint {
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #666);
+    margin: 0;
+  }
+}

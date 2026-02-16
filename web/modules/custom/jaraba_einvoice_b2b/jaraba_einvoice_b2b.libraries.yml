@@ -1,0 +1,23 @@
+# Libraries for E-Invoice B2B module.
+
+einvoice-dashboard:
+  css:
+    theme:
+      css/einvoice.css: {}
+  js:
+    js/einvoice-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+einvoice-delivery:
+  css:
+    theme:
+      css/einvoice.css: {}
+  js:
+    js/einvoice-delivery.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles

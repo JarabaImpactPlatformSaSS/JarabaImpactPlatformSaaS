@@ -1,0 +1,47 @@
+// =============================================================================
+// VARIABLES FISCALES — MODULO JARABA VERIFACTU
+// =============================================================================
+// Re-exporta las variables fiscales definidas en ecosistema_jaraba_core.
+// Cada modulo fiscal tiene su propia copia para independencia de build.
+//
+// DIRECTRIZ: Dart Sass moderno (@use, nunca @import).
+// DIRECTRIZ: color-mix() en lugar de rgba(), color.adjust() en lugar
+//            de darken()/lighten().
+// =============================================================================
+
+// Importar variables SSOT desde ecosistema_jaraba_core.
+// En build local, apunta a la copia del modulo.
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// COLORES FISCALES (copia local de ecosistema_jaraba_core/_fiscal-variables)
+// ---------------------------------------------------------------------------
+
+$fiscal-aeat-fallback: #1A365D !default;
+$fiscal-aeat-light-fallback: #EBF4FF !default;
+$fiscal-face-fallback: #553C9A !default;
+$fiscal-face-light-fallback: #FAF5FF !default;
+$fiscal-b2b-fallback: #276749 !default;
+$fiscal-b2b-light-fallback: #F0FFF4 !default;
+
+$fiscal-accepted-fallback: #10B981 !default;
+$fiscal-pending-fallback: #F59E0B !default;
+$fiscal-rejected-fallback: #EF4444 !default;
+$fiscal-error-fallback: #DC2626 !default;
+
+$fiscal-cert-warning-fallback: #D97706 !default;
+$fiscal-cert-expired-fallback: #B91C1C !default;
+$fiscal-cert-valid-fallback: #059669 !default;
+
+$fiscal-chain-valid-fallback: #0891B2 !default;
+$fiscal-chain-broken-fallback: #DC2626 !default;
+
+$fiscal-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
+
+// ---------------------------------------------------------------------------
+// DIMENSIONES VERIFACTU-ESPECIFICAS
+// ---------------------------------------------------------------------------
+
+$verifactu-hash-display-width: 480px !default;
+$verifactu-chain-arrow-size: 20px !default;
+$verifactu-record-card-min-width: 320px !default;

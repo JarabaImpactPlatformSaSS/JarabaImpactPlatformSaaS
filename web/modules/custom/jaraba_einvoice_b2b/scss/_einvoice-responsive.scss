@@ -1,0 +1,47 @@
+// Responsive breakpoints for E-Invoice B2B module.
+
+@media (max-width: 768px) {
+  .einvoice-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .einvoice-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .einvoice-detail__layout {
+    flex-direction: column;
+  }
+
+  .einvoice-detail__sidebar {
+    order: -1;
+  }
+
+  .einvoice-morosity__summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .einvoice-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .einvoice-morosity__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .einvoice-dashboard__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .einvoice-card,
+  .einvoice-stats__card,
+  .einvoice-dashboard__action {
+    transition: none;
+  }
+}

@@ -1,0 +1,100 @@
+{#
+ # E-Invoice Document Detail template.
+ #
+ # Variables:
+ #   - document: EInvoiceDocument entity data.
+ #   - payment_history: Array of payment events.
+ #   - delivery_logs: Array of delivery log entries.
+ #
+ # Spec: Doc 181, Section 7.
+ #}
+<div class="einvoice-detail">
+  <header class="einvoice-detail__header">
+    <h1 class="einvoice-detail__title">{{ document.invoice_number }}</h1>
+    {% include '@jaraba_einvoice_b2b/partials/_einvoice-format-badge.html.twig' with { format: document.format } only %}
+    <span class="einvoice-detail__direction einvoice-detail__direction--{{ document.direction }}">
+      {{ document.direction == 'outbound' ? 'Emitida'|t : 'Recibida'|t }}
+    </span>
+  </header>
+
+  <div class="einvoice-detail__layout">
+    <div class="einvoice-detail__main">
+      {# Parties #}
+      <section class="einvoice-detail__section">
+        <h2>{{ 'Parties'|t }}</h2>
+        <div class="einvoice-detail__parties">
+          <div class="einvoice-detail__party">
+            <h3>{{ 'Seller'|t }}</h3>
+            <dl>
+              <dt>{{ 'Name'|t }}</dt><dd>{{ document.seller_name }}</dd>
+              <dt>{{ 'NIF'|t }}</dt><dd>{{ document.seller_nif }}</dd>
+            </dl>
+          </div>
+          <div class="einvoice-detail__party">
+            <h3>{{ 'Buyer'|t }}</h3>
+            <dl>
+              <dt>{{ 'Name'|t }}</dt><dd>{{ document.buyer_name }}</dd>
+              <dt>{{ 'NIF'|t }}</dt><dd>{{ document.buyer_nif }}</dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {# Amounts #}
+      <section class="einvoice-detail__section">
+        <h2>{{ 'Amounts'|t }}</h2>
+        <dl class="einvoice-detail__amounts">
+          <dt>{{ 'Subtotal'|t }}</dt>
+          <dd class="einvoice-detail__amount">{{ document.total_without_tax|number_format(2, ',', '.') }} {{ document.currency_code }}</dd>
+          <dt>{{ 'Tax'|t }}</dt>
+          <dd class="einvoice-detail__amount">{{ document.total_tax|number_format(2, ',', '.') }} {{ document.currency_code }}</dd>
+          <dt>{{ 'Total'|t }}</dt>
+          <dd class="einvoice-detail__amount einvoice-detail__amount--total">{{ document.total_amount|number_format(2, ',', '.') }} {{ document.currency_code }}</dd>
+        </dl>
+      </section>
+
+      {# Payment Timeline #}
+      {% if payment_history is not empty %}
+        {% include '@jaraba_einvoice_b2b/partials/_einvoice-payment-timeline.html.twig' with { events: payment_history } only %}
+      {% endif %}
+    </div>
+
+    <aside class="einvoice-detail__sidebar">
+      {# Delivery Status #}
+      {% include '@jaraba_einvoice_b2b/partials/_einvoice-delivery-status.html.twig' with {
+        delivery_status: document.delivery_status,
+        delivery_method: document.delivery_method,
+        spfe_status: document.spfe_status,
+        mode: 'detail'
+      } only %}
+
+      {# Status badges #}
+      <div class="einvoice-detail__statuses">
+        <div class="einvoice-detail__status-item">
+          <span class="einvoice-detail__status-label">{{ 'Document'|t }}</span>
+          <span class="einvoice-detail__status-badge einvoice-detail__status-badge--{{ document.status }}">{{ document.status }}</span>
+        </div>
+        <div class="einvoice-detail__status-item">
+          <span class="einvoice-detail__status-label">{{ 'Payment'|t }}</span>
+          <span class="einvoice-detail__status-badge einvoice-detail__status-badge--{{ document.payment_status }}">{{ document.payment_status }}</span>
+        </div>
+        <div class="einvoice-detail__status-item">
+          <span class="einvoice-detail__status-label">{{ 'Validation'|t }}</span>
+          <span class="einvoice-detail__status-badge einvoice-detail__status-badge--{{ document.validation_status }}">{{ document.validation_status }}</span>
+        </div>
+      </div>
+
+      {# Actions #}
+      {% if document.direction == 'outbound' %}
+        <div class="einvoice-detail__actions">
+          {% if document.status == 'draft' or document.status == 'validated' %}
+            <button class="einvoice-detail__action einvoice-detail__action--send"
+                    data-action="send" data-document-id="{{ document.id }}">
+              {{ 'Send'|t }}
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>

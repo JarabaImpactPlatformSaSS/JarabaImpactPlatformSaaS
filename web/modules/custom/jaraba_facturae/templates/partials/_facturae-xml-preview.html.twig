@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * XML preview panel for Facturae documents.
+ *
+ * Shows a collapsible preview of the unsigned and signed XML content.
+ *
+ * Variables:
+ * - document: FacturaeDocument entity.
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+<div class="facturae-xml-preview">
+  <h3 class="facturae-xml-preview__title">
+    <span class="facturae-xml-preview__icon" aria-hidden="true">{{ jaraba_icon('code', 'fiscal') }}</span>
+    {% trans %}XML Content{% endtrans %}
+  </h3>
+
+  {% set has_unsigned = document.xml_unsigned.value is not empty %}
+  {% set has_signed = document.xml_signed.value is not empty %}
+
+  {% if has_unsigned or has_signed %}
+    <div class="facturae-xml-preview__tabs">
+      {% if has_unsigned %}
+        <button type="button"
+                class="facturae-xml-preview__tab facturae-xml-preview__tab--active"
+                data-xml-tab="unsigned"
+                aria-selected="true">
+          {% trans %}Unsigned XML{% endtrans %}
+        </button>
+      {% endif %}
+      {% if has_signed %}
+        <button type="button"
+                class="facturae-xml-preview__tab {{ not has_unsigned ? 'facturae-xml-preview__tab--active' : '' }}"
+                data-xml-tab="signed"
+                aria-selected="{{ not has_unsigned ? 'true' : 'false' }}">
+          {% trans %}Signed XML{% endtrans %}
+        </button>
+      {% endif %}
+    </div>
+
+    {% if has_unsigned %}
+      <div class="facturae-xml-preview__content" data-xml-content="unsigned">
+        <pre class="facturae-xml-preview__code"><code>{{ document.xml_unsigned.value|slice(0, 2000) }}{% if document.xml_unsigned.value|length > 2000 %}...{% trans %}(truncated){% endtrans %}{% endif %}</code></pre>
+      </div>
+    {% endif %}
+
+    {% if has_signed %}
+      <div class="facturae-xml-preview__content {{ has_unsigned ? 'facturae-xml-preview__content--hidden' : '' }}" data-xml-content="signed">
+        <pre class="facturae-xml-preview__code"><code>{{ document.xml_signed.value|slice(0, 2000) }}{% if document.xml_signed.value|length > 2000 %}...{% trans %}(truncated){% endtrans %}{% endif %}</code></pre>
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="facturae-xml-preview__empty">
+      {% trans %}No XML generated yet. XML is created when the document is validated.{% endtrans %}
+    </p>
+  {% endif %}
+</div>

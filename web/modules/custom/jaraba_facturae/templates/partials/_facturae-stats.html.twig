@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * Facturae dashboard statistics cards.
+ *
+ * Variables:
+ * - stats: Array with keys: total, draft, signed, sent, rejected, paid.
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+<div class="facturae-stats">
+  <div class="facturae-stats__card facturae-stats__card--total">
+    <span class="facturae-stats__card-label">{% trans %}Total Documents{% endtrans %}</span>
+    <span class="facturae-stats__card-value" data-stat="total">{{ stats.total|default(0) }}</span>
+    <div class="facturae-stats__card-breakdown">
+      <span class="facturae-stats__mini-stat facturae-stats__mini-stat--draft">
+        {% trans %}Draft{% endtrans %}: <strong data-stat="draft">{{ stats.draft|default(0) }}</strong>
+      </span>
+      <span class="facturae-stats__mini-stat facturae-stats__mini-stat--signed">
+        {% trans %}Signed{% endtrans %}: <strong data-stat="signed">{{ stats.signed|default(0) }}</strong>
+      </span>
+      <span class="facturae-stats__mini-stat facturae-stats__mini-stat--sent">
+        {% trans %}Sent{% endtrans %}: <strong data-stat="sent">{{ stats.sent|default(0) }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="facturae-stats__card facturae-stats__card--face">
+    <span class="facturae-stats__card-label">{% trans %}FACe Portal{% endtrans %}</span>
+    <span class="facturae-stats__card-value" data-stat="face_sent">{{ stats.sent|default(0) }}</span>
+    <div class="facturae-stats__card-breakdown">
+      <span class="facturae-stats__mini-stat facturae-stats__mini-stat--paid">
+        {% trans %}Paid{% endtrans %}: <strong data-stat="paid">{{ stats.paid|default(0) }}</strong>
+      </span>
+      <span class="facturae-stats__mini-stat facturae-stats__mini-stat--rejected">
+        {% trans %}Rejected{% endtrans %}: <strong data-stat="rejected">{{ stats.rejected|default(0) }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="facturae-stats__card facturae-stats__card--signature">
+    <span class="facturae-stats__card-label">{% trans %}XAdES Signatures{% endtrans %}</span>
+    <span class="facturae-stats__card-value" data-stat="signed_total">{{ stats.signed|default(0) }}</span>
+    <div class="facturae-stats__card-breakdown">
+      <span class="facturae-stats__mini-stat">
+        {% trans %}Pending signature{% endtrans %}: <strong>{{ stats.draft|default(0) }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="facturae-stats__card facturae-stats__card--errors">
+    <span class="facturae-stats__card-label">{% trans %}Errors{% endtrans %}</span>
+    <span class="facturae-stats__card-value facturae-stats__card-value--{{ stats.error|default(0) > 0 ? 'error' : 'ok' }}"
+          data-stat="error">{{ stats.error|default(0) }}</span>
+    <div class="facturae-stats__card-breakdown">
+      <span class="facturae-stats__mini-stat">
+        {% trans %}Requires attention{% endtrans %}
+      </span>
+    </div>
+  </div>
+</div>

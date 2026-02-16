@@ -1,0 +1,13 @@
+{
+  "name": "jaraba_verifactu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SCSS build for Jaraba VeriFactu module",
+  "scripts": {
+    "build": "sass scss/main.scss:css/verifactu.css --style=compressed --no-source-map",
+    "watch": "sass scss/main.scss:css/verifactu.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

@@ -1,0 +1,19 @@
+{# E-Invoice Delivery Status partial — summary or detail mode. #}
+<div class="einvoice-delivery einvoice-delivery--{{ mode|default('summary') }}">
+  <h3 class="einvoice-delivery__title">{{ 'Delivery Status'|t }}</h3>
+
+  <div class="einvoice-delivery__indicator einvoice-delivery__indicator--{{ delivery_status|default('pending') }}">
+    <span class="einvoice-delivery__status-text">{{ delivery_status|default('pending')|capitalize }}</span>
+  </div>
+
+  {% if mode == 'detail' %}
+    <dl class="einvoice-delivery__details">
+      <dt>{{ 'Method'|t }}</dt>
+      <dd>{{ delivery_method|default('-')|upper }}</dd>
+      <dt>{{ 'SPFE Status'|t }}</dt>
+      <dd class="einvoice-delivery__spfe einvoice-delivery__spfe--{{ spfe_status|default('not_sent') }}">
+        {{ spfe_status|default('not_sent')|replace({'_': ' '})|capitalize }}
+      </dd>
+    </dl>
+  {% endif %}
+</div>

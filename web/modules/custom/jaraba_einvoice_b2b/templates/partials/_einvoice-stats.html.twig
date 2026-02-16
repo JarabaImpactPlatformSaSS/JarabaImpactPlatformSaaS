@@ -1,0 +1,19 @@
+{# E-Invoice Stats partial — 4 cards for dashboard. #}
+<div class="einvoice-stats" data-auto-refresh="30">
+  <div class="einvoice-stats__card" data-stat="total">
+    <span class="einvoice-stats__value">{{ stats.total_documents|default(0) }}</span>
+    <span class="einvoice-stats__label">{{ 'Total Documents'|t }}</span>
+  </div>
+  <div class="einvoice-stats__card" data-stat="outbound">
+    <span class="einvoice-stats__value">{{ stats.outbound|default(0) }}</span>
+    <span class="einvoice-stats__label">{{ 'Outbound'|t }}</span>
+  </div>
+  <div class="einvoice-stats__card" data-stat="inbound">
+    <span class="einvoice-stats__value">{{ stats.inbound|default(0) }}</span>
+    <span class="einvoice-stats__label">{{ 'Inbound'|t }}</span>
+  </div>
+  <div class="einvoice-stats__card einvoice-stats__card--{{ stats.overdue > 0 ? 'alert' : 'ok' }}" data-stat="overdue">
+    <span class="einvoice-stats__value">{{ stats.overdue|default(0) }}</span>
+    <span class="einvoice-stats__label">{{ 'Overdue'|t }}</span>
+  </div>
+</div>

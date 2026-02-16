@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * XAdES-EPES signature information panel.
+ *
+ * Variables:
+ * - document: FacturaeDocument entity.
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+<div class="facturae-signature {{ document.signature_status.value == 'signed' ? 'facturae-signature--signed' : 'facturae-signature--unsigned' }}">
+  <h3 class="facturae-signature__title">
+    <span class="facturae-signature__icon" aria-hidden="true">{{ jaraba_icon('certificate', 'fiscal') }}</span>
+    {% trans %}Digital Signature{% endtrans %}
+  </h3>
+
+  {% if document.signature_status.value == 'signed' %}
+    <div class="facturae-signature__status facturae-signature__status--valid">
+      <span class="facturae-signature__check" aria-hidden="true">&check;</span>
+      {% trans %}XAdES-EPES Signed{% endtrans %}
+    </div>
+
+    <dl class="facturae-signature__dl">
+      {% if document.signature_timestamp.value %}
+        <dt>{% trans %}Signed at{% endtrans %}</dt>
+        <dd>{{ document.signature_timestamp.value }}</dd>
+      {% endif %}
+
+      <dt>{% trans %}Format{% endtrans %}</dt>
+      <dd>XAdES-EPES (ETSI TS 101 903)</dd>
+
+      <dt>{% trans %}Algorithm{% endtrans %}</dt>
+      <dd>RSA-SHA256 + C14N</dd>
+
+      <dt>{% trans %}Policy{% endtrans %}</dt>
+      <dd class="facturae-signature__policy">
+        {% trans %}Politica de firma Facturae v3.1{% endtrans %}
+      </dd>
+    </dl>
+  {% else %}
+    <div class="facturae-signature__status facturae-signature__status--pending">
+      <span class="facturae-signature__pending-icon" aria-hidden="true">&mdash;</span>
+      {% trans %}Not signed{% endtrans %}
+    </div>
+    <p class="facturae-signature__hint">
+      {% trans %}This document must be signed with XAdES-EPES before submission to FACe.{% endtrans %}
+    </p>
+  {% endif %}
+</div>

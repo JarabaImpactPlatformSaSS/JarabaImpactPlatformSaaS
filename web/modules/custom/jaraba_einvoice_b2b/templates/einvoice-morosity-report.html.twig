@@ -1,0 +1,75 @@
+{#
+ # E-Invoice Morosity Report template.
+ #
+ # Variables:
+ #   - report: MorosityReport data array.
+ #   - tenant_id: Tenant ID.
+ #
+ # Spec: Doc 181, Section 7.
+ #}
+<div class="einvoice-morosity">
+  <header class="einvoice-morosity__header">
+    <h1 class="einvoice-morosity__title">{{ 'Morosity Report'|t }}</h1>
+    <time class="einvoice-morosity__timestamp" datetime="{{ report.generated_at }}">
+      {{ report.generated_at|date('d/m/Y H:i') }}
+    </time>
+  </header>
+
+  <div class="einvoice-morosity__summary">
+    <div class="einvoice-morosity__stat">
+      <span class="einvoice-morosity__stat-value">{{ report.total_invoices }}</span>
+      <span class="einvoice-morosity__stat-label">{{ 'Total Invoices'|t }}</span>
+    </div>
+    <div class="einvoice-morosity__stat einvoice-morosity__stat--overdue">
+      <span class="einvoice-morosity__stat-value">{{ report.overdue_invoices }}</span>
+      <span class="einvoice-morosity__stat-label">{{ 'Overdue'|t }}</span>
+    </div>
+    <div class="einvoice-morosity__stat">
+      <span class="einvoice-morosity__stat-value">{{ report.overdue_percentage }}%</span>
+      <span class="einvoice-morosity__stat-label">{{ 'Overdue Rate'|t }}</span>
+    </div>
+    <div class="einvoice-morosity__stat">
+      <span class="einvoice-morosity__stat-value">{{ report.average_overdue_days|number_format(1) }}</span>
+      <span class="einvoice-morosity__stat-label">{{ 'Avg Days Overdue'|t }}</span>
+    </div>
+  </div>
+
+  <div class="einvoice-morosity__severity">
+    <span class="einvoice-morosity__severity-badge einvoice-morosity__severity-badge--critical">
+      {{ report.critical_count }} {{ 'Critical'|t }}
+    </span>
+    <span class="einvoice-morosity__severity-badge einvoice-morosity__severity-badge--urgent">
+      {{ report.urgent_count }} {{ 'Urgent'|t }}
+    </span>
+    <span class="einvoice-morosity__severity-badge einvoice-morosity__severity-badge--warning">
+      {{ report.warning_count }} {{ 'Warning'|t }}
+    </span>
+  </div>
+
+  {% if report.overdue_documents is not empty %}
+    <table class="einvoice-morosity__table">
+      <thead>
+        <tr>
+          <th>{{ 'Invoice'|t }}</th>
+          <th>{{ 'Due Date'|t }}</th>
+          <th>{{ 'Days Overdue'|t }}</th>
+          <th>{{ 'Severity'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in report.overdue_documents %}
+          <tr class="einvoice-morosity__row einvoice-morosity__row--{{ doc.severity }}">
+            <td>{{ doc.invoice_number }}</td>
+            <td>{{ doc.due_date }}</td>
+            <td>{{ doc.overdue_days }}</td>
+            <td>
+              <span class="einvoice-morosity__severity-badge einvoice-morosity__severity-badge--{{ doc.severity }}">
+                {{ doc.severity }}
+              </span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>

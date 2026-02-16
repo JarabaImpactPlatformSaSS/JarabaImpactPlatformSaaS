@@ -1,0 +1,27 @@
+# Task links (tabs) for E-Invoice B2B module.
+#
+# Provides tab navigation on the documents collection page.
+# Spec: Doc 181. Plan: FASE 9, entregable F9-8.
+
+jaraba_einvoice_b2b.documents:
+  route_name: entity.einvoice_document.collection
+  title: 'Documents'
+  base_route: entity.einvoice_document.collection
+
+jaraba_einvoice_b2b.delivery_log:
+  route_name: entity.einvoice_delivery_log.collection
+  title: 'Delivery Log'
+  base_route: entity.einvoice_document.collection
+  weight: 10
+
+jaraba_einvoice_b2b.payment_events:
+  route_name: entity.einvoice_payment_event.collection
+  title: 'Payment Events'
+  base_route: entity.einvoice_document.collection
+  weight: 20
+
+jaraba_einvoice_b2b.config:
+  route_name: entity.einvoice_tenant_config.collection
+  title: 'Configuration'
+  base_route: entity.einvoice_document.collection
+  weight: 30

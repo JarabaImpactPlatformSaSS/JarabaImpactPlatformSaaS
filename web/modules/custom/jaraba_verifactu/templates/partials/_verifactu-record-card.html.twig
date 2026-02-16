@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * VeriFactu invoice record card partial.
+ *
+ * Variables:
+ * - record (array): {
+ *     id, numero_factura, record_type ('alta'|'anulacion'),
+ *     tipo_factura, nif_emisor, nombre_emisor, fecha_expedicion,
+ *     importe_total, aeat_status ('pending'|'accepted'|'rejected'|'error'|'draft'),
+ *     hash_record (string, 64-char SHA-256), created (timestamp)
+ *   }
+ * - show_actions (bool): Whether to show view detail button.
+ *
+ * CSS: BEM — verifactu-record-card
+ * Icons: jaraba_icon('fiscal', ...)
+ * i18n: {% trans %}
+ */
+#}
+{% set r = record|default({}) %}
+{% set show_actions = show_actions|default(true) %}
+
+<article class="verifactu-record-card verifactu-record-card--{{ r.record_type|default('alta') }}"
+         aria-label="{% trans %}Invoice record{% endtrans %} {{ r.numero_factura|default('') }}">
+
+  <div class="verifactu-record-card__header">
+    <div class="verifactu-record-card__number">
+      {{ jaraba_icon('fiscal', 'signed-document', { size: '16px' }) }}
+      <span>{{ r.numero_factura|default('—') }}</span>
+    </div>
+    {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+      'status': r.aeat_status|default('draft'),
+      'size': 'sm'
+    } only %}
+  </div>
+
+  <div class="verifactu-record-card__body">
+    <div class="verifactu-record-card__row">
+      <span class="verifactu-record-card__label">{% trans %}Type{% endtrans %}</span>
+      <span class="verifactu-record-card__value">
+        {% if r.record_type == 'anulacion' %}
+          <span class="verifactu-record-card__type verifactu-record-card__type--anulacion">
+            {% trans %}Cancellation{% endtrans %}
+          </span>
+        {% else %}
+          <span class="verifactu-record-card__type verifactu-record-card__type--alta">
+            {{ r.tipo_factura|default('F1') }}
+          </span>
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="verifactu-record-card__row">
+      <span class="verifactu-record-card__label">{% trans %}Emitter{% endtrans %}</span>
+      <span class="verifactu-record-card__value">
+        {{ r.nombre_emisor|default('—') }}
+        {% if r.nif_emisor %}
+          <span class="verifactu-record-card__nif">({{ r.nif_emisor }})</span>
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="verifactu-record-card__row">
+      <span class="verifactu-record-card__label">{% trans %}Date{% endtrans %}</span>
+      <span class="verifactu-record-card__value">{{ r.fecha_expedicion|default('—') }}</span>
+    </div>
+
+    <div class="verifactu-record-card__row">
+      <span class="verifactu-record-card__label">{% trans %}Total{% endtrans %}</span>
+      <span class="verifactu-record-card__value verifactu-record-card__value--amount">
+        {{ r.importe_total|default('0.00')|number_format(2, ',', '.') }} &euro;
+      </span>
+    </div>
+
+    {% if r.hash_record %}
+      <div class="verifactu-record-card__row">
+        <span class="verifactu-record-card__label">{% trans %}Hash{% endtrans %}</span>
+        <span class="verifactu-record-card__value verifactu-record-card__value--mono"
+              title="{{ r.hash_record }}">
+          {{ r.hash_record|slice(0, 12) }}&hellip;
+        </span>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if show_actions %}
+    <div class="verifactu-record-card__actions">
+      <a href="{{ path('jaraba_verifactu.record_detail', { verifactu_invoice_record: r.id }) }}"
+         class="verifactu-record-card__action"
+         data-slide-panel="record-{{ r.id }}"
+         data-slide-panel-title="{% trans %}Record Detail{% endtrans %}"
+         data-slide-panel-size="--large">
+        {{ jaraba_icon('fiscal', 'invoice-check', { size: '14px' }) }}
+        {% trans %}View details{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</article>

@@ -1,0 +1,299 @@
+/**
+ * @file
+ * FACe portal status panel and document card styles.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+@use 'variables-fiscal' as *;
+
+// FACe status panel.
+.facturae-face-status {
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ej-text-primary, #333);
+  }
+
+  &__description {
+    font-size: 0.8125rem;
+    color: var(--ej-text-secondary, #666);
+    margin: 0 0 0.75rem;
+  }
+
+  &__indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    &--active {
+      background: var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
+      box-shadow: 0 0 4px color-mix(in srgb, var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback}) 40%, transparent);
+    }
+  }
+
+  &__dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.375rem 1rem;
+    font-size: 0.8125rem;
+    margin: 0;
+
+    dt {
+      font-weight: 600;
+      color: var(--ej-text-secondary, #666);
+    }
+
+    dd {
+      margin: 0;
+      color: var(--ej-text-primary, #333);
+    }
+  }
+
+  &__mono {
+    font-family: $fiscal-font-mono;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  &__anulacion {
+    color: var(--ej-fiscal-status-error, #{$fiscal-status-error-fallback});
+    font-weight: 600;
+  }
+}
+
+// Document card.
+.facturae-doc-card {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+
+  &:hover {
+    border-color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-face, #{$fiscal-face-fallback}) 12%, transparent);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  &__number {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--ej-text-primary, #333);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ej-text-secondary, #999);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+  }
+
+  &__value {
+    font-size: 0.875rem;
+    color: var(--ej-text-primary, #333);
+
+    &--amount {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--ej-border-light, #f0f0f0);
+  }
+
+  &__face-label {
+    font-size: 0.75rem;
+    color: var(--ej-text-secondary, #999);
+  }
+
+  &__view-link {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Detail page layout.
+.facturae-detail {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+
+  &__header {
+    margin-bottom: 1.5rem;
+  }
+
+  &__back {
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #666);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+
+    &:hover {
+      color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: var(--ej-text-primary, #333);
+  }
+
+  &__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  &__section {
+    background: var(--ej-surface, #fff);
+    border: 1px solid var(--ej-border, #e0e0e0);
+    border-radius: var(--ej-radius-md, 8px);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  &__section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+  }
+
+  &__dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.375rem 1rem;
+    font-size: 0.875rem;
+    margin: 0;
+
+    dt {
+      font-weight: 600;
+      color: var(--ej-text-secondary, #666);
+    }
+
+    dd {
+      margin: 0;
+      color: var(--ej-text-primary, #333);
+    }
+
+    &--amounts {
+      dd {
+        text-align: right;
+        font-family: $fiscal-font-mono;
+      }
+    }
+  }
+
+  &__dt--total {
+    font-size: 1rem;
+    padding-top: 0.5rem;
+    border-top: 2px solid var(--ej-fiscal-face, #{$fiscal-face-fallback});
+  }
+
+  &__dd--total {
+    font-size: 1.125rem;
+    font-weight: 700;
+    padding-top: 0.5rem;
+    border-top: 2px solid var(--ej-fiscal-face, #{$fiscal-face-fallback});
+    color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  &__action-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: var(--ej-radius-sm, 4px);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+
+    &--sign {
+      background: var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
+      color: #fff;
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback}) 85%, #000);
+      }
+    }
+
+    &--send {
+      background: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+      color: #fff;
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-fiscal-face, #{$fiscal-face-fallback}) 85%, #000);
+      }
+    }
+
+    &--pdf {
+      background: var(--ej-surface-alt, #f5f5f5);
+      color: var(--ej-text-primary, #333);
+      border: 1px solid var(--ej-border, #e0e0e0);
+
+      &:hover {
+        background: var(--ej-surface, #fff);
+        border-color: var(--ej-fiscal-face, #{$fiscal-face-fallback});
+      }
+    }
+  }
+}

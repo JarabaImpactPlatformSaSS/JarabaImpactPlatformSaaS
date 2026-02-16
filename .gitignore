@@ -93,5 +93,8 @@ logs/
 # ----- PHP CONFIG (generated per-environment) -----
 web/.user.ini
 
+# ----- PYTHON CACHE -----
+__pycache__
+
 # ----- SASS NODE MODULES (installed by npx sass) -----
 web/modules/custom/ecosistema_jaraba_core/node_modules

@@ -1,0 +1,376 @@
+// =============================================================================
+// VERIFACTU RECORDS — SCSS
+// =============================================================================
+// Estilos para la pagina de listado de registros VeriFactu y la tabla.
+//
+// BEM: .verifactu-records, .verifactu-record-card
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-fiscal' as *;
+
+// ---------------------------------------------------------------------------
+// RECORDS PAGE HEADER
+// ---------------------------------------------------------------------------
+
+.verifactu-records__header {
+  margin-bottom: 1.5rem;
+}
+
+.verifactu-records__title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.verifactu-records__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+}
+
+.verifactu-records__back {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FILTERS BAR
+// ---------------------------------------------------------------------------
+
+.verifactu-records__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background: var(--ej-color-surface, #FFFFFF);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+}
+
+.verifactu-records__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 140px;
+}
+
+.verifactu-records__filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.verifactu-records__filter-select,
+.verifactu-records__filter-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ej-color-text-primary, #1A1A2E);
+  background: var(--ej-color-background, #FFFFFF);
+
+  &:focus {
+    outline: none;
+    border-color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 20%, transparent);
+  }
+}
+
+.verifactu-records__filter-btn {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--ej-fiscal-aeat-hover, #{color.adjust($fiscal-aeat-fallback, $lightness: -8%)});
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// RECORDS TABLE
+// ---------------------------------------------------------------------------
+
+.verifactu-records__table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+}
+
+.verifactu-records__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.verifactu-records__th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-text-secondary, #6B7280);
+  background: var(--ej-color-surface-alt, #F9FAFB);
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  white-space: nowrap;
+
+  &--right {
+    text-align: right;
+  }
+}
+
+.verifactu-records__row {
+  transition: background 0.1s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 4%, transparent);
+  }
+
+  &:not(:last-child) {
+    .verifactu-records__td {
+      border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+    }
+  }
+}
+
+.verifactu-records__td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: var(--ej-color-text-primary, #1A1A2E);
+
+  &--number {
+    font-weight: 600;
+  }
+
+  &--right {
+    text-align: right;
+  }
+
+  &--amount {
+    font-family: $fiscal-font-mono;
+    font-weight: 600;
+  }
+
+  &--mono {
+    font-family: $fiscal-font-mono;
+    font-size: 0.8125rem;
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+
+  &--empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+}
+
+.verifactu-records__type {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &--alta {
+    background: color-mix(in srgb, var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback});
+  }
+
+  &--anulacion {
+    background: color-mix(in srgb, var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback});
+  }
+}
+
+.verifactu-records__nif {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.verifactu-records__action-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PAGINATION
+// ---------------------------------------------------------------------------
+
+.verifactu-records__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.verifactu-records__pagination-info {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.verifactu-records__pagination-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.verifactu-records__pagination-link {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 6%, transparent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// RECORD CARD (used in dashboard grid)
+// ---------------------------------------------------------------------------
+
+.verifactu-record-card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+  background: var(--ej-color-surface, #FFFFFF);
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 8%, transparent);
+  }
+}
+
+.verifactu-record-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.verifactu-record-card__number {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+}
+
+.verifactu-record-card__body {
+  margin-bottom: 0.75rem;
+}
+
+.verifactu-record-card__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.8125rem;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid color-mix(in srgb, var(--ej-color-border, #E5E7EB) 50%, transparent);
+  }
+}
+
+.verifactu-record-card__label {
+  color: var(--ej-color-text-secondary, #6B7280);
+  flex-shrink: 0;
+}
+
+.verifactu-record-card__value {
+  text-align: right;
+  color: var(--ej-color-text-primary, #1A1A2E);
+
+  &--amount {
+    font-family: $fiscal-font-mono;
+    font-weight: 600;
+  }
+
+  &--mono {
+    font-family: $fiscal-font-mono;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+}
+
+.verifactu-record-card__nif {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.verifactu-record-card__type {
+  display: inline-block;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+
+  &--alta {
+    background: color-mix(in srgb, var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback});
+  }
+
+  &--anulacion {
+    background: color-mix(in srgb, var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback});
+  }
+}
+
+.verifactu-record-card__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.verifactu-record-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

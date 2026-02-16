@@ -1,0 +1,53 @@
+# ============================================================================
+# BIBLIOTECAS DEL MÓDULO JARABA VERIFACTU
+# ============================================================================
+# COMPILACIÓN SCSS:
+# npx sass scss/main.scss:css/verifactu.css --style=compressed --no-source-map
+# ============================================================================
+
+global:
+  version: 1.x
+  css:
+    theme:
+      css/verifactu.css: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/fiscal-styles
+
+verifactu-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/verifactu.css: {}
+  js:
+    js/verifactu-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+verifactu-records:
+  version: 1.x
+  css:
+    theme:
+      css/verifactu.css: {}
+  js:
+    js/verifactu-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+verifactu-chain-viewer:
+  version: 1.x
+  css:
+    theme:
+      css/verifactu.css: {}
+  js:
+    js/verifactu-chain-viewer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

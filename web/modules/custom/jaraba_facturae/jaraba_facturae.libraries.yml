@@ -1,0 +1,48 @@
+global:
+  version: VERSION
+  css:
+    theme:
+      css/facturae.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+facturae-dashboard:
+  version: VERSION
+  js:
+    js/facturae-dashboard.js: {}
+  css:
+    theme:
+      css/facturae.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+facturae-documents:
+  version: VERSION
+  js:
+    js/facturae-dashboard.js: {}
+  css:
+    theme:
+      css/facturae.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles
+
+facturae-dir3:
+  version: VERSION
+  js:
+    js/facturae-dir3-autocomplete.js: {}
+  css:
+    theme:
+      css/facturae.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_core/fiscal-styles

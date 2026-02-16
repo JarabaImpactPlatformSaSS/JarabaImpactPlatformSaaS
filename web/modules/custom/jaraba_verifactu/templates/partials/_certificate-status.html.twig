@@ -1,0 +1,104 @@
+{#
+/**
+ * @file
+ * _certificate-status.html.twig — Panel de estado de certificado digital.
+ *
+ * Parcial compartido por los 3 modulos del stack fiscal (jaraba_verifactu,
+ * jaraba_facturae, jaraba_einvoice_b2b). Muestra el estado del certificado
+ * PKCS#12 del tenant con colores semanticos y alerta de expiracion.
+ *
+ * VARIABLES ESPERADAS:
+ * - certificate: Array con datos del CertificateValidationResult.toArray()
+ *   - is_valid (bool): Si el certificado es valido y vigente.
+ *   - subject (string): CN del titular.
+ *   - issuer (string): CN del emisor (CA).
+ *   - serial_number (string): Numero de serie.
+ *   - nif (string): NIF/CIF extraido.
+ *   - expires_at (string): Fecha ISO 8601 de expiracion.
+ *   - days_until_expiry (int): Dias restantes.
+ *   - error_message (string): Mensaje de error si aplica.
+ *   - error_code (string): Codigo de error.
+ * - has_certificate (bool): Si el tenant tiene certificado almacenado.
+ * - tenant_name (string): Nombre del tenant para contexto.
+ *
+ * DIRECTRICES:
+ * - i18n: Todos los textos con {% trans %}
+ * - CSS: Variables var(--ej-fiscal-cert-*)
+ * - Iconos: jaraba_icon('fiscal', 'certificate', ...)
+ *
+ * Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 0, entregable F0-6.
+ */
+#}
+{% set cert = certificate|default({}) %}
+{% set has_cert = has_certificate|default(false) %}
+
+<div class="fiscal-cert-status {{ has_cert ? 'fiscal-cert-status--has-cert' : 'fiscal-cert-status--no-cert' }}">
+  <div class="fiscal-cert-status__header">
+    {{ jaraba_icon('fiscal', 'certificate', { variant: 'duotone', size: '24px' }) }}
+    <h3 class="fiscal-cert-status__title">{% trans %}Digital Certificate{% endtrans %}</h3>
+  </div>
+
+  {% if not has_cert %}
+    {# SIN CERTIFICADO CONFIGURADO #}
+    <div class="fiscal-cert-status__body fiscal-cert-status__body--empty">
+      <p class="fiscal-cert-status__message fiscal-cert-status__message--warning">
+        {% trans %}No digital certificate configured for this tenant. A valid PKCS#12 certificate is required for fiscal compliance.{% endtrans %}
+      </p>
+      <a href="#" class="fiscal-cert-status__action" data-slide-panel="certificate-upload">
+        {% trans %}Upload Certificate{% endtrans %}
+      </a>
+    </div>
+
+  {% elseif cert.is_valid %}
+    {# CERTIFICADO VALIDO #}
+    {% set status_class = cert.days_until_expiry <= 30 ? 'fiscal-cert-status__body--warning' : 'fiscal-cert-status__body--valid' %}
+    <div class="fiscal-cert-status__body {{ status_class }}">
+      <div class="fiscal-cert-status__info">
+        <div class="fiscal-cert-status__row">
+          <span class="fiscal-cert-status__label">{% trans %}Subject{% endtrans %}</span>
+          <span class="fiscal-cert-status__value">{{ cert.subject }}</span>
+        </div>
+        {% if cert.nif %}
+          <div class="fiscal-cert-status__row">
+            <span class="fiscal-cert-status__label">{% trans %}NIF/CIF{% endtrans %}</span>
+            <span class="fiscal-cert-status__value fiscal-cert-status__value--mono">{{ cert.nif }}</span>
+          </div>
+        {% endif %}
+        <div class="fiscal-cert-status__row">
+          <span class="fiscal-cert-status__label">{% trans %}Issuer{% endtrans %}</span>
+          <span class="fiscal-cert-status__value">{{ cert.issuer }}</span>
+        </div>
+        <div class="fiscal-cert-status__row">
+          <span class="fiscal-cert-status__label">{% trans %}Expires{% endtrans %}</span>
+          <span class="fiscal-cert-status__value">
+            {{ cert.expires_at|date('d/m/Y') }}
+            <span class="fiscal-cert-status__days">
+              ({{ cert.days_until_expiry }} {% trans %}days remaining{% endtrans %})
+            </span>
+          </span>
+        </div>
+        <div class="fiscal-cert-status__row">
+          <span class="fiscal-cert-status__label">{% trans %}Serial{% endtrans %}</span>
+          <span class="fiscal-cert-status__value fiscal-cert-status__value--mono">{{ cert.serial_number }}</span>
+        </div>
+      </div>
+
+      {% if cert.days_until_expiry <= 30 %}
+        <div class="fiscal-cert-status__alert fiscal-cert-status__alert--warning">
+          {% trans %}Certificate expires in {{ cert.days_until_expiry }} days. Please renew it before it expires to avoid service interruption.{% endtrans %}
+        </div>
+      {% endif %}
+    </div>
+
+  {% else %}
+    {# CERTIFICADO INVALIDO/EXPIRADO #}
+    <div class="fiscal-cert-status__body fiscal-cert-status__body--error">
+      <p class="fiscal-cert-status__message fiscal-cert-status__message--error">
+        {{ cert.error_message }}
+      </p>
+      <a href="#" class="fiscal-cert-status__action" data-slide-panel="certificate-upload">
+        {% trans %}Replace Certificate{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

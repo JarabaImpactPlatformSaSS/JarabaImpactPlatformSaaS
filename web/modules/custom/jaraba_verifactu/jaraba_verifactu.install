@@ -1,0 +1,168 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_verifactu.
+ *
+ * Crea indices de base de datos criticos para rendimiento y cumplimiento
+ * normativo del sistema VeriFactu (RD 1007/2023).
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_install().
+ *
+ * Crea indices optimizados para las entidades VeriFactu.
+ * Los indices son obligatorios para el rendimiento de consultas
+ * de tenant, hash chain y estado AEAT.
+ */
+function jaraba_verifactu_install(): void {
+  $schema = Database::getConnection()->schema();
+
+  // --- VERIFACTU_INVOICE_RECORD INDICES ---
+
+  // Indice compuesto tenant + created para consultas ordenadas por tenant.
+  if ($schema->tableExists('verifactu_invoice_record')) {
+    if (!$schema->indexExists('verifactu_invoice_record', 'idx_tenant_created')) {
+      $schema->addIndex('verifactu_invoice_record', 'idx_tenant_created', [
+        'tenant_id',
+        'created',
+      ], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'created' => ['type' => 'int'],
+        ],
+      ]);
+    }
+
+    // Indice en hash_record para busquedas de integridad de cadena.
+    if (!$schema->indexExists('verifactu_invoice_record', 'idx_hash_record')) {
+      $schema->addIndex('verifactu_invoice_record', 'idx_hash_record', [
+        'hash_record',
+      ], [
+        'fields' => [
+          'hash_record' => ['type' => 'varchar', 'length' => 64],
+        ],
+      ]);
+    }
+
+    // Indice en aeat_status para filtrado de registros pendientes/error.
+    if (!$schema->indexExists('verifactu_invoice_record', 'idx_aeat_status')) {
+      $schema->addIndex('verifactu_invoice_record', 'idx_aeat_status', [
+        'aeat_status',
+      ], [
+        'fields' => [
+          'aeat_status' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+
+    // Indice compuesto tenant + aeat_status para consultas de remision.
+    if (!$schema->indexExists('verifactu_invoice_record', 'idx_tenant_aeat_status')) {
+      $schema->addIndex('verifactu_invoice_record', 'idx_tenant_aeat_status', [
+        'tenant_id',
+        'aeat_status',
+      ], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'aeat_status' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+
+    // Indice en numero_factura para busquedas por numero.
+    if (!$schema->indexExists('verifactu_invoice_record', 'idx_numero_factura')) {
+      $schema->addIndex('verifactu_invoice_record', 'idx_numero_factura', [
+        'numero_factura',
+      ], [
+        'fields' => [
+          'numero_factura' => ['type' => 'varchar', 'length' => 60],
+        ],
+      ]);
+    }
+  }
+
+  // --- VERIFACTU_EVENT_LOG INDICES ---
+
+  if ($schema->tableExists('verifactu_event_log')) {
+    // Indice compuesto tenant + created para consultas de auditoria.
+    if (!$schema->indexExists('verifactu_event_log', 'idx_tenant_created')) {
+      $schema->addIndex('verifactu_event_log', 'idx_tenant_created', [
+        'tenant_id',
+        'created',
+      ], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'created' => ['type' => 'int'],
+        ],
+      ]);
+    }
+
+    // Indice en event_type para filtrado por tipo de evento.
+    if (!$schema->indexExists('verifactu_event_log', 'idx_event_type')) {
+      $schema->addIndex('verifactu_event_log', 'idx_event_type', [
+        'event_type',
+      ], [
+        'fields' => [
+          'event_type' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+
+    // Indice en severity para alertas criticas.
+    if (!$schema->indexExists('verifactu_event_log', 'idx_severity')) {
+      $schema->addIndex('verifactu_event_log', 'idx_severity', [
+        'severity',
+      ], [
+        'fields' => [
+          'severity' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+  }
+
+  // --- VERIFACTU_REMISION_BATCH INDICES ---
+
+  if ($schema->tableExists('verifactu_remision_batch')) {
+    // Indice compuesto tenant + status para consultas de remision.
+    if (!$schema->indexExists('verifactu_remision_batch', 'idx_tenant_status')) {
+      $schema->addIndex('verifactu_remision_batch', 'idx_tenant_status', [
+        'tenant_id',
+        'status',
+      ], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'status' => ['type' => 'varchar', 'length' => 255],
+        ],
+      ]);
+    }
+  }
+
+  // --- VERIFACTU_TENANT_CONFIG INDICES ---
+
+  if ($schema->tableExists('verifactu_tenant_config')) {
+    // Indice unico en tenant_id (un tenant = una config).
+    if (!$schema->indexExists('verifactu_tenant_config', 'idx_tenant_id')) {
+      $schema->addIndex('verifactu_tenant_config', 'idx_tenant_id', [
+        'tenant_id',
+      ], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+        ],
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Limpia datos residuales al desinstalar el modulo.
+ */
+function jaraba_verifactu_uninstall(): void {
+  // Eliminar configuracion del modulo.
+  \Drupal::configFactory()->getEditable('jaraba_verifactu.settings')->delete();
+}

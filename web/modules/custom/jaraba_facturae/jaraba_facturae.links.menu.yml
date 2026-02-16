@@ -1,0 +1,20 @@
+jaraba_facturae.admin:
+  title: 'Facturae'
+  description: 'Facturae 3.2.2 electronic invoicing: documents, FACe status, signing.'
+  route_name: jaraba_facturae.dashboard
+  parent: system.admin_content
+  weight: 55
+
+jaraba_facturae.admin.structure:
+  title: 'Facturae Documents'
+  description: 'Manage Facturae documents, FACe logs and tenant configuration.'
+  route_name: jaraba_facturae.documents
+  parent: system.admin_structure
+  weight: 65
+
+jaraba_facturae.config:
+  title: 'Facturae Settings'
+  description: 'Configure Facturae: certificates, FACe environment, numbering, DIR3.'
+  route_name: jaraba_facturae.settings
+  parent: system.admin_config_system
+  weight: 75

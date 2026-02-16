@@ -1,0 +1,190 @@
+// =============================================================================
+// VERIFACTU RESPONSIVE — SCSS
+// =============================================================================
+// Breakpoints y adaptaciones mobile-first para todos los componentes VeriFactu.
+//
+// Breakpoints: 480px (mobile), 768px (tablet), 1024px (desktop), 1440px (wide).
+// =============================================================================
+
+@use 'variables-fiscal' as *;
+
+// ---------------------------------------------------------------------------
+// STATS GRID
+// ---------------------------------------------------------------------------
+
+.verifactu-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// STATS CARDS
+// ---------------------------------------------------------------------------
+
+.verifactu-stats__card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+  background: var(--ej-color-surface, #FFFFFF);
+}
+
+.verifactu-stats__card-icon {
+  margin-bottom: 0.5rem;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+}
+
+.verifactu-stats__card-body {
+  margin-bottom: 0.5rem;
+}
+
+.verifactu-stats__card-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-color-text-primary, #1A1A2E);
+  line-height: 1.2;
+
+  &--valid {
+    color: var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback});
+  }
+
+  &--broken {
+    color: var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback});
+  }
+
+  &--unknown {
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+
+  &--time {
+    font-size: 1rem;
+    font-family: $fiscal-font-mono;
+  }
+}
+
+.verifactu-stats__card-label {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.verifactu-stats__card-breakdown {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+// ---------------------------------------------------------------------------
+// FILTERS (mobile stacking)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .verifactu-records__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .verifactu-records__filter-group {
+    min-width: auto;
+  }
+
+  .verifactu-records__filter-btn {
+    width: 100%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TABLE (mobile scroll + hide columns)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .verifactu-records__table-wrapper {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .verifactu-records__th,
+  .verifactu-records__td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  // Hide less critical columns on mobile.
+  .verifactu-records__table th:nth-child(3),
+  .verifactu-records__table td:nth-child(3),
+  .verifactu-records__table th:nth-child(4),
+  .verifactu-records__table td:nth-child(4),
+  .verifactu-records__table th:nth-child(8),
+  .verifactu-records__table td:nth-child(8) {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PAGINATION (mobile stacking)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 480px) {
+  .verifactu-records__pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DASHBOARD GRID (mobile stacking)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .verifactu-dashboard__header {
+    flex-direction: column;
+  }
+
+  .verifactu-dashboard__quick-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .verifactu-dashboard__records-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// QR PREVIEW (responsive sizing)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 480px) {
+  .verifactu-qr-preview {
+    max-width: 100%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ACCESSIBILITY: prefers-reduced-motion
+// ---------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  .verifactu-stats__card,
+  .verifactu-record-card,
+  .verifactu-remision-card,
+  .verifactu-quick-action,
+  .verifactu-chain-status__progress-bar,
+  .verifactu-remision-card__progress-bar {
+    transition: none;
+  }
+}

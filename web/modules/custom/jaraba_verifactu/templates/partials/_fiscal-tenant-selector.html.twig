@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * _fiscal-tenant-selector.html.twig — Selector de tenant para contexto fiscal.
+ *
+ * Parcial compartido por los 3 modulos del stack fiscal. Para usuarios con
+ * acceso a multiples tenants (admin/platform), permite cambiar el contexto
+ * fiscal activo. Para usuarios con un solo tenant, muestra el nombre fijo.
+ *
+ * VARIABLES ESPERADAS:
+ * - current_tenant: Array con datos del tenant actual.
+ *   - id (int): ID del tenant.
+ *   - name (string): Nombre del tenant.
+ *   - nif (string): NIF/CIF del tenant.
+ * - available_tenants (array): Lista de tenants disponibles.
+ *   - Cada elemento: { id, name, nif }
+ * - switch_url (string): URL base para cambio de tenant (query param ?tenant_id=X).
+ *
+ * DIRECTRICES:
+ * - i18n: Todos los textos con {% trans %}
+ * - CRUD en slide-panel si se necesita editar config del tenant.
+ * - BEM: fiscal-tenant-selector fiscal-tenant-selector--*
+ *
+ * Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 0, entregable F0-6.
+ */
+#}
+{% set tenant = current_tenant|default({}) %}
+{% set tenants = available_tenants|default([]) %}
+
+<div class="fiscal-tenant-selector {{ tenants|length > 1 ? 'fiscal-tenant-selector--multi' : 'fiscal-tenant-selector--single' }}">
+  <div class="fiscal-tenant-selector__current">
+    <span class="fiscal-tenant-selector__label">{% trans %}Tenant{% endtrans %}</span>
+    <span class="fiscal-tenant-selector__name">{{ tenant.name|default('—') }}</span>
+    {% if tenant.nif %}
+      <span class="fiscal-tenant-selector__nif">({{ tenant.nif }})</span>
+    {% endif %}
+  </div>
+
+  {% if tenants|length > 1 %}
+    <div class="fiscal-tenant-selector__dropdown" data-fiscal-tenant-dropdown>
+      <button type="button"
+              class="fiscal-tenant-selector__toggle"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="{% trans %}Switch tenant{% endtrans %}">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 9L12 15L18 9"/>
+        </svg>
+      </button>
+      <ul class="fiscal-tenant-selector__list" role="listbox" hidden>
+        {% for t in tenants %}
+          <li class="fiscal-tenant-selector__item {{ t.id == tenant.id ? 'fiscal-tenant-selector__item--active' : '' }}"
+              role="option"
+              aria-selected="{{ t.id == tenant.id ? 'true' : 'false' }}">
+            <a href="{{ switch_url }}?tenant_id={{ t.id }}" class="fiscal-tenant-selector__link">
+              <span class="fiscal-tenant-selector__item-name">{{ t.name }}</span>
+              {% if t.nif %}
+                <span class="fiscal-tenant-selector__item-nif">{{ t.nif }}</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>

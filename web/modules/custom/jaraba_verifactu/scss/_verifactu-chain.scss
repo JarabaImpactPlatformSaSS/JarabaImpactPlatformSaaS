@@ -1,0 +1,190 @@
+// =============================================================================
+// VERIFACTU CHAIN STATUS — SCSS
+// =============================================================================
+// Estilos para el componente de estado de integridad de cadena hash.
+//
+// BEM: .verifactu-chain-status
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-fiscal' as *;
+
+.verifactu-chain-status {
+  padding: 1.25rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+  background: var(--ej-color-surface, #FFFFFF);
+
+  &--valid {
+    border-left: 4px solid var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback});
+  }
+
+  &--broken {
+    border-left: 4px solid var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback});
+  }
+}
+
+.verifactu-chain-status__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.verifactu-chain-status__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1A1A2E);
+  flex: 1;
+}
+
+.verifactu-chain-status__indicator {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &--valid {
+    background: color-mix(in srgb, var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback});
+  }
+
+  &--broken {
+    background: color-mix(in srgb, var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// METRICS
+// ---------------------------------------------------------------------------
+
+.verifactu-chain-status__metrics {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.verifactu-chain-status__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.verifactu-chain-status__metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ej-color-text-primary, #1A1A2E);
+}
+
+.verifactu-chain-status__metric-label {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// PROGRESS BAR
+// ---------------------------------------------------------------------------
+
+.verifactu-chain-status__progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ej-color-border, #E5E7EB);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.verifactu-chain-status__progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+
+  &--full {
+    width: 100%;
+    background: var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback});
+  }
+
+  &--partial {
+    background: var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// MESSAGES
+// ---------------------------------------------------------------------------
+
+.verifactu-chain-status__message {
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+
+  &--valid {
+    color: var(--ej-fiscal-chain-valid, #{$fiscal-chain-valid-fallback});
+  }
+
+  &--broken {
+    color: var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback});
+    font-weight: 600;
+  }
+
+  &--error {
+    color: var(--ej-fiscal-error, #{$fiscal-error-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CHAIN BREAK DETAIL
+// ---------------------------------------------------------------------------
+
+.verifactu-chain-status__break {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--ej-fiscal-chain-broken, #{$fiscal-chain-broken-fallback}) 5%, transparent);
+  margin-bottom: 0.5rem;
+}
+
+.verifactu-chain-status__hashes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.verifactu-chain-status__hash {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.verifactu-chain-status__hash-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ej-color-text-secondary, #6B7280);
+  min-width: 5rem;
+}
+
+.verifactu-chain-status__hash-value {
+  font-family: $fiscal-font-mono;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-primary, #1A1A2E);
+  word-break: break-all;
+}
+
+// ---------------------------------------------------------------------------
+// FOOTER
+// ---------------------------------------------------------------------------
+
+.verifactu-chain-status__footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.verifactu-chain-status__timestamp {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}

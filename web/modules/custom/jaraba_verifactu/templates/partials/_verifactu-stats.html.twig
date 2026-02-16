@@ -1,0 +1,105 @@
+{#
+/**
+ * @file
+ * VeriFactu dashboard statistics summary.
+ *
+ * Variables:
+ * - stats (array): {
+ *     total_records, pending_records, accepted_records, rejected_records,
+ *     total_batches, pending_batches, sent_batches, failed_batches,
+ *     chain_status ('valid'|'broken'|'unknown'), last_submission_at (string|null)
+ *   }
+ *
+ * CSS: BEM — verifactu-stats verifactu-stats__card
+ * Icons: jaraba_icon('fiscal', ...)
+ * i18n: {% trans %}
+ */
+#}
+{% set s = stats|default({}) %}
+
+<section class="verifactu-stats" aria-label="{% trans %}VeriFactu statistics{% endtrans %}">
+  <div class="verifactu-stats__grid">
+
+    {# CARD: Total Records #}
+    <div class="verifactu-stats__card verifactu-stats__card--records">
+      <div class="verifactu-stats__card-icon">
+        {{ jaraba_icon('fiscal', 'signed-document', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <div class="verifactu-stats__card-body">
+        <span class="verifactu-stats__card-value">{{ s.total_records|default(0) }}</span>
+        <span class="verifactu-stats__card-label">{% trans %}Invoice Records{% endtrans %}</span>
+      </div>
+      <div class="verifactu-stats__card-breakdown">
+        <span class="verifactu-stats__mini verifactu-stats__mini--accepted">
+          {{ s.accepted_records|default(0) }} {% trans %}accepted{% endtrans %}
+        </span>
+        <span class="verifactu-stats__mini verifactu-stats__mini--pending">
+          {{ s.pending_records|default(0) }} {% trans %}pending{% endtrans %}
+        </span>
+        <span class="verifactu-stats__mini verifactu-stats__mini--rejected">
+          {{ s.rejected_records|default(0) }} {% trans %}rejected{% endtrans %}
+        </span>
+      </div>
+    </div>
+
+    {# CARD: Remision Batches #}
+    <div class="verifactu-stats__card verifactu-stats__card--batches">
+      <div class="verifactu-stats__card-icon">
+        {{ jaraba_icon('fiscal', 'aeat-seal', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <div class="verifactu-stats__card-body">
+        <span class="verifactu-stats__card-value">{{ s.total_batches|default(0) }}</span>
+        <span class="verifactu-stats__card-label">{% trans %}AEAT Batches{% endtrans %}</span>
+      </div>
+      <div class="verifactu-stats__card-breakdown">
+        <span class="verifactu-stats__mini verifactu-stats__mini--accepted">
+          {{ s.sent_batches|default(0) }} {% trans %}sent{% endtrans %}
+        </span>
+        <span class="verifactu-stats__mini verifactu-stats__mini--pending">
+          {{ s.pending_batches|default(0) }} {% trans %}queued{% endtrans %}
+        </span>
+        <span class="verifactu-stats__mini verifactu-stats__mini--rejected">
+          {{ s.failed_batches|default(0) }} {% trans %}failed{% endtrans %}
+        </span>
+      </div>
+    </div>
+
+    {# CARD: Chain Integrity #}
+    <div class="verifactu-stats__card verifactu-stats__card--chain">
+      <div class="verifactu-stats__card-icon">
+        {{ jaraba_icon('fiscal', 'shield-fiscal', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <div class="verifactu-stats__card-body">
+        {% set chain = s.chain_status|default('unknown') %}
+        <span class="verifactu-stats__card-value verifactu-stats__card-value--{{ chain }}">
+          {% if chain == 'valid' %}
+            {% trans %}Valid{% endtrans %}
+          {% elseif chain == 'broken' %}
+            {% trans %}Broken{% endtrans %}
+          {% else %}
+            {% trans %}Unknown{% endtrans %}
+          {% endif %}
+        </span>
+        <span class="verifactu-stats__card-label">{% trans %}Hash Chain{% endtrans %}</span>
+      </div>
+    </div>
+
+    {# CARD: Last Submission #}
+    <div class="verifactu-stats__card verifactu-stats__card--submission">
+      <div class="verifactu-stats__card-icon">
+        {{ jaraba_icon('fiscal', 'invoice-check', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <div class="verifactu-stats__card-body">
+        <span class="verifactu-stats__card-value verifactu-stats__card-value--time">
+          {% if s.last_submission_at %}
+            {{ s.last_submission_at }}
+          {% else %}
+            —
+          {% endif %}
+        </span>
+        <span class="verifactu-stats__card-label">{% trans %}Last AEAT Submission{% endtrans %}</span>
+      </div>
+    </div>
+
+  </div>
+</section>

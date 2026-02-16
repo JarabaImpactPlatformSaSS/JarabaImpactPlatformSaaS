@@ -1,0 +1,21 @@
+/**
+ * @file
+ * Main SCSS entry point for jaraba_facturae module.
+ *
+ * Compiles all partials in dependency order.
+ * Compile: npx sass scss/main.scss:css/facturae.css --style=compressed --no-source-map
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+
+// Shared fiscal variables (from verifactu — same fiscal stack).
+@use 'variables-fiscal';
+
+// Module-specific partials.
+@use 'facturae-dashboard';
+@use 'facturae-documents';
+@use 'facturae-signature';
+@use 'facturae-face';
+
+// Responsive breakpoints (last to override).
+@use 'facturae-responsive';

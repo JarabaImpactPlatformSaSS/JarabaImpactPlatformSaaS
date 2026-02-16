@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Facturae document card for dashboard grid.
+ *
+ * Variables:
+ * - document: Array with keys: id, facturae_number, buyer_name,
+ *   total_invoice_amount, status, face_status, created.
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+<div class="facturae-doc-card">
+  <div class="facturae-doc-card__header">
+    <span class="facturae-doc-card__number">{{ document.facturae_number }}</span>
+    {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+      'status': document.status,
+      'size': 'sm'
+    } only %}
+  </div>
+
+  <div class="facturae-doc-card__body">
+    <div class="facturae-doc-card__buyer">
+      <span class="facturae-doc-card__label">{% trans %}Buyer{% endtrans %}</span>
+      <span class="facturae-doc-card__value">{{ document.buyer_name|default('—') }}</span>
+    </div>
+    <div class="facturae-doc-card__amount">
+      <span class="facturae-doc-card__label">{% trans %}Amount{% endtrans %}</span>
+      <span class="facturae-doc-card__value facturae-doc-card__value--amount">
+        {{ document.total_invoice_amount|default('0.00') }} &euro;
+      </span>
+    </div>
+  </div>
+
+  <div class="facturae-doc-card__footer">
+    <div class="facturae-doc-card__face">
+      {% if document.face_status != 'not_sent' %}
+        {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+          'status': document.face_status,
+          'size': 'sm'
+        } only %}
+      {% else %}
+        <span class="facturae-doc-card__face-label">{% trans %}Not sent{% endtrans %}</span>
+      {% endif %}
+    </div>
+    <a href="{{ path('jaraba_facturae.document_detail', {'facturae_document': document.id}) }}"
+       class="facturae-doc-card__view-link">
+      {% trans %}View{% endtrans %} &rarr;
+    </a>
+  </div>
+</div>

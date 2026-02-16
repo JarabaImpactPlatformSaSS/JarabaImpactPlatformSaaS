@@ -1,0 +1,40 @@
+administer einvoice b2b:
+  title: 'Administer E-Factura B2B'
+  description: 'Full administration of E-Factura B2B module.'
+  restrict access: true
+
+view einvoice documents:
+  title: 'View E-Invoice documents'
+  description: 'View E-Invoice B2B documents and delivery status.'
+
+create einvoice documents:
+  title: 'Create E-Invoice documents'
+  description: 'Create new E-Invoice B2B documents.'
+
+delete einvoice documents:
+  title: 'Delete E-Invoice documents'
+  description: 'Delete E-Invoice B2B documents in draft status.'
+
+send einvoice:
+  title: 'Send E-Invoices'
+  description: 'Send E-Invoice documents via SPFE, email, or Peppol.'
+
+receive einvoice:
+  title: 'Receive inbound E-Invoices'
+  description: 'Receive and process inbound E-Invoice documents.'
+
+view einvoice delivery logs:
+  title: 'View E-Invoice delivery logs'
+  description: 'View the delivery communication log.'
+
+manage einvoice payment events:
+  title: 'Manage payment events'
+  description: 'Create and manage payment events for E-Invoices.'
+
+manage einvoice config:
+  title: 'Manage E-Invoice B2B configuration'
+  description: 'Configure tenant settings for E-Factura B2B.'
+
+view einvoice reports:
+  title: 'View E-Invoice reports'
+  description: 'View morosity reports and E-Invoice analytics.'

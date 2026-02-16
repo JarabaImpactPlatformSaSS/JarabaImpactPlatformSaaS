@@ -1,0 +1,170 @@
+// =============================================================================
+// VERIFACTU DASHBOARD — SCSS
+// =============================================================================
+// Layout y estilos para la pagina principal del dashboard VeriFactu.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$fiscal-*}.
+// BEM: .verifactu-dashboard, .verifactu-quick-action
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-fiscal' as *;
+
+// ---------------------------------------------------------------------------
+// DASHBOARD LAYOUT
+// ---------------------------------------------------------------------------
+
+.verifactu-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.verifactu-dashboard__title-wrapper {
+  flex: 1;
+  min-width: 280px;
+}
+
+.verifactu-dashboard__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+}
+
+.verifactu-dashboard__description {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// MAIN GRID (Chain + Certificate side by side)
+// ---------------------------------------------------------------------------
+
+.verifactu-dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.verifactu-dashboard__grid-item {
+  min-width: 0;
+}
+
+// ---------------------------------------------------------------------------
+// RECENT RECORDS SECTION
+// ---------------------------------------------------------------------------
+
+.verifactu-dashboard__recent {
+  margin-bottom: 2rem;
+}
+
+.verifactu-dashboard__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.verifactu-dashboard__section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1A1A2E);
+}
+
+.verifactu-dashboard__view-all {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.verifactu-dashboard__records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(#{$verifactu-record-card-min-width}, 1fr));
+  gap: 1rem;
+}
+
+// ---------------------------------------------------------------------------
+// QUICK ACTIONS
+// ---------------------------------------------------------------------------
+
+.verifactu-dashboard__actions {
+  margin-bottom: 2rem;
+}
+
+.verifactu-dashboard__quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.verifactu-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: 0.75rem;
+  background: var(--ej-color-surface, #FFFFFF);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 12%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+    outline-offset: 2px;
+  }
+}
+
+.verifactu-quick-action__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 8%, transparent);
+  color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  flex-shrink: 0;
+}
+
+.verifactu-quick-action__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.verifactu-quick-action__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1A1A2E);
+}
+
+.verifactu-quick-action__description {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}

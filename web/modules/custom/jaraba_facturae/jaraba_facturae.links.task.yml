@@ -1,0 +1,22 @@
+jaraba_facturae.dashboard:
+  route_name: jaraba_facturae.dashboard
+  title: 'Dashboard'
+  base_route: jaraba_facturae.dashboard
+
+jaraba_facturae.documents:
+  route_name: jaraba_facturae.documents
+  title: 'Documents'
+  base_route: jaraba_facturae.dashboard
+  weight: 10
+
+jaraba_facturae.face_log:
+  route_name: jaraba_facturae.face_log
+  title: 'FACe Log'
+  base_route: jaraba_facturae.dashboard
+  weight: 20
+
+jaraba_facturae.config_tab:
+  route_name: jaraba_facturae.config
+  title: 'Configuration'
+  base_route: jaraba_facturae.dashboard
+  weight: 30

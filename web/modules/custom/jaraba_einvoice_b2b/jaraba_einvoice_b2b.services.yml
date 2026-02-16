@@ -1,0 +1,38 @@
+services:
+  # UBL 2.1 generator service (F9-5).
+  jaraba_einvoice_b2b.ubl_service:
+    class: Drupal\jaraba_einvoice_b2b\Service\EInvoiceUblService
+
+  # Format converter service (F9-6).
+  jaraba_einvoice_b2b.format_converter:
+    class: Drupal\jaraba_einvoice_b2b\Service\EInvoiceFormatConverterService
+    arguments:
+      - '@jaraba_einvoice_b2b.ubl_service'
+
+  # Validation service — 4-layer EN 16931 validation (F10-3).
+  jaraba_einvoice_b2b.validation_service:
+    class: Drupal\jaraba_einvoice_b2b\Service\EInvoiceValidationService
+
+  # SPFE client — Interface + Stub (F10-4).
+  # Swap to SPFEClientLive when AEAT publishes the API.
+  jaraba_einvoice_b2b.spfe_client:
+    class: Drupal\jaraba_einvoice_b2b\Service\SPFEClient\SPFEClientStub
+    arguments:
+      - '@logger.factory'
+
+  # Multi-channel delivery service (F10-1).
+  jaraba_einvoice_b2b.delivery_service:
+    class: Drupal\jaraba_einvoice_b2b\Service\EInvoiceDeliveryService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_einvoice_b2b.spfe_client'
+      - '@plugin.manager.mail'
+      - '@logger.factory'
+
+  # Payment status + morosity service (F10-2).
+  jaraba_einvoice_b2b.payment_status_service:
+    class: Drupal\jaraba_einvoice_b2b\Service\EInvoicePaymentStatusService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_einvoice_b2b.spfe_client'
+      - '@logger.factory'
