@@ -1106,8 +1106,9 @@
 | [2026-02-15_andalucia_ei_elevacion_12_fases.md](./tecnicos/aprendizajes/2026-02-15_andalucia_ei_elevacion_12_fases.md) | 🌿 **Andalucía +ei Elevación 12 Fases** ⭐ — Tercer vertical clase mundial. FeatureGateService, 6 MJML SEQ_AEI, CrossVerticalBridgeService 4 bridges, JourneyProgression 8 reglas, HealthScore 5 dimensiones, i18n TranslatableMarkup, A/B ExperimentService, conversion tracking. 43 archivos, 5 módulos. Aprendizaje #82 | 2026-02-15 |
 | [2026-02-16_tenant_export_backup_automatizado.md](./tecnicos/aprendizajes/2026-02-16_tenant_export_backup_automatizado.md) | 📦 **Tenant Export + Backup Automatizado** ⭐ — Graceful degradation per entity type, Queue API section-by-section, rate limiting cache-backed, StreamedResponse ZIP, daily-backup.yml cron independiente, manifest.json portabilidad, verify-backups dual patterns. 8 reglas EXPORT-001 a 006, BACKUP-001/002. Aprendizaje #83 | 2026-02-16 |
 | [2026-02-16_specs_madurez_backup_separation.md](./tecnicos/aprendizajes/2026-02-16_specs_madurez_backup_separation.md) | 📋 **Specs Madurez N1/N2/N3 + Backup Separation** ⭐ — 21 docs técnicos (183-203) en 3 niveles. Separación ~/backups/daily/ + ~/backups/pre_deploy/ para GoodSync. Migración one-time 78 backups via GitHub Actions. Patrón documentación por niveles madurez. 2 reglas BACKUP-003, DOC-NIVEL-001. Aprendizaje #84 | 2026-02-16 |
+| [2026-02-16_jarabalex_elevacion_vertical_independiente.md](./tecnicos/aprendizajes/2026-02-16_jarabalex_elevacion_vertical_independiente.md) | ⚖️ **Elevacion JarabaLex a Vertical Independiente** ⭐ — Elevacion de jaraba_legal_intelligence de sub-feature ServiciosConecta a vertical independiente. 16 config entities (vertical + 3 features + 3 SaaS plans + 9 FreemiumVerticalLimit). page--legal.html.twig zero-region + CSS custom properties --ej-legal-*. Billing FEATURE_ADDON_MAP. Patron reutilizable elevacion vertical con zero cambios funcionales. 5 reglas VERTICAL-ELEV-001 a 005. Aprendizaje #85 | 2026-02-16 |
 
-**Total aprendizajes:** 84
+**Total aprendizajes:** 85
 
 ---
 
@@ -1164,28 +1165,28 @@
 | Métrica | Valor |
 |---------|-------|
 | **Total documentos técnicos** | 322+ (296 base + 5 docs fiscal 178-182 + 21 docs madurez 183-203) |
-| **Documentos de implementación** | 39 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar + Tenant Export + Stack Fiscal) |
+| **Documentos de implementación** | 40 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar + Tenant Export + Stack Fiscal + JarabaLex Elevacion) |
 | **Bloques Plan Maestro v3** | 7 (A-G) |
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 84 |
+| **Aprendizajes documentados** | 85 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
-| **Landing pages verticales** | 5 (empleo, talento, emprender, comercio, instituciones) |
+| **Landing pages verticales** | 6 (empleo, talento, emprender, comercio, instituciones, jarabalex) |
 | **Plantillas disponibles** | 4 |
 | **Módulos custom** | 37 (9 Marketing AI + 10 Platform Services v3 + 3 Módulos 20260201 + jaraba_tenant_export) |
 | **Módulos con package.json** | 18 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
-| **Page templates Twig** | 18 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding, tenant-export) |
+| **Page templates Twig** | 19 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding, tenant-export, fiscal) |
 | **Bloques Page Builder** | 67 (45 base + 22 premium) |
 | **Docs Page Builder** | 20 (160-179) |
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
 | **Skills AI verticales** | 30 (7+7+6+5+5 por vertical) |
 | **Monitoring alertas** | 24 reglas Prometheus (14 base + 10 scaling F10) + 5 recording rules |
 | **Email templates MJML** | 40 transaccionales (auth 5, billing 7, marketplace 6, empleabilidad 10, emprendimiento 11 + base) |
-| **Stripe precios** | 40 (5 productos × 4 tiers × 2 intervalos) |
+| **Stripe precios** | 48 (6 productos × 4 tiers × 2 intervalos) |
 | **Go-live scripts** | 4 (preflight, validation, rollback + restore_tenant F10) |
 | **Security CI scans** | Daily (Trivy + ZAP + composer/npm audit) |
 | **PHPUnit tests ejecutados** | 789 (730 pass, 92.5%) |
@@ -1231,6 +1232,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-16 | **50.0.0** | ⚖️ **Elevacion JarabaLex a Vertical Independiente:** `jaraba_legal_intelligence` elevado de sub-feature ServiciosConecta a vertical independiente JarabaLex. 16 config entities (1 vertical + 3 features + 3 SaaS plans + 9 FreemiumVerticalLimit). page--legal.html.twig + CSS custom properties --ej-legal-* + billing FEATURE_ADDON_MAP. Docs 178/178A/178B metadata actualizada. 18 nuevos + 11 modificados. 5 reglas VERTICAL-ELEV-001 a 005. Aprendizaje #85. Directrices v34.0.0, Arquitectura v34.0.0. 85 aprendizajes |
 | 2026-02-16 | **49.0.0** | 📋 **Specs Madurez N1/N2/N3 + Backup Separation:** 21 documentos técnicos (docs 183-203) organizados en 3 niveles de madurez. N1 Foundation (GDPR DPA, Legal Terms, DR Plan — audit NOT READY). N2 Growth Ready (AI Agents, Mobile, Multi-Agent, Predictive Analytics, Multi-Region, STO/PIIL, EU Funding, Connector SDK — audit 15.6%). N3 Enterprise (SOC 2, ISO 27001, ENS, HA 99.99%, SLA, SSO/SCIM, Data Governance — audit 10.4%). Plan fiscal v1 creado. Separación backups daily/pre_deploy para GoodSync (78 migrados). Sección 7.4e nueva. 6 aprendizajes faltantes añadidos a §7.6. Directrices v33.0.0, Arquitectura v33.0.0. 84 aprendizajes |
 | 2026-02-16 | **48.0.0** | 📦 **Tenant Export + Daily Backup — Portabilidad GDPR Art. 20:** Módulo `jaraba_tenant_export` implementado. TenantExportRecord entity (17 campos, 4 índices DB). TenantDataCollectorService (6 grupos datos). TenantExportService (ZIP async Queue API, rate limiting, StreamedResponse SHA-256, audit logging). 2 QueueWorkers (export + cleanup). 6 API REST endpoints /api/v1/tenant-export/*. Página frontend /tenant/export Zero-Region + 6 partials + JS dashboard polling. SCSS BEM + 6 SVG icons (export, archive, schedule). daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente, Slack alertas). verify-backups.yml actualizado para db_daily_*. 3 Drush commands. 8 test suites. Plan implementación + Aprendizaje #83. Directrices v32.0.0, Arquitectura v32.0.0. 83 aprendizajes |
 | 2026-02-14 | **35.0.0** | 🎨 **Bloques Verticales Diseñados — 55 Templates + SCSS:** 55 templates Twig reescritos (5 verticales × 11 tipos: hero, content, features, stats, pricing, testimonials, faq, cta, gallery, map, social_proof) con HTML semántico único por tipo. SCSS `_pb-sections.scss` (570 LOC): base `.pb-section` + 5 esquemas color via `--pb-accent` + `color-mix()` + 11 layouts responsive + `prefers-reduced-motion`. `renderTemplatePreview()` mejorado (Twig real + fallback). CSS compilado 47KB (257 reglas `.pb-section`). 2 reglas nuevas (PB-VERTICAL-001, PB-VERTICAL-002). Aprendizaje #78. Directrices v25.0.0, Arquitectura v25.0.0. 78 aprendizajes |
