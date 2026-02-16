@@ -1,0 +1,145 @@
+# =============================================================================
+# DASHBOARD FRONTEND — Zero region, template page--privacy.html.twig
+# =============================================================================
+
+jaraba_privacy.dashboard:
+  path: '/privacy'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyDashboardController::dashboard'
+    _title: 'Privacidad GDPR'
+  requirements:
+    _permission: 'view privacy dashboard'
+
+# =============================================================================
+# CONFIGURACIÓN — Formulario de settings del módulo
+# =============================================================================
+
+jaraba_privacy.settings:
+  path: '/admin/config/jaraba/privacy'
+  defaults:
+    _form: '\Drupal\jaraba_privacy\Form\PrivacySettingsForm'
+    _title: 'Configuración de Privacidad GDPR'
+  requirements:
+    _permission: 'administer privacy'
+
+# =============================================================================
+# ENTITY ROUTES — Field UI base routes para configuración de campos
+# =============================================================================
+
+jaraba_privacy.dpa_agreement.settings:
+  path: '/admin/structure/dpa-agreements'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'DPA Agreements'
+  requirements:
+    _permission: 'administer privacy'
+
+jaraba_privacy.privacy_policy.settings:
+  path: '/admin/structure/privacy-policies'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Políticas de Privacidad'
+  requirements:
+    _permission: 'administer privacy'
+
+jaraba_privacy.processing_activity.settings:
+  path: '/admin/structure/processing-activities'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Actividades de Tratamiento (RAT)'
+  requirements:
+    _permission: 'administer privacy'
+
+# =============================================================================
+# API REST — DPA ENDPOINTS (Bearer + tenant_admin)
+# =============================================================================
+
+jaraba_privacy.api.dpa.current:
+  path: '/api/v1/dpa/current'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getDpaCurrent'
+  methods: [GET]
+  requirements:
+    _permission: 'administer privacy'
+
+jaraba_privacy.api.dpa.sign:
+  path: '/api/v1/dpa/sign'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::signDpa'
+  methods: [POST]
+  requirements:
+    _permission: 'administer privacy'
+
+jaraba_privacy.api.dpa.history:
+  path: '/api/v1/dpa/history'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getDpaHistory'
+  methods: [GET]
+  requirements:
+    _permission: 'administer privacy'
+
+jaraba_privacy.api.dpa.pdf:
+  path: '/api/v1/dpa/{dpa_id}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getDpaPdf'
+  methods: [GET]
+  requirements:
+    _permission: 'administer privacy'
+    dpa_id: '\d+'
+
+jaraba_privacy.api.dpa.subprocessors:
+  path: '/api/v1/dpa/subprocessors'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getSubprocessors'
+  methods: [GET]
+  requirements:
+    _permission: 'access privacy api'
+
+# =============================================================================
+# API REST — ARCO-POL ENDPOINTS (Bearer + authenticated)
+# =============================================================================
+
+jaraba_privacy.api.rights.request:
+  path: '/api/v1/privacy/rights/request'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::createRightsRequest'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+
+jaraba_privacy.api.rights.status:
+  path: '/api/v1/privacy/rights/{request_id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getRightsRequestStatus'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    request_id: '\d+'
+
+jaraba_privacy.api.data_export:
+  path: '/api/v1/privacy/data-export'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::requestDataExport'
+  methods: [POST]
+  requirements:
+    _role: 'authenticated'
+
+# =============================================================================
+# API REST — COOKIE CONSENT ENDPOINTS (Público, sin auth)
+# =============================================================================
+
+jaraba_privacy.api.cookies.consent.post:
+  path: '/api/v1/cookies/consent'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::recordCookieConsent'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_privacy.api.cookies.consent.get:
+  path: '/api/v1/cookies/consent'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::getCookieConsent'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'

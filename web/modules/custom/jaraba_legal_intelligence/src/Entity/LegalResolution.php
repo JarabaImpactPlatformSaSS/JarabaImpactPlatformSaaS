@@ -216,16 +216,14 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
       ->setDescription(t('Ratio decidendi extraida por IA. Puntos clave de la doctrina establecida.'))
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['topics'] = BaseFieldDefinition::create('string')
+    $fields['topics'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Topics'))
       ->setDescription(t('Temas clasificados por IA como JSON array. Mapean a taxonomias legal_topic_*.'))
-      ->setSetting('max_length', 2048)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['cited_legislation'] = BaseFieldDefinition::create('string')
+    $fields['cited_legislation'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Cited Legislation'))
       ->setDescription(t('Leyes, articulos y normativa citada en la resolucion (JSON). Extraida por NER juridico spaCy.'))
-      ->setSetting('max_length', 4096)
       ->setDisplayConfigurable('view', TRUE);
 
     // =========================================================================
@@ -270,16 +268,14 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['cedh_articles'] = BaseFieldDefinition::create('string')
+    $fields['cedh_articles'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('CEDH Articles'))
       ->setDescription(t('Articulos del CEDH alegados o violados (JSON array). Solo para fuentes TEDH.'))
-      ->setSetting('max_length', 512)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['eu_legal_basis'] = BaseFieldDefinition::create('string')
+    $fields['eu_legal_basis'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('EU Legal Basis'))
       ->setDescription(t('Base juridica UE: tratados, directivas, reglamentos citados (JSON array).'))
-      ->setSetting('max_length', 2048)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['advocate_general'] = BaseFieldDefinition::create('string')
@@ -315,10 +311,9 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // vector_ids contiene los UUIDs de los puntos en la coleccion.
     // =========================================================================
 
-    $fields['vector_ids'] = BaseFieldDefinition::create('string')
+    $fields['vector_ids'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Qdrant Vector IDs'))
       ->setDescription(t('Array de UUIDs de puntos en Qdrant (JSON). Cada punto es un chunk de 512 tokens.'))
-      ->setSetting('max_length', 4096)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['qdrant_collection'] = BaseFieldDefinition::create('string')

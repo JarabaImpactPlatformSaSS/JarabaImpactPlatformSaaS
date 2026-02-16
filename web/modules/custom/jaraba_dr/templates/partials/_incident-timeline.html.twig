@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Partial: timeline de incidentes DR.
+ */
+#}
+<div class="incident-timeline">
+  <h3>{{ 'Incidentes recientes'|t }}</h3>
+  {% if active_incidents %}
+    <div class="incident-timeline__list">
+      {% for incident in active_incidents %}
+        <div class="incident-timeline__item incident-timeline__item--{{ incident.severity }}">
+          <div class="incident-timeline__header">
+            <span class="incident-timeline__severity">{{ incident.severity_label }}</span>
+            <span class="incident-timeline__status">{{ incident.status_label }}</span>
+          </div>
+          <h4 class="incident-timeline__title">{{ incident.title }}</h4>
+          <p class="incident-timeline__description">{{ incident.description }}</p>
+          <span class="incident-timeline__time">{{ incident.started_at }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="incident-timeline__empty">{{ 'No hay incidentes recientes.'|t }}</p>
+  {% endif %}
+</div>

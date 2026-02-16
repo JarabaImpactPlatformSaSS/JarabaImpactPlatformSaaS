@@ -1,0 +1,24 @@
+administer privacy:
+  title: 'Administrar configuración de privacidad'
+  description: 'Acceso completo a DPA, políticas y configuración GDPR.'
+  restrict access: true
+
+manage data rights:
+  title: 'Gestionar solicitudes de derechos'
+  description: 'Procesar solicitudes ARCO-POL de los interesados.'
+
+view privacy dashboard:
+  title: 'Ver panel de privacidad'
+  description: 'Consultar estado de DPAs, cookies y solicitudes.'
+
+manage cookie consent:
+  title: 'Gestionar consentimiento de cookies'
+  description: 'Configurar banner y categorías de cookies.'
+
+report security breach:
+  title: 'Reportar brecha de seguridad'
+  description: 'Crear y gestionar notificaciones de brechas.'
+
+access privacy api:
+  title: 'Acceder a API de privacidad'
+  description: 'Acceso a los endpoints REST de privacidad.'

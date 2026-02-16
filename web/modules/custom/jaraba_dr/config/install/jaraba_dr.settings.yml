@@ -1,0 +1,8 @@
+backup_verification_frequency: 'daily'
+backup_retention_days: 30
+failover_mode: 'manual'
+status_page_public: true
+status_page_refresh_seconds: 60
+dr_test_schedule: 'quarterly'
+notification_channels: ['email', 'slack']
+escalation_timeout_minutes: 30

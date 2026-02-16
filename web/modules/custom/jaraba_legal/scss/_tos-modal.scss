@@ -1,0 +1,31 @@
+/**
+ * @file
+ * Estilos del modal de aceptación de ToS.
+ */
+
+.tos-acceptance {
+  h3 {
+    margin-top: 0;
+    color: #333;
+  }
+}
+
+.tos-modal {
+  max-width: 720px;
+  margin: 0 auto;
+
+  &__content {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fafafa;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}

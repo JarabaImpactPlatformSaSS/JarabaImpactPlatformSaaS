@@ -1,0 +1,4 @@
+jaraba_privacy.settings:
+  title: 'Configuración'
+  route_name: jaraba_privacy.settings
+  base_route: jaraba_privacy.settings

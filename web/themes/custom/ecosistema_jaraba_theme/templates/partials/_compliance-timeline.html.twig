@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * _compliance-timeline.html.twig — Timeline vertical de compliance reutilizable.
+ *
+ * PROPOSITO: Mostrar un timeline vertical con pasos y estados para procesos
+ * de compliance (ARCO-POL, offboarding, brechas, DR incidents).
+ *
+ * VARIABLES:
+ * - items: array — Lista de items del timeline, cada uno con:
+ *   - title: string — Titulo del paso
+ *   - description: string (optional) — Descripcion del paso
+ *   - date: string (optional) — Fecha/hora del paso
+ *   - status: string — Estado ('completed', 'current', 'pending', 'error')
+ *   - icon_name: string (optional) — Icono SVG del paso
+ * - title: string (optional) — Titulo del timeline
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} para textos estaticos
+ * - SCSS: var(--ej-*) con fallbacks, color-mix() para transparencias
+ * - Patron BEM: .compliance-timeline, .compliance-timeline__item, etc.
+ * - Mobile-first: Vertical en todas las resoluciones
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
+ */
+#}
+{% set timeline_items = items|default([]) %}
+
+{% if timeline_items|length > 0 %}
+<div class="compliance-timeline">
+  {% if title is defined and title %}
+    <h3 class="compliance-timeline__title">{{ title }}</h3>
+  {% endif %}
+
+  <ol class="compliance-timeline__list">
+    {% for item in timeline_items %}
+      <li class="compliance-timeline__item compliance-timeline__item--{{ item.status|default('pending') }}">
+        <div class="compliance-timeline__marker">
+          {% if item.status|default('pending') == 'completed' %}
+            {{ jaraba_icon('compliance', 'shield-check', { variant: 'duotone', size: '16px' }) }}
+          {% elseif item.status|default('pending') == 'error' %}
+            {{ jaraba_icon('compliance', 'alert-bell', { variant: 'duotone', size: '16px' }) }}
+          {% else %}
+            <span class="compliance-timeline__dot"></span>
+          {% endif %}
+        </div>
+
+        <div class="compliance-timeline__content">
+          <span class="compliance-timeline__item-title">{{ item.title }}</span>
+
+          {% if item.description is defined and item.description %}
+            <p class="compliance-timeline__item-desc">{{ item.description }}</p>
+          {% endif %}
+
+          {% if item.date is defined and item.date %}
+            <time class="compliance-timeline__item-date" datetime="{{ item.date }}">
+              {{ item.date }}
+            </time>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endif %}

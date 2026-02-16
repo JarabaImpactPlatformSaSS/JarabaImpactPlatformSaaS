@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Partial: Alertas de brechas de seguridad.
+ */
+#}
+<div class="breach-alerts">
+  <h3>{{ 'Brechas de Seguridad'|t }}</h3>
+  {% if breach_alerts %}
+    <div class="breach-alerts__list">
+      {% for breach in breach_alerts %}
+        <div class="breach-alerts__item breach-alerts__item--{{ breach.severity }}">
+          <div class="breach-alerts__header">
+            <span class="breach-alerts__severity">{{ breach.severity_label }}</span>
+            <span class="breach-alerts__status">{{ breach.status_label }}</span>
+          </div>
+          <h4 class="breach-alerts__title">{{ breach.title }}</h4>
+          <span class="breach-alerts__deadline">
+            {{ 'Plazo AEPD: @deadline'|t({'@deadline': breach.aepd_deadline_human}) }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="breach-alerts__empty">{{ 'No hay brechas activas.'|t }}</p>
+  {% endif %}
+</div>

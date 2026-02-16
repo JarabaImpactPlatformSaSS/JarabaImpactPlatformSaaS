@@ -1,0 +1,7 @@
+arco_pol_deadline_days: 30
+breach_notification_hours: 72
+dpo_email: ''
+dpo_name: ''
+cookie_banner_position: 'bottom-bar'
+cookie_expiry_days: 365
+enable_cookie_banner: true

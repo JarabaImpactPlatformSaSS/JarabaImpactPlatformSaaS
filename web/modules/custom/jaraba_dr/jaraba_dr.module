@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Modulo Jaraba DR -- Disaster Recovery y continuidad de negocio.
+ *
+ * ESTRUCTURA:
+ * Modulo principal del stack de Disaster Recovery. Proporciona 3 Content
+ * Entities (DrTestResult, DrIncident, BackupVerification), servicios de
+ * verificacion de backups, orquestacion de failover, status page publica,
+ * comunicacion de incidentes y framework de testing DR.
+ *
+ * LOGICA:
+ * - hook_theme(): Registro de templates del modulo.
+ * - Status page publica sin autenticacion.
+ * - Tests DR automatizados con registro de resultados.
+ * - Comunicacion multi-canal de incidentes.
+ *
+ * Plan Implementacion Stack Compliance Legal N1 v1.
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig del modulo de Disaster Recovery.
+ */
+function jaraba_dr_theme(): array {
+  return [
+    'dr_dashboard' => [
+      'variables' => [
+        'backup_status' => NULL,
+        'test_results' => NULL,
+        'active_incidents' => NULL,
+        'failover_status' => NULL,
+        'service_status' => NULL,
+        'metrics' => NULL,
+      ],
+      'template' => 'dr-dashboard',
+    ],
+    'dr_status_page' => [
+      'variables' => [
+        'services' => NULL,
+        'active_incidents' => NULL,
+        'recent_incidents' => NULL,
+        'uptime_metrics' => NULL,
+        'last_updated' => NULL,
+        'refresh_seconds' => 60,
+      ],
+      'template' => 'dr-status-page',
+    ],
+  ];
+}

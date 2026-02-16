@@ -1,0 +1,68 @@
+{#
+/**
+ * @file
+ * _compliance-metric-card.html.twig — Card de metrica KPI de compliance reutilizable.
+ *
+ * PROPOSITO: Mostrar una card con KPI numerico, label, tendencia y estado de compliance.
+ * Usado en dashboards de privacidad, legal, DR y panel unificado.
+ *
+ * VARIABLES:
+ * - label: string — Nombre de la metrica (ej: 'DPA Coverage')
+ * - value: string|int — Valor principal de la metrica (ej: '95%' o 12)
+ * - unit: string (optional) — Unidad de medida (ej: '%', 'dias', 'h')
+ * - status: string (optional) — Estado visual ('ok', 'warning', 'error', 'info')
+ * - trend: string (optional) — Tendencia ('up', 'down', 'stable')
+ * - trend_value: string (optional) — Valor de la tendencia (ej: '+5%')
+ * - icon_category: string (optional) — Categoria del icono (default: 'compliance')
+ * - icon_name: string (optional) — Nombre del icono SVG
+ * - description: string (optional) — Descripcion corta bajo el valor
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} para textos estaticos
+ * - SCSS: var(--ej-*) con fallbacks, color-mix() para transparencias
+ * - Patron BEM: .compliance-metric, .compliance-metric__value, etc.
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
+ */
+#}
+{% set card_status = status|default('info') %}
+
+<div class="compliance-metric compliance-metric--{{ card_status }}">
+  <div class="compliance-metric__header">
+    {% if icon_name is defined and icon_name %}
+      <span class="compliance-metric__icon">
+        {{ jaraba_icon(icon_category|default('compliance'), icon_name, {
+          variant: 'duotone',
+          size: '24px'
+        }) }}
+      </span>
+    {% endif %}
+
+    <span class="compliance-metric__label">{{ label|default('') }}</span>
+  </div>
+
+  <div class="compliance-metric__body">
+    <span class="compliance-metric__value">
+      {{ value|default('—') }}{% if unit is defined and unit %}<small class="compliance-metric__unit">{{ unit }}</small>{% endif %}
+    </span>
+
+    {% if trend is defined and trend %}
+      <span class="compliance-metric__trend compliance-metric__trend--{{ trend }}">
+        {% if trend == 'up' %}
+          &uarr;
+        {% elseif trend == 'down' %}
+          &darr;
+        {% else %}
+          &rarr;
+        {% endif %}
+        {% if trend_value is defined and trend_value %}
+          {{ trend_value }}
+        {% endif %}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if description is defined and description %}
+    <p class="compliance-metric__desc">{{ description }}</p>
+  {% endif %}
+</div>

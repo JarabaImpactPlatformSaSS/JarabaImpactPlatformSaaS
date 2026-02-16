@@ -1,0 +1,87 @@
+/**
+ * @file
+ * Estilos de la pagina de estado publica.
+ */
+
+.jaraba-dr-status-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+
+  .status-page__header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .status-page__updated {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+  }
+
+  .status-page__global-status {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+
+    &--operational {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &--degraded {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+  }
+
+  .status-page__service {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+
+    &--operational .status-page__service-status {
+      color: #16a34a;
+    }
+
+    &--degraded .status-page__service-status {
+      color: #ca8a04;
+    }
+
+    &--outage .status-page__service-status {
+      color: #dc2626;
+    }
+  }
+
+  .status-page__incident {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #e2e8f0;
+
+    &--p1_critical {
+      border-left-color: #dc2626;
+    }
+
+    &--p2_major {
+      border-left-color: #ea580c;
+    }
+
+    &--p3_minor {
+      border-left-color: #ca8a04;
+    }
+
+    &--resolved {
+      border-left-color: #16a34a;
+    }
+  }
+}

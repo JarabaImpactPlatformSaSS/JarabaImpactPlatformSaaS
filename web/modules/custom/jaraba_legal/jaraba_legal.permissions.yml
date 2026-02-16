@@ -1,0 +1,24 @@
+administer legal:
+  title: 'Administrar configuración legal'
+  description: 'Acceso completo a ToS, SLA, AUP, offboarding y canal de denuncias.'
+  restrict access: true
+
+manage service agreements:
+  title: 'Gestionar acuerdos de servicio'
+  description: 'Crear y editar Terms of Service, SLA y AUP.'
+
+view legal dashboard:
+  title: 'Ver panel legal'
+  description: 'Consultar estado de ToS, SLA, violations y offboarding.'
+
+manage offboarding:
+  title: 'Gestionar offboarding'
+  description: 'Procesar solicitudes de baja y exportación de datos.'
+
+manage whistleblower reports:
+  title: 'Gestionar canal de denuncias'
+  description: 'Acceder y gestionar reportes del canal de denuncias.'
+
+access legal api:
+  title: 'Acceder a API legal'
+  description: 'Acceso a los endpoints REST del módulo legal.'

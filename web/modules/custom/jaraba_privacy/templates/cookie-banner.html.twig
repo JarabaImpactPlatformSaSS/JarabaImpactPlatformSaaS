@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * Template del banner de cookies LSSI-CE / ePrivacy.
+ *
+ * Variables disponibles:
+ * - banner_config: Configuración del banner con:
+ *   - enabled: bool
+ *   - position: string (bottom-bar, top-bar, center-modal)
+ *   - expiry_days: int
+ *   - categories: array de categorías de cookies
+ *   - texts: array de textos del banner
+ *
+ * Se inyecta via hook_page_bottom() cuando no hay consentimiento activo.
+ */
+#}
+{% if banner_config.enabled %}
+<div class="jaraba-cookie-banner jaraba-cookie-banner--{{ banner_config.position }}"
+     id="jaraba-cookie-banner"
+     role="dialog"
+     aria-label="{{ banner_config.texts.title }}"
+     data-api-endpoint="/api/v1/cookies/consent"
+     data-expiry-days="{{ banner_config.expiry_days }}">
+
+  <div class="jaraba-cookie-banner__container">
+    <div class="jaraba-cookie-banner__content">
+      <h2 class="jaraba-cookie-banner__title">{{ banner_config.texts.title }}</h2>
+      <p class="jaraba-cookie-banner__description">{{ banner_config.texts.description }}</p>
+    </div>
+
+    {# Panel de categorías (oculto por defecto, se muestra al personalizar) #}
+    <div class="jaraba-cookie-banner__categories" id="jaraba-cookie-categories" hidden>
+      {% for key, category in banner_config.categories %}
+        <div class="jaraba-cookie-banner__category">
+          <label class="jaraba-cookie-banner__category-label">
+            <input type="checkbox"
+                   name="cookie_{{ key }}"
+                   value="1"
+                   {% if category.required %}checked disabled{% endif %}
+                   class="jaraba-cookie-banner__checkbox"
+                   data-category="{{ key }}">
+            <span class="jaraba-cookie-banner__category-name">{{ category.label }}</span>
+            {% if category.required %}
+              <span class="jaraba-cookie-banner__category-required">{{ 'Obligatoria'|t }}</span>
+            {% endif %}
+          </label>
+          <p class="jaraba-cookie-banner__category-description">{{ category.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Botones de acción #}
+    <div class="jaraba-cookie-banner__actions">
+      <button type="button"
+              class="jaraba-cookie-banner__btn jaraba-cookie-banner__btn--accept-all"
+              data-action="accept-all">
+        {{ banner_config.texts.accept_all }}
+      </button>
+      <button type="button"
+              class="jaraba-cookie-banner__btn jaraba-cookie-banner__btn--reject-all"
+              data-action="reject-all">
+        {{ banner_config.texts.reject_all }}
+      </button>
+      <button type="button"
+              class="jaraba-cookie-banner__btn jaraba-cookie-banner__btn--customize"
+              data-action="customize">
+        {{ banner_config.texts.customize }}
+      </button>
+      <button type="button"
+              class="jaraba-cookie-banner__btn jaraba-cookie-banner__btn--save"
+              data-action="save"
+              hidden>
+        {{ banner_config.texts.save }}
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}

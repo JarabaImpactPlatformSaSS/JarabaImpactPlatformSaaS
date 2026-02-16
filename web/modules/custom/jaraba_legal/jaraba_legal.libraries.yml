@@ -1,0 +1,30 @@
+legal-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-legal.css: {}
+  js:
+    js/legal-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+
+tos-acceptance:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-legal.css: {}
+  js:
+    js/tos-acceptance.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+whistleblower:
+  version: 1.x
+  js:
+    js/whistleblower.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.dialog.ajax

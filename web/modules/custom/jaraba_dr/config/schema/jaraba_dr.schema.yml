@@ -1,0 +1,31 @@
+jaraba_dr.settings:
+  type: config_object
+  label: 'Configuracion de Disaster Recovery'
+  mapping:
+    backup_verification_frequency:
+      type: string
+      label: 'Frecuencia de verificacion de backups'
+    backup_retention_days:
+      type: integer
+      label: 'Dias de retencion de backups'
+    failover_mode:
+      type: string
+      label: 'Modo de failover (manual/automatic)'
+    status_page_public:
+      type: boolean
+      label: 'Status page publica'
+    status_page_refresh_seconds:
+      type: integer
+      label: 'Segundos de refresco de status page'
+    dr_test_schedule:
+      type: string
+      label: 'Periodicidad de tests DR'
+    notification_channels:
+      type: sequence
+      label: 'Canales de notificacion'
+      sequence:
+        type: string
+        label: 'Canal'
+    escalation_timeout_minutes:
+      type: integer
+      label: 'Timeout de escalado en minutos'

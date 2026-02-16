@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Template para el dashboard de Disaster Recovery.
+ *
+ * Variables:
+ * - backup_status: Estado de los backups.
+ * - test_results: Resultados de tests DR recientes.
+ * - active_incidents: Incidentes activos.
+ * - failover_status: Estado del failover.
+ * - service_status: Estado de los servicios.
+ * - metrics: Metricas consolidadas de DR.
+ */
+#}
+<div class="jaraba-dr-dashboard">
+  <div class="dr-dashboard__header">
+    <h1>{{ 'Disaster Recovery'|t }}</h1>
+  </div>
+
+  <div class="dr-dashboard__grid">
+    {# Estado de servicios #}
+    <div class="dr-dashboard__section dr-dashboard__services">
+      {% include '@jaraba_dr/partials/_dr-status-card.html.twig' %}
+    </div>
+
+    {# Estado de backups #}
+    <div class="dr-dashboard__section dr-dashboard__backups">
+      {% include '@jaraba_dr/partials/_backup-status.html.twig' %}
+    </div>
+
+    {# Historial de tests #}
+    <div class="dr-dashboard__section dr-dashboard__tests">
+      {% include '@jaraba_dr/partials/_dr-test-history.html.twig' %}
+    </div>
+
+    {# Timeline de incidentes #}
+    <div class="dr-dashboard__section dr-dashboard__incidents">
+      {% include '@jaraba_dr/partials/_incident-timeline.html.twig' %}
+    </div>
+  </div>
+</div>

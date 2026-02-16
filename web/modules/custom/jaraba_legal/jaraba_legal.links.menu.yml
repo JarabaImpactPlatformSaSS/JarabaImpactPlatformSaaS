@@ -1,0 +1,20 @@
+jaraba_legal.admin:
+  title: 'Legal'
+  description: 'Dashboard legal: ToS, SLA, AUP, offboarding, denuncias y límites de uso.'
+  route_name: jaraba_legal.dashboard
+  parent: system.admin_content
+  weight: 56
+
+jaraba_legal.admin.structure:
+  title: 'Legal'
+  description: 'Gestionar entidades legales: acuerdos de servicio, SLA, AUP y offboarding.'
+  route_name: entity.service_agreement.collection
+  parent: system.admin_structure
+  weight: 56
+
+jaraba_legal.config:
+  title: 'Configuración Legal'
+  description: 'Configurar parámetros legales: ToS, SLA, offboarding y canal de denuncias.'
+  route_name: jaraba_legal.settings
+  parent: system.admin_config_system
+  weight: 61

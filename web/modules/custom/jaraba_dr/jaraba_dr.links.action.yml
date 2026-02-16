@@ -1,0 +1,17 @@
+jaraba_dr.dr_test_result.add:
+  title: 'Registrar test DR'
+  route_name: entity.dr_test_result.add_form
+  appears_on:
+    - entity.dr_test_result.collection
+
+jaraba_dr.dr_incident.add:
+  title: 'Crear incidente DR'
+  route_name: entity.dr_incident.add_form
+  appears_on:
+    - entity.dr_incident.collection
+
+jaraba_dr.backup_verification.add:
+  title: 'Registrar verificacion de backup'
+  route_name: entity.backup_verification.add_form
+  appears_on:
+    - entity.backup_verification.collection

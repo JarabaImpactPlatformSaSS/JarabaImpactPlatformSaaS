@@ -1,0 +1,52 @@
+services:
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  logger.channel.jaraba_dr:
+    parent: logger.channel_base
+    arguments: ['jaraba_dr']
+
+  # ===========================================
+  # CORE SERVICES (FASE 9)
+  # ===========================================
+
+  jaraba_dr.backup_verifier:
+    class: Drupal\jaraba_dr\Service\BackupVerifierService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@file_system'
+      - '@logger.channel.jaraba_dr'
+
+  jaraba_dr.failover_orchestrator:
+    class: Drupal\jaraba_dr\Service\FailoverOrchestratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@state'
+      - '@logger.channel.jaraba_dr'
+
+  jaraba_dr.status_page_manager:
+    class: Drupal\jaraba_dr\Service\StatusPageManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@state'
+      - '@logger.channel.jaraba_dr'
+
+  jaraba_dr.incident_communicator:
+    class: Drupal\jaraba_dr\Service\IncidentCommunicatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@plugin.manager.mail'
+      - '@queue'
+      - '@logger.channel.jaraba_dr'
+
+  jaraba_dr.test_runner:
+    class: Drupal\jaraba_dr\Service\DrTestRunnerService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_dr'

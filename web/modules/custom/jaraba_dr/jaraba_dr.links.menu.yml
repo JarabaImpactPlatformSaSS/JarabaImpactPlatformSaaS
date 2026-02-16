@@ -1,0 +1,20 @@
+jaraba_dr.admin:
+  title: 'Disaster Recovery'
+  description: 'Dashboard de DR: backups, failover, incidentes y tests.'
+  route_name: jaraba_dr.dashboard
+  parent: system.admin_content
+  weight: 60
+
+jaraba_dr.admin.structure:
+  title: 'Disaster Recovery'
+  description: 'Gestionar entidades de DR: tests, incidentes y verificaciones de backup.'
+  route_name: entity.dr_test_result.collection
+  parent: system.admin_structure
+  weight: 60
+
+jaraba_dr.config:
+  title: 'Configuracion de Disaster Recovery'
+  description: 'Configurar parametros DR: backups, failover, status page y notificaciones.'
+  route_name: jaraba_dr.settings
+  parent: system.admin_config_system
+  weight: 65

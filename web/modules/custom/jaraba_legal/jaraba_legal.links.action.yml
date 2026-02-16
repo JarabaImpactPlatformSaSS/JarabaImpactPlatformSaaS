@@ -1,0 +1,17 @@
+jaraba_legal.service_agreement.add:
+  title: 'Añadir acuerdo de servicio'
+  route_name: entity.service_agreement.add_form
+  appears_on:
+    - entity.service_agreement.collection
+
+jaraba_legal.offboarding_request.add:
+  title: 'Crear solicitud de offboarding'
+  route_name: entity.offboarding_request.add_form
+  appears_on:
+    - entity.offboarding_request.collection
+
+jaraba_legal.whistleblower_report.add:
+  title: 'Crear reporte de denuncia'
+  route_name: entity.whistleblower_report.add_form
+  appears_on:
+    - entity.whistleblower_report.collection

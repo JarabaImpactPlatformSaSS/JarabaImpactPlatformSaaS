@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Partial: Solicitudes ARCO-POL activas.
+ */
+#}
+<div class="arco-pol-requests">
+  <h3>{{ 'Solicitudes ARCO-POL'|t }}</h3>
+  {% if arco_pol_requests %}
+    <div class="arco-pol-requests__list">
+      {% for request in arco_pol_requests %}
+        <div class="arco-pol-requests__item arco-pol-requests__item--{{ request.status }}">
+          <div class="arco-pol-requests__header">
+            <span class="arco-pol-requests__type">{{ request.right_type_label }}</span>
+            <span class="arco-pol-requests__status">{{ request.status_label }}</span>
+          </div>
+          <span class="arco-pol-requests__requester">{{ request.requester_name }}</span>
+          <span class="arco-pol-requests__deadline">
+            {{ 'Plazo: @days días'|t({'@days': request.days_remaining}) }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="arco-pol-requests__empty">{{ 'No hay solicitudes activas.'|t }}</p>
+  {% endif %}
+</div>

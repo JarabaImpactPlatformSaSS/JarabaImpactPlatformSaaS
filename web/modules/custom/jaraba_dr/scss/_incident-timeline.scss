@@ -1,0 +1,95 @@
+/**
+ * @file
+ * Estilos del timeline de incidentes.
+ */
+
+.incident-timeline {
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .incident-timeline__list {
+    position: relative;
+    padding-left: 1.5rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+  }
+
+  .incident-timeline__item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1.75rem;
+      top: 0.5rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    &--p1_critical::before {
+      background: #dc2626;
+    }
+
+    &--p2_major::before {
+      background: #ea580c;
+    }
+
+    &--p3_minor::before {
+      background: #ca8a04;
+    }
+
+    &--p4_informational::before {
+      background: #3b82f6;
+    }
+  }
+
+  .incident-timeline__header {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .incident-timeline__severity,
+  .incident-timeline__status {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    background: #f1f5f9;
+  }
+
+  .incident-timeline__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+
+  .incident-timeline__description {
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .incident-timeline__time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .incident-timeline__empty {
+    color: #94a3b8;
+    font-style: italic;
+  }
+}

@@ -1,0 +1,10 @@
+name: Jaraba Legal
+type: module
+description: 'Gestión legal del servicio SaaS multi-tenant: Terms of Service con versionado y re-aceptación, SLA con cálculo de créditos, AUP con enforcement, offboarding con exportación de datos, canal de denuncias cifrado y control de límites de uso.'
+core_version_requirement: ^11
+php: 8.4
+package: Jaraba Compliance
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:views

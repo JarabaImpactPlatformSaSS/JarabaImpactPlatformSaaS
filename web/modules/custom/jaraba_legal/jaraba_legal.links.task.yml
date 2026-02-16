@@ -1,0 +1,4 @@
+jaraba_legal.settings:
+  title: 'Configuración'
+  route_name: jaraba_legal.settings
+  base_route: jaraba_legal.settings

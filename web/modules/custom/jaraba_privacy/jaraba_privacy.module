@@ -1,0 +1,299 @@
+<?php
+
+/**
+ * @file
+ * Módulo Jaraba Privacy — Compliance RGPD/LOPD-GDD multi-tenant.
+ *
+ * ESTRUCTURA:
+ * Módulo principal del stack de privacidad. Proporciona 5 Content Entities
+ * (DPA, Políticas, Cookies, RAT, ARCO-POL), servicios de gestión y hooks
+ * de automatización para cumplimiento RGPD.
+ *
+ * LÓGICA:
+ * - hook_user_login(): Verifica DPA vigente del tenant.
+ * - hook_entity_insert(): Automatizaciones post-creación de entidades.
+ * - hook_cron(): Verificación de plazos ARCO-POL y brechas.
+ * - hook_theme(): Registro de templates del módulo.
+ * - hook_page_bottom(): Inyección del cookie banner.
+ *
+ * Plan Implementación Stack Compliance Legal N1 v1.
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ *
+ * Registra los templates Twig del módulo de privacidad.
+ */
+function jaraba_privacy_theme(): array {
+  return [
+    'privacy_dashboard' => [
+      'variables' => [
+        'dpa_status' => NULL,
+        'cookie_stats' => NULL,
+        'arco_pol_requests' => NULL,
+        'breach_alerts' => NULL,
+        'rat_overview' => NULL,
+        'metrics' => NULL,
+      ],
+      'template' => 'privacy-dashboard',
+    ],
+    'jaraba_privacy_cookie_banner' => [
+      'variables' => [
+        'banner_config' => NULL,
+      ],
+      'template' => 'cookie-banner',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_user_login().
+ *
+ * Verifica si el tenant del usuario tiene un DPA activo firmado.
+ * Si no tiene DPA, se registra un warning en el log para que el
+ * middleware de DPA pueda redirigir al modal de firma.
+ */
+function jaraba_privacy_user_login($account): void {
+  try {
+    $membershipLoader = \Drupal::service('group.membership_loader');
+    $memberships = $membershipLoader->loadByUser($account);
+
+    if (empty($memberships)) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_privacy\Service\DpaManagerService $dpaManager */
+    $dpaManager = \Drupal::service('jaraba_privacy.dpa_manager');
+    $tenantId = (int) reset($memberships)->getGroup()->id();
+
+    if (!$dpaManager->hasDpa($tenantId)) {
+      \Drupal::logger('jaraba_privacy')->warning(
+        'Tenant @tenant no tiene DPA activo. Usuario @user debe firmar antes de acceder.',
+        [
+          '@tenant' => $tenantId,
+          '@user' => $account->getDisplayName(),
+        ]
+      );
+
+      // Almacenar en sesión para que el middleware pueda redirigir.
+      \Drupal::request()->getSession()->set('jaraba_privacy_dpa_required', TRUE);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_privacy')->error(
+      'Error en hook_user_login: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Automatizaciones post-creación de entidades de privacidad:
+ * - DPA firmado → log de auditoría.
+ * - Solicitud ARCO-POL → verificación de plazo.
+ * - Brecha reportada → notificación DPO (ya gestionada por el servicio).
+ */
+function jaraba_privacy_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $entityTypeId = $entity->getEntityTypeId();
+
+  if ($entityTypeId === 'dpa_agreement') {
+    $status = $entity->get('status')->value ?? '';
+    if ($status === 'active') {
+      \Drupal::logger('jaraba_privacy')->info(
+        'DPA v@version firmado para tenant @tenant.',
+        [
+          '@version' => $entity->get('version')->value,
+          '@tenant' => $entity->get('tenant_id')->target_id ?? 'N/A',
+        ]
+      );
+    }
+  }
+
+  if ($entityTypeId === 'data_rights_request') {
+    \Drupal::logger('jaraba_privacy')->info(
+      'Nueva solicitud ARCO-POL tipo @type recibida. Plazo: @deadline.',
+      [
+        '@type' => $entity->get('right_type')->value ?? 'N/A',
+        '@deadline' => $entity->get('deadline')->value
+          ? date('d/m/Y', (int) $entity->get('deadline')->value)
+          : 'N/A',
+      ]
+    );
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta las verificaciones periódicas de privacidad:
+ * 1. Plazos ARCO-POL: alertas a T-5d y T-2d, auto-expire.
+ * 2. Brechas: verificación de plazo 72h para notificación AEPD.
+ */
+function jaraba_privacy_cron(): void {
+  try {
+    // 1. Verificar plazos de solicitudes ARCO-POL.
+    /** @var \Drupal\jaraba_privacy\Service\DataRightsHandlerService $dataRightsHandler */
+    $dataRightsHandler = \Drupal::service('jaraba_privacy.data_rights_handler');
+    $alerts = $dataRightsHandler->checkDeadlines();
+
+    if ($alerts > 0) {
+      \Drupal::logger('jaraba_privacy')->info(
+        'Cron: @count alertas de plazo ARCO-POL generadas.',
+        ['@count' => $alerts]
+      );
+    }
+
+    // 2. Verificar plazos de notificación de brechas (72h AEPD).
+    $breaches = \Drupal::state()->get('jaraba_privacy.active_breaches', []);
+    $now = time();
+
+    foreach ($breaches as $breach) {
+      if ($breach['status'] === 'detected' || $breach['status'] === 'assessing') {
+        $hoursRemaining = ($breach['aepd_deadline'] - $now) / 3600;
+
+        if ($hoursRemaining <= 12 && $hoursRemaining > 0) {
+          \Drupal::logger('jaraba_privacy')->critical(
+            'ALERTA: Brecha @id tiene @hours horas para notificar a AEPD.',
+            [
+              '@id' => $breach['id'],
+              '@hours' => round($hoursRemaining, 1),
+            ]
+          );
+        }
+
+        if ($hoursRemaining <= 0) {
+          \Drupal::logger('jaraba_privacy')->emergency(
+            'PLAZO EXCEDIDO: Brecha @id ha superado las 72h de plazo AEPD.',
+            ['@id' => $breach['id']]
+          );
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_privacy')->error(
+      'Error en hook_cron: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_page_bottom().
+ *
+ * Inyecta el banner de cookies en todas las páginas si está habilitado.
+ * El banner se carga solo si no hay consentimiento activo para el usuario/sesión.
+ */
+function jaraba_privacy_page_bottom(array &$page_bottom): void {
+  try {
+    if (!\Drupal::moduleHandler()->moduleExists('jaraba_privacy')) {
+      return;
+    }
+
+    $config = \Drupal::config('jaraba_privacy.settings');
+    if (!$config->get('enable_cookie_banner')) {
+      return;
+    }
+
+    // No mostrar en rutas de admin.
+    $routeMatch = \Drupal::routeMatch();
+    $routeName = $routeMatch->getRouteName() ?? '';
+    if (str_starts_with($routeName, 'system.') || str_starts_with($routeName, 'entity.')) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_privacy\Service\CookieConsentManagerService $cookieManager */
+    $cookieManager = \Drupal::service('jaraba_privacy.cookie_consent_manager');
+    $currentUser = \Drupal::currentUser();
+    $userId = $currentUser->isAuthenticated() ? (int) $currentUser->id() : NULL;
+    $sessionId = \Drupal::request()->getSession()?->getId();
+
+    $existingConsent = $cookieManager->getCurrentConsent($userId, $sessionId);
+
+    if ($existingConsent) {
+      return;
+    }
+
+    $bannerConfig = $cookieManager->getBannerConfig(0);
+
+    $page_bottom['jaraba_privacy_cookie_banner'] = [
+      '#theme' => 'jaraba_privacy_cookie_banner',
+      '#banner_config' => $bannerConfig,
+      '#attached' => [
+        'library' => [
+          'jaraba_privacy/cookie-banner',
+        ],
+      ],
+      '#cache' => [
+        'contexts' => ['user', 'session'],
+        'tags' => ['config:jaraba_privacy.settings'],
+      ],
+    ];
+  }
+  catch (\Exception $e) {
+    // Silenciar errores del banner para no romper la página.
+    \Drupal::logger('jaraba_privacy')->error(
+      'Error al renderizar cookie banner: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Define las plantillas de email del módulo de privacidad.
+ */
+function jaraba_privacy_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'breach_detected':
+      $message['subject'] = $params['subject'] ?? 'Brecha de seguridad detectada';
+      $breach = $params['breach'] ?? [];
+      $message['body'][] = t('Se ha detectado una brecha de seguridad:');
+      $message['body'][] = t('Título: @title', ['@title' => $breach['title'] ?? '']);
+      $message['body'][] = t('Severidad: @severity', ['@severity' => $breach['severity'] ?? '']);
+      $message['body'][] = t('Descripción: @desc', ['@desc' => $breach['description'] ?? '']);
+      $message['body'][] = t('Plazo AEPD: @deadline', [
+        '@deadline' => isset($breach['aepd_deadline']) ? date('d/m/Y H:i', $breach['aepd_deadline']) : 'N/A',
+      ]);
+      break;
+
+    case 'arco_pol_new_request':
+      $message['subject'] = $params['subject'] ?? 'Nueva solicitud ARCO-POL';
+      $request = $params['request'] ?? NULL;
+      $message['body'][] = t('Se ha recibido una nueva solicitud de ejercicio de derechos.');
+      if ($request) {
+        $message['body'][] = t('Tipo: @type', ['@type' => $request->get('right_type')->value ?? '']);
+        $message['body'][] = t('Solicitante: @name', ['@name' => $request->get('requester_name')->value ?? '']);
+        $message['body'][] = t('Plazo: @deadline', [
+          '@deadline' => $request->get('deadline')->value
+            ? date('d/m/Y', (int) $request->get('deadline')->value)
+            : 'N/A',
+        ]);
+      }
+      break;
+
+    case 'arco_pol_resolved':
+      $message['subject'] = $params['subject'] ?? 'Solicitud ARCO-POL procesada';
+      $message['body'][] = t('Su solicitud de ejercicio de derechos ha sido procesada.');
+      $message['body'][] = t('Puede consultar el resultado accediendo a la plataforma.');
+      break;
+
+    case 'arco_pol_deadline_warning':
+      $message['subject'] = $params['subject'] ?? 'Alerta de plazo ARCO-POL';
+      $days = $params['days_remaining'] ?? 0;
+      $message['body'][] = t('Una solicitud ARCO-POL tiene @days días restantes para su resolución.', [
+        '@days' => $days,
+      ]);
+      if ($days === 0) {
+        $message['body'][] = t('ATENCIÓN: El plazo ha expirado.');
+      }
+      break;
+  }
+}
