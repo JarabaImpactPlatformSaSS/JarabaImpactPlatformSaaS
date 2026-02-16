@@ -108,7 +108,7 @@ class WhatsAppApiServiceTest extends TestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function testVerifyWebhookSignatureValid(): void {
     $payload = '{"entry":[{"changes":[]}]}';
-    $secret = 'test_app_secret_xyz789';
+    $secret = 'test_app_secret_xyz789'; // test fixture, not a real credential
     $expectedHash = hash_hmac('sha256', $payload, $secret);
     $signature = 'sha256=' . $expectedHash;
 

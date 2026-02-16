@@ -334,7 +334,7 @@ class TenantWebhooksForm extends FormBase
         $secret = $state->get('tenant_webhook_secret.' . $tenantId);
 
         if (!$secret) {
-            $secret = 'whsec_' . Crypt::randomBytesBase64(24);
+            $secret = 'whsec_' . Crypt::randomBytesBase64(24); // generated random, not hardcoded
             $state->set('tenant_webhook_secret.' . $tenantId, $secret);
         }
 

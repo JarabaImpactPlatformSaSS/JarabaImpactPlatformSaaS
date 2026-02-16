@@ -11,8 +11,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 // Verificar que estamos en Drupal.
 if (!defined('DRUPAL_ROOT')) {
-    echo "Este script debe ejecutarse con Drush.\n";
-    exit(1);
+    throw new \RuntimeException('Este script debe ejecutarse con Drush.');
 }
 
 $entityTypeManager = \Drupal::entityTypeManager();

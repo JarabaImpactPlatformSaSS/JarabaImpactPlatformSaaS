@@ -3,8 +3,31 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-02-15
-**Versión:** 47.0.0 (Legal Intelligence Hub — Plan Implementacion + 3 Docs Especificacion)
+**Última actualización:** 2026-02-16
+**Versión:** 49.0.0 (Specs Madurez N1/N2/N3 — 21 Documentos Técnicos 183-203 + Backup Separation)
+
+> **📋 SPECS MADUREZ N1/N2/N3 — 21 DOCUMENTOS TÉCNICOS 183-203 + BACKUP SEPARATION** (2026-02-16)
+> - **21 documentos técnicos** de especificación organizados en 3 niveles de madurez plataforma
+> - **N1 Foundation** (docs 183-185): GDPR DPA Templates, Legal Terms SaaS, Disaster Recovery Plan
+> - **N2 Growth Ready** (docs 186-193): AI Agents, Native Mobile, Multi-Agent, Predictive Analytics, Multi-Region, STO/PIIL, European Funding, Connector SDK
+> - **N3 Enterprise Class** (docs 194-200): SOC 2, ISO 27001, ENS, HA Multi-Region, SLA Management, SSO SAML/SCIM, Data Governance
+> - **3 Auditorías readiness:** N1 (NOT READY, 12 gaps), N2 (15.6%), N3 (10.4%)
+> - **Plan:** [20260216-Plan_Implementacion_Stack_Cumplimiento_Fiscal_v1.md](./implementacion/20260216-Plan_Implementacion_Stack_Cumplimiento_Fiscal_v1.md)
+> - **Backup separation:** `~/backups/daily/` + `~/backups/pre_deploy/` (GoodSync). Migración 78 backups
+> - **Aprendizaje:** [2026-02-16_specs_madurez_backup_separation.md](./tecnicos/aprendizajes/2026-02-16_specs_madurez_backup_separation.md)
+
+> **📦 TENANT EXPORT + DAILY BACKUP — PORTABILIDAD GDPR Art. 20** (2026-02-16)
+> - **Módulo:** `jaraba_tenant_export` — Exportación self-service datos tenant + backup automatizado diario
+> - **1 Content Entity:** TenantExportRecord (17 campos, 4 DB indexes, status: queued/collecting/packaging/completed/failed/expired)
+> - **2 Services:** TenantDataCollectorService (6 grupos: core, analytics, knowledge, operational, vertical, files), TenantExportService (ZIP async, rate limiting, StreamedResponse, SHA-256, audit)
+> - **2 QueueWorkers:** TenantExportWorker (cron 55s, 3 max retries) + TenantExportCleanupWorker (cron 30s, expires 48h)
+> - **6 API REST endpoints:** /api/v1/tenant-export/* (request, status, download, cancel, history, sections)
+> - **Frontend:** /tenant/export Zero-Region page + 6 partials Twig + JS dashboard con polling progreso
+> - **SCSS:** BEM, @use, color-mix(), Outfit font + 6 SVG icons (export, archive, schedule — mono + duotone)
+> - **Daily Backup:** daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente, Slack alertas)
+> - **Drush:** tenant-export:backup, tenant-export:cleanup, tenant-export:status
+> - **Tests:** 8 suites (3 Unit + 3 Kernel + 2 Functional)
+> - **Plan:** [20260216-Plan_Implementacion_Tenant_Export_v1.md](./implementacion/20260216-Plan_Implementacion_Tenant_Export_v1.md)
 
 > **🎯 LEGAL INTELLIGENCE HUB — PLAN DE IMPLEMENTACION (Docs 178/178A/178B)** (2026-02-15)
 > - **Plan de Implementacion:** 20 secciones, 10 fases (Fase 0-9), 530-685 horas / 23,850-30,825 EUR
@@ -927,6 +950,46 @@
 | 181 | Platform E-Factura B2B (Crea y Crece) | `jaraba_einvoice_b2b` | P2 Q1 2027 | ⬜ Ready for Dev |
 | 182 | Gap Analysis Madurez Documental Niveles 0-3 | — | — | ✅ Análisis |
 
+### 7.4e Niveles de Madurez Plataforma (Docs 183-203)
+
+21 documentos de especificación técnica organizados por nivel de madurez + 3 auditorías de readiness.
+
+**Nivel 1 — Foundation/Compliance (docs 183-185):**
+
+| Doc | Título | Área | Estado |
+|-----|--------|------|--------|
+| 183 | GDPR DPA Templates — Plantillas legales multi-tenant RGPD/LOPD-GDD | Legal/Compliance | ⬜ Spec |
+| 184 | Legal Terms SaaS — TdS, SLA, AUP, Licencia, Offboarding | Legal | ⬜ Spec |
+| 185 | Disaster Recovery Plan — Continuidad de Negocio y DR | DR/BCP | ⬜ Spec |
+| 201 | Auditoría N1 Claude Code Readiness | Audit | ❌ NOT READY (12 gaps) |
+
+**Nivel 2 — Growth Ready (docs 186-193):**
+
+| Doc | Título | Área | Estado |
+|-----|--------|------|--------|
+| 186 | AI Autonomous Agents — Ejecución autónoma con guardrails | AI | ⬜ Spec |
+| 187 | Native Mobile App — iOS/Android con Capacitor | Mobile | ⬜ Spec |
+| 188 | Multi-Agent Orchestration — Memoria compartida | AI | ⬜ Spec |
+| 189 | Predictive Analytics — Churn, Lead Scoring, Forecasting | Analytics | ⬜ Spec |
+| 190 | Multi-Region Operations — Multi-país, multi-currency | Infrastructure | ⬜ Spec |
+| 191 | STO/PIIL Integration — Servicio Telemático Orientación | Integrations | ⬜ Spec |
+| 192 | European Funding Module — Fondos europeos, subvenciones | Funding | ⬜ Spec |
+| 193 | Connector SDK — SDK conectores, certificación, marketplace | Platform | ⬜ Spec |
+| 202 | Auditoría N2 Claude Code Readiness | Audit | 🟡 15.6% ready |
+
+**Nivel 3 — Enterprise Class (docs 194-200):**
+
+| Doc | Título | Área | Estado |
+|-----|--------|------|--------|
+| 194 | SOC 2 Type II Readiness — Evidencia automatizada | Security | ⬜ Spec |
+| 195 | ISO 27001 SGSI — Sistema Gestión Seguridad Información | Security | ⬜ Spec |
+| 196 | ENS Compliance — Esquema Nacional Seguridad (RD 311/2022) | Security | ⬜ Spec |
+| 197 | HA Multi-Region — 99.99% Galera Cluster + zero-downtime | Infrastructure | ⬜ Spec |
+| 198 | SLA Management — Gestión SLAs, status page, postmortems | Operations | ⬜ Spec |
+| 199 | SSO SAML/SCIM — SAML 2.0, SCIM 2.0, MFA | Security/Identity | ⬜ Spec |
+| 200 | Data Governance — Clasificación, retención, lineage, KMS | Data | ⬜ Spec |
+| 203 | Auditoría N3 Claude Code Readiness | Audit | 🟡 10.4% ready |
+
 ### 7.5 Platform Features (Docs 100-157)
 
 | Rango | Área |
@@ -1027,8 +1090,16 @@
 | [2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_paridad_empleabilidad_7_gaps.md) | 🎯 **Emprendimiento Paridad Empleabilidad 7 Gaps** ⭐ — 7 aprendizajes clave: dimensiones HealthScore difieren por vertical, reglas JourneyProgression mapean 1:1 con condiciones vertical-specific, email sequences patron identico solo cambian constantes, CopilotAgent extiende BaseAgent con modes/keywords/prompts vertical-specific, puentes cross-vertical son salientes (direccion importa), CRM sync replica limpiamente a jaraba_copilot_v2, upgrade triggers necesitan tipos + fire() en FeatureGateService. 10 archivos nuevos, 6 modificados, 5 modulos | 2026-02-15 |
 
 | [2026-02-15_verifactu_stack_fiscal_compliance.md](./tecnicos/aprendizajes/2026-02-15_verifactu_stack_fiscal_compliance.md) | 📋 **Stack Fiscal VeriFactu + Facturae + E-Factura** ⭐ — 5 docs especificación (178-182), 3 módulos (jaraba_verifactu P0, jaraba_facturae P1, jaraba_einvoice_b2b P2), 11 entidades, 19 servicios, 66 endpoints, 72 tests, inversión 720-956h. Componentes reutilizables ~70%. Deadline legal 2027. Gap Analysis 4 niveles madurez | 2026-02-15 |
+| [2026-02-13_admin_center_premium_f104_7_fases.md](./tecnicos/aprendizajes/2026-02-13_admin_center_premium_f104_7_fases.md) | 🏢 **Admin Center Premium — 7 Fases** ⭐ — Dashboard SaaS shell sidebar+topbar, 8 páginas, dark mode, WCAG 2.1 AA. 5 servicios dedicados, 30+ API endpoints, 10 templates Zero Region, slide-panel CRUD. Optional DI pattern (~NULL). Aprendizaje #76 | 2026-02-13 |
+| [2026-02-14_bloques_verticales_diseno_55_templates.md](./tecnicos/aprendizajes/2026-02-14_bloques_verticales_diseno_55_templates.md) | 🎨 **Bloques Verticales 55 Templates** ⭐ — 55 templates Twig (5 verticales × 11 tipos) con HTML semántico. SCSS _pb-sections.scss 570 LOC. 5 esquemas color --pb-accent + color-mix(). CSS 47KB. 2 reglas PB-VERTICAL-001/002. Aprendizaje #78 | 2026-02-14 |
+| [2026-02-15_emprendimiento_gaps_9_world_class.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_gaps_9_world_class.md) | 🏆 **Emprendimiento 9 Gaps Clase Mundial** ⭐ — Design token Outfit, FreemiumVerticalLimit, 6 MJML, CrossSellService, re-engagement cron, upgrade triggers, FundingMatchingEngine canvas context, cross-vertical bidireccional, onboarding wizard. 33 archivos, 7 módulos. Aprendizaje #79 | 2026-02-15 |
+| [2026-02-15_emprendimiento_elevacion_6_fases.md](./tecnicos/aprendizajes/2026-02-15_emprendimiento_elevacion_6_fases.md) | 🚀 **Emprendimiento Elevación 6 Fases** ⭐ — Page template zero-region, SCSS compliance color-mix, copilot FAB, Drupal.behaviors once(), preprocess hooks body classes, mobile-first responsive. Aprendizaje #80 | 2026-02-15 |
+| [2026-02-15_empleabilidad_elevacion_10_fases.md](./tecnicos/aprendizajes/2026-02-15_empleabilidad_elevacion_10_fases.md) | 💼 **Empleabilidad Elevación 10 Fases** ⭐ — FeatureGateService, UpgradeTriggerService, EmailSequenceService 5 MJML, CRM pipeline sync, CrossVerticalBridgeService 4 bridges, JourneyProgressionService 7 reglas, HealthScoreService 5 dimensiones. 34+ archivos, 6 módulos. Aprendizaje #81 | 2026-02-15 |
+| [2026-02-15_andalucia_ei_elevacion_12_fases.md](./tecnicos/aprendizajes/2026-02-15_andalucia_ei_elevacion_12_fases.md) | 🌿 **Andalucía +ei Elevación 12 Fases** ⭐ — Tercer vertical clase mundial. FeatureGateService, 6 MJML SEQ_AEI, CrossVerticalBridgeService 4 bridges, JourneyProgression 8 reglas, HealthScore 5 dimensiones, i18n TranslatableMarkup, A/B ExperimentService, conversion tracking. 43 archivos, 5 módulos. Aprendizaje #82 | 2026-02-15 |
+| [2026-02-16_tenant_export_backup_automatizado.md](./tecnicos/aprendizajes/2026-02-16_tenant_export_backup_automatizado.md) | 📦 **Tenant Export + Backup Automatizado** ⭐ — Graceful degradation per entity type, Queue API section-by-section, rate limiting cache-backed, StreamedResponse ZIP, daily-backup.yml cron independiente, manifest.json portabilidad, verify-backups dual patterns. 8 reglas EXPORT-001 a 006, BACKUP-001/002. Aprendizaje #83 | 2026-02-16 |
+| [2026-02-16_specs_madurez_backup_separation.md](./tecnicos/aprendizajes/2026-02-16_specs_madurez_backup_separation.md) | 📋 **Specs Madurez N1/N2/N3 + Backup Separation** ⭐ — 21 docs técnicos (183-203) en 3 niveles. Separación ~/backups/daily/ + ~/backups/pre_deploy/ para GoodSync. Migración one-time 78 backups via GitHub Actions. Patrón documentación por niveles madurez. 2 reglas BACKUP-003, DOC-NIVEL-001. Aprendizaje #84 | 2026-02-16 |
 
-**Total aprendizajes:** 79
+**Total aprendizajes:** 84
 
 ---
 
@@ -1084,22 +1155,22 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Total documentos técnicos** | 301+ (296 base + 5 docs compliance fiscal 178-182) |
-| **Documentos de implementación** | 37 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar) |
+| **Total documentos técnicos** | 322+ (296 base + 5 docs fiscal 178-182 + 21 docs madurez 183-203) |
+| **Documentos de implementación** | 39 (29 base + 4 Clase Mundial F9-F12 + Empleabilidad Elevacion + Emprendimiento 6 Fases + Emprendimiento v2 Paridad + Navegacion Avatar + Tenant Export + Stack Fiscal) |
 | **Bloques Plan Maestro v3** | 7 (A-G) |
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 78 |
+| **Aprendizajes documentados** | 84 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
 | **Landing pages verticales** | 5 (empleo, talento, emprender, comercio, instituciones) |
 | **Plantillas disponibles** | 4 |
-| **Módulos custom** | 36 (9 Marketing AI + 10 Platform Services v3 + 3 Módulos 20260201) |
-| **Módulos con package.json** | 17 (compilación Dart Sass estandarizada) |
+| **Módulos custom** | 37 (9 Marketing AI + 10 Platform Services v3 + 3 Módulos 20260201 + jaraba_tenant_export) |
+| **Módulos con package.json** | 18 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
-| **Page templates Twig** | 17 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding) |
+| **Page templates Twig** | 18 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding, tenant-export) |
 | **Bloques Page Builder** | 67 (45 base + 22 premium) |
 | **Docs Page Builder** | 20 (160-179) |
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
@@ -1152,6 +1223,8 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-16 | **49.0.0** | 📋 **Specs Madurez N1/N2/N3 + Backup Separation:** 21 documentos técnicos (docs 183-203) organizados en 3 niveles de madurez. N1 Foundation (GDPR DPA, Legal Terms, DR Plan — audit NOT READY). N2 Growth Ready (AI Agents, Mobile, Multi-Agent, Predictive Analytics, Multi-Region, STO/PIIL, EU Funding, Connector SDK — audit 15.6%). N3 Enterprise (SOC 2, ISO 27001, ENS, HA 99.99%, SLA, SSO/SCIM, Data Governance — audit 10.4%). Plan fiscal v1 creado. Separación backups daily/pre_deploy para GoodSync (78 migrados). Sección 7.4e nueva. 6 aprendizajes faltantes añadidos a §7.6. Directrices v33.0.0, Arquitectura v33.0.0. 84 aprendizajes |
+| 2026-02-16 | **48.0.0** | 📦 **Tenant Export + Daily Backup — Portabilidad GDPR Art. 20:** Módulo `jaraba_tenant_export` implementado. TenantExportRecord entity (17 campos, 4 índices DB). TenantDataCollectorService (6 grupos datos). TenantExportService (ZIP async Queue API, rate limiting, StreamedResponse SHA-256, audit logging). 2 QueueWorkers (export + cleanup). 6 API REST endpoints /api/v1/tenant-export/*. Página frontend /tenant/export Zero-Region + 6 partials + JS dashboard polling. SCSS BEM + 6 SVG icons (export, archive, schedule). daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente, Slack alertas). verify-backups.yml actualizado para db_daily_*. 3 Drush commands. 8 test suites. Plan implementación + Aprendizaje #83. Directrices v32.0.0, Arquitectura v32.0.0. 83 aprendizajes |
 | 2026-02-14 | **35.0.0** | 🎨 **Bloques Verticales Diseñados — 55 Templates + SCSS:** 55 templates Twig reescritos (5 verticales × 11 tipos: hero, content, features, stats, pricing, testimonials, faq, cta, gallery, map, social_proof) con HTML semántico único por tipo. SCSS `_pb-sections.scss` (570 LOC): base `.pb-section` + 5 esquemas color via `--pb-accent` + `color-mix()` + 11 layouts responsive + `prefers-reduced-motion`. `renderTemplatePreview()` mejorado (Twig real + fallback). CSS compilado 47KB (257 reglas `.pb-section`). 2 reglas nuevas (PB-VERTICAL-001, PB-VERTICAL-002). Aprendizaje #78. Directrices v25.0.0, Arquitectura v25.0.0. 78 aprendizajes |
 | 2026-02-13 | **30.0.0** | 📋 **Actualización Documental Post-Auditoría Integral:** Plan Remediación v1 creado (906 líneas, 16 secciones TOC, catálogo 65 hallazgos, 3 fases 8 semanas 250-350h, correspondencia directrices, checklist frontend 12 sub-secciones). Aprendizaje #73 (11 lecciones Situación→Aprendizaje→Regla). Directrices actualizadas a v20.0.0 (sección 4.7 con 3 sub-secciones seguridad/rendimiento/consistencia + sección 5.8.3 tabla 11 reglas AUDIT-*). Arquitectura actualizada a v19.0.0 (madurez 5.0→4.5, nueva sección 12 Estado Auditoría con métricas + evaluación por área). Workflow auditoría actualizado (8→15 disciplinas, 7 verificaciones obligatorias CAUTION, 5 gaps G8-G12). 73 aprendizajes |
 | 2026-02-13 | **29.0.0** | 🏁 **Sprint Diferido 22/22 TODOs — 5 Fases Completadas:** Backlog diferido del Catálogo v1.2.0 resuelto al 100%. FASE 1 Quick Wins (pricing table, course ratings, canvas save/publish, player review). FASE 2 UX Sprint 5 (header SaaS, i18n selector, dynamic fields Alpine.js, a11y slide-panel). FASE 3 Knowledge Base CRUD (FAQs accordion, policies cards, documents file-type). FASE 4 Infraestructura (agent re-exec, BrowserTestBase migration, webhook EventDispatcher, Course field_category). FASE 5 Integraciones (token verification V2.1 4 plataformas, batch dispatch sin entidad, commerce stock dinámico, sameAs configurable). ~25 archivos editados, ~8 creados. 6 directrices aplicadas. Plan v2.0.0 completado. Aprendizaje #72. Directrices v21.0.0, Maestro v20.0.0. 72 aprendizajes |
