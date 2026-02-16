@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_intelligence\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Psr\Log\LoggerInterface;
@@ -85,6 +86,7 @@ class LegalCitationService {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected TenantContextService $tenantContext,
     protected LoggerInterface $logger,
+    protected JarabaLexFeatureGateService $featureGate,
   ) {}
 
   /**
@@ -603,6 +605,18 @@ class LegalCitationService {
    *   - error: string|null — Mensaje de error si aplica.
    */
   public function attachToExpediente(int $resolutionId, int $expedienteId, string $format, int $userId): array {
+    // Verificar limite del plan para inserciones de citas.
+    $gateResult = $this->featureGate->check($userId, 'citation_insert');
+    if (!$gateResult->isAllowed()) {
+      return [
+        'success' => FALSE,
+        'citation_id' => 0,
+        'citation_text' => '',
+        'created' => FALSE,
+        'error' => $gateResult->getUpgradeMessage(),
+      ];
+    }
+
     // Validar formato.
     if (!in_array($format, self::VALID_FORMATS, TRUE)) {
       return [

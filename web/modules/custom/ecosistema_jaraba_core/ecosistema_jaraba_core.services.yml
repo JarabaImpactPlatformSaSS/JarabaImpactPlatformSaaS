@@ -679,7 +679,52 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
-  # EMPRENDIMIENTO EXPERIMENT SERVICE (Plan Elevación Emprendimiento v1 — Fase 6)
+  # JARABALEX FEATURE GATE (Plan Elevación JarabaLex v1 — Fase 4)
+  # ===========================================
+
+  # Feature gating por plan para el vertical JarabaLex.
+  # Verifica limites de uso diario (searches_per_month, max_alerts,
+  # max_bookmarks, citation_insert, digest_access, api_access)
+  # consultando FreemiumVerticalLimit y tabla jarabalex_feature_usage.
+  ecosistema_jaraba_core.jarabalex_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevación JarabaLex v1 — Fase 6: Email Sequences.
+  ecosistema_jaraba_core.jarabalex_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaLexEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevación JarabaLex v1 — Fase 10: Health Scores.
+  ecosistema_jaraba_core.jarabalex_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaLexHealthScoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevación JarabaLex v1 — Fase 9: Journey Progression.
+  ecosistema_jaraba_core.jarabalex_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaLexJourneyProgressionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevación JarabaLex v1 — Fase 8: Cross-Vertical Bridges.
+  ecosistema_jaraba_core.jarabalex_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\JarabaLexCrossVerticalBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # EMPRENDIMIENTO EXPERIMENT SERVICE (Plan Elevación Emprendimiento v1 — Fase 4)
   # ===========================================
 
   # Servicio de experimentacion A/B para el vertical Emprendimiento.

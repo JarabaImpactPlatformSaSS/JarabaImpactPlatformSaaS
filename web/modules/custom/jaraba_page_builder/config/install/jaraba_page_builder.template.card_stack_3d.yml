@@ -59,7 +59,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/card-stack-3d.png'
 preview_data:
   title: "Lo que dicen nuestros clientes"
   subtitle: "Historias de éxito que nos inspiran"

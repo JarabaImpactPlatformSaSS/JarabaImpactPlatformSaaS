@@ -44,6 +44,8 @@ function jaraba_legal_intelligence_preprocess_html(array &$variables): void {
   $routeClasses = [
     'jaraba_legal.search' => 'page--legal-search',
     'jaraba_legal.resolution' => 'page--legal-resolution',
+    'jaraba_legal.cite' => 'page--legal-cite',
+    'jaraba_legal.similar' => 'page--legal-similar',
     'jaraba_legal.public_summary' => 'page--legal-public',
     'jaraba_legal_intelligence.settings' => 'page--legal-admin',
     'jaraba_legal.dashboard' => 'page--legal-dashboard',
@@ -54,6 +56,10 @@ function jaraba_legal_intelligence_preprocess_html(array &$variables): void {
     $variables['attributes']['class'][] = $routeClasses[$route_name];
     $variables['attributes']['class'][] = 'page--legal';
     $variables['attributes']['class'][] = 'page--clean-layout';
+    // Clases base para el template zero-region page--legal.html.twig.
+    $variables['attributes']['class'][] = 'page-legal';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
   }
 }
 
@@ -213,6 +219,124 @@ function _jaraba_legal_intelligence_cron_cleanup(int $time): void {
   }
   catch (\Exception $e) {
     \Drupal::logger('jaraba_legal_intelligence')->error('Cron cleanup failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+// =========================================================================
+// CRM Integration — Plan Elevacion JarabaLex v1 — Fase 7.
+// =========================================================================
+
+/**
+ * Ensures a CRM contact exists for a legal professional user.
+ *
+ * Uses keyValue store for user->contact ID mapping. Creates a new
+ * CRM contact if none exists, or links to existing by email search.
+ *
+ * @return int|null
+ *   CRM contact ID or NULL if creation failed.
+ */
+function _jaraba_legal_intelligence_ensure_crm_contact(int $userId): ?int {
+  $kvStore = \Drupal::keyValue('jaraba_legal_intelligence.crm_sync');
+  $contactKey = 'user_contact_' . $userId;
+  $existingContactId = $kvStore->get($contactKey);
+
+  if ($existingContactId) {
+    return (int) $existingContactId;
+  }
+
+  try {
+    if (!\Drupal::hasService('jaraba_crm.contact')) {
+      return NULL;
+    }
+
+    /** @var \Drupal\jaraba_crm\Service\ContactService $contactService */
+    $contactService = \Drupal::service('jaraba_crm.contact');
+    $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+    if (!$user) {
+      return NULL;
+    }
+
+    $email = $user->getEmail();
+    if ($email) {
+      $existing = $contactService->search($email, 1);
+      if (!empty($existing)) {
+        $contact = reset($existing);
+        $kvStore->set($contactKey, $contact->id());
+        return (int) $contact->id();
+      }
+    }
+
+    $displayName = $user->getDisplayName() ?? '';
+    $nameParts = explode(' ', $displayName, 2);
+    $contact = $contactService->create([
+      'first_name' => $nameParts[0] ?? $displayName,
+      'last_name' => $nameParts[1] ?? '',
+      'email' => $email,
+      'source' => 'legal_intelligence',
+      'tags' => ['legal_professional'],
+    ]);
+
+    $kvStore->set($contactKey, $contact->id());
+    return (int) $contact->id();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->warning(
+      'Failed to ensure CRM contact for user @uid: @error',
+      ['@uid' => $userId, '@error' => $e->getMessage()]
+    );
+    return NULL;
+  }
+}
+
+/**
+ * Syncs a legal user event to CRM pipeline.
+ *
+ * Maps legal intelligence events to CRM pipeline stages:
+ * - first_search: lead -> mql
+ * - alert_created: mql -> sql
+ * - citation_inserted: sql -> demo
+ * - plan_upgraded: demo -> closed_won
+ *
+ * @param int $userId
+ *   User ID.
+ * @param string $event
+ *   Event type (first_search, alert_created, citation_inserted, plan_upgraded).
+ */
+function _jaraba_legal_intelligence_sync_crm_event(int $userId, string $event): void {
+  $contactId = _jaraba_legal_intelligence_ensure_crm_contact($userId);
+  if (!$contactId) {
+    return;
+  }
+
+  $stageMap = [
+    'first_search' => 'mql',
+    'alert_created' => 'sql',
+    'citation_inserted' => 'demo',
+    'plan_upgraded' => 'closed_won',
+  ];
+
+  $stage = $stageMap[$event] ?? NULL;
+  if (!$stage) {
+    return;
+  }
+
+  try {
+    if (!\Drupal::hasService('jaraba_crm.pipeline')) {
+      return;
+    }
+    /** @var \Drupal\jaraba_crm\Service\PipelineService $pipelineService */
+    $pipelineService = \Drupal::service('jaraba_crm.pipeline');
+    $pipelineService->moveToStage($contactId, $stage, [
+      'source' => 'legal_intelligence',
+      'event' => $event,
+      'timestamp' => \Drupal::time()->getRequestTime(),
+    ]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->warning(
+      'CRM sync failed for user @uid event @event: @error',
+      ['@uid' => $userId, '@event' => $event, '@error' => $e->getMessage()]
+    );
   }
 }
 

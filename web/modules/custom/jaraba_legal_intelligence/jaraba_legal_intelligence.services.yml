@@ -14,6 +14,7 @@ services:
       - '@http_client'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
   # === INGESTION: Orquestacion de ingesta de resoluciones ===
   jaraba_legal_intelligence.ingestion:
@@ -45,6 +46,7 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
   # === CITATIONS: Generacion e insercion de citas formateadas ===
   jaraba_legal_intelligence.citations:
@@ -53,6 +55,7 @@ services:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
   # === DIGEST: Digest semanal personalizado ===
   jaraba_legal_intelligence.digest:
@@ -64,6 +67,7 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
   # === COPILOT BRIDGE: Puente entre Legal Intelligence Hub y Copilot ===
   jaraba_legal_intelligence.copilot_bridge:
@@ -73,6 +77,18 @@ services:
       - '@jaraba_legal_intelligence.citations'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@ecosistema_jaraba_core.jarabalex_feature_gate'
+
+  # === COPILOT AGENT: Agente dedicado JarabaLex (6 modos) ===
+  jaraba_legal_intelligence.legal_copilot_agent:
+    class: Drupal\jaraba_legal_intelligence\Agent\LegalCopilotAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@ecosistema_jaraba_core.unified_prompt_builder'
 
   # === MERGE & RANK: Fusion de resultados nacionales + UE ===
   jaraba_legal_intelligence.merge_rank:

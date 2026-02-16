@@ -46,6 +46,8 @@ class AvatarNavigationService {
     'service_provider' => 'Proveedor',
     'student' => 'Estudiante',
     'mentor' => 'Mentor',
+    // Plan Elevacion JarabaLex v1 — Fase 12.
+    'legal_professional' => 'Profesional Juridico',
     'tenant_admin' => 'Administrador',
     'admin' => 'Administrador',
     'anonymous' => 'Visitante',
@@ -276,6 +278,12 @@ class AvatarNavigationService {
         ['id' => 'dashboard', 'label' => 'Dashboard', 'route' => 'jaraba_mentoring.mentor_dashboard', 'icon_category' => 'analytics', 'icon_name' => 'dashboard'],
         ['id' => 'mentors', 'label' => 'Mentores', 'route' => 'jaraba_mentoring.mentor_catalog', 'icon_category' => 'ui', 'icon_name' => 'users'],
         ['id' => 'training', 'label' => 'Formación', 'route' => 'jaraba_lms.my_learning', 'icon_category' => 'ui', 'icon_name' => 'book'],
+      ],
+      'legal_professional' => [
+        ['id' => 'search', 'label' => 'Búsqueda', 'route' => 'jaraba_legal.search', 'icon_category' => 'legal', 'icon_name' => 'search-legal'],
+        ['id' => 'dashboard', 'label' => 'Dashboard', 'route' => 'jaraba_legal.dashboard', 'icon_category' => 'analytics', 'icon_name' => 'dashboard'],
+        ['id' => 'alerts', 'label' => 'Alertas', 'route' => 'jaraba_legal.dashboard', 'icon_category' => 'legal', 'icon_name' => 'alert-bell'],
+        ['id' => 'eu_sources', 'label' => 'Fuentes UE', 'route' => 'jaraba_legal.search', 'icon_category' => 'legal', 'icon_name' => 'eu-flag'],
       ],
       'tenant_admin' => [
         ['id' => 'dashboard', 'label' => 'Dashboard', 'route' => 'ecosistema_jaraba_core.tenant.dashboard', 'icon_category' => 'analytics', 'icon_name' => 'dashboard'],

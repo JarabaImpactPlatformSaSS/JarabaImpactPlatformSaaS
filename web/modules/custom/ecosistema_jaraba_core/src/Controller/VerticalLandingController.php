@@ -471,6 +471,99 @@ class VerticalLandingController extends ControllerBase {
     ]);
   }
 
+  /**
+   * Landing JarabaLex — Inteligencia Legal con IA.
+   *
+   * Ruta: /jarabalex
+   * Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
+   */
+  public function jarabalex(): array {
+    return $this->buildLanding([
+      'key' => 'jarabalex',
+      'color' => 'corporate',
+      'hero' => [
+        'headline' => $this->t('Inteligencia legal con IA al alcance de todos'),
+        'subheadline' => $this->t('Jurisprudencia nacional y europea, búsqueda semántica, alertas inteligentes y citaciones automatizadas. Sin intermediarios.'),
+        'icon' => ['category' => 'legal', 'name' => 'search-legal'],
+        'cta' => [
+          'text' => $this->t('Haz tu diagnóstico legal gratuito'),
+          'url' => '/jarabalex/diagnostico-legal',
+        ],
+        'cta_secondary' => [
+          'text' => $this->t('Ya tengo cuenta'),
+          'url' => Url::fromRoute('user.login')->toString(),
+        ],
+      ],
+      'pain_points' => [
+        ['icon' => ['category' => 'ui', 'name' => 'search'], 'text' => $this->t('Búsqueda manual en bases de datos desconectadas')],
+        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Alertas normativas que llegan tarde o nunca')],
+        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Citaciones que consumen horas de formateo')],
+        ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Coste prohibitivo de herramientas premium (3.000–8.000 €/año)')],
+      ],
+      'steps' => [
+        ['title' => $this->t('Busca'), 'description' => $this->t('Búsqueda semántica con IA en 8 fuentes oficiales (CENDOJ, BOE, EUR-Lex...)')],
+        ['title' => $this->t('Analiza'), 'description' => $this->t('Pipeline NLP extrae entidades, clasifica por jurisdicción y resume automáticamente')],
+        ['title' => $this->t('Cita'), 'description' => $this->t('Citaciones automáticas en 4 formatos jurídicos listos para usar')],
+      ],
+      'features' => [
+        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Búsqueda Semántica'), 'description' => $this->t('Encuentra resoluciones por significado, no solo por palabras clave. Embeddings 3072D.')],
+        ['icon' => ['category' => 'legal', 'name' => 'search-legal'], 'title' => $this->t('8 Fuentes Oficiales'), 'description' => $this->t('CENDOJ, BOE, DGT, TEAC, EUR-Lex, CURIA, HUDOC y EDPB integrados.')],
+        ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Alertas Inteligentes'), 'description' => $this->t('10 tipos de alerta: derogaciones, nueva doctrina, cambios normativos, plazos.')],
+        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Citaciones en 4 Formatos'), 'description' => $this->t('Formal, resumida, bibliográfica y nota al pie. Inserción directa en expedientes.')],
+        ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Digest Semanal'), 'description' => $this->t('Resumen personalizado cada lunes con las resoluciones más relevantes para ti.')],
+        ['icon' => ['category' => 'analytics', 'name' => 'chart-line'], 'title' => $this->t('Grafo de Citaciones'), 'description' => $this->t('Visualización interactiva de relaciones entre resoluciones (D3.js).')],
+      ],
+      'social_proof' => [
+        'testimonials' => [
+          ['quote' => $this->t('Antes tardaba horas buscando jurisprudencia. Ahora encuentro resoluciones relevantes en segundos con la búsqueda semántica.'), 'author' => 'Elena', 'role' => $this->t('abogada mercantilista en Madrid')],
+          ['quote' => $this->t('Las alertas de cambios normativos me han salvado de presentar recursos basados en doctrina superada.'), 'author' => 'Roberto', 'role' => $this->t('asesor fiscal en Sevilla')],
+        ],
+        'metrics' => [
+          ['value' => '8', 'label' => $this->t('fuentes oficiales integradas')],
+          ['value' => '< 3s', 'label' => $this->t('tiempo medio de búsqueda')],
+        ],
+      ],
+      'lead_magnet' => [
+        'title' => $this->t('Diagnóstico Legal Gratuito'),
+        'description' => $this->t('Descubre en 2 minutos las áreas de riesgo legal más relevantes para tu actividad profesional.'),
+        'url' => '/jarabalex/diagnostico-legal',
+        'cta_text' => $this->t('Hacer diagnóstico'),
+        'icon' => ['category' => 'ai', 'name' => 'screening'],
+      ],
+      'pricing' => [
+        'headline' => $this->t('Planes para profesionales jurídicos'),
+        'from_price' => '0',
+        'currency' => 'EUR',
+        'period' => $this->t('mes'),
+        'cta_text' => $this->t('Ver todos los planes'),
+        'cta_url' => '/planes',
+        'features_preview' => [
+          $this->t('10 búsquedas/mes gratis'),
+          $this->t('1 alerta inteligente'),
+          $this->t('Acceso a CENDOJ y BOE'),
+          $this->t('Copilot legal incluido'),
+        ],
+      ],
+      'faq' => [
+        ['question' => $this->t('¿De dónde proviene la información legal?'), 'answer' => $this->t('De fuentes oficiales públicas: CENDOJ, BOE, DGT, TEAC (España) y EUR-Lex, CURIA, HUDOC, EDPB (Europa). Todo bajo licencia de datos abiertos (Ley 37/2007).')],
+        ['question' => $this->t('¿Es fiable la búsqueda con IA?'), 'answer' => $this->t('Sí. Cada resultado incluye enlaces directos a la fuente oficial. La IA busca por significado semántico, pero siempre puedes verificar en la fuente original.')],
+        ['question' => $this->t('¿Cómo funcionan las alertas?'), 'answer' => $this->t('Configuras criterios (jurisdicción, tema, órgano emisor) y recibes notificaciones cuando se publica doctrina relevante o cambia normativa aplicable.')],
+        ['question' => $this->t('¿Puedo insertar citaciones en mis documentos?'), 'answer' => $this->t('Sí, en plan Pro. Genera citaciones en 4 formatos (formal, resumida, bibliográfica, nota al pie) con un clic.')],
+        ['question' => $this->t('¿Cuánto cuesta comparado con Aranzadi o vLex?'), 'answer' => $this->t('Desde 0€/mes (Free) hasta 99€/mes (Pro). Frente a 3.000–8.000€/año de herramientas tradicionales, accedes a las mismas fuentes oficiales por una fracción.')],
+        ['question' => $this->t('¿Incluye normativa europea?'), 'answer' => $this->t('Sí. EUR-Lex (legislación UE), CURIA (TJUE), HUDOC (TEDH) y EDPB (protección de datos) están integrados con detección de primacía.')],
+        ['question' => $this->t('¿Qué es el Diagnóstico Legal Gratuito?'), 'answer' => $this->t('Un cuestionario de 5 preguntas que la IA analiza para identificar tus áreas de riesgo legal y recomendarte fuentes y alertas personalizadas.')],
+        ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 10 búsquedas/mes, 1 alerta y acceso a 2 fuentes. Sin tarjeta de crédito.')],
+      ],
+      'final_cta' => [
+        'headline' => $this->t('Empieza a investigar con inteligencia'),
+        'cta' => [
+          'text' => $this->t('Crea tu cuenta gratuita'),
+          'url' => Url::fromRoute('user.register')->toString(),
+        ],
+      ],
+    ]);
+  }
+
   // =========================================================================
   // LANDING PAGES LEGACY — Refactorizadas al formato de 9 secciones
   // =========================================================================

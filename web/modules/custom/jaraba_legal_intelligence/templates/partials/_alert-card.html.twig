@@ -40,6 +40,9 @@
       </button>
       <button class="btn btn--sm btn--ghost btn--danger"
               data-alert-delete="{{ alert.id|default(0) }}"
+              data-confirm-modal="true"
+              data-confirm-title="{{ 'Delete alert'|t }}"
+              data-confirm-message="{{ 'Are you sure you want to delete this alert? This action cannot be undone.'|t }}"
               aria-label="{{ 'Delete alert'|t }}">
         {% trans %}Delete{% endtrans %}
       </button>

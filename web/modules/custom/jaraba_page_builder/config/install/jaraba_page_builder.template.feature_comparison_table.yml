@@ -63,7 +63,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/feature-comparison-table.png'
 preview_data:
   title: "Elige el plan perfecto para ti"
   subtitle: "Todas las funciones que necesitas para hacer crecer tu negocio"

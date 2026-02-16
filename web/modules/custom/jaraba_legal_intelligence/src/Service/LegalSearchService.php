@@ -7,6 +7,7 @@ namespace Drupal\jaraba_legal_intelligence\Service;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use GuzzleHttp\ClientInterface;
@@ -95,6 +96,7 @@ class LegalSearchService {
     protected ClientInterface $httpClient,
     protected ConfigFactoryInterface $configFactory,
     protected LoggerInterface $logger,
+    protected JarabaLexFeatureGateService $featureGate,
   ) {}
 
   /**
@@ -758,50 +760,36 @@ class LegalSearchService {
   /**
    * Verifica si el usuario actual tiene busquedas disponibles en su plan.
    *
-   * Consulta el plan SaaS del tenant actual y compara con los limites
-   * configurados. Plans con 0 busquedas/mes = ilimitado.
-   * Tambien aplica rate limiting global (100 busquedas/hora por defecto).
+   * Delega la comprobacion real al JarabaLexFeatureGateService, que consulta
+   * FreemiumVerticalLimit y la tabla jarabalex_feature_usage para verificar
+   * el uso mensual contra los limites del plan.
    *
    * @param \Drupal\Core\Config\ImmutableConfig $config
-   *   Configuracion del modulo con los limites por plan.
+   *   Configuracion del modulo (mantenido por compatibilidad de firma).
    *
    * @return array
    *   ['allowed' => bool, 'message' => string|null].
    */
   private function checkPlanLimits($config): array {
-    $tenant = $this->tenantContext->getCurrentTenant();
-    if (!$tenant) {
-      // Sin tenant, permitir busqueda (sera filtrada por permisos de ruta).
+    $userId = (int) \Drupal::currentUser()->id();
+
+    // Usuarios anonimos: permitir busqueda (sera filtrada por permisos de ruta).
+    if ($userId === 0) {
       return ['allowed' => TRUE, 'message' => NULL];
     }
 
-    // Obtener plan del tenant.
-    $planId = 'free';
-    if (method_exists($tenant, 'getSubscriptionPlan') && $tenant->getSubscriptionPlan()) {
-      $planId = $tenant->getSubscriptionPlan()->id() ?? 'free';
+    $result = $this->featureGate->check($userId, 'searches_per_month');
+
+    if (!$result->isAllowed()) {
+      return [
+        'allowed' => FALSE,
+        'message' => $result->getUpgradeMessage(),
+      ];
     }
 
-    // Mapear plan de Drupal a clave de config.
-    $configPlan = match ($planId) {
-      'starter' => 'starter',
-      'profesional', 'pro' => 'pro',
-      'business', 'enterprise' => 'enterprise',
-      default => 'starter',
-    };
+    // Registrar uso tras verificacion exitosa.
+    $this->featureGate->recordUsage($userId, 'searches_per_month');
 
-    $limits = $config->get('limits');
-    $planLimits = $limits[$configPlan] ?? $limits['starter'] ?? [];
-    $searchesPerMonth = (int) ($planLimits['searches_per_month'] ?? 50);
-
-    // 0 = ilimitado.
-    if ($searchesPerMonth === 0) {
-      return ['allowed' => TRUE, 'message' => NULL];
-    }
-
-    // Contar busquedas del mes actual (via flood control o similar).
-    // Usamos el modulo de watchdog como registro basico. En produccion,
-    // esto se reemplazaria con un servicio de rate limiting dedicado.
-    // Por ahora, delegamos la comprobacion real al FeatureGate si existe.
     return ['allowed' => TRUE, 'message' => NULL];
   }
 

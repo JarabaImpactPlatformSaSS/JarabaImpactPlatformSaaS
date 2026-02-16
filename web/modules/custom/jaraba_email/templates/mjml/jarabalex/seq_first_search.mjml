@@ -1,0 +1,62 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#1E3A5F" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .source-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; background-color: #F5F3EF; color: #1E3A5F; font-size: 12px; font-weight: bold; margin: 2px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#1E3A5F" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#C8A96E" font-size="24px" font-weight="bold">
+          {{ site_name }} &mdash; JarabaLex
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#1E3A5F" padding-bottom="8px">
+          Tu primera b&uacute;squeda legal
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has completado tu primera b&uacute;squeda en JarabaLex: <strong>&laquo;{{ search_query }}&raquo;</strong>. Encontramos <strong>{{ result_count }} resoluciones</strong> relevantes.</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#1E3A5F" padding-top="16px">
+          Saca m&aacute;s partido a tus b&uacute;squedas:
+        </mj-text>
+        <mj-text>
+          <p>&bull; <strong>Filtros facetados:</strong> Filtra por jurisdicci&oacute;n, &oacute;rgano emisor, fecha y tipo de resoluci&oacute;n.</p>
+          <p>&bull; <strong>Resoluciones similares:</strong> Desde cada resultado, descubre sentencias relacionadas.</p>
+          <p>&bull; <strong>Citas automatizadas:</strong> Inserta citas formateadas directamente en tus expedientes.</p>
+        </mj-text>
+        <mj-button href="{{ search_url }}" align="center" padding="24px 0">
+          Continuar buscando
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

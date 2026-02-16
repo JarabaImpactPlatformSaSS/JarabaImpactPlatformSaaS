@@ -181,6 +181,8 @@ class FeatureAccessService {
       'page_builder_analytics' => 'Page Builder Analytics',
       // P1-02: Credentials add-ons.
       'credentials_advanced' => 'Credentials Avanzado (Stacks + Portabilidad)',
+      // Plan Elevación JarabaLex v1 — Fase 4.
+      'jaraba_legal_intelligence' => 'JarabaLex Inteligencia Legal',
     ];
 
     $activeAddons = $this->getActiveAddons($tenantId);

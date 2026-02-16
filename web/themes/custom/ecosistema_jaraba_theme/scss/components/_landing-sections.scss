@@ -971,6 +971,33 @@
   }
 }
 
+// — JarabaLex (Inteligencia Legal) —
+.vertical-landing--jarabalex {
+  .landing-hero__gradient {
+    background: linear-gradient(135deg, #1e3a5f 0%, #152c47 40%, #0f1f33 100%);
+  }
+
+  .landing-pain-point {
+    border-left-color: var(--ej-legal-accent, #c8a96e);
+  }
+
+  .landing-step__number {
+    background: var(--ej-legal-primary, #1e3a5f);
+  }
+
+  .landing-testimonial {
+    border-left-color: var(--ej-legal-accent, #c8a96e);
+  }
+
+  .landing-lead-magnet {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f1f33 100%);
+  }
+
+  .landing-final-cta {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f1f33 100%);
+  }
+}
+
 // =============================================
 // REDUCED MOTION
 // =============================================

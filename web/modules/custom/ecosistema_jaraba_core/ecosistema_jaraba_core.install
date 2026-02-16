@@ -1568,3 +1568,57 @@ function ecosistema_jaraba_core_update_9016(): string {
 
   return 'Created emprendimiento_feature_usage table.';
 }
+
+/**
+ * Crea la tabla jarabalex_feature_usage para feature gating del vertical JarabaLex.
+ */
+function ecosistema_jaraba_core_update_9017(): string {
+  $database = \Drupal::database();
+
+  if ($database->schema()->tableExists('jarabalex_feature_usage')) {
+    return 'Table jarabalex_feature_usage already exists.';
+  }
+
+  $database->schema()->createTable('jarabalex_feature_usage', [
+    'description' => 'Tracking de uso diario de features del vertical JarabaLex.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'feature_key' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ],
+      'usage_date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+      ],
+      'usage_count' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+      'feature_date' => ['feature_key', 'usage_date'],
+    ],
+  ]);
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'Tabla jarabalex_feature_usage creada para feature gating del vertical JarabaLex.'
+  );
+
+  return 'Created jarabalex_feature_usage table.';
+}

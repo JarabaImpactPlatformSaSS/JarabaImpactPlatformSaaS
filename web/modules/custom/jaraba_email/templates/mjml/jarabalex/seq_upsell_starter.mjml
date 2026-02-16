@@ -1,0 +1,73 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#C8A96E" color="#1E3A5F" font-size="16px" border-radius="6px" inner-padding="12px 28px" font-weight="bold" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .feature-check { color: #2D6A4F; font-weight: bold; }
+      .feature-x { color: #9B2335; }
+      .plan-box { background-color: #F5F3EF; border: 2px solid #C8A96E; border-radius: 8px; padding: 16px; text-align: center; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#1E3A5F" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#C8A96E" font-size="24px" font-weight="bold">
+          {{ site_name }} &mdash; JarabaLex
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#1E3A5F" padding-bottom="8px">
+          Desbloquea todo el potencial de JarabaLex
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has realizado <strong>{{ total_searches }} b&uacute;squedas</strong> este mes y guardado <strong>{{ bookmark_count }} resoluciones</strong>. Tu uso demuestra que JarabaLex es valioso para tu pr&aacute;ctica.</p>
+          <p>Con el plan <strong>Starter</strong> eliminas los l&iacute;mites y accedes a funcionalidades avanzadas:</p>
+        </mj-text>
+        <mj-text padding-top="8px">
+          <p><span class="feature-check">&check;</span> B&uacute;squedas ilimitadas en 8 fuentes jur&iacute;dicas</p>
+          <p><span class="feature-check">&check;</span> Alertas jur&iacute;dicas ilimitadas con notificaci&oacute;n en tiempo real</p>
+          <p><span class="feature-check">&check;</span> Inserci&oacute;n autom&aacute;tica de citas en expedientes</p>
+          <p><span class="feature-check">&check;</span> Digest semanal personalizado</p>
+          <p><span class="feature-check">&check;</span> Resoluciones similares y grafo de citas</p>
+        </mj-text>
+        <mj-text padding-top="16px">
+          <div class="plan-box">
+            <strong>Plan Starter</strong><br/>
+            {{ starter_price }} /mes
+          </div>
+        </mj-text>
+        <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
+          Actualizar a Starter
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          Sin permanencia. Cancela cuando quieras.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

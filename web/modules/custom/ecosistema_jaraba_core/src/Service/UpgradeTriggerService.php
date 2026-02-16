@@ -53,6 +53,12 @@ class UpgradeTriggerService
         'mentor_matched' => 0.35,
         'experiment_success' => 0.40,
         'funding_eligible' => 0.45,
+        // Plan Elevación JarabaLex v1 — Fase 4.
+        'search_limit_reached' => 0.40,
+        'alert_limit_reached' => 0.30,
+        'citation_blocked' => 0.35,
+        'digest_blocked' => 0.25,
+        'api_blocked' => 0.15,
     ];
 
     /**
@@ -176,7 +182,12 @@ class UpgradeTriggerService
         // Obtener limite freemium si aplica.
         $freemiumLimit = NULL;
         $featureKey = $context['feature_key'] ?? '';
-        if ($featureKey && in_array($type, ['limit_reached', 'feature_blocked'])) {
+        $triggerTypesWithLimits = [
+            'limit_reached', 'feature_blocked',
+            'search_limit_reached', 'alert_limit_reached',
+            'citation_blocked', 'digest_blocked', 'api_blocked',
+        ];
+        if ($featureKey && in_array($type, $triggerTypesWithLimits)) {
             $freemiumLimit = $this->getVerticalLimit($verticalId, $planId, $featureKey);
         }
 
@@ -350,6 +361,49 @@ class UpgradeTriggerService
                     ]),
                 ];
 
+            // Plan Elevación JarabaLex v1 — Fase 5.
+            case 'search_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 0);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de busquedas legales'),
+                    'message' => $this->t('Has realizado @limit busquedas juridicas este mes. Con el plan @plan tendras busquedas ilimitadas en CENDOJ, BOE, DGT y fuentes europeas.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'alert_limit_reached':
+                return [
+                    'title' => $this->t('Limite de alertas juridicas alcanzado'),
+                    'message' => $this->t('Has alcanzado el maximo de alertas activas. Con el plan @plan podras configurar alertas ilimitadas y recibir notificaciones en tiempo real.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'citation_blocked':
+                return [
+                    'title' => $this->t('Insercion de citas no disponible'),
+                    'message' => $this->t('La insercion automatica de citas legales en expedientes esta disponible desde el plan @plan. Incluye 4 formatos: formal, resumida, bibliografica y nota al pie.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'digest_blocked':
+                return [
+                    'title' => $this->t('Digest semanal no disponible'),
+                    'message' => $this->t('El digest semanal personalizado con las resoluciones mas relevantes para tu practica esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'api_blocked':
+                return [
+                    'title' => $this->t('API REST no disponible'),
+                    'message' => $this->t('El acceso a la API REST de inteligencia legal para integraciones esta disponible en el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
             default:
                 return [
                     'title' => $this->t('Mejora tu plan'),
@@ -402,6 +456,38 @@ class UpgradeTriggerService
                 'variant' => 'duotone',
                 'color' => 'azul-corporativo',
             ],
+        ];
+
+        // Plan Elevación JarabaLex v1 — Fase 5.
+        $icons['search_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'search',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['alert_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'bell',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['citation_blocked'] = [
+            'category' => 'actions',
+            'name' => 'quote',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['digest_blocked'] = [
+            'category' => 'actions',
+            'name' => 'mail',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['api_blocked'] = [
+            'category' => 'actions',
+            'name' => 'code',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
         ];
 
         return $icons[$type] ?? $icons['limit_reached'];
@@ -655,6 +741,12 @@ class UpgradeTriggerService
             'customer_discovery' => 'Con %s accedes a guiones de entrevista avanzados y analisis Mom Test.',
             'pattern_expert' => 'Con %s obtienes deteccion de patrones BMG y senales de pivot.',
             'pivot_advisor' => 'Con %s recibes asesoramiento personalizado de pivot con data historica.',
+            // Plan Elevación JarabaLex v1 — Fase 5.
+            'legal_search' => 'Con %s tendras busquedas juridicas ilimitadas en 8 fuentes nacionales y europeas.',
+            'legal_alerts' => 'El plan %s desbloquea alertas juridicas ilimitadas con notificaciones en tiempo real.',
+            'legal_citations' => 'Con %s podras insertar citas legales automaticas en todos tus expedientes.',
+            'legal_digest' => 'El plan %s incluye un digest semanal personalizado con las resoluciones mas relevantes.',
+            'legal_copilot' => 'Con %s accedes al asistente juridico IA sin restricciones para consultas avanzadas.',
         ];
 
         $template = $benefits[$mode] ?? 'El plan %s desbloquea funcionalidades avanzadas.';
