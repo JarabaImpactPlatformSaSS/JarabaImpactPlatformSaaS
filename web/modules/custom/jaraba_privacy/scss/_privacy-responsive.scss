@@ -1,0 +1,86 @@
+// =============================================================================
+// PRIVACY RESPONSIVE — SCSS
+// =============================================================================
+// Media queries mobile-first para el módulo de privacidad.
+// =============================================================================
+
+@use 'variables-privacy' as *;
+
+// ---------------------------------------------------------------------------
+// MOBILE (< 768px)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .privacy-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-dashboard__header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .jaraba-cookie-banner__actions {
+    flex-direction: column;
+
+    .jaraba-cookie-banner__btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .jaraba-cookie-banner--center-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    max-width: 100%;
+    width: 100%;
+    border-radius: $privacy-card-radius $privacy-card-radius 0 0;
+  }
+
+  .arco-pol-requests__header {
+    flex-wrap: wrap;
+  }
+
+  .breach-alerts__header {
+    flex-wrap: wrap;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TABLET (768px - 1024px)
+// ---------------------------------------------------------------------------
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .privacy-dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DESKTOP (> 1024px)
+// ---------------------------------------------------------------------------
+
+@media (min-width: 1025px) {
+  .privacy-dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $privacy-dashboard-gap;
+  }
+
+  .jaraba-cookie-banner__container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .jaraba-cookie-banner__content {
+    flex: 1;
+  }
+
+  .jaraba-cookie-banner__actions {
+    flex-shrink: 0;
+  }
+}

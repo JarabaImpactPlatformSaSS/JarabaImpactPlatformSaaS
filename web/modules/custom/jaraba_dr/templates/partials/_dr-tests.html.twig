@@ -1,0 +1,109 @@
+{#
+/**
+ * @file
+ * Partial: resultados de tests de Disaster Recovery.
+ *
+ * Variables:
+ * - test_results: Array de resultados de tests, cada uno con:
+ *   - test_name: Nombre descriptivo del test.
+ *   - test_type: Tipo (backup_restore, failover, network, database, full_dr).
+ *   - status: Estado (passed, failed, running, cancelled).
+ *   - duration_formatted: Duración formateada.
+ *   - rto_achieved: RTO alcanzado en segundos.
+ *   - rpo_achieved: RPO alcanzado en segundos.
+ *   - created: Timestamp de creación.
+ * - metrics: Métricas RTO/RPO con rto_target_seconds, rpo_target_seconds,
+ *   rto_compliant, rpo_compliant.
+ *
+ * DIRECTRIZ: Clases BEM dr-test__*, sin {{ page.* }}.
+ */
+#}
+<div class="dr-test-results">
+  <h3>{{ 'Tests de Disaster Recovery'|t }}</h3>
+
+  {# Métricas RTO / RPO si están disponibles #}
+  {% if metrics %}
+    <div class="dr-test__rto-rpo">
+      <div class="dr-test__rto-rpo-item {{ metrics.rto_compliant ? 'dr-test__rto-rpo-item--compliant' : 'dr-test__rto-rpo-item--non-compliant' }}">
+        <span class="dr-test__rto-rpo-label">RTO:</span>
+        <span class="dr-test__rto-rpo-achieved">{{ metrics.rto_current_seconds }}s</span>
+        <span class="dr-test__rto-rpo-target">/ {{ metrics.rto_target_seconds }}s {{ 'objetivo'|t }}</span>
+      </div>
+      <div class="dr-test__rto-rpo-item {{ metrics.rpo_compliant ? 'dr-test__rto-rpo-item--compliant' : 'dr-test__rto-rpo-item--non-compliant' }}">
+        <span class="dr-test__rto-rpo-label">RPO:</span>
+        <span class="dr-test__rto-rpo-achieved">{{ metrics.rpo_current_seconds }}s</span>
+        <span class="dr-test__rto-rpo-target">/ {{ metrics.rpo_target_seconds }}s {{ 'objetivo'|t }}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Listado de tests #}
+  {% if test_results %}
+    {% for test in test_results %}
+      <div class="dr-test dr-test--{{ test.status }}" data-status="{{ test.status }}">
+        <div class="dr-test__header">
+          <span class="dr-test__name">{{ test.test_name }}</span>
+          <span class="dr-test__type">{{ test.test_type }}</span>
+          <span class="dr-test__status dr-test__status--{{ test.status }}">
+            {% if test.status == 'passed' %}
+              {{ 'Superado'|t }}
+            {% elseif test.status == 'failed' %}
+              {{ 'Fallido'|t }}
+            {% elseif test.status == 'running' %}
+              {{ 'En ejecución'|t }}
+            {% else %}
+              {{ 'Cancelado'|t }}
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="dr-test__date">{{ test.created|date('d/m/Y H:i') }}</div>
+
+        {# RTO/RPO alcanzado por este test #}
+        {% if test.rto_achieved or test.rpo_achieved %}
+          <div class="dr-test__rto-rpo">
+            {% if test.rto_achieved %}
+              <div class="dr-test__rto-rpo-item">
+                <span class="dr-test__rto-rpo-label">RTO:</span>
+                <span class="dr-test__rto-rpo-achieved">{{ test.rto_achieved }}s</span>
+              </div>
+            {% endif %}
+            {% if test.rpo_achieved %}
+              <div class="dr-test__rto-rpo-item">
+                <span class="dr-test__rto-rpo-label">RPO:</span>
+                <span class="dr-test__rto-rpo-achieved">{{ test.rpo_achieved }}s</span>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {# Duración #}
+        {% if test.duration_formatted %}
+          <div class="dr-test__date">
+            {{ 'Duración:'|t }} {{ test.duration_formatted }}
+          </div>
+        {% endif %}
+
+        {# Findings expandibles (placeholder para JS) #}
+        <div class="dr-test__findings">
+          <button class="dr-test__findings-toggle" type="button">
+            {{ 'Ver hallazgos'|t }}
+            <span class="dr-test__findings-count">0</span>
+          </button>
+          <ul class="dr-test__findings-list" hidden>
+            {# Se llena vía JS si hay resultados detallados #}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+
+    {# Próximo test programado #}
+    {% if next_scheduled %}
+      <div class="dr-test__date">
+        {{ 'Próximo test programado:'|t }} {{ next_scheduled|date('d/m/Y H:i') }}
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="dr-test__empty">{{ 'No hay resultados de tests disponibles.'|t }}</p>
+  {% endif %}
+</div>

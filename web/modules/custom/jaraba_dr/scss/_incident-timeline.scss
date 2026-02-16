@@ -1,95 +1,173 @@
-/**
- * @file
- * Estilos del timeline de incidentes.
- */
+// =============================================================================
+// INCIDENT TIMELINE — SCSS
+// =============================================================================
+// Estilos del timeline vertical de incidentes DR.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$dr-*}.
+// BEM: .incident-timeline, .incident-timeline__*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-dr' as *;
+
+// ---------------------------------------------------------------------------
+// TIMELINE VERTICAL
+// ---------------------------------------------------------------------------
 
 .incident-timeline {
-  h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  position: relative;
+}
+
+.incident-timeline__list {
+  position: relative;
+  padding-left: 1.5rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: $dr-timeline-line-width;
+    background: var(--ej-color-border, #E5E7EB);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ENTRADAS DEL TIMELINE
+// ---------------------------------------------------------------------------
+
+.incident-timeline__entry {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
   }
 
-  .incident-timeline__list {
-    position: relative;
-    padding-left: 1.5rem;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #e2e8f0;
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem - #{$dr-timeline-dot-size} / 2 + #{$dr-timeline-line-width} / 2);
+    top: 0.5rem;
+    width: $dr-timeline-dot-size;
+    height: $dr-timeline-dot-size;
+    border-radius: 50%;
+    background: var(--ej-color-text-secondary, #94A3B8);
   }
 
-  .incident-timeline__item {
-    position: relative;
-    margin-bottom: 1.5rem;
-    padding-left: 1rem;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: -1.75rem;
-      top: 0.5rem;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #94a3b8;
-    }
-
-    &--p1_critical::before {
-      background: #dc2626;
-    }
-
-    &--p2_major::before {
-      background: #ea580c;
-    }
-
-    &--p3_minor::before {
-      background: #ca8a04;
-    }
-
-    &--p4_informational::before {
-      background: #3b82f6;
-    }
+  &--p1_critical::before {
+    background: var(--ej-dr-severity-p1-critical, #{$dr-severity-p1-critical-fallback});
   }
 
-  .incident-timeline__header {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
+  &--p2_major::before {
+    background: var(--ej-dr-severity-p2-major, #{$dr-severity-p2-major-fallback});
   }
 
-  .incident-timeline__severity,
-  .incident-timeline__status {
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 4px;
-    background: #f1f5f9;
+  &--p3_minor::before {
+    background: var(--ej-dr-severity-p3-minor, #{$dr-severity-p3-minor-fallback});
   }
 
-  .incident-timeline__title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0.25rem 0;
+  &--p4_cosmetic::before {
+    background: var(--ej-dr-severity-p4-cosmetic, #{$dr-severity-p4-cosmetic-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ENCABEZADO DE ENTRADA
+// ---------------------------------------------------------------------------
+
+.incident-timeline__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.incident-timeline__timestamp {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #94A3B8);
+}
+
+// ---------------------------------------------------------------------------
+// BADGES DE SEVERIDAD
+// ---------------------------------------------------------------------------
+
+.incident-timeline__severity {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+
+  &--p1_critical {
+    background: color-mix(in srgb, #{$dr-severity-p1-critical-fallback} 15%, transparent);
+    color: var(--ej-dr-severity-p1-critical, #{$dr-severity-p1-critical-fallback});
   }
 
-  .incident-timeline__description {
-    color: #64748b;
-    font-size: 0.875rem;
+  &--p2_major {
+    background: color-mix(in srgb, #{$dr-severity-p2-major-fallback} 15%, transparent);
+    color: var(--ej-dr-severity-p2-major, #{$dr-severity-p2-major-fallback});
   }
 
-  .incident-timeline__time {
-    font-size: 0.75rem;
-    color: #94a3b8;
+  &--p3_minor {
+    background: color-mix(in srgb, #{$dr-severity-p3-minor-fallback} 15%, transparent);
+    color: var(--ej-dr-severity-p3-minor, #{$dr-severity-p3-minor-fallback});
   }
 
-  .incident-timeline__empty {
-    color: #94a3b8;
-    font-style: italic;
+  &--p4_cosmetic {
+    background: color-mix(in srgb, #{$dr-severity-p4-cosmetic-fallback} 15%, transparent);
+    color: var(--ej-dr-severity-p4-cosmetic, #{$dr-severity-p4-cosmetic-fallback});
   }
+}
+
+// ---------------------------------------------------------------------------
+// CONTENIDO DEL ENTRY
+// ---------------------------------------------------------------------------
+
+.incident-timeline__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+  margin: 0.25rem 0;
+}
+
+.incident-timeline__message {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0 0 0.25rem;
+}
+
+// ---------------------------------------------------------------------------
+// LOG DE COMUNICACIONES
+// ---------------------------------------------------------------------------
+
+.incident-timeline__communication {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  padding: 0.5rem 0.75rem;
+  background: var(--ej-color-background, #F9FAFB);
+  border-radius: 4px;
+  border-left: 2px solid var(--ej-color-border, #E5E7EB);
+  margin-top: 0.5rem;
+}
+
+.incident-timeline__communication-channel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ej-dr-primary, #{$dr-primary-fallback});
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACÍO
+// ---------------------------------------------------------------------------
+
+.incident-timeline__empty {
+  color: var(--ej-color-text-secondary, #94A3B8);
+  font-style: italic;
 }

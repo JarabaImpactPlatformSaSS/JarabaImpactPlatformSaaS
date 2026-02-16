@@ -1,87 +1,294 @@
-/**
- * @file
- * Estilos de la pagina de estado publica.
- */
+// =============================================================================
+// STATUS PAGE — SCSS
+// =============================================================================
+// Estilos de la página de estado pública de la plataforma.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$dr-*}.
+// BEM: .status-page, .status-page__*
+// =============================================================================
 
-.jaraba-dr-status-page {
-  max-width: 800px;
+@use 'sass:color';
+@use 'variables-dr' as *;
+
+// ---------------------------------------------------------------------------
+// LAYOUT PRINCIPAL
+// ---------------------------------------------------------------------------
+
+.status-page {
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1rem;
+}
 
-  .status-page__header {
-    text-align: center;
-    margin-bottom: 2rem;
+.status-page__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-    }
+.status-page__header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ej-color-text-primary, #1F2937);
+  margin: 0 0 0.5rem;
+}
 
-    .status-page__updated {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
+.status-page__updated {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// INDICADOR DE AUTO-REFRESCO
+// ---------------------------------------------------------------------------
+
+.status-page__refresh-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.status-page__refresh-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ej-dr-success, #{$dr-success-fallback});
+  animation: dr-pulse 2s ease-in-out infinite;
+}
+
+@keyframes dr-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO GLOBAL
+// ---------------------------------------------------------------------------
+
+.status-page__global-status {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: $dr-card-radius;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+
+  &--operational {
+    background: var(--ej-dr-status-operational-light, #{$dr-status-operational-light-fallback});
+    color: var(--ej-dr-status-operational, #{$dr-status-operational-fallback});
   }
 
-  .status-page__global-status {
-    text-align: center;
-    padding: 1.5rem;
-    border-radius: 8px;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-
-    &--operational {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    &--degraded {
-      background: #fef9c3;
-      color: #854d0e;
-    }
+  &--degraded {
+    background: var(--ej-dr-status-degraded-light, #{$dr-status-degraded-light-fallback});
+    color: var(--ej-dr-status-degraded, #{$dr-status-degraded-fallback});
   }
 
-  .status-page__service {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-
-    &--operational .status-page__service-status {
-      color: #16a34a;
-    }
-
-    &--degraded .status-page__service-status {
-      color: #ca8a04;
-    }
-
-    &--outage .status-page__service-status {
-      color: #dc2626;
-    }
+  &--partial_outage {
+    background: var(--ej-dr-status-partial-outage-light, #{$dr-status-partial-outage-light-fallback});
+    color: var(--ej-dr-status-partial-outage, #{$dr-status-partial-outage-fallback});
   }
 
-  .status-page__incident {
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 6px;
-    border-left: 4px solid #e2e8f0;
-
-    &--p1_critical {
-      border-left-color: #dc2626;
-    }
-
-    &--p2_major {
-      border-left-color: #ea580c;
-    }
-
-    &--p3_minor {
-      border-left-color: #ca8a04;
-    }
-
-    &--resolved {
-      border-left-color: #16a34a;
-    }
+  &--major_outage {
+    background: var(--ej-dr-status-major-outage-light, #{$dr-status-major-outage-light-fallback});
+    color: var(--ej-dr-status-major-outage, #{$dr-status-major-outage-fallback});
   }
+
+  &--maintenance {
+    background: var(--ej-dr-status-maintenance-light, #{$dr-status-maintenance-light-fallback});
+    color: var(--ej-dr-status-maintenance, #{$dr-status-maintenance-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// COMPONENTES / SERVICIOS
+// ---------------------------------------------------------------------------
+
+.status-page__components {
+  margin-bottom: 2rem;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: $dr-card-radius;
+  overflow: hidden;
+}
+
+.status-page__component {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem $dr-card-padding;
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  background: var(--ej-color-surface, #FFFFFF);
+  transition: background-color 300ms ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.status-page__component-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.status-page__component-uptime {
+  font-family: $dr-font-mono;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-left: 1rem;
+}
+
+// ---------------------------------------------------------------------------
+// BADGES DE ESTADO
+// ---------------------------------------------------------------------------
+
+.status-page__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &--operational {
+    background: var(--ej-dr-status-operational-light, #{$dr-status-operational-light-fallback});
+    color: var(--ej-dr-status-operational, #{$dr-status-operational-fallback});
+  }
+
+  &--degraded {
+    background: var(--ej-dr-status-degraded-light, #{$dr-status-degraded-light-fallback});
+    color: var(--ej-dr-status-degraded, #{$dr-status-degraded-fallback});
+  }
+
+  &--partial_outage {
+    background: var(--ej-dr-status-partial-outage-light, #{$dr-status-partial-outage-light-fallback});
+    color: var(--ej-dr-status-partial-outage, #{$dr-status-partial-outage-fallback});
+  }
+
+  &--major_outage {
+    background: var(--ej-dr-status-major-outage-light, #{$dr-status-major-outage-light-fallback});
+    color: var(--ej-dr-status-major-outage, #{$dr-status-major-outage-fallback});
+  }
+
+  &--maintenance {
+    background: var(--ej-dr-status-maintenance-light, #{$dr-status-maintenance-light-fallback});
+    color: var(--ej-dr-status-maintenance, #{$dr-status-maintenance-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// BARRA DE UPTIME (90 días)
+// ---------------------------------------------------------------------------
+
+.status-page__uptime-bar {
+  display: flex;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+  background: var(--ej-color-background, #F3F4F6);
+}
+
+.status-page__uptime-segment {
+  height: 100%;
+  min-width: 1px;
+  transition: width 300ms ease;
+
+  &--operational {
+    background: var(--ej-dr-status-operational, #{$dr-status-operational-fallback});
+  }
+
+  &--degraded {
+    background: var(--ej-dr-status-degraded, #{$dr-status-degraded-fallback});
+  }
+
+  &--partial_outage {
+    background: var(--ej-dr-status-partial-outage, #{$dr-status-partial-outage-fallback});
+  }
+
+  &--major_outage {
+    background: var(--ej-dr-status-major-outage, #{$dr-status-major-outage-fallback});
+  }
+
+  &--maintenance {
+    background: var(--ej-dr-status-maintenance, #{$dr-status-maintenance-fallback});
+  }
+}
+
+.status-page__uptime-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-bottom: 2rem;
+}
+
+// ---------------------------------------------------------------------------
+// INCIDENTES (tarjetas)
+// ---------------------------------------------------------------------------
+
+.status-page__incidents {
+  margin-bottom: 2rem;
+}
+
+.status-page__incidents h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+  margin: 0 0 1rem;
+}
+
+.status-page__incident {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--ej-color-border, #E5E7EB);
+  background: var(--ej-color-background, #F9FAFB);
+
+  &--p1_critical {
+    border-left-color: var(--ej-dr-severity-p1-critical, #{$dr-severity-p1-critical-fallback});
+    background: var(--ej-dr-danger-light, #{$dr-danger-light-fallback});
+  }
+
+  &--p2_major {
+    border-left-color: var(--ej-dr-severity-p2-major, #{$dr-severity-p2-major-fallback});
+    background: var(--ej-dr-warning-light, #{$dr-warning-light-fallback});
+  }
+
+  &--p3_minor {
+    border-left-color: var(--ej-dr-severity-p3-minor, #{$dr-severity-p3-minor-fallback});
+  }
+
+  &--p4_cosmetic {
+    border-left-color: var(--ej-dr-severity-p4-cosmetic, #{$dr-severity-p4-cosmetic-fallback});
+  }
+
+  &--resolved {
+    border-left-color: var(--ej-dr-success, #{$dr-success-fallback});
+  }
+}
+
+.status-page__incident-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+  margin: 0 0 0.25rem;
+}
+
+.status-page__incident-description {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0 0 0.5rem;
+}
+
+.status-page__incident-time {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.status-page__empty {
+  color: var(--ej-color-text-secondary, #6B7280);
+  font-style: italic;
 }

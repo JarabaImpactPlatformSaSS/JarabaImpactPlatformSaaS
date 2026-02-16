@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Partial: incidentes activos con timeline.
+ *
+ * Variables:
+ * - active_incidents: Array de incidentes activos, cada uno con:
+ *   - id: ID del incidente.
+ *   - title: Título del incidente.
+ *   - severity: Severidad (p1_critical, p2_major, p3_minor, p4_cosmetic).
+ *   - status: Estado (investigating, identified, monitoring).
+ *   - description: Descripción del incidente.
+ *   - affected_services: Array de servicios afectados.
+ *   - started_at: Timestamp de inicio.
+ *   - duration_seconds: Duración en segundos.
+ *
+ * DIRECTRIZ: Clases BEM incident-timeline__*, sin {{ page.* }}.
+ */
+#}
+<div class="incident-timeline">
+  <h3>{{ 'Incidentes activos'|t }}</h3>
+
+  {% if active_incidents %}
+    <div class="incident-timeline__list">
+      {% for incident in active_incidents %}
+        <div class="incident-timeline__entry incident-timeline__entry--{{ incident.severity }}"
+             data-incident-id="{{ incident.id }}">
+          <div class="incident-timeline__header">
+            {# Badge de severidad #}
+            <span class="incident-timeline__severity incident-timeline__severity--{{ incident.severity }}">
+              {% if incident.severity == 'p1_critical' %}
+                P1 {{ 'Crítico'|t }}
+              {% elseif incident.severity == 'p2_major' %}
+                P2 {{ 'Mayor'|t }}
+              {% elseif incident.severity == 'p3_minor' %}
+                P3 {{ 'Menor'|t }}
+              {% else %}
+                P4 {{ 'Cosmético'|t }}
+              {% endif %}
+            </span>
+
+            {# Badge de estado #}
+            <span class="incident-timeline__severity">
+              {% if incident.status == 'investigating' %}
+                {{ 'Investigando'|t }}
+              {% elseif incident.status == 'identified' %}
+                {{ 'Identificado'|t }}
+              {% elseif incident.status == 'monitoring' %}
+                {{ 'Monitorizando'|t }}
+              {% else %}
+                {{ incident.status }}
+              {% endif %}
+            </span>
+
+            <span class="incident-timeline__timestamp">
+              {{ incident.started_at|date('d/m/Y H:i') }}
+            </span>
+          </div>
+
+          <h4 class="incident-timeline__title">{{ incident.title }}</h4>
+          <p class="incident-timeline__message">{{ incident.description }}</p>
+
+          {# Componentes afectados #}
+          {% if incident.affected_services %}
+            <div class="incident-timeline__communication">
+              <span class="incident-timeline__communication-channel">
+                {{ 'Afecta a:'|t }}
+              </span>
+              {{ incident.affected_services|join(', ') }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="incident-timeline__empty">
+      {{ 'No hay incidentes activos. Todos los sistemas operan con normalidad.'|t }}
+    </p>
+  {% endif %}
+</div>

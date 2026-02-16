@@ -12,6 +12,8 @@
  *
  * LOGICA:
  * - hook_theme(): Registro de templates del modulo.
+ * - hook_cron(): Verificacion programada de backups, tests DR y escalados.
+ * - hook_mail(): Templates de email para notificaciones DR.
  * - Status page publica sin autenticacion.
  * - Tests DR automatizados con registro de resultados.
  * - Comunicacion multi-canal de incidentes.
@@ -22,6 +24,8 @@
  */
 
 declare(strict_types=1);
+
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Implements hook_theme().
@@ -53,4 +57,159 @@ function jaraba_dr_theme(): array {
       'template' => 'dr-status-page',
     ],
   ];
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta las tareas programadas del modulo de Disaster Recovery:
+ * 1. Verificacion automatica de integridad de backups.
+ * 2. Ejecucion de tests DR programados segun frecuencia configurada.
+ * 3. Verificacion de escalados para incidentes sin respuesta.
+ *
+ * Se ejecuta en cada ejecucion del cron de Drupal. Los servicios
+ * internamente verifican si es momento de ejecutar cada tarea segun
+ * sus respectivas frecuencias configuradas.
+ */
+function jaraba_dr_cron(): void {
+  // 1. Verificacion programada de backups.
+  try {
+    /** @var \Drupal\jaraba_dr\Service\BackupVerifierService $backupVerifier */
+    $backupVerifier = \Drupal::service('jaraba_dr.backup_verifier');
+    $verified = $backupVerifier->runScheduledVerification();
+    if ($verified > 0) {
+      \Drupal::logger('jaraba_dr')->info('Cron: @count backups verificados.', [
+        '@count' => $verified,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_dr')->error('Cron: Error en verificacion de backups: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+
+  // 2. Ejecucion de tests DR programados.
+  try {
+    /** @var \Drupal\jaraba_dr\Service\DrTestRunnerService $testRunner */
+    $testRunner = \Drupal::service('jaraba_dr.test_runner');
+    $executed = $testRunner->runScheduledTests();
+    if ($executed > 0) {
+      \Drupal::logger('jaraba_dr')->info('Cron: @count tests DR ejecutados.', [
+        '@count' => $executed,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_dr')->error('Cron: Error en ejecucion de tests DR: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+
+  // 3. Verificacion de escalados de incidentes.
+  try {
+    /** @var \Drupal\jaraba_dr\Service\IncidentCommunicatorService $communicator */
+    $communicator = \Drupal::service('jaraba_dr.incident_communicator');
+    $escalated = $communicator->checkEscalations();
+    if ($escalated > 0) {
+      \Drupal::logger('jaraba_dr')->warning('Cron: @count incidentes escalados.', [
+        '@count' => $escalated,
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_dr')->error('Cron: Error en verificacion de escalados: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Define las plantillas de email para notificaciones del modulo DR.
+ * Soporta los siguientes templates:
+ * - incident_notification: Notificacion de incidente nuevo o actualizado.
+ * - escalation_notification: Escalado de incidente sin respuesta.
+ * - backup_alert: Alerta de fallo de verificacion de backup.
+ * - test_result: Resultado de test DR.
+ *
+ * @param string $key
+ *   Identificador del template de email.
+ * @param array &$message
+ *   Array del mensaje que sera modificado con subject y body.
+ * @param array $params
+ *   Parametros pasados desde el servicio que envia el email.
+ */
+function jaraba_dr_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'incident_notification':
+      $message['subject'] = $params['subject'] ?? (string) new TranslatableMarkup(
+        'Incidente DR: @title',
+        ['@title' => $params['title'] ?? 'Sin titulo']
+      );
+      $message['body'][] = (string) new TranslatableMarkup(
+        "Incidente DR #@id\n\nTitulo: @title\nSeveridad: @severity\n\n@message",
+        [
+          '@id' => $params['incident_id'] ?? 0,
+          '@title' => $params['title'] ?? '',
+          '@severity' => $params['severity'] ?? '',
+          '@message' => $params['message'] ?? '',
+        ]
+      );
+      break;
+
+    case 'escalation_notification':
+      $message['subject'] = (string) new TranslatableMarkup(
+        '[ESCALADO] Incidente DR: @title',
+        ['@title' => $params['title'] ?? 'Sin titulo']
+      );
+      $message['body'][] = (string) new TranslatableMarkup(
+        "ESCALADO DE INCIDENTE\n\nIncidente DR #@id: @title\nSeveridad: @severity\nTiempo transcurrido: @minutes minutos\n\n@message\n\nEste incidente requiere atencion inmediata.",
+        [
+          '@id' => $params['incident_id'] ?? 0,
+          '@title' => $params['title'] ?? '',
+          '@severity' => $params['severity'] ?? '',
+          '@minutes' => $params['elapsed_minutes'] ?? 0,
+          '@message' => $params['message'] ?? '',
+        ]
+      );
+      break;
+
+    case 'backup_alert':
+      $message['subject'] = (string) new TranslatableMarkup(
+        '[ALERTA] Verificacion de backup fallida'
+      );
+      $message['body'][] = (string) new TranslatableMarkup(
+        "ALERTA DE BACKUP\n\nTipo: @type\nRuta: @path\nEstado: @status\n\n@message\n\nSe requiere verificacion manual.",
+        [
+          '@type' => $params['backup_type'] ?? '',
+          '@path' => $params['backup_path'] ?? '',
+          '@status' => $params['status'] ?? '',
+          '@message' => $params['message'] ?? '',
+        ]
+      );
+      break;
+
+    case 'test_result':
+      $message['subject'] = (string) new TranslatableMarkup(
+        'Resultado test DR: @name - @status',
+        [
+          '@name' => $params['test_name'] ?? '',
+          '@status' => $params['status'] ?? '',
+        ]
+      );
+      $message['body'][] = (string) new TranslatableMarkup(
+        "RESULTADO DE TEST DR\n\nNombre: @name\nTipo: @type\nEstado: @status\nDuracion: @duration segundos\nRTO alcanzado: @rto s\nRPO alcanzado: @rpo s",
+        [
+          '@name' => $params['test_name'] ?? '',
+          '@type' => $params['test_type'] ?? '',
+          '@status' => $params['status'] ?? '',
+          '@duration' => $params['duration_seconds'] ?? 0,
+          '@rto' => $params['rto_achieved'] ?? 0,
+          '@rpo' => $params['rpo_achieved'] ?? 0,
+        ]
+      );
+      break;
+  }
 }

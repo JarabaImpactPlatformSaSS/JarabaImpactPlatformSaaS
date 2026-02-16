@@ -1,0 +1,204 @@
+// =============================================================================
+// AUP VIOLATIONS — SCSS
+// =============================================================================
+// Estilos de las tarjetas de violaciones de la Acceptable Use Policy.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$legal-*}.
+// BEM: .aup-violation, .aup-violation__*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-legal' as *;
+
+// ---------------------------------------------------------------------------
+// LISTA DE VIOLACIONES
+// ---------------------------------------------------------------------------
+
+.aup-violations__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// ---------------------------------------------------------------------------
+// TARJETA DE VIOLACION
+// ---------------------------------------------------------------------------
+
+.aup-violation {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--ej-color-border, #E5E7EB);
+  background: var(--ej-color-background, #F9FAFB);
+
+  &--low {
+    border-left-color: var(--ej-legal-severity-low, #{$legal-severity-low-fallback});
+  }
+
+  &--medium {
+    border-left-color: var(--ej-legal-severity-medium, #{$legal-severity-medium-fallback});
+  }
+
+  &--high {
+    border-left-color: var(--ej-legal-severity-high, #{$legal-severity-high-fallback});
+  }
+
+  &--critical {
+    border-left-color: var(--ej-legal-severity-critical, #{$legal-severity-critical-fallback});
+    background: var(--ej-legal-danger-light, #{$legal-danger-light-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CABECERA DE VIOLACION
+// ---------------------------------------------------------------------------
+
+.aup-violation__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.aup-violation__severity {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+}
+
+.aup-violation--low .aup-violation__severity {
+  background: color-mix(in srgb, #{$legal-severity-low-fallback} 15%, transparent);
+  color: var(--ej-legal-severity-low, #{$legal-severity-low-fallback});
+}
+
+.aup-violation--medium .aup-violation__severity {
+  background: color-mix(in srgb, #{$legal-severity-medium-fallback} 15%, transparent);
+  color: var(--ej-legal-severity-medium, #{$legal-severity-medium-fallback});
+}
+
+.aup-violation--high .aup-violation__severity {
+  background: color-mix(in srgb, #{$legal-severity-high-fallback} 15%, transparent);
+  color: var(--ej-legal-severity-high, #{$legal-severity-high-fallback});
+}
+
+.aup-violation--critical .aup-violation__severity {
+  background: color-mix(in srgb, #{$legal-severity-critical-fallback} 15%, transparent);
+  color: var(--ej-legal-severity-critical, #{$legal-severity-critical-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// TIPO Y ACCION
+// ---------------------------------------------------------------------------
+
+.aup-violation__type {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-legal-primary-light, #{$legal-primary-light-fallback});
+  color: var(--ej-legal-primary, #{$legal-primary-fallback});
+  font-weight: 500;
+}
+
+.aup-violation__action {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-color-background, #F3F4F6);
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// CONTENIDO
+// ---------------------------------------------------------------------------
+
+.aup-violation__title {
+  margin: 0.25rem 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.aup-violation__description {
+  margin: 0.25rem 0;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.4;
+}
+
+.aup-violation__date {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACIO
+// ---------------------------------------------------------------------------
+
+.aup-violations__empty {
+  color: var(--ej-legal-success, #{$legal-success-fallback});
+  font-style: italic;
+}
+
+// ---------------------------------------------------------------------------
+// BARRAS DE USO (integradas en AUP panel)
+// ---------------------------------------------------------------------------
+
+.aup-usage__bar-container {
+  margin-bottom: 0.75rem;
+}
+
+.aup-usage__bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+}
+
+.aup-usage__bar-name {
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.aup-usage__bar-value {
+  font-family: $legal-font-mono;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.aup-usage__bar {
+  height: 8px;
+  background: var(--ej-color-border, #E5E7EB);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.aup-usage__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 300ms ease;
+
+  &--safe {
+    background: var(--ej-legal-aup-clean, #{$legal-aup-clean-fallback});
+  }
+
+  &--warning {
+    background: var(--ej-legal-aup-warning, #{$legal-aup-warning-fallback});
+  }
+
+  &--exceeded {
+    background: var(--ej-legal-aup-suspended, #{$legal-aup-suspended-fallback});
+  }
+}
+
+.aup-usage__violation-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--ej-legal-danger-light, #{$legal-danger-light-fallback});
+  color: var(--ej-legal-danger, #{$legal-danger-fallback});
+}

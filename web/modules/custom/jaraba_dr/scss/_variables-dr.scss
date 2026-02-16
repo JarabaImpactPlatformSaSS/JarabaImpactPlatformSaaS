@@ -1,0 +1,78 @@
+// =============================================================================
+// VARIABLES DE DISASTER RECOVERY — MÓDULO JARABA DR
+// =============================================================================
+// Tokens de diseño específicos del stack de DR e infraestructura.
+//
+// DIRECTRIZ: Dart Sass moderno (@use, nunca @import).
+// DIRECTRIZ: color-mix() en lugar de rgba(), color.adjust() en lugar
+//            de darken()/lighten().
+// DIRECTRIZ: var(--ej-*) con fallback #{$dr-*}.
+// =============================================================================
+
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// COLORES DR (Infraestructura / Disaster Recovery)
+// ---------------------------------------------------------------------------
+
+$dr-primary-fallback: #0D47A1 !default;
+$dr-primary-light-fallback: #E3F2FD !default;
+$dr-success-fallback: #1B5E20 !default;
+$dr-success-light-fallback: #E8F5E9 !default;
+$dr-warning-fallback: #E65100 !default;
+$dr-warning-light-fallback: #FFF3E0 !default;
+$dr-danger-fallback: #B71C1C !default;
+$dr-danger-light-fallback: #FFEBEE !default;
+$dr-maintenance-fallback: #1565C0 !default;
+$dr-maintenance-light-fallback: #E3F2FD !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS DE COMPONENTE (status page)
+// ---------------------------------------------------------------------------
+
+$dr-status-operational-fallback: #1B5E20 !default;
+$dr-status-operational-light-fallback: #E8F5E9 !default;
+$dr-status-degraded-fallback: #E65100 !default;
+$dr-status-degraded-light-fallback: #FFF3E0 !default;
+$dr-status-partial-outage-fallback: #BF360C !default;
+$dr-status-partial-outage-light-fallback: #FBE9E7 !default;
+$dr-status-major-outage-fallback: #B71C1C !default;
+$dr-status-major-outage-light-fallback: #FFEBEE !default;
+$dr-status-maintenance-fallback: #1565C0 !default;
+$dr-status-maintenance-light-fallback: #E3F2FD !default;
+
+// ---------------------------------------------------------------------------
+// SEVERIDAD DE INCIDENTES
+// ---------------------------------------------------------------------------
+
+$dr-severity-p1-critical-fallback: #B71C1C !default;
+$dr-severity-p2-major-fallback: #E65100 !default;
+$dr-severity-p3-minor-fallback: #F9A825 !default;
+$dr-severity-p4-cosmetic-fallback: #6B7280 !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS DE VERIFICACIÓN DE BACKUP
+// ---------------------------------------------------------------------------
+
+$dr-backup-passed-fallback: #1B5E20 !default;
+$dr-backup-passed-light-fallback: #E8F5E9 !default;
+$dr-backup-failed-fallback: #B71C1C !default;
+$dr-backup-failed-light-fallback: #FFEBEE !default;
+$dr-backup-pending-fallback: #F9A825 !default;
+$dr-backup-pending-light-fallback: #FFFDE7 !default;
+
+// ---------------------------------------------------------------------------
+// TIPOGRAFÍA
+// ---------------------------------------------------------------------------
+
+$dr-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
+
+// ---------------------------------------------------------------------------
+// DIMENSIONES
+// ---------------------------------------------------------------------------
+
+$dr-dashboard-gap: 1.5rem !default;
+$dr-card-radius: 8px !default;
+$dr-card-padding: 1.5rem !default;
+$dr-timeline-line-width: 2px !default;
+$dr-timeline-dot-size: 10px !default;

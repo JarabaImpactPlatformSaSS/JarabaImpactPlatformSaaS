@@ -1,0 +1,211 @@
+// =============================================================================
+// DR TESTS — SCSS
+// =============================================================================
+// Estilos de las tarjetas de resultados de tests de Disaster Recovery.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$dr-*}.
+// BEM: .dr-test, .dr-test__*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-dr' as *;
+
+// ---------------------------------------------------------------------------
+// TARJETA DE TEST
+// ---------------------------------------------------------------------------
+
+.dr-test {
+  background: var(--ej-color-surface, #FFFFFF);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: $dr-card-radius;
+  padding: $dr-card-padding;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--ej-color-border, #E5E7EB);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &--passed {
+    border-left-color: var(--ej-dr-backup-passed, #{$dr-backup-passed-fallback});
+  }
+
+  &--failed {
+    border-left-color: var(--ej-dr-backup-failed, #{$dr-backup-failed-fallback});
+  }
+
+  &--running {
+    border-left-color: var(--ej-dr-backup-pending, #{$dr-backup-pending-fallback});
+  }
+
+  &--cancelled {
+    border-left-color: var(--ej-color-text-secondary, #6B7280);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ENCABEZADO DE TEST
+// ---------------------------------------------------------------------------
+
+.dr-test__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.dr-test__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.dr-test__type {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-dr-primary-light, #{$dr-primary-light-fallback});
+  color: var(--ej-dr-primary, #{$dr-primary-fallback});
+}
+
+.dr-test__date {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// BADGE DE ESTADO
+// ---------------------------------------------------------------------------
+
+.dr-test__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--passed {
+    background: color-mix(in srgb, #{$dr-backup-passed-fallback} 15%, transparent);
+    color: var(--ej-dr-backup-passed, #{$dr-backup-passed-fallback});
+  }
+
+  &--failed {
+    background: color-mix(in srgb, #{$dr-backup-failed-fallback} 15%, transparent);
+    color: var(--ej-dr-backup-failed, #{$dr-backup-failed-fallback});
+  }
+
+  &--running {
+    background: color-mix(in srgb, #{$dr-backup-pending-fallback} 15%, transparent);
+    color: var(--ej-dr-backup-pending, #{$dr-backup-pending-fallback});
+  }
+
+  &--cancelled {
+    background: var(--ej-color-background, #F3F4F6);
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// BADGES RTO / RPO
+// ---------------------------------------------------------------------------
+
+.dr-test__rto-rpo {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.dr-test__rto-rpo-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.dr-test__rto-rpo-label {
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.dr-test__rto-rpo-achieved {
+  font-family: $dr-font-mono;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.dr-test__rto-rpo-target {
+  font-family: $dr-font-mono;
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #94A3B8);
+}
+
+.dr-test__rto-rpo-item--compliant .dr-test__rto-rpo-achieved {
+  color: var(--ej-dr-success, #{$dr-success-fallback});
+}
+
+.dr-test__rto-rpo-item--non-compliant .dr-test__rto-rpo-achieved {
+  color: var(--ej-dr-danger, #{$dr-danger-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// FINDINGS (sección expandible)
+// ---------------------------------------------------------------------------
+
+.dr-test__findings {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.dr-test__findings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ej-dr-primary, #{$dr-primary-fallback});
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.dr-test__findings-toggle:hover {
+  color: color-mix(in srgb, var(--ej-dr-primary, #{$dr-primary-fallback}) 85%, #000000);
+}
+
+.dr-test__findings-count {
+  font-family: $dr-font-mono;
+  font-size: 0.75rem;
+  background: var(--ej-color-background, #F3F4F6);
+  padding: 0.0625rem 0.375rem;
+  border-radius: 3px;
+}
+
+.dr-test__findings-list {
+  margin: 0.5rem 0 0;
+  padding: 0 0 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  list-style: disc;
+}
+
+.dr-test__findings-list li {
+  margin-bottom: 0.25rem;
+}
+
+// ---------------------------------------------------------------------------
+// ESTADO VACÍO
+// ---------------------------------------------------------------------------
+
+.dr-test__empty {
+  color: var(--ej-color-text-secondary, #6B7280);
+  font-style: italic;
+}

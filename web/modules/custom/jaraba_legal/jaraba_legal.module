@@ -2,20 +2,21 @@
 
 /**
  * @file
- * Módulo Jaraba Legal — Gestión legal del servicio SaaS multi-tenant.
+ * Modulo Jaraba Legal — Gestion legal del servicio SaaS multi-tenant.
  *
  * ESTRUCTURA:
- * Módulo principal del stack legal. Proporciona 6 Content Entities
+ * Modulo principal del stack legal. Proporciona 6 Content Entities
  * (ServiceAgreement, SlaRecord, AupViolation, OffboardingRequest,
- * WhistleblowerReport, UsageLimitRecord), servicios de gestión y hooks
- * de automatización para cumplimiento legal.
+ * WhistleblowerReport, UsageLimitRecord), servicios de gestion y hooks
+ * de automatizacion para cumplimiento legal.
  *
- * LÓGICA:
+ * LOGICA:
  * - hook_user_login(): Verifica ToS vigentes del tenant.
- * - hook_cron(): Verificación de SLA, límites de uso y plazos de offboarding.
- * - hook_theme(): Registro de templates del módulo.
+ * - hook_cron(): Verificacion de SLA, limites de uso y plazos de offboarding.
+ * - hook_mail(): Templates de email para notificaciones legales.
+ * - hook_theme(): Registro de templates del modulo.
  *
- * Plan Implementación Stack Compliance Legal N1 v1.
+ * Plan Implementacion Stack Compliance Legal N1 v1.
  *
  * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
  */
@@ -25,7 +26,7 @@ declare(strict_types=1);
 /**
  * Implements hook_theme().
  *
- * Registra los templates Twig del módulo legal.
+ * Registra los templates Twig del modulo legal.
  */
 function jaraba_legal_theme(): array {
   return [
@@ -42,4 +43,196 @@ function jaraba_legal_theme(): array {
       'template' => 'legal-dashboard',
     ],
   ];
+}
+
+/**
+ * Implements hook_user_login().
+ *
+ * Verifica si el tenant del usuario tiene un ToS activo aceptado.
+ * Si no ha aceptado la version vigente, se almacena un flag en sesion
+ * para que el middleware/modal de ToS pueda redirigir al formulario
+ * de aceptacion bloqueante.
+ */
+function jaraba_legal_user_login($account): void {
+  try {
+    $membershipLoader = \Drupal::service('group.membership_loader');
+    $memberships = $membershipLoader->loadByUser($account);
+
+    if (empty($memberships)) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_legal\Service\TosManagerService $tosManager */
+    $tosManager = \Drupal::service('jaraba_legal.tos_manager');
+    $tenantId = (int) reset($memberships)->getGroup()->id();
+
+    $acceptance = $tosManager->checkAcceptance($tenantId);
+
+    if (!$acceptance['accepted']) {
+      \Drupal::logger('jaraba_legal')->warning(
+        'Tenant @tenant no ha aceptado la version activa de ToS (@version). Usuario @user debe aceptar.',
+        [
+          '@tenant' => $tenantId,
+          '@version' => $acceptance['active_version'] ?? 'N/A',
+          '@user' => $account->getDisplayName(),
+        ]
+      );
+
+      // Almacenar en sesion para que el middleware pueda mostrar el modal.
+      \Drupal::request()->getSession()->set('jaraba_legal_tos_required', TRUE);
+    }
+    else {
+      // Limpiar flag de sesion si ya acepto.
+      \Drupal::request()->getSession()->remove('jaraba_legal_tos_required');
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal')->error(
+      'Error en hook_user_login: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta las verificaciones periodicas del modulo legal:
+ * 1. Periodos de gracia de offboarding expirados.
+ * 2. Calculo SLA mensual (al cierre de cada periodo).
+ * 3. Verificacion de limites de uso AUP.
+ */
+function jaraba_legal_cron(): void {
+  try {
+    // 1. Verificar periodos de gracia de offboarding expirados.
+    /** @var \Drupal\jaraba_legal\Service\OffboardingManagerService $offboardingManager */
+    $offboardingManager = \Drupal::service('jaraba_legal.offboarding_manager');
+    $expiredCount = $offboardingManager->checkGracePeriods();
+
+    if ($expiredCount > 0) {
+      \Drupal::logger('jaraba_legal')->info(
+        'Cron: @count solicitudes de offboarding con periodo de gracia expirado procesadas.',
+        ['@count' => $expiredCount]
+      );
+    }
+
+    // 2. Calcular metricas SLA del mes (solo el dia 1 del mes siguiente).
+    $today = date('j'); // Dia del mes (1-31).
+    if ($today === '1') {
+      /** @var \Drupal\jaraba_legal\Service\SlaCalculatorService $slaCalculator */
+      $slaCalculator = \Drupal::service('jaraba_legal.sla_calculator');
+
+      // Calcular para el mes anterior.
+      $prevMonthStart = (int) strtotime('first day of last month 00:00:00');
+      $prevMonthEnd = (int) strtotime('last day of last month 23:59:59');
+
+      // Obtener todos los tenants (grupos).
+      $groupStorage = \Drupal::entityTypeManager()->getStorage('group');
+      $groupIds = $groupStorage->getQuery()
+        ->accessCheck(FALSE)
+        ->execute();
+
+      foreach (array_keys($groupIds) as $groupId) {
+        try {
+          $uptimeData = $slaCalculator->calculateUptime((int) $groupId, $prevMonthStart, $prevMonthEnd);
+          $slaCalculator->recordSlaMetrics(
+            (int) $groupId,
+            $uptimeData['uptime_percentage'],
+            $uptimeData['downtime_minutes']
+          );
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_legal')->error(
+            'Cron SLA: Error calculando metricas para tenant @tenant: @error',
+            [
+              '@tenant' => $groupId,
+              '@error' => $e->getMessage(),
+            ]
+          );
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal')->error(
+      'Error en hook_cron: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Define las plantillas de email del modulo legal.
+ * Cada clave corresponde a un tipo de notificacion del sistema.
+ */
+function jaraba_legal_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'tos_new_version':
+      $message['subject'] = $params['subject'] ?? 'Nueva version de Terms of Service';
+      $message['body'][] = t('Estimado administrador de @tenant,', [
+        '@tenant' => $params['tenant_name'] ?? '',
+      ]);
+      $message['body'][] = t('Se ha publicado una nueva version de los Terms of Service (v@version).', [
+        '@version' => $params['tos_version'] ?? '',
+      ]);
+      $message['body'][] = t('Es necesario aceptar los nuevos terminos para continuar utilizando la plataforma.');
+      $message['body'][] = t('Acceda a la plataforma para revisar y aceptar los nuevos terminos.');
+      break;
+
+    case 'offboarding_initiated':
+      $message['subject'] = $params['subject'] ?? 'Solicitud de baja iniciada';
+      $message['body'][] = t('Se ha iniciado el proceso de baja para el tenant @tenant.', [
+        '@tenant' => $params['tenant_name'] ?? '',
+      ]);
+      $message['body'][] = t('Motivo: @reason', ['@reason' => $params['reason'] ?? '']);
+      $message['body'][] = t('El periodo de gracia finaliza el @date.', [
+        '@date' => $params['grace_period_end'] ?? '',
+      ]);
+      $message['body'][] = t('Puede cancelar la solicitud antes de que expire el periodo de gracia.');
+      break;
+
+    case 'offboarding_completed':
+      $message['subject'] = $params['subject'] ?? 'Proceso de baja completado';
+      $message['body'][] = t('El proceso de baja para el tenant @tenant ha sido completado.', [
+        '@tenant' => $params['tenant_name'] ?? '',
+      ]);
+      $message['body'][] = t('Fecha de completado: @date', ['@date' => $params['completed_at'] ?? '']);
+      $message['body'][] = t('Hash del certificado de eliminacion: @hash', [
+        '@hash' => $params['certificate_hash'] ?? '',
+      ]);
+      $message['body'][] = t('Conserve este hash como prueba de la eliminacion de datos.');
+      break;
+
+    case 'whistleblower_new_report':
+      $message['subject'] = $params['subject'] ?? 'Nuevo reporte en el canal de denuncias';
+      $message['body'][] = t('Se ha recibido un nuevo reporte en el canal de denuncias.');
+      $message['body'][] = t('Codigo de seguimiento: @code', [
+        '@code' => $params['tracking_code'] ?? '',
+      ]);
+      $message['body'][] = t('Acceda al panel de administracion para revisar y gestionar el reporte.');
+      $message['body'][] = t('Recuerde que el plazo maximo de acuse de recibo es de 7 dias (Directiva EU 2019/1937).');
+      break;
+
+    case 'sla_breach':
+      $message['subject'] = $params['subject'] ?? 'Incumplimiento de SLA detectado';
+      $message['body'][] = t('Se ha detectado un incumplimiento del SLA para el tenant @tenant.', [
+        '@tenant' => $params['tenant_name'] ?? '',
+      ]);
+      $message['body'][] = t('Uptime real: @uptime% (target: @target%)', [
+        '@uptime' => $params['uptime'] ?? '',
+        '@target' => $params['target'] ?? '',
+      ]);
+      $message['body'][] = t('Credito aplicable: @credit%', ['@credit' => $params['credit'] ?? '0']);
+      break;
+
+    case 'aup_violation':
+      $message['subject'] = $params['subject'] ?? 'Violacion de AUP detectada';
+      $message['body'][] = t('Se ha detectado una violacion de la politica de uso aceptable.');
+      $message['body'][] = t('Tipo: @type', ['@type' => $params['violation_type'] ?? '']);
+      $message['body'][] = t('Severidad: @severity', ['@severity' => $params['severity'] ?? '']);
+      $message['body'][] = t('Accion aplicada: @action', ['@action' => $params['action'] ?? '']);
+      break;
+  }
 }

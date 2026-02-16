@@ -11,19 +11,19 @@ jaraba_legal.dashboard:
     _permission: 'view legal dashboard'
 
 # =============================================================================
-# CONFIGURACIÓN — Formulario de settings del módulo
+# CONFIGURACION — Formulario de settings del modulo
 # =============================================================================
 
 jaraba_legal.settings:
   path: '/admin/config/jaraba/legal'
   defaults:
     _form: '\Drupal\jaraba_legal\Form\LegalSettingsForm'
-    _title: 'Configuración Legal'
+    _title: 'Configuracion Legal'
   requirements:
     _permission: 'administer legal'
 
 # =============================================================================
-# ENTITY ROUTES — Field UI base routes para configuración de campos
+# ENTITY ROUTES — Field UI base routes para configuracion de campos
 # =============================================================================
 
 jaraba_legal.service_agreement.settings:
@@ -73,3 +73,123 @@ jaraba_legal.usage_limit_record.settings:
     _title: 'Usage Limit Records'
   requirements:
     _permission: 'administer legal'
+
+# =============================================================================
+# API REST — TOS ENDPOINTS (Bearer + access legal api)
+# =============================================================================
+
+jaraba_legal.api.tos.current:
+  path: '/api/v1/legal/tos/current'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getActiveToS'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+
+jaraba_legal.api.tos.accept:
+  path: '/api/v1/legal/tos/accept'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::acceptToS'
+  methods: [POST]
+  requirements:
+    _permission: 'access legal api'
+
+jaraba_legal.api.tos.check:
+  path: '/api/v1/legal/tos/check'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::checkAcceptance'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+
+# =============================================================================
+# API REST — SLA ENDPOINTS (Bearer + access legal api)
+# =============================================================================
+
+jaraba_legal.api.sla.report:
+  path: '/api/v1/legal/sla/{tenant_id}/report'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getSlaReport'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+    tenant_id: '\d+'
+
+jaraba_legal.api.sla.current:
+  path: '/api/v1/legal/sla/{tenant_id}/current'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getCurrentSla'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+    tenant_id: '\d+'
+
+# =============================================================================
+# API REST — AUP ENDPOINTS (Bearer + access legal api)
+# =============================================================================
+
+jaraba_legal.api.aup.violations:
+  path: '/api/v1/legal/aup/violations'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getViolations'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+
+jaraba_legal.api.aup.usage:
+  path: '/api/v1/legal/aup/usage'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getUsageLimits'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal api'
+
+# =============================================================================
+# API REST — OFFBOARDING ENDPOINTS (Bearer + manage offboarding)
+# =============================================================================
+
+jaraba_legal.api.offboarding.request:
+  path: '/api/v1/legal/offboarding/request'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::requestOffboarding'
+  methods: [POST]
+  requirements:
+    _permission: 'manage offboarding'
+
+jaraba_legal.api.offboarding.status:
+  path: '/api/v1/legal/offboarding/{id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getOffboardingStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'manage offboarding'
+    id: '\d+'
+
+jaraba_legal.api.offboarding.cancel:
+  path: '/api/v1/legal/offboarding/{id}/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::cancelOffboarding'
+  methods: [POST]
+  requirements:
+    _permission: 'manage offboarding'
+    id: '\d+'
+
+# =============================================================================
+# API REST — WHISTLEBLOWER ENDPOINTS (Publico, sin auth)
+# =============================================================================
+
+jaraba_legal.api.whistleblower.report:
+  path: '/api/v1/legal/whistleblower/report'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::submitReport'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+jaraba_legal.api.whistleblower.status:
+  path: '/api/v1/legal/whistleblower/{tracking_code}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_legal\Controller\LegalApiController::getReportStatus'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'

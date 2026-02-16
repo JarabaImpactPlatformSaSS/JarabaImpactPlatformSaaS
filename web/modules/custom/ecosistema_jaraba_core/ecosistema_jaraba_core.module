@@ -596,6 +596,24 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // =========================================================================
+    // COMPLIANCE PANEL UNIFICADO (Stack Compliance Legal N1 — FASE 12)
+    // =========================================================================
+
+    // Panel cross-modulo: agrega KPIs de jaraba_privacy, jaraba_legal, jaraba_dr
+    // Ruta: /admin/jaraba/compliance
+    'compliance_panel' => [
+      'variables' => [
+        'score' => 0,
+        'grade' => 'F',
+        'kpis' => [],
+        'alerts' => [],
+        'modules' => [],
+      ],
+      'template' => 'compliance-panel',
+      'path' => $path . '/templates',
+    ],
+
+    // =========================================================================
     // FISCAL COMPLIANCE DASHBOARD (FASE 11)
     // =========================================================================
 

@@ -1013,6 +1013,30 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # COMPLIANCE AGGREGATOR — STACK COMPLIANCE LEGAL N1 (FASE 12)
+  # ===========================================
+
+  # Servicio agregador de KPIs de compliance cross-modulo.
+  # Agrega metricas de jaraba_privacy, jaraba_legal y jaraba_dr.
+  # Los 9 servicios satelite se inyectan condicionalmente (~NULL)
+  # via EcosistemaJarabaCoreServiceProvider cuando los modulos
+  # no estan instalados.
+  ecosistema_jaraba_core.compliance_aggregator:
+    class: Drupal\ecosistema_jaraba_core\Service\ComplianceAggregatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
+
+  # ===========================================
   # FISCAL COMPLIANCE SERVICE — STACK FISCAL (FASE 11)
   # ===========================================
 

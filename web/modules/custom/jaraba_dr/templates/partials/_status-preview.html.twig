@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Partial: vista previa mini de la página de estado pública.
+ *
+ * Variables:
+ * - service_status: Array de servicios con su estado actual, cada uno con:
+ *   - name: Nombre del servicio.
+ *   - status: Estado (operational, degraded, partial_outage, major_outage,
+ *     maintenance).
+ *
+ * DIRECTRIZ: Clases BEM dr-status-card__*, sin {{ page.* }}.
+ */
+#}
+<div class="dr-status-card">
+  <h3>{{ 'Vista previa de estado público'|t }}</h3>
+
+  {% if service_status %}
+    {% for service_id, service in service_status %}
+      <div class="dr-dashboard__card dr-dashboard__card--{{ service.status }}">
+        <div class="dr-dashboard__card-title">{{ service.name }}</div>
+        <div class="dr-dashboard__card-value">
+          <span class="status-page__badge status-page__badge--{{ service.status }}">
+            {% if service.status == 'operational' %}
+              {{ 'Operativo'|t }}
+            {% elseif service.status == 'degraded' %}
+              {{ 'Degradado'|t }}
+            {% elseif service.status == 'partial_outage' %}
+              {{ 'Interrupción parcial'|t }}
+            {% elseif service.status == 'major_outage' %}
+              {{ 'Interrupción mayor'|t }}
+            {% elseif service.status == 'maintenance' %}
+              {{ 'Mantenimiento'|t }}
+            {% else %}
+              {{ service.status }}
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    {% endfor %}
+
+    {# Enlace a la página de estado pública completa #}
+    <div style="margin-top: 1rem;">
+      <a href="/status" class="dr-dashboard__card-value" target="_blank" rel="noopener">
+        {{ 'Ver página de estado pública completa'|t }} &rarr;
+      </a>
+    </div>
+  {% else %}
+    <p class="dr-status-card__empty">{{ 'Sin datos de estado disponibles.'|t }}</p>
+  {% endif %}
+</div>

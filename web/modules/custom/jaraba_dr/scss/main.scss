@@ -1,9 +1,17 @@
-/**
- * @file
- * Main SCSS del modulo Jaraba DR.
- * Importa todos los parciales del modulo.
- */
+// =============================================================================
+// JARABA DR — ARCHIVO PRINCIPAL DE COMPILACIÓN SCSS
+// =============================================================================
+// DIRECTRIZ: Solo @use, nunca @import. Cada parcial declara sus propias
+// dependencias.
+//
+// Compilación:
+// npx sass scss/main.scss:css/jaraba-dr.css --style=compressed --no-source-map
+// =============================================================================
 
-@import 'dr-dashboard';
-@import 'status-page';
-@import 'incident-timeline';
+@use 'variables-dr';
+@use 'dr-dashboard';
+@use 'status-page';
+@use 'backup-status';
+@use 'incident-timeline';
+@use 'dr-tests';
+@use 'dr-responsive';

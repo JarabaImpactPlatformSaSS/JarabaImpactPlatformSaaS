@@ -3,46 +3,74 @@
  * @file
  * Template del dashboard legal — Zero region layout.
  *
+ * Dashboard de compliance legal con 5 secciones en grid layout.
+ * Cada seccion se carga via include de parciales independientes.
+ *
  * Variables disponibles:
  * - tos_status: Estado de Terms of Service activos.
- * - sla_metrics: Métricas de SLA del periodo actual.
- * - aup_violations: Violaciones AUP recientes.
- * - offboarding_requests: Solicitudes de offboarding pendientes.
- * - whistleblower_stats: Estadísticas del canal de denuncias.
- * - usage_limits: Estado de límites de uso por tenant.
- * - metrics: Métricas agregadas del módulo.
+ * - sla_metrics: Metricas de SLA del periodo actual.
+ * - aup_usage: Estado de uso y violaciones AUP.
+ * - offboarding_status: Estado del proceso de offboarding.
+ * - whistleblower_stats: Estadisticas del canal de denuncias.
+ * - metrics: Metricas agregadas del modulo.
+ * - tenant_id: ID del tenant actual.
+ * - tos_pending: Boolean indicando si hay ToS pendiente de aceptacion.
  */
 #}
-<div class="jaraba-legal-dashboard">
+<div class="jaraba-legal-dashboard"
+     data-tenant-id="{{ tenant_id|default(0) }}"
+     {% if tos_pending is defined and tos_pending %}data-tos-pending="true"{% endif %}>
+
   <div class="legal-dashboard__header">
-    <h1>{{ 'Panel Legal'|t }}</h1>
-    <p class="legal-dashboard__subtitle">{{ 'Gestión de términos de servicio, SLA, AUP, offboarding y canal de denuncias.'|t }}</p>
+    <div>
+      <h1>{{ 'Panel Legal'|t }}</h1>
+      <p class="legal-dashboard__subtitle">
+        {{ 'Gestion de terminos de servicio, SLA, AUP, offboarding y canal de denuncias.'|t }}
+      </p>
+    </div>
   </div>
 
   <div class="legal-dashboard__grid">
-    {# ToS Status #}
+    {# Seccion 1: Estado de Terms of Service #}
     <div class="legal-dashboard__card legal-dashboard__card--tos">
-      {% include '@jaraba_legal/partials/_tos-acceptance.html.twig' %}
+      <h3>{{ 'Terms of Service'|t }}</h3>
+      {% include '@jaraba_legal/partials/_tos-status.html.twig' with {
+        tos_status: tos_status|default(null),
+        tos_pending: tos_pending|default(false)
+      } only %}
     </div>
 
-    {# SLA Metrics #}
+    {# Seccion 2: Metricas SLA #}
     <div class="legal-dashboard__card legal-dashboard__card--sla">
-      {% include '@jaraba_legal/partials/_sla-status.html.twig' %}
+      <h3>{{ 'Metricas SLA'|t }}</h3>
+      {% include '@jaraba_legal/partials/_sla-metrics.html.twig' with {
+        sla_metrics: sla_metrics|default(null)
+      } only %}
     </div>
 
-    {# Offboarding Progress #}
-    <div class="legal-dashboard__card legal-dashboard__card--offboarding">
-      {% include '@jaraba_legal/partials/_offboarding-progress.html.twig' %}
-    </div>
-
-    {# Whistleblower Stats #}
-    <div class="legal-dashboard__card legal-dashboard__card--whistleblower">
-      {% include '@jaraba_legal/partials/_whistleblower-form.html.twig' %}
-    </div>
-
-    {# Usage Limits #}
+    {# Seccion 3: Uso de recursos y AUP #}
     <div class="legal-dashboard__card legal-dashboard__card--usage">
-      {% include '@jaraba_legal/partials/_usage-limits.html.twig' %}
+      <h3>{{ 'Uso de recursos'|t }}</h3>
+      {% include '@jaraba_legal/partials/_aup-usage.html.twig' with {
+        aup_usage: aup_usage|default(null)
+      } only %}
+    </div>
+
+    {# Seccion 4: Proceso de offboarding #}
+    <div class="legal-dashboard__card legal-dashboard__card--offboarding">
+      <h3>{{ 'Offboarding'|t }}</h3>
+      {% include '@jaraba_legal/partials/_offboarding-status.html.twig' with {
+        offboarding_status: offboarding_status|default(null)
+      } only %}
+    </div>
+
+    {# Seccion 5: Canal de denuncias #}
+    <div class="legal-dashboard__card legal-dashboard__card--whistleblower">
+      <h3>{{ 'Canal de denuncias'|t }}</h3>
+      {% include '@jaraba_legal/partials/_whistleblower-panel.html.twig' with {
+        whistleblower_stats: whistleblower_stats|default(null),
+        is_handler: is_handler|default(false)
+      } only %}
     </div>
   </div>
 </div>

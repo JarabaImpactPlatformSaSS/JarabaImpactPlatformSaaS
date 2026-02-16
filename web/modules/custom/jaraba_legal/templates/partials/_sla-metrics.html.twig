@@ -1,0 +1,109 @@
+{#
+/**
+ * @file
+ * Partial: Metricas de SLA del periodo actual.
+ *
+ * Muestra el porcentaje de uptime actual, target comprometido,
+ * historial mensual y creditos aplicables.
+ *
+ * Variables:
+ * - sla_metrics: Array con claves uptime_percentage, target_percentage,
+ *   downtime_minutes, incident_count, credit_percentage, history.
+ */
+#}
+<div class="sla-metrics-container">
+  {% if sla_metrics %}
+    {# Gauge circular de uptime #}
+    <div class="sla-metrics__gauge-wrapper">
+      {% set uptime = sla_metrics.uptime_percentage|default(0) %}
+      {% set target = sla_metrics.target_percentage|default(99.9) %}
+      {% if uptime >= target %}
+        {% set gauge_class = '' %}
+      {% elseif uptime >= (target - 1) %}
+        {% set gauge_class = 'sla-metrics__gauge--at-risk' %}
+      {% else %}
+        {% set gauge_class = 'sla-metrics__gauge--breached' %}
+      {% endif %}
+
+      <div class="sla-metrics__gauge {{ gauge_class }}"
+           style="--sla-percentage: {{ uptime }}%">
+        <span class="sla-metrics__gauge-text">{{ uptime }}%</span>
+      </div>
+    </div>
+
+    {# Grid de metricas principales #}
+    <div class="sla-metrics">
+      <div class="sla-metrics__item">
+        <span class="sla-metrics__label">{{ 'Uptime'|t }}</span>
+        <span class="sla-metrics__value" data-metric="uptime">
+          {{ sla_metrics.uptime_percentage|default('--') }}%
+        </span>
+      </div>
+
+      <div class="sla-metrics__item">
+        <span class="sla-metrics__label">{{ 'Target'|t }}</span>
+        <span class="sla-metrics__value">
+          {{ sla_metrics.target_percentage|default('99.9') }}%
+        </span>
+      </div>
+
+      <div class="sla-metrics__item">
+        <span class="sla-metrics__label">{{ 'Downtime'|t }}</span>
+        <span class="sla-metrics__value" data-metric="downtime">
+          {{ sla_metrics.downtime_minutes|default(0) }} min
+        </span>
+      </div>
+    </div>
+
+    {# Barra de progreso lineal #}
+    {% set bar_class = 'sla-metrics__bar-fill--compliant' %}
+    {% if uptime < target %}
+      {% set bar_class = 'sla-metrics__bar-fill--breached' %}
+    {% elseif uptime < (target + 0.5) %}
+      {% set bar_class = 'sla-metrics__bar-fill--at-risk' %}
+    {% endif %}
+
+    <div class="sla-metrics__bar">
+      <div class="sla-metrics__bar-fill {{ bar_class }}" style="width: {{ uptime }}%"></div>
+    </div>
+
+    {# Historial mensual #}
+    {% if sla_metrics.history is defined and sla_metrics.history|length > 0 %}
+      <table class="sla-metrics__history">
+        <thead>
+          <tr>
+            <th>{{ 'Periodo'|t }}</th>
+            <th>{{ 'Uptime'|t }}</th>
+            <th>{{ 'Incidentes'|t }}</th>
+            <th>{{ 'Credito'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in sla_metrics.history %}
+            <tr>
+              <td>{{ record.period|default('--') }}</td>
+              <td>{{ record.uptime_percentage|default('--') }}%</td>
+              <td>{{ record.incident_count|default(0) }}</td>
+              <td>{{ record.credit_percentage|default(0) }}%</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {# Info de credito si aplica #}
+    {% if sla_metrics.credit_percentage is defined and sla_metrics.credit_percentage > 0 %}
+      <div class="sla-metrics__credit sla-metrics__credit--applied" data-metric="credit">
+        {{ 'Credito aplicable: @credit% sobre la factura mensual.'|t({'@credit': sla_metrics.credit_percentage}) }}
+      </div>
+    {% else %}
+      <div class="sla-metrics__credit sla-metrics__credit--none">
+        {{ 'SLA cumplido. No se aplican creditos.'|t }}
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="sla-metrics__empty">
+      {{ 'No hay metricas SLA disponibles para el periodo actual.'|t }}
+    </p>
+  {% endif %}
+</div>

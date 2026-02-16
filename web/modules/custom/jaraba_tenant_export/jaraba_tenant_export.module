@@ -94,6 +94,63 @@ function jaraba_tenant_export_theme(): array {
 }
 
 /**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Assigns zero-region page template to the tenant export route.
+ */
+function jaraba_tenant_export_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === 'jaraba_tenant_export.export_page') {
+    $suggestions[] = 'page__tenant_export';
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Injects template variables for the tenant export zero-region page.
+ */
+function jaraba_tenant_export_preprocess_page(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_tenant_export.export_page') {
+    return;
+  }
+
+  /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+  $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+  /** @var \Drupal\jaraba_tenant_export\Service\TenantExportService $exportService */
+  $exportService = \Drupal::service('jaraba_tenant_export.export_service');
+  /** @var \Drupal\jaraba_tenant_export\Service\TenantDataCollectorService $dataCollector */
+  $dataCollector = \Drupal::service('jaraba_tenant_export.data_collector');
+
+  $tenant = $tenantContext->getCurrentTenant();
+  $groupId = $tenant ? (int) $tenant->id() : 0;
+
+  $canRequest = $groupId
+    ? $exportService->canRequestExport($groupId)
+    : ['allowed' => FALSE, 'retry_after' => 0, 'retry_after_formatted' => ''];
+
+  $exports = $groupId ? $exportService->getExportHistory($groupId) : [];
+  $sections = $dataCollector->getAvailableSections();
+
+  $variables['exports'] = $exports;
+  $variables['can_request'] = $canRequest['allowed'];
+  $variables['sections'] = $sections;
+  $variables['rate_limit_info'] = $canRequest;
+
+  // Attach drupalSettings for JS (zero-region templates don't render
+  // page.content, so controller #attached is not processed).
+  $variables['#attached']['drupalSettings']['jarabaTenantExport'] = [
+    'apiBase' => '/api/v1/tenant-export',
+    'tenantId' => $groupId,
+    'canRequest' => $canRequest['allowed'],
+    'rateLimitInfo' => $canRequest,
+    'sections' => $sections,
+    'exports' => $exports,
+  ];
+}
+
+/**
  * Implements hook_preprocess_html().
  *
  * Directriz 3.5: Body classes para páginas frontend.

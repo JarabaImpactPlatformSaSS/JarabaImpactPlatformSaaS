@@ -1,0 +1,85 @@
+// =============================================================================
+// VARIABLES LEGALES — MÓDULO JARABA LEGAL
+// =============================================================================
+// Tokens de diseño específicos del stack de compliance legal.
+//
+// DIRECTRIZ: Dart Sass moderno (@use, nunca @import).
+// DIRECTRIZ: color-mix() en lugar de rgba(), color.adjust() en lugar
+//            de darken()/lighten().
+// DIRECTRIZ: var(--ej-*) con fallback #{$legal-*}.
+// =============================================================================
+
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// COLORES LEGAL (branding compliance)
+// ---------------------------------------------------------------------------
+
+$legal-primary-fallback: #1565C0 !default;
+$legal-primary-light-fallback: #E3F2FD !default;
+$legal-success-fallback: #2E7D32 !default;
+$legal-success-light-fallback: #E8F5E9 !default;
+$legal-warning-fallback: #E65100 !default;
+$legal-warning-light-fallback: #FFF3E0 !default;
+$legal-danger-fallback: #C62828 !default;
+$legal-danger-light-fallback: #FFEBEE !default;
+$legal-info-fallback: #0277BD !default;
+$legal-info-light-fallback: #E1F5FE !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS ToS (Terms of Service)
+// ---------------------------------------------------------------------------
+
+$legal-tos-accepted-fallback: #2E7D32 !default;
+$legal-tos-pending-fallback: #E65100 !default;
+$legal-tos-expired-fallback: #C62828 !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS SLA
+// ---------------------------------------------------------------------------
+
+$legal-sla-compliant-fallback: #2E7D32 !default;
+$legal-sla-at-risk-fallback: #F57F17 !default;
+$legal-sla-breached-fallback: #C62828 !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS AUP (Acceptable Use Policy)
+// ---------------------------------------------------------------------------
+
+$legal-aup-clean-fallback: #2E7D32 !default;
+$legal-aup-warning-fallback: #E65100 !default;
+$legal-aup-suspended-fallback: #C62828 !default;
+
+// ---------------------------------------------------------------------------
+// ESTADOS OFFBOARDING
+// ---------------------------------------------------------------------------
+
+$legal-offboarding-grace-fallback: #F57F17 !default;
+$legal-offboarding-export-fallback: #0277BD !default;
+$legal-offboarding-deletion-fallback: #C62828 !default;
+$legal-offboarding-completed-fallback: #6B7280 !default;
+$legal-offboarding-cancelled-fallback: #9E9E9E !default;
+
+// ---------------------------------------------------------------------------
+// SEVERIDAD WHISTLEBLOWER
+// ---------------------------------------------------------------------------
+
+$legal-severity-low-fallback: #6B7280 !default;
+$legal-severity-medium-fallback: #F57F17 !default;
+$legal-severity-high-fallback: #E65100 !default;
+$legal-severity-critical-fallback: #C62828 !default;
+
+// ---------------------------------------------------------------------------
+// TIPOGRAFÍA
+// ---------------------------------------------------------------------------
+
+$legal-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
+
+// ---------------------------------------------------------------------------
+// DIMENSIONES
+// ---------------------------------------------------------------------------
+
+$legal-dashboard-gap: 1.5rem !default;
+$legal-card-radius: 8px !default;
+$legal-card-padding: 1.5rem !default;
+$legal-modal-z-index: 10000 !default;

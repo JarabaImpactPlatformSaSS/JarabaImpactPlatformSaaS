@@ -1,0 +1,96 @@
+// =============================================================================
+// DR RESPONSIVE — SCSS
+// =============================================================================
+// Media queries mobile-first para el módulo de Disaster Recovery.
+// =============================================================================
+
+@use 'variables-dr' as *;
+
+// ---------------------------------------------------------------------------
+// MOBILE (< 768px) — Columna única, tarjetas compactas
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .dr-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dr-dashboard__header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .dr-dashboard__section {
+    padding: 1rem;
+  }
+
+  .backup-status {
+    grid-template-columns: 1fr;
+  }
+
+  .dr-test__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dr-test__rto-rpo {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .status-page__component {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .status-page__component-uptime {
+    margin-left: 0;
+  }
+
+  .incident-timeline__header {
+    flex-wrap: wrap;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TABLET (768px - 1024px) — 2 columnas
+// ---------------------------------------------------------------------------
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dr-dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .backup-status {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DESKTOP (> 1024px) — Grid completo con sidebars
+// ---------------------------------------------------------------------------
+
+@media (min-width: 1025px) {
+  .dr-dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $dr-dashboard-gap;
+  }
+
+  .dr-dashboard__section--wide {
+    grid-column: 1 / -1;
+  }
+
+  .backup-status {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .status-page {
+    max-width: 900px;
+  }
+
+  .incident-timeline__list {
+    max-width: 720px;
+  }
+}
