@@ -1,0 +1,181 @@
+{#
+/**
+ * @file
+ * page--legal-case-detail.html.twig — Detalle de Expediente Juridico.
+ *
+ * Template zero-region para /legal/cases/{id}.
+ * Layout full-width con timeline de actividades, datos del cliente
+ * y plazos proximos.
+ *
+ * FASE A1 JarabaLex Legal Practice Platform v1.
+ *
+ * @see jaraba_legal_cases.module para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovacion') %}
+
+{{ attach_library('jaraba_legal_cases/legal-cases.main') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# MAIN CONTENT — Detalle del expediente #}
+  <main id="main-content" class="legal-case-detail-main">
+    <div class="legal-case-detail">
+
+      {% if legal_case is defined and legal_case %}
+
+      {# BREADCRUMB + BACK #}
+      <div class="legal-case-detail__nav">
+        <a href="/legal/cases" class="legal-case-detail__back">
+          {% trans %}Volver a Expedientes{% endtrans %}
+        </a>
+      </div>
+
+      {# HEADER DEL EXPEDIENTE #}
+      <div class="legal-case-detail__header">
+        <div class="legal-case-detail__title-row">
+          <h1 class="legal-case-detail__title">
+            {{ jaraba_icon('legal', 'briefcase', { variant: 'duotone', size: '28px' }) }}
+            {{ legal_case.case_number }} — {{ legal_case.title }}
+          </h1>
+          <span class="ej-badge ej-badge--{{ legal_case.status }}">{{ legal_case.status|t }}</span>
+        </div>
+        <div class="legal-case-detail__meta">
+          <span class="legal-case-detail__priority ej-badge ej-badge--{{ legal_case.priority }}">
+            {{ legal_case.priority|t }}
+          </span>
+          <span class="legal-case-detail__type">{{ legal_case.case_type|t }}</span>
+          {% if legal_case.assigned_to %}
+            <span class="legal-case-detail__assigned">
+              {% trans %}Asignado a:{% endtrans %} {{ legal_case.assigned_to }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# CONTENIDO PRINCIPAL — 2 columnas #}
+      <div class="legal-case-detail__content">
+
+        {# COLUMNA IZQUIERDA — Info del caso #}
+        <div class="legal-case-detail__info">
+
+          {# DATOS DEL CLIENTE #}
+          <section class="legal-case-detail__section">
+            <h2 class="legal-case-detail__section-title">{% trans %}Datos del Cliente{% endtrans %}</h2>
+            <dl class="legal-case-detail__dl">
+              <dt>{% trans %}Nombre{% endtrans %}</dt>
+              <dd>{{ legal_case.client_name }}</dd>
+              {% if legal_case.client_email %}
+                <dt>{% trans %}Email{% endtrans %}</dt>
+                <dd>{{ legal_case.client_email }}</dd>
+              {% endif %}
+              {% if legal_case.client_phone %}
+                <dt>{% trans %}Telefono{% endtrans %}</dt>
+                <dd>{{ legal_case.client_phone }}</dd>
+              {% endif %}
+            </dl>
+          </section>
+
+          {# DESCRIPCION #}
+          {% if legal_case.description %}
+          <section class="legal-case-detail__section">
+            <h2 class="legal-case-detail__section-title">{% trans %}Descripcion{% endtrans %}</h2>
+            <div class="legal-case-detail__description">
+              {{ legal_case.description }}
+            </div>
+          </section>
+          {% endif %}
+
+          {# DATOS JUDICIALES #}
+          {% if legal_case.court_name %}
+          <section class="legal-case-detail__section">
+            <h2 class="legal-case-detail__section-title">{% trans %}Datos Judiciales{% endtrans %}</h2>
+            <dl class="legal-case-detail__dl">
+              <dt>{% trans %}Juzgado{% endtrans %}</dt>
+              <dd>{{ legal_case.court_name }}</dd>
+              {% if legal_case.next_deadline %}
+                <dt>{% trans %}Proximo Plazo{% endtrans %}</dt>
+                <dd>{{ legal_case.next_deadline }}</dd>
+              {% endif %}
+              {% if legal_case.estimated_value %}
+                <dt>{% trans %}Valor Estimado{% endtrans %}</dt>
+                <dd>{{ legal_case.estimated_value }} &euro;</dd>
+              {% endif %}
+            </dl>
+          </section>
+          {% endif %}
+        </div>
+
+        {# COLUMNA DERECHA — Timeline de actividades #}
+        <div class="legal-case-detail__timeline">
+          <h2 class="legal-case-detail__section-title">
+            {{ jaraba_icon('legal', 'gavel', { variant: 'duotone', size: '20px' }) }}
+            {% trans %}Actividad del Expediente{% endtrans %}
+          </h2>
+          <div class="legal-case-detail__activity-list">
+            {% if legal_activities is defined and legal_activities %}
+              {% for activity in legal_activities %}
+                {% include '@jaraba_legal_cases/partials/_activity-entry.html.twig' with {
+                  activity: activity
+                } only %}
+              {% endfor %}
+            {% else %}
+              <p class="legal-case-detail__no-activity">{% trans %}Sin actividad registrada.{% endtrans %}</p>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+      {% else %}
+        <div class="legal-case-detail__not-found">
+          <p>{% trans %}Expediente no encontrado.{% endtrans %}</p>
+          <a href="/legal/cases">{% trans %}Volver a Expedientes{% endtrans %}</a>
+        </div>
+      {% endif %}
+
+    </div>
+  </main>
+
+  {# FOOTER #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'legal_case_detail_copilot',
+    avatar_type: 'legal_advisor',
+    fab_color: 'var(--ej-legal-primary, #1E3A5F)',
+    greeting: 'Soy tu asistente para este expediente. Puedo ayudarte con plazos, busqueda de jurisprudencia y preparacion de escritos.'|t
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

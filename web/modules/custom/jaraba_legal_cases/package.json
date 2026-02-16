@@ -1,0 +1,14 @@
+{
+  "name": "jaraba-legal-cases",
+  "version": "1.0.0",
+  "description": "SCSS del modulo Legal Cases - Gestion de expedientes juridicos JarabaLex",
+  "private": true,
+  "scripts": {
+    "build": "sass scss/main.scss:css/jaraba-legal-cases.css --style=compressed --no-source-map",
+    "build:all": "npm run build",
+    "watch": "sass --watch scss/main.scss:css/jaraba-legal-cases.css --style=compressed"
+  },
+  "devDependencies": {
+    "sass": "^1.97.3"
+  }
+}

@@ -1,0 +1,135 @@
+{#
+/**
+ * @file
+ * page--legal-cases.html.twig — Dashboard Expedientes Juridicos.
+ *
+ * Template zero-region para /legal/cases.
+ * Layout full-width mobile-first con parciales reutilizables.
+ *
+ * ARQUITECTURA:
+ * - Sin {{ page.* }} = Sin bloques/regiones de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-*)
+ * - Body class 'page-legal-cases' via hook_preprocess_html()
+ *
+ * PARTIALS:
+ * - _header.html.twig: Header con menu movil (reutilizado)
+ * - _footer.html.twig: Footer configurable (reutilizado)
+ * - _copilot-fab.html.twig: FAB de copiloto contextual
+ *
+ * FASE A1 JarabaLex Legal Practice Platform v1.
+ *
+ * @see jaraba_legal_cases.module para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovacion') %}
+
+{{ attach_library('jaraba_legal_cases/legal-cases.main') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER — Partial reutilizable con menu movil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# MAIN CONTENT — Dashboard expedientes #}
+  <main id="main-content" class="legal-cases-main">
+    <div class="legal-cases-dashboard">
+
+      {# PAGE TITLE #}
+      <div class="legal-cases-dashboard__header">
+        <div class="legal-cases-dashboard__title-row">
+          <h1 class="legal-cases-dashboard__title">
+            {{ jaraba_icon('legal', 'briefcase', { variant: 'duotone', size: '32px' }) }}
+            {% trans %}Expedientes Juridicos{% endtrans %}
+          </h1>
+          <a href="/admin/content/legal-cases/add"
+             class="ej-btn ej-btn--primary"
+             data-dialog-type="modal"
+             data-dialog-options='{"width":800}'>
+            {% trans %}Nuevo Expediente{% endtrans %}
+          </a>
+        </div>
+
+        {# KPIs #}
+        {% if legal_stats is defined and legal_stats %}
+        <div class="legal-cases-dashboard__kpis">
+          <div class="ej-kpi-card">
+            <span class="ej-kpi-card__value">{{ legal_stats.total_active|default(0) }}</span>
+            <span class="ej-kpi-card__label">{% trans %}Activos{% endtrans %}</span>
+          </div>
+          <div class="ej-kpi-card">
+            <span class="ej-kpi-card__value">{{ legal_stats.total_on_hold|default(0) }}</span>
+            <span class="ej-kpi-card__label">{% trans %}En Espera{% endtrans %}</span>
+          </div>
+          <div class="ej-kpi-card">
+            <span class="ej-kpi-card__value">{{ legal_stats.total_completed|default(0) }}</span>
+            <span class="ej-kpi-card__label">{% trans %}Completados{% endtrans %}</span>
+          </div>
+          <div class="ej-kpi-card">
+            <span class="ej-kpi-card__value">{{ legal_stats.total_this_month|default(0) }}</span>
+            <span class="ej-kpi-card__label">{% trans %}Este Mes{% endtrans %}</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      {# GRID DE EXPEDIENTES #}
+      <div class="legal-cases-dashboard__grid" id="legal-cases-grid">
+        {% if legal_cases is defined and legal_cases %}
+          {% for case_item in legal_cases %}
+            {% include '@jaraba_legal_cases/partials/_case-card.html.twig' with {
+              case_entity: case_item
+            } only %}
+          {% endfor %}
+        {% else %}
+          <div class="legal-cases-dashboard__empty">
+            {{ jaraba_icon('legal', 'briefcase', { variant: 'duotone', size: '48px' }) }}
+            <p>{% trans %}No hay expedientes activos. Crea tu primer expediente para comenzar.{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </main>
+
+  {# FOOTER — Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO — Asesor Legal Contextual #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'legal_cases_copilot',
+    avatar_type: 'legal_advisor',
+    fab_color: 'var(--ej-legal-primary, #1E3A5F)',
+    greeting: 'Soy tu asistente de gestion de expedientes. Puedo ayudarte a buscar expedientes, gestionar plazos y preparar documentos.'|t
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

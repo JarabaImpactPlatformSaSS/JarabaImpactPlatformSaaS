@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * _case-card.html.twig — Tarjeta de expediente juridico.
+ *
+ * Parcial reutilizable con BEM .ej-case-card.
+ * Variables inyectadas desde el template padre.
+ *
+ * @param case_entity: array con datos del expediente
+ */
+#}
+{% if case_entity %}
+<article class="ej-case-card ej-case-card--{{ case_entity.priority|default('medium') }}">
+  <div class="ej-case-card__header">
+    <span class="ej-case-card__number">{{ case_entity.case_number }}</span>
+    <span class="ej-badge ej-badge--{{ case_entity.status|default('active') }}">
+      {{ case_entity.status|default('active')|t }}
+    </span>
+  </div>
+  <h3 class="ej-case-card__title">
+    <a href="/legal/cases/{{ case_entity.id }}">{{ case_entity.title }}</a>
+  </h3>
+  <div class="ej-case-card__meta">
+    <span class="ej-case-card__client">
+      {{ case_entity.client_name }}
+    </span>
+    <span class="ej-case-card__type">{{ case_entity.case_type|default('')|t }}</span>
+  </div>
+  <div class="ej-case-card__footer">
+    <span class="ej-case-card__priority ej-badge ej-badge--{{ case_entity.priority|default('medium') }}">
+      {{ case_entity.priority|default('medium')|t }}
+    </span>
+    {% if case_entity.assigned_to %}
+      <span class="ej-case-card__assigned">{{ case_entity.assigned_to }}</span>
+    {% endif %}
+  </div>
+</article>
+{% endif %}

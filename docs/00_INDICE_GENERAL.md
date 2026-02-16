@@ -4,7 +4,18 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 56.0.0 (Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial)
+**Versión:** 57.0.0 (FASE A1 jaraba_legal_cases — Legal Practice Platform)
+
+> **⚖️ FASE A1 jaraba_legal_cases — LEGAL PRACTICE PLATFORM IMPLEMENTADA** (2026-02-16)
+> - **Modulo implementado:** `jaraba_legal_cases` — Modulo pivote del vertical JarabaLex Legal Practice Platform v1.0
+> - **4 Content Entities:** ClientCase (22 campos, auto EXP-YYYY-NNNN), CaseActivity (append-only, 11 campos), ClientInquiry (17 campos, auto CON-YYYY-NNNN), InquiryTriage (13 campos, urgency_score IA)
+> - **4 Services:** CaseManagerService, ActivityLoggerService, CaseTriageService, InquiryManagerService
+> - **3 Controllers + 11 API REST endpoints:** Dashboard (zero-region), Detail (zero-region), API (/api/v1/legal/cases/*, /api/v1/legal/inquiries/*)
+> - **Frontend:** 2 zero-region page templates (page--legal-cases, page--legal-case-detail), 3 Twig partials, 6 SCSS BEM partials (Dart Sass @use, var(--ej-*), color-mix()), 1 JS behavior, 4 SVG icons (briefcase + gavel, mono + duotone)
+> - **Infraestructura:** 4 AccessControlHandlers, 2 ListBuilders, 3 Forms, 9 permisos, hook_install() con taxonomia legal_area (12 terminos), config schema, libraries.yml
+> - **Verificacion:** 22 PHP files pasan lint, drush en exitoso, 4 entidades registradas, SCSS compilado, theme modificado (prefijo + 2 template suggestions)
+> - **Aprendizaje #90:** 6 reglas nuevas (ENTITY-AUTONUMBER-001, ENTITY-APPEND-001, THEME-SUGGEST-001, SCSS-BUILD-001, INSTALL-TAXONOMY-001, ENTITY-FK-001)
+> - **Directrices v41.0.0, Arquitectura v41.0.0, Indice v57.0.0**
 
 > **⚖️ PLAN ELEVACION JARABALEX v1 — 14 FASES CLASE MUNDIAL** (2026-02-16)
 > - **14 fases implementadas:** FeatureGate + UpgradeTriggers + CopilotBridge + preprocess_html + page template zero-region + SCSS compliance + design tokens + email MJML (6 templates SEQ_LEX_001-006) + cross-vertical bridges + journey progression (7 reglas proactivas) + health score (5 dimensiones + 8 KPIs) + experiments (8 eventos conversion) + avatar navigation + funnel analytics (3 funnels) + QA integral
@@ -1276,6 +1287,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-16 | **57.0.0** | ⚖️ **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Modulo pivote JarabaLex implementado. 4 Content Entities (ClientCase 22 campos auto EXP-YYYY-NNNN, CaseActivity append-only 11 campos, ClientInquiry 17 campos auto CON-YYYY-NNNN, InquiryTriage 13 campos). 4 Services + 3 Controllers + 11 API REST endpoints. 2 zero-region templates + 3 Twig partials + 6 SCSS BEM + 4 SVG icons + JS behavior. 47 ficheros, 22 PHP lint OK, drush en exitoso. Taxonomia legal_area (12 terminos). Theme modificado (prefijo + 2 suggestions). 6 reglas nuevas (ENTITY-AUTONUMBER-001, ENTITY-APPEND-001, THEME-SUGGEST-001, SCSS-BUILD-001, INSTALL-TAXONOMY-001, ENTITY-FK-001). Directrices v41.0.0, Arquitectura v41.0.0. 90 aprendizajes |
 | 2026-02-16 | **56.0.0** | ⚖️ **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** 14 fases implementadas para elevar jaraba_legal_intelligence a vertical clase mundial. FeatureGateService + UpgradeTriggers + LegalCopilotBridge + preprocess_html body classes + page template zero-region + SCSS compliance + design tokens + 6 MJML emails (SEQ_LEX_001-006) + cross-vertical bridges + journey progression (7 reglas proactivas) + health score (5 dimensiones + 8 KPIs) + experiments (8 eventos conversion) + avatar navigation (4 items legal_professional) + 3 funnel definitions + QA integral. LegalCopilotAgent 6 modos con AgentInterface completo. 3 reglas nuevas (LEGAL-RAG-001, LEGAL-GATE-001, LEGAL-BODY-001). Directrices v40.0.0, Arquitectura v40.0.0. 89 aprendizajes |
 | 2026-02-16 | **55.0.0** | 📖 **Documentation Update v39.0.0:** 3 reglas ZERO-REGION-001/002/003 en Directrices seccion 5.8.4. 5 modulos (jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService) añadidos al registro de modulos en Arquitectura seccion 7.1. Aprendizaje #88 zero-region template pattern. 88 aprendizajes |
 | 2026-02-16 | **53.0.0** | 🔧 **Gap-filling Compliance Stack + ComplianceAggregatorService:** Servicios compliance con lógica de producción completa (+16,035 LOC, 97 archivos). jaraba_dr 5 servicios + API + 4 tests. jaraba_legal 5 servicios + LegalApiController (12 endpoints) + 4 tests. jaraba_privacy JS + SCSS + 4 tests. ComplianceAggregatorService: 9 KPIs cross-module (3 por módulo), score 0-100, grade A-F, alertas automáticas. CompliancePanelController `/admin/jaraba/compliance` + API. Tenant export fix (zero-region + hook_preprocess_page). Sección 7.4e docs 183-185 actualizados a IMPLEMENTADO. 13 test files nuevos. Directrices v37.0.0, Arquitectura v36.0.0. 87 aprendizajes |

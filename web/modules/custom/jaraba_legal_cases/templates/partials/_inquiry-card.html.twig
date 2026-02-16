@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * _inquiry-card.html.twig — Tarjeta de consulta juridica.
+ *
+ * Parcial reutilizable con BEM .ej-inquiry-card.
+ *
+ * @param inquiry: array con datos de la consulta
+ */
+#}
+{% if inquiry %}
+<article class="ej-inquiry-card ej-inquiry-card--{{ inquiry.status|default('pending') }}">
+  <div class="ej-inquiry-card__header">
+    <span class="ej-inquiry-card__number">{{ inquiry.inquiry_number }}</span>
+    <span class="ej-badge ej-badge--{{ inquiry.status|default('pending') }}">
+      {{ inquiry.status|default('pending')|t }}
+    </span>
+  </div>
+  <h3 class="ej-inquiry-card__title">{{ inquiry.subject }}</h3>
+  <div class="ej-inquiry-card__meta">
+    <span class="ej-inquiry-card__client">{{ inquiry.client_name }}</span>
+    <span class="ej-inquiry-card__source">{{ inquiry.source|default('web_form')|t }}</span>
+  </div>
+  {% if inquiry.urgency_score is defined and inquiry.urgency_score > 0 %}
+    <div class="ej-inquiry-card__urgency">
+      <span class="ej-inquiry-card__urgency-label">{% trans %}Urgencia{% endtrans %}</span>
+      <span class="ej-inquiry-card__urgency-score">{{ inquiry.urgency_score }}/100</span>
+    </div>
+  {% endif %}
+</article>
+{% endif %}

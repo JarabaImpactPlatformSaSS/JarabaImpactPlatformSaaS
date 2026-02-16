@@ -1,0 +1,16 @@
+/**
+ * @file
+ * _variables.scss — Variables y tokens de Legal Cases.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * Las variables SCSS locales son solo fallback de compilacion.
+ * Los modulos satelite NUNCA definen SCSS variables — solo consumen
+ * CSS Custom Properties con fallbacks inline.
+ */
+
+// Colores legales (fallbacks locales).
+$legal-primary: #1E3A5F;
+$legal-secondary: #2D5F8A;
+$legal-accent: #D4A843;
+$legal-surface: #F8FAFC;
+$legal-border: #E2E8F0;

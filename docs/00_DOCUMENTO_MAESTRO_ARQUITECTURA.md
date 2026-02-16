@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 40.0.0 (Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial)
+**Versión:** 41.0.0 (FASE A1 jaraba_legal_cases — 4 Content Entities + 11 API endpoints)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -960,6 +960,28 @@
 │   ├── Frontend: 3 controllers, 6 templates, 8 parciales, 6 JS, 12 SCSS│
 │   ├── Tests: 7 PHPUnit suites                                         │
 │   └── Estado: ✅ Clase Mundial (50 archivos, Plan Elevacion v1 14/14) │
+│                                                                         │
+│   📦 jaraba_legal_cases ✅ (Legal Practice Platform — FASE A1)          │
+│   ├── Modulo pivote JarabaLex: gestion expedientes + consultas         │
+│   ├── 4 Content Entities:                                               │
+│   │   ├── ClientCase (22 campos, auto EXP-YYYY-NNNN, preSave())       │
+│   │   ├── CaseActivity (append-only, 11 campos, sin edit/delete)       │
+│   │   ├── ClientInquiry (17 campos, auto CON-YYYY-NNNN)               │
+│   │   └── InquiryTriage (13 campos, urgency_score 0-100, AI triage)   │
+│   ├── 4 Services: CaseManagerService, ActivityLoggerService,           │
+│   │   CaseTriageService, InquiryManagerService                         │
+│   ├── 3 Controllers:                                                    │
+│   │   ├── CasesDashboardController (zero-region /legal/cases)          │
+│   │   ├── CaseDetailController (zero-region /legal/cases/{id})         │
+│   │   └── CasesApiController (11 REST endpoints /api/v1/legal/*)       │
+│   ├── API REST: cases CRUD + activity + inquiries CRUD + triage +      │
+│   │   convert-to-case + assign (envelope {data, meta} / {error})       │
+│   ├── Frontend: 2 zero-region templates, 3 Twig partials BEM,         │
+│   │   6 SCSS (@use, var(--ej-*), color-mix()), 4 SVG icons duotone    │
+│   ├── Taxonomia: legal_area (12 terminos via hook_install())           │
+│   ├── Permisos: 9 (manage/view/create/edit/delete cases + inquiries)   │
+│   ├── Tests: PHP lint 22/22 OK                                         │
+│   └── Estado: ✅ Produccion (FASE A1, Feb 2026)                        │
 │                                                                         │
 │   📦 jaraba_tenant_export ✅ (Tenant Data Export + Daily Backup)          │
 │   ├── GDPR Art. 20 Portabilidad de Datos — Self-service tenant export  │
@@ -2555,8 +2577,9 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
+| 2026-02-16 | **41.0.0** | **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Nuevo modulo jaraba_legal_cases anadido al registro seccion 7.1. 4 Content Entities (ClientCase, CaseActivity append-only, ClientInquiry, InquiryTriage). 4 Services, 3 Controllers, 11 API REST endpoints. 2 zero-region page templates. 47 ficheros. Aprendizaje #90. |
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 40.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 41.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 

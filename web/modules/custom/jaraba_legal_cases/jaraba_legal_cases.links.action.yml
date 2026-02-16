@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de accion (+ Anadir) en las paginas de coleccion admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Boton "Crear Expediente" en la coleccion de expedientes
+jaraba_legal_cases.client_case.add:
+  title: 'Crear Expediente'
+  route_name: entity.client_case.add_form
+  appears_on:
+    - entity.client_case.collection
+
+# Boton "Crear Consulta" en la coleccion de consultas
+jaraba_legal_cases.client_inquiry.add:
+  title: 'Crear Consulta'
+  route_name: entity.client_inquiry.add_form
+  appears_on:
+    - entity.client_inquiry.collection

@@ -1,0 +1,43 @@
+# =============================================================================
+# Permisos del modulo Legal Cases (JarabaLex)
+# Estructura: permisos por entidad y funcionalidad de expedientes juridicos
+# Logica: control granular de acceso para abogados, clientes y administradores
+# =============================================================================
+
+# --- Expedientes ---
+manage legal cases:
+  title: 'Gestionar expedientes juridicos'
+  description: 'Acceso completo a CRUD de todos los expedientes juridicos.'
+  restrict access: true
+
+view own legal cases:
+  title: 'Ver expedientes propios'
+  description: 'Ver los expedientes asignados al usuario actual.'
+
+create legal cases:
+  title: 'Crear expedientes juridicos'
+  description: 'Crear nuevos expedientes en el sistema.'
+
+edit own legal cases:
+  title: 'Editar expedientes propios'
+  description: 'Editar expedientes asignados al usuario actual.'
+
+delete own legal cases:
+  title: 'Eliminar expedientes propios'
+  description: 'Eliminar expedientes asignados al usuario actual.'
+
+# --- Consultas ---
+manage legal inquiries:
+  title: 'Gestionar consultas juridicas'
+  description: 'Acceso completo a CRUD de todas las consultas pre-expediente.'
+  restrict access: true
+
+view legal inquiries:
+  title: 'Ver consultas juridicas'
+  description: 'Ver consultas pre-expediente en el sistema.'
+
+# --- Admin ---
+administer legal cases settings:
+  title: 'Administrar configuracion de expedientes'
+  description: 'Acceso a la configuracion global del modulo Legal Cases.'
+  restrict access: true
