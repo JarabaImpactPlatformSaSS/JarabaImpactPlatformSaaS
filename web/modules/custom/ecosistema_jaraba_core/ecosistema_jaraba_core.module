@@ -594,6 +594,26 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'admin-content-overview',
       'path' => $path . '/templates',
     ],
+
+    // =========================================================================
+    // FISCAL COMPLIANCE DASHBOARD (FASE 11)
+    // =========================================================================
+
+    // Dashboard fiscal unificado — zero-region page template.
+    // Ruta: /admin/jaraba/fiscal
+    'page__fiscal' => [
+      'template' => 'page--fiscal',
+      'path' => $path . '/templates',
+      'variables' => [
+        'fiscal_compliance' => [],
+        'fiscal_installed_modules' => [],
+        'fiscal_verifactu_stats' => [],
+        'fiscal_facturae_stats' => [],
+        'fiscal_einvoice_stats' => [],
+        'fiscal_certificate_status' => [],
+        'fiscal_tenant_id' => '',
+      ],
+    ],
   ];
 
 
@@ -2502,5 +2522,26 @@ function ecosistema_jaraba_core_preprocess_html(&$variables) {
     $variables['#attached']['drupalSettings']['adminCommandPalette'] = [
       'searchUrl' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
     ];
+  }
+
+  // FASE 11: Add body classes for fiscal dashboard route.
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'ecosistema_jaraba_core.fiscal.dashboard') {
+    $variables['attributes']['class'][] = 'page--fiscal-dashboard';
+    $variables['attributes']['class'][] = 'page--fiscal';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Assigns the zero-region page template to the fiscal dashboard route.
+ * FASE 11, entregable F11-3.
+ */
+function ecosistema_jaraba_core_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'ecosistema_jaraba_core.fiscal.dashboard') {
+    $suggestions[] = 'page__fiscal';
   }
 }

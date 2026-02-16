@@ -9,7 +9,12 @@
  */
 #}
 <div class="page-wrapper page-wrapper--clean page-wrapper--fiscal">
-  {% include '@ecosistema_jaraba_core/partials/_header.html.twig' %}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
 
   <main class="facturae-documents" role="main">
     <div class="facturae-documents__header">
@@ -95,6 +100,9 @@
     </nav>
   </main>
 
-  {% include '@ecosistema_jaraba_core/partials/_footer.html.twig' %}
-  {% include '@ecosistema_jaraba_core/partials/_copilot-fab.html.twig' %}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
 </div>

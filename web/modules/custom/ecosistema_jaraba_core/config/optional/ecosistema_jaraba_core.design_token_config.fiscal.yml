@@ -1,0 +1,47 @@
+# Design Token Config: Fiscal Compliance Stack.
+#
+# Paleta de colores fiscales para override por tenant.
+# Estos tokens se aplican como CSS Custom Properties --ej-fiscal-*
+# y pueden ser sobreescritos a nivel tenant, plan o vertical.
+#
+# Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 11, F11-8.
+
+id: fiscal
+label: 'Fiscal Compliance Stack'
+scope: platform
+vertical_id: ''
+plan_id: ''
+tenant_id: ''
+preset_id: ''
+weight: 100
+
+color_tokens:
+  # AEAT / VeriFactu — Azul institucional.
+  ej-fiscal-aeat: '#1A365D'
+  ej-fiscal-aeat-light: '#EBF4FF'
+  # FACe / B2G — Morado institucional Administracion Publica.
+  ej-fiscal-face: '#553C9A'
+  ej-fiscal-face-light: '#FAF5FF'
+  # B2B / E-Factura — Verde de negocio.
+  ej-fiscal-b2b: '#276749'
+  ej-fiscal-b2b-light: '#F0FFF4'
+  # Estados de compliance.
+  ej-fiscal-accepted: '#10B981'
+  ej-fiscal-pending: '#F59E0B'
+  ej-fiscal-rejected: '#EF4444'
+  ej-fiscal-error: '#DC2626'
+  # Certificados.
+  ej-fiscal-cert-valid: '#059669'
+  ej-fiscal-cert-warning: '#D97706'
+  ej-fiscal-cert-expired: '#B91C1C'
+  # Hash chain integrity.
+  ej-fiscal-chain-valid: '#0891B2'
+  ej-fiscal-chain-broken: '#DC2626'
+
+typography_tokens: {}
+
+spacing_tokens: {}
+
+effect_tokens: {}
+
+component_variants: {}

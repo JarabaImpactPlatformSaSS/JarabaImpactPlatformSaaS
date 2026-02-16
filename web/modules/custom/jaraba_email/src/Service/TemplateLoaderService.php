@@ -215,6 +215,21 @@ class TemplateLoaderService {
       'file' => 'emprendimiento/seq_post_funding.mjml',
       'description' => 'Post-funding: Retención y próximos pasos',
     ],
+
+    // Fiscal compliance templates (FISC_001 - FISC_003).
+    // Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 11 (F11-6).
+    'FISC_001' => [
+      'file' => 'fiscal/certificate_expiring.mjml',
+      'description' => 'Alerta de certificado digital próximo a expirar',
+    ],
+    'FISC_002' => [
+      'file' => 'fiscal/verifactu_chain_break.mjml',
+      'description' => 'Alerta crítica de rotura de cadena VeriFactu',
+    ],
+    'FISC_003' => [
+      'file' => 'fiscal/face_invoice_rejected.mjml',
+      'description' => 'Notificación de factura rechazada por FACe',
+    ],
   ];
 
   /**
@@ -496,6 +511,37 @@ class TemplateLoaderService {
       'amount' => '25.000 €',
       'next_steps_url' => 'https://jaraba.es/funding/application/FA-001/next-steps',
       'referral_url' => 'https://jaraba.es/referral?source=post_funding',
+    ],
+    // Fiscal compliance sample data (FISC_001 - FISC_003).
+    'FISC_001' => [
+      'user_name' => 'Carlos Administrador',
+      'tenant_name' => 'Empresa Ejemplo S.L.',
+      'days_remaining' => '15',
+      'expiry_date' => '3 de marzo de 2026',
+      'certificate_subject' => 'CN=EMPRESA EJEMPLO SL - CIF B12345678',
+      'certificate_issuer' => 'AC FNMT Usuarios',
+      'renew_url' => 'https://jaraba.es/admin/jaraba/fiscal',
+    ],
+    'FISC_002' => [
+      'user_name' => 'Carlos Administrador',
+      'tenant_name' => 'Empresa Ejemplo S.L.',
+      'affected_record' => 'VF-2026-000042 (ID: 42)',
+      'expected_hash' => 'a1b2c3d4e5f6...',
+      'actual_hash' => 'f6e5d4c3b2a1...',
+      'detection_date' => '16 de febrero de 2026, 10:30',
+      'dashboard_url' => 'https://jaraba.es/admin/jaraba/verifactu',
+    ],
+    'FISC_003' => [
+      'user_name' => 'Carlos Administrador',
+      'tenant_name' => 'Empresa Ejemplo S.L.',
+      'invoice_number' => 'FE-2026-000015',
+      'recipient_name' => 'Ayuntamiento de Sevilla',
+      'amount' => '12.500,00 €',
+      'organo_gestor' => 'Concejalía de Hacienda',
+      'dir3_code' => 'L01410917',
+      'rejection_reason' => 'Error en NIF del emisor: no coincide con el certificado',
+      'rejection_date' => '15 de febrero de 2026',
+      'invoice_url' => 'https://jaraba.es/admin/jaraba/facturae/15',
     ],
   ];
 

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'variables-fiscal' as *;
 
 .einvoice-stats {
@@ -87,7 +88,7 @@
     text-transform: uppercase;
 
     &--draft { background: color-mix(in srgb, $fiscal-info 15%, transparent); color: $fiscal-info; }
-    &--pending { background: color-mix(in srgb, $fiscal-warning 15%, transparent); color: darken($fiscal-warning, 20%); }
+    &--pending { background: color-mix(in srgb, $fiscal-warning 15%, transparent); color: color.adjust($fiscal-warning, $lightness: -20%); }
     &--paid, &--delivered, &--valid { background: color-mix(in srgb, $fiscal-secondary 15%, transparent); color: $fiscal-secondary; }
     &--overdue, &--error, &--failed { background: color-mix(in srgb, $fiscal-danger 15%, transparent); color: $fiscal-danger; }
   }

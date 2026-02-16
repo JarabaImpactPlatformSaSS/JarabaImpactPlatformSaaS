@@ -1,0 +1,323 @@
+{#
+/**
+ * @file
+ * Zero-region page template for the unified Fiscal Compliance Dashboard.
+ *
+ * This template provides a clean layout without Drupal's default page regions,
+ * following the zero-region pattern established by page--verifactu.html.twig.
+ *
+ * Variables (injected via hook_preprocess_page()):
+ * - fiscal_compliance (array): Compliance score, grade, factors, alerts.
+ * - fiscal_installed_modules (array): verifactu/facturae/einvoice_b2b booleans.
+ * - fiscal_verifactu_stats (array): VeriFactu record stats.
+ * - fiscal_facturae_stats (array): Facturae B2G invoice stats.
+ * - fiscal_einvoice_stats (array): E-Invoice B2B document stats.
+ * - fiscal_certificate_status (array): Certificate validity info.
+ * - fiscal_tenant_id (string): Current tenant ID.
+ * - site_name, site_slogan, logo, logged_in: Standard Drupal variables.
+ *
+ * FASE 11, entregable F11-3.
+ */
+#}
+{{ attach_library('ecosistema_jaraba_core/fiscal-styles') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--fiscal">
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
+
+  <main class="main-content main-content--full main-content--fiscal" role="main">
+    <div class="main-content__inner main-content__inner--full">
+
+      {# Dashboard header with compliance score #}
+      <div class="fiscal-dashboard__header">
+        <div class="fiscal-dashboard__title-wrapper">
+          <h1 class="fiscal-dashboard__title">
+            {{ jaraba_icon('fiscal', 'shield-fiscal', { variant: 'duotone', size: '32px' }) }}
+            {% trans %}Fiscal Compliance Dashboard{% endtrans %}
+          </h1>
+          <p class="fiscal-dashboard__description">
+            {% trans %}Unified compliance monitoring: VeriFactu, Facturae B2G, E-Factura B2B, and digital certificates.{% endtrans %}
+          </p>
+        </div>
+      </div>
+
+      {# Compliance Score Card #}
+      {% set compliance = fiscal_compliance|default({}) %}
+      {% set score = compliance.score|default(0) %}
+      {% set grade = compliance.grade|default('—') %}
+      <section class="fiscal-dashboard__score-section" aria-label="{% trans %}Compliance Score{% endtrans %}">
+        <div class="fiscal-score-card fiscal-score-card--grade-{{ grade|lower }}">
+          <div class="fiscal-score-card__gauge">
+            <div class="fiscal-score-card__score">{{ score }}</div>
+            <div class="fiscal-score-card__grade">{{ grade }}</div>
+          </div>
+          <div class="fiscal-score-card__details">
+            <h2 class="fiscal-score-card__title">{% trans %}Compliance Score{% endtrans %}</h2>
+            <p class="fiscal-score-card__subtitle">
+              {% if score >= 90 %}
+                {% trans %}Excellent — Full regulatory compliance{% endtrans %}
+              {% elseif score >= 70 %}
+                {% trans %}Good — Minor issues detected{% endtrans %}
+              {% elseif score >= 50 %}
+                {% trans %}Fair — Several compliance gaps{% endtrans %}
+              {% else %}
+                {% trans %}Critical — Immediate action required{% endtrans %}
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {# Compliance Factors Grid #}
+      {% if compliance.factors|default([])|length > 0 %}
+        <section class="fiscal-dashboard__factors" aria-label="{% trans %}Compliance Factors{% endtrans %}">
+          <h2 class="fiscal-dashboard__section-title">{% trans %}Compliance Factors{% endtrans %}</h2>
+          <div class="fiscal-dashboard__factors-grid">
+            {% for key, factor in compliance.factors %}
+              <div class="fiscal-factor-card fiscal-factor-card--{{ factor.status|default('unknown') }}">
+                <div class="fiscal-factor-card__header">
+                  <span class="fiscal-factor-card__label">{{ factor.label|default(key) }}</span>
+                  <span class="fiscal-factor-card__score">{{ factor.score|default(0) }}/{{ factor.max|default(20) }}</span>
+                </div>
+                <div class="fiscal-factor-card__bar">
+                  <div class="fiscal-factor-card__bar-fill" style="width: {{ (factor.score|default(0) / factor.max|default(20) * 100)|round }}%"></div>
+                </div>
+                <p class="fiscal-factor-card__detail">{{ factor.detail|default('') }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {# Alerts Section #}
+      {% set alerts = compliance.alerts|default([]) %}
+      {% if alerts|length > 0 %}
+        <section class="fiscal-dashboard__alerts" aria-label="{% trans %}Fiscal Alerts{% endtrans %}">
+          <h2 class="fiscal-dashboard__section-title">{% trans %}Active Alerts{% endtrans %}</h2>
+          <div class="fiscal-dashboard__alerts-list">
+            {% for alert in alerts %}
+              <div class="fiscal-alert fiscal-alert--{{ alert.severity|default('info') }}">
+                <span class="fiscal-alert__icon">
+                  {% if alert.severity == 'critical' %}
+                    {{ jaraba_icon('ui', 'alert-triangle', { size: '20px' }) }}
+                  {% else %}
+                    {{ jaraba_icon('ui', 'alert-circle', { size: '20px' }) }}
+                  {% endif %}
+                </span>
+                <span class="fiscal-alert__module fiscal-alert__module--{{ alert.module|default('general') }}">
+                  {{ alert.module|default('general')|capitalize }}
+                </span>
+                <span class="fiscal-alert__message">{{ alert.message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {# Module Stats Grid #}
+      {% set modules = fiscal_installed_modules|default({}) %}
+      <section class="fiscal-dashboard__modules" aria-label="{% trans %}Fiscal Modules{% endtrans %}">
+        <h2 class="fiscal-dashboard__section-title">{% trans %}Module Status{% endtrans %}</h2>
+        <div class="fiscal-dashboard__modules-grid">
+
+          {# VeriFactu Card #}
+          {% set vf = fiscal_verifactu_stats|default({}) %}
+          <div class="fiscal-module-card fiscal-module-card--verifactu {{ vf.installed|default(false) ? '' : 'fiscal-module-card--disabled' }}">
+            <div class="fiscal-module-card__header">
+              {{ jaraba_icon('fiscal', 'aeat-seal', { size: '24px' }) }}
+              <h3 class="fiscal-module-card__title">VeriFactu</h3>
+              {% if vf.installed|default(false) %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--active">{% trans %}Active{% endtrans %}</span>
+              {% else %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--inactive">{% trans %}Not installed{% endtrans %}</span>
+              {% endif %}
+            </div>
+            {% if vf.installed|default(false) and not vf.error|default(false) %}
+              <div class="fiscal-module-card__stats">
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ vf.total_records|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Records{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ vf.accepted_records|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Accepted{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ vf.pending_records|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Pending{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ vf.rejected_records|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Rejected{% endtrans %}</span>
+                </div>
+              </div>
+              <a href="{{ vf.dashboard_url|default('/admin/jaraba/verifactu') }}" class="fiscal-module-card__link">
+                {% trans %}Go to VeriFactu{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+
+          {# Facturae B2G Card #}
+          {% set ft = fiscal_facturae_stats|default({}) %}
+          <div class="fiscal-module-card fiscal-module-card--facturae {{ ft.installed|default(false) ? '' : 'fiscal-module-card--disabled' }}">
+            <div class="fiscal-module-card__header">
+              {{ jaraba_icon('fiscal', 'signed-document', { size: '24px' }) }}
+              <h3 class="fiscal-module-card__title">Facturae B2G</h3>
+              {% if ft.installed|default(false) %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--active">{% trans %}Active{% endtrans %}</span>
+              {% else %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--inactive">{% trans %}Not installed{% endtrans %}</span>
+              {% endif %}
+            </div>
+            {% if ft.installed|default(false) and not ft.error|default(false) %}
+              <div class="fiscal-module-card__stats">
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ft.total_invoices|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Invoices{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ft.submitted_invoices|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Submitted{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ft.rejected_invoices|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Rejected{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ft.draft_invoices|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Drafts{% endtrans %}</span>
+                </div>
+              </div>
+              <a href="{{ ft.dashboard_url|default('/admin/jaraba/facturae') }}" class="fiscal-module-card__link">
+                {% trans %}Go to Facturae{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+
+          {# E-Invoice B2B Card #}
+          {% set ei = fiscal_einvoice_stats|default({}) %}
+          <div class="fiscal-module-card fiscal-module-card--einvoice {{ ei.installed|default(false) ? '' : 'fiscal-module-card--disabled' }}">
+            <div class="fiscal-module-card__header">
+              {{ jaraba_icon('fiscal', 'invoice', { size: '24px' }) }}
+              <h3 class="fiscal-module-card__title">E-Factura B2B</h3>
+              {% if ei.installed|default(false) %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--active">{% trans %}Active{% endtrans %}</span>
+              {% else %}
+                <span class="fiscal-module-card__badge fiscal-module-card__badge--inactive">{% trans %}Not installed{% endtrans %}</span>
+              {% endif %}
+            </div>
+            {% if ei.installed|default(false) and not ei.error|default(false) %}
+              <div class="fiscal-module-card__stats">
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ei.total_documents|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Documents{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ei.outbound_documents|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Outbound{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ei.inbound_documents|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Inbound{% endtrans %}</span>
+                </div>
+                <div class="fiscal-module-card__stat">
+                  <span class="fiscal-module-card__stat-value">{{ ei.overdue_documents|default(0) }}</span>
+                  <span class="fiscal-module-card__stat-label">{% trans %}Overdue{% endtrans %}</span>
+                </div>
+              </div>
+              <a href="{{ ei.dashboard_url|default('/admin/jaraba/einvoice') }}" class="fiscal-module-card__link">
+                {% trans %}Go to E-Factura{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+
+        </div>
+      </section>
+
+      {# Certificate Status #}
+      {% set cert = fiscal_certificate_status|default({}) %}
+      {% if cert.available|default(false) %}
+        <section class="fiscal-dashboard__certificate" aria-label="{% trans %}Certificate Status{% endtrans %}">
+          <h2 class="fiscal-dashboard__section-title">{% trans %}Digital Certificate{% endtrans %}</h2>
+          <div class="fiscal-certificate-card {{ cert.is_valid|default(false) ? 'fiscal-certificate-card--valid' : 'fiscal-certificate-card--invalid' }}">
+            <div class="fiscal-certificate-card__icon">
+              {{ jaraba_icon('fiscal', 'certificate', { size: '32px' }) }}
+            </div>
+            <div class="fiscal-certificate-card__info">
+              {% if cert.is_valid|default(false) %}
+                <span class="fiscal-certificate-card__status fiscal-certificate-card__status--valid">
+                  {% trans %}Valid{% endtrans %}
+                </span>
+                <span class="fiscal-certificate-card__days">
+                  {% trans %}{{ cert.days_remaining }} days remaining{% endtrans %}
+                </span>
+              {% else %}
+                <span class="fiscal-certificate-card__status fiscal-certificate-card__status--invalid">
+                  {% trans %}Invalid or Expired{% endtrans %}
+                </span>
+              {% endif %}
+              {% if cert.subject|default('') %}
+                <span class="fiscal-certificate-card__subject">{{ cert.subject }}</span>
+              {% endif %}
+              {% if cert.not_after|default('') %}
+                <span class="fiscal-certificate-card__expiry">{% trans %}Expires: {{ cert.not_after }}{% endtrans %}</span>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+      {% endif %}
+
+      {# Quick actions #}
+      <section class="fiscal-dashboard__actions" aria-label="{% trans %}Quick actions{% endtrans %}">
+        <h2 class="fiscal-dashboard__section-title">{% trans %}Quick Actions{% endtrans %}</h2>
+        <div class="fiscal-dashboard__quick-actions">
+          {% if modules.verifactu|default(false) %}
+            <a href="/admin/jaraba/verifactu" class="fiscal-quick-action fiscal-quick-action--verifactu">
+              <div class="fiscal-quick-action__icon">
+                {{ jaraba_icon('fiscal', 'aeat-seal', { size: '24px' }) }}
+              </div>
+              <div class="fiscal-quick-action__content">
+                <span class="fiscal-quick-action__title">{% trans %}VeriFactu Dashboard{% endtrans %}</span>
+                <span class="fiscal-quick-action__description">{% trans %}Records, remision, and audit trail{% endtrans %}</span>
+              </div>
+            </a>
+          {% endif %}
+          {% if modules.facturae|default(false) %}
+            <a href="/admin/jaraba/facturae" class="fiscal-quick-action fiscal-quick-action--facturae">
+              <div class="fiscal-quick-action__icon">
+                {{ jaraba_icon('fiscal', 'signed-document', { size: '24px' }) }}
+              </div>
+              <div class="fiscal-quick-action__content">
+                <span class="fiscal-quick-action__title">{% trans %}Facturae B2G{% endtrans %}</span>
+                <span class="fiscal-quick-action__description">{% trans %}FACe submissions and Ley 25/2013{% endtrans %}</span>
+              </div>
+            </a>
+          {% endif %}
+          {% if modules.einvoice_b2b|default(false) %}
+            <a href="/admin/jaraba/einvoice" class="fiscal-quick-action fiscal-quick-action--einvoice">
+              <div class="fiscal-quick-action__icon">
+                {{ jaraba_icon('fiscal', 'invoice', { size: '24px' }) }}
+              </div>
+              <div class="fiscal-quick-action__content">
+                <span class="fiscal-quick-action__title">{% trans %}E-Factura B2B{% endtrans %}</span>
+                <span class="fiscal-quick-action__description">{% trans %}UBL, payments, and Ley 18/2022{% endtrans %}</span>
+              </div>
+            </a>
+          {% endif %}
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+</div>

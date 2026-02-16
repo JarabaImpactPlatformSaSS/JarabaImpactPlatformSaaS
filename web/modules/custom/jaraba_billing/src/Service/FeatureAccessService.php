@@ -57,6 +57,19 @@ class FeatureAccessService {
     'legal_search' => 'jaraba_legal_intelligence',
     'legal_alerts' => 'jaraba_legal_intelligence',
     'legal_citations' => 'jaraba_legal_intelligence',
+    // Fiscal Compliance Stack — FASE 11 (F11-7).
+    // VeriFactu (RD 1007/2023): Plan Pro o superior.
+    'verifactu_records' => 'jaraba_verifactu',
+    'verifactu_remision' => 'jaraba_verifactu',
+    'verifactu_dashboard' => 'jaraba_verifactu',
+    // Facturae B2G (Ley 25/2013): Plan Pro o superior.
+    'facturae_invoices' => 'jaraba_facturae',
+    'facturae_face_submit' => 'jaraba_facturae',
+    'facturae_xades_sign' => 'jaraba_facturae',
+    // E-Factura B2B (Ley 18/2022): Plan Enterprise.
+    'einvoice_documents' => 'jaraba_einvoice_b2b',
+    'einvoice_ubl_generate' => 'jaraba_einvoice_b2b',
+    'einvoice_payment_tracking' => 'jaraba_einvoice_b2b',
   ];
 
   public function __construct(

@@ -135,3 +135,20 @@ services:
       - '@jaraba_billing.plan_validator'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+
+  # ===========================================
+  # FISCAL INVOICE DELEGATION — FASE 11 (F11-5)
+  # ===========================================
+
+  # Delegacion de facturas finalizadas al stack fiscal correspondiente.
+  # Detecta tipo (B2G/B2B/nacional) y delega a VeriFactu + Facturae/E-Factura.
+  # Servicios opcionales de modulos fiscales inyectados condicionalmente
+  # via JarabaBillingServiceProvider cuando los modulos estan instalados.
+  jaraba_billing.fiscal_delegation:
+    class: Drupal\jaraba_billing\Service\FiscalInvoiceDelegationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+      - ~
+      - ~
+      - ~

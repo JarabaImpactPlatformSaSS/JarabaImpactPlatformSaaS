@@ -47,6 +47,13 @@ function jaraba_tenant_export_theme(): array {
     'page__tenant_export' => [
       'template' => 'page--tenant-export',
       'base hook' => 'page',
+      'variables' => [
+        'tenant' => NULL,
+        'exports' => [],
+        'can_request' => FALSE,
+        'sections' => [],
+        'rate_limit_info' => [],
+      ],
     ],
     'tenant_export_header' => [
       'template' => 'partials/_export-header',

@@ -97,6 +97,25 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
         $analyticsArgs[3] = new Reference('ecosistema_jaraba_core.ai_telemetry');
         $analytics->setArguments($analyticsArgs);
 
+        // Fiscal Compliance Service: inyectar servicios opcionales de los 3 modulos fiscales.
+        // jaraba_verifactu.hash_service → arg[2], jaraba_verifactu.remision_service → arg[3],
+        // jaraba_facturae.face_client → arg[4], jaraba_einvoice_b2b.payment_status_service → arg[5],
+        // ecosistema_jaraba_core.certificate_manager → arg[6].
+        $fiscal = $container->getDefinition('ecosistema_jaraba_core.fiscal_compliance');
+        $fiscalArgs = $fiscal->getArguments();
+        if (isset($modules['jaraba_verifactu'])) {
+            $fiscalArgs[2] = new Reference('jaraba_verifactu.hash_service');
+            $fiscalArgs[3] = new Reference('jaraba_verifactu.remision_service');
+        }
+        if (isset($modules['jaraba_facturae'])) {
+            $fiscalArgs[4] = new Reference('jaraba_facturae.face_client');
+        }
+        if (isset($modules['jaraba_einvoice_b2b'])) {
+            $fiscalArgs[5] = new Reference('jaraba_einvoice_b2b.payment_status_service');
+        }
+        $fiscalArgs[6] = new Reference('ecosistema_jaraba_core.certificate_manager');
+        $fiscal->setArguments($fiscalArgs);
+
         // UnifiedPromptBuilder: Combina Skills + Knowledge + Corrections + RAG.
         // Depende de jaraba_skills y jaraba_tenant_knowledge.
         // Solo se registra cuando ambos módulos están instalados.

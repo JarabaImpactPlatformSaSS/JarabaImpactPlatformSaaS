@@ -9,7 +9,12 @@
  */
 #}
 <div class="page-wrapper page-wrapper--clean page-wrapper--fiscal">
-  {% include '@ecosistema_jaraba_core/partials/_header.html.twig' %}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
 
   <main class="facturae-dashboard" role="main">
     <div class="facturae-dashboard__header">
@@ -23,7 +28,7 @@
         </p>
       </div>
       <div class="facturae-dashboard__tenant-selector">
-        {% include '@jaraba_verifactu/partials/_fiscal-tenant-selector.html.twig' %}
+        {% include '@jaraba_verifactu/partials/_fiscal-tenant-selector.html.twig' only %}
       </div>
     </div>
 
@@ -37,7 +42,7 @@
     {# Main grid: FACe status + Certificate #}
     <div class="facturae-dashboard__grid">
       <section class="facturae-dashboard__face-panel" aria-label="{% trans %}FACe Portal status{% endtrans %}">
-        {% include '@jaraba_facturae/partials/_facturae-face-status.html.twig' %}
+        {% include '@jaraba_facturae/partials/_facturae-face-status.html.twig' only %}
       </section>
 
       <section class="facturae-dashboard__cert-panel" aria-label="{% trans %}Certificate status{% endtrans %}">
@@ -45,7 +50,7 @@
           'certificate': certificate,
           'has_certificate': has_certificate,
           'tenant_name': tenant_name
-        } %}
+        } only %}
       </section>
     </div>
 
@@ -89,6 +94,9 @@
     </section>
   </main>
 
-  {% include '@ecosistema_jaraba_core/partials/_footer.html.twig' %}
-  {% include '@ecosistema_jaraba_core/partials/_copilot-fab.html.twig' %}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
 </div>

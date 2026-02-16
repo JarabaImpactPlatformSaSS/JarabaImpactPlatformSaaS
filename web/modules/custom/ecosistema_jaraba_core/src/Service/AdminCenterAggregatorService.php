@@ -32,6 +32,7 @@ class AdminCenterAggregatorService {
     protected LoggerInterface $logger,
     protected ?object $saasMetrics = NULL,
     protected ?object $healthCalculator = NULL,
+    protected ?object $fiscalCompliance = NULL,
   ) {}
 
   /**
@@ -114,6 +115,13 @@ class AdminCenterAggregatorService {
         'trend' => 0,
         'sparkline' => [],
       ],
+      'fiscal_compliance' => [
+        'value' => 0,
+        'label' => $this->t('Fiscal'),
+        'format' => 'score',
+        'trend' => 0,
+        'sparkline' => [],
+      ],
     ];
 
     // SaaS Metrics (jaraba_foc module).
@@ -178,6 +186,19 @@ class AdminCenterAggregatorService {
       }
       catch (\Exception $e) {
         $this->logger->warning('Error calculando health avg: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    // Fiscal Compliance Score (FASE 11, F11-4).
+    if ($this->fiscalCompliance !== NULL) {
+      try {
+        $summary = $this->fiscalCompliance->getComplianceSummary('0');
+        $kpis['fiscal_compliance']['value'] = $summary['score'] ?? 0;
+      }
+      catch (\Exception $e) {
+        $this->logger->warning('Error obteniendo fiscal compliance: @error', [
           '@error' => $e->getMessage(),
         ]);
       }
@@ -321,6 +342,13 @@ class AdminCenterAggregatorService {
         'url' => '/admin/seguridad',
         'icon_category' => 'ui',
         'icon_name' => 'shield',
+        'shortcut' => '',
+      ],
+      [
+        'label' => $this->t('Fiscal'),
+        'url' => '/admin/jaraba/fiscal',
+        'icon_category' => 'fiscal',
+        'icon_name' => 'shield-fiscal',
         'shortcut' => '',
       ],
       [
