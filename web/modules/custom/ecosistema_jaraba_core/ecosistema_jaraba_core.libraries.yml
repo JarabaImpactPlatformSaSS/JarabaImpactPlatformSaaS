@@ -589,3 +589,18 @@ back-to-top:
   dependencies:
     - core/drupal
     - core/once
+
+# ---------------------------------------------------------------------------
+# STACK CUMPLIMIENTO FISCAL (FASE 0)
+# ---------------------------------------------------------------------------
+# Estilos compartidos para el dashboard fiscal unificado y parciales
+# reutilizables (_certificate-status, _fiscal-status-badge, _fiscal-tenant-selector).
+# Incluye variables CSS fiscales (--ej-fiscal-*).
+
+fiscal-styles:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  dependencies:
+    - core/drupal

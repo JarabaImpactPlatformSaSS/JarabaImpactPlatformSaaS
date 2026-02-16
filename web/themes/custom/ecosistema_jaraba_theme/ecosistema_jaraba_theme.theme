@@ -1385,6 +1385,44 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
+  // STACK CUMPLIMIENTO FISCAL — Body classes para rutas fiscales
+  // VeriFactu, Facturae B2G, E-Factura B2B y Dashboard Fiscal Unificado.
+  // Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 0.
+  // =========================================================================
+  $fiscal_routes = [
+    'jaraba_verifactu.dashboard',
+    'jaraba_verifactu.records',
+    'jaraba_verifactu.record_detail',
+    'jaraba_verifactu.remision',
+    'jaraba_verifactu.audit',
+    'jaraba_verifactu.config',
+    'jaraba_facturae.dashboard',
+    'jaraba_facturae.documents',
+    'jaraba_facturae.document_detail',
+    'jaraba_facturae.config',
+    'jaraba_einvoice_b2b.dashboard',
+    'jaraba_einvoice_b2b.documents',
+    'jaraba_einvoice_b2b.document_detail',
+    'jaraba_einvoice_b2b.payments',
+    'jaraba_einvoice_b2b.config',
+  ];
+  if (in_array($route, $fiscal_routes) || str_starts_with((string) $route, 'jaraba_verifactu.') || str_starts_with((string) $route, 'jaraba_facturae.') || str_starts_with((string) $route, 'jaraba_einvoice_b2b.')) {
+    $variables['attributes']['class'][] = 'page-fiscal';
+    $variables['attributes']['class'][] = 'dashboard-page';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    // Clase por submodulo para CSS targeting.
+    if (str_starts_with((string) $route, 'jaraba_verifactu.')) {
+      $variables['attributes']['class'][] = 'page-verifactu';
+    }
+    elseif (str_starts_with((string) $route, 'jaraba_facturae.')) {
+      $variables['attributes']['class'][] = 'page-facturae';
+    }
+    elseif (str_starts_with((string) $route, 'jaraba_einvoice_b2b.')) {
+      $variables['attributes']['class'][] = 'page-einvoice-b2b';
+    }
+  }
+
+  // =========================================================================
   // ZERO REGION CATCH-ALL — Body classes para módulos custom sin cobertura
   //
   // Añade dashboard-page + full-width-layout + clase por módulo a todas

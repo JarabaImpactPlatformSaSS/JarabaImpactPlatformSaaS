@@ -1,0 +1,136 @@
+// =============================================================================
+// VARIABLES SCSS FISCALES — STACK DE CUMPLIMIENTO FISCAL
+// =============================================================================
+// Variables locales $fiscal-* como fallback SCSS para los Design Tokens
+// del stack fiscal. Se consumen via var(--ej-fiscal-*, #{$fiscal-fallback}).
+//
+// Este archivo es la referencia SSOT. Los modulos jaraba_verifactu,
+// jaraba_facturae y jaraba_einvoice_b2b copian estas variables en sus
+// propios _variables-fiscal.scss via @use.
+//
+// DIRECTRIZ: Dart Sass moderno (@use, nunca @import).
+// DIRECTRIZ: color-mix() en lugar de rgba(), color.adjust() en lugar
+//            de darken()/lighten().
+//
+// Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 0, entregable F0-5.
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// COLORES FISCALES — ESTADOS DE COMPLIANCE
+// ---------------------------------------------------------------------------
+
+// AEAT / VeriFactu — Azul institucional AEAT.
+$fiscal-aeat-fallback: #1A365D !default;
+$fiscal-aeat-light-fallback: #EBF4FF !default;
+
+// FACe / B2G — Morado institucional de la Administracion Publica.
+$fiscal-face-fallback: #553C9A !default;
+$fiscal-face-light-fallback: #FAF5FF !default;
+
+// B2B / E-Factura — Verde de negocio entre empresas.
+$fiscal-b2b-fallback: #276749 !default;
+$fiscal-b2b-light-fallback: #F0FFF4 !default;
+
+// Estado: Aceptado por AEAT (success contextualizado fiscal).
+$fiscal-accepted-fallback: #10B981 !default;
+
+// Estado: Pendiente de envio o procesamiento.
+$fiscal-pending-fallback: #F59E0B !default;
+
+// Estado: Rechazado por AEAT, FACe o validacion fallida.
+$fiscal-rejected-fallback: #EF4444 !default;
+
+// Estado: Error de comunicacion o sistema.
+$fiscal-error-fallback: #DC2626 !default;
+
+// Certificado: Proximo a expirar (warning especifico).
+$fiscal-cert-warning-fallback: #D97706 !default;
+
+// Certificado: Expirado (critical).
+$fiscal-cert-expired-fallback: #B91C1C !default;
+
+// Certificado: Valido.
+$fiscal-cert-valid-fallback: #059669 !default;
+
+// Hash chain: Integridad verificada.
+$fiscal-chain-valid-fallback: #0891B2 !default;
+
+// Hash chain: Integridad comprometida.
+$fiscal-chain-broken-fallback: #DC2626 !default;
+
+// ---------------------------------------------------------------------------
+// COLORES DERIVADOS (usando color-mix, NUNCA rgba())
+// ---------------------------------------------------------------------------
+
+$fiscal-aeat-hover-fallback: color.adjust($fiscal-aeat-fallback, $lightness: -8%);
+$fiscal-face-hover-fallback: color.adjust($fiscal-face-fallback, $lightness: -8%);
+$fiscal-b2b-hover-fallback: color.adjust($fiscal-b2b-fallback, $lightness: -8%);
+
+// ---------------------------------------------------------------------------
+// TIPOGRAFIA FISCAL
+// ---------------------------------------------------------------------------
+
+// Monospace para hashes, codigos QR y XML.
+$fiscal-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
+
+// Tamano para etiquetas de estado y badges.
+$fiscal-badge-font-size: $ej-font-size-xs !default;
+
+// ---------------------------------------------------------------------------
+// DIMENSIONES Y ESPACIADO
+// ---------------------------------------------------------------------------
+
+// Card de registro fiscal.
+$fiscal-card-padding: $ej-spacing-lg !default;
+$fiscal-card-border-radius: $ej-border-radius-md !default;
+
+// Badge de estado.
+$fiscal-badge-padding: $ej-spacing-xs $ej-spacing-sm !default;
+$fiscal-badge-border-radius: $ej-border-radius-full !default;
+
+// QR code.
+$fiscal-qr-size: 120px !default;
+$fiscal-qr-size-sm: 80px !default;
+
+// Panel de certificado.
+$fiscal-cert-panel-padding: $ej-spacing-md !default;
+
+// ---------------------------------------------------------------------------
+// CSS CUSTOM PROPERTIES — INYECTABLES
+// ---------------------------------------------------------------------------
+
+:root {
+  // Colores fiscales como CSS Custom Properties.
+  --ej-fiscal-aeat: #{$fiscal-aeat-fallback};
+  --ej-fiscal-aeat-light: #{$fiscal-aeat-light-fallback};
+  --ej-fiscal-face: #{$fiscal-face-fallback};
+  --ej-fiscal-face-light: #{$fiscal-face-light-fallback};
+  --ej-fiscal-b2b: #{$fiscal-b2b-fallback};
+  --ej-fiscal-b2b-light: #{$fiscal-b2b-light-fallback};
+
+  // Estados.
+  --ej-fiscal-accepted: #{$fiscal-accepted-fallback};
+  --ej-fiscal-pending: #{$fiscal-pending-fallback};
+  --ej-fiscal-rejected: #{$fiscal-rejected-fallback};
+  --ej-fiscal-error: #{$fiscal-error-fallback};
+
+  // Certificados.
+  --ej-fiscal-cert-valid: #{$fiscal-cert-valid-fallback};
+  --ej-fiscal-cert-warning: #{$fiscal-cert-warning-fallback};
+  --ej-fiscal-cert-expired: #{$fiscal-cert-expired-fallback};
+
+  // Hash chain.
+  --ej-fiscal-chain-valid: #{$fiscal-chain-valid-fallback};
+  --ej-fiscal-chain-broken: #{$fiscal-chain-broken-fallback};
+
+  // Derivados con color-mix (NUNCA rgba).
+  --ej-fiscal-aeat-hover: color-mix(in srgb, var(--ej-fiscal-aeat) 85%, black);
+  --ej-fiscal-face-hover: color-mix(in srgb, var(--ej-fiscal-face) 85%, black);
+  --ej-fiscal-b2b-hover: color-mix(in srgb, var(--ej-fiscal-b2b) 85%, black);
+  --ej-fiscal-accepted-light: color-mix(in srgb, var(--ej-fiscal-accepted) 15%, white);
+  --ej-fiscal-pending-light: color-mix(in srgb, var(--ej-fiscal-pending) 15%, white);
+  --ej-fiscal-rejected-light: color-mix(in srgb, var(--ej-fiscal-rejected) 15%, white);
+}
