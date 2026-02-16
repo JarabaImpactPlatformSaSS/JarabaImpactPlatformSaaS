@@ -406,6 +406,36 @@ function jaraba_legal_intelligence_update_10003(): void {
  * Limpia las entradas de State API usadas para rate limiting del cron
  * y elimina la tabla legal_citation_graph.
  */
+/**
+ * FASE A3: Migrar expediente_id de integer a entity_reference (client_case).
+ *
+ * Ahora que la entidad client_case existe (FASE A1), migramos el campo
+ * de integer FK a entity_reference para integridad referencial nativa.
+ */
+function jaraba_legal_intelligence_update_10004(): void {
+  $database = Database::getConnection();
+
+  // Verificar que la tabla existe.
+  if (!$database->schema()->tableExists('legal_citation')) {
+    return;
+  }
+
+  // El campo ya se ha cambiado en la definicion de la entidad (LegalCitation.php).
+  // Drupal manejara la actualizacion del schema via entity updates.
+  // Los valores existentes (integers) siguen siendo validos como target_id.
+  \Drupal::entityDefinitionUpdateManager()->applyUpdates();
+
+  \Drupal::logger('jaraba_legal_intelligence')->info(
+    'FASE A3: Campo expediente_id migrado a entity_reference (client_case).'
+  );
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Limpia las entradas de State API usadas para rate limiting del cron
+ * y elimina la tabla legal_citation_graph.
+ */
 function jaraba_legal_intelligence_uninstall(): void {
   \Drupal::state()->deleteMultiple([
     'jaraba_legal_intelligence.ingest_last_run',

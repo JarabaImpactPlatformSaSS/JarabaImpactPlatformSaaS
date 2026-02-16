@@ -97,11 +97,10 @@ class LegalCitation extends ContentEntityBase implements EntityOwnerInterface, E
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['expediente_id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('Expediente ID'))
-      ->setDescription(t('FK al expediente del Buzon de Confianza (doc 88). Integer porque la entidad destino puede no existir aun.'))
-      ->setRequired(TRUE)
-      ->setSetting('unsigned', TRUE)
+    $fields['expediente_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Expediente'))
+      ->setDescription(t('Expediente vinculado (client_case). Migrado de integer a entity_reference en FASE A3.'))
+      ->setSetting('target_type', 'client_case')
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
