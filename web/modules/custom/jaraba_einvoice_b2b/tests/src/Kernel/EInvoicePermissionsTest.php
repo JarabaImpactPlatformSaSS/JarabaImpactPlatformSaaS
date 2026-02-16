@@ -21,6 +21,8 @@ class EInvoicePermissionsTest extends KernelTestBase {
   protected static $modules = [
     'system',
     'user',
+    'field',
+    'options',
     'jaraba_einvoice_b2b',
   ];
 

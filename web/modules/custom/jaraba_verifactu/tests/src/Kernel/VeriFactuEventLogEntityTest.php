@@ -18,6 +18,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
     'jaraba_verifactu',
   ];
 

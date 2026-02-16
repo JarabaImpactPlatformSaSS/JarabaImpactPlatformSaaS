@@ -18,6 +18,7 @@ class VeriFactuRemisionBatchEntityTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
     'jaraba_verifactu',
   ];
 

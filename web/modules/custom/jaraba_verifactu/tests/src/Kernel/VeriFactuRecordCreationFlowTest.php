@@ -20,6 +20,7 @@ class VeriFactuRecordCreationFlowTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
     'jaraba_verifactu',
   ];
 
