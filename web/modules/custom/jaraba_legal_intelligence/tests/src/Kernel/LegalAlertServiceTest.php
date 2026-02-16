@@ -42,14 +42,10 @@ class LegalAlertServiceTest extends KernelTestBase {
    */
   public function register(ContainerBuilder $container): void {
     parent::register($container);
-    // Provide stub definitions for external services not available in the
-    // isolated Kernel test environment (ai contrib module, ecosistema_jaraba_core).
-    if (!$container->hasDefinition('ai.provider')) {
-      $container->register('ai.provider', \stdClass::class);
-    }
-    if (!$container->hasDefinition('ecosistema_jaraba_core.tenant_context')) {
-      $container->register('ecosistema_jaraba_core.tenant_context', \stdClass::class);
-    }
+    // Register external services as synthetic so the container compiles
+    // without pulling in ai/ecosistema_jaraba_core module chains.
+    $container->register('ai.provider')->setSynthetic(TRUE);
+    $container->register('ecosistema_jaraba_core.tenant_context')->setSynthetic(TRUE);
   }
 
   /**
@@ -57,6 +53,17 @@ class LegalAlertServiceTest extends KernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set typed mocks for synthetic services before any entity operations
+    // trigger hooks that resolve these services from the container.
+    $this->container->set('ai.provider', new \stdClass());
+    $this->container->set(
+      'ecosistema_jaraba_core.tenant_context',
+      $this->getMockBuilder('Drupal\ecosistema_jaraba_core\Service\TenantContextService')
+        ->disableOriginalConstructor()
+        ->getMock()
+    );
+
     $this->installEntitySchema('user');
     $this->installEntitySchema('legal_resolution');
     $this->installEntitySchema('legal_alert');
