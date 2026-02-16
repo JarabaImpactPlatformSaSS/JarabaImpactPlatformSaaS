@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Composer dependencies (actual project dependencies)
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Disable npm for web/core (Drupal core upstream - not used in our build/deploy)
+  - package-ecosystem: "npm"
+    directory: "/web/core"
+    open-pull-requests-limit: 0
