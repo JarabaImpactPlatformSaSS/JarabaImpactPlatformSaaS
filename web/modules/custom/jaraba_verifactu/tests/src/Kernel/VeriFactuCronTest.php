@@ -128,20 +128,20 @@ class VeriFactuCronTest extends KernelTestBase {
 
     $storage->create([
       'tenant_id' => 1,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B12345678',
+      'is_active' => TRUE,
+      'nif' => 'B12345678',
     ])->save();
 
     $storage->create([
       'tenant_id' => 2,
-      'modo_verifactu' => FALSE,
-      'nif_empresa' => 'A99999999',
+      'is_active' => FALSE,
+      'nif' => 'A99999999',
     ])->save();
 
     $storage->create([
       'tenant_id' => 3,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B99999999',
+      'is_active' => TRUE,
+      'nif' => 'B99999999',
     ])->save();
 
     $tenantIds = _jaraba_verifactu_get_active_tenant_ids();
@@ -160,8 +160,8 @@ class VeriFactuCronTest extends KernelTestBase {
 
     $storage->create([
       'tenant_id' => 10,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B12345678',
+      'is_active' => TRUE,
+      'nif' => 'B12345678',
     ])->save();
 
     $this->assertTrue(_jaraba_verifactu_tenant_enabled(10));

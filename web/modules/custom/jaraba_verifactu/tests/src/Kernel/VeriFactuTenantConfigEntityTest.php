@@ -57,19 +57,18 @@ class VeriFactuTenantConfigEntityTest extends KernelTestBase {
 
     $config = $storage->create([
       'tenant_id' => 1,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B12345678',
-      'nombre_empresa' => 'Test Company SL',
+      'is_active' => TRUE,
+      'nif' => 'B12345678',
+      'nombre_fiscal' => 'Test Company SL',
       'aeat_environment' => 'testing',
-      'remision_automatica' => TRUE,
-      'serie_factura_prefijo' => 'VF-',
+      'serie_facturacion' => 'VF-',
     ]);
     $config->save();
 
     $loaded = $storage->load($config->id());
     $this->assertNotNull($loaded);
-    $this->assertTrue((bool) $loaded->get('modo_verifactu')->value);
-    $this->assertSame('B12345678', $loaded->get('nif_empresa')->value);
+    $this->assertTrue((bool) $loaded->get('is_active')->value);
+    $this->assertSame('B12345678', $loaded->get('nif')->value);
     $this->assertSame('testing', $loaded->get('aeat_environment')->value);
   }
 
@@ -82,19 +81,19 @@ class VeriFactuTenantConfigEntityTest extends KernelTestBase {
 
     $config = $storage->create([
       'tenant_id' => 1,
-      'modo_verifactu' => FALSE,
-      'nif_empresa' => 'B12345678',
+      'is_active' => FALSE,
+      'nif' => 'B12345678',
       'aeat_environment' => 'testing',
     ]);
     $config->save();
 
     // Update.
-    $config->set('modo_verifactu', TRUE);
+    $config->set('is_active', TRUE);
     $config->set('aeat_environment', 'production');
     $config->save();
 
     $loaded = $storage->load($config->id());
-    $this->assertTrue((bool) $loaded->get('modo_verifactu')->value);
+    $this->assertTrue((bool) $loaded->get('is_active')->value);
     $this->assertSame('production', $loaded->get('aeat_environment')->value);
   }
 
@@ -107,25 +106,25 @@ class VeriFactuTenantConfigEntityTest extends KernelTestBase {
 
     $storage->create([
       'tenant_id' => 1,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B12345678',
+      'is_active' => TRUE,
+      'nif' => 'B12345678',
     ])->save();
 
     $storage->create([
       'tenant_id' => 2,
-      'modo_verifactu' => FALSE,
-      'nif_empresa' => 'A99999999',
+      'is_active' => FALSE,
+      'nif' => 'A99999999',
     ])->save();
 
     $storage->create([
       'tenant_id' => 3,
-      'modo_verifactu' => TRUE,
-      'nif_empresa' => 'B99999999',
+      'is_active' => TRUE,
+      'nif' => 'B99999999',
     ])->save();
 
     $enabled = $storage->getQuery()
       ->accessCheck(FALSE)
-      ->condition('modo_verifactu', TRUE)
+      ->condition('is_active', TRUE)
       ->execute();
 
     $this->assertCount(2, $enabled);

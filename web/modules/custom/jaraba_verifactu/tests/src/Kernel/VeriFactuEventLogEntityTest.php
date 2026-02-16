@@ -44,6 +44,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
       $this->createMock(\Drupal\ecosistema_jaraba_core\Service\CertificateManagerService::class),
     );
     $this->installEntitySchema('user');
+    $this->installEntitySchema('verifactu_invoice_record');
     $this->installEntitySchema('verifactu_event_log');
     $this->installConfig(['jaraba_verifactu']);
   }

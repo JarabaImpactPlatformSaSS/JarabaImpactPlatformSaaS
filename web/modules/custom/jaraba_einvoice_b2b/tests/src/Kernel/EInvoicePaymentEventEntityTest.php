@@ -58,7 +58,7 @@ class EInvoicePaymentEventEntityTest extends KernelTestBase {
     $loaded = $storage->load($event->id());
     $this->assertNotNull($loaded);
     $this->assertSame('payment_received', $loaded->get('event_type')->value);
-    $this->assertSame('500.00', $loaded->get('amount')->value);
+    $this->assertEqualsWithDelta(500.00, (float) $loaded->get('amount')->value, 0.001);
     $this->assertSame('2026-02-01', $loaded->get('payment_date')->value);
     $this->assertSame('transfer', $loaded->get('payment_method')->value);
     $this->assertSame('REF-001', $loaded->get('payment_reference')->value);

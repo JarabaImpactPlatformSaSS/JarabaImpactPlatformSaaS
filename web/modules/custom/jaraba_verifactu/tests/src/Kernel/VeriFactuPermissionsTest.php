@@ -53,6 +53,8 @@ class VeriFactuPermissionsTest extends KernelTestBase {
     $this->installEntitySchema('verifactu_event_log');
     $this->installEntitySchema('verifactu_tenant_config');
     $this->installConfig(['jaraba_verifactu']);
+    // Create uid=1 (super admin in Drupal) so test users get uid>=2.
+    User::create(['name' => 'admin', 'status' => 1])->save();
   }
 
   /**

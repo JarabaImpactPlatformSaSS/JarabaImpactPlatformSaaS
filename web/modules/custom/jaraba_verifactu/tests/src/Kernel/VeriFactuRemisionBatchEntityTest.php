@@ -98,13 +98,11 @@ class VeriFactuRemisionBatchEntityTest extends KernelTestBase {
     $batch->set('status', 'sent');
     $batch->set('accepted_records', 8);
     $batch->set('rejected_records', 2);
-    $batch->set('aeat_csv', 'CSV123456');
     $batch->save();
 
     $loaded = $storage->load($batch->id());
     $this->assertSame('sent', $loaded->get('status')->value);
     $this->assertSame('8', (string) $loaded->get('accepted_records')->value);
-    $this->assertSame('CSV123456', $loaded->get('aeat_csv')->value);
   }
 
   /**

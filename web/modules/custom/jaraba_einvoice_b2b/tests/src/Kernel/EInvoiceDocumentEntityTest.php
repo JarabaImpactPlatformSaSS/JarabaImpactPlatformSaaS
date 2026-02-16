@@ -72,7 +72,7 @@ class EInvoiceDocumentEntityTest extends KernelTestBase {
     $this->assertSame('ubl_2.1', $loaded->get('format')->value);
     $this->assertSame('B12345678', $loaded->get('seller_nif')->value);
     $this->assertSame('A87654321', $loaded->get('buyer_nif')->value);
-    $this->assertSame('1210.00', $loaded->get('total_amount')->value);
+    $this->assertEqualsWithDelta(1210.00, (float) $loaded->get('total_amount')->value, 0.001);
     $this->assertSame('draft', $loaded->get('status')->value);
     $this->assertSame('pending', $loaded->get('delivery_status')->value);
     $this->assertSame('pending', $loaded->get('payment_status')->value);

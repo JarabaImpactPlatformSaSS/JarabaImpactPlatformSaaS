@@ -519,14 +519,14 @@ function _jaraba_verifactu_cron_cert_alerts(): void {
  *   The tenant ID.
  *
  * @return bool
- *   TRUE if the tenant has a VeriFactu config with modo_verifactu enabled.
+ *   TRUE if the tenant has a VeriFactu config with is_active enabled.
  */
 function _jaraba_verifactu_tenant_enabled(int $tenantId): bool {
   $config = _jaraba_verifactu_load_tenant_config($tenantId);
   if ($config === NULL) {
     return FALSE;
   }
-  return (bool) ($config->get('modo_verifactu')->value ?? FALSE);
+  return (bool) ($config->get('is_active')->value ?? FALSE);
 }
 
 /**
@@ -573,7 +573,7 @@ function _jaraba_verifactu_get_active_tenant_ids(): array {
       ->getStorage('verifactu_tenant_config')
       ->getQuery()
       ->accessCheck(FALSE)
-      ->condition('modo_verifactu', TRUE)
+      ->condition('is_active', TRUE)
       ->execute();
 
     if (empty($ids)) {
