@@ -1,0 +1,125 @@
+// Tenant Export — History List
+// Shows past exports with status badges.
+
+@use 'sass:color';
+@use 'variables-export' as v;
+
+.ej-export__history {
+  margin-top: v.$export-spacing-md;
+}
+
+.ej-export__history-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0 0 v.$export-spacing-md;
+}
+
+.ej-export__history-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$export-spacing-sm;
+}
+
+.ej-export__history-item {
+  display: flex;
+  align-items: center;
+  gap: v.$export-spacing-md;
+  padding: v.$export-spacing-md;
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: v.$export-radius-md;
+  flex-wrap: wrap;
+
+  @include v.respond-to('tablet') {
+    flex-wrap: nowrap;
+  }
+}
+
+.ej-export__history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ej-export__history-date {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1a1a2e);
+}
+
+.ej-export__history-meta {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin-top: 2px;
+}
+
+// Status badges
+.ej-export__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px v.$export-spacing-sm;
+  border-radius: v.$export-radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &--queued {
+    background: color-mix(in srgb, var(--ej-color-info, #3b82f6) 10%, transparent);
+    color: var(--ej-color-info, #3b82f6);
+  }
+
+  &--collecting,
+  &--packaging {
+    background: color-mix(in srgb, var(--ej-color-primary, #2563eb) 10%, transparent);
+    color: var(--ej-color-primary, #2563eb);
+  }
+
+  &--completed {
+    background: color-mix(in srgb, var(--ej-color-success, #10b981) 10%, transparent);
+    color: var(--ej-color-success, #10b981);
+  }
+
+  &--failed {
+    background: color-mix(in srgb, var(--ej-color-error, #ef4444) 10%, transparent);
+    color: var(--ej-color-error, #ef4444);
+  }
+
+  &--expired,
+  &--cancelled {
+    background: color-mix(in srgb, var(--ej-color-text-secondary, #6b7280) 10%, transparent);
+    color: var(--ej-color-text-secondary, #6b7280);
+  }
+}
+
+.ej-export__history-actions {
+  flex-shrink: 0;
+}
+
+// Empty state
+.ej-export__empty-content {
+  text-align: center;
+  padding: v.$export-spacing-2xl v.$export-spacing-md;
+}
+
+.ej-export__empty-icon {
+  color: var(--ej-color-text-secondary, #6b7280);
+  opacity: 0.4;
+  margin-bottom: v.$export-spacing-md;
+}
+
+.ej-export__empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0 0 v.$export-spacing-sm;
+}
+
+.ej-export__empty-desc {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin: 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}

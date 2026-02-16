@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Template for the Tenant Export self-service page.
+ *
+ * Zero-region frontend page for data export.
+ * Directriz 3.4: Sin bloques, sin sidebar admin.
+ *
+ * Variables:
+ * - page: The page render array from the controller.
+ *
+ * @see jaraba_tenant_export_theme()
+ */
+#}
+{% extends "@claro/layout/page.html.twig" %}
+
+{% block content %}
+  <div class="ej-export">
+    {# Header #}
+    {% include '@jaraba_tenant_export/partials/_export-header.html.twig' %}
+
+    {# Main Content — populated by JS #}
+    <div class="ej-export__content" id="tenant-export-app">
+
+      {# Request Card #}
+      {% include '@jaraba_tenant_export/partials/_export-request-card.html.twig' %}
+
+      {# Active Exports / Progress #}
+      <div class="ej-export__active" id="export-active-section">
+        {# Populated by JS when exports are in progress #}
+      </div>
+
+      {# History #}
+      {% include '@jaraba_tenant_export/partials/_export-history-list.html.twig' %}
+
+    </div>
+
+    {{ page.content }}
+  </div>
+{% endblock %}

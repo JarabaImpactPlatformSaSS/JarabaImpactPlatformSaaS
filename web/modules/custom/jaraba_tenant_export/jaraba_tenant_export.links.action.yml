@@ -1,0 +1,5 @@
+jaraba_tenant_export.add:
+  title: 'Crear exportación'
+  route_name: entity.tenant_export_record.add_form
+  appears_on:
+    - entity.tenant_export_record.collection

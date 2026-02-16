@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Card to request a new data export.
+ */
+#}
+<div class="ej-export__request-card" id="export-request-card">
+  <div class="ej-export__card-header">
+    <h2 class="ej-export__card-title">{{ 'Nueva Exportación'|t }}</h2>
+  </div>
+
+  <div class="ej-export__card-body">
+    <p class="ej-export__card-desc">
+      {{ 'Selecciona las secciones de datos que deseas incluir en tu paquete de exportación.'|t }}
+    </p>
+
+    {# Section checkboxes — populated by JS from drupalSettings #}
+    <div class="ej-export__sections" id="export-sections-list">
+      {# JS renders checkboxes here #}
+    </div>
+
+    {# Export type selector #}
+    <div class="ej-export__type-selector" id="export-type-selector">
+      <label class="ej-export__type-label">{{ 'Tipo de exportación'|t }}</label>
+      <select class="ej-export__type-select" id="export-type">
+        <option value="full">{{ 'Completa'|t }}</option>
+        <option value="partial">{{ 'Parcial (solo secciones seleccionadas)'|t }}</option>
+        <option value="gdpr_portability">{{ 'Portabilidad GDPR (Art. 20)'|t }}</option>
+      </select>
+    </div>
+
+    {# Rate limit warning #}
+    <div class="ej-export__rate-limit" id="export-rate-limit" style="display: none;">
+      <p class="ej-export__rate-warning">
+        {{ 'Has alcanzado el límite diario de exportaciones. Podrás solicitar una nueva en'|t }}
+        <span id="export-retry-after"></span>.
+      </p>
+    </div>
+
+    {# Submit button #}
+    <button class="ej-export__submit-btn" id="export-submit-btn" type="button">
+      {{ 'Solicitar Exportación'|t }}
+    </button>
+  </div>
+</div>

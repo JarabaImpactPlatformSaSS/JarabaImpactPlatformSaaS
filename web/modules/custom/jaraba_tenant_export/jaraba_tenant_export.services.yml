@@ -1,0 +1,41 @@
+services:
+  # ===========================================
+  # JARABA TENANT EXPORT — Servicios de Exportación y Backup
+  # ===========================================
+
+  # Logger channel
+  logger.channel.jaraba_tenant_export:
+    parent: logger.channel_base
+    arguments: ['jaraba_tenant_export']
+
+  # Recopilación de datos del tenant por secciones
+  jaraba_tenant_export.data_collector:
+    class: Drupal\jaraba_tenant_export\Service\TenantDataCollectorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@file_system'
+      - '@logger.channel.jaraba_tenant_export'
+
+  # Orquestación del ciclo de exportación
+  jaraba_tenant_export.export_service:
+    class: Drupal\jaraba_tenant_export\Service\TenantExportService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_tenant_export.data_collector'
+      - '@ecosistema_jaraba_core.rate_limiter'
+      - '@ecosistema_jaraba_core.audit_log'
+      - '@file_system'
+      - '@config.factory'
+      - '@queue'
+      - '@logger.channel.jaraba_tenant_export'
+
+  # Drush commands for tenant export and backup management
+  jaraba_tenant_export.commands:
+    class: Drupal\jaraba_tenant_export\Commands\TenantExportCommands
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_tenant_export.export_service'
+      - '@logger.channel.jaraba_tenant_export'
+    tags:
+      - { name: drush.command }

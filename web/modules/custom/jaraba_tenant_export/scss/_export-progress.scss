@@ -1,0 +1,74 @@
+// Tenant Export — Progress Bar
+// Animated progress indicator for active exports.
+
+@use 'variables-export' as v;
+
+.ej-export__progress {
+  padding: v.$export-spacing-md v.$export-spacing-lg;
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #e5e7eb);
+  border-radius: v.$export-radius-lg;
+}
+
+.ej-export__progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: v.$export-spacing-sm;
+}
+
+.ej-export__progress-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1a1a2e);
+}
+
+.ej-export__progress-percent {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ej-color-primary, #2563eb);
+}
+
+.ej-export__progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ej-color-border, #e5e7eb);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ej-export__progress-fill {
+  height: 100%;
+  background: var(--ej-color-primary, #2563eb);
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, white 30%, transparent) 50%,
+      transparent 100%
+    );
+    animation: export-progress-shimmer 1.5s infinite;
+  }
+}
+
+@keyframes export-progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.ej-export__progress-phase {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin: v.$export-spacing-sm 0 0;
+  font-style: italic;
+}

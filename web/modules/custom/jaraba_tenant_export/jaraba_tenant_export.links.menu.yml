@@ -1,0 +1,5 @@
+jaraba_tenant_export.admin:
+  title: 'Exportaciones de Tenant'
+  parent: system.admin_content
+  route_name: entity.tenant_export_record.collection
+  weight: 20

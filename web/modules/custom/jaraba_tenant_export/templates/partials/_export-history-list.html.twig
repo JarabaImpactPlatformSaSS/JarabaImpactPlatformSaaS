@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * List of past and current exports.
+ */
+#}
+<div class="ej-export__history" id="export-history-section">
+  <h2 class="ej-export__history-title">{{ 'Historial de Exportaciones'|t }}</h2>
+
+  <div class="ej-export__history-list" id="export-history-list">
+    {# Populated by JS #}
+  </div>
+
+  {# Empty state #}
+  <div class="ej-export__empty" id="export-empty-state" style="display: none;">
+    {% include '@jaraba_tenant_export/partials/_export-empty-state.html.twig' %}
+  </div>
+</div>

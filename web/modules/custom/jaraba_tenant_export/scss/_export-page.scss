@@ -1,0 +1,57 @@
+// Tenant Export — Page Layout
+// Directriz 3.2/3.3: mobile-first, BEM naming.
+// Docker compilation: lando ssh -c "cd /app/web/modules/custom/jaraba_tenant_export && npm run build"
+
+@use 'variables-export' as v;
+
+.ej-export {
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: v.$export-spacing-md;
+
+  @include v.respond-to('tablet') {
+    padding: v.$export-spacing-xl;
+  }
+
+  @include v.respond-to('desktop') {
+    padding: v.$export-spacing-2xl;
+  }
+}
+
+.ej-export__header {
+  margin-bottom: v.$export-spacing-xl;
+  text-align: center;
+
+  @include v.respond-to('tablet') {
+    text-align: left;
+  }
+}
+
+.ej-export__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-color-text-primary, #1a1a2e);
+  margin: 0 0 v.$export-spacing-sm;
+
+  @include v.respond-to('tablet') {
+    font-size: 2rem;
+  }
+}
+
+.ej-export__subtitle {
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #6b7280);
+  margin: 0;
+  line-height: 1.5;
+
+  @include v.respond-to('tablet') {
+    font-size: 1rem;
+  }
+}
+
+.ej-export__content {
+  display: flex;
+  flex-direction: column;
+  gap: v.$export-spacing-lg;
+}

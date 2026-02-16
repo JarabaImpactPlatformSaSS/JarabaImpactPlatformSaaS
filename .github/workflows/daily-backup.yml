@@ -1,0 +1,260 @@
+# ==============================================
+# BACKUP DIARIO AUTOMATIZADO (IONOS)
+# ==============================================
+# Cron diario a las 03:00 UTC (05:00 CET).
+# Independiente del pipeline de deploy.
+#
+# Flujo: SSH → Backup → Verificación → Rotación → Notificación
+#
+# Naming: db_daily_{YYYYMMDD_HHMMSS}.sql.gz
+# Retención:
+#   - Diarios < 30 días: todos se mantienen
+#   - 30-84 días: solo lunes (semanal)
+#   - > 84 días: se eliminan
+#   - Pre-deploy > 30 días: se eliminan
+# ==============================================
+
+name: Jaraba SaaS - Daily Backup
+
+on:
+  schedule:
+    # Diario a las 03:00 UTC (05:00 CET)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      skip_rotation:
+        description: 'Skip backup rotation (keep all backups)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  PHP_VERSION: '8.4'
+  IONOS_HOST: 'access834313033.webspace-data.io'
+  IONOS_USER: 'u101456434'
+  SITE_DIR: '~/JarabaImpactPlatformSaaS'
+  BACKUP_DIR: '~/backups'
+  RETENTION_DAILY_DAYS: 30
+  RETENTION_WEEKLY_DAYS: 84
+
+jobs:
+  backup:
+    name: 💾 Daily Backup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Add IONOS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create daily backup
+        id: backup
+        run: |
+          echo "💾 Creating daily backup..."
+
+          BACKUP_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            mkdir -p ~/backups
+            BACKUP_FILE="db_daily_$(date +%Y%m%d_%H%M%S).sql.gz"
+            BACKUP_PATH="$HOME/backups/$BACKUP_FILE"
+
+            # Try drush sql-dump first
+            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > "$BACKUP_PATH" 2>/dev/null
+
+            if [ $? -ne 0 ] || [ ! -s "$BACKUP_PATH" ]; then
+              echo "⚠️ Drush sql-dump failed. Trying mysqldump..."
+              rm -f "$BACKUP_PATH"
+
+              SETTINGS_FILE="web/sites/default/settings.local.php"
+              if [ ! -f "$SETTINGS_FILE" ]; then
+                SETTINGS_FILE="web/sites/default/settings.php"
+              fi
+              DBNAME=$(grep "'database'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+              DBUSER=$(grep "'username'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+              DBPASS=$(grep "'password'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
+
+              if [ -n "$DBNAME" ] && [ -n "$DBUSER" ]; then
+                mysqldump -u"$DBUSER" -p"$DBPASS" "$DBNAME" | gzip > "$BACKUP_PATH"
+                echo "METHOD=mysqldump"
+              else
+                echo "STATUS=failed"
+                echo "ERROR=No database credentials found"
+                exit 1
+              fi
+            else
+              echo "METHOD=drush"
+            fi
+
+            if [ -s "$BACKUP_PATH" ]; then
+              SIZE=$(stat -c %s "$BACKUP_PATH" 2>/dev/null || echo "0")
+              echo "STATUS=success"
+              echo "FILE=$BACKUP_FILE"
+              echo "SIZE=$SIZE"
+            else
+              echo "STATUS=failed"
+              echo "ERROR=Backup file is empty"
+              exit 1
+            fi
+          EOF
+          )
+
+          echo "$BACKUP_RESULT"
+
+          # Extract variables
+          STATUS=$(echo "$BACKUP_RESULT" | grep "STATUS=" | cut -d= -f2)
+          FILE=$(echo "$BACKUP_RESULT" | grep "FILE=" | cut -d= -f2)
+          SIZE=$(echo "$BACKUP_RESULT" | grep "SIZE=" | cut -d= -f2)
+
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+
+          if [ "$STATUS" != "success" ]; then
+            echo "❌ Backup failed!"
+            exit 1
+          fi
+
+          echo "✅ Backup created: $FILE ($SIZE bytes)"
+
+      - name: Verify backup integrity
+        id: verify
+        run: |
+          echo "🔍 Verifying backup integrity..."
+
+          VERIFY_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'VEOF'
+            BACKUP_FILE=$(ls -t ~/backups/db_daily_*.sql.gz 2>/dev/null | head -1)
+
+            if [ -z "$BACKUP_FILE" ]; then
+              echo "INTEGRITY=missing"
+              exit 1
+            fi
+
+            # Test gzip integrity
+            gzip -t "$BACKUP_FILE" 2>/dev/null
+            if [ $? -eq 0 ]; then
+              echo "INTEGRITY=valid"
+            else
+              echo "INTEGRITY=corrupt"
+              exit 1
+            fi
+
+            # Check minimum size (1KB)
+            SIZE=$(stat -c %s "$BACKUP_FILE" 2>/dev/null || echo "0")
+            if [ "$SIZE" -lt 1024 ]; then
+              echo "INTEGRITY=too_small"
+              echo "SIZE=$SIZE"
+              exit 1
+            fi
+
+            echo "SIZE=$SIZE"
+          VEOF
+          )
+
+          echo "$VERIFY_RESULT"
+
+          INTEGRITY=$(echo "$VERIFY_RESULT" | grep "INTEGRITY=" | cut -d= -f2)
+          echo "integrity=$INTEGRITY" >> $GITHUB_OUTPUT
+
+          if [ "$INTEGRITY" != "valid" ]; then
+            echo "❌ Backup integrity check failed: $INTEGRITY"
+            exit 1
+          fi
+
+          echo "✅ Backup integrity verified"
+
+      - name: Rotate old backups
+        if: ${{ github.event.inputs.skip_rotation != 'true' }}
+        run: |
+          echo "🔄 Rotating old backups..."
+
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'REOF'
+            cd ~/backups
+            NOW=$(date +%s)
+            DELETED=0
+            KEPT=0
+
+            # Process daily backups
+            for FILE in db_daily_*.sql.gz; do
+              [ -e "$FILE" ] || continue
+
+              MODIFIED=$(stat -c %Y "$FILE" 2>/dev/null || echo "0")
+              AGE_DAYS=$(( (NOW - MODIFIED) / 86400 ))
+
+              if [ "$AGE_DAYS" -gt 84 ]; then
+                # > 84 days (12 weeks): delete all
+                rm -f "$FILE"
+                DELETED=$((DELETED + 1))
+                echo "  Deleted (>84d): $FILE"
+              elif [ "$AGE_DAYS" -gt 30 ]; then
+                # 30-84 days: keep only Monday backups
+                DAY_OF_WEEK=$(date -d "@$MODIFIED" +%u 2>/dev/null || echo "0")
+                if [ "$DAY_OF_WEEK" != "1" ]; then
+                  rm -f "$FILE"
+                  DELETED=$((DELETED + 1))
+                  echo "  Deleted (30-84d, not Monday): $FILE"
+                else
+                  KEPT=$((KEPT + 1))
+                fi
+              else
+                KEPT=$((KEPT + 1))
+              fi
+            done
+
+            # Process pre-deploy backups > 30 days
+            for FILE in db_pre_deploy_*.sql.gz; do
+              [ -e "$FILE" ] || continue
+
+              MODIFIED=$(stat -c %Y "$FILE" 2>/dev/null || echo "0")
+              AGE_DAYS=$(( (NOW - MODIFIED) / 86400 ))
+
+              if [ "$AGE_DAYS" -gt 30 ]; then
+                rm -f "$FILE"
+                DELETED=$((DELETED + 1))
+                echo "  Deleted pre-deploy (>30d): $FILE"
+              else
+                KEPT=$((KEPT + 1))
+              fi
+            done
+
+            echo ""
+            echo "Rotation complete: $DELETED deleted, $KEPT kept"
+            echo "Current backups:"
+            ls -lh ~/backups/db_*.sql.gz 2>/dev/null | wc -l
+          REOF
+
+      - name: Report success
+        if: success()
+        run: |
+          echo "✅ Daily backup completed successfully!"
+          echo "  File: ${{ steps.backup.outputs.file }}"
+          echo "  Size: ${{ steps.backup.outputs.size }} bytes"
+          echo "  Integrity: ${{ steps.verify.outputs.integrity }}"
+
+      - name: Notify failure via Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "❌ *Daily Backup Failed*\n*Status:* `${{ steps.backup.outputs.status || 'unknown' }}`\n*Integrity:* `${{ steps.verify.outputs.integrity || 'not checked' }}`\n*File:* `${{ steps.backup.outputs.file || 'none' }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true

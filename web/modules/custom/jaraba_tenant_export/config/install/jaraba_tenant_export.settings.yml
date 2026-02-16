@@ -1,0 +1,12 @@
+export_expiration_hours: 48
+rate_limit_per_day: 3
+max_export_size_mb: 500
+analytics_row_limit: 50000
+default_sections:
+  - core
+  - analytics
+  - knowledge
+  - operational
+  - files
+backup_retention_daily_days: 30
+backup_retention_weekly_weeks: 12
