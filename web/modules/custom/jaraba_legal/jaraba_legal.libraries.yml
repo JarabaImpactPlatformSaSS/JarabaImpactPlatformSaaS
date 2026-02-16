@@ -7,8 +7,8 @@ legal-dashboard:
     js/legal-dashboard.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
-    - core/drupal.dialog.ajax
 
 tos-acceptance:
   version: 1.x
@@ -19,12 +19,17 @@ tos-acceptance:
     js/tos-acceptance.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
 
 whistleblower:
   version: 1.x
+  css:
+    theme:
+      css/jaraba-legal.css: {}
   js:
-    js/whistleblower.js: {}
+    js/whistleblower-form.js: {}
   dependencies:
     - core/drupal
-    - core/drupal.dialog.ajax
+    - core/drupalSettings
+    - core/once
