@@ -39,7 +39,7 @@ class SearchConsoleConnectForm extends FormBase {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected ConfigFactoryInterface $configFactory;
+  protected $configFactory;
 
   /**
    * El servicio de contexto de tenant.
@@ -53,7 +53,7 @@ class SearchConsoleConnectForm extends FormBase {
    *
    * @var \Symfony\Component\HttpFoundation\RequestStack
    */
-  protected RequestStack $requestStack;
+  protected $requestStack;
 
   /**
    * {@inheritdoc}

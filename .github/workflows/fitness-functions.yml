@@ -42,7 +42,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, bcmath, gd
-          tools: composer:v2, phpstan
+          tools: composer:v2
 
       - name: Cache Composer
         uses: actions/cache@v4
@@ -51,13 +51,13 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
 
       - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress
 
       - name: PHPStan Analysis
         id: phpstan
         run: |
           echo "## 🔬 PHPStan Level 5 Results" >> $GITHUB_STEP_SUMMARY
-          phpstan analyse web/modules/custom --level=5 --error-format=github 2>&1 | tee phpstan-output.txt
+          vendor/bin/phpstan analyse -c phpstan.neon --error-format=github --no-progress 2>&1 | tee phpstan-output.txt
           if [ ${PIPESTATUS[0]} -eq 0 ]; then
             echo "✅ **PHPStan passed** - No errors found" >> $GITHUB_STEP_SUMMARY
           else

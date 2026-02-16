@@ -64,8 +64,10 @@ class LegalResolutionController extends ControllerBase implements ContainerInjec
   public function __construct(
     protected LegalSearchService $searchService,
     protected LegalCitationService $citationService,
-    protected EntityTypeManagerInterface $entityTypeManager,
-  ) {}
+    EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

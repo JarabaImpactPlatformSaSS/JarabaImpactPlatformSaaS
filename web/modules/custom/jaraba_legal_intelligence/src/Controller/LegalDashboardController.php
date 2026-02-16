@@ -63,12 +63,14 @@ class LegalDashboardController extends ControllerBase {
    *   Logger del canal jaraba_legal_intelligence.
    */
   public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected LegalSearchService $searchService,
     protected LegalAlertService $alertService,
     protected LegalCitationService $citationService,
     protected LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

@@ -1,0 +1,235 @@
+# Dashboard and admin pages.
+jaraba_facturae.dashboard:
+  path: '/admin/jaraba/fiscal/facturae'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::dashboard'
+    _title: 'Facturae Dashboard'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.documents:
+  path: '/admin/jaraba/fiscal/facturae/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::documents'
+    _title: 'Facturae Documents'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.document_detail:
+  path: '/admin/jaraba/fiscal/facturae/documents/{facturae_document}'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::documentDetail'
+    _title: 'Facturae Document Detail'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    _admin_route: TRUE
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+
+jaraba_facturae.face_log:
+  path: '/admin/jaraba/fiscal/facturae/face-log'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::faceLog'
+    _title: 'FACe Communication Log'
+  requirements:
+    _permission: 'view facturae logs'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.settings:
+  path: '/admin/config/jaraba/facturae'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::settings'
+    _title: 'Facturae Settings'
+  requirements:
+    _permission: 'administer facturae'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.config:
+  path: '/admin/jaraba/fiscal/facturae/config'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDashboardController::settings'
+    _title: 'Facturae Configuration'
+  requirements:
+    _permission: 'administer facturae'
+  options:
+    _admin_route: TRUE
+
+# Entity Field UI settings routes.
+jaraba_facturae.facturae_document.settings:
+  path: '/admin/structure/facturae-document/settings'
+  defaults:
+    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _title: 'Facturae Document Settings'
+  requirements:
+    _permission: 'administer facturae'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.facturae_tenant_config.settings:
+  path: '/admin/structure/facturae-tenant-config/settings'
+  defaults:
+    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _title: 'Facturae Tenant Config Settings'
+  requirements:
+    _permission: 'administer facturae'
+  options:
+    _admin_route: TRUE
+
+jaraba_facturae.facturae_face_log.settings:
+  path: '/admin/structure/facturae-face-log/settings'
+  defaults:
+    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _title: 'Facturae FACe Log Settings'
+  requirements:
+    _permission: 'administer facturae'
+  options:
+    _admin_route: TRUE
+
+# REST API endpoints.
+jaraba_facturae.api.config:
+  path: '/api/v1/facturae/config'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::getConfig'
+  requirements:
+    _permission: 'administer facturae'
+  methods: [GET]
+
+jaraba_facturae.api.documents:
+  path: '/api/v1/facturae/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::documents'
+  requirements:
+    _permission: 'view facturae documents'
+  methods: [GET]
+
+jaraba_facturae.api.document_detail:
+  path: '/api/v1/facturae/documents/{facturae_document}'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::documentDetail'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+  methods: [GET]
+
+jaraba_facturae.api.document_create:
+  path: '/api/v1/facturae/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::createDocument'
+  requirements:
+    _permission: 'create facturae documents'
+  methods: [POST]
+
+jaraba_facturae.api.document_sign:
+  path: '/api/v1/facturae/documents/{facturae_document}/sign'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::signDocument'
+  requirements:
+    _permission: 'sign facturae documents'
+  options:
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+  methods: [POST]
+
+jaraba_facturae.api.document_send:
+  path: '/api/v1/facturae/documents/{facturae_document}/send'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::sendToFace'
+  requirements:
+    _permission: 'send facturae to face'
+  options:
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+  methods: [POST]
+
+jaraba_facturae.api.document_pdf:
+  path: '/api/v1/facturae/documents/{facturae_document}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::downloadPdf'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+  methods: [GET]
+
+jaraba_facturae.api.face_logs:
+  path: '/api/v1/facturae/face-logs'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::faceLogs'
+  requirements:
+    _permission: 'view facturae logs'
+  methods: [GET]
+
+jaraba_facturae.api.face_status:
+  path: '/api/v1/facturae/documents/{facturae_document}/face-status'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::faceStatus'
+  requirements:
+    _permission: 'view facturae documents'
+  options:
+    parameters:
+      facturae_document:
+        type: entity:facturae_document
+  methods: [GET]
+
+jaraba_facturae.api.dir3_search:
+  path: '/api/v1/facturae/dir3/search'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDir3Controller::search'
+  requirements:
+    _permission: 'view facturae documents'
+  methods: [GET]
+
+jaraba_facturae.api.dir3_unit:
+  path: '/api/v1/facturae/dir3/{code}'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDir3Controller::getUnit'
+  requirements:
+    _permission: 'view facturae documents'
+  methods: [GET]
+
+jaraba_facturae.api.dir3_validate:
+  path: '/api/v1/facturae/dir3/{code}/validate'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeDir3Controller::validate'
+  requirements:
+    _permission: 'view facturae documents'
+  methods: [GET]
+
+jaraba_facturae.api.certificate_status:
+  path: '/api/v1/facturae/config/certificate/status'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::certificateStatus'
+  requirements:
+    _permission: 'administer facturae'
+  methods: [GET]
+
+jaraba_facturae.api.config_tenant:
+  path: '/api/v1/facturae/config/tenant'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::tenantConfig'
+  requirements:
+    _permission: 'manage facturae config'
+  methods: [GET]
+
+jaraba_facturae.api.config_tenant_update:
+  path: '/api/v1/facturae/config/tenant'
+  defaults:
+    _controller: '\Drupal\jaraba_facturae\Controller\FacturaeApiController::updateTenantConfig'
+  requirements:
+    _permission: 'manage facturae config'
+  methods: [PUT]

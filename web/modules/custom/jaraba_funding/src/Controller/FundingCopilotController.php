@@ -47,7 +47,7 @@ class FundingCopilotController extends ControllerBase {
    *
    * @var \Drupal\Core\Session\AccountProxyInterface
    */
-  protected AccountProxyInterface $currentUser;
+  protected $currentUser;
 
   /**
    * El servicio de contexto de tenant.

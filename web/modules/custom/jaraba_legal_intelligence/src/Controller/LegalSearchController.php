@@ -81,12 +81,14 @@ class LegalSearchController extends ControllerBase {
   public function __construct(
     protected LegalSearchService $searchService,
     protected LegalMergeRankService $mergeRankService,
-    protected ConfigFactoryInterface $configFactory,
+    ConfigFactoryInterface $configFactory,
     protected LegalAlertService $alertService,
     protected LegalDigestService $digestService,
     protected LegalCopilotBridgeService $copilotBridge,
     protected LegalCitationService $citationService,
-  ) {}
+  ) {
+    $this->configFactory = $configFactory;
+  }
 
   /**
    * {@inheritdoc}

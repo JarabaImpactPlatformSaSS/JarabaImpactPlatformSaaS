@@ -70,11 +70,14 @@ class LegalAdminController extends ControllerBase {
    *   Logger del canal jaraba_legal_intelligence.
    */
   public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
-    protected ConfigFactoryInterface $configFactory,
+    EntityTypeManagerInterface $entityTypeManager,
+    ConfigFactoryInterface $configFactory,
     protected HttpClientInterface $httpClient,
     protected LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->configFactory = $configFactory;
+  }
 
   /**
    * {@inheritdoc}
