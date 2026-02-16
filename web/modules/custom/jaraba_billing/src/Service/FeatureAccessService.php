@@ -53,6 +53,10 @@ class FeatureAccessService {
     // Credentials — P1-02.
     'credential_stacks' => 'credentials_advanced',
     'credential_portability' => 'credentials_advanced',
+    // Legal Intelligence — JarabaLex.
+    'legal_search' => 'jaraba_legal_intelligence',
+    'legal_alerts' => 'jaraba_legal_intelligence',
+    'legal_citations' => 'jaraba_legal_intelligence',
   ];
 
   public function __construct(

@@ -1,0 +1,7 @@
+id: legal_search
+label: 'Busqueda juridica semantica'
+description: 'Busqueda semantica con IA sobre legislacion, jurisprudencia y doctrina nacional y europea.'
+category: legal
+icon: search-legal
+weight: 20
+status: true

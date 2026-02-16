@@ -1,0 +1,103 @@
+{#
+/**
+ * @file
+ * page--legal.html.twig — Dashboard Legal Intelligence Hub.
+ *
+ * Template zero-region para /admin/jaraba/legal y rutas legales.
+ * Layout full-width mobile-first con parciales reutilizables.
+ *
+ * ARQUITECTURA:
+ * - Sin {{ page.* }} = Sin bloques/regiones de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-legal-*)
+ * - Body class 'page-legal' via hook_preprocess_html()
+ *
+ * PARTIALS:
+ * - _header.html.twig: Header con menu movil (reutilizado)
+ * - _footer.html.twig: Footer configurable (reutilizado)
+ * - _copilot-fab.html.twig: FAB de copiloto contextual
+ *
+ * Elevacion JarabaLex a Vertical Independiente v1.
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('jaraba_legal_intelligence/legal.search') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-legal', 'dashboard-page', 'full-width-layout') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER — Partial reutilizable con menu movil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# DRUPAL MESSAGES #}
+  {% if clean_messages %}
+    <div class="legal-messages">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
+
+  {# MAIN CONTENT — Dashboard legal #}
+  <main id="main-content" class="legal-main">
+
+    {# PAGE TITLE #}
+    <div class="legal-main__header">
+      <div class="legal-main__title-row">
+        <h1 class="legal-main__title">
+          {{ jaraba_icon('legal', 'search-legal', { variant: 'duotone', size: '32px' }) }}
+          {% trans %}Legal Intelligence{% endtrans %}
+        </h1>
+      </div>
+    </div>
+
+    {# CONTROLLER CONTENT — Rendered by Drupal controller #}
+    {% if clean_content %}
+      <div class="legal-main__content">
+        {{ clean_content }}
+      </div>
+    {% endif %}
+
+  </main>
+
+  {# FOOTER — Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO — Asesor Legal Contextual #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'legal_copilot',
+    avatar_type: 'legal_advisor',
+    fab_color: 'var(--ej-legal-primary, #1E3A5F)',
+    greeting: '¡Hola! Soy tu asistente legal. Puedo ayudarte con búsquedas de jurisprudencia, legislación, alertas normativas y citaciones cruzadas. ¿En qué puedo asistirte?'|t
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

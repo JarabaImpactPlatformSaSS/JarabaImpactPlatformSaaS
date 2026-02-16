@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 33.0.0 (Specs Madurez N1/N2/N3 — 21 Documentos Técnicos 183-203 + Backup Separation)
+**Versión:** 34.0.0 (Elevacion JarabaLex a Vertical Independiente + Specs Madurez N1/N2/N3)
 
 ---
 
@@ -45,6 +45,11 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 - **Trazabilidad**: Seguimiento de productos desde origen
 - **Certificación Digital**: Firma electrónica con FNMT/AutoFirma
 - **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
+- **JarabaLex** ⭐: Vertical independiente de inteligencia juridica profesional (✅ Elevado):
+  - `jaraba_legal_intelligence`: Busqueda semantica IA, alertas inteligentes, citaciones cruzadas
+  - Config entities: vertical, 3 features, 3 SaaS plans, 9 FreemiumVerticalLimit
+  - Theme: page--legal.html.twig, CSS custom properties --ej-legal-*
+  - Billing: 3 entradas FEATURE_ADDON_MAP (legal_search, legal_alerts, legal_citations)
 - **Theming**: Personalización visual por Tenant
 - **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorías, Template Registry SSoT v5.0, Feature Flags, IA Asistente integrada, Template Marketplace, Multi-Page Editor, SEO Assistant, Responsive Preview 8 viewports, IconRegistry SVG 17 iconos, Publish endpoint + SEO URLs, Font Outfit unificado, SCSS pipeline Docker NVM, Bloques Verticales 55 templates (5 verticales × 11 tipos) con _pb-sections.scss (570 LOC, 5 esquemas color, 11 layouts responsive))
 - **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 módulos, Copilots ✅):
@@ -75,7 +80,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - 4 Controllers: BillingWebhookController (10 eventos Stripe), BillingApiController (13 endpoints), UsageBillingApiController (7 endpoints), AddonApiController (6 endpoints)
   - 26 endpoints REST API: suscripciones, facturas, uso, add-ons, portal Stripe, metodos de pago
   - Dunning 6 pasos (spec 134 §6), Feature Access plan+addons (spec 158 §6.1)
-  - Catálogo Stripe: 5 productos × 4 tiers × 2 intervalos = 40 precios con lookup_keys
+  - Catálogo Stripe: 6 productos × 4 tiers × 2 intervalos = 48 precios con lookup_keys
   - Comisiones marketplace: agroconecta 8%, comercioconecta 6%, serviciosconecta 10%, enterprise 3%
 - **AI Skills Verticales** ⭐: 30 skills predefinidas con contenido experto (✅ Seedado):
   - Seed script: `scripts/seed_vertical_skills.php` (1,647 LOC, idempotente)
@@ -863,7 +868,24 @@ const UNLOCK_MAP = [
 
 > **Ver**: [Plan de Implementación v3.1](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan.md)
 
-### 2.10 AI Orchestration (Arquitectura Multiproveedor)
+### 2.10 Vertical JarabaLex — Inteligencia Juridica Profesional
+
+> **Modulo**: `jaraba_legal_intelligence` | **Estado**: ✅ Vertical Independiente
+> **Package**: JarabaLex (antes Jaraba ServiciosConecta)
+
+Hub de inteligencia juridica profesional con busqueda semantica IA sobre fuentes nacionales (ES) y europeas (UE/CEDH). Compite con Aranzadi/La Ley en el mercado de bases de datos juridicas.
+
+| Componente | Descripcion |
+|-----------|-------------|
+| **Vertical seed** | `ecosistema_jaraba_core.vertical.jarabalex.yml` — 3 features, 1 AI agent |
+| **Features** | legal_search (busqueda semantica), legal_alerts (alertas), legal_citations (citaciones) |
+| **SaaS Plans** | Starter (49 EUR/mes), Pro (99 EUR/mes), Enterprise (199 EUR/mes) |
+| **FreemiumVerticalLimit** | 9 configs (3 plans x 3 feature_keys: searches, alerts, bookmarks) |
+| **Theme** | page--legal.html.twig (zero-region + Copilot FAB legal_copilot) |
+| **Design Tokens** | CSS custom properties --ej-legal-* (primary #1E3A5F, accent #C8A96E) |
+| **Billing** | FEATURE_ADDON_MAP: legal_search, legal_alerts, legal_citations → jaraba_legal_intelligence |
+
+### 2.11 AI Orchestration (Arquitectura Multiproveedor)
 
 > **Módulo**: Drupal AI (`ai`) | **Estado**: ✅ Configurado
 > **Proveedores**: Anthropic (Claude) + OpenAI (GPT-4)

@@ -2,12 +2,12 @@
 LEGAL INTELLIGENCE HUB
 Base de Conocimiento Jurisprudencial y Normativo con IA
 Resoluciones Administrativas + Judiciales + Normativa Vigente
-Vertical ServiciosConecta — JARABA IMPACT PLATFORM
+Vertical JarabaLex (antes ServiciosConecta) — JARABA IMPACT PLATFORM
 
-Versión:	1.0
+Versión:	1.1
 Fecha:	Febrero 2026
 Estado:	Especificación Técnica
-Código:	178_ServiciosConecta_Legal_Intelligence_Hub
+Código:	178_JarabaLex_Legal_Intelligence_Hub
 Dependencias:	82_Services_Core, 88_Buzon_Confianza, 93_Copilot_Servicios, 130_Tenant_Knowledge_Training
 Tecnología:	RAG (Qdrant) + Web Scraping + NLP + Gemini 2.0 Flash
 Prioridad:	ALTA — Diferenciador competitivo legal

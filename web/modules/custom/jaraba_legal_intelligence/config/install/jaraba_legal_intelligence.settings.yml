@@ -18,6 +18,9 @@ score_threshold: 0.65
 max_results: 20
 
 # Limites por plan SaaS.
+# LEGACY: Estos limites se mantienen por compatibilidad. El mecanismo oficial
+# de limites es FreemiumVerticalLimit (config entities jarabalex_*_*).
+# Ver ecosistema_jaraba_core.freemium_vertical_limit.jarabalex_*.yml
 limits:
   starter:
     searches_per_month: 50

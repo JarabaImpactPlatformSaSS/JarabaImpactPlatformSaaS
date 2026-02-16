@@ -1,0 +1,7 @@
+id: legal_citations
+label: 'Citaciones cruzadas'
+description: 'Grafo de citaciones entre resoluciones, legislacion y doctrina con navegacion contextual.'
+category: legal
+icon: citation
+weight: 22
+status: true

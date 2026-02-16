@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 49.0.0 (Specs Madurez N1/N2/N3 — 21 Documentos Técnicos 183-203 + Backup Separation)
+**Versión:** 50.0.0 (Elevacion JarabaLex a Vertical Independiente + Specs Madurez N1/N2/N3)
 
 > **📋 SPECS MADUREZ N1/N2/N3 — 21 DOCUMENTOS TÉCNICOS 183-203 + BACKUP SEPARATION** (2026-02-16)
 > - **21 documentos técnicos** de especificación organizados en 3 niveles de madurez plataforma
@@ -28,6 +28,14 @@
 > - **Drush:** tenant-export:backup, tenant-export:cleanup, tenant-export:status
 > - **Tests:** 8 suites (3 Unit + 3 Kernel + 2 Functional)
 > - **Plan:** [20260216-Plan_Implementacion_Tenant_Export_v1.md](./implementacion/20260216-Plan_Implementacion_Tenant_Export_v1.md)
+
+> **⚖️ ELEVACION JARABALEX A VERTICAL INDEPENDIENTE** (2026-02-16)
+> - **Decision estrategica:** `jaraba_legal_intelligence` elevado de sub-feature ServiciosConecta a vertical independiente JarabaLex
+> - **Modulo:** package cambiado a 'JarabaLex', sin cambios funcionales ni dependencias nuevas
+> - **16 config entities nuevos:** 1 vertical, 3 features, 3 SaaS plans (Starter 49 EUR, Pro 99 EUR, Enterprise 199 EUR), 9 FreemiumVerticalLimit
+> - **Theme:** page--legal.html.twig (zero-region + Copilot FAB), CSS custom properties --ej-legal-*
+> - **Billing:** 3 entradas FEATURE_ADDON_MAP en FeatureAccessService
+> - **Plan:** [20260216-Elevacion_JarabaLex_Vertical_Independiente_v1.md](./implementacion/20260216-Elevacion_JarabaLex_Vertical_Independiente_v1.md)
 
 > **🎯 LEGAL INTELLIGENCE HUB — PLAN DE IMPLEMENTACION (Docs 178/178A/178B)** (2026-02-15)
 > - **Plan de Implementacion:** 20 secciones, 10 fases (Fase 0-9), 530-685 horas / 23,850-30,825 EUR

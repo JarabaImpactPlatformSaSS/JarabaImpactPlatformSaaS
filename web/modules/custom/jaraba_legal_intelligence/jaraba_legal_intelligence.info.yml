@@ -1,7 +1,7 @@
 name: 'Jaraba Legal Intelligence Hub'
 type: module
 description: 'AI-powered legal research with semantic search across national (ES) and European (EU/CEDH) sources. Pipeline NLP, Qdrant vector search, citation insertion, intelligent alerts.'
-package: 'Jaraba ServiciosConecta'
+package: 'JarabaLex'
 core_version_requirement: ^10.3 || ^11
 php: 8.3
 dependencies:

@@ -1,0 +1,11 @@
+id: jarabalex_starter_searches_per_month
+label: 'JarabaLex Starter: Busquedas por mes'
+vertical: jarabalex
+plan: starter
+feature_key: searches_per_month
+limit_value: 50
+description: 'Maximo 50 busquedas juridicas por mes en plan Starter JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 303
+status: true

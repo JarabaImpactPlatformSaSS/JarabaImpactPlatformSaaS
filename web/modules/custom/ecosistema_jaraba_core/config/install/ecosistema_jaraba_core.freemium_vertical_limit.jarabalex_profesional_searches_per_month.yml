@@ -1,0 +1,11 @@
+id: jarabalex_profesional_searches_per_month
+label: 'JarabaLex Profesional: Busquedas por mes'
+vertical: jarabalex
+plan: profesional
+feature_key: searches_per_month
+limit_value: -1
+description: 'Busquedas juridicas ilimitadas en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 306
+status: true

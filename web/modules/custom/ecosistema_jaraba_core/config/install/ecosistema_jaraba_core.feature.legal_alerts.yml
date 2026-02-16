@@ -1,0 +1,7 @@
+id: legal_alerts
+label: 'Alertas juridicas inteligentes'
+description: 'Alertas automaticas sobre cambios legislativos, nueva jurisprudencia y actualizaciones normativas relevantes.'
+category: legal
+icon: alert
+weight: 21
+status: true
