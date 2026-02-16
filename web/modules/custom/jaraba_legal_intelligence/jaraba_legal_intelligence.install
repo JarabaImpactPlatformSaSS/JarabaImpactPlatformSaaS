@@ -335,6 +335,72 @@ SKILL,
 }
 
 /**
+ * Seeds 3 JarabaLex funnel definitions for analytics (FASE 12).
+ *
+ * Creates vertical-specific funnels:
+ * - Legal Search Conversion: landing → search → bookmark → alert
+ * - Legal Upgrade Funnel: search → limit_hit → upgrade_view → purchase
+ * - Legal Citation Workflow: search → resolution_view → cite → expediente
+ */
+function jaraba_legal_intelligence_update_10003(): void {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  if (!$entityTypeManager->hasDefinition('funnel_definition')) {
+    \Drupal::messenger()->addWarning(t('jaraba_analytics module not enabled. JarabaLex funnels not created.'));
+    return;
+  }
+
+  $storage = $entityTypeManager->getStorage('funnel_definition');
+
+  $funnels = [
+    [
+      'name' => 'JarabaLex: Search Conversion',
+      'steps' => [
+        ['event_type' => 'legal_landing_view', 'label' => 'Landing legal', 'filters' => []],
+        ['event_type' => 'legal_search', 'label' => 'Busqueda realizada', 'filters' => []],
+        ['event_type' => 'legal_bookmark_created', 'label' => 'Resolucion guardada', 'filters' => []],
+        ['event_type' => 'legal_alert_created', 'label' => 'Alerta configurada', 'filters' => []],
+      ],
+      'conversion_window_hours' => 168,
+    ],
+    [
+      'name' => 'JarabaLex: Upgrade Funnel',
+      'steps' => [
+        ['event_type' => 'legal_search', 'label' => 'Busqueda realizada', 'filters' => []],
+        ['event_type' => 'legal_limit_reached', 'label' => 'Limite alcanzado', 'filters' => []],
+        ['event_type' => 'upgrade_page_view', 'label' => 'Pagina upgrade vista', 'filters' => []],
+        ['event_type' => 'plan_upgraded', 'label' => 'Plan contratado', 'filters' => []],
+      ],
+      'conversion_window_hours' => 336,
+    ],
+    [
+      'name' => 'JarabaLex: Citation Workflow',
+      'steps' => [
+        ['event_type' => 'legal_search', 'label' => 'Busqueda realizada', 'filters' => []],
+        ['event_type' => 'legal_resolution_view', 'label' => 'Resolucion consultada', 'filters' => []],
+        ['event_type' => 'legal_citation_inserted', 'label' => 'Cita insertada', 'filters' => []],
+      ],
+      'conversion_window_hours' => 72,
+    ],
+  ];
+
+  $created = 0;
+  foreach ($funnels as $data) {
+    $existing = $storage->loadByProperties(['name' => $data['name']]);
+    if (!empty($existing)) {
+      continue;
+    }
+    $storage->create([
+      'name' => $data['name'],
+      'steps' => [$data['steps']],
+      'conversion_window_hours' => $data['conversion_window_hours'],
+    ])->save();
+    $created++;
+  }
+
+  \Drupal::messenger()->addStatus(t('@count JarabaLex funnel definitions created.', ['@count' => $created]));
+}
+
+/**
  * Implements hook_uninstall().
  *
  * Limpia las entradas de State API usadas para rate limiting del cron

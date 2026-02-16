@@ -63,15 +63,15 @@
         {% trans %}View detail{% endtrans %}
       </a>
 
-      {# Boton insertar cita (slide-panel) #}
-      <button class="btn btn--sm btn--primary"
-              data-slide-panel="cite-{{ resolution.id|default(0) }}"
-              data-slide-panel-url="/legal/cite/{{ resolution.id|default(0) }}/formal?ajax=1"
-              data-slide-panel-title="{{ 'Insert citation'|t }}"
-              data-slide-panel-size="--large">
+      {# Boton insertar cita (modal CRUD) #}
+      <a href="/legal/cite/{{ resolution.id|default(0) }}/formal"
+         class="btn btn--sm btn--primary use-ajax"
+         data-dialog-type="modal"
+         data-dialog-options='{"width":"680","dialogClass":"legal-citation-modal"}'
+         title="{{ 'Insert citation'|t }}">
         {{ jaraba_icon('legal', 'citation', { size: '14px' }) }}
         {% trans %}Cite{% endtrans %}
-      </button>
+      </a>
 
       {# Boton favorito #}
       <button class="btn btn--sm btn--ghost"

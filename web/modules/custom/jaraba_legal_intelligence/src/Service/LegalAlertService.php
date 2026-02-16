@@ -7,6 +7,7 @@ namespace Drupal\jaraba_legal_intelligence\Service;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_legal_intelligence\Entity\LegalAlert;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
@@ -142,6 +143,13 @@ class LegalAlertService {
   protected LoggerInterface $logger;
 
   /**
+   * Servicio de feature gating para verificar limites del plan.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService
+   */
+  protected JarabaLexFeatureGateService $featureGate;
+
+  /**
    * Construye una nueva instancia de LegalAlertService.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
@@ -152,17 +160,21 @@ class LegalAlertService {
    *   Gestor de plugins de mail para envio de notificaciones por email.
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del canal jaraba_legal_intelligence.
+   * @param \Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService $featureGate
+   *   Servicio de feature gating para verificar limites del plan.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     TenantContextService $tenantContext,
     MailManagerInterface $mailManager,
     LoggerInterface $logger,
+    JarabaLexFeatureGateService $featureGate,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->tenantContext = $tenantContext;
     $this->mailManager = $mailManager;
     $this->logger = $logger;
+    $this->featureGate = $featureGate;
   }
 
   /**
@@ -757,7 +769,16 @@ class LegalAlertService {
    *   ['allowed' => bool, 'message' => string|null].
    */
   private function checkAlertLimit(int $providerId): array {
-    // Contar alertas actuales del usuario.
+    $result = $this->featureGate->check($providerId, 'max_alerts');
+
+    if (!$result->isAllowed()) {
+      return [
+        'allowed' => FALSE,
+        'message' => $result->getUpgradeMessage(),
+      ];
+    }
+
+    // Contar alertas actuales del usuario para verificar contra el limite.
     try {
       $storage = $this->entityTypeManager->getStorage('legal_alert');
       $count = (int) $storage->getQuery()
@@ -767,19 +788,11 @@ class LegalAlertService {
         ->execute();
     }
     catch (\Exception $e) {
-      // Si no se puede contar, permitir (fail-open).
       return ['allowed' => TRUE, 'message' => NULL];
     }
 
-    // Obtener limite del plan.
-    $maxAlerts = $this->getMaxAlertsForCurrentPlan();
-
-    // 0 = ilimitado.
-    if ($maxAlerts === 0) {
-      return ['allowed' => TRUE, 'message' => NULL];
-    }
-
-    if ($count >= $maxAlerts) {
+    // Si el FeatureGate tiene un limite definido, verificar contra el count real.
+    if ($result->limit > 0 && $count >= $result->limit) {
       return [
         'allowed' => FALSE,
         'message' => sprintf(

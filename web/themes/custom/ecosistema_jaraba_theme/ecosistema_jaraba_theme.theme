@@ -916,6 +916,9 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     'ecosistema_jaraba_core.landing.serviciosconecta',
     'ecosistema_jaraba_core.landing.empleabilidad',
     'ecosistema_jaraba_core.landing.emprendimiento',
+    // JarabaLex — Inteligencia Legal con IA.
+    // Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
+    'ecosistema_jaraba_core.landing.jarabalex',
   ];
   if (in_array($route, $vertical_routes)) {
     $variables['attributes']['class'][] = 'landing-page';
@@ -2157,6 +2160,45 @@ function ecosistema_jaraba_theme_preprocess_page__empleabilidad(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_page__legal().
+ *
+ * Preprocesa las páginas del vertical JarabaLex (Legal Intelligence Hub)
+ * para inyectar contexto del Copilot y variables específicas del vertical.
+ *
+ * Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
+ * Template: page--legal.html.twig (Zero Region Policy + Copilot FAB legal_copilot)
+ *
+ * Aplica a todas las rutas de:
+ * - jaraba_legal.search, jaraba_legal.dashboard, jaraba_legal.resolution, etc.
+ * - jaraba_legal_intelligence.settings
+ */
+function ecosistema_jaraba_theme_preprocess_page__legal(&$variables) {
+  // Inyectar contexto del Copilot para el FAB.
+  try {
+    $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
+    $variables['copilot_context'] = $copilot_service->getContext();
+  }
+  catch (\Exception $e) {
+    // Servicio no disponible — FAB se renderiza con defaults.
+    $variables['copilot_context'] = [];
+  }
+
+  // Configuración del tema para parciales (header/footer).
+  $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $site_config = \Drupal::config('system.site');
+
+  $variables['theme_settings'] = [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+  ];
+
+  $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
+  $variables['site_slogan'] = $site_config->get('slogan') ?: '';
+}
+
+/**
  * Implements hook_preprocess_page__emprendimiento().
  *
  * Preprocesa las páginas del vertical Emprendimiento para inyectar contexto
@@ -2972,6 +3014,28 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
   if (str_starts_with($route_str, 'jaraba_dr.')) {
     $suggestions[] = 'page__dr_status';
+  }
+
+  // =========================================================================
+  // VERTICAL JARABALEX — Template específico para Legal Intelligence Hub
+  // Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
+  //
+  // Las rutas jaraba_legal.search, jaraba_legal.dashboard, etc. pertenecen
+  // al módulo jaraba_legal_intelligence (no al compliance jaraba_legal).
+  // Usan page--legal.html.twig con Copilot FAB legal_copilot.
+  // =========================================================================
+  $jarabalex_routes = [
+    'jaraba_legal.search',
+    'jaraba_legal.resolution',
+    'jaraba_legal.cite',
+    'jaraba_legal.similar',
+    'jaraba_legal.public_summary',
+    'jaraba_legal.dashboard',
+    'jaraba_legal.admin_dashboard',
+    'jaraba_legal_intelligence.settings',
+  ];
+  if (in_array($route_str, $jarabalex_routes)) {
+    $suggestions[] = 'page__legal';
   }
 }
 

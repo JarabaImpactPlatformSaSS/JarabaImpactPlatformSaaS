@@ -945,6 +945,71 @@
     );
 
     // =========================================================================
+    // PNG PREVIEWS — Mapa de bloques estáticos con thumbnail PNG disponible
+    // =========================================================================
+
+    const pngBasePath = '/modules/custom/jaraba_page_builder/images/previews/';
+
+    /**
+     * Mapa blockId → nombre de archivo PNG (sin extensión).
+     * Solo para bloques estáticos que tienen un PNG representativo.
+     */
+    const pngMap = {
+        'blockquote': 'blockquote',
+        'features-grid': 'features-grid',
+        'features-icon-box': 'feature-highlight',
+        'stats-counter': 'stats-counter',
+        'stats-progress': 'animated-counter',
+        'stats-chart': 'animated-counter',
+        'testimonials-slider': 'testimonials-slider',
+        'faq-accordion': 'faq-accordion',
+        'tabs-content': 'tabs-content',
+        'countdown-timer': 'countdown-timer',
+        'timeline': 'timeline',
+        'contact-form': 'contact-form',
+        'contact-map': 'map-locations',
+        'team-grid': 'team-grid',
+        'social-feed': 'social-feed',
+        'social-icons': 'social-media',
+        'social-share': 'social-proof',
+        'alert-banner': 'alert-banner',
+        'hero-simple': 'hero-fullscreen',
+        'hero-split': 'split-hero',
+        'hero-video': 'video-hero',
+        'cta-basic': 'cta-section',
+        'cta-gradient': 'cta-section',
+        'cta-split': 'cta-section',
+        'columns-2': 'two-columns',
+        'columns-3': 'columns-layout',
+        'columns-asymmetric': 'columns-layout',
+        'pricing-basic': 'pricing-table',
+        'pricing-toggle': 'pricing-table',
+        'pricing-highlighted': 'pricing-table',
+        'pricing-comparison': 'comparison-table',
+        'media-gallery': 'image-gallery',
+        'media-video': 'video-embed',
+        'media-carousel': 'partners-carousel',
+        'product-card': 'product-showcase',
+        'product-grid': 'cards-grid',
+        'shopping-cart': 'product-showcase',
+        'map-embed': 'map-locations',
+        'premium-block': 'glassmorphism-cards',
+    };
+
+    /**
+     * Genera HTML <img> para un thumbnail PNG.
+     *
+     * @param {string} pngFile Nombre del archivo (sin extensión).
+     * @param {string} alt Texto alternativo.
+     * @return {string} HTML img tag.
+     */
+    function makePngMedia(pngFile, alt) {
+        return '<img src="' + pngBasePath + pngFile + '.png" '
+            + 'alt="' + alt + '" width="120" height="80" loading="lazy" '
+            + 'style="border-radius:6px; object-fit:cover; width:100%; height:auto;" />';
+    }
+
+    // =========================================================================
     // API PÚBLICA
     // =========================================================================
 
@@ -1290,6 +1355,14 @@
                 return;
             }
 
+            // Preferir PNG preview sobre SVG cuando existe mapeo.
+            if (pngMap[blockId]) {
+                block.set('media', makePngMedia(pngMap[blockId], blockId));
+                upgraded++;
+                return;
+            }
+
+            // Fallback a SVG duotone.
             if (thumbnails[blockId]) {
                 block.set('media', thumbnails[blockId]);
                 upgraded++;
@@ -1398,6 +1471,16 @@
 
             /* Categoría con icono inyectado */
             .jaraba-cat-icon svg {
+                display: block;
+            }
+
+            /* PNG thumbnails en bloques del sidebar */
+            .gjs-block img {
+                width: 100%;
+                height: auto;
+                max-height: 80px;
+                border-radius: 6px;
+                object-fit: cover;
                 display: block;
             }
         `;

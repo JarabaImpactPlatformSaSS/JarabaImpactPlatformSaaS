@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#1E3A5F" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .alert-box { background-color: #F5F3EF; border-left: 4px solid #C8A96E; padding: 12px 16px; border-radius: 4px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#1E3A5F" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#C8A96E" font-size="24px" font-weight="bold">
+          {{ site_name }} &mdash; JarabaLex
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#1E3A5F" padding-bottom="8px">
+          Alerta jur&iacute;dica configurada
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>Has configurado tu primera alerta jur&iacute;dica. Te notificaremos cuando se publiquen nuevas resoluciones que coincidan con tus criterios.</p>
+        </mj-text>
+        <mj-text padding-top="16px">
+          <div class="alert-box">
+            <strong>{{ alert_type }}</strong><br/>
+            {{ alert_description }}
+          </div>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#1E3A5F" padding-top="16px">
+          Consejos para alertas efectivas:
+        </mj-text>
+        <mj-text>
+          <p>&bull; Combina t&eacute;rminos espec&iacute;ficos con fuentes concretas (ej: &laquo;IRPF no residentes&raquo; + DGT).</p>
+          <p>&bull; A&ntilde;ade varios temas para cubrir toda tu &aacute;rea de pr&aacute;ctica.</p>
+          <p>&bull; Las alertas se eval&uacute;an en cada ingesta de resoluciones (diaria).</p>
+        </mj-text>
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          Gestionar mis alertas
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

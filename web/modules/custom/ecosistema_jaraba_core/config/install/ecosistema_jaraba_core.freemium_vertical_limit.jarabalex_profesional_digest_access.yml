@@ -1,0 +1,11 @@
+id: jarabalex_profesional_digest_access
+label: 'JarabaLex Profesional: Digest semanal'
+vertical: jarabalex
+plan: profesional
+feature_key: digest_access
+limit_value: -1
+description: 'Digest semanal de jurisprudencia disponible en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 326
+status: true

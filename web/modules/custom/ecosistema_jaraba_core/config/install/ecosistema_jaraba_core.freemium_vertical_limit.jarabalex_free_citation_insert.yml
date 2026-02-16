@@ -1,0 +1,11 @@
+id: jarabalex_free_citation_insert
+label: 'JarabaLex Free: Inserciones de citas'
+vertical: jarabalex
+plan: free
+feature_key: citation_insert
+limit_value: 0
+description: 'Citas automatizadas no disponibles en plan gratuito JarabaLex.'
+upgrade_message: 'Las citas automatizadas requieren plan Starter o superior. Actualiza para insertar citas con un clic.'
+expected_conversion: 0.35
+weight: 310
+status: true

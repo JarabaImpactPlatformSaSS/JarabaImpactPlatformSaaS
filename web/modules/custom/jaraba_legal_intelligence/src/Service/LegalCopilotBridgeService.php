@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_intelligence\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -94,6 +95,7 @@ class LegalCopilotBridgeService {
     protected LegalCitationService $citationService,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected JarabaLexFeatureGateService $featureGate,
   ) {}
 
   /**
@@ -278,6 +280,68 @@ class LegalCopilotBridgeService {
    */
   public function getSourceLabels(): array {
     return self::SOURCE_LABELS;
+  }
+
+  /**
+   * Genera una sugerencia de upgrade contextual para el copilot.
+   *
+   * Sigue el patron de EmployabilityCopilotAgent::getSoftSuggestion().
+   * Solo sugiere a usuarios en plan free con actividad suficiente
+   * (al menos 3 busquedas realizadas).
+   *
+   * Plan Elevacion JarabaLex v1 — Fase 5.
+   *
+   * @param array $context
+   *   Contexto opcional: user_id, current_route.
+   *
+   * @return array|null
+   *   Sugerencia de upgrade o NULL si no aplica.
+   */
+  public function getSoftSuggestion(array $context = []): ?array {
+    try {
+      $userId = $context['user_id'] ?? (int) \Drupal::currentUser()->id();
+      if (!$userId) {
+        return NULL;
+      }
+
+      $plan = $this->featureGate->getUserPlan($userId);
+      if ($plan !== 'free') {
+        return NULL;
+      }
+
+      // Verificar que el usuario tiene actividad suficiente (>= 3 busquedas).
+      $searchResult = $this->featureGate->check($userId, 'searches_per_month');
+      $used = $searchResult->used ?? 0;
+      if ($used < 3) {
+        return NULL;
+      }
+
+      // Determinar sugerencia segun nivel de uso.
+      if ($used >= 8) {
+        return [
+          'type' => 'upgrade',
+          'message' => 'Estas usando la inteligencia legal de forma intensiva. Con el plan Starter tendras busquedas ilimitadas, alertas juridicas y acceso al digest semanal.',
+          'cta' => [
+            'label' => 'Ver plan Starter',
+            'url' => '/upgrade?vertical=jarabalex&source=copilot',
+          ],
+          'trigger' => 'copilot_premium_upsell',
+        ];
+      }
+
+      return [
+        'type' => 'upgrade',
+        'message' => 'Tu actividad legal crece. Con el plan Starter podrias buscar jurisprudencia sin limites y configurar alertas para tus areas de practica.',
+        'cta' => [
+          'label' => 'Ver plan Starter',
+          'url' => '/upgrade?vertical=jarabalex&source=copilot',
+        ],
+        'trigger' => 'copilot_soft_upsell',
+      ];
+    }
+    catch (\Exception $e) {
+      return NULL;
+    }
   }
 
   /**

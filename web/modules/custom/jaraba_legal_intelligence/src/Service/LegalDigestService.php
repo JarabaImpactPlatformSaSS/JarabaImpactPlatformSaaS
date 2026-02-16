@@ -7,6 +7,7 @@ namespace Drupal\jaraba_legal_intelligence\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Psr\Log\LoggerInterface;
 
@@ -119,6 +120,13 @@ class LegalDigestService {
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del canal jaraba_legal_intelligence.
    */
+  /**
+   * Servicio de feature gating para verificar limites del plan.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService
+   */
+  protected JarabaLexFeatureGateService $featureGate;
+
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     LegalSearchService $searchService,
@@ -126,6 +134,7 @@ class LegalDigestService {
     TenantContextService $tenantContext,
     ConfigFactoryInterface $configFactory,
     LoggerInterface $logger,
+    JarabaLexFeatureGateService $featureGate,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->searchService = $searchService;
@@ -133,6 +142,7 @@ class LegalDigestService {
     $this->tenantContext = $tenantContext;
     $this->configFactory = $configFactory;
     $this->logger = $logger;
+    $this->featureGate = $featureGate;
   }
 
   /**
@@ -155,6 +165,16 @@ class LegalDigestService {
     $sentCount = 0;
 
     foreach ($providerIds as $providerId) {
+      // Verificar si el usuario tiene acceso al digest en su plan.
+      $gateResult = $this->featureGate->check($providerId, 'digest_access');
+      if (!$gateResult->isAllowed()) {
+        $this->logger->debug('LegalDigestService: Usuario @uid no tiene acceso al digest (plan: @plan).', [
+          '@uid' => $providerId,
+          '@plan' => $gateResult->getCurrentPlan(),
+        ]);
+        continue;
+      }
+
       $digest = $this->generateWeeklyDigest($providerId, $periodStart, $periodEnd);
 
       if (empty($digest['resolutions'])) {

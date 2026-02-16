@@ -1,0 +1,11 @@
+id: jarabalex_starter_digest_access
+label: 'JarabaLex Starter: Digest semanal'
+vertical: jarabalex
+plan: starter
+feature_key: digest_access
+limit_value: -1
+description: 'Digest semanal de jurisprudencia disponible en plan Starter JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 323
+status: true
