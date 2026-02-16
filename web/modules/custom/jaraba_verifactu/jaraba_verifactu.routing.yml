@@ -6,6 +6,8 @@
 # ============================================================================
 
 # --- FRONTEND PAGES ---
+# Directriz 3.4: Zero-region pages use _admin_route: FALSE to render
+# with the frontend theme instead of the admin theme.
 
 jaraba_verifactu.dashboard:
   path: '/admin/jaraba/fiscal/verifactu'
@@ -14,6 +16,8 @@ jaraba_verifactu.dashboard:
     _title: 'VeriFactu Dashboard'
   requirements:
     _permission: 'view verifactu records'
+  options:
+    _admin_route: FALSE
 
 jaraba_verifactu.records:
   path: '/admin/jaraba/fiscal/verifactu/records'
@@ -22,6 +26,8 @@ jaraba_verifactu.records:
     _title: 'VeriFactu Records'
   requirements:
     _permission: 'view verifactu records'
+  options:
+    _admin_route: FALSE
 
 jaraba_verifactu.record_detail:
   path: '/admin/jaraba/fiscal/verifactu/records/{verifactu_invoice_record}'
@@ -31,6 +37,7 @@ jaraba_verifactu.record_detail:
   requirements:
     _permission: 'view verifactu records'
   options:
+    _admin_route: FALSE
     parameters:
       verifactu_invoice_record:
         type: entity:verifactu_invoice_record
@@ -42,6 +49,8 @@ jaraba_verifactu.remision:
     _title: 'AEAT Remision'
   requirements:
     _permission: 'manage verifactu remision'
+  options:
+    _admin_route: FALSE
 
 jaraba_verifactu.audit:
   path: '/admin/jaraba/fiscal/verifactu/audit'
@@ -50,6 +59,8 @@ jaraba_verifactu.audit:
     _title: 'VeriFactu Audit Log'
   requirements:
     _permission: 'view verifactu event log'
+  options:
+    _admin_route: FALSE
 
 jaraba_verifactu.config:
   path: '/admin/jaraba/fiscal/verifactu/config'
@@ -58,6 +69,8 @@ jaraba_verifactu.config:
     _title: 'VeriFactu Configuration'
   requirements:
     _permission: 'manage verifactu config'
+  options:
+    _admin_route: FALSE
 
 jaraba_verifactu.settings:
   path: '/admin/config/jaraba/verifactu'

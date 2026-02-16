@@ -122,7 +122,7 @@
   }
 
   &__text-body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: var(--ej-font-family-serif, Georgia, 'Times New Roman', serif);
     font-size: 0.9375rem;
     line-height: 1.8;
     color: var(--ej-text-primary, #{legal.$legal-text});

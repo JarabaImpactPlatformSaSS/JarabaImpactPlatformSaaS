@@ -28,6 +28,8 @@ use Drupal\Core\Entity\EntityInterface;
 function jaraba_facturae_theme(): array {
   return [
     'page__facturae' => [
+      'template' => 'page--facturae',
+      'base hook' => 'page',
       'variables' => [
         'facturae_stats' => [],
         'facturae_recent' => [],
@@ -37,6 +39,8 @@ function jaraba_facturae_theme(): array {
       ],
     ],
     'page__facturae_documents' => [
+      'template' => 'page--facturae-documents',
+      'base hook' => 'page',
       'variables' => [],
     ],
     'facturae_dashboard' => [

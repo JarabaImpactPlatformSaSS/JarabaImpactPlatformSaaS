@@ -1,0 +1,74 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#553C9A" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#553C9A" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ site_name }} &mdash; Facturaci&oacute;n B2G
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Alerta -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#553C9A" padding-bottom="8px">
+          Factura rechazada por FACe
+        </mj-text>
+        <mj-text>
+          <p>Hola {{ user_name }},</p>
+          <p>La factura <strong>{{ invoice_number }}</strong> enviada a <strong>{{ recipient_name }}</strong> ha sido <strong>rechazada</strong> por la plataforma FACe.</p>
+        </mj-text>
+        <mj-section background-color="#FAF5FF" padding="16px" border-radius="6px">
+          <mj-column>
+            <mj-text font-size="14px" color="#553C9A">
+              <strong>Factura:</strong> {{ invoice_number }}<br/>
+              <strong>Importe:</strong> {{ amount }}<br/>
+              <strong>&Oacute;rgano gestor:</strong> {{ organo_gestor }}<br/>
+              <strong>C&oacute;digo DIR3:</strong> {{ dir3_code }}<br/>
+              <strong>Motivo de rechazo:</strong> {{ rejection_reason }}<br/>
+              <strong>Fecha rechazo:</strong> {{ rejection_date }}
+            </mj-text>
+          </mj-column>
+        </mj-section>
+        <mj-text padding-top="16px">
+          <p>Seg&uacute;n la <strong>Ley 25/2013</strong>, la facturaci&oacute;n electr&oacute;nica a la Administraci&oacute;n P&uacute;blica es obligatoria. Corrija los errores y reenv&iacute;e la factura lo antes posible.</p>
+        </mj-text>
+        <mj-button href="{{ invoice_url }}" align="center" padding="24px 0">
+          Ver factura y corregir
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280">
+          <p>Puede consultar los motivos habituales de rechazo en la documentaci&oacute;n de FACe.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+          Has recibido este correo por ser administrador fiscal de {{ tenant_name }}.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

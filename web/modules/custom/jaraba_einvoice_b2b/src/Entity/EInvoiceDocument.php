@@ -33,8 +33,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *       "default" = "Drupal\jaraba_einvoice_b2b\Form\EInvoiceDocumentForm",
  *       "add" = "Drupal\jaraba_einvoice_b2b\Form\EInvoiceDocumentForm",
  *       "edit" = "Drupal\jaraba_einvoice_b2b\Form\EInvoiceDocumentForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_einvoice_b2b\Access\EInvoiceDocumentAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
@@ -42,6 +44,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   admin_permission = "administer einvoice b2b",
  *   links = {
  *     "canonical" = "/admin/jaraba/fiscal/einvoice/documents/{einvoice_document}",
+ *     "add-form" = "/admin/jaraba/fiscal/einvoice/documents/add",
+ *     "edit-form" = "/admin/jaraba/fiscal/einvoice/documents/{einvoice_document}/edit",
+ *     "delete-form" = "/admin/jaraba/fiscal/einvoice/documents/{einvoice_document}/delete",
  *     "collection" = "/admin/jaraba/fiscal/einvoice/documents",
  *   },
  *   field_ui_base_route = "jaraba_einvoice_b2b.einvoice_document.settings",

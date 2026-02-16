@@ -1,40 +1,68 @@
 {#
 /**
  * @file
- * Template for the Tenant Export self-service page.
+ * Zero-region page template for Tenant Export self-service page.
  *
- * Zero-region frontend page for data export.
- * Directriz 3.4: Sin bloques, sin sidebar admin.
+ * Directriz 3.4: Sin bloques, sin sidebar admin, sin {{ page.content }}.
+ * Directriz 3.5: Body classes via hook_preprocess_html().
  *
- * Variables:
- * - page: The page render array from the controller.
+ * Variables (injected via hook_preprocess_page()):
+ * - tenant: Current tenant entity.
+ * - exports: Array of recent export records.
+ * - can_request: Boolean — whether the tenant can request a new export.
+ * - sections: Available data sections for export.
+ * - rate_limit_info: Rate limit status array.
+ * - site_name, site_slogan, logo, logged_in: Standard Drupal variables.
  *
  * @see jaraba_tenant_export_theme()
+ * @see jaraba_tenant_export_preprocess_html()
  */
 #}
-{% extends "@claro/layout/page.html.twig" %}
+{{ attach_library('jaraba_tenant_export/tenant-export-dashboard') }}
 
-{% block content %}
-  <div class="ej-export">
-    {# Header #}
-    {% include '@jaraba_tenant_export/partials/_export-header.html.twig' %}
+<div class="page-wrapper page-wrapper--clean page-wrapper--export">
 
-    {# Main Content — populated by JS #}
-    <div class="ej-export__content" id="tenant-export-app">
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
 
-      {# Request Card #}
-      {% include '@jaraba_tenant_export/partials/_export-request-card.html.twig' %}
+  <main class="main-content main-content--full main-content--export" role="main">
+    <div class="main-content__inner main-content__inner--full">
 
-      {# Active Exports / Progress #}
-      <div class="ej-export__active" id="export-active-section">
-        {# Populated by JS when exports are in progress #}
+      {# Header #}
+      {% include '@jaraba_tenant_export/partials/_export-header.html.twig' only %}
+
+      {# Main Content — populated by JS #}
+      <div class="ej-export__content" id="tenant-export-app">
+
+        {# Request Card #}
+        {% include '@jaraba_tenant_export/partials/_export-request-card.html.twig' with {
+          'can_request': can_request,
+          'sections': sections,
+          'rate_limit_info': rate_limit_info
+        } only %}
+
+        {# Active Exports / Progress #}
+        <div class="ej-export__active" id="export-active-section">
+          {# Populated by JS when exports are in progress #}
+        </div>
+
+        {# History #}
+        {% include '@jaraba_tenant_export/partials/_export-history-list.html.twig' with {
+          'exports': exports
+        } only %}
+
       </div>
 
-      {# History #}
-      {% include '@jaraba_tenant_export/partials/_export-history-list.html.twig' %}
-
     </div>
+  </main>
 
-    {{ page.content }}
-  </div>
-{% endblock %}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+</div>

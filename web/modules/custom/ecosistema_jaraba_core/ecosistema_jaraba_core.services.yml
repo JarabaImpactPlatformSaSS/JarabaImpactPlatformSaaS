@@ -824,6 +824,7 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
       - ~
       - ~
+      - '@ecosistema_jaraba_core.fiscal_compliance'
 
   # ===========================================
   # ADMIN CENTER FINANCE (F6 Doc 181 / Spec f104 §FASE 4)
@@ -1010,6 +1011,26 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # FISCAL COMPLIANCE SERVICE — STACK FISCAL (FASE 11)
+  # ===========================================
+
+  # Servicio de compliance score fiscal unificado (0-100) por tenant.
+  # Calcula score basado en 5 subfactores: cadena VeriFactu intacta,
+  # remisiones AEAT al dia, certificados vigentes, FACe sin rechazos,
+  # morosidad B2B controlada. Servicios opcionales de modulos fiscales
+  # se inyectan condicionalmente via EcosistemaJarabaCoreServiceProvider.
+  ecosistema_jaraba_core.fiscal_compliance:
+    class: Drupal\ecosistema_jaraba_core\Service\FiscalComplianceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - ~
+      - ~
+      - ~
+      - ~
+      - ~
 
   # ===========================================
   # CERTIFICATE MANAGER — STACK FISCAL (FASE 0)

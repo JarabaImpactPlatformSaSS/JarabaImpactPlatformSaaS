@@ -1,4 +1,6 @@
-# Dashboard and admin pages.
+# Dashboard and frontend pages.
+# Directriz 3.4: Zero-region pages use _admin_route: FALSE to render
+# with the frontend theme instead of the admin theme.
 jaraba_facturae.dashboard:
   path: '/admin/jaraba/fiscal/facturae'
   defaults:
@@ -7,7 +9,7 @@ jaraba_facturae.dashboard:
   requirements:
     _permission: 'view facturae documents'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
 
 jaraba_facturae.documents:
   path: '/admin/jaraba/fiscal/facturae/documents'
@@ -17,7 +19,7 @@ jaraba_facturae.documents:
   requirements:
     _permission: 'view facturae documents'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
 
 jaraba_facturae.document_detail:
   path: '/admin/jaraba/fiscal/facturae/documents/{facturae_document}'
@@ -27,7 +29,7 @@ jaraba_facturae.document_detail:
   requirements:
     _permission: 'view facturae documents'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
     parameters:
       facturae_document:
         type: entity:facturae_document
@@ -40,7 +42,7 @@ jaraba_facturae.face_log:
   requirements:
     _permission: 'view facturae logs'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
 
 jaraba_facturae.settings:
   path: '/admin/config/jaraba/facturae'
@@ -50,7 +52,7 @@ jaraba_facturae.settings:
   requirements:
     _permission: 'administer facturae'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
 
 jaraba_facturae.config:
   path: '/admin/jaraba/fiscal/facturae/config'
@@ -60,13 +62,14 @@ jaraba_facturae.config:
   requirements:
     _permission: 'administer facturae'
   options:
-    _admin_route: TRUE
+    _admin_route: FALSE
 
 # Entity Field UI settings routes.
+# These use FormBase as placeholder — Field UI attaches its own forms.
 jaraba_facturae.facturae_document.settings:
   path: '/admin/structure/facturae-document/settings'
   defaults:
-    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _form: '\Drupal\Core\Form\FormBase'
     _title: 'Facturae Document Settings'
   requirements:
     _permission: 'administer facturae'
@@ -76,7 +79,7 @@ jaraba_facturae.facturae_document.settings:
 jaraba_facturae.facturae_tenant_config.settings:
   path: '/admin/structure/facturae-tenant-config/settings'
   defaults:
-    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _form: '\Drupal\Core\Form\FormBase'
     _title: 'Facturae Tenant Config Settings'
   requirements:
     _permission: 'administer facturae'
@@ -86,7 +89,7 @@ jaraba_facturae.facturae_tenant_config.settings:
 jaraba_facturae.facturae_face_log.settings:
   path: '/admin/structure/facturae-face-log/settings'
   defaults:
-    _form: '\Drupal\Core\Entity\EntityFieldManagerInterface'
+    _form: '\Drupal\Core\Form\FormBase'
     _title: 'Facturae FACe Log Settings'
   requirements:
     _permission: 'administer facturae'

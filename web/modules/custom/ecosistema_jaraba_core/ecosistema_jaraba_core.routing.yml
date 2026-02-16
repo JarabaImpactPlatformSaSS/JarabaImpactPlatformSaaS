@@ -1794,3 +1794,18 @@ ecosistema_jaraba_core.admin.settings.apikeys.revoke:
   requirements:
     _permission: 'administer site configuration'
   methods: [POST]
+
+# ---------------------------------------------------------------------------
+# FISCAL COMPLIANCE DASHBOARD (FASE 11)
+# ---------------------------------------------------------------------------
+
+# Dashboard fiscal unificado — Agrega datos de VeriFactu, Facturae y E-Factura.
+ecosistema_jaraba_core.fiscal.dashboard:
+  path: '/admin/jaraba/fiscal'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\FiscalDashboardController::dashboard'
+    _title: 'Fiscal Compliance Dashboard'
+  requirements:
+    _permission: 'view platform analytics'
+  options:
+    _admin_route: TRUE

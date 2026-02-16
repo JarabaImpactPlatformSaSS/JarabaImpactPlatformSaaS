@@ -48,6 +48,13 @@
         {{ jaraba_icon('ui', 'bell', { size: '16px', color: 'neutral' }) }}
         {% trans %}Configurar Alertas{% endtrans %}
       </a>
+      <a href="/admin/jaraba/fiscal"
+         class="admin-center__btn admin-center__btn--secondary"
+         data-slide-panel="fiscal-compliance"
+         data-slide-panel-title="{% trans %}Cumplimiento Fiscal{% endtrans %}">
+        {{ jaraba_icon('fiscal', 'shield-fiscal', { size: '16px' }) }}
+        {% trans %}Fiscal{% endtrans %}
+      </a>
       <a href="/admin/structure/group" class="admin-center__btn admin-center__btn--primary">
         {{ jaraba_icon('business', 'company', { size: '16px', color: 'corporate' }) }}
         {% trans %}Gestionar Tenants{% endtrans %}

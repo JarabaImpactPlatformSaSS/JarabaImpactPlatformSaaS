@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'variables-fiscal' as *;
 
 .einvoice-morosity {
@@ -58,7 +59,7 @@
     font-weight: 600;
 
     &--critical { background: color-mix(in srgb, $fiscal-danger 15%, transparent); color: $fiscal-danger; }
-    &--urgent { background: color-mix(in srgb, $fiscal-warning 15%, transparent); color: darken($fiscal-warning, 20%); }
+    &--urgent { background: color-mix(in srgb, $fiscal-warning 15%, transparent); color: color.adjust($fiscal-warning, $lightness: -20%); }
     &--warning { background: color-mix(in srgb, $fiscal-info 15%, transparent); color: $fiscal-info; }
   }
 

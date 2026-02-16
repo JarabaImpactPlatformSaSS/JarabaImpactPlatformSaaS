@@ -18,7 +18,7 @@
   margin: 0 auto;
   padding: 2rem 1.5rem;
   color: var(--ej-text-primary, #{legal.$legal-text});
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--ej-font-family-serif, Georgia, 'Times New Roman', serif);
   line-height: 1.6;
 
   // === Cabecera: organo emisor y fecha ===
@@ -56,7 +56,7 @@
     gap: 0.25rem;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.8125rem;
     font-weight: 500;
     background: color.change(legal.$legal-primary, $alpha: 0.08);
@@ -69,7 +69,7 @@
     align-items: center;
     padding: 0.25rem 0.625rem;
     border-radius: legal.$legal-radius-sm;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -122,7 +122,7 @@
     border-radius: 0 legal.$legal-radius legal.$legal-radius 0;
 
     &-title {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: var(--ej-font-family, 'Outfit', sans-serif);
       font-size: 0.875rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -169,7 +169,7 @@
 
   &__topics-label {
     width: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -183,7 +183,7 @@
     align-items: center;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.8125rem;
     font-weight: 500;
     color: var(--ej-color-primary, #{legal.$legal-primary});
@@ -210,7 +210,7 @@
   }
 
   &__cta-title {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--ej-text-primary, #{legal.$legal-text});
@@ -218,7 +218,7 @@
   }
 
   &__cta-text {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.9375rem;
     color: var(--ej-text-secondary, #{legal.$legal-text-light});
     margin: 0 0 1.25rem;
@@ -234,7 +234,7 @@
     color: #fff;
     border: none;
     border-radius: legal.$legal-radius;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
@@ -254,7 +254,7 @@
   &__cta-secondary {
     display: block;
     margin-top: 0.75rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.8125rem;
     color: var(--ej-text-secondary, #{legal.$legal-text-light});
 
@@ -275,7 +275,7 @@
     margin-top: 2.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--ej-border-color, #e2e8f0);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
   }
 
   &__source-attribution {
