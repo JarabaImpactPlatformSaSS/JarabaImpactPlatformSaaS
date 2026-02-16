@@ -27,6 +27,7 @@ class VeriFactuPermissionsTest extends KernelTestBase {
     'datetime',
     'flexible_permissions',
     'group',
+    'jaraba_billing',
     'jaraba_verifactu',
   ];
 
@@ -36,6 +37,8 @@ class VeriFactuPermissionsTest extends KernelTestBase {
   public function register(ContainerBuilder $container): void {
     parent::register($container);
     $container->register('ecosistema_jaraba_core.certificate_manager')
+      ->setSynthetic(TRUE);
+    $container->register('jaraba_foc.stripe_connect')
       ->setSynthetic(TRUE);
   }
 

@@ -31,6 +31,7 @@ class SPFEClientStubTest extends KernelTestBase {
     'datetime',
     'flexible_permissions',
     'group',
+    'file',
     'jaraba_einvoice_b2b',
   ];
 
