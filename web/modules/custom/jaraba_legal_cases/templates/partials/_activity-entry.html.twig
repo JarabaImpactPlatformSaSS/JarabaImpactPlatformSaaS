@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * _activity-entry.html.twig — Entrada de timeline de actividad.
+ *
+ * Parcial reutilizable con BEM .ej-activity-entry.
+ *
+ * @param activity: array con datos de la actividad
+ */
+#}
+{% if activity %}
+<div class="ej-activity-entry ej-activity-entry--{{ activity.activity_type|default('note') }}">
+  <div class="ej-activity-entry__dot"></div>
+  <div class="ej-activity-entry__content">
+    <div class="ej-activity-entry__header">
+      <span class="ej-activity-entry__type">{{ activity.activity_type|default('note')|t }}</span>
+      {% if activity.actor %}
+        <span class="ej-activity-entry__actor">{{ activity.actor }}</span>
+      {% endif %}
+    </div>
+    {% if activity.description %}
+      <p class="ej-activity-entry__description">{{ activity.description }}</p>
+    {% endif %}
+    <time class="ej-activity-entry__time" datetime="{{ activity.created }}">
+      {{ activity.created|date('d/m/Y H:i') }}
+    </time>
+  </div>
+</div>
+{% endif %}

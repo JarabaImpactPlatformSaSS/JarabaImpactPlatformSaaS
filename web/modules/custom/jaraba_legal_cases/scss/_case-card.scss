@@ -1,0 +1,173 @@
+/**
+ * @file
+ * _case-card.scss — Estilos de la tarjeta de expediente.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * BEM: .ej-case-card
+ */
+
+.ej-case-card {
+  background: var(--ej-bg-surface, #ffffff);
+  border-radius: var(--ej-radius-md, 0.75rem);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 3px 0 rgba(0, 0, 0, 0.1));
+  border-left: 4px solid var(--ej-color-corporate, #233D63);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: var(--ej-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    transform: translateY(-2px);
+  }
+
+  &--critical {
+    border-left-color: var(--ej-color-danger, #EF4444);
+  }
+
+  &--high {
+    border-left-color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--medium {
+    border-left-color: var(--ej-color-corporate, #233D63);
+  }
+
+  &--low {
+    border-left-color: var(--ej-color-success, #10B981);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__number {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ej-text-muted, #64748B);
+    letter-spacing: 0.02em;
+  }
+
+  &__title {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 var(--ej-spacing-sm, 0.5rem);
+    line-height: 1.4;
+
+    a {
+      color: var(--ej-color-corporate, #233D63);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--ej-color-impulse, #FF8C42);
+      }
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    font-size: 0.85rem;
+    color: var(--ej-text-muted, #64748B);
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__client {
+    font-weight: 500;
+    color: var(--ej-text-primary, #1A1A2E);
+  }
+
+  &__type {
+    &::before {
+      content: '\00B7';
+      margin-right: 0.25rem;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--ej-spacing-sm, 0.5rem);
+    border-top: 1px solid var(--ej-border-color, #E2E8F0);
+    font-size: 0.8rem;
+  }
+
+  &__assigned {
+    color: var(--ej-text-muted, #64748B);
+  }
+}
+
+.ej-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &--active {
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 15%, transparent);
+    color: var(--ej-color-success, #10B981);
+  }
+
+  &--on_hold {
+    background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 15%, transparent);
+    color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--completed {
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  &--archived {
+    background: color-mix(in srgb, var(--ej-color-neutral, #64748B) 15%, transparent);
+    color: var(--ej-color-neutral, #64748B);
+  }
+
+  &--pending {
+    background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 15%, transparent);
+    color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--triaged, &--assigned {
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 15%, transparent);
+    color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  &--converted {
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 15%, transparent);
+    color: var(--ej-color-success, #10B981);
+  }
+
+  &--rejected {
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 15%, transparent);
+    color: var(--ej-color-danger, #EF4444);
+  }
+
+  &--critical {
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 15%, transparent);
+    color: var(--ej-color-danger, #EF4444);
+  }
+
+  &--high {
+    background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 15%, transparent);
+    color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--medium {
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  &--low {
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 15%, transparent);
+    color: var(--ej-color-success, #10B981);
+  }
+}

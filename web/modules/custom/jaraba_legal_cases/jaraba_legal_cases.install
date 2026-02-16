@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Instalacion y actualizacion del modulo Legal Cases (JarabaLex FASE A1).
+ *
+ * Estructura: Define hooks de instalacion, desinstalacion y actualizacion.
+ *
+ * Logica: La instalacion crea el vocabulario de taxonomia legal_area
+ *   y los terminos iniciales para las areas juridicas del despacho.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Logica: Crea los terminos iniciales de la taxonomia legal_area
+ *   para que los expedientes tengan areas juridicas desde el primer momento.
+ *   Los terminos se crean solo si el vocabulario existe y esta vacio.
+ */
+function jaraba_legal_cases_install(): void {
+  _jaraba_legal_cases_create_legal_areas();
+
+  \Drupal::messenger()->addStatus(t('Legal Cases (JarabaLex) instalado correctamente. Areas juridicas iniciales creadas.'));
+}
+
+/**
+ * Crea las areas juridicas iniciales.
+ *
+ * Logica: Crea un listado plano de areas juridicas alineadas con
+ *   los tipos de expediente definidos en ClientCase::baseFieldDefinitions().
+ */
+function _jaraba_legal_cases_create_legal_areas(): void {
+  $vocabulary = 'legal_area';
+
+  // Crear el vocabulario si no existe.
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    $vocab = $vocab_storage->create([
+      'vid' => $vocabulary,
+      'name' => t('Area Juridica'),
+      'description' => t('Areas de practica juridica para clasificacion de expedientes.'),
+    ]);
+    $vocab->save();
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  // Verificar que no hay terminos ya creados.
+  $existing = $term_storage->getQuery()
+    ->condition('vid', $vocabulary)
+    ->range(0, 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($existing)) {
+    return;
+  }
+
+  $areas = [
+    'Derecho Civil' => 0,
+    'Derecho Penal' => 1,
+    'Derecho Laboral' => 2,
+    'Derecho Mercantil' => 3,
+    'Derecho Administrativo' => 4,
+    'Derecho Tributario' => 5,
+    'Derecho de Familia' => 6,
+    'Derecho Contencioso-Administrativo' => 7,
+    'Derecho Inmobiliario' => 8,
+    'Derecho Concursal' => 9,
+    'Derecho de Extranjeria' => 10,
+    'Derecho Comunitario / UE' => 11,
+  ];
+
+  foreach ($areas as $name => $weight) {
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $name,
+      'weight' => $weight,
+    ]);
+    $term->save();
+  }
+}

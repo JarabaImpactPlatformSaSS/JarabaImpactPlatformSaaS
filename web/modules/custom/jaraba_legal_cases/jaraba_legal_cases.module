@@ -1,0 +1,269 @@
+<?php
+
+/**
+ * @file
+ * Modulo principal de Legal Cases (JarabaLex).
+ *
+ * Estructura: Define hooks de tema, preproceso y automatizaciones para
+ *   la gestion de expedientes juridicos del vertical JarabaLex.
+ *
+ * Logica: Los hooks implementan el patron de automatizacion por codigo
+ *   (no ECA BPMN) siguiendo la directriz del proyecto. Cada hook
+ *   incluye verificacion de tipo de entidad para evitar conflictos
+ *   con otras entidades del ecosistema.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra todos los templates Twig del modulo.
+ *   Cada template tiene sus variables documentadas con tipo y proposito.
+ *
+ * Logica: Los templates zero-region (dashboard, detail) se renderizan
+ *   a traves del tema, no del controller. Los parciales se usan via
+ *   {% include %} dentro de los templates del tema.
+ */
+function jaraba_legal_cases_theme(): array {
+  return [
+    'legal_cases_dashboard' => [
+      'variables' => [
+        'cases' => [],
+        'stats' => [],
+        'filters' => [],
+      ],
+    ],
+    'legal_case_detail' => [
+      'variables' => [
+        'case_entity' => NULL,
+        'activities' => [],
+        'stats' => [],
+      ],
+    ],
+    'legal_case_card' => [
+      'template' => 'partials/case-card',
+      'variables' => [
+        'case_entity' => NULL,
+      ],
+    ],
+    'legal_activity_entry' => [
+      'template' => 'partials/activity-entry',
+      'variables' => [
+        'activity' => NULL,
+      ],
+    ],
+    'legal_inquiry_card' => [
+      'template' => 'partials/inquiry-card',
+      'variables' => [
+        'inquiry' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Anade clases CSS al <body> segun la ruta activa.
+ *
+ * Logica: Detecta rutas de Legal Cases para anadir clases que
+ *   permiten estilos especificos por pagina. IMPORTANTE: Las clases
+ *   en <body> SOLO funcionan desde hook_preprocess_html, NO desde
+ *   templates (LEGAL-BODY-001).
+ */
+function jaraba_legal_cases_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $map = [
+    'jaraba_legal_cases.dashboard' => [
+      'page-legal-cases',
+      'dashboard-page',
+      'full-width-layout',
+    ],
+    'jaraba_legal_cases.case_detail' => [
+      'page-legal-case-detail',
+      'dashboard-page',
+      'full-width-layout',
+    ],
+  ];
+
+  if (isset($map[$route_name])) {
+    foreach ($map[$route_name] as $class) {
+      $variables['attributes']['class'][] = $class;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyecta variables en templates zero-region de Legal Cases.
+ *
+ * Logica: ZERO-REGION-003 — En templates zero-region, las variables
+ *   y drupalSettings se inyectan aqui, NO desde el controller.
+ *   El controller retorna solo markup vacio (ZERO-REGION-001).
+ */
+function jaraba_legal_cases_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if ($route_name === 'jaraba_legal_cases.dashboard') {
+    try {
+      /** @var \Drupal\jaraba_legal_cases\Service\CaseManagerService $service */
+      $service = \Drupal::service('jaraba_legal_cases.case_manager');
+      $result = $service->getActiveCases();
+      $stats = $service->getDashboardStats();
+
+      $cases_data = [];
+      foreach ($result['cases'] as $case) {
+        $assigned = $case->get('assigned_to')->entity;
+        $cases_data[] = [
+          'id' => (int) $case->id(),
+          'case_number' => $case->get('case_number')->value ?? '',
+          'title' => $case->get('title')->value ?? '',
+          'status' => $case->get('status')->value ?? '',
+          'priority' => $case->get('priority')->value ?? '',
+          'case_type' => $case->get('case_type')->value ?? '',
+          'client_name' => $case->get('client_name')->value ?? '',
+          'assigned_to' => $assigned ? $assigned->getDisplayName() : '',
+          'created' => $case->get('created')->value,
+        ];
+      }
+
+      $variables['legal_cases'] = $cases_data;
+      $variables['legal_stats'] = $stats;
+
+      $variables['#attached']['drupalSettings']['jarabaLegalCases'] = [
+        'cases' => $cases_data,
+        'stats' => $stats,
+        'apiBase' => '/api/v1/legal',
+      ];
+      $variables['#attached']['library'][] = 'jaraba_legal_cases/legal-cases.main';
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_legal_cases')->error('Error en preprocess dashboard: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+      $variables['legal_cases'] = [];
+      $variables['legal_stats'] = [];
+    }
+  }
+
+  if ($route_name === 'jaraba_legal_cases.case_detail') {
+    try {
+      $case_id = \Drupal::routeMatch()->getParameter('client_case');
+      if ($case_id) {
+        $storage = \Drupal::entityTypeManager()->getStorage('client_case');
+        $case = $storage->load($case_id);
+
+        if ($case) {
+          /** @var \Drupal\jaraba_legal_cases\Service\ActivityLoggerService $activity_service */
+          $activity_service = \Drupal::service('jaraba_legal_cases.activity_logger');
+          $activities = $activity_service->getActivities((int) $case_id);
+
+          $activities_data = [];
+          foreach ($activities as $activity) {
+            $actor = $activity->get('actor_uid')->entity;
+            $activities_data[] = [
+              'id' => (int) $activity->id(),
+              'activity_type' => $activity->get('activity_type')->value ?? '',
+              'description' => $activity->get('description')->value ?? '',
+              'actor' => $actor ? $actor->getDisplayName() : '',
+              'created' => $activity->get('created')->value,
+            ];
+          }
+
+          $assigned = $case->get('assigned_to')->entity;
+          $variables['legal_case'] = [
+            'id' => (int) $case->id(),
+            'case_number' => $case->get('case_number')->value ?? '',
+            'title' => $case->get('title')->value ?? '',
+            'status' => $case->get('status')->value ?? '',
+            'priority' => $case->get('priority')->value ?? '',
+            'case_type' => $case->get('case_type')->value ?? '',
+            'client_name' => $case->get('client_name')->value ?? '',
+            'client_email' => $case->get('client_email')->value ?? '',
+            'client_phone' => $case->get('client_phone')->value ?? '',
+            'description' => $case->get('description')->value ?? '',
+            'court_name' => $case->get('court_name')->value ?? '',
+            'assigned_to' => $assigned ? $assigned->getDisplayName() : '',
+            'next_deadline' => $case->get('next_deadline')->value ?? '',
+            'estimated_value' => $case->get('estimated_value')->value ?? '',
+            'created' => $case->get('created')->value,
+          ];
+          $variables['legal_activities'] = $activities_data;
+
+          $variables['#attached']['drupalSettings']['jarabaLegalCase'] = $variables['legal_case'];
+          $variables['#attached']['drupalSettings']['jarabaLegalActivities'] = $activities_data;
+          $variables['#attached']['library'][] = 'jaraba_legal_cases/legal-cases.main';
+        }
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_legal_cases')->error('Error en preprocess case detail: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Hook que se dispara al crear cualquier entidad.
+ *   Filtra por tipo de entidad para actuar solo en ClientCase.
+ *
+ * Logica: Al crear un expediente, se registra automaticamente una
+ *   actividad 'case_created' via el ActivityLoggerService.
+ */
+function jaraba_legal_cases_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'client_case') {
+    try {
+      /** @var \Drupal\jaraba_legal_cases\Service\ActivityLoggerService $logger */
+      $logger = \Drupal::service('jaraba_legal_cases.activity_logger');
+      $case_number = $entity->get('case_number')->value ?? '';
+      $logger->log($entity, 'case_created', sprintf('Expediente %s creado.', $case_number), [], TRUE);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_legal_cases')->error('Error al registrar actividad de creacion: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Estructura: Hook que detecta cambios de estado en expedientes.
+ *
+ * Logica: Cuando el campo 'status' cambia en un ClientCase,
+ *   registra automaticamente una actividad 'status_change'.
+ */
+function jaraba_legal_cases_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'client_case') {
+    $original = $entity->original ?? NULL;
+    if ($original && $entity->get('status')->value !== $original->get('status')->value) {
+      try {
+        /** @var \Drupal\jaraba_legal_cases\Service\ActivityLoggerService $logger */
+        $logger = \Drupal::service('jaraba_legal_cases.activity_logger');
+        $old_status = $original->get('status')->value;
+        $new_status = $entity->get('status')->value;
+        $logger->log(
+          $entity,
+          'status_change',
+          sprintf('Estado cambiado de "%s" a "%s".', $old_status, $new_status),
+          ['old_status' => $old_status, 'new_status' => $new_status],
+          TRUE
+        );
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_legal_cases')->error('Error al registrar cambio de estado: @msg', [
+          '@msg' => $e->getMessage(),
+        ]);
+      }
+    }
+  }
+}

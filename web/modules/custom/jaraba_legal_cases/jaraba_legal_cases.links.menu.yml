@@ -1,0 +1,20 @@
+# =============================================================================
+# Enlaces de menu en /admin/structure para Legal Cases (JarabaLex)
+# Cada entidad tiene su entrada en el menu de estructura de Drupal
+# =============================================================================
+
+# Expedientes en Structure
+jaraba_legal_cases.client_case.settings:
+  title: 'Expedientes Juridicos'
+  description: 'Configuracion de la entidad Expediente Juridico de JarabaLex.'
+  route_name: jaraba_legal_cases.client_case.settings
+  parent: system.admin_structure
+  weight: 90
+
+# Consultas en Structure
+jaraba_legal_cases.client_inquiry.settings:
+  title: 'Consultas Juridicas'
+  description: 'Configuracion de la entidad Consulta Juridica de JarabaLex.'
+  route_name: jaraba_legal_cases.client_inquiry.settings
+  parent: system.admin_structure
+  weight: 91

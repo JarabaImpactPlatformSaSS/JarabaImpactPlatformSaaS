@@ -1,0 +1,142 @@
+# =============================================================================
+# Rutas del modulo Legal Cases (JarabaLex) - FASE A1
+# Estructura: rutas de settings (Field UI), frontend zero-region y API REST
+# Logica: cada entidad tiene su ruta de settings para field_ui_base_route,
+#   las rutas CRUD de entidad las genera AdminHtmlRouteProvider automaticamente
+# =============================================================================
+
+# --- Settings Routes (para Field UI de cada entidad) ---
+
+jaraba_legal_cases.client_case.settings:
+  path: '/admin/structure/legal-cases'
+  defaults:
+    _form: '\Drupal\jaraba_legal_cases\Form\ClientCaseSettingsForm'
+    _title: 'Configuracion Expedientes Juridicos'
+  requirements:
+    _permission: 'administer legal cases settings'
+
+jaraba_legal_cases.client_inquiry.settings:
+  path: '/admin/structure/legal-inquiries'
+  defaults:
+    _form: '\Drupal\jaraba_legal_cases\Form\ClientCaseSettingsForm'
+    _title: 'Configuracion Consultas Juridicas'
+  requirements:
+    _permission: 'administer legal cases settings'
+
+# --- Rutas Frontend Zero-Region ---
+
+jaraba_legal_cases.dashboard:
+  path: '/legal/cases'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesDashboardController::dashboard'
+    _title: 'Expedientes Juridicos'
+  requirements:
+    _permission: 'view own legal cases'
+
+jaraba_legal_cases.case_detail:
+  path: '/legal/cases/{client_case}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CaseDetailController::detail'
+    _title_callback: '\Drupal\jaraba_legal_cases\Controller\CaseDetailController::title'
+  requirements:
+    _permission: 'view own legal cases'
+    client_case: '\d+'
+
+# --- API REST — Expedientes ---
+
+jaraba_legal_cases.api.cases.list:
+  path: '/api/v1/legal/cases'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view own legal cases'
+
+jaraba_legal_cases.api.cases.store:
+  path: '/api/v1/legal/cases'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'create legal cases'
+
+jaraba_legal_cases.api.cases.detail:
+  path: '/api/v1/legal/cases/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::detail'
+  methods: [GET]
+  requirements:
+    _permission: 'view own legal cases'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_cases.api.cases.update:
+  path: '/api/v1/legal/cases/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'edit own legal cases'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_cases.api.cases.delete:
+  path: '/api/v1/legal/cases/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::delete'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete own legal cases'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_cases.api.cases.activity:
+  path: '/api/v1/legal/cases/{uuid}/activity'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::activity'
+  methods: [GET]
+  requirements:
+    _permission: 'view own legal cases'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Consultas ---
+
+jaraba_legal_cases.api.inquiries.store:
+  path: '/api/v1/legal/inquiries'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::storeInquiry'
+  methods: [POST]
+  requirements:
+    _permission: 'manage legal inquiries'
+
+jaraba_legal_cases.api.inquiries.list:
+  path: '/api/v1/legal/inquiries'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::listInquiries'
+  methods: [GET]
+  requirements:
+    _permission: 'view legal inquiries'
+
+jaraba_legal_cases.api.inquiries.triage:
+  path: '/api/v1/legal/inquiries/{uuid}/triage'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::triage'
+  methods: [POST]
+  requirements:
+    _permission: 'manage legal inquiries'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_cases.api.inquiries.convert:
+  path: '/api/v1/legal/inquiries/{uuid}/convert'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::convertToCase'
+  methods: [POST]
+  requirements:
+    _permission: 'manage legal inquiries'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_cases.api.inquiries.assign:
+  path: '/api/v1/legal/inquiries/{uuid}/assign'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_cases\Controller\CasesApiController::assign'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage legal inquiries'
+    uuid: '[a-f0-9\-]+'

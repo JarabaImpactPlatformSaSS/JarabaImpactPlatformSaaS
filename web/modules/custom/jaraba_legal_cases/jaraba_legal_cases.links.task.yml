@@ -1,0 +1,18 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Legal Cases (JarabaLex)
+# Cada entidad aparece como una pestana en la seccion de contenido
+# =============================================================================
+
+# Tab Expedientes en admin/content
+jaraba_legal_cases.client_case.collection:
+  title: 'Expedientes'
+  route_name: entity.client_case.collection
+  base_route: system.admin_content
+  weight: 70
+
+# Tab Consultas en admin/content
+jaraba_legal_cases.client_inquiry.collection:
+  title: 'Consultas'
+  route_name: entity.client_inquiry.collection
+  base_route: system.admin_content
+  weight: 71

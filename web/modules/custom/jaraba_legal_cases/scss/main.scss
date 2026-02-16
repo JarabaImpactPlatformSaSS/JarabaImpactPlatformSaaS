@@ -1,0 +1,16 @@
+/**
+ * @file
+ * main.scss — Entry point para SCSS del modulo Legal Cases.
+ *
+ * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ *
+ * COMPILACION:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_legal_cases && npx sass scss/main.scss css/jaraba-legal-cases.css --style=compressed"
+ */
+
+@use 'variables' as *;
+@use 'legal-cases-dashboard';
+@use 'case-detail';
+@use 'case-card';
+@use 'inquiry-card';

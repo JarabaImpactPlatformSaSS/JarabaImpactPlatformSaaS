@@ -1,0 +1,58 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Legal Cases (JarabaLex)
+  # Permite filtrar mensajes del modulo en los logs de Drupal
+  # =====================================================================
+  logger.channel.jaraba_legal_cases:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_cases']
+
+  # =====================================================================
+  # CaseManagerService: CRUD y logica de expedientes juridicos
+  # Responsabilidad: crear, listar, filtrar y gestionar expedientes
+  # Relaciones: consume ClientCase, CaseActivity
+  # =====================================================================
+  jaraba_legal_cases.case_manager:
+    class: Drupal\jaraba_legal_cases\Service\CaseManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_cases'
+
+  # =====================================================================
+  # ActivityLoggerService: Registro append-only de actividades
+  # Responsabilidad: crear entradas de actividad en expedientes
+  # Relaciones: consume CaseActivity
+  # =====================================================================
+  jaraba_legal_cases.activity_logger:
+    class: Drupal\jaraba_legal_cases\Service\ActivityLoggerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_cases'
+
+  # =====================================================================
+  # CaseTriageService: Triaje IA de consultas juridicas
+  # Responsabilidad: analizar consultas con IA y generar triajes
+  # Relaciones: consume ClientInquiry, InquiryTriage, proveedor IA
+  # =====================================================================
+  jaraba_legal_cases.triage:
+    class: Drupal\jaraba_legal_cases\Service\CaseTriageService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_legal_cases'
+
+  # =====================================================================
+  # InquiryManagerService: Gestion de consultas pre-expediente
+  # Responsabilidad: CRUD de consultas, conversion a expedientes,
+  #   asignacion de abogados
+  # Relaciones: consume ClientInquiry, CaseManagerService, ActivityLoggerService
+  # =====================================================================
+  jaraba_legal_cases.inquiry_manager:
+    class: Drupal\jaraba_legal_cases\Service\InquiryManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_legal_cases.case_manager'
+      - '@jaraba_legal_cases.activity_logger'
+      - '@logger.channel.jaraba_legal_cases'

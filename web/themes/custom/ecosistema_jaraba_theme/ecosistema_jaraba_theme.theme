@@ -2491,7 +2491,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_ads.', 'jaraba_email.', 'jaraba_events.', 'jaraba_funding.', 'jaraba_geo.',
     'jaraba_heatmap.', 'jaraba_i18n.', 'jaraba_insights_hub.',
     'jaraba_integrations.', 'jaraba_interactive.', 'jaraba_job_board.',
-    'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
+    'jaraba_legal_cases.', 'jaraba_legal_knowledge.', 'jaraba_lms.', 'jaraba_mentoring.',
     'jaraba_onboarding.', 'jaraba_page_builder.', 'jaraba_paths.',
     'jaraba_pixels.', 'jaraba_producer.', 'jaraba_referral.',
     'jaraba_privacy.', 'jaraba_legal.', 'jaraba_dr.',
@@ -3036,6 +3036,20 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   ];
   if (in_array($route_str, $jarabalex_routes)) {
     $suggestions[] = 'page__legal';
+  }
+
+  // =========================================================================
+  // JARABALEX LEGAL CASES — Templates zero-region para expedientes
+  // Plan Implementacion JarabaLex Legal Practice Platform v1 — FASE A1.
+  //
+  // Dashboard expedientes → page--legal-cases.html.twig
+  // Detalle expediente   → page--legal-case-detail.html.twig
+  // =========================================================================
+  if ($route_str === 'jaraba_legal_cases.dashboard') {
+    $suggestions[] = 'page__legal_cases';
+  }
+  if ($route_str === 'jaraba_legal_cases.case_detail') {
+    $suggestions[] = 'page__legal_case_detail';
   }
 }
 

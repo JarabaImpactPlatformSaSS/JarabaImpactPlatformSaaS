@@ -1,0 +1,53 @@
+# Schema de configuracion del modulo Legal Cases (JarabaLex FASE A1).
+# Define la estructura de datos para validacion de YAML config.
+
+jaraba_legal_cases.settings:
+  type: config_object
+  label: 'Legal Cases settings'
+  mapping:
+    default_case_prefix:
+      type: string
+      label: 'Default case number prefix (e.g. EXP)'
+    default_inquiry_prefix:
+      type: string
+      label: 'Default inquiry number prefix (e.g. CON)'
+    auto_triage_enabled:
+      type: boolean
+      label: 'Enable automatic AI triage for new inquiries'
+    triage_model:
+      type: string
+      label: 'AI model for triage (e.g. gemini-2.0-flash)'
+    limits:
+      type: mapping
+      label: 'Plan-based limits'
+      mapping:
+        starter:
+          type: mapping
+          label: 'Starter plan limits'
+          mapping:
+            max_cases:
+              type: integer
+              label: 'Maximum active cases (0 = unlimited)'
+            max_inquiries_per_month:
+              type: integer
+              label: 'Maximum inquiries per month (0 = unlimited)'
+        pro:
+          type: mapping
+          label: 'Pro plan limits'
+          mapping:
+            max_cases:
+              type: integer
+              label: 'Maximum active cases (0 = unlimited)'
+            max_inquiries_per_month:
+              type: integer
+              label: 'Maximum inquiries per month (0 = unlimited)'
+        enterprise:
+          type: mapping
+          label: 'Enterprise plan limits'
+          mapping:
+            max_cases:
+              type: integer
+              label: 'Maximum active cases (0 = unlimited)'
+            max_inquiries_per_month:
+              type: integer
+              label: 'Maximum inquiries per month (0 = unlimited)'
