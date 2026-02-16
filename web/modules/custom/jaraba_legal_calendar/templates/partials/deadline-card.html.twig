@@ -1,0 +1,26 @@
+{#
+ # Parcial: Tarjeta de plazo legal.
+ # Variables: deadline (LegalDeadline entity).
+ #}
+{% set status = deadline.status.value %}
+{% set deadline_type = deadline.deadline_type.value %}
+<div class="ej-deadline-card ej-deadline-card--{{ status }}">
+  <div class="ej-deadline-card__header">
+    <span class="ej-deadline-card__type">{{ deadline_type|capitalize }}</span>
+    <span class="ej-badge ej-badge--{{ status }}">{{ status|t }}</span>
+  </div>
+  <h3 class="ej-deadline-card__title">{{ deadline.label }}</h3>
+  <div class="ej-deadline-card__meta">
+    {% if deadline.legal_basis.value %}
+      <span class="ej-deadline-card__basis">{{ deadline.legal_basis.value }}</span>
+    {% endif %}
+    <span class="ej-deadline-card__date">
+      {{ deadline.due_date.value|date('d/m/Y H:i') }}
+    </span>
+  </div>
+  {% if deadline.assigned_to.entity %}
+    <div class="ej-deadline-card__assigned">
+      {{ 'Responsable:'|t }} {{ deadline.assigned_to.entity.displayName }}
+    </div>
+  {% endif %}
+</div>

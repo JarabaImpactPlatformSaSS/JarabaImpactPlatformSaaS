@@ -1,0 +1,11 @@
+jaraba_legal_calendar.add_deadline:
+  title: 'Crear Plazo'
+  route_name: entity.legal_deadline.add_form
+  appears_on:
+    - entity.legal_deadline.collection
+
+jaraba_legal_calendar.add_hearing:
+  title: 'Crear Senalado'
+  route_name: entity.court_hearing.add_form
+  appears_on:
+    - entity.court_hearing.collection

@@ -1,0 +1,13 @@
+jaraba_legal_calendar.admin_deadlines:
+  title: 'Plazos Legales'
+  description: 'Gestionar plazos procesales y tributarios.'
+  route_name: entity.legal_deadline.collection
+  parent: system.admin_structure
+  weight: 30
+
+jaraba_legal_calendar.admin_hearings:
+  title: 'Senalados Judiciales'
+  description: 'Gestionar senalados de vistas judiciales.'
+  route_name: entity.court_hearing.collection
+  parent: system.admin_structure
+  weight: 31
